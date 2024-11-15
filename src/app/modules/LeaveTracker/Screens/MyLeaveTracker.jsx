@@ -356,7 +356,7 @@ function ConsumedLeaves({ componentsWithUsed }) {
             CTC Components
           </h3>
           <div className="flex relative gap-4 items-start">
-            <div className="flex flex-col justify-center text-sm leading-tight whitespace-nowrap text-neutral-400">
+            <div className="flex flex-col justify-center text-sm leading-tight whitespace-nowrap text-neutral-900">
               {componentsWithUsed.map((leave) => (
                 <div key={leave.name} className="mt-4 first:mt-0">
                   {leave.name}

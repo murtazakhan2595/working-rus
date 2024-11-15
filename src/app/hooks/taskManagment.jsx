@@ -175,7 +175,7 @@ const addProject = async (payload) => {
   try {
     if (payload?.id) {
       const response = await axios.patch(
-        `${baseUrl}/project/${payload.id}`,
+        `${baseUrl}/project/${payload.id}/`,
         payload,
         {
           headers: headers(),
@@ -211,7 +211,7 @@ const addTask = async (payload) => {
   try {
     if (payload?.id) {
       const response = await axios.patch(
-        `${baseUrl}/task/${payload.id}`,
+        `${baseUrl}/task/${payload.id}/`,
         payload,
         {
           headers: headers(),
@@ -246,7 +246,7 @@ const moveTask = async (payload) => {
   try {
     if (payload?.id) {
       const response = await axios.patch(
-        `${baseUrl}/task/${payload.id}`,
+        `${baseUrl}/task/${payload.id}/`,
         payload,
         {
           headers: headers(),

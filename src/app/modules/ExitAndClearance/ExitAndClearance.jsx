@@ -32,8 +32,8 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   const [approvedResignation, setApprovedResignation] = useState(0);
   const [rejectedResignation, setRejectedResignation] = useState(0);
   const [filterData, setFilterData] = useState({
-    exit_category: "resignation",
-    status_resignation: StatusList(),
+     exit_category: "resignation",
+     status_resignation: StatusList(),
     ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
   });
   const fetchData = async () => {
@@ -65,7 +65,6 @@ const ExitAndClearance = ({ userProfile, departments }) => {
       filterName === "status_resignation" ||
       (filterName === "status_termination" && filterValue)
     ) {
-      console.log("filterValue", filterValue);
       filterValue = [filterValue];
     }
     setFilterData((prevFilters) => {
@@ -157,7 +156,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
                 <TabsTrigger
                   key={tab}
                   value={tab}
-                  className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
+                  className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
                 >
                   {tab}
                 </TabsTrigger>

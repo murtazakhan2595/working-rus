@@ -9,30 +9,31 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../../src/@/components/ui/alert-dialog";
+import { Button } from "./button";
 
-const AlertDialogue = ({ isOpen, setIsOpen, handleContinue }) => {
+const AlertDialogue = ({ isOpen, setIsOpen, handleContinue , continueText = "Continue", description, title, cancelText ="Cancel", buttonType="destructive", className="text-red-700"}) => {
   return (
     <AlertDialog className="z-[999]" open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+          <AlertDialogTitle className={className}>{title}</AlertDialogTitle>
+          <AlertDialogDescription className="text-neutral-1100">
+            {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={() => setIsOpen(false)}>
-            Cancel
+            {cancelText}
           </AlertDialogCancel>
-          <AlertDialogAction
+          <Button
+            variant={buttonType}
             onClick={() => {
-              handleContinue(); // Trigger the continue action
-              setIsOpen(false); // Close the dialog after action
+              handleContinue(); 
+              setIsOpen(false); 
             }}
           >
-            Continue
-          </AlertDialogAction>
+            {continueText}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

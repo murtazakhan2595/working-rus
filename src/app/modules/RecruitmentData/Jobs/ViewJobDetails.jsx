@@ -1,12 +1,4 @@
-import { RxCross2 } from "react-icons/rx";
 import { useEffect } from "react";
-import { LuExternalLink } from "react-icons/lu";
-import { Link } from "react-router-dom";
-import { CiEdit } from "react-icons/ci";
-import { PiBriefcaseThin } from "react-icons/pi";
-import { IoArrowForward } from "react-icons/io5";
-import { Labels } from "../Sections";
-import { PiDotsThreeOutlineFill } from "react-icons/pi";
 import {
   getCountryFullName,
   getEmployeeType,
@@ -19,150 +11,136 @@ import { getJobById } from "app/hooks/recruitment";
 import { PageLoader } from "components";
 import { formatNumber } from "data/Data";
 import moment from "moment";
-import { Col,Row } from "reactstrap";
+import SheetComponent from "components/ui/SheetComponent";
+import { DetailBox } from "components/SheetCardExtension";
+import { EmployeeNameInfo } from "components";
+import { EmployeeID } from "utils/getValuesFromTables";
+import JobsActions from "./JobsActions";
+import { StatusLabel } from "components";
+import { JobStatusLabel } from "components/StatusLabel";
+import { DetailCard } from "components/SheetCardExtension";
+import { Button } from "components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const ViewJobDetails = ({ jobId, onClose }) => {
+const ViewJobDetails = ({ job, onClose, isOpen, setIsOpen ,fetchJobPosts, posts }) => {
   const [showEdit, setShowEdit] = useState(false);
-  const [job, setJob] = useState(false);
+  const [viewJob, setViewJob] = useState(job)
+  const [currentJob, setCurrentJob] = useState(posts?.results?.findIndex((p) => p.id === job?.id)); 
   const [isLoading, setIsLoading] = useState(false);
 
   const handleEditClick = () => {
     setShowEdit(true);
+    // setIsOpen(false)
   };
 
   const handleEditClose = () => {
-    getPosts();
+    // getPosts();
     setShowEdit(false);
   };
 
-  const getPosts = async () => {
-    setIsLoading(true);
-    try {
-      const data = await getJobById(jobId);
-      setJob(data);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  
+
+  const handleNexJob = () => {
+    const nextIndex = (currentJob + 1) % posts?.results?.length; 
+    setCurrentJob(nextIndex);
+    setViewJob(posts?.results[nextIndex]);
   };
 
-  useEffect(() => {
-    getPosts();
-  }, [jobId]);
-  console.log(job)
+  const handlePreviousJob = () => {
+    const previousIndex = (currentJob - 1 + posts?.results?.length) % posts?.results?.length; 
+    setCurrentJob(previousIndex);
+    setViewJob(posts?.results[previousIndex]);
+  };
+
+  const formSheetData = {
+    triggerText: null,
+    title: "Jobs",
+
+    description: null,
+    footer: null,
+  };
 
   return (
-    <div className="fixed top-0 right-0 w-[650px] h-full z-10 overflow-y-auto hideScroll pl-10">
-      <div className="bg-white h-auto shadow-lg p-10">
-        <div
-          className="absolute right-6 top-6 cursor-pointer"
-          onClick={onClose}
-        >
-          <RxCross2 className="text-baseGray" />
-        </div>
+    <SheetComponent
+      {...formSheetData}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      width="568px"
+    >
+      <div className="">
         {isLoading ? (
           <PageLoader />
         ) : (
           <>
-            <div className="flex justify-between items-center mb-1">
-              <Labels
-                label={job?.status === "live" ? "Open" : "Close"}
-                iconDot={true}
-                iconColor={`${
-                  job?.status === "live" ? "bg-green-500" : "bg-red-500"
-                }`}
-                backgroungColor={`${
-                  job?.status === "live" ? "bg-green-100" : "bg-red-100"
-                }`}
+          <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={handlePreviousJob}> <ChevronLeft/> Previous</Button>
+          <Button variant="outline" onClick={handleNexJob}>Next <ChevronRight/> </Button>
+          </div>
+              <div className="flex justify-between w-full">
+                <EmployeeNameInfo
+                  jobId={<EmployeeID value={job?.serial_number} />}
+                  name={viewJob?.Job_Title}
+                  showPosition={false}
+                  position={null}
+                  date={
+                    job?.created_at
+                      ? moment(viewJob?.created_at).format("MMM D, YYYY")
+                      : ""
+                  }
+                />
+                <JobsActions row={viewJob} fetchJobPosts={fetchJobPosts} isEdit={handleEditClick}/>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <StatusLabel  status={getWorkType(viewJob?.Work_type)}/>
+                <StatusLabel  status={getJobType(viewJob?.Job_Type)}/>
+                <StatusLabel  status={getEmployeeType(viewJob?.Employee_Type)}/>
+              </div>
+            <DetailCard detailCardTitle={"Details"} date={viewJob?.created_at}>
+              <DetailBox label="Eductation" value={viewJob?.Education} />
+              <DetailBox
+                label="Start Date"
+                value={
+                  viewJob?.created_at
+                    ? moment(viewJob?.created_at).format("DD-MM-YYYY")
+                    : ""
+                }
               />
-            </div>
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <p className="text-capitalize text-base text-baseGray mb-3">
-                  {job?.id}
-                </p>
-                <h2 className="text-2xl text-capitalize font-bold text-[#323333]">
-                  {job?.Job_Title}
-                </h2>
-              </div>
-              <div className="text-base text-baseGray flex items-center gap-x-4">
-                <button
-                  onClick={handleEditClick}
-                  className="border px-3 py-2 rounded-md border-black flex items-center gap-x-2"
-                >
-                  <CiEdit className="text-xl" />
-                  Edit Job
-                </button>
-                <Link to={`/job-description/${job?.id}`}>
-                  <LuExternalLink />
-                </Link>
-                <PiDotsThreeOutlineFill />
-              </div>
-            </div>
-            <Row className="mb-4 border border-gray-400 rounded-lg px-3 py-4">
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">Education</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {job?.Education}
-                </p>
-              </Col>
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">Job type</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {getJobType(job?.Job_Type)}
-                </p>
-              </Col>
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">Start date</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {job?.created_at
-                    ? moment(job?.created_at).format("DD-MM-YYYY")
-                    : ""}
-                </p>
-              </Col>
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">Work type</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {getWorkType(job?.Work_type)}
-                </p>
-              </Col>
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">Location</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {getCountryFullName(job?.location)}
-                </p>
-              </Col>
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">Deadline</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {job?.Deadline
-                    ? moment(job?.Deadline).format("DD-MM-YYYY")
-                    : ""}
-                </p>
-              </Col>
-              <Col lg={4} className="pb-4">
-                <p className="text-[14px] font-normal text-baseGray">
-                  Employee type
-                </p>
-                <p className="text-base font-semibold text-baseGray">
-                  {getEmployeeType(job?.Employee_Type)}
-                </p>
-              </Col>
-              <Col lg={8}>
-                <p className="text-[14px] font-normal text-baseGray">Salary</p>
-                <p className="text-base font-semibold text-baseGray">
-                  {job?.currency} {formatNumber(job?.min_salary)} -{" "}
-                 {formatNumber(job?.max_salary)}
-                </p>
-              </Col>
-            </Row>
 
-            <div className="flex justify-between items-center">
-              <button className="flex items-center gap-x-2 rounded-full bg-[#E6E9F0] px-3 py-1 text-baseGray text-base font-normal">
-                <PiBriefcaseThin className="text-xl" />{" "}
-                {job?.total_applications} Applications
-              </button>
+              <DetailBox
+                label="Location"
+                value={getCountryFullName(viewJob?.location)}
+              />
+              <DetailBox
+                label="End Date"
+                value={
+                  job?.Deadline
+                    ? moment(viewJob?.Deadline).format("DD-MM-YYYY")
+                    : ""
+                }
+              />
+              <DetailBox
+                label="Salary"
+                value={`${viewJob?.currency} ${formatNumber(
+                  viewJob?.min_salary
+                )}-${formatNumber(viewJob?.max_salary)}`}
+              />
+              <DetailBox label="Applications" value={viewJob?.total_applications} />
+              <DetailBox label="Status" value={<JobStatusLabel status={viewJob?.status}/>} />
+              </DetailCard>
+
+            <DetailCard>
+              <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
+                Job Description
+              </div>
+              <p>{viewJob?.Job_Description}</p>
+
+              <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
+                Job Requirement
+              </div>
+              <p>{viewJob?.Job_Requirement}</p>
+            </DetailCard>
+
+            {/* <div className="flex justify-between items-center">
               <Link
                 to="/applicants"
                 state={{ jobId: job.id }}
@@ -171,29 +149,13 @@ const ViewJobDetails = ({ jobId, onClose }) => {
                 Applications
                 <IoArrowForward className="text-xl" />
               </Link>
-            </div>
-            <div className="mt-3">
-              <h3 className="font-bold text-base text-[#323333]">
-                Job Description
-              </h3>
-              <p className="text-base font-normal text-baseGray">
-                {job?.Job_Description}
-              </p>
-            </div>
-            <div className="mt-4">
-              <h3 className="font-bold text-base text-[#323333]">
-                Job Requirements
-              </h3>
-              <p className="text-base font-normal text-baseGray">
-                {job?.Job_Requirement}
-              </p>
-            </div>
+            </div> */}
           </>
         )}
       </div>
 
-      {showEdit && <EditJobDetails job={job} onClose={handleEditClose} />}
-    </div>
+      {showEdit && <EditJobDetails job={viewJob} onClose={handleEditClose} fetchJobPosts={fetchJobPosts}/>}
+    </SheetComponent>
   );
 };
 

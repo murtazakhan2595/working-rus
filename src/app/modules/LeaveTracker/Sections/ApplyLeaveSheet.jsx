@@ -312,7 +312,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                               )}
                             </div>
                             <Button
-                              className="bg-white border border-[#e8e8ec] text-[#1c2024]"
+                              className="bg-white border border-[#e8e8ec] text-neutral-1200"
                               type="button"
                               onClick={() =>
                                 document.getElementById("fileInput").click()
@@ -330,7 +330,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                           style={{ display: "none" }} // Hide the file input
                           onChange={handleFileChange} // Call the file change handler
                         />
-                        {/* <Button className="bg-white border border-[#e8e8ec] text-[#1c2024] text-sm font-medium w-fit">
+                        {/* <Button className="bg-white border border-[#e8e8ec] text-neutral-1200 text-sm font-medium w-fit">
                           + Add another
                         </Button> */}
                       </div>

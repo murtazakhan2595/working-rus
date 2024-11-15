@@ -12,8 +12,6 @@ import {
 } from "utils/getValuesFromTables";
 
 import { Formik } from "formik";
-import { FileInput } from "components/form-control";
-import { Col, Row, Form } from "reactstrap";
 
 import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 import { ExitStatusCurrentStep } from "./Sections";
@@ -23,8 +21,6 @@ import {
   Sheet,
   SheetContent,
   SheetHeader,
-  SheetTitle,
-  SheetTrigger,
 } from "../../../src/@/components/ui/sheet";
 import {
   ViewDetailHeader,
@@ -32,6 +28,7 @@ import {
   ViewAttachmentDetail,
 } from "./Sections/DetailViewPanel";
 import { Button } from "../../../components/ui/button";
+import { CoverFileUpload } from "components/form-control";
 const ExitDetailsCard = ({
   onClose,
   resignationId,
@@ -82,6 +79,7 @@ const ExitDetailsCard = ({
   const handleSubmit = async (data) => {
     try {
       if (data) {
+        data.exit_type='Relocation';
         const payload = {
           ...data,
           ...(isResignation
@@ -98,7 +96,6 @@ const ExitDetailsCard = ({
     }
   };
 
-  console.log("==============================", resignation);
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetContent side="right" className="w-full p-6 sm:max-w-4xl ">
@@ -110,17 +107,17 @@ const ExitDetailsCard = ({
             />
           </SheetHeader>
           <div className="mt-4">
-            <section className="flex flex-col mt-10 w-full max-md:max-w-full justify-start items-start gap-2">
+            <section className="flex flex-col items-start justify-start w-full gap-2 mt-10 max-md:max-w-full">
               <Labels
                 label={`${isResignation ? "Resignation" : "Termination"}`}
                 backgroungColor={`bg-[#f4e4eb]`}
               />
               <div className="flex flex-wrap items-center justify-between w-full">
                 <div className="flex flex-col gap-2 justify-start max-w-[70%]">
-                  <h1 className="text-2xl font-bold text-zinc-800 mb-0">
+                  <h1 className="mb-0 text-2xl font-bold text-zinc-800">
                     {resignation?.emp_name}
                   </h1>
-                  <p className=" text-base text-zinc-600">
+                  <p className="text-base  text-zinc-600">
                     ID: <EmployeeID value={resignation?.employee_id} /> |{" "}
                     <DesignationName value={resignation?.position} /> |
                     <DepartmentName value={resignation?.department_name} />
@@ -223,7 +220,7 @@ const ExitDetailsCard = ({
                   >
                     {(props) => (
                       <form onSubmit={props.handleSubmit}>
-                        <FileInput
+                        <CoverFileUpload
                           name="clearance_report"
                           label=" Clearance Report or drag it here"
                           acceptType=".pdf"

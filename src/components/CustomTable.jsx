@@ -142,7 +142,7 @@ export default function TableCustom({
                 <TableHeader>
                   <TableRow>
                     {selectable && (
-                      <TableHead className="p-0 w-[0px] text-right m-0 text-[#8b8d98]">
+                      <TableHead className="p-0 w-[0px] text-right m-0">
                         <input
                           type="checkbox"
                           onChange={handleSelectAllRows}
@@ -157,7 +157,7 @@ export default function TableCustom({
                     {columns.map((column, index) => (
                       <TableHead
                         key={index}
-                        className="cursor-pointer text-[#8b8d98]"
+                        className="cursor-pointer"
                         style={column.width ? { width: column.width } : {}}
                         onClick={() => handleSort(column.dataField)}
                       >
@@ -190,7 +190,7 @@ export default function TableCustom({
                         `}
                       >
                         {selectable && (
-                          <TableCell className="p-0 pl-1 w-[0px] text-right ml-0 text-[#1c2024]">
+                          <TableCell className="p-0 pl-1 w-[0px] text-right ml-0 text-neutral-1200">
                             <div
                               onClick={(event) => {
                                 // Stop the event propagation to prevent onRowClick from being triggered
@@ -209,7 +209,7 @@ export default function TableCustom({
                         {Array.isArray(columns) &&
                           columns.map((column, index) => (
                             <TableCell
-                              className={`text-[#1c2024] ${
+                              className={`text-neutral-1200 ${
                                 column.onClick ? "cursor-pointer " : ""
                               }`}
                               key={index}
@@ -241,7 +241,7 @@ export default function TableCustom({
                         <TableRow>
                           <TableCell
                             colSpan={columns.length}
-                            className="text-[#1c2024]"
+                            className="text-neutral-1200"
                           >
                             {renderExpandedContent(row)}
                           </TableCell>
@@ -253,7 +253,7 @@ export default function TableCustom({
                   <TableRow>
                     <TableCell
                       colSpan={columns.length}
-                      className="py-4 text-center text-[#1c2024]"
+                      className="py-4 text-center text-neutral-1200"
                     >
                       No data available
                     </TableCell>
@@ -263,7 +263,7 @@ export default function TableCustom({
             </Table>
           </div>
         </div>
-        {pagination && (
+        {pagination && dataTotalSize > 10 && (
           <div className="flex justify-between ">
             <CustomPageSizePagination
               sizePerPage={options.sizePerPage}

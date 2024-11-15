@@ -57,6 +57,7 @@ import moment from "moment";
 import { getVisaLabel } from "../../../../../utils/getVisaLabel";
 import DownloadData from "./DownloadButton";
 import { DepartmentName } from "utils/getValuesFromTables";
+import { Header } from "components";
 const ViewEmployee = ({ userProfile, profileView }) => {
   const [employeeData, setEmployeeData] = React.useState({});
   const [educations, setEducations] = useState([{}]);
@@ -67,6 +68,10 @@ const ViewEmployee = ({ userProfile, profileView }) => {
   const { id } = useParams();
   const userId = profileView ? userProfile?.id : id;
   const navigate = useNavigate();
+  const location = useLocation();
+
+  console.log("Current path:", location.pathname);
+
   const getDataByHooks = async () => {
     setLoading(true);
     try {
@@ -101,16 +106,21 @@ const ViewEmployee = ({ userProfile, profileView }) => {
   return (
     <>
       {loading? <PageLoader/> : <div className="container p-4 mx-auto">
-        <div className="mb-4">
-          <Button
-            variant="ghost"
-            onClick={() => {navigate(-1)}}
-            className="p-4 text-xl text-balance"
-          >
-            <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
-            Go Back
-          </Button>
-        </div>
+      {/* if the pathname starts with /user/ then show the go back button */}
+        {location.pathname.startsWith("/user/") && (
+          <div className="mb-4">
+            <Button
+              variant="ghost"
+              onClick={() => {navigate(-1)}}
+              className="p-4 text-xl text-balance"
+            >
+              <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
+              Go Back
+            </Button>
+          </div>
+        )}
+        {/* if the pathname is /my-profile then show the header */}
+        {location.pathname === "/my-profile" && <Header />}
         <div className="my-5">
           <Card>
             <CardContent className="flex items-center pt-6 space-x-4">
@@ -161,7 +171,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
               </TabsList>
             </div>
             <TabsContent value="personal">
-              <div className="my-2 grid grid-cols-1 gap-4 mb-4">
+              <div className="grid grid-cols-2 gap-4 my-2 mb-4">
                 <PersonalDetials
                   isEditable={profileView}
                   userData={employeeData}
@@ -190,7 +200,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
               />
             </TabsContent>
             <TabsContent value="qualification">
-              <div className="my-2 grid grid-cols-1 gap-4 mb-4">
+              <div className="grid grid-cols-1 gap-4 my-2 mb-4">
                 {Array.isArray(educations) && educations?.length > 0 && (
                   <AcademicInfo
                     isEditable={profileView}

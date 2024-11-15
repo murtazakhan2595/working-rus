@@ -19,7 +19,6 @@ import moment from "moment";
 import { IoIosArrowDown } from "react-icons/io";
 import { downloadCV } from "app/hooks/recruitment";
 import { AiOutlineDownload } from "react-icons/ai";
-import ApplicationStatus from "app/modules/EmployeesExit/sections/ApplicationStatus";
 import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExitTableAction";
 import { filebase64Download } from "utils/fileUtils";
 import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
@@ -35,10 +34,8 @@ import { Switch } from "../../../src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
 import { Clock, Download } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
-import { calculateTotalMonthlyEarningsAndDeductions } from "app/modules/payroll/Sections/CalculationsHelperFunctions";
 import { MembersList } from "app/modules/TaskManagment/Sections";
-import { formatters } from "date-fns";
-import { StatusCircleLabel } from "components/StatusLabel";
+
 
 /**
  * LeaveHistoryColumns
@@ -147,7 +144,7 @@ export const EmployeeColumns = [
   },
   {
     dataField: "",
-    text: "",
+    text: "Actions",
     formatter: (cell, row) => <EmployeeAction row={row} />,
   },
 ];
@@ -352,7 +349,8 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
 };
 export const AllJobApplicationColumns = (
   handleOptionSelect,
-  setViewApplicationDetails
+  setViewApplicationDetails,
+  setIsViewApplicationDetailOpen
 ) => [
   {
     dataField: "id",
@@ -363,44 +361,48 @@ export const AllJobApplicationColumns = (
     dataField: "first_name",
     text: "Candidate",
     formatter: (cell, row) => (
-      <>
-        <div className="cursor-pointer">
-          {cell} {row.last_name}
-        </div>
-        <div className="text-base text-baseGray">
-          {`Exp. ${row?.Year_of_Experience} years`}
-        </div>
-      </>
+        <EmployeeNameInfo
+          name={`${cell} ${row?.last_name}`}
+          date={row?.email}
+          department={false}
+        />
     ),
     onClick: (index, list) => {
       setViewApplicationDetails({ index, list });
+      setIsViewApplicationDetailOpen(true)
     },
   },
+  // {
+  //   dataField: "phone_number",
+  //   text: "Phone",
+  //   formatter: (cell, row) => (
+  //     <>
+  //       <div className="text-base ">{cell || ""}</div>
+  //       {/* <div className="text-base ">{row.email || ""}</div> */}
+  //     </>
+  //   ),
+  // },
+  // {
+  //   dataField: "current_salary",
+  //   text: "Current Salary",
+  //   formatter: (cell) => <>{formatNumber(cell)}</>,
+  // },
   {
-    dataField: "phone_number",
-    text: "Phone no/Email",
-    formatter: (cell, row) => (
-      <>
-        <div className="text-base ">{cell || ""}</div>
-        <div className="text-base ">{row.email || ""}</div>
-      </>
-    ),
+    dataField: "updated_at",
+    text: "Applied On",
+    formatter: (cell) => <>{moment(cell).format("MMM D, YYYY")}</>,
   },
   {
-    dataField: "current_salary",
-    text: "Current Salary",
-    formatter: (cell) => <>{formatNumber(cell)}</>,
+    dataField:"Year_of_Experience",
+    text:"Experience",
+    formatter:(cell)=> <p>{cell} Years</p>
   },
   {
     dataField: "expected_salary",
     text: "Expected Salary",
     formatter: (cell) => <>{formatNumber(cell)}</>,
   },
-  {
-    dataField: "updated_at",
-    text: "Applied On",
-    formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
-  },
+
   {
     dataField: "",
     text: "Resume",
@@ -427,7 +429,7 @@ export const AllJobApplicationColumns = (
   },
   {
     dataField: "",
-    text: "",
+    text: "Actions",
     formatter: (cell, row) => (
       <RenderJobApplicationActions
         row={row}
@@ -619,7 +621,7 @@ export const SalaryComponentColumns = (onCheckedChange) => [
               cell === "deduction" ? "bg-[#29a385]" : "bg-[#EA3E69]"
             } rounded-full`}
           />
-          <div className="text-[#1c2024] text-xs font-semibold  leading-3 capitalize">
+          <div className="text-neutral-1200 text-xs font-semibold  leading-3 capitalize">
             {cell}
           </div>
         </div>

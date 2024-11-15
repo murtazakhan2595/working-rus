@@ -23,6 +23,7 @@ import {
   CardContent,
   // CardFooter,
 } from "../../../../components/ui/card.jsx";
+import Header from "components/Header.jsx";
 
 const CreateUpdateEmployee = () => {
   const {id} = useParams()
@@ -48,6 +49,7 @@ const CreateUpdateEmployee = () => {
   }, [showFormSubmittedModal]);
   return (
     <>
+    <Header />
       <Card>
         <CardContent>
           <EmployeeForm

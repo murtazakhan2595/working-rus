@@ -22,6 +22,8 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [comments, setComments] = useState([]);
 
+  
+
   const editDetails = () => {
     setIsDropdownOpen(false);
     setIsEditCardOpen(true);

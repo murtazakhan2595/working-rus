@@ -31,15 +31,58 @@ const Header = ({ content, userProfile }) => {
       "exit-employee": "Employee Offboarding",
       "claim-request": "Claim Request",
       "my-claims": "My Claims",
-      "projects":`${userProfile.role === 4 ? "My Projects" : "All Projects"}`,
+      "projects": `${userProfile.role === 4 ? "My Projects" : "All Projects"}`,
       "leave-records": "Leave Records",
+      "applications": "Applications",
+      "applicants": "Applicants",
+      "create-profile": "Create Profile",
+      "project-board": "Project Board",
+      "my-profile": "My Profile",
+      "test": "Test",
+      "my-team": "My Team",
+      "my-task": "My Tasks",
+      "calender": "Calendar",
+      "attendance": "Attendance",
+      "files-data": "Files Data",
+      "announcement": "Announcements",
+      "recognition": "Recognition",
+      "my-travel-details": "My Travel Details",
+      "letter-request": "Letter Request",
+      "leave-calender": "Leave Calendar",
+      "my-payroll": "My Payroll",
+      "create-task": "Create Task",
+      "my-dtr": "My DTR",
+      "settings": "Settings",
+      "travel-details": "Travel Details",
+      "customise-employees": "Customize Employees",
+      "relocation": "Relocation",
+      "create-employee": "Create Employee",
+      "loans": "Loans",
+      "payslips": "Payslips",
+      "development-plan": "Development Plan",
+      "personnel-requisition": "Personnel Requisition",
+      "jobs": "Jobs",
+      "job-post": "Job Post",
+      "tests": "Tests",
+      "referals": "Referrals",
+      "learn": "Learning",
+      "career-planning": "Career Planning",
+      "on-boarding": "Onboarding",
+      "employee-evaluation": "Employee Evaluation",
+      "leave-request": "Leave Request",
+      "recruitment": "Recruitment",
+      "my-leave-tracker": "My Leave Tracker",
+      "job-application": "Job Application",
+      "job-application-form": "Job Application Form",
+      "job-description": "Job Description",
+      
     };
     setPathName(pathNames[path] || "Dashboard");
   }, [location]);
 
   return (
     <div className="flex flex-row items-center justify-between px-4 py-4">
-      <h4 className="text-lg font-semibold capitalize text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">{pathName}</h4>
+      <h3 className="capitalize h4 ">{pathName}</h3>
       <div className="flex flex-wrap justify-end gap-3">
         {/* <FilterInput
           filters={[

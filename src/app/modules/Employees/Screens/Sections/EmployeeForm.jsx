@@ -201,6 +201,7 @@ const SheetOnBorading = ({
 
   return (
     <>
+
       <div
         side="right"
         className="w-full p-0 "
@@ -316,8 +317,8 @@ const SheetOnBorading = ({
                           />
                         </div>
                         <div className="space-y-2">
-                          <div>
-                            <Label htmlFor="password">
+                          <div className="flex flex-col gap-4">
+                            <Label htmlFor="password" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-baseGray">
                               <span className="text-red-600">* </span>Password
                             </Label>
                             <Input
@@ -366,7 +367,7 @@ const SheetOnBorading = ({
                             countryOptions={countriesCallingCodes} // Pass the country options here
                           />
                         </div>
-                        <div className="space-y-2">
+                        <div className="col-span-3 space-y-2">
                           <TextAreaInput
                             name={"residential_address"}
                             error={props.errors?.residential_address}
@@ -374,7 +375,7 @@ const SheetOnBorading = ({
                             value={props.values?.residential_address}
                             label={"Address"}
                             required={true}
-                            minRows={3}
+                            maxRows={3}
                             onChange={(field, value) => {
                               props.handleChange(field)(value);
                             }}
@@ -382,6 +383,9 @@ const SheetOnBorading = ({
                         </div>
                       </div>
                     </div>
+
+
+                    
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold">
                         Official Information

@@ -26,7 +26,7 @@ const PersonalInformation = ({ userData, isEditable, getDataByHooks }) => {
       <Card>
         <CardHeader>
           <div className="flex justify-between">
-            <CardTitle>Personal Information</CardTitle>
+            <CardTitle className="text-primary">Personal Information</CardTitle>
             {isEditable && (
               <div
                 className="flex items-center gap-4"
@@ -40,16 +40,13 @@ const PersonalInformation = ({ userData, isEditable, getDataByHooks }) => {
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid grid-cols-3 gap-4 mb-4 md:grid-cols-3 w-full">
+          <div className="grid grid-cols-2 gap-4">
             {personalInfo.map((info, index) => (
-              <div className="flex w-full gap-3" key={index}>
-                <div className="w-[150px] lg:w-[40%] text-base text-muted-foreground">
-                  {info.title}
+              <div className="flex flex-row w-full gap-3" key={index}>
+                <div className="flex-1 text-base text-neutral-1000">
+                  {info.title}  
                 </div>
-                <div
-                  className="w-[calc(100%-150px)] lg:w-[60%] text-base text-black"
-                  style={{ overflowWrap: "break-word" }}
-                >
+                <div  className="flex-1 text-base text-black">
                   {info.data || "N/A"}
                 </div>
               </div>

@@ -19,7 +19,7 @@ module.exports = {
     extend: {
        
       fontFamily: {
-        body: ['Inter', 'sans-serif'], // Define your custom font family
+        body: ['Inter', 'ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji'], // Define your custom font family
       },
       colors: {
         border: "hsl(var(--border))",
@@ -91,21 +91,90 @@ module.exports = {
           1200: "hsl(var(--plum-12))",
         },
 
+        "neutral": {
+          100: "hsl(var(--neutral-1))",
+          200: "hsl(var(--neutral-2))",
+          300: "hsl(var(--neutral-3))",
+          400: "hsl(var(--neutral-4))",
+          500: "hsl(var(--neutral-5))",
+          600: "hsl(var(--neutral-6))",
+          700: "hsl(var(--neutral-7))",
+          800: "hsl(var(--neutral-8))",
+          900: "hsl(var(--neutral-9))",
+          1000: "hsl(var(--neutral-10))",
+          1100: "hsl(var(--neutral-11))",
+          1200: "hsl(var(--neutral-12))",
+        },
+
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "hsl(var(--plum-11))",
+          foreground: "hsl(var(--plum-12))",
+          100: "hsl(var(--plum-1))",
+          200: "hsl(var(--plum-2))",
+          300: "hsl(var(--plum-3))",
+          400: "hsl(var(--plum-4))",
+          500: "hsl(var(--plum-5))",
+          600: "hsl(var(--plum-6))",
+          700: "hsl(var(--plum-7))",
+          800: "hsl(var(--plum-8))",
+          900: "hsl(var(--plum-9))",
+          1000: "hsl(var(--plum-10))",
+          1100: "hsl(var(--plum-11))",
+          1200: "hsl(var(--plum-12))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
+        "red": {
+          100: "hsl(var(--red-1))",
+          200: "hsl(var(--red-2))",
+          300: "hsl(var(--red-3))",
+          400: "hsl(var(--red-4))",
+          500: "hsl(var(--red-5))",
+        
+        },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "hsl(var(--red-9))",
+          foreground: "hsl(var(--red-12))",
+          100: "hsl(var(--red-1))",
+          200: "hsl(var(--red-2))",
+          300: "hsl(var(--red-3))",
+          400: "hsl(var(--red-4))",
+          500: "hsl(var(--red-5))",
+        
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "hsl(var(--neutral-11))",
+          foreground: "hsl(var(--neutral-12))",
+          100: "hsl(var(--neutral-1))",
+          200: "hsl(var(--neutral-2))",
+          300: "hsl(var(--neutral-3))",
+          400: "hsl(var(--neutral-4))",
+          500: "hsl(var(--neutral-5))",
+          600: "hsl(var(--neutral-6))",
+          700: "hsl(var(--neutral-7))",
+          800: "hsl(var(--neutral-8))",
+          900: "hsl(var(--neutral-9))",
+          1000: "hsl(var(--neutral-10))",
+          1100: "hsl(var(--neutral-11))",
+          1200: "hsl(var(--neutral-12))",
+        },
+        hover: {
+          DEFAULT: "hsl(var(--neutral-11))",
+          foreground: "hsl(var(--neutral-12))",
+          100: "hsl(var(--neutral-1))",
+          200: "hsl(var(--neutral-2))",
+          300: "hsl(var(--neutral-3))",
+          400: "hsl(var(--neutral-4))",
+          500: "hsl(var(--neutral-5))",
+          600: "hsl(var(--neutral-6))",
+          700: "hsl(var(--neutral-7))",
+          800: "hsl(var(--neutral-8))",
+          900: "hsl(var(--neutral-9))",
+          1000: "hsl(var(--neutral-10))",
+          1100: "hsl(var(--neutral-11))",
+          1200: "hsl(var(--neutral-12))",
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
@@ -118,6 +187,30 @@ module.exports = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning-9))",
+          foreground: "hsl(var(--warning-12))",
+          100: "hsl(var(--warning-1))",
+          200: "hsl(var(--warning-2))",
+          300: "hsl(var(--warning-3))",
+          400: "hsl(var(--warning-4))",
+          500: "hsl(var(--warning-5))",
+        
+        },
+        success: {
+          DEFAULT: "hsl(var(--success-9))",
+          foreground: "hsl(var(--success-12))",
+          100: "hsl(var(--success-1))",
+          200: "hsl(var(--success-2))",
+          300: "hsl(var(--success-3))",
+          400: "hsl(var(--success-4))",
+          500: "hsl(var(--success-5))",
+      
+        },
+        "base": {
+          black: "hsl(var(--base-black))",
+          white: "hsl(var(--base-white))",
         },
       },
       borderRadius: {
@@ -139,6 +232,9 @@ module.exports = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      boxShadow: {
+        'custom': '0px 3px 6px 0px rgba(0, 0, 0, 0.25)',
       },
     },
     screens: {

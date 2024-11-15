@@ -11,6 +11,7 @@ import { TextInput } from "../../../../../components/form-control.jsx";
 import PageLoader from "../../../../../components/PageLoader.jsx";
 import { Button } from "components/ui/button.jsx";
 import { validateEmployeeBankInformationForm } from "app/utils/FormSchema/employeeFormSchema.jsx";
+import { Card, CardContent } from "components/ui/card.jsx";
 
 const BankInformation = ({
   nextstep,
@@ -66,6 +67,8 @@ const BankInformation = ({
           >
             {(props) => (
               <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                <Card className="p-6">
+                  <CardContent>
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -187,7 +190,9 @@ const BankInformation = ({
                       </Button>
                     </div>
                   </div>
-                </div>
+                  </div>
+                </CardContent>
+                </Card>
               </form>
             )}
           </Formik>

@@ -126,8 +126,8 @@ const Notifications = ({ onClose }) => {
             <div className="flex items-center justify-between border-b mx-3 py-2">
                 <h2 className="text-lg font-semibold">Notifications</h2>
                 <div className="flex space-x-4">
-                    <button className="text-blue-600 font-lato text-[13px]">All</button>
-                    <button className="text-gray-500 font-lato text-[13px]">Unread</button>
+                    <button className="text-blue-600  text-[13px]">All</button>
+                    <button className="text-gray-500  text-[13px]">Unread</button>
                 </div>
             </div>
             <div className="overflow-y-auto h-[80vh] gray-scorll">

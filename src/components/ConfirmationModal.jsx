@@ -37,23 +37,23 @@ const ConfirmationModal = ({ isOpen, onClose, onDelete }) => {
               </defs>
             </svg>
           </div>
-          <h2 className="text-2xl font-lato font-bold text-[#323333] mb-2">
+          <h2 className="text-2xl  font-bold text-[#323333] mb-2">
             Are you sure?
           </h2>
-          <p className="text-[#323333] font-lato text-xl mb-10">
+          <p className="text-[#323333]  text-xl mb-10">
             This action can't be undone. All information associated with this
             will be lost.
           </p>
           <div className="flex justify-center space-x-4">
             <button
               onClick={onDelete}
-              className="bg-[#D12C15] font-semibold text-base w-32 text-[#F7F8FA] font-lato px-4 py-2 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="bg-[#D12C15] font-semibold text-base w-32 text-[#F7F8FA]  px-4 py-2 rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
             >
               DELETE
             </button>
             <button
               onClick={onClose}
-              className="w-32 text-base font-semibold font-lato border-2 border-[#323333] text-[#323333] px-4 py-2 rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="w-32 text-base font-semibold  border-2 border-[#323333] text-[#323333] px-4 py-2 rounded hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
             >
               CANCEL
             </button>

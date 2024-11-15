@@ -1,24 +1,20 @@
-import { CardTitle } from "components/ui/card";
-import { CardHeader } from "components/ui/card";
+
 import { Formik } from "formik";
 import React, { useEffect } from "react";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 import { Button } from "components/ui/button";
 import { TextInput } from "components/form-control";
-import { department } from "data/Data";
+
 import { DateInput } from "components/form-control";
 import { SelectComponent } from "components/form-control";
 import { terminationReasonsOptions } from "data/Data";
 import { getEmployeeData } from "app/hooks/employee";
-import { DesignationName } from "utils/getValuesFromTables";
-import { DepartmentName } from "utils/getValuesFromTables";
-import { ManagerName } from "utils/getValuesFromTables";
-import { getAllCountries } from "countries-and-timezones";
-import { FileInput } from "components/form-control";
+
 import moment from "moment";
 import { connect } from "react-redux";
 import { NoticePeriod } from "data/Data";
 import { validateTerminationForm } from "app/utils/FormSchema/exitAndClearanceFormSchema";
+import { CoverFileUpload } from "components/form-control";
 
 const RequestTerminationForm = ({
   employees,
@@ -113,7 +109,7 @@ const RequestTerminationForm = ({
           { title: "Phone Number", data: response.mobile_no },
           {
             title: "Work Location",
-            data: getAllCountries()[response.employee_location]?.name || "",
+            data: response.employee_location || "",
           },
           {
             title: "Organization",
@@ -179,7 +175,7 @@ const RequestTerminationForm = ({
                       {employeeData.map((infoGroup, index) => (
                         <div
                           key={index}
-                          className="grid sm:grid-cols-1 lg:grid-cols-2 w-full gap-4"
+                          className="grid w-full gap-4 sm:grid-cols-1 lg:grid-cols-2"
                         >
                           <div className="space-y-2">
                             <SelectComponent
@@ -198,7 +194,7 @@ const RequestTerminationForm = ({
                           </div>
                           {infoGroup.length > 0
                             ? infoGroup.map((info) => (
-                                <div className="space-y-2 flex flex-col justify-end">
+                                <div className="flex flex-col justify-end space-y-2">
                                   <TextInput
                                     value={info.data}
                                     name={info.title}
@@ -209,7 +205,7 @@ const RequestTerminationForm = ({
                               ))
                             : employeeFootPrint.map((info) => {
                                 return (
-                                  <div className="space-y-2 flex flex-col justify-end">
+                                  <div className="flex flex-col justify-end space-y-2">
                                     <TextInput
                                       value={info.title}
                                       disabled={true}
@@ -219,10 +215,10 @@ const RequestTerminationForm = ({
                               })}
                         </div>
                       ))}
-                      <div className="font-bold text-lg mb-4 text-plum-1100">
+                      <div className="mb-4 text-lg font-bold text-plum-1100">
                         Exit Details
                       </div>
-                      <div className="grid sm:grid-cols-1 lg:grid-cols-2 w-full gap-4">
+                      <div className="grid w-full gap-4 sm:grid-cols-1 lg:grid-cols-2">
                         <DateInput
                           name={"last_working_day"}
                           error={props.errors.last_working_day}
@@ -270,7 +266,7 @@ const RequestTerminationForm = ({
                           }}
                         />
                       </div>
-                      <FileInput
+                      <CoverFileUpload
                         name={"termination_letter"}
                         error={props.errors?.termination_letter}
                         touch={props.touched?.termination_letter}

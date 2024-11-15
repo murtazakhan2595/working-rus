@@ -1,27 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { dropdownOptions } from "data/Data";
-import { PageLoader, Table } from "components";
-import { Card, CardHeader, CardBody, Row, Col } from "reactstrap";
-import { cut, file, list } from "assets/images";
-import { Blocks, Header } from "../Sections";
+import { PageLoader } from "components";
 import { Tabs } from "./Sections";
 import { ViewApplicantDetails } from ".";
 import {
-  fetchJobPosts,
   getJobApplications,
   updateApplicationStatus,
 } from "../../../hooks/recruitment";
 import { FilterInput } from "components/form-control";
 import { AllJobApplicationColumns } from "app/utils/Types/TableColumns";
+import TableCustom from "components/CustomTable";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardDescription,
+} from "components/ui/card";
+import { Header } from "components";
+import Stats from "components/ui/Stats";
+import { File, List, Scissors } from "lucide-react";
+import { DateInput } from "components/form-control";
+import SheetComponent from "components/ui/SheetComponent";
+import { JobDetails } from "./Sections/Tabs";
+import { jobIcon } from "assets/images";
 
 const Applications = () => {
   const location = useLocation();
   const jobIdForFilter = location?.state?.jobId ?? "";
   const [Applications, setApplications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [filterDate, setFilterDate] = useState(null);
   const [viewApplicationDetails, setViewApplicationDetails] = useState(null);
+  const [isViewApplicationDetailOpen, setIsViewApplicationDetailOpen] = useState(false)
   const [activeTab, setActiveTab] = useState(jobIdForFilter ? 1 : 0);
   const [filterData, setFilterData] = useState({});
   const [totalApplications, setTotalApplications] = useState(0);
@@ -32,6 +44,11 @@ const Applications = () => {
     page: 1,
     sizePerPage: 10,
   });
+
+  const [jobs, setJobs] = useState(null)
+  const [currentJob, setCurrentJob] = useState("");
+
+
   const onPageChange = (name, value) => {
     const pageOptions = options;
     if (pageOptions[name] !== value) {
@@ -39,6 +56,7 @@ const Applications = () => {
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
+
 
   useEffect(() => {
     if (jobIdForFilter) {
@@ -67,6 +85,21 @@ const Applications = () => {
     fetchLists();
   }, [options, filterData]);
 
+  const statsData = [
+    { label: "Total applications", value: totalApplications, icon: File },
+    {
+      label: "Shortlisted applications",
+      value: shortlistedApplications,
+      icon: List,
+    },
+    { label: "Selected applications", value: selectedApplications, icon: File },
+    {
+      label: "Rejected applications",
+      value: rejectedApplications,
+      icon: Scissors,
+    },
+  ];
+
   const handleOptionSelect = async (applicant, option) => {
     try {
       if (applicant) {
@@ -82,6 +115,8 @@ const Applications = () => {
       console.error("Error updating application status:", error);
     }
   };
+
+  console.log(jobs, "JOBS DATA IS HERE")
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
     setFilterData((prevFilters) => {
@@ -101,9 +136,34 @@ const Applications = () => {
     onPageChange: onPageChange,
   };
 
+  const formSheetData = {
+    triggerText: null,
+    title: "Application Details",
+    description: null,
+    footer: null,
+  };
+ 
+  const handleJobChange = (isPrevious) => {
+    if (jobs && currentJob === jobs.length - 1) {
+      setCurrentJob(0);
+      handleFilterChange("job_id", jobs[0].id);
+    } else {
+      const newJobIndex = isPrevious ? currentJob -1 : currentJob + 1;
+      setCurrentJob(newJobIndex);
+      handleFilterChange("job_id",jobs[newJobIndex]?.id);
+    }
+  };
+
+
   return (
-    <div className="screen bg-[#F0F1F2]">
+    <>
       {viewApplicationDetails && (
+        <SheetComponent
+        {...formSheetData}
+         isOpen={isViewApplicationDetailOpen}
+         setIsOpen={setIsViewApplicationDetailOpen}
+         width="568px"
+        >
         <ViewApplicantDetails
           applicantIndex={viewApplicationDetails?.index}
           closeModel={() => {
@@ -112,9 +172,10 @@ const Applications = () => {
           handleOptionSelect={handleOptionSelect}
           applicationsList={viewApplicationDetails?.list}
         />
+        </SheetComponent>
       )}
+
       <Header
-        title="Applications"
         content={
           <FilterInput
             filters={[
@@ -128,107 +189,80 @@ const Applications = () => {
           />
         }
       />
-      <Row className="mb-5">
-        <Col lg={6}>
-          <Tabs
-            onTabChange={setActiveTab}
-            activeTab={activeTab}
-            activeJobId={jobIdForFilter}
-            changeJobFilter={(jobId) => {
-              handleFilterChange("job_id", jobId);
-            }}
-          />
-        </Col>
-        <Col lg={6}>
-          <Blocks
-            blocks={[
+      <Stats stats={statsData} />
+
+      <Tabs
+        onTabChange={setActiveTab}
+        activeTab={activeTab}
+        activeJobId={jobIdForFilter}
+        setActiveTab={setActiveTab}
+        setJobs={setJobs}
+        jobs={jobs}
+        currentJob={currentJob}
+        setCurrentJob={setCurrentJob}
+        changeJobFilter={(jobId) => {
+          handleFilterChange("job_id", jobId);
+        }}
+      />
+      {
+        activeTab === 1 && (
+          <Card className="p-4 mb-4">
+             <JobDetails job={jobs[currentJob]} jobIcon={jobIcon} handleJobChange={handleJobChange} jobs={jobs}/>
+          </Card>
+        )
+      }
+      <Card className="p-0">
+        <CardHeader className="flex flex-row justify-end gap-2">
+          <FilterInput
+            filters={[
               {
-                label: "Total applications",
-                value: totalApplications,
-                image: file,
+                type: "search",
+                placeholder: "Search by Keyword",
+                name: "first_name",
               },
               {
-                label: "Shortlisted applications",
-                value: shortlistedApplications,
-                image: list,
-              },
-              {
-                label: "Selected applications",
-                value: selectedApplications,
-                image: file,
-              },
-              {
-                label: "Rejected applications",
-                value: rejectedApplications,
-                image: cut,
+                type: "select-one",
+                option: dropdownOptions,
+                name: "application_status",
+                placeholder: "Status",
               },
             ]}
+            onChange={handleFilterChange}
           />
-        </Col>
-      </Row>
-      <Row>
-        <Col lg={12} className="mx-auto">
-          <Card className="p-0">
-            <CardHeader>
-              <Row>
-                <Col lg={12}>
-                  <div className="py-3 px-3">
-                    <FilterInput
-                      filters={[
-                        {
-                          type: "search",
-                          placeholder: "Search by Keyword",
-                          name: "id_and_first_name",
-                        },
-                        {
-                          type: "date",
-                          name: "updated_at",
-                          placeholder: "Applied On",
-                          value: filterData?.updated_at,
-                        },
-                        {
-                          type: "select",
-                          option: dropdownOptions,
-                          name: "application_status",
-                          placeholder: "Status",
-                        },
-                      ]}
-                      onChange={handleFilterChange}
-                    />
-                  </div>
-                </Col>
-              </Row>
-            </CardHeader>
-            <CardBody>
-              {isLoading ? (
-                <Row>
-                  <Col lg={12}>
-                    <PageLoader />
-                  </Col>
-                </Row>
-              ) : (
-                <Row>
-                  <Col lg={12}>
-                    <div>
-                      <Table
-                        data={Applications?.results || []}
-                        columns={AllJobApplicationColumns(
-                          handleOptionSelect,
-                          setViewApplicationDetails
-                        )}
-                        pagination={true}
-                        dataTotalSize={Applications?.count || 0}
-                        tableOptions={tableOptions}
-                      />
-                    </div>
-                  </Col>
-                </Row>
-              )}
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </div>
+          <DateInput
+            placeholder="Applied On"
+            value={filterDate}
+            className="flex align-middle items-center"
+            name="updated_at"
+            onChange={(field, value) => {
+              setFilterDate(value);
+              handleFilterChange(field, value);
+            }}
+          />
+        </CardHeader>
+        <CardDescription>
+          {isLoading ? (
+            <PageLoader />
+          ) : (
+            <Card>
+              <CardContent>
+                <TableCustom
+                  data={Applications?.results || []}
+                  columns={AllJobApplicationColumns(
+                    handleOptionSelect,
+                    setViewApplicationDetails,
+                    setIsViewApplicationDetailOpen
+                  )}
+                  pagination={true}
+                  dataTotalSize={Applications?.count || 0}
+                  tableOptions={tableOptions}
+                />
+              </CardContent>
+            </Card>
+          )}
+        </CardDescription>
+      </Card>
+    </>
   );
 };
 

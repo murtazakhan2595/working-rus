@@ -193,7 +193,7 @@ const ResetPassword = () => {
                           </Button>
                           {errorMessage && (
                 <div className="mx-auto bg-[#FFF8F7] border border-[#F2DCDA] rounded-xl p-2 flex gap-x-2">
-                  <p className="font-lato text-[#F08278] text-[14px]">
+                  <p className=" text-[#F08278] text-[14px]">
                     {errorMessage}
                   </p>
                 </div>
@@ -207,7 +207,7 @@ const ResetPassword = () => {
                   }`}
                 >
                   <p
-                    className={`font-lato text-[14px] ${
+                    className={` text-[14px] ${
                       response.status === "success"
                         ? "text-[#27A745]"
                         : "text-[#F08278]"
@@ -220,7 +220,7 @@ const ResetPassword = () => {
                           
                         </div>
                         <div className="grid gap-2">
-                        <Button type="submit" className={`flex h-11 justify-center items-center w-full font-normal rounded-xl  px-3 py-1.5 text-sm md:text-lg leading-8 font-lato lg:text-base ${
+                        <Button type="submit" className={`flex h-11 justify-center items-center w-full font-normal rounded-xl  px-3 py-1.5 text-sm md:text-lg leading-8  lg:text-base ${
                     !isFormValid
                       ? "bg-[#F2F2F2] text-[#AFB0B2]"
                       : "bg-black text-white"

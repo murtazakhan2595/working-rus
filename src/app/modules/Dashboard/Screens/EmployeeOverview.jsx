@@ -53,14 +53,19 @@ export default function Component() {
   }, [userProfile]);
 
   const chartConfig = {
+    total: {
+      label: "Total",
+      color: "hsl(var(--neutral-5))",
+      value: employeeData.total,
+    },
     active: {
       label: "Active",
-      color: "hsl(var(--chart-1))",
+      color: "hsl(var(--primary))",
       value: employeeData.active,
     },
     offboarding: {
       label: "Offboarding",
-      color: "hsl(var(--mauve-3))",
+      color: "hsl(var(--plum-7))",
       value: employeeData.offboarding,
     },
   };
@@ -78,7 +83,7 @@ export default function Component() {
     <Card className="flex flex-col min-h-[442px]">
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
-          <div className="text-base text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg xl:text-2xl lg:text-xl md:text-lg">
+          <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
             Total Employees
           </div>
           <Button variant="outline" className="">
@@ -86,7 +91,7 @@ export default function Component() {
           </Button>
         </CardTitle>
         <CardDescription className="text-slate-900">
-          January - June 2024
+          {/* January - June 2024 */}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex items-center flex-1 pb-0">
@@ -100,7 +105,28 @@ export default function Component() {
             innerRadius={80}
             outerRadius={130}
           >
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <ChartTooltip 
+              cursor={false} 
+              content={({ payload }) => {
+                if (payload && payload.length > 0) {
+                  const dataKey = payload[0].dataKey;
+                  const value = payload[0].value;
+                  const label = chartConfig[dataKey]?.label || dataKey;
+                  return (
+                    <div className="p-2 bg-white border rounded shadow">
+                      <p className="flex items-center text-neutral-1100">
+                        <span 
+                          className="inline-block w-2 h-2 mr-2 rounded-full"
+                          style={{ backgroundColor: payload[0].fill }}
+                        />
+                        {label}: {value}
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
               <Label
                 content={({ viewBox }) => {
@@ -159,7 +185,7 @@ export default function Component() {
                 className={`w-3 h-3 mr-2 rounded-sm`}
                 style={{ backgroundColor: item.color }}
               ></div>
-              <span>{item.label}</span>
+              <span>{item.label} {item.value}</span>
             </div>
           ))}
         </div>

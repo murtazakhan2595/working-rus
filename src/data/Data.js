@@ -91,6 +91,7 @@ export const jobTypeOptions = [
   { value: "Hybrid", label: "Hybrid" },
 ];
 
+
 export const workTypeOptions = [
   { value: "Internees", label: "Internees" },
   { value: "Junior_Level", label: "Junior Level" },
@@ -125,19 +126,21 @@ export const locationTypeOptions = [
 ];
 
 export const dropdownOptions = [
-  { label: "Selected", value: "selected" },
   { label: "Pending", value: "pending" },
   { label: "Shortlisted", value: "shortlisted" },
   { label: "Offer Made", value: "offer_made" },
-  { label: "Onboard", value: "on_board" },
-  { label: "Declined", value: "declined" },
-  { label: "Contacted", value: "contacted" },
+  { label: "Selected", value: "selected" },
   { label: "Rejected", value: "rejected" },
-  { label: "Interview R1 ", value: "interview r1" },
-  { label: "Interview R2 ", value: "interview r2" },
-  { label: "Interview R3 ", value: "interview r3" },
-  { label: "Assessment", value: "assessment" },
+  { label: "Onboard", value: "on_board" },
+  { label: "Reject", value: "rejected" },
+  { label: "Reconsider", value: "reconsider" },
+  { label: "Send Email", value: "send_email" },
+  { label: "Offer Declined", value: "declined" },
+  { label: "Move to Selected", value: "selected" },
+  { label: "Schedule Interview", value: "scheduled" },
+  { label: "Offer Accepted", value: "offer_accepted" },
 ];
+
 
 export const filterDropdownOptions = [
   { label: "Pending", value: "pending" },
@@ -156,9 +159,9 @@ export const filterDropdownOptions = [
 ];
 
 export const jobsStatusOptions = [
-  { label: "Show All", value: "" },
-  { label: "Live", value: "live" },
-  { label: "Expired", value: "expired" },
+  { label: "All", value: "" },
+  { label: "Open", value: "live" },
+  { label: "Closed", value: "expired" },
 ];
 
 export const HeadOfDepartment = [
@@ -177,11 +180,11 @@ export const HeadOfDepartment = [
 
 export const HeadOfDepartmentOptions = HeadOfDepartment?.map((manager) => ({
   label: (
-    <div>
-      <div style={{ fontWeight: "bold", color: "#000", marginTop: "25px" }}>
+    <div className="flex flex-row gap-2">
+      <div className="font-bold text-neutral-1200">
         {manager?.label?.split(" - ")[0]}
       </div>
-      <div style={{ fontSize: "13px", color: "#777", fontWeight: "normal" }}>
+      <div className="text-sm text-neutral-1100">
         {manager?.label?.split(" - ")[1]}
       </div>
     </div>
@@ -326,6 +329,17 @@ export const PriorityListIcons = [
   },
 ];
 
+export const relationList = [
+  {
+    value: "WireFrame",
+    label: "WireFrame"
+  },
+  {
+    value:"Design",
+    label:"Design"
+  }
+]
+
 export const ProjectStatusList = [
   {
     value: "upcoming",
@@ -336,13 +350,13 @@ export const ProjectStatusList = [
     ),
   },
   {
-    value: "ongoing",
+    value: "on_going",
     label: (
       <div className="flex justify-center text-yellow-500 gap-x-2">Ongoing</div>
     ),
   },
   {
-    value: "onhold",
+    value: "On_hold",
     label: (
       <div className="flex justify-center text-red-500 gap-x-2">On Hold</div>
     ),
@@ -558,13 +572,42 @@ export const ResignationStatusOptions = [
 
 export const ResignationReasons = [
   // { value: "career-advance", label: "Career growth" },
-  { value: "better-opportunity", label: "Better opportunity" },
+  //{ value: "better-opportunity", label: "Better opportunity" },
   { value: "family-reasons", label: "Personal Reasons" },
-  { value: "relocation", label: "Relocation" },
+  { value: "Rrelocation", label: "Relocation" },
   { value: "health-reasons", label: "Health reasons" },
   // { value: "Job dissatisfaction", label: "Job dissatisfaction" },
   { value: "Others", label: "Others" },
 ];
+export const ReasonForLeaving=[
+  { value: "voluntary", label: "Voluntary" },
+  { value: "involuntary", label: "Involuntary" },
+  {
+    value: "end-of-contract",
+    label: "End of Contract",
+  },
+  { value: "retirement", label: "Retirement" },
+  { value: "layoff", label: "Layoff" },
+  { value: "dismissal", label: "Dismissal" },
+  {
+    value: "mutual-agreement",
+    label: "Mutual Agreement",
+  },
+  { value: "Relocation", label: "Relocation" },
+  {
+    value: "health-reasons",
+    label: "Health Reasons",
+  },
+  {
+    value: "family-reasons",
+    label: "Family Reasons",
+  },
+  { value: "education", label: "Education" },
+  {
+    value: "others",
+    label: "Other",
+  },
+]
 
 export const terminationReasonsOptions = [
   {

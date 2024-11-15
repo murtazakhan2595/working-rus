@@ -22,7 +22,8 @@ function Navbar({ title, setUserLogout, userRole }) {
         </div>
 
         <div className="flex items-center justify-end flex-1 space-x-2">
-          <SearchInput />
+        
+          {/* <SearchInput /> */}
           <UserNotifications/>
           <UserNav setUserLogout={handleLogout} />
         </div>

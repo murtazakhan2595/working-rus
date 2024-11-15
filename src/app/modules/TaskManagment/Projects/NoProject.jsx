@@ -18,7 +18,7 @@ const NoProject = () => {
             />
           </svg>
         </div>
-        <p className="text-baseGray text-2xl font-lato mt-2">Looks like you don't have any projects</p>
+        <p className="text-baseGray text-2xl  mt-2">Looks like you don't have any projects</p>
       </div>
     </div>
   );

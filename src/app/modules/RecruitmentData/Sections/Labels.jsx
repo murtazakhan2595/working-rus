@@ -6,7 +6,7 @@ const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
   return (
     <>
       <div
-        className={`flex text-capitalize items-center text-baseGray font-lato text-base font-normal rounded-2xl px-3 py-1 ${
+        className={`flex text-capitalize items-center text-baseGray  text-base font-normal rounded-2xl px-3 py-1 ${
           backgroungColor ?? "bg-[#E6E9F0]"
         }`}
       >

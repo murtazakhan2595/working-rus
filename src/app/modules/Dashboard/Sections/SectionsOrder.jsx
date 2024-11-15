@@ -155,43 +155,43 @@ const DashboardManager = [
   
 ];
 const DashboardEmployee = [
-  {
-    type: "div",
-    className: "grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
-    children: [
-      {
-        type: "div",
-        className: "w-full",
-        content: <EmployeeOverview/>,
-        value: "EmployeeOverview",
-      },
-      {
-        type: "div",
-        className: "w-full",
-        content: <TaskProgress/>,
-        value: "TaskProgress",
-      },
-      {
-        type: "div",
-        className: "w-full",
-        content: <RecentActivity/>,
-        value: "RecentActivity",
-      },
-    ],
-  },
-  {
-    type: "div",
-    className: "leave-tracker ",
-    children: [
-      {
-        type: "div",
-        className: "grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
-        content: <LeaveTrackerOverview/>,
-        value: "LeaveTracker",
-      },
+  // {
+  //   type: "div",
+  //   className: "grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
+  //   children: [
+  //     {
+  //       type: "div",
+  //       className: "w-full",
+  //       content: <EmployeeOverview/>,
+  //       value: "EmployeeOverview",
+  //     },
+  //     {
+  //       type: "div",
+  //       className: "w-full",
+  //       content: <TaskProgress/>,
+  //       value: "TaskProgress",
+  //     },
+  //     {
+  //       type: "div",
+  //       className: "w-full",
+  //       content: <RecentActivity/>,
+  //       value: "RecentActivity",
+  //     },
+  //   ],
+  // },
+  // {
+  //   type: "div",
+  //   className: "leave-tracker ",
+  //   children: [
+  //     {
+  //       type: "div",
+  //       className: "grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid lg:grid md:grid   xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 ",
+  //       content: <LeaveTrackerOverview/>,
+  //       value: "LeaveTracker",
+  //     },
      
-    ]
-  },
+  //   ]
+  // },
   
   {
     type: "div",

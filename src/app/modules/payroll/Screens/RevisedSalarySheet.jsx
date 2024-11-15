@@ -183,14 +183,14 @@ const RevisedSalaryView = ({
               <div className="flex items-center gap-3">
                 <Button
                   onClick={onEdit}
-                  className="border bg-white border-[#e8e8ec] text-[#1c2024] text-xs font-semibold font-[inter]"
+                  className="border bg-white border-[#e8e8ec] text-neutral-1200 text-xs font-semibold font-[inter]"
                 >
                   {" "}
                   Edit
                 </Button>
                 <Button
                   onClick={onDelete}
-                  className="border bg-white border-[#e8e8ec] text-[#1c2024] text-xs font-semibold font-[inter]"
+                  className="border bg-white border-[#e8e8ec] text-neutral-1200 text-xs font-semibold font-[inter]"
                 >
                   {" "}
                   Delete

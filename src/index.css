@@ -3,11 +3,18 @@
 @tailwind utilities;
 
 .lucide-dot {
-    display: none !important
+    display: none !important;
 }
 
-
-
+.main-content {
+    padding: 30px 20px 20px 20px;
+    font-family: "Inter", ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji" ;
+    width: 100%;
+    overflow-y: auto;
+    background-color: #f7f5f7;
+    /* height: 100vh; */
+  }
+  box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.25);
 @layer components {
     .font-heading {
         @apply text-4xl font-bold text-primary;
@@ -94,35 +101,85 @@
         --gray-10: 0 0% 51.4%;
         --gray-11: 0 0% 39.2%;
         --gray-12: 0 0% 12.5%;
-    }
+
+        --neutral-1: 240 20% 99%;
+        --neutral-2: 240 20% 98%;
+        --neutral-3: 240 11.1% 94.7%;   
+        --neutral-4: 240 9.5% 91.8%;
+        --neutral-5: 230 10.7% 89%; 
+        --neutral-6: 240 10.1% 86.5%;
+        --neutral-7: 233 9.9% 82.2%;
+        --neutral-8: 231 10.2% 75.1%;
+        --neutral-9: 231 5.9% 57.1%;
+        --neutral-10: 226 5.4% 52.7%;
+        --neutral-11: 220 6% 40%;
+        --neutral-12: 210 13% 13%;     
+       
+        --warning-1: 35 85.2% 55.1%;
+        --warning-2: 35 84.6% 39.4%;
+        --warning-3: 35 79.6% 37.1%;
+        --warning-4: 35 74.6% 27.8%;
+        --warning-5: 35 70% 15.5%;
+        
+        --success-1: 157 42.1% 64.3%;
+        --success-2: 158 64.1% 51.6%;
+        --success-3: 159 61% 47.7%;
+        --success-4: 160 51.4% 40.4%;
+        --success-5: 161 75% 16.1%;
+
+        --base-black: 240 4% 5%;
+        --base-white: 0 0% 98%;        
+        --red-1: 355 86% 55.1%;
+        --red-2: 355 86% 39.4%;
+        --red-3: 355 86% 37.1%;
+        --red-4: 355 86% 27.8%;
+        --red-5: 355 86% 15.5%;
+
+
 }
+}
+        
 
 @layer base {
     * {
         @apply border-border;
     }
 
-
-
     body {
-        @apply bg-background text-foreground font-body;
+        @apply bg-background text-foreground;
     }
 
     h1,
     .h1 {
-        @apply text-5xl font-semibold leading-snug;
+        @apply text-[56px] font-semibold;
     }
 
     h2,
-    h3,
-    h4,
-    h5,
-
-    h6 {
-        @apply font-heading;
+    .h2 {
+        @apply text-[48px] font-semibold;
     }
 
+    h3,
+    .h3 {
+        @apply text-[40px] font-semibold;
+    }
+
+    h4,
+    .h4 {
+        @apply text-[32px] font-semibold;
+    }
+
+    h5,
+    .h5 {
+        @apply text-[24px] font-semibold;
+    }
+
+    h6,
+    .h6 {
+        @apply text-[18px] font-semibold;
+    }
 }
+
 
 
 /* loding css */

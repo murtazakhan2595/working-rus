@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { IoCalendarOutline } from "react-icons/io5";
 import { jobIcon } from "../../../../../assets/images";
-import { FaCircleArrowRight } from "react-icons/fa6";
 import { fetchJobPosts } from "../../../../hooks/recruitment";
 import { Labels } from "../../Sections";
 import {
@@ -11,7 +10,14 @@ import {
   getWorkLocation,
 } from "utils/getValuesFromTables";
 import moment from "moment";
-
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "../../../../../src/@/components/ui/tabs";
+import { CardTitle } from "components/ui/card";
+import { Button } from "components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 const Message = ({ message }) => {
   return (
     <div className="mt-5">
@@ -20,7 +26,7 @@ const Message = ({ message }) => {
   );
 };
 
-const JobDetails = ({ job }) => {
+export const JobDetails = ({ job, handleJobChange, jobs }) => {
   if (job) {
     const employeeType = getEmployeeType(job.Employee_Type);
     const workType = getWorkType(job.Work_type);
@@ -34,18 +40,15 @@ const JobDetails = ({ job }) => {
       ? moment(job?.Deadline).format("DD MMMM YYYY")
       : "N/A";
 
-    console.log(formattedDeadline, formattedUpdatedAt);
 
     return (
-      <div className="flex flex-col justify-between gap-y-12 text-baseGray ">
+      <div className="flex flex-col justify-between gap-y-12 text-baseGray">
         <div className="flex justify-between">
           <div className="flex items-center gap-x-2">
             <img src={jobIcon} alt="Job Icon" />
             <div>
               <p className="text-base">{job?.id}</p>
-              <h3 className="text-[20px] font-bold text-capitalize">
-                {job?.Job_Title}
-              </h3>
+              <CardTitle>{job?.Job_Title}</CardTitle>
             </div>
           </div>
           <div className="text-base flex items-center gap-x-2">
@@ -53,7 +56,8 @@ const JobDetails = ({ job }) => {
             {`${formattedUpdatedAt} - ${formattedDeadline} `}
           </div>
         </div>
-        <div className="flex justify-start items-center flex-wrap gap-3">
+        <div className="flex justify-between items-center flex-wrap gap-3">
+          <div className="flex gap-2">
           <Labels
             label={job.status === "live" ? "Open" : "Close"}
             iconDot={true}
@@ -68,7 +72,21 @@ const JobDetails = ({ job }) => {
           <Labels label={workType} />
           <Labels label={workLocation} />
           <Labels label={jobType} />
+          </div>
+          <div className="flex items-center gap-2">
+          <Button
+            disabled={jobs[0]?.id === job?.id}
+            onClick={() => handleJobChange(true)}
+            variant="outline"
+          >
+            <ChevronLeft/> Previous
+          </Button>
+          <Button variant="outline" onClick={() => handleJobChange(false)}>
+            Next <ChevronRight/>
+          </Button>
         </div>
+        </div>
+
       </div>
     );
   } else {
@@ -76,10 +94,19 @@ const JobDetails = ({ job }) => {
   }
 };
 
-const Tabs = ({ activeTab, onTabChange, activeJobId, changeJobFilter }) => {
-  const [jobs, setJobs] = useState([]);
-  const [currentJob, setCurrentJob] = useState("");
+const TabComponent = ({
+  onTabChange,
+  activeTab,
+  activeJobId,
+  changeJobFilter,
+  setActiveTab,
+  jobs,
+  setJobs,
+  setCurrentJob,
+}) => {
   const tabs = ["All Candidates", "Jobs"];
+
+
   const handleTabChange = (tab) => {
     if (tab === 0) {
       changeJobFilter("");
@@ -88,17 +115,6 @@ const Tabs = ({ activeTab, onTabChange, activeJobId, changeJobFilter }) => {
       if (jobs && jobs.length > 0) changeJobFilter(jobs[0]?.id);
     }
     onTabChange(tab);
-  };
-
-  const handleJobChange = () => {
-    if (jobs && currentJob === jobs.length - 1) {
-      setCurrentJob(0);
-      changeJobFilter(jobs[0].id);
-    } else {
-      const newJobIndex = currentJob + 1;
-      setCurrentJob(newJobIndex);
-      changeJobFilter(jobs[newJobIndex]?.id);
-    }
   };
 
   useEffect(() => {
@@ -119,54 +135,25 @@ const Tabs = ({ activeTab, onTabChange, activeJobId, changeJobFilter }) => {
     loadJob();
   }, [activeJobId]);
 
-  const tabContents = [
-    <Message message={"Showing All Applications"} />,
-    <JobDetails job={jobs[currentJob]} jobIcon={jobIcon} />,
-  ];
-
   return (
-    <div className="bg-white w-full rounded-[10px] py-2 px-4 mb-2 h-[100%]">
-      <div className={`flex justify-between items-center border-b pb-2`}>
-        <div className="flex justify-between w-full">
-          <div className="flex space-x-4">
-            {tabs.map((tab, index) => {
-              return (
-                <button
-                  key={tab}
-                  className={`py-1 px-2 ${
-                    activeTab === index
-                      ? "border-b-2 border-[#35B6E9] text-base"
-                      : "text-gray-500"
-                  }`}
-                  onClick={() => handleTabChange(index)}
-                >
-                  {tab}
-                </button>
-              );
-            })}
-          </div>
-          <div className="flex items-center gap-x-3">
-            {activeTab === 1 && (
-              <div
-                className="text-[#47484C] flex items-center"
-                role="button"
-                onClick={() => {
-                  handleJobChange();
-                }}
-              >
-                <span className="mr-1">Change Job </span>
-                <FaCircleArrowRight />
-              </div>
-            )}{" "}
-            {/* <button className="p-2 rounded-md bg-black"><FaCircleArrowRight className="text-white" /></button> */}
-          </div>
-        </div>
-      </div>
-      <div className={`${tabContents ? "mt-4" : ""}`}>
-        {tabContents ? tabContents[activeTab] : null}
-      </div>
+    <div className="flex justify-between">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="flex justify-center mb-4">
+          {tabs?.map((tab, index) => (
+            <TabsTrigger
+              key={index}
+              value={index}
+              onClick={() => handleTabChange(index)}
+              className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
+            >
+              {tab}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+      <div></div>
     </div>
   );
 };
 
-export default Tabs;
+export default TabComponent;

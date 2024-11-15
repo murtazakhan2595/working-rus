@@ -13,7 +13,7 @@ import {
   DateInput,
   SelectComponent,
   TextInput,
-  FileInput,
+  CoverFileUpload,
 } from "components/form-control";
 import { educationTypeOptions } from "data/Data.js";
 import { Link } from "react-router-dom";
@@ -21,6 +21,8 @@ import { Link } from "react-router-dom";
 import { Button } from "../../../../../components/ui/button";
 import { CircleX } from "lucide-react";
 import { validateEmployeeEducationForm } from "app/utils/FormSchema/employeeFormSchema";
+import { Card, CardContent } from "components/ui/card";
+
 const EducationInformation = ({
   nextstep,
   baseUrl,
@@ -84,8 +86,10 @@ const EducationInformation = ({
         </div>
       ) : (
         <>
-          <div className="space-y-4">
-            <Formik
+          <Card className="p-6">
+            <CardContent>
+              <div className="space-y-4">
+                <Formik
               initialValues={{ educations: educations }}
               ref={formRef}
               onSubmit={(values, { resetForm }) => {
@@ -223,7 +227,7 @@ const EducationInformation = ({
                               />
                             </div>
                             <div className="col-span-2 space-y-2">
-                              <FileInput
+                              <CoverFileUpload
                                 acceptType=".pdf"
                                 name={`educations[${index}].education_body`}
                                 value={education.education_body}
@@ -286,7 +290,9 @@ const EducationInformation = ({
                 </form>
               )}
             </Formik>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </>
       )}
     </div>

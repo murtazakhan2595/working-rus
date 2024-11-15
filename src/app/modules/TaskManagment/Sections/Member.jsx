@@ -31,7 +31,7 @@ const Members = ({ member, isEditMode, removeMember }) => {
               <div className="absolute top-[2rem] w-28 bg-[#FAFBFC] rounded-xl projectDetails-shadow z-10">
                 <ul className="py-1">
                   <li
-                    className="px-3 py-2 font-lato font-medium text-[12px] text-baseGray hover:bg-gray-100 cursor-pointer"
+                    className="px-3 py-2  font-medium text-[12px] text-baseGray hover:bg-gray-100 cursor-pointer"
                     onClick={() => {
                       removeMember(member);
                       setIsOpen(false);

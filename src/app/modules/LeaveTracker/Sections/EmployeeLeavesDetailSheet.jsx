@@ -126,7 +126,7 @@ const ViewDetails = ({
               setIsEdit(true);
             }}
           >
-            <div className="text-center text-[#1c2024] text-xs font-semibold">
+            <div className="text-center text-neutral-1200 text-xs font-semibold">
               Edit Leaves
             </div>
           </Button>

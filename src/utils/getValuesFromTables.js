@@ -39,7 +39,7 @@ function getWorkPlaceType(workPlaceType) {
   const response = workplaceTypes.find((option) => option.value === workPlaceType);
   return response ? response.label : workPlaceType;
 }
-function getJobType(jobType) {
+function getJobType(jobType, includeAllOption = false) {
   const response = jobTypeOptions.find((option) => option.value === jobType);
   return response ? response.label : jobType;
 }
@@ -88,7 +88,7 @@ function EmployeeName({ value, length }) {
 }
 
 function EmployeeID({ value }) {
-  const employee = value ? `TXB-${value.toString().padStart(4, "0")}` : "N/A";
+  const employee = value ? `TXB-${value.toString().padStart(4, "")}` : "N/A";
   return <>{employee}</>;
 }
 

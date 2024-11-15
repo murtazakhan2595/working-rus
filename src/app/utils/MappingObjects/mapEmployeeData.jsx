@@ -48,6 +48,7 @@ function getPersonalInfo(data) {
 }
 function getContactInfo(data) {
   const contactInfo = {
+    emergency_country_code: data?.emergency_country_code,
     emergency_phone_no: data.emergency_phone_no,
     emergency_first_name: data.emergency_first_name,
     emergency_relation: data.emergency_relation,

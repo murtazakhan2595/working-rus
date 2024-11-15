@@ -1,25 +1,19 @@
-
-
 import {
-  FileInput,
   DateInput,
   TextAreaInput,
   TextInput,
-  CheckBoxInput
+  CheckBoxInput,
+  CoverFileUpload
 } from "components/form-control";
-import React, { useEffect, useState } from "react";
-import { Label } from "../../../../../src/@/components/ui/label";
-import { Input } from "../../../../../components/ui/input";
-import { Button } from "../../../../../components/ui/button";
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from '../../../../../src/@/components/ui/calendar';
+import React, {  useState } from "react";
+
 
 const Experience = ({ errors, touched, values, onChange }) => {
   const [date, setDate] = useState(new Date());
   const [selectedValue, setSelectedValue] = useState('');
   return (
     <>
+    
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -107,7 +101,7 @@ const Experience = ({ errors, touched, values, onChange }) => {
             />
           </div>
           <div className="col-span-2 space-y-2">
-            <FileInput
+            <CoverFileUpload
               name="exp_letter"
               label="Experience Letter or drag it here"
               acceptType=".pdf"
@@ -121,7 +115,8 @@ const Experience = ({ errors, touched, values, onChange }) => {
             />
           </div>
         </div>
-      </div>
+        </div>
+       
     </>
   );
 };

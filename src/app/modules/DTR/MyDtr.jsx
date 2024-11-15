@@ -216,7 +216,7 @@ const MyDtr = ({ baseUrl, token }) => {
                 <SuccessPopup onClose={() => setShowSuccessPopup(false)} heading="DTR Submitted" message="Your daily task report was successfully submitted." />
             )}
             <div className="flex justify-between lg:p-6">
-                <h1 className="font-lato lg:text-[24px] text-baseGray font-bold"> My Daily Task Report</h1>
+                <h1 className=" lg:text-[24px] text-baseGray font-bold"> My Daily Task Report</h1>
                 <div>Filter here</div>
             </div>
             <div>
@@ -224,11 +224,11 @@ const MyDtr = ({ baseUrl, token }) => {
                     <div className="flex justify-between border-b pb-3">
                         <div className="flex items-center gap-x-2">
                             <div className="w-3 h-3 rounded-full bg-[#25A8E0]"></div>
-                            <h3 className="font-lato lg:text-[25px] text-[#323333] font-bold">Today</h3>
+                            <h3 className=" lg:text-[25px] text-[#323333] font-bold">Today</h3>
                             <div className="text-[#323333]">{currentDate}</div>
                         </div>
                         <div className="flex items-center gap-x-3">
-                            <div className="font-lato text-[20px] text-[#47484C] font-bold">Add Task</div>
+                            <div className=" text-[20px] text-[#47484C] font-bold">Add Task</div>
                             <button onClick={() => dispatch(openModal())} className="p-2 rounded-md bg-black"><FaPlus className="text-white" /></button>
                         </div>
 
@@ -237,34 +237,34 @@ const MyDtr = ({ baseUrl, token }) => {
                             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50
                              z-50 w-screen overflow-y-auto scroll h-screen">
                                 <div className="bg-white lg:p-8 rounded-lg lg:w-[40%] lg:h-[100vh] relative">
-                                    <h2 className="text-xl font-lato text-[#323333] font-bold lg:pt-3 lg:mb-3">Add Task</h2>
+                                    <h2 className="text-xl  text-[#323333] font-bold lg:pt-3 lg:mb-3">Add Task</h2>
                                     <button onClick={() => dispatch(closeModal())} className="absolute top-6 right-8"><RxCross2 /></button>
                                     <form onSubmit={handleAddTask}>
-                                        <label htmlFor="title" className="text-[18px] font-lato font-semibold text-baseGray">Title</label>
-                                        <input id="title" placeholder="Add here" type="text" required name="title" value={formData.title} onChange={(e) => handleChange(e.target.name, e.target.value)} className="block pl-2 lg:w-full outline-none border rounded-lg h-9 border-baseGray placeholder:font-lato lg:mb-4" />
-                                        <label htmlFor="taskDetails" className="text-[18px] font-lato font-semibold text-baseGray">Task Details</label>
-                                        <textarea name="taskDetails" required value={formData.taskDetails} onChange={(e) => handleChange(e.target.name, e.target.value)} id="taskDetails" className="block pl-2 lg:w-full outline-none border rounded-lg border-baseGray lg:mb-4 placeholder:font-lato" cols="30" rows="4" placeholder="Add here"></textarea>
+                                        <label htmlFor="title" className="text-[18px]  font-semibold text-baseGray">Title</label>
+                                        <input id="title" placeholder="Add here" type="text" required name="title" value={formData.title} onChange={(e) => handleChange(e.target.name, e.target.value)} className="block pl-2 lg:w-full outline-none border rounded-lg h-9 border-baseGray placeholder: lg:mb-4" />
+                                        <label htmlFor="taskDetails" className="text-[18px]  font-semibold text-baseGray">Task Details</label>
+                                        <textarea name="taskDetails" required value={formData.taskDetails} onChange={(e) => handleChange(e.target.name, e.target.value)} id="taskDetails" className="block pl-2 lg:w-full outline-none border rounded-lg border-baseGray lg:mb-4 placeholder:" cols="30" rows="4" placeholder="Add here"></textarea>
 
 
                                         <div className="flex items-center gap-x-6">
                                             <div className="flex lg:flex-col lg:gap-y-3">
                                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><PiUsersLight className="text-xl" />
-                                                    <h3 className="font-medium text-[18px] font-lato">Assignee</h3>
+                                                    <h3 className="font-medium text-[18px] ">Assignee</h3>
                                                 </div>
                                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><IoCalendarOutline className="text-xl" />
-                                                    <h3 className="font-medium text-[18px] font-lato">Start Date</h3>
+                                                    <h3 className="font-medium text-[18px] ">Start Date</h3>
                                                 </div>
                                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><IoCalendarOutline className="text-xl" />
-                                                    <h3 className="font-medium text-[18px] font-lato">Due Date</h3>
+                                                    <h3 className="font-medium text-[18px] ">Due Date</h3>
                                                 </div>
                                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><AiOutlineUnorderedList className="text-xl" />
-                                                    <h3 className="font-medium text-[18px] font-lato">Type</h3>
+                                                    <h3 className="font-medium text-[18px] ">Type</h3>
                                                 </div>
                                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><PiHeadlightsBold className="text-xl" />
-                                                    <h3 className="font-medium text-[18px] font-lato">priorty</h3>
+                                                    <h3 className="font-medium text-[18px] ">priorty</h3>
                                                 </div>
                                                 <div className="text-baseGray flex items-center gap-x-2 h-9"><TbCircleDashed className="text-xl" />
-                                                    <h3 className="font-medium text-[18px] font-lato">Status</h3>
+                                                    <h3 className="font-medium text-[18px] ">Status</h3>
                                                 </div>
                                             </div>
                                             <div className="flex lg:flex-col lg:gap-y-2.5 lg:w-[60%]">
@@ -486,7 +486,7 @@ const MyDtr = ({ baseUrl, token }) => {
                                             </div>
                                         </div>
 
-                                        <button type="submit" className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white font-lato text-base font-semibold w-28 h-10"><FaPlus className="text-white font-normal" />Add</button>
+                                        <button type="submit" className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white  text-base font-semibold w-28 h-10"><FaPlus className="text-white font-normal" />Add</button>
                                     </form>
                                 </div>
                             </div>
@@ -496,11 +496,11 @@ const MyDtr = ({ baseUrl, token }) => {
                     {/* <div className="max-h-36 overflow-y-auto">
                         {tasks.map((task) => (
                             <div key={task.title} className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg">
-                                <div className="lg:w-[70%] font-lato lg:flex items-center gap-x-3">
+                                <div className="lg:w-[70%]  lg:flex items-center gap-x-3">
                                     <div className="text-xl font-bold">{task.taskType === "Project" ? <CiViewBoard className="text-[#FF61C0] bg-[#FFE8F6] rounded-full p-0.5" /> : <CiCircleMore className="text-[#935AF2] bg-[#F1E8FF] rounded-full p-0.5" />}</div>
                                     <div className="flex items-center gap-x-2 text-sm px-3 text-baseGray">
                                         <IoCalendarOutline className="text-xl" /> Due
-                                        <div className="font-lato">{task.dueDate.slice(0, 5)}</div>
+                                        <div className="">{task.dueDate.slice(0, 5)}</div>
                                     </div>
                                     <h3 className="text-[18px] font-bold text-[#323333]">{task.title}</h3>
                                 </div>
@@ -541,7 +541,7 @@ const MyDtr = ({ baseUrl, token }) => {
                 <div className="space-y-2 rounded-lg bg-white">
                     {Object.entries(groupedTasks).map(([date, tasks]) => (
                         <div key={date} className="w-full m-0">
-                            <div className={`font-normal font-lato text-[18px] text-[#323333] rounded-lg px-4 py-2 border-b ${dropdownStates[date] ? 'bg-blue-100' : ''}`}>
+                            <div className={`font-normal  text-[18px] text-[#323333] rounded-lg px-4 py-2 border-b ${dropdownStates[date] ? 'bg-blue-100' : ''}`}>
                                 <div onClick={() => toggleDropdown(date)} className="focus:outline-none flex items-center justify-between cursor-pointer">
                                     {date}
                                     <FaAngleUp className={`text-sm transform transition-transform duration-300 ${dropdownStates[date] ? 'rotate-180' : ''}`} />
@@ -555,7 +555,7 @@ const MyDtr = ({ baseUrl, token }) => {
                                         onMouseEnter={() => setHoveredTask(task)}
                                         onMouseLeave={() => setHoveredTask(null)}
                                         className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg">
-                                        <div className="lg:w-[70%] font-lato lg:flex items-center gap-x-3">
+                                        <div className="lg:w-[70%]  lg:flex items-center gap-x-3">
                                             <div className="text-xl font-bold">
                                                 {task.Type === "Project" ? (
                                                     <CiViewBoard className="text-[#FF61C0] bg-[#FFE8F6] rounded-full p-0.5" />
@@ -565,7 +565,7 @@ const MyDtr = ({ baseUrl, token }) => {
                                             </div>
                                             <div className={`flex items-center gap-x-2 text-sm px-3 ${task?.due_date < formattedDate ? 'text-[#D96C6C] bg-[#F2DCDA] rounded-lg py-1' : 'text-baseGray'}`}>
                                                 <IoCalendarOutline className="text-xl" /> Due
-                                                <div className="font-lato">{task?.due_date?.slice(0, 5)}</div>
+                                                <div className="">{task?.due_date?.slice(0, 5)}</div>
                                             </div>
                                             <h3 className="text-[18px] font-bold text-[#323333]">{task.task}</h3>
                                         </div>

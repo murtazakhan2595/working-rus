@@ -24,7 +24,7 @@ import {
   CardTitle,
   CardDescription,
 } from "components/ui/card";
-import { Clock, Layout, ListTodo } from "lucide-react";
+import { Clock, Layout, ListTodo, Timer } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import TableCustom from "components/CustomTable";
 import { projectBoard } from "app/utils/Types/TableColumns";
@@ -194,10 +194,10 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
   };
 
   return (
-    <Card>
+    <Card className="rounded-lg">
       {project && (
         <>
-          <CardHeader className={`m-2 bg-gray-500`} onClick={viewDetails}>
+          <CardHeader className={`m-2 bg-gray-500 cursor-pointer rounded-t-lg `} onClick={viewDetails} >
             <CardTitle>
               <Badge
                 variant="dot"
@@ -216,10 +216,10 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
           </CardHeader>
           <CardContent>
             <div onClick={navigateToBoard}>
-              <h3 className="text-lg font-semibold mb-2 text-[#11182c]">
+              <h3 className="text-lg font-semibold mb-2 text-neutral-1200">
                 {project.name}
               </h3>
-              <div className="flex text-gray-500 text-sm mb-4 gap-1">
+              <div className="flex text-neutral-1100 text-sm mb-4 gap-1">
                 <ListTodo size={18} />
                 <span className="ml-2 font-semibold">
                   {project?.task_count}
@@ -230,9 +230,9 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
           </CardContent>
           <div className="border border-gray-400 m-2" />
           <CardFooter className="flex justify-between">
-            <div className="text-gray-400 text-sm flex justify-center gap-2">
+            <div className="text-neutral-1100 text-sm flex justify-center gap-2">
               {" "}
-              <Clock /> {moment(project.start_date).format("MMM D, YYYY")}
+              <Timer />{moment(project.start_date).format("MMM D, YYYY")}
             </div>
             <MembersList members={project?.project_members || []} />
           </CardFooter>

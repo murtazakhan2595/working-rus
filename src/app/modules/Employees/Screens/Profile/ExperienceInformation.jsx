@@ -18,6 +18,7 @@ import { validationEmployeeExperienceFormSchema } from "app/utils/FormSchema/emp
 import { FaTimes } from "react-icons/fa"; // Import the close icon from react-icons
 import { CircleX, X } from "lucide-react";
 import { Button } from "../../../../../components/ui/button.jsx";
+import { Card, CardContent } from "components/ui/card.jsx";
 
 const ExperienceInformation = ({
   nextstep,
@@ -91,8 +92,10 @@ const ExperienceInformation = ({
           >
             {(props) => (
               <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
-                <div>
-                  {props.values?.experiences &&
+                <Card className="p-6">
+                  <CardContent>
+                    <div>
+                      {props.values?.experiences &&
                     props.values.experiences.length > 0 &&
                     props.values.experiences.map((experience, index) => (
                       <React.Fragment key={index}>
@@ -189,7 +192,9 @@ const ExperienceInformation = ({
                       {isEditMode ? "Save" : "Next"}
                     </Button>
                   </div>
-                </div>
+                  </div>
+                </CardContent>
+              </Card>
               </form>
             )}
           </Formik>

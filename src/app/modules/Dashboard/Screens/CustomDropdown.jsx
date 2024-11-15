@@ -18,7 +18,7 @@ const CustomDropdown = ({ isOpen, toggleDropdown, options, iconVisible=true, rig
             {options.map((option, index) => (
               <li
                 key={index}
-                className="px-3 py-2 font-lato font-medium text-[12px] text-baseGray hover:bg-gray-100 cursor-pointer"
+                className="px-3 py-2  font-medium text-[12px] text-baseGray hover:bg-gray-100 cursor-pointer"
                 onClick={option.onClick}
               >
                 {option.label}
