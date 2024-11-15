@@ -14,6 +14,7 @@ import {
   UsersRound,
   BadgeDollarSign,
 } from "lucide-react";
+import Config from "constants/config";
 
 /**
  * @typedef {Object} Group
@@ -84,16 +85,16 @@ export function getMenuList(pathname, userRole) {
       "Team Management",
       Users,
       [
-        ...(userRole !== 2 ? [createMenu("/profile-management", "Profile Management")] : []),
+        Config.PROFIL_MANAGMENT&&userRole !== 2 && createMenu("/profile-management", "Profile Management"),
         // createMenu("/settings", "Profile Settings"),
         // createMenu("/travel-details", "Travel Details"),
-        createMenu("/exit-clearance", "Exit & Clearance"),
-        ...(userRole !== 2 ? [createMenu("/create-employee", "Employee Creation")] : []),
+        Config.EMPLOYEE_OFFBOARDING&&createMenu("/exit-clearance", "Exit & Clearance"),
+        Config.PROFIL_MANAGMENT&&userRole !== 2 && createMenu("/create-employee", "Employee Creation"),
         // createMenu("/edit-employee", "Customize Employee"),
         // createMenu("/relocation", "Relocation"),
         // createMenu("/internal", "Internal"),
         // createMenu("/external", "External"),
-      ],
+      ].filter(Boolean),
     ),
   ];
 
@@ -148,7 +149,6 @@ export function getMenuList(pathname, userRole) {
         // createMenu("/my-task", "My Task"),
         // createMenu("/my-team", "My Team DTR"),
         createMenu("/projects", "Project Board"),
-        // createMenu("/attendence", "Time Management"),
       ],
       pathname === "/my-task"
     ),
@@ -172,15 +172,16 @@ export function getMenuList(pathname, userRole) {
       "Talent Sphere",
       UserRoundSearch,
       [
-        // createMenu("/personnel-requisition", "Personnel Requisition"),
-        createMenu("/jobs", "Jobs"),
-        createMenu("/applicants", "Applicants"),
-        // createMenu("/referrals", "Referrals"),
-        // createMenu("/on-boarding", "On Boarding"),
-      ],
+        Config.TS_PERSONAL_REQUISITION && createMenu("/personnel-requisition", "Personnel Requisition"),
+        Config.TS_JOBS&&createMenu("/jobs", "Jobs"),
+        Config.TS_APPLICANTS&&createMenu("/applicants", "Applicants"),
+        Config.TS_REFERRALS && createMenu("/referrals", "Referrals"),
+        Config.TS_ON_BOARDING && createMenu("/on-boarding", "On Boarding"),
+      ].filter(Boolean), // Filter out undefined values
       pathname === "/personnel-requisition"
     ),
   ];
+  
 
   const dailyTaskReportMenus = [
     createMenu(
@@ -188,10 +189,10 @@ export function getMenuList(pathname, userRole) {
       "Daily Task Report",
       FileChartColumnIncreasing,
       [
-        // createMenu("/create-task", "Create Task"),
-        // createMenu("/my-dtr", "My DTR"),
+         createMenu("/create-task", "Create Task"),
+         createMenu("/my-dtr", "My DTR"),
       ],
-      // pathname === "/daily-task-report"
+      pathname === "/my-dtr"
     ),
   ];
 
@@ -201,9 +202,9 @@ export function getMenuList(pathname, userRole) {
       "Personal Development",
       UsersRound,
       [ 
-        // createMenu("/learn", "Learn"),
-        // createMenu("/career-planning", "Career Planning"),
-        // createMenu("/succession-plan", "Succession Plan"),
+         createMenu("/learn", "Learn"),
+         createMenu("/career-planning", "Career Planning"),
+         createMenu("/succession-plan", "Succession Plan"),
       ],
       pathname === "/learn"
     ),
@@ -256,45 +257,45 @@ export function getMenuList(pathname, userRole) {
 
   const menuList = [
     { groupLabel: "", menus: commonMenus },
-    userRolesMap.isPeopleTeam && { groupLabel: "", menus: peopleTeamMenus },
-    userRolesMap.isSelfServiceHub && {
+    userRolesMap.isPeopleTeam && Config.TEAM_MANAGEMENT&&{ groupLabel: "", menus: peopleTeamMenus },
+    userRolesMap.isSelfServiceHub && Config.SELF_SERVICE_HUB &&{
       groupLabel: "",
       menus: selfServiceHubMenus,
     },
-    userRolesMap.isLeaveTracker && {
+    userRolesMap.isLeaveTracker && Config.LEAVE_MANAGMENT&&{
       groupLabel: "",
       menus: leaveTrackerMenus,
     },
-    userRolesMap.isPayroll && {
+    userRolesMap.isPayroll && Config.PAYROLL&& {
       groupLabel: "",
       menus: payrollMenus,
     },
-    userRolesMap.isTaskManagement && {
+    userRolesMap.isTaskManagement &&  Config.TASK_MANAGMENT && {
       groupLabel: "",
       menus: taskManagementMenus,
     },
-    userRolesMap.isTalentSphere && { groupLabel: "", menus: talentSphereMenus },
-    userRolesMap.performanceManagementMenus && {
+    userRolesMap.isTalentSphere && Config.TALENT_SPHERE &&{ groupLabel: "", menus: talentSphereMenus },
+    userRolesMap.performanceManagementMenus &&Config.PERFORMANCE_MANAGEMENT&& {
       groupLabel: "",
       menus: performanceManagementMenus,
     },
-    userRolesMap.isPayrollAttendance && {
+    userRolesMap.isPayrollAttendance &&Config.ATTENDANCE&& {
       groupLabel: "",
       menus: AndAttendanceMenus,
     },
-    userRolesMap.dailyTaskReportMenus && {
+    userRolesMap.dailyTaskReportMenus &&Config.DAILY_TASK_REPORT&& {
       groupLabel: "",
       menus: dailyTaskReportMenus,
     },
-    userRolesMap.personalDevelopmentMenus && {
+    userRolesMap.personalDevelopmentMenus &&Config.PERSONAL_DEVELOPMENT&& {
       groupLabel: "",
       menus: personalDevelopmentMenus,
     },
-    userRolesMap.peopleEngagementMenus && {
+    userRolesMap.peopleEngagementMenus &&Config.PEOPLE_ENGAGEMENT&& {
       groupLabel: "",
       menus: peopleEngagementMenus,
     },
-    userRolesMap.isReportsMenu && { groupLabel: "", menus: reportsMenus },
+    userRolesMap.isReportsMenu&& Config.REPORTS && { groupLabel: "", menus: reportsMenus },
   ].filter(Boolean);
 
   return menuList;
