@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { deleteTask } from "app/hooks/taskManagment";
 import { PriorityList } from "data/Data";
-import { ConfirmationModal } from "components";
 import { BiComment } from "react-icons/bi";
 import { getStatusClass, getStatusIconColor } from "./Sections";
 import { CustomDropdown, MembersList } from "../Sections";
@@ -15,6 +14,7 @@ import TaskDetail from "./TaskDetail";
 import { fetchComments } from "app/hooks/taskManagment";
 import { Card } from "components/ui/card";
 import SheetComponent from "components/ui/CustomSheet";
+import AlertDialogue from "components/ui/AlertDialogue";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -131,13 +131,15 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
       )}
       {/* Render ConfirmationModal component when isDeleteModalOpen is true */}
       {isDeleteModalOpen && (
-        <ConfirmationModal
+        <AlertDialogue
           isOpen={isDeleteModalOpen}
-          onClose={() => {
-            setIsDeleteModalOpen(false);
-            reloadData();
+          setIsOpen={()=>{
+            setIsDeleteModalOpen(false)
           }}
-          onDelete={confirmDelete}
+          handleContinue={confirmDelete}
+          title="Confirm Delete?"
+          description="This action can't be undone. All information associated with this
+            will be lost."
         />
       )}
       <div className="flex gap-3 justify-between items-center py-0.5">

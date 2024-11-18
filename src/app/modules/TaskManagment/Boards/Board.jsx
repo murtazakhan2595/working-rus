@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { Project } from "app/utils/Types/TaskManagment";
-import { Header, PageLoader, ConfirmationModal } from "components";
+import { Header, PageLoader } from "components";
 import { FilterInput } from "components/form-control";
 // import { Card, CardBody, Row, Col, Button } from "reactstrap";
 import {
@@ -34,6 +34,7 @@ import { CardContent } from "components/ui/card";
 import SheetComponent from "components/ui/SheetComponent";
 import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
 import TableCustom from "components/CustomTable";
+import AlertDialogue from "components/ui/AlertDialogue";
 
 const Board = ({ employees }) => {
   const navigate = useNavigate();
@@ -388,13 +389,13 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
         />
       )}
       {isDeleteModalOpen && (
-        <ConfirmationModal
+        <AlertDialogue
           isOpen={isDeleteModalOpen}
-          onClose={() => {
-            setIsDeleteModalOpen(false);
-            // reloadData();
-          }}
-          onDelete={confirmDelete}
+          setIsOpen={()=> setIsDeleteModalOpen(false)}
+          handleContinue={confirmDelete}
+          title="Confirm Delete"
+          description="This action can't be undone. All information associated with this
+            will be lost."
         />
       )}
     </div>
