@@ -14,26 +14,20 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { getDarkerTextColor } from "../Boards/Sections/getTaskStatus";
+import { getAllLabels } from "app/hooks/taskManagment";
 
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
 });
 
-export default function Labels({ onSelectedLabelsChange, labelsList }) {
+export default function Labels({ onSelectedLabelsChange, labelsList, reloadList }) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedLabels, setSelectedLabels] = React.useState([]);
   const [showNewLabel, setShowNewLabel] = React.useState(false);
   const [newLabelTitle, setNewLabelTitle] = React.useState("");
   const [selectedColor, setSelectedColor] = React.useState("");
   const baseUrl = useSelector((state) => state.user.baseUrl);
-
-  //   const predefinedLabels = [
-  //     { id: 1, name: 'Design', color: 'bg-purple-100 text-purple-600' },
-  //     { id: 2, name: 'FE', color: 'bg-red-100 text-red-600' },
-  //     { id: 3, name: 'Dev', color: 'bg-orange-100 text-orange-600' },
-  //     { id: 4, name: 'QA', color: 'bg-emerald-100 text-emerald-600' },
-  //   ];
 
   const colorOptions = [
     "bg-purple-300",
@@ -83,6 +77,7 @@ export default function Labels({ onSelectedLabelsChange, labelsList }) {
       });
 
       if (response.status === 201) {
+        reloadList();
         toast.success("Label Added!", {
           position: toast.POSITION.TOP_RIGHT,
         });
