@@ -33,6 +33,7 @@ import {
 } from "../../../../../src/@/components/ui/popover";
 import { Input } from "components/ui/input";
 import { relationList } from "data/Data";
+import { SheetCardExtension } from "components/SheetCardExtension";
 
 const CreateAndEditCardForm = ({
   initialValues,
@@ -167,11 +168,9 @@ const CreateAndEditCardForm = ({
     >
       {(props) => (
         <form onSubmit={props.handleSubmit} className="">
-          <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
-            <div className="font-[inter] flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
-              <div className="flex h-[7px] flex-shrink-0 items-end px-px">
-                <div className="text-zinc-950">Card Details</div>
-              </div>
+          <div className={`flex w-full gap-6 flex-col rounded-lg pt-2.5`}>
+
+              <SheetCardExtension title="Card Details">
               <div className="space-y-2">
                 <TextAreaInput
                   name="name"
@@ -251,13 +250,10 @@ const CreateAndEditCardForm = ({
                   </div>
                 )}
               </div>
-            </div>
+              </SheetCardExtension>
 
-            <div className={`flex w-full flex-col rounded-lg pt-2.5 mt-5`}>
-              <div className="font-[inter] flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
-                <div className="flex h-[7px] flex-shrink-0 items-end px-px">
-                  <div className="text-zinc-950">Add To Card</div>
-                </div>
+
+                <SheetCardExtension title="Add To Card">
                 <div className="space-y-2">
                   <DateInput
                     name="end_date"
@@ -437,8 +433,7 @@ const CreateAndEditCardForm = ({
                     }}
                   />
                 </div>
-              </div>
-            </div>
+                </SheetCardExtension>
 
             <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
               <Button
