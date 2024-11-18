@@ -75,13 +75,12 @@ const CreateAndEditCardForm = ({
   const handleRelationSelect = (task) => {
     console.log("Selected task:", task);
   };
+  const fetchLabels = async () => {
+    const labelList = await getAllLabels();
+    setLabelsList(labelList); // Update this to `labelList`
+  };
 
   useEffect(() => {
-    const fetchLabels = async () => {
-      const labelList = await getAllLabels();
-      setLabelsList(labelList); // Update this to `labelList`
-    };
-
     fetchLabels();
   }, []);
 
@@ -90,7 +89,6 @@ const CreateAndEditCardForm = ({
     const selectedLabelObjects = selectedLabels?.map((selectedId) =>
       labelsList?.results?.find((label) => label.id === selectedId)
     );
-    console.log(selectedLabelObjects, "OBJECT LABEL");
     setLabels(selectedLabelObjects);
   };
 
@@ -321,6 +319,9 @@ const CreateAndEditCardForm = ({
                   <Labels
                     onSelectedLabelsChange={handleSelectedLabelsChange}
                     labelsList={labelsList?.results}
+                    reloadList={()=>{
+                      fetchLabels();
+                    }}
                   />
                 </div>
                 <div>
