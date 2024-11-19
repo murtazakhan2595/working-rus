@@ -49,9 +49,10 @@ const LeaveTrackerOverview = ({ userProfile }) => {
   const fetchData = async () => {
     const leaveTypesData = await getLeaveComponents({});
     if (leaveTypesData) {
-      setLeaveTypesData(leaveTypesData);
+      setLeaveTypesData(leaveTypesData?.results);
     }
   };
+
 
   useEffect(() => {
     fetchLeaveTransaction();
@@ -88,6 +89,7 @@ const LeaveTrackerOverview = ({ userProfile }) => {
       return updatedFilters;
     });
   };
+
   return (
     <>
       <Card className="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-1 ">
@@ -109,7 +111,7 @@ const LeaveTrackerOverview = ({ userProfile }) => {
                   {
                     type: "select-two",
                     width: "max-w-[130px]",
-                    option: leaveTypesData.map((leave) => ({
+                    option: leaveTypesData?.map((leave) => ({
                       value: leave.id,
                       label: leave.name,
                     })),

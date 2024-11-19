@@ -33,8 +33,7 @@ export default function Component() {
     const fetchData = async () => {
       try {
         const response = await getAllProjects({ }, userProfile);
-        setData(response?.results)
-        console.log(response?.results, "ALL PROJECTS")
+        setData(response?.results?.results)
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -65,9 +64,8 @@ export default function Component() {
     on_hold: "hsl(var(--neutral-5))",
     on_going: "hsl(var(--plum-7))"
 };
-
 const statusCounts = data?.reduce((acc, project) => {
-  const statusKey = project.status ? project.status.toLowerCase() : 'on_going'; 
+  const statusKey = project?.status ? project?.status.toLowerCase() : 'on_going'; 
   if (!acc[statusKey]) {
       acc[statusKey] = 1;
   } else {
@@ -82,8 +80,6 @@ const chartData = Object.keys(statusCounts).map(status => ({
   fill: statusColors[status] 
 }));
 
-console.log('Chart Data with fills:', chartData);
-console.log('Status Colors:', statusColors);
 
 const chartConfig = {
     visitors: {

@@ -121,7 +121,7 @@ const getProjectsList = async (userProfile) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      const projectResponse = response.data;
+      const projectResponse = response?.data?.results;
       if (userProfile.role === 4 || userProfile.role === 2) {
         const filteredResults = projectResponse.filter(
           (project) =>
