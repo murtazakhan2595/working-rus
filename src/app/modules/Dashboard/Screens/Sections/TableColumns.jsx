@@ -1,21 +1,3 @@
-import FormateLeaveTrackerName from "app/modules/Dashboard/Screens/FormateLeaveTrackerName";
-import {
-  EmployeeID,
-  ManagerName,
-  LeaveType,
-  LeaveTypeOfEmployee,
-  UserRole,
-} from "utils/getValuesFromTables";
-import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
-import { dropdownOptions, formatNumber } from "data/Data";
-import { EmployeeNameInfo, StatusLabel } from "components";
-import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
-// import {
-//   Status,
-//   RenderStatus,
-//   RenderLeaveType,
-//   RenderLeaveAction,
-// } from "app/modules/LeaveManagment/Sections";
 import { RenderJobTitle } from "app/modules/Dashboard/Screens/TalentSphere/Sections";
 import moment from "moment";
 // import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/RenderEmployeesLeaveAllotement";
@@ -24,6 +6,7 @@ import { Link as ExLink } from "lucide-react";
 import { Badge } from "../../../../../components/ui/badge";
 import { DesignationName } from "utils/getValuesFromTables";
 import { Button } from "components/ui/button";
+import { EmployeeNameInfo } from "components";
 export const DashboardJobApplicationColumns = (navigate) => [
   {
     dataField: "id",
@@ -32,7 +15,7 @@ export const DashboardJobApplicationColumns = (navigate) => [
   },
 
   {
-    dataField: "Job_Title",
+    dataField: "total_applications",
     text: "Applications",
     formatter: (cell, row) => <div className="">{cell}</div>,
   },
@@ -74,11 +57,6 @@ export const DashboardOnGoingColumns = (navigate) => [
     ),
     // formatter: (cell, row) => <EmployeeNameInfo row={row} />,
   },
-  // {
-  //   dataField: "job_title",
-  //   text: "Job Title",
-  //   formatter: (cell, row) => <RenderJobTitle row={row} />,
-  // },
   {
     dataField: "application_status",
     text: "Application Status",
@@ -87,11 +65,7 @@ export const DashboardOnGoingColumns = (navigate) => [
         {cell}
       </Badge>
     ),
-    // formatter: ({ value }) => (
-    //   <Badge variant="outline" className="text-xs">
-    //     {value}
-    //   </Badge>
-    // ),
+
   },
 ];
 
