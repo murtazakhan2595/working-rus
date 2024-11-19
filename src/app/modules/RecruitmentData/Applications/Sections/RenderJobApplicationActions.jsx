@@ -5,7 +5,6 @@ import { MoreHorizontal } from "lucide-react";
 import { dropdownOptions } from "data/Data";
 
 const RenderJobApplicationActions = ({ row, handleOptionSelect }) => {
-  console.log(row, "ROW")
 
   // Function to filter dropdown options based on the current status
   const getFilteredOptions = (status) => {
@@ -16,7 +15,7 @@ const RenderJobApplicationActions = ({ row, handleOptionSelect }) => {
         );
       case "pending":
         return [
-          { label: "Review Application", value: "review" },
+          // { label: "Review Application", value: "review" },
           ...dropdownOptions.filter((option) =>
             ["shortlisted", "rejected"].includes(option.value)
           ),

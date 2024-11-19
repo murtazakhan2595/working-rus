@@ -54,7 +54,7 @@ export default function JobListingsTable({ posts, loading ,fetchJobPosts }) {
             className="relative"
             name={row.Job_Title}
             department={false}
-            position={getJobType(row.Job_Type)}
+            // position={getJobType(row.Job_Type)}
             showBadge={true}
             row={row}
           />

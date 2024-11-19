@@ -44,7 +44,6 @@ const TalentSphere = () => {
     try {
       setIsLoading(true);
       const data = await fetchJobPosts();
-      console.log(data, "DATA IN JOB POST")
       setPosts(data.results.reverse());
       setJobOpenings(data.results.length); // Set job openings count
       setInterviewed(data.results.length); // Set job openings count
@@ -153,7 +152,6 @@ export default TalentSphere;
    */
   const OnGoingApplications = ({ applicantsData }) => {
     const navigate = useNavigate();
-    console.log(applicantsData, "APPLICATIONS DATA")
     return (
       <div className="h-full overflow-y-auto hideScroll">
         <CustomTable
