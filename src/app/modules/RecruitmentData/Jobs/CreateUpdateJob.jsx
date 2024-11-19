@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, forwardRef } from "react";
-import { Card, CardHeader, CardBody, Row, Col, Form } from "reactstrap";
 import { Formik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -28,13 +27,21 @@ import { validationJobFormSchema } from "app/utils/FormSchema/jobFormSchema.jsx"
 import SheetComponent from "components/ui/SheetComponent.jsx";
 import { Button } from "components/ui/button";
 import {SheetCardExtension }from "components/SheetCardExtension";
+import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
 const JobForm = forwardRef(
-  ({ isLoading, formData, handleSubmit, isEditMode, id, onClose }, formRef) => {
+  ({ isLoading, formData, handleSubmit, isEditMode, id, onClose, setIsOpen }, formRef) => {
     const initialValues = isEditMode ? formData : JobDetail;
     const navigate = useNavigate();
     const [job_Id, setJob_Id] = useState(null);
     const [currencies, setCurrencies] = useState([]);
+    const [closeSheet, setCloseSheet] = useState(false)
+
+    const handleClose = ()=>{
+      // onClose()
+      setCloseSheet(true)
+    }
+
     useEffect(() => {
       const fetchData = async () => {
         try {
@@ -72,6 +79,9 @@ const JobForm = forwardRef(
         {isLoading ? (
           <PageLoader />
         ) : (
+          <>
+     {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
+
             <Formik
               initialValues={initialValues}
               innerRef={formRef}
@@ -279,9 +289,8 @@ const JobForm = forwardRef(
                     <Button
                       variant="outline"
                       // to="/jobs"
-                      onClick={() => {
-                        isEditMode ? onClose() : navigate("/jobs");
-                      }}
+                      type="button"
+                      onClick={handleClose}
                     >
                       Cancel
                     </Button>
@@ -290,11 +299,12 @@ const JobForm = forwardRef(
                 </form>
               )}
             </Formik>
+            </>
         )}
       </>
     );
   }
-);
+); 
 
 const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData, fetchJobPosts, isDashboard = false }) => {
   const formRef = useRef();
@@ -367,6 +377,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData, fetchJ
         isEditMode={isEditMode}
         id={id}
         onClose={onClose}
+        setIsOpen={setIsOpen}
       />
     </SheetComponent>
     </>
