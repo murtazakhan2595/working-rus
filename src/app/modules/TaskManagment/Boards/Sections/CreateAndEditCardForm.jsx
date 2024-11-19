@@ -34,6 +34,7 @@ import {
 import { Input } from "components/ui/input";
 import { relationList } from "data/Data";
 import { SheetCardExtension } from "components/SheetCardExtension";
+import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
 const CreateAndEditCardForm = ({
   initialValues,
@@ -41,6 +42,7 @@ const CreateAndEditCardForm = ({
   handleSubmit,
   onClose,
   isEdit,
+  setIsOpen
 }) => {
   const formRef = useRef();
 
@@ -56,6 +58,12 @@ const CreateAndEditCardForm = ({
   const [items, setItems] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [closeSheet, setCloseSheet] = useState(false)
+
+  const handleClose = ()=>{
+    // setIsOpen(false)
+    setCloseSheet(true)
+  }
 
   const handleAddItem = () => {
     const newItem = {
@@ -149,6 +157,8 @@ const CreateAndEditCardForm = ({
   };
 
   return (
+    <>
+     {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
     <Formik
       initialValues={formInitialValues}
       enableReinitialize={true}
@@ -437,9 +447,10 @@ const CreateAndEditCardForm = ({
 
             <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
               <Button
-                type=""
+                type="button"
                 variant="outline"
                 size="lg"
+                onClick={handleClose}
                 // onClick={onClose()}
               >
                 Cancel
@@ -452,6 +463,7 @@ const CreateAndEditCardForm = ({
         </form>
       )}
     </Formik>
+    </>
   );
 };
 

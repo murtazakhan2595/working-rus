@@ -374,6 +374,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
           }}
           boardId={board.id}
           projectId={projectId}
+          setIsOpen={setOpenCreateCard}
           />
       </SheetComponent>
       {showAddNewListModel && (
