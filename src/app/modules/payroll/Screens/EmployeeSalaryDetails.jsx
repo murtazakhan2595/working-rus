@@ -401,7 +401,7 @@ export default function EmployeeSalaryDetails() {
             previousCTC={
               latestApprovedSalaryRevision?.previous_salary
             }
-            currentCTC={latestApprovedSalaryRevision?.new_salary}
+            currentCTC={latestApprovedSalaryRevision?.new_salary || totalEarnings}
           />
           <Card className="mb-4 h-fit">
             <CardHeader>
