@@ -20,7 +20,6 @@ import { RenderJobTitle } from "app/modules/Dashboard/Screens/TalentSphere/Secti
 import moment from "moment";
 // import RenderEmployeesLeaveAllotement from "app/modules/LeaveManagment/Screens/RenderEmployeesLeaveAllotement";
 
-import { Link } from "react-router-dom";
 import { Link as ExLink } from "lucide-react";
 import { Badge } from "../../../../../components/ui/badge";
 import { DesignationName } from "utils/getValuesFromTables";
@@ -69,8 +68,8 @@ export const DashboardOnGoingColumns = (navigate) => [
     text: "Name",
     formatter: (cell, row) => (
       <div>
-        <p>{row.id}</p>
-        <p className="text-[#111827] font-semibold">{cell}</p>
+        <p>{row.job_title}</p>
+        <p className="text-neutral-900 font-semibold">{cell}</p>
       </div>
     ),
     // formatter: (cell, row) => <EmployeeNameInfo row={row} />,
