@@ -130,7 +130,7 @@ export const dropdownOptions = [
   { label: "Shortlisted", value: "shortlisted" },
   { label: "Offer Made", value: "offer_made" },
   { label: "Selected", value: "selected" },
-  { label: "Rejected", value: "rejected" },
+  // { label: "Rejected", value: "rejected" },
   { label: "Onboard", value: "on_board" },
   { label: "Reject", value: "rejected" },
   { label: "Reconsider", value: "reconsider" },
