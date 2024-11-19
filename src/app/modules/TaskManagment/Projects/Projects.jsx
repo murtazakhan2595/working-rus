@@ -61,7 +61,7 @@ const Projects = ({ userProfile }) => {
       const projectsData = await getAllProjects({ filterData }, userProfile);
       console.log(projectsData, "PROJECTS DATA IS HERE")
       if (isMounted) {
-        setAllProjects(projectsData);
+        setAllProjects(projectsData?.results);
       }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);

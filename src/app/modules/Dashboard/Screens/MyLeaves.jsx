@@ -57,7 +57,7 @@ const MyLeaves = ({ userProfile }) => {
       filterData: { employee_id_and_org: `${userProfile.id},${true}` },
     });
     if (leaveTypesData) {
-      setLeaveTypesData(leaveTypesData);
+      setLeaveTypesData(leaveTypesData?.results);
     }
   };
 
