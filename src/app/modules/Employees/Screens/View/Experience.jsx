@@ -32,11 +32,11 @@ const Experience = ({ experience, isEditable, employeeId, getDataByHooks }) => {
             <div key={index} className="w-full mb-7">
               <div className="flex flex-col md:flex-row justify-between mb-2">
                 <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">{exp.exp_organization || "N/A"}</div>
-                {exp.exp_letter?.file && (
+                {exp.exp_letter[0]?.file && (
                   <a
-                    download={exp.exp_letter?.name}
+                    download={exp.exp_letter[0]?.name}
                     className="text-sm flex gap-2 items-center no-underline"
-                    href={exp.exp_letter.file}
+                    href={exp.exp_letter[0].file}
                   >
                     Experience Letter <FiDownload />
                   </a>

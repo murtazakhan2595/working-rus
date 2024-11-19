@@ -72,11 +72,11 @@ const Certifications = ({ isEditable, employeeId }) => {
                   </div>
                 </div>
                 <div>
-                  {cer.certification_body?.file && (
+                  {cer.certification_body[0]?.file && (
                     <a
-                      download={cer.certification_body?.name}
+                      download={cer.certification_body[0]?.name}
                       className="text-sm flex gap-2 items-center no-underline"
-                      href={cer?.certification_body?.file}
+                      href={cer?.certification_body[0]?.file}
                     >
                       Certification <FiDownload />
                     </a>
