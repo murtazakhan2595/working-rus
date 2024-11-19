@@ -22,12 +22,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "components/ui/card";
-import { Clock, Layout, ListTodo, Timer } from "lucide-react";
-import AlertDialogue from "components/ui/AlertDialogue";
+import { Layout, ListTodo, Timer } from "lucide-react";
 import TableCustom from "components/CustomTable";
 import { projectBoard } from "app/utils/Types/TableColumns";
+import { Button } from "components/ui/button";
 
 const Projects = ({ userProfile }) => {
   const dispatch = useDispatch();
@@ -215,10 +214,13 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
             </div>
           </CardHeader>
           <CardContent>
-            <div onClick={navigateToBoard}>
+            <div >
+              <div className="flex justify-between items-center"> 
               <h3 className="text-lg font-semibold mb-2 text-neutral-1200">
                 {project.name}
               </h3>
+              <Button onClick={navigateToBoard}>View</Button>
+              </div>
               <div className="flex text-neutral-1100 text-sm mb-4 gap-1">
                 <ListTodo size={18} />
                 <span className="ml-2 font-semibold">

@@ -10,7 +10,7 @@ import { addTask, addAttachments } from "app/hooks/taskManagment";
 import { Card } from "components/ui/card";
 import moment from "moment";
 
-const CreateAndUpdateCard = ({ employees, onClose, boardId, projectId }) => {
+const CreateAndUpdateCard = ({ employees, onClose, boardId, projectId , setIsOpen}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [initialValues, setInitialValues] = useState({
     ...CardTypes,
@@ -74,6 +74,7 @@ const CreateAndUpdateCard = ({ employees, onClose, boardId, projectId }) => {
         employees={employees}
         handleSubmit={handleSubmit}
         onClose={onClose}
+        setIsOpen={setIsOpen}
       />
       <ToastContainer />
     </>

@@ -138,11 +138,10 @@ const Board = ({ employees }) => {
     setshowAddNewListModel(!showAddNewListModel);
   };
 
-  console.log("ALL BOARD RESULTS", AllBoards)
 
   return (
     <>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-4">
         <div className="flex items-center">
         <Button
           variant="ghost"
@@ -190,6 +189,7 @@ const Board = ({ employees }) => {
             <AddNewListModel
               projectId={projectId}
               onClose={toggleAddBoardModal}
+              setIsOpen={setshowAddNewListModel}
             />
           )}
 
@@ -374,6 +374,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
           }}
           boardId={board.id}
           projectId={projectId}
+          setIsOpen={setOpenCreateCard}
           />
       </SheetComponent>
       {showAddNewListModel && (

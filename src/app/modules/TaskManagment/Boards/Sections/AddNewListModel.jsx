@@ -7,14 +7,22 @@ import { AddList } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
 import SheetComponent from "components/ui/SheetComponent";
 import { Button } from "components/ui/button";
+import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
-const AddNewListModel = ({ onClose, projectId, boardId, isEditMode }) => {
+const AddNewListModel = ({ onClose, projectId, boardId, isEditMode, setIsOpen }) => {
   const formRef = useRef();
+  const [closeSheet, setCloseSheet] = useState(false)
+
   const [initialValues, setInitialValues] = useState({
     ...AddList,
     ...{ project_id: projectId },
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleClose = ()=>{
+    // setIsOpen(false)
+    setCloseSheet(true)
+  }
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -64,6 +72,7 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode }) => {
 
   return (
     <>
+     {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
       <SheetComponent {...formSheetData} width="500px" isOpen={true}>
         {isLoading ? (
           <PageLoader />
@@ -93,7 +102,7 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode }) => {
                   }}
                 />
                 <div className="flex justify-end gap-2 mt-4">
-                  <Button type="button" variant="outline" onClick={onClose}>
+                  <Button type="button" variant="outline" onClick={handleClose}>
                     Cancel
                   </Button>
                   <Button type="submit">{boardId ? "Update" : "Add"}</Button>
