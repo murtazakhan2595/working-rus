@@ -1,20 +1,19 @@
 import { useEffect, useState, useRef } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { connect } from "react-redux";
-import { RxCross2, RxPlus } from "react-icons/rx";
+import { RxPlus } from "react-icons/rx";
 import { Members } from "../Sections";
 import { Formik } from "formik";
 import { addProject, getProjectById } from "app/hooks/taskManagment";
 import { TextInput, SelectComponent } from "components/form-control.jsx";
 import { Project } from "app/utils/Types/TaskManagment";
-import { PageLoader } from "components";
-import { DateInput } from "components/form-control";
 import { useDispatch } from "react-redux";
 import { fetchProjects } from "state/slices/CommonSlice";
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
 import { ProjectStatusList } from "data/Data";
 import { ImageInput } from "components/form-control";
+import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
 const ProjectForm = ({
   employees,
@@ -36,7 +35,13 @@ const ProjectForm = ({
   const [membersOpen, setMembersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [imageError, setImageError] = useState(null);
-  const [selectedColor, setSelectedColor] = useState("#f7f7f7"); // Default color
+  const [selectedColor, setSelectedColor] = useState("#f7f7f7");
+  const [closeSheet, setCloseSheet] = useState(false)
+
+  const handleClose = ()=>{
+    // setIsOpen(false)
+    setCloseSheet(true)
+  }
 
   // const fetchData = async (isMounted) => {
   //   setIsLoading(true);
@@ -95,6 +100,7 @@ const ProjectForm = ({
   };
   return (
     <>
+    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
       <div
         side="right"
         className="w-full p-0 "
@@ -285,10 +291,9 @@ const ProjectForm = ({
                       <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
                         <Button
                           variant="outline"
+                          type="button"
                           size="lg"
-                          onClick={() => {
-                            setIsOpen(false);
-                          }}
+                          onClick={handleClose}
                         >
                           Cancel
                         </Button>
