@@ -3,6 +3,7 @@ import moment from "moment";
 import React from "react";
 import { getFileSizeInKB } from "utils/fileUtils";
 import { Button } from "./ui/button";
+import AlertDialogue from "./ui/AlertDialogue";
 
 export const SheetCardExtension = ({ title, children }) => {
   return (
@@ -90,3 +91,20 @@ export const DisplayButton = ({handlePrevious, handleNext})=>{
     </div>
   )
 }
+
+export const handleCloseWithConfirmation = (isOpen, setCloseSheet, setIsOpen) => {
+  return (
+    isOpen && (
+      <AlertDialogue
+        isOpen={isOpen}
+        setIsOpen={setCloseSheet}
+        title="Are you sure you want to close?"
+        description="Any unsaved changes will be discarded. Do you want to proceed?"
+        handleContinue={() => {
+          setCloseSheet(false);
+          setIsOpen(false);
+        }}
+      />
+    )
+  );
+};

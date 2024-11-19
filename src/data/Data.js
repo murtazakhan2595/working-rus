@@ -136,7 +136,7 @@ export const dropdownOptions = [
   { label: "Reconsider", value: "reconsider" },
   { label: "Send Email", value: "send_email" },
   { label: "Offer Declined", value: "declined" },
-  { label: "Move to Selected", value: "selected" },
+  // { label: "Move to Selected", value: "selected" },
   { label: "Schedule Interview", value: "scheduled" },
   { label: "Offer Accepted", value: "offer_accepted" },
 ];
