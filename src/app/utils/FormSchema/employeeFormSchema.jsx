@@ -19,8 +19,8 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     errors.department_name = "Department is required";
   if (!values.department_position)
     errors.department_position = "Designation is required";
-  if (!values.department_manager)
-    errors.department_manager = "Manager is required";
+  // if (!values.department_manager)
+  //   errors.department_manager = "Manager is required";
   if (!values.employee_type) errors.employee_type = "Employee type is required";
   if (!values.employee_work_type)
     errors.employee_work_type = "Work type is required";
@@ -239,12 +239,12 @@ const validationDepartmentInfoFormSchema = Joi.object({
   employee_type: Joi.string().required().label("Employee type").messages({
     "string.empty": `Employee type is required`,
   }),
-  department_manager: Joi.string()
-    .required()
-    .label("Department Manger")
-    .messages({
-      "string.empty": `Department Manger is required`,
-    }),
+  // department_manager: Joi.string()
+  //   .required()
+  //   .label("Department Manger")
+  //   .messages({
+  //     "string.empty": `Department Manger is required`,
+  //   }),
   joining_date: Joi.string()
     .regex(/^\d{2}-\d{2}-\d{4}$/) // Matches "DD-MM-YYYY" format
     .required()
