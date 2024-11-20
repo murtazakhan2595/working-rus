@@ -45,10 +45,12 @@ const JobsActions = ({ row, fetchJobPosts, isEdit= false }) => {
     }
   };
 
-  const handleShare = (id)=>{
+  const handleShare = (job)=>{
     setOpenModal(true)
-    // setJobLink(`${window.location.origin}/job-description/${row?.id}`);
-    setJobLink(id);
+    setJobLink({
+      jobID: job?.id,
+      jobTitle: job?.Job_Title,
+    });
 
   }
   return (
@@ -63,7 +65,7 @@ const JobsActions = ({ row, fetchJobPosts, isEdit= false }) => {
         <DropdownMenuContent align="end">
         {isEdit && <DropdownMenuItem onClick={isEdit}>Edit</DropdownMenuItem>}
           <DropdownMenuItem onClick={() => navigate(`/applicants`)}>View Applications</DropdownMenuItem>
-          <DropdownMenuItem onClick={()=>handleShare(row?.id)}>Share Link</DropdownMenuItem>
+          <DropdownMenuItem onClick={()=>handleShare(row)}>Share Link</DropdownMenuItem>
           <DropdownMenuItem onClick={handleCopyLink}>Copy Link</DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleDelete(row?.id, row?.Job_Title)}>Delete</DropdownMenuItem>
         </DropdownMenuContent>
@@ -74,7 +76,8 @@ const JobsActions = ({ row, fetchJobPosts, isEdit= false }) => {
           <Dialogue
             isOpen={openModal}
             setIsOpen={setOpenModal}
-            jobId={jobLink}
+            jobId={jobLink?.jobID}
+            jobTitle={jobLink?.jobTitle}
           />
         )
       }
