@@ -56,7 +56,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
         filterData: { employee_id_and_org: `${userProfile.id},${true}`, status:true },
       });
       if (response) {
-        const LeaveTypeOptions = response.map((item) => ({
+        const LeaveTypeOptions = response?.results?.map((item) => ({
           value: item.id,
           label: item.name,
           ...item,

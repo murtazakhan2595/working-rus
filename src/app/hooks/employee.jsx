@@ -395,8 +395,9 @@ const getEmployeeProfessionalExperianceData = async (employeeid) => {
           headers: headers(),
         }
       );
+      console.log(response, "HELLO KASHIF")
       if (response.status === 200) {
-        const employeeData = await getProfessionalExperiance(response.data);
+        const employeeData = await getProfessionalExperiance(response?.data?.results);
         return employeeData;
       }
     } catch (error) {
@@ -564,7 +565,7 @@ const getEmployeeAcademicRecordData = async (employeeid) => {
         }
       );
       if (response.status === 200) {
-        const employeeData = getAcademicRecord(response.data);
+        const employeeData = getAcademicRecord(response.data?.results);
         return employeeData;
       }
     } catch (error) {
@@ -617,7 +618,7 @@ const getEmployeeCerficationData = async (employeeid) => {
         }
       );
       if (response.status === 200) {
-        const employeeData = getCertifications(response.data);
+        const employeeData = getCertifications(response.data?.results);
         return employeeData;
       }
     } catch (error) {

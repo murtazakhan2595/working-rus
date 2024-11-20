@@ -200,7 +200,7 @@ const LeaveRequests = ({ userProfile, departments }) => {
                 {
                   type: "select-three",
                   width: "max-w-[130px]",
-                  option: leaveTypesData.map((leave) => ({
+                  option: leaveTypesData?.results?.map((leave) => ({
                     value: leave.id,
                     label: leave.name,
                   })),
