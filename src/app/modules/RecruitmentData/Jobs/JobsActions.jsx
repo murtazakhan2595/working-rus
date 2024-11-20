@@ -5,11 +5,15 @@ import { MoreHorizontal } from "lucide-react";
 import { Button } from "components/ui/button";
 import { deleteJob } from "app/hooks/recruitment";
 import AlertDialogue from "components/ui/AlertDialogue";
+import SheetComponent from "components/ui/SheetComponent";
+import Dialogue from "components/Dialogue";
 
 const JobsActions = ({ row, fetchJobPosts, isEdit= false }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [jobId, setJobId] = useState(null);
+  const [jobLink, setJobLink] = useState(null)
+  const [openModal, setOpenModal] = useState(false)
 
   const handleCopyLink = () => {
     const jobLink = `${window.location.origin}/job-description/${row?.id}`;
@@ -41,6 +45,12 @@ const JobsActions = ({ row, fetchJobPosts, isEdit= false }) => {
     }
   };
 
+  const handleShare = (id)=>{
+    setOpenModal(true)
+    // setJobLink(`${window.location.origin}/job-description/${row?.id}`);
+    setJobLink(id);
+
+  }
   return (
     <>
       <DropdownMenu>
@@ -53,11 +63,21 @@ const JobsActions = ({ row, fetchJobPosts, isEdit= false }) => {
         <DropdownMenuContent align="end">
         {isEdit && <DropdownMenuItem onClick={isEdit}>Edit</DropdownMenuItem>}
           <DropdownMenuItem onClick={() => navigate(`/applicants`)}>View Applications</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate(`/job-description/${row?.id}`)}>Share Link</DropdownMenuItem>
+          <DropdownMenuItem onClick={()=>handleShare(row?.id)}>Share Link</DropdownMenuItem>
           <DropdownMenuItem onClick={handleCopyLink}>Copy Link</DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleDelete(row?.id, row?.Job_Title)}>Delete</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      
+      {
+        openModal && (
+          <Dialogue
+            isOpen={openModal}
+            setIsOpen={setOpenModal}
+            shareLink={jobLink}
+          />
+        )
+      }
 
       {isOpen && (
         <AlertDialogue
