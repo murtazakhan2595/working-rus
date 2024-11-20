@@ -105,7 +105,9 @@ export const handleCloseWithConfirmation = (isOpen, setCloseSheet, setIsOpen, se
         handleContinue={() => {
           setCloseSheet(false);
           setIsOpen(false);
-          setNewAttachment(null)
+          if (setNewAttachment) {
+            setNewAttachment(null);
+          }
         }}
       />
     )
