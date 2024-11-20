@@ -74,7 +74,7 @@ const JobsActions = ({ row, fetchJobPosts, isEdit= false }) => {
           <Dialogue
             isOpen={openModal}
             setIsOpen={setOpenModal}
-            shareLink={jobLink}
+            jobId={jobLink}
           />
         )
       }
