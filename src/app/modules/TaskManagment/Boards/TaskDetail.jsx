@@ -224,7 +224,6 @@ const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
   }
 
   function CardValues({ values }) {
-    console.log("IN CARD VALUES", values);
     const items = [
       {
         label: "Due Date",

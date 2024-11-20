@@ -487,7 +487,7 @@ const fetchComments = async (filter) => {
         headers: headers(),
       }
     );
-    return response.data;
+    return response.data?.results;
   } catch (error) {
     console.error("Error fetching comments:", error);
     return [];
