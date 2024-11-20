@@ -10,11 +10,13 @@ import { connect } from "react-redux";
 import { getEarnAndDeduction } from "app/hooks/payroll.jsx";
 import { saveEarnAndDeduction } from "app/hooks/payroll.jsx";
 import AddComponentSheet from "./AddComponentSheet.jsx";
+import { handleCloseWithConfirmation } from "components/SheetCardExtension.jsx";
 
 const SalaryComponent = ({ componentFilterData }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [component, setComponent] = useState([]);
-    const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [closeSheet, setCloseSheet] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState(null);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const onPageChange = (name, value) => {
@@ -26,8 +28,7 @@ const SalaryComponent = ({ componentFilterData }) => {
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
     onRowClick: (row) => {
-      console.log("Row clicked:", row);
-      setIsOpen(true)
+      setIsOpen(true);
       setSelectedComponent(row);
     },
   };
@@ -36,7 +37,7 @@ const SalaryComponent = ({ componentFilterData }) => {
     setIsLoading(true);
     const response = await getEarnAndDeduction({
       options,
-      filterData:{...componentFilterData},
+      filterData: { ...componentFilterData },
     });
     if (response) {
       setComponent(response.results);
@@ -47,9 +48,7 @@ const SalaryComponent = ({ componentFilterData }) => {
     fetchData();
   }, [options, componentFilterData]);
 
-
   const onCheckedChange = async (value, component) => {
-    console.log("INFO", value, component);
     const updatedComponent = { ...component, is_active: value };
     const response = await saveEarnAndDeduction(updatedComponent);
     if (response) {
@@ -61,28 +60,34 @@ const SalaryComponent = ({ componentFilterData }) => {
     }
   };
 
-  console.log("INFO component", component);
+  const handleClose = () => {
+    setIsOpen(false)
+    setCloseSheet(true);
+  };
+
   return (
     <div className="flex flex-col gap-4 profile-management">
+      {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
       {selectedComponent && (
         <AddComponentSheet
           component={selectedComponent}
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           reload={fetchData}
+          onClose={handleClose}
         />
       )}
 
       {isLoading ? (
         <PageLoader />
       ) : (
-            <CustomTable
-              data={component}
-              columns={SalaryComponentColumns(onCheckedChange)}
-              pagination={true}
-              dataTotalSize={0}
-              tableOptions={tableOptions}
-            />
+        <CustomTable
+          data={component}
+          columns={SalaryComponentColumns(onCheckedChange)}
+          pagination={true}
+          dataTotalSize={0}
+          tableOptions={tableOptions}
+        />
       )}
     </div>
   );

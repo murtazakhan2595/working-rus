@@ -92,7 +92,7 @@ export const DisplayButton = ({handlePrevious, handleNext})=>{
   )
 }
 
-export const handleCloseWithConfirmation = (isOpen, setCloseSheet, setIsOpen) => {
+export const handleCloseWithConfirmation = (isOpen, setCloseSheet, setIsOpen, setNewAttachment) => {
   return (
     isOpen && (
       <AlertDialogue
@@ -100,9 +100,14 @@ export const handleCloseWithConfirmation = (isOpen, setCloseSheet, setIsOpen) =>
         setIsOpen={setCloseSheet}
         title="Are you sure you want to close?"
         description="Any unsaved changes will be discarded. Do you want to proceed?"
+        continueText="Discard"
+        cancelText="Keep"
         handleContinue={() => {
           setCloseSheet(false);
           setIsOpen(false);
+          if (setNewAttachment) {
+            setNewAttachment(null);
+          }
         }}
       />
     )

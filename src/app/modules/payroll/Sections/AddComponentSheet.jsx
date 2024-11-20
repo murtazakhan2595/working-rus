@@ -43,6 +43,7 @@ import {
 } from "../../../../src/@/components/ui/alert-dialog";
 import { deleteEarnAndDeduction } from "app/hooks/payroll";
 import moment from "moment";
+import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
 const initialEarningAndDeduction = {
   name: "",
@@ -58,8 +59,10 @@ const AddComponentSheet = ({
   reload,
   isOpen,
   setIsOpen,
+  onClose
 }) => {
   const [isEdit, setIsEdit] = useState(false);
+  const [closeSheet, setCloseSheet] = useState(false)
 
   const [earnAndDeduction, setEarnAndDeduction] = useState(
     component || initialEarningAndDeduction
@@ -72,12 +75,8 @@ const AddComponentSheet = ({
     footer: null,
   };
 
-  console.log("Component:", component);
-  console.log("Open Sheet:", openSheet);
-  console.log("Is Open:", isOpen);
 
   const handleSubmit = async (values) => {
-    console.log("Form Values:", values);
     const response = await saveEarnAndDeduction(values);
     if (response) {
       if (values.id) {
@@ -92,7 +91,6 @@ const AddComponentSheet = ({
   };
 
   const handleComponentDelete = async () => {
-    console.log("Delete component:", component);
     const response = await deleteEarnAndDeduction(component.id);
     if (response) {
       toast.success("Component deleted successfully");
@@ -111,9 +109,15 @@ const AddComponentSheet = ({
     }
     }
 
+    const handleClose = ()=>{
+      setCloseSheet(true)
+    }
+
+
   return (
     <>
       <div>
+    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
         <SheetComponent
           {...formSheetData}
           contentClassName="custom-sheet-width"
@@ -133,6 +137,7 @@ const AddComponentSheet = ({
               handleSubmit={handleSubmit}
               setIsOpen={setIsOpen}
               setIsEdit={setIsEdit}
+              onClose={handleClose}
             />
           )}
         </SheetComponent>
@@ -148,6 +153,7 @@ const ComponentForm = ({
   handleSubmit,
   setIsOpen,
   setIsEdit,
+  onClose
 }) => {
   return (
     <Formik
@@ -261,12 +267,9 @@ const ComponentForm = ({
               variant="outline"
               size="lg"
               type="button"
-              onClick={() => {
-                setIsOpen(false);
-                setIsEdit(false)
-              }}
+              onClick={onClose}
             >
-              Cancel{" "}
+              Cancel
             </Button>
             <Button type="submit" size="lg" variant="default">
               {"Save"}
