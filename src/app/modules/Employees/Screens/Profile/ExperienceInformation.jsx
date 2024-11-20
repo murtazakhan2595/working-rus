@@ -102,7 +102,7 @@ const ExperienceInformation = ({
                         <div className="space-y-4">
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                              <h5 className="text-base">
+                              <h5 className="text-base mb-2">
                                 Add Experience {index + 1}
                               </h5>
                             </div>

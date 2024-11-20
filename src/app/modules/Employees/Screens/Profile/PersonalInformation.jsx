@@ -114,6 +114,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                         }}
                         setImageError={setImageError}
                       />
+                      
                     </div>
                       </CardContent>
                     </Card>

@@ -36,11 +36,11 @@ const CreateEmployeeProfile = () => {
 
   return (
     <>
-      <div className="flex justify-center">
-        <div className="flex flex-col ">
+      <div className="flex justify-center main-content min-h-screen">
+        <div className="flex flex-col  ">
           {/*  */}
-          <div className="screen">
-            <div className="min-w-[750px]">
+          <div className="">
+            <div className="min-w-[840px]">
               {currentTab === 1 && (
                 <Welcome
                   employeeId={id}
@@ -65,14 +65,11 @@ const CreateEmployeeProfile = () => {
               )}
               {currentTab !== 1 && currentTab !== 9 &&
                 <>
-                <Card className="">
+                <h3 className="h4 capitalize">{getTitle()}</h3>
+                
 
-                  <CardHeader>
-                    <CardTitle>
-                    <h4 className="">{getTitle()}</h4>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                 
+                  
                   {currentTab === 2 && (
                       <PersonalInformation
                         employeeId={id}
@@ -154,8 +151,8 @@ const CreateEmployeeProfile = () => {
                         }}
                       />
                     )}
-                    </CardContent>
-                </Card>
+                    
+               
                 </>
               }
             </div>

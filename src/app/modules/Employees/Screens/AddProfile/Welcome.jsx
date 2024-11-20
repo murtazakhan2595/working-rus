@@ -9,8 +9,9 @@ const Welcome = ({ nextstep }) => {
   return (
     <>
 
-      <div className="flex flex-col items-center justify-center min-h-screen ">
-        <div className="space-y-8 text-center">
+      <div className="flex flex-col items-center justify-center min-h-screen main-content ">
+        <div className="space-y-8 text-center bg-white p-10 rounded-lg min-h-screen ">
+        
           <div className="flex flex-col items-center mb-8">
             <NewLogo />
 
