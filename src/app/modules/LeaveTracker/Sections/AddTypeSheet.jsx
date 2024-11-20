@@ -27,6 +27,7 @@ import {
 } from "../../../../components/ui/card";
 import moment from "moment";
 import { deleteLeaveComponent } from "app/hooks/leaveTracker";
+import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
 const AddTypeSheet = ({
   type,
@@ -141,7 +142,16 @@ const ComponentForm = ({
   editMode,
   setOpenSheet,
 }) => {
+  const [closeSheet, setCloseSheet] = useState(false)
+
+ const handleClose = ()=>{
+  setCloseSheet(true)
+  // setOpenSheet(false)
+ }
   return (
+    <>
+    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
+
     <Formik
       initialValues={leaveComponentType}
       // validationSchema={validationSchema}
@@ -195,10 +205,7 @@ const ComponentForm = ({
               variant="outline"
               size="lg"
               type="button"
-              onClick={() => {
-                setIsOpen(false);
-                setOpenSheet(false)
-              }}
+              onClick={handleClose}
             >
               Cancel 
             </Button>
@@ -209,6 +216,7 @@ const ComponentForm = ({
         </form>
       )}
     </Formik>
+    </>
   );
 };
 

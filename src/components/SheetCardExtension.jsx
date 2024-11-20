@@ -92,7 +92,7 @@ export const DisplayButton = ({handlePrevious, handleNext})=>{
   )
 }
 
-export const handleCloseWithConfirmation = (isOpen, setCloseSheet, setIsOpen) => {
+export const handleCloseWithConfirmation = (isOpen, setCloseSheet, setIsOpen, setNewAttachment) => {
   return (
     isOpen && (
       <AlertDialogue
@@ -105,6 +105,7 @@ export const handleCloseWithConfirmation = (isOpen, setCloseSheet, setIsOpen) =>
         handleContinue={() => {
           setCloseSheet(false);
           setIsOpen(false);
+          setNewAttachment(null)
         }}
       />
     )

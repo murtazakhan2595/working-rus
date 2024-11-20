@@ -24,6 +24,7 @@ import { saveLeaveTransaction } from "app/hooks/leaveTracker";
 import { validateLeaveRequestFormSchema } from "app/utils/FormSchema/leaveTrackerFormSchema";
 import { saveAttachment } from "app/hooks/leaveTracker";
 import { getRemainingLeaves } from "app/hooks/leaveTracker";
+import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
 const ApplyLeaveSheet = ({ userProfile, reload }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,6 +34,8 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
   const [selectedNoOfDays, setSelectedNoOfDays] = useState(0);
   const [leaveAfter, setLeaveAfter] = useState(null);
   const [maxDays, setMaxDays] = useState(0);
+  const [closeSheet, setCloseSheet] = useState(false)
+
 
   const leaveRequest = {
     component_type: "",
@@ -184,8 +187,13 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
     }
   };
 
+  const handleClose = ()=>{
+    setCloseSheet(true)
+   }
+
   return (
     <div>
+    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen, setNewAttachment)}
       <SheetComponent
         {...formSheetData}
         contentClassName="custom-sheet-width"
@@ -343,10 +351,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                   variant="outline"
                   type="button"
                   size="lg"
-                  onClick={() => {
-                    setNewAttachment(null);
-                    setIsOpen(false);
-                  }}
+                  onClick={handleClose}
                 >
                   Cancel
                 </Button>
