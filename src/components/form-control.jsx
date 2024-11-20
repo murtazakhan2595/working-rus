@@ -1194,7 +1194,7 @@ const CoverFileUpload = ({
   label,
   acceptType,
   required,
-  maxSize = 10 // in MB
+  maxSize = 10
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState([]); // Store multiple files
@@ -1253,10 +1253,9 @@ const CoverFileUpload = ({
           file: reader.result
         };
         
-        // Add new file to existing files
-        const updatedFiles = [...files, fileData];
-        setFiles(updatedFiles);
-        onChange(name, updatedFiles); // Send array of files to parent
+        // Replace existing files with new file
+        setFiles([fileData]);
+        onChange(name, [fileData]); // Send single file to parent
       };
       reader.readAsDataURL(file);
     }
@@ -1278,9 +1277,25 @@ const CoverFileUpload = ({
   };
 
   const handleNewFileClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    // Create a temporary file input
+    const tempFileInput = document.createElement('input');
+    tempFileInput.type = 'file';
+    tempFileInput.accept = acceptType;
+    tempFileInput.style.display = 'none';
+    
+    // Add change event listener
+    tempFileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        handleFile(file);
+      }
+      // Remove the temporary input after use
+      document.body.removeChild(tempFileInput);
+    });
+    
+    // Add to body and trigger click
+    document.body.appendChild(tempFileInput);
+    tempFileInput.click();
   };
 
   const renderUploadedFiles = () => {
@@ -1327,33 +1342,6 @@ const CoverFileUpload = ({
       {value ? (
         <div className="space-y-3">
           {renderUploadedFiles(value)}
-          <div
-            className={`relative border-2 border-dashed rounded-lg p-6 ${
-              dragActive ? 'border-neutral-600 bg-plum-200' : 'border-neutral-600'
-            }`}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-          >
-            <div className="flex flex-col items-center justify-center min-h-[100px] text-center">
-              <p className="mb-2">
-                <span className="font-semibold text-primary">Upload a file</span>
-                <span className="text-neutral-1000"> or drag and drop</span>
-              </p>
-              <p className="text-sm text-neutral-1000">
-                {acceptType === '.pdf' ? 'Please upload PNG, JPG or PDF up to 10MB' : 'PNG, JPG or PDF up to 10MB'}
-              </p>
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                onChange={handleChange}
-                accept={acceptType}
-                title=""
-              />
-            </div>
-          </div>
         </div>
       ) : (
         <div

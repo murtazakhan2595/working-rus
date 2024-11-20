@@ -77,9 +77,9 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
               <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
                 <Card className="p-6">
                   <CardContent>
-                    <h6 className="text-2xl text-secondary-foreground">
+                    {/* <h6 className="text-2xl text-secondary-foreground">
                       Emergency Contact
-                    </h6>
+                    </h6> */}
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
