@@ -11,8 +11,8 @@ import {
 } from 'react-share';
 
 
-const Dialogue = ({ isOpen, setIsOpen, id }) => {
-  const shareUrl = `https://staging-hrms.tecbrix.cloud/job-description/${id}`; // Replace with your desired URL
+const Dialogue = ({ isOpen, setIsOpen, jobId }) => {
+  const shareUrl = `https://staging-hrms.tecbrix.cloud/job-description/${jobId}`; 
   const shareMessage = "Check this out!";
 
   return (
