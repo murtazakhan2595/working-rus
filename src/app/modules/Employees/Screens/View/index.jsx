@@ -79,7 +79,6 @@ const ViewEmployee = ({ userProfile, profileView }) => {
       let expData = await getEmployeeProfessionalExperianceData(userId);
       let cvData = await getEmployeeCVDetailData(userId);
       let educationData = await getEmployeeAcademicRecordData(userId);
-
       setEmployeeData(empData);
       setExperiences(expData);
       setCV(cvData);
@@ -101,7 +100,6 @@ const ViewEmployee = ({ userProfile, profileView }) => {
     { value: "security", label: "Security" },
     { value: "qualification", label: "Qualification" },
   ];
-  console.log(employeeData);
 
   return (
     <>
