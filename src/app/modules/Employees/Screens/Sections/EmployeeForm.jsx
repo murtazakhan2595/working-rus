@@ -23,7 +23,7 @@ import {
 import { validationEmployeeInfoFormSchema } from "../../../../../app/utils/FormSchema/employeeFormSchema";
 
 import {
-  HeadOfDepartmentOptions,
+  // HeadOfDepartmentOptions,
   employeeStatus,
   jobRoles,
   workplaceTypes,
@@ -524,7 +524,7 @@ const SheetOnBorading = ({
                             }}
                           />
                         </div>
-                        <div className="space-y-2">
+                        {/* <div className="space-y-2">
                           <SelectComponent
                             name={"department_manager"}
                             options={HeadOfDepartmentOptions}
@@ -537,7 +537,7 @@ const SheetOnBorading = ({
                               props.setFieldValue(field, value);
                             }}
                           />
-                        </div>
+                        </div> */}
                         <div className="space-y-2">
                           <DateInput
                             name={"joining_date"}
