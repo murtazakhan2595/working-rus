@@ -40,7 +40,7 @@ const ViewBoardDetails = ({
       {...formSheetData}
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      
+      width="568px"
     >
       {isEditMode && project && (
         <CreateEditProject

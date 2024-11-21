@@ -157,7 +157,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
         {...formSheetEditData}
         isOpen={isEditCardOpen}
         setIsOpen={setIsEditCardOpen}
-       
+        width="568px"
         contentClassName="custom-sheet-width"
         >
         <EditCard
@@ -246,6 +246,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
          {...formSheetData}
          isOpen={isTaskDetailOpen}
          setIsOpen={setIsTaskDetailOpen}
+         width="568px"
        
         >
         <TaskDetail

@@ -26,7 +26,7 @@ const CreateEditProject = ({
       <SheetComponent
         {...formSheetData}
         onSubmit={handleSubmit}
-      
+        width="568px"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         contentClassName="custom-sheet-width"
