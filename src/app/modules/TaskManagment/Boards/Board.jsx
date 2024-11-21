@@ -32,8 +32,7 @@ import { Button } from "components/ui/button";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import SheetComponent from "components/ui/SheetComponent";
-import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
-import TableCustom from "components/CustomTable";
+
 import AlertDialogue from "components/ui/AlertDialogue";
 
 const Board = ({ employees }) => {
@@ -44,10 +43,11 @@ const Board = ({ employees }) => {
   const [projectData, setProjectData] = useState(Project);
   const [filterData, setFilterData] = useState({});
   const [AllBoards, setAllBoards] = useState([]);
-  const [filterList, setFilterList] = useState([]);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
+  const [selectedExpenseType, setSelectedExpenseType] = useState("");
 
   const handleFilterChange = (filterName, filterValue) => {
+    if (filterName === "expense_type") setSelectedExpenseType(filterValue);
     // onPageChange("page", 1);
     console.log("filterName", filterName);
     console.log("filterValue", filterValue);
@@ -163,6 +163,8 @@ const Board = ({ employees }) => {
                 option: ClaimExpenseTypeOptions,
                 name: "expense_type",
                 placeholder: "Filters",
+                values: selectedExpenseType,
+                    value: selectedExpenseType
               },
             ]}
             onChange={handleFilterChange}

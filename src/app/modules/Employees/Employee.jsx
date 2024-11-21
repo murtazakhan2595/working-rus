@@ -106,7 +106,7 @@ export default function EmployeeManagement() {
   };
 
   return (
-    <div className="flex flex-col gap-4 profile-management">
+    <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}>
       <Header content={<SheetOnBoarding />} />
       <Stats stats={statsData} />
       <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">

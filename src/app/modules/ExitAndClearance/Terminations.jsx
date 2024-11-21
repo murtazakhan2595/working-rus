@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import ExitDetailsCard from "./ExitDetailsCard";
 import { connect } from "react-redux";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
-import { TerminationStatusOptions } from "data/Data";
-import { FilterInput } from "components/form-control";
-import { PageLoader, Table } from "components";
+
+
+import { PageLoader} from "components";
 import { Card, CardContent } from "../../../components/ui/card.jsx";
 import { ExitRequestColumns } from "app/utils/Types/TableColumns";
-import { StatusList } from "./Sections";
+
 import TableCustom from "components/CustomTable";
 
 const Terminations = ({ userProfile, filterData }) => {
