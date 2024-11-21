@@ -45,10 +45,10 @@ export const JobDetails = ({ job, handleJobChange, jobs }) => {
       <div className="flex flex-col justify-between gap-y-12 text-baseGray">
         <div className="flex justify-between">
           <div className="flex items-center gap-x-2">
-            <img src={jobIcon} alt="Job Icon" />
+            {/* <img src={jobIcon} alt="Job Icon" /> */}
             <div>
-              <p className="text-base">{job?.id}</p>
-              <CardTitle>{job?.Job_Title}</CardTitle>
+              <p className="text-base">Job Id: {job?.id}</p>
+              <CardTitle className="text-pramiry">{job?.Job_Title}</CardTitle>
             </div>
           </div>
           <div className="text-base flex items-center gap-x-2">

@@ -43,7 +43,6 @@ const OnBoardingSheet = () => {
       <SheetComponent
         {...formSheetData}
         onSubmit={handleSubmit}
-        width="860px"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         contentClassName="custom-sheet-width"

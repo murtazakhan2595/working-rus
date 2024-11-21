@@ -128,11 +128,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
                   employeeData?.profile_picture
                 }
                 alt={`${employeeData?.first_name} ${employeeData?.last_name}`}
-                fallbackText={`${employeeData?.first_name} ${employeeData?.last_name}`
-                  ?.split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-                classNam={`w-30 h-30`}
+                fallbackText={employeeData?.first_name[0]}
               />
               <div>
                 <p className="text-base text-black">
