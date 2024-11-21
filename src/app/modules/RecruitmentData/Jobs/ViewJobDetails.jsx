@@ -27,7 +27,6 @@ const ViewJobDetails = ({ job, onClose, isOpen, setIsOpen ,fetchJobPosts, posts 
   const [viewJob, setViewJob] = useState(job)
   const [currentJob, setCurrentJob] = useState(posts?.results?.findIndex((p) => p.id === job?.id)); 
   const [isLoading, setIsLoading] = useState(false);
-
   const handleEditClick = () => {
     setShowEdit(true);
     // setIsOpen(false)
@@ -65,7 +64,7 @@ const ViewJobDetails = ({ job, onClose, isOpen, setIsOpen ,fetchJobPosts, posts 
       {...formSheetData}
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      
+      width="568px"
     >
       <div className="">
         {isLoading ? (

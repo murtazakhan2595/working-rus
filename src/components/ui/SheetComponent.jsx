@@ -27,12 +27,7 @@ const SheetComponent = ({
   formData,
   onSubmit,
   triggerText,
-  width = {
-    base: "95vw",
-    sm: "90vw",
-    md: "80vw",
-    lg: "100%"
-  },
+  width = '100%',
   isOpen,
   setIsOpen,
   children,

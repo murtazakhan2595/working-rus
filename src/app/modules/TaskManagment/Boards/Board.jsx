@@ -365,7 +365,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
       {...formSheetData}
       isOpen={openCreateCard}
       setIsOpen={setOpenCreateCard}
-    
+      width="568px"
       >
           <CreateCard
           onClose={() => {
