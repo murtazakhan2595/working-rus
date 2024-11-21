@@ -310,7 +310,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
       onDrop={handleDrop}
     >
       <div className="flex flex-col ">
-        <header className="flex gap-5 justify-between pl-5 w-full">
+        <header className="flex gap-5 justify-between items-center pl-5 w-full">
           <div className="flex gap-4">
             <h2 className="flex gap-2 text-base font-bold text-zinc-800">
               <div
