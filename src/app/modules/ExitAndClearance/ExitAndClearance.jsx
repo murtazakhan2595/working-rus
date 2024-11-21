@@ -96,14 +96,14 @@ const ExitAndClearance = ({ userProfile, departments }) => {
         ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
 
         exit_category: "resignation",
-        status_resignation: ["exit interview"],
+        status_resignation: "exit interview",
       });
     } else if (tab === "Terminated") {
       setFilterData({
         ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
 
         exit_category: "termination",
-        status_termination: ["exit interview"],
+        status_termination: "exit interview",
       });
     }
     setActiveTab(tab);
