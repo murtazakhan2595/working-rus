@@ -16,16 +16,14 @@ export const SheetCardExtension = ({ title, children }) => {
   );
 };
 
-export const DetailBox = ({ label, value }) => {
+export const DetailBox = ({ label, value, className="mt-3" }) => {
   return (
-    <div>
-      <div className="flex gap-4 items-center mt-4 max-w-full">
+      <div className={`flex gap-4 items-center max-w-full ${className}`}>
         <div className="flex flex-col leading-none min-w-[88px] text-neutral-900 w-[132px]">
           <div>{label}</div>
         </div>
         <div className="flex-1 shrink leading-5 basis-0">{value ?? "N/A"}</div>
       </div>
-    </div>
   );
 };
 
