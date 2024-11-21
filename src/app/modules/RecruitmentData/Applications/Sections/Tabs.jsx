@@ -53,7 +53,7 @@ export const JobDetails = ({ job, handleJobChange, jobs }) => {
               <IoCalendarOutline className="text-lg" />
               {`${formattedUpdatedAt} - ${formattedDeadline} `}
             </div>
-              <div className="">
+              <div className="flex gap-3">
                 <JobStatusLabel
                   label={job.status === "live" ? "Open" : "Close"}
                   type="status"
@@ -75,7 +75,7 @@ export const JobDetails = ({ job, handleJobChange, jobs }) => {
                   type="jobType"
                 />
               </div>
-              <div className="flex justify-start w-full gap-2">
+                <div className="flex justify-start w-full gap-3">
                 <Button
                   disabled={jobs[0]?.id === job?.id}
                   onClick={() => handleJobChange(true)}
