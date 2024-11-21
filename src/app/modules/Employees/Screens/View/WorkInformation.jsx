@@ -55,9 +55,9 @@ const WorkInformation = ({
       <Card>
         <CardHeader>
           <div className="flex justify-between">
-            <CardTitle>Job Details</CardTitle>
+            <CardTitle className="text-primary">Job Details</CardTitle>
             {isEditable && (
-              <div className="flex gap-4 items-center">
+              <div className="flex items-center gap-4">
                 <div
                   onClick={() => {
                     setShowPersonalDetailCard(true);
@@ -70,14 +70,15 @@ const WorkInformation = ({
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3 w-full">
+          <div className="grid w-full grid-cols-1 gap-4 mb-4 md:grid-cols-3">
             {workInformation.map((info, index) => (
               <div className="flex w-full gap-3" key={index}>
-                <div className="w-1/2 1100:w-[35%] text-base text-muted-foreground">
+                <div className="text-sm xl:text-base lg:text-base md:text-sm text-muted-foreground">
                   {info.title}
                 </div>
-                <div className="w-1/2 1100:w-[65%]text-base text-black"
-                  style={{ overflowWrap: "break-word" }}>{info.data || "N/A"}</div>
+                <div className="text-sm text-black break-all xl:break-normal lg:break-all md:break-all xl:text-base lg:text-base md:text-sm">
+                  {info.data || "N/A"}
+                </div>
               </div>
             ))}
           </div>

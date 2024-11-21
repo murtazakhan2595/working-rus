@@ -66,7 +66,7 @@ const ContactInformation = ({
       <Card>
         <CardHeader>
           <div className="flex justify-between">
-            <CardTitle>Contact Information</CardTitle>
+            <CardTitle className="text-primary">Contact Information</CardTitle>
             {isEditable && (
               <div
                 className="flex items-center gap-4"
@@ -80,7 +80,7 @@ const ContactInformation = ({
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3 w-full">
+          <div className="grid w-full grid-rows-1 gap-4 mb-4">
             {contactInformation.map((contactInfo, index) => (
               <div key={index}>
                 <div className="text-[#111827] text-sm font-semibold whitespace-nowrap py-3">
@@ -91,10 +91,10 @@ const ContactInformation = ({
                     contactInfo.fields &&
                     contactInfo.fields.map((info, infoIndex) => (
                       <div className="flex w-full gap-3" key={infoIndex}>
-                        <div className="w-1/2 text-base text-muted-foreground">
+                        <div className="text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000">
                           {info.title}
                         </div>
-                        <div className="w-1/2 text-base text-black">
+                        <div className="text-sm text-black break-all xl:break-normal lg:break-all md:break-all xl:text-base lg:text-base md:text-sm">
                           {info.data || "N/A"}
                         </div>
                       </div>

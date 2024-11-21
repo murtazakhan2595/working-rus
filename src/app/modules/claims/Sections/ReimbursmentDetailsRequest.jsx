@@ -119,7 +119,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        width="600px"
+        
       >
         <Formik
           initialValues={claimRequest}
@@ -143,7 +143,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                   }}
                   placeholder="Select"
                 />
-                <div className="gap-4 flex items-center ">
+                <div className="flex items-center gap-4 ">
                   <div className="flex-1 space-y-2">
                     {/* <div>
                         <div>Amount</div>
@@ -198,12 +198,12 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                 />
 
                 <div className="h-[118px] flex-col justify-start  gap-2 inline-flex">
-                  <div className=" justify-center  gap-12">
-                    <div className=" flex-col justify-start  inline-flex text-neutral-800 text-sm font-medium ">
+                  <div className="justify-center gap-12 ">
+                    <div className="inline-flex flex-col justify-start text-sm font-medium  text-neutral-800">
                       Attachments
                     </div>
                     <div className="flex flex-col gap-3">
-                      <div className="grow flex-col justify-start  inline-flex p-4 pr-5 border border-solid border-zinc-200 rounded-md">
+                      <div className="inline-flex flex-col justify-start p-4 pr-5 border border-solid rounded-md grow border-zinc-200">
                         <div className="flex items-center">
                           <div>
                             <div className="flex items-center text-[#8b8d98] text-sm  gap-2">
@@ -255,7 +255,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                   </div>
                 </div>
               </SheetCardExtension>
-              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
+              <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
                 <Button
                   variant="outline"
                   type="button"

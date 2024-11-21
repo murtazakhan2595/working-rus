@@ -40,7 +40,7 @@ const ViewBoardDetails = ({
       {...formSheetData}
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      width="500px"
+      
     >
       {isEditMode && project && (
         <CreateEditProject
@@ -61,7 +61,7 @@ const ViewBoardDetails = ({
           description="Are you sure you want to delete this Project? This action is irreversible and will delete all tasks within."
         />
       )}
-      <div className="flex justify-between items-center gap-4">
+      <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <img
             src={project?.profile?.file}

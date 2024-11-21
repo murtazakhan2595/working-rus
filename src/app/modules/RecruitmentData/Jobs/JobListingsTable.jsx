@@ -14,6 +14,7 @@ import EmployeeNameInfo from "../../../../components/EmployeeNameInfo";
 import { PageLoader } from "../../../../components";
 import JobsActions from "./JobsActions";
 import ViewJobDetails from "./ViewJobDetails";
+import { JobStatusLabel } from "../../../../components/StatusLabel";
 
 export default function JobListingsTable({ posts, loading, fetchJobPosts }) {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -87,36 +88,30 @@ export default function JobListingsTable({ posts, loading, fetchJobPosts }) {
       dataField: "Work_type",
       text: "Work Type",
       formatter: (cell, row) => (
-        <Badge
-          variant="secondary"
-          className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full"
-        >
-          {getWorkType(row.Work_type)}
-        </Badge>
+        <JobStatusLabel
+          label={getWorkType(row.Work_type)}
+          type="workType"
+        />
       ),
     },
     {
       dataField: "Job_Type",
       text: "Job Type",
       formatter: (cell, row) => (
-        <Badge
-          variant="secondary"
-          className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full"
-        >
-          {getJobType(row.Job_Type)}
-        </Badge>
+        <JobStatusLabel
+          label={getJobType(row.Job_Type)}
+          type="jobType"
+        />
       ),
     },
     {
       dataField: "Employee_Type",
       text: "Employee Type",
       formatter: (cell, row) => (
-        <Badge
-          variant="secondary"
-          className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full"
-        >
-          {getEmployeeType(row.Employee_Type)}
-        </Badge>
+        <JobStatusLabel
+          label={getEmployeeType(row.Employee_Type)}
+          type="employeeType"
+        />
       ),
     },
     {

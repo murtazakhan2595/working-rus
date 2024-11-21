@@ -5,7 +5,7 @@ import { MoreHorizontal } from "lucide-react";
 import { Button } from "components/ui/button";
 import { deleteJob } from "app/hooks/recruitment";
 import AlertDialogue from "components/ui/AlertDialogue";
-import SheetComponent from "components/ui/SheetComponent";
+
 import Dialogue from "components/Dialogue";
 
 const JobsActions = ({ row, fetchJobPosts, isEdit= false }) => {

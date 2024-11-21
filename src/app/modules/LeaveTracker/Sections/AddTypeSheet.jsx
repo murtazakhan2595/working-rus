@@ -110,7 +110,7 @@ const AddTypeSheet = ({
           contentClassName="custom-sheet-width"
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          width="500px"
+         
         >
           {type && !isEdit ? (
             <ViewComponent
@@ -200,7 +200,7 @@ const ComponentForm = ({
             />
             <Label htmlFor="status">Activate</Label>
           </div>
-          <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
+          <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
             <Button
               variant="outline"
               size="lg"
@@ -279,10 +279,10 @@ const ViewComponent = ({ type, handleTypeDelete, setIsEdit }) => {
             <div className="flex items-start mt-3 max-w-full w-[285px]">
               <div className="flex flex-col pr-20 min-w-[240px] w-[285px]">
                 {details.map((detail, index) => (
-                  <div className="flex gap-4 items-start w-full h-5  mb-4">
-                    <div className=" text-sm">{detail.label}</div>
+                  <div className="flex items-start w-full h-5 gap-4 mb-4">
+                    <div className="text-sm ">{detail.label}</div>
                     <div className="flex flex-col items-start">
-                      <div className="text-gray-900 text-sm">
+                      <div className="text-sm text-gray-900">
                         {detail.value}
                       </div>
                     </div>

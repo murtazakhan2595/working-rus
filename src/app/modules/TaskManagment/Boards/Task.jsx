@@ -148,7 +148,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
 
   return (
     <Card
-      className="flex flex-col p-3 mt-6 w-full bg-white rounded shadow cursor-pointer"
+      className="flex flex-col w-full p-3 mt-6 bg-white rounded-lg shadow cursor-pointer"
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
     >
@@ -157,7 +157,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
         {...formSheetEditData}
         isOpen={isEditCardOpen}
         setIsOpen={setIsEditCardOpen}
-        width="500px"
+       
         contentClassName="custom-sheet-width"
         >
         <EditCard
@@ -211,13 +211,13 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
         </p>
       </div>
       <footer className="flex justify-between py-2">
-        <div className="flex gap-1 items-center">
+        <div className="flex items-center gap-1">
           <div className="flex -space-x-2.5">
             {/* Render MembersList component */}
             <MembersList members={task?.assigned_to} />
           </div>
         </div>
-        <div className="flex gap-2 items-center text-zinc-600">
+        <div className="flex items-center gap-2 text-zinc-600">
           {task?.end_date && (
             <div
               className={`flex gap-1 justify-center items-center text-sm p-2 rounded`}
@@ -246,7 +246,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
          {...formSheetData}
          isOpen={isTaskDetailOpen}
          setIsOpen={setIsTaskDetailOpen}
-         width="500px"
+       
         >
         <TaskDetail
           task={task} // Pass task data as props to TaskDetail

@@ -161,28 +161,58 @@ export const StatusIcon = ({ status }) => {
 };
 
 
-export const JobStatusLabel = ({ status, value }) => {
-  if (!status) {
-    return "";
-  }
+export const JobStatusLabel = ({ label, type }) => {
+  if (!label) return "";
 
-  let className = "";
-  
-  // Set the class based on the status prop
-  if (status === "live") {
-    className = " text-white";
-  } else if (status === "closed") {
-    className = "bg-red-200 text-red-800";
-  } else {
-    className = "bg-neutral-300 text-neutral-1100";
-  }
+  const getStylesByType = () => {
+    switch (type) {
+      case 'status':
+        return {
+          bgColor: label.toLowerCase() === "open" ? "bg-green-100/50" : "bg-red-100/50",
+          dotColor: label.toLowerCase() === "open" ? "before:bg-green-500" : "before:bg-red-500",
+          textColor: label.toLowerCase() === "open" ? "text-green-700" : "text-red-700"
+        };
+      case 'employeeType':
+        return {
+          bgColor: "bg-blue-100/50",
+          dotColor: "before:bg-blue-500",
+          textColor: "text-blue-700"
+        };
+      case 'workType':
+        return {
+          bgColor: "bg-purple-100/50",
+          dotColor: "before:bg-purple-500",
+          textColor: "text-purple-700"
+        };
+      case 'workLocation':
+        return {
+          bgColor: "bg-orange-100/50",
+          dotColor: "before:bg-orange-500",
+          textColor: "text-orange-700"
+        };
+      case 'jobType':
+        return {
+          bgColor: "bg-emerald-100/50",
+          dotColor: "before:bg-emerald-500",
+          textColor: "text-emerald-700"
+        };
+      default:
+        return {
+          bgColor: "bg-gray-100/50",
+          dotColor: "before:bg-gray-500",
+          textColor: "text-gray-700"
+        };
+    }
+  };
+
+  const { bgColor, dotColor, textColor } = getStylesByType();
 
   return (
     <Badge
-     variant="secondary"
-     className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full"
+      variant="secondary"
+      className={`relative pl-5 ${bgColor} ${textColor} before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full ${dotColor}`}
     >
-      {value ?? status}
+      {label}
     </Badge>
   );
 };

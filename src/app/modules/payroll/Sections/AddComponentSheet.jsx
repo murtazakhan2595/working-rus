@@ -123,7 +123,7 @@ const AddComponentSheet = ({
           contentClassName="custom-sheet-width"
           isOpen={isOpen}
           setIsOpen={handleOpenState}
-          width="500px"
+         
         >
           {component && !isEdit ? (
             <ViewComponent
@@ -228,7 +228,7 @@ const ComponentForm = ({
                 <div className="pt-4">
                   <div>Amount </div>
                 </div>
-                <div className="flex space-x-4 items-center">
+                <div className="flex items-center space-x-4">
                   <div className="text-zinc-900">
                     {props.values.amounts_types === "fixed"
                       ? "Flat Amount"
@@ -262,7 +262,7 @@ const ComponentForm = ({
               <Label htmlFor="is_active">Activate</Label>
             </div>
           </>
-          <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
+          <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
             <Button
               variant="outline"
               size="lg"
@@ -338,14 +338,14 @@ const ViewComponent = ({ component, handleComponentDelete, setIsEdit }) => {
       <section className="flex flex-col pt-14 ">
         <Card className="mt-0">
           <CardContent className="p-6">
-            <div className="w-full font-semibold   ">Component Details</div>
+            <div className="w-full font-semibold ">Component Details</div>
             <div className="flex items-start mt-3 max-w-full w-[285px]">
               <div className="flex flex-col pr-20 min-w-[240px] w-[285px]">
                 {details.map((detail, index) => (
-                  <div className="flex gap-4 items-start w-full h-5  mb-4">
-                    <div className=" text-sm">{detail.label}</div>
+                  <div className="flex items-start w-full h-5 gap-4 mb-4">
+                    <div className="text-sm ">{detail.label}</div>
                     <div className="flex flex-col items-start">
-                      <div className="text-gray-900 text-sm">
+                      <div className="text-sm text-gray-900">
                         {detail.value}
                       </div>
                     </div>

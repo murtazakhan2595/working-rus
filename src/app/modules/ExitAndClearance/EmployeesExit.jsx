@@ -73,8 +73,8 @@
 //               <TabsTrigger
 //                 key={tab.value}
 //                 value={tab.value}
-//                 className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
-//               >
+//                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+  //               >
 //                 {tab.label}
 //               </TabsTrigger>
 //             ))}
@@ -133,7 +133,7 @@
 //                   isTermination={true}
 //                 />
 //               ) : (
-//                 <div className="w-full h-96 bg-white flex items-center justify-center text-3xl text-gray-600">
+//                 <div className="flex items-center justify-center w-full text-3xl text-gray-600 bg-white h-96">
 //                   <div>No Termination Letter</div>
 //                 </div>
 //               )}

@@ -263,6 +263,24 @@ const TaskDetail = ({ task, onClose, employees, handleDelete }) => {
 
   return (
     <>
+      {/* {isEditCardOpen && (
+        <SheetComponent
+          {...formSheetData}
+          isOpen={isEditCardOpen}
+          setIsOpen={setIsEditCardOpen}
+          
+          contentClassName="custom-sheet-width"
+        >
+          <EditCard
+            cardId={task?.id}
+            projectId={task?.project_id}
+            onClose={() => {
+              setIsEditCardOpen(false);
+              onClose();
+            }}
+          />
+        </SheetComponent>
+      )} */}
       {
         isEditCardOpen && (
           <EditCard

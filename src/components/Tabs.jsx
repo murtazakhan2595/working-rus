@@ -11,7 +11,7 @@
 //   };
 
 //   return (
-//     <div className="flex justify-between items-center pr-3">
+//     <div className="flex items-center justify-between pr-3">
 //       <div className="flex space-x-4">
 //         {tabs.map((tab) => (
 //           <button
@@ -31,7 +31,7 @@
 //       {buttonLabel &&
 //         <div className="flex items-center gap-x-3">
 //           <div className=" text-[#47484C] text-[17px]">{buttonLabel}</div>
-//           <Link to="/job-post" className="p-2 rounded-md bg-black" style={{ fontSize: '12px' }}><FaPlus className="text-white" /></Link>
+//           <Link to="/job-post" className="p-2 bg-black rounded-md" style={{ fontSize: '12px' }}><FaPlus className="text-white" /></Link>
 //         </div>
 //       }
 
@@ -60,8 +60,8 @@ const TabComponent = ({ tabsData, activeTab, onValueChange, children }) => {
           <TabsTrigger
             key={tab.value}
             value={tab.value}
-            className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
-          >
+            className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+               >
             {tab.label}
           </TabsTrigger>
         ))}

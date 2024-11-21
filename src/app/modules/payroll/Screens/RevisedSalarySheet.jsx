@@ -94,7 +94,7 @@ export default function RevisedSalarySheet({
           contentClassName="custom-sheet-width"
           isOpen={isOpen}
           setIsOpen={handleSheetClose}
-          width="500px"
+          
         >
           {formState === "view" ? (
             <RevisedSalaryView
@@ -199,17 +199,17 @@ const RevisedSalaryView = ({
             </div>
             <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
               <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
-                <div className="text-gray-900 text-sm font-semibold whitespace-nowrap">
+                <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
                   Details
                 </div>
-                <div className="flex mt-3 w-full">
+                <div className="flex w-full mt-3">
                   <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
                     {detailItems.map((item, index) => (
-                      <div className="flex gap-4 items-center mt-4 max-w-full">
+                      <div className="flex items-center max-w-full gap-4 mt-4">
                         <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
                           <div>{item.label}</div>
                         </div>
-                        <div className="flex-1 shrink leading-5 basis-0 text-neutral-800">
+                        <div className="flex-1 leading-5 shrink basis-0 text-neutral-800">
                           {item.value}
                         </div>
                       </div>
@@ -218,7 +218,7 @@ const RevisedSalaryView = ({
                 </div>
               </section>
               <div className="h-[45px] px-6 pt-[13px] pb-3 bg-zinc-100/50 border-t border-zinc-200 justify-start items-center inline-flex">
-                <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                <div className="inline-flex flex-col items-start justify-start grow shrink basis-0">
                   <div>
                     <span className="text-[#8b8d98] text-xs font-medium  leading-tight">
                       Created on:
@@ -234,16 +234,16 @@ const RevisedSalaryView = ({
             </div>
             <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200  text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
               <section className="flex flex-col justify-center p-6 text-sm bg-white max-w-[479px]">
-                <div className="text-gray-900 text-sm font-semibold whitespace-nowrap">
+                <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
                   Status
                 </div>
-                <div className="flex mt-3 w-full">
+                <div className="flex w-full mt-3">
                   <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
-                    <div className="flex gap-4 items-center mt-4 max-w-full">
+                    <div className="flex items-center max-w-full gap-4 mt-4">
                       <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
                         <div>Revision Status</div>
                       </div>
-                      <div className="flex-1 shrink leading-5 basis-0 text-neutral-800">
+                      <div className="flex-1 leading-5 shrink basis-0 text-neutral-800">
                         <div className="flex items-center gap-2">
                           <div className="capitalize">
                             {revision?.revision_status?.toLowerCase()}
@@ -258,11 +258,11 @@ const RevisedSalaryView = ({
                         </div>
                       </div>
                     </div>
-                    <div className="flex gap-4 items-center mt-4 max-w-full">
+                    <div className="flex items-center max-w-full gap-4 mt-4">
                       <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
                         <div>Revision Letter</div>
                       </div>
-                      <div className="flex-1 shrink leading-5 basis-0 text-neutral-800">
+                      <div className="flex-1 leading-5 shrink basis-0 text-neutral-800">
                         <div className="flex items-center gap-2">
                           <span
                             className={`capitalize bg-${
@@ -302,7 +302,7 @@ const RevisedSalaryView = ({
                 </div>
               </section>
               <div className="h-[45px] px-6 pt-[13px] pb-3 bg-zinc-100/50 border-t border-zinc-200 justify-start items-center inline-flex">
-                <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                <div className="inline-flex flex-col items-start justify-start grow shrink basis-0">
                   <div>
                     <span className="text-[#8b8d98] text-xs font-medium  leading-tight">
                       Updated on:
@@ -385,7 +385,7 @@ const RevisedSalaryForm = ({
                       <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                         <div className="text-zinc-950">Details</div>
                       </div>
-                      <div className="space-y-2 mt-2">
+                      <div className="mt-2 space-y-2">
                         <TextInput
                           name={"new_salary"}
                           error={props.errors?.new_salary}

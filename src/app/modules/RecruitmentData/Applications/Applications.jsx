@@ -47,7 +47,7 @@ const Applications = () => {
 
   const [jobs, setJobs] = useState(null)
   const [currentJob, setCurrentJob] = useState("");
-
+  const [selectedApplicationStatus, setSelectedApplicationStatus] = useState(null);
 
   const onPageChange = (name, value) => {
     const pageOptions = options;
@@ -115,10 +115,12 @@ const Applications = () => {
       console.error("Error updating application status:", error);
     }
   };
+  
 
   console.log(jobs, "JOBS DATA IS HERE")
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
+    if (filterName === "application_status") setSelectedApplicationStatus(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (!filterValue) {
@@ -162,7 +164,7 @@ const Applications = () => {
         {...formSheetData}
          isOpen={isViewApplicationDetailOpen}
          setIsOpen={setIsViewApplicationDetailOpen}
-         width="568px"
+         
         >
         <ViewApplicantDetails
           applicantIndex={viewApplicationDetails?.index}
@@ -177,8 +179,8 @@ const Applications = () => {
 
       <Header />
       <Stats stats={statsData} />
-
-      <Tabs
+      <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+      <Tabs className="flex justify-center mb-4"
         onTabChange={setActiveTab}
         activeTab={activeTab}
         activeJobId={jobIdForFilter}
@@ -191,6 +193,7 @@ const Applications = () => {
           handleFilterChange("job_id", jobId);
         }}
       />
+      <div className="flex items-center gap-x-2">
        <FilterInput
             filters={[
               {
@@ -203,6 +206,7 @@ const Applications = () => {
                 option: dropdownOptions,
                 name: "application_status",
                 placeholder: "Status",
+                values: selectedApplicationStatus
               },
             ]}
             onChange={handleFilterChange}
@@ -217,15 +221,14 @@ const Applications = () => {
               handleFilterChange(field, value);
             }}
           />
-      {
-        activeTab === 1 && (
-          <Card className="p-4 mb-4">
-             <JobDetails job={jobs[currentJob]} jobIcon={jobIcon} handleJobChange={handleJobChange} jobs={jobs}/>
-          </Card>
-        )
-      }
-     
-         
+          </div>
+     </div>
+       
+          {activeTab === 1 && (
+            <Card className="p-4 mb-4">
+              <JobDetails job={jobs[currentJob]} jobIcon={jobIcon} handleJobChange={handleJobChange} jobs={jobs}/>
+            </Card>
+          )}
        
         
           {isLoading ? (

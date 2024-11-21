@@ -146,7 +146,7 @@ const ReimbursmentDetailsSheet = ({
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        width="500px"
+        
       >
         <EmployeeDataInfo
           name={claimRequest.full_name}
@@ -160,12 +160,12 @@ const ReimbursmentDetailsSheet = ({
           )}`}
           dateTitle="Create on:"
         >
-          <div className="flex mt-3 w-full">
+          <div className="flex w-full mt-3">
             <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
               {detailItems.map((item, index) => (
                 <DetailBox label={item?.label} value={item?.value} />
               ))}
-              <div className="flex gap-4 items-center mt-4 max-w-full">
+              <div className="flex items-center max-w-full gap-4 mt-4">
                 <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
                   <div className="text-neutral-900">Attachment</div>
                 </div>
@@ -187,7 +187,7 @@ const ReimbursmentDetailsSheet = ({
         <DetailCard detailCardTitle="Approval Status">
           <div className="flex absolute -bottom-0.5 z-0 justify-center items-start w-6 h-[150px] left-[5px] min-h-[150px]" />
           {approvalSteps.map((step, index) => (
-            <div className="flex z-0 gap-10 justify-between items-center w-full">
+            <div className="z-0 flex items-center justify-between w-full gap-10">
               <div className="flex gap-4 self-stretch my-auto w-[194px]">
                 <div className="flex justify-center items-center px-1 bg-white h-[33px] w-[33px]">
                   <img
@@ -210,7 +210,7 @@ const ReimbursmentDetailsSheet = ({
           ))}
         </DetailCard>
         {!isMyClaims && hasPendingApprovalForUser() && (
-          <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
+          <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
             <Button
               variant="outline"
               size="lg"
