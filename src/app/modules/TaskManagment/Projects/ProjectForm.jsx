@@ -14,6 +14,7 @@ import { Button } from "components/ui/button";
 import { ProjectStatusList } from "data/Data";
 import { ImageInput } from "components/form-control";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
+import { SheetCardExtension } from "components/SheetCardExtension";
 
 const ProjectForm = ({
   employees,
@@ -102,8 +103,6 @@ const ProjectForm = ({
     <>
     {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
       <div
-        side="right"
-        className="w-full p-0 "
         open={isOpen}
         onOpenChange={setIsOpen}
       >
@@ -125,10 +124,8 @@ const ProjectForm = ({
                 {(props) => (
                   <form onSubmit={props.handleSubmit}>
                     <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
-                      <div className="font-[inter] flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
-                        <div className="flex h-[7px] flex-shrink-0 items-end px-px">
-                          <div className="text-zinc-950">Project Details</div>
-                        </div>
+
+                        <SheetCardExtension title="Project Details">
                         <div className="space-y-2">
                           <ImageInput
                             name={"profile"}
@@ -155,7 +152,7 @@ const ProjectForm = ({
                             onChange={(field, value) => {
                               props.handleChange(field)(value);
                             }}
-                          />
+                          /> 
                         </div>
                         <div className="space-y-2">
                           <TextAreaInput
@@ -174,17 +171,13 @@ const ProjectForm = ({
                             Give important details regarding the new project
                           </p>
                         </div>
+                    </SheetCardExtension>
+
                       </div>
-                    </div>
 
                     {/* Color Selection */}
-                    <div
-                      className={`flex w-full flex-col rounded-lg pt-2.5 mt-4`}
-                    >
-                      <div className="font-[inter] flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
-                        <div className="flex h-[7px] flex-shrink-0 items-end px-px">
-                          <div className="text-zinc-950">Add To Project</div>
-                        </div>
+ 
+                        <SheetCardExtension title="Add to Project" className="mt-4">
 
                         <div className="flex items-center gap-10">
                           <div className="space-y-2">
@@ -270,7 +263,7 @@ const ProjectForm = ({
 
                         <div className="flex items-center gap-4">
                           <div>
-                            <span className="label text-[14px]">Status</span>
+                            <span className="label text-sm">Status</span>
                           </div>
                           <SelectComponent
                             name="status"
@@ -284,8 +277,8 @@ const ProjectForm = ({
                             }}
                           />
                         </div>
-                      </div>
-                    </div>
+                        </SheetCardExtension>
+
 
                     <div className="p-6 border-t border-gray-200 ">
                       <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">

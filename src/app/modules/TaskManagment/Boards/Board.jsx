@@ -48,9 +48,6 @@ const Board = ({ employees }) => {
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
 
   const handleFilterChange = (filterName, filterValue) => {
-    // onPageChange("page", 1);
-    console.log("filterName", filterName);
-    console.log("filterValue", filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
