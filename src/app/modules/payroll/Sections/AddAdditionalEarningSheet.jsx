@@ -85,7 +85,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId, isEos }) => {
         <SheetComponent
           {...formSheetData}
           onSubmit={handleSubmit}
-          width="500px"
+         
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           contentClassName="custom-sheet-width"
@@ -154,7 +154,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId, isEos }) => {
                         <div className="pt-4">
                           <div>Amount </div>
                         </div>
-                        <div className="flex space-x-4 items-center">
+                        <div className="flex items-center space-x-4">
                           <div className="text-zinc-900">
                             {console.log("AMOUNTS", props.values)}
                             {props.values.amount_type === "fixed"
@@ -201,7 +201,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId, isEos }) => {
                   </>
                 )}
 
-                <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
+                <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
                   <Button
                     variant="outline"
                     size="lg"

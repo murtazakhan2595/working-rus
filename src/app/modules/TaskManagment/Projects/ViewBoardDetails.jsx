@@ -47,7 +47,7 @@ const ViewBoardDetails = ({
       {...formSheetData}
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      width="500px"
+      
     >
       {isEditMode && project && (
         <CreateEditProject
@@ -68,7 +68,7 @@ const ViewBoardDetails = ({
           description="Are you sure you want to delete this Project? This action is irreversible and will delete all tasks within."
         />
       )}
-      <div className="flex justify-between items-center gap-4">
+      <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <img
             src={project?.profile?.file}
@@ -97,16 +97,16 @@ const ViewBoardDetails = ({
           </div>
         </div>
 
-        <div className="bg-gray-500 p-2 flex items-start justify-between rounded-b-md">
+        <div className="flex items-start justify-between p-2 bg-gray-500 rounded-b-md">
           <p className="text-sm text-neutral-1100">
             Created On: {moment(project?.created_at)?.format("MMM D, YYYY")}
           </p>
         </div>
       </div>
 
-      <div className="mt-4 border border-gray-500 rounded-md p-4 flex flex-col gap-4">
+      <div className="flex flex-col gap-4 p-4 mt-4 border border-gray-500 rounded-md">
         <p className="text-sm font-semibold">Project Members</p>
-        <div className="text-sm flex gap-9">
+        <div className="flex text-sm gap-9">
           <div className="space-y-2">
             <span className="text-sm text-neutral-1100">Colors: </span>
           </div>
@@ -185,7 +185,7 @@ const ViewBoardDetails = ({
                   key={index}
                   className={`w-[35px] h-[35px] p-3 ${getRandomColor()} rounded-[100px] justify-center items-center gap-2.5 inline-flex`}
                 >
-                  <div className="text-zinc-100 text-sm font-normal ">
+                  <div className="text-sm font-normal text-zinc-100 ">
                     HP
                   </div>
                 </div>

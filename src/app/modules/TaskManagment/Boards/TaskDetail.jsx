@@ -272,7 +272,7 @@ const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
           {...formSheetData}
           isOpen={isEditCardOpen}
           setIsOpen={setIsEditCardOpen}
-          width="500px"
+          
           contentClassName="custom-sheet-width"
         >
           <EditCard

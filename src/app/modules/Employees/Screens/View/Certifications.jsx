@@ -38,7 +38,7 @@ const Certifications = ({ isEditable, employeeId }) => {
       <Card>
         <CardHeader>
           <div className="flex justify-between">
-            <CardTitle>Certification and License</CardTitle>
+            <CardTitle className="text-primary">Certification and License</CardTitle>
             {isEditable && (
               <div
                 className="flex items-center gap-4"
@@ -52,14 +52,14 @@ const Certifications = ({ isEditable, employeeId }) => {
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid grid-cols-1 gap-4 mb-4 w-full">
+          <div className="grid w-full grid-cols-1 gap-4 mb-4">
             {certifications?.map((cer, index) => (
               <div
                 key={index}
-                className="w-full flex flex-wrap justify-between mb-7"
+                className="flex flex-wrap justify-between w-full mb-7"
               >
                 <div>
-                  <div className="text-[#111827] font-semibold whitespace-nowrap">
+                  <div className="text-base font-semibold text-black whitespace-nowrap">
                     {cer.certification_institute || "N/A"}
                   </div>
                   <div className="text-base text-black">
@@ -75,7 +75,7 @@ const Certifications = ({ isEditable, employeeId }) => {
                   {cer.certification_body[0]?.file && (
                     <a
                       download={cer.certification_body[0]?.name}
-                      className="text-sm flex gap-2 items-center no-underline"
+                      className="flex items-center gap-2 text-sm no-underline"
                       href={cer?.certification_body[0]?.file}
                     >
                       Certification <FiDownload />

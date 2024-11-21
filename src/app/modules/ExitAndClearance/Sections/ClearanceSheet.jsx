@@ -58,7 +58,7 @@ const ClearanceSheet = ({
       contentClassName="custom-sheet-width"
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      width="500px"
+      
     >
       <Formik
         initialValues={{
@@ -94,7 +94,7 @@ const ClearanceSheet = ({
                   required={true}
                   placeholder="Pick a date"
                 />
-                <div className="gap-4 flex items-center ">
+                <div className="flex items-center gap-4 ">
                   <div className="flex-1 space-y-2">
                     <TextInput
                       name={"remaining_salary"}
@@ -120,7 +120,7 @@ const ClearanceSheet = ({
                     />
                   </div>
                 </div>
-                <div className="gap-4 flex items-center ">
+                <div className="flex items-center gap-4 ">
                   <div className="flex-1 space-y-2">
                     <TextInput
                       name={"total_deductions"}
@@ -146,7 +146,7 @@ const ClearanceSheet = ({
                     />
                   </div>
                 </div>
-                <div className="gap-4 flex items-center ">
+                <div className="flex items-center gap-4 ">
                   <div className="flex-1 space-y-2">
                     <TextInput
                       name={"final_amount"}
@@ -174,7 +174,7 @@ const ClearanceSheet = ({
                 />
               </div>
             </div>
-            <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
+            <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
               <Button
                 variant="outline"
                 size="lg"

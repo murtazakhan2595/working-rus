@@ -149,15 +149,15 @@ const ExitAndClearance = ({ userProfile, departments }) => {
         onValueChange={handleTabChange}
         value={activeTab}
       >
-        <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
-          <TabsList className="flex justify-center mb-4">
+        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+          <TabsList className="flex items-center justify-center mb-4">
             {["Resignations", "Terminations", "Resigned", "Terminated"].map(
               (tab) => (
                 <TabsTrigger
                   key={tab}
                   value={tab}
                   className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-                >
+                  >
                   {tab}
                 </TabsTrigger>
               )
