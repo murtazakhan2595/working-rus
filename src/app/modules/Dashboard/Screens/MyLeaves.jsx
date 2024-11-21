@@ -38,6 +38,9 @@ const MyLeaves = ({ userProfile }) => {
     employee_id: userProfile.id,
   });
   const [leaveTypesData, setLeaveTypesData] = useState([]);
+  const [page, setPage] = useState(1);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedLeaveType, setSelectedLeaveType] = useState("");
 
   const fetchLeaveTransaction = async () => {
     setIsLeaveTransactionLoading(true);
@@ -68,7 +71,11 @@ const MyLeaves = ({ userProfile }) => {
   useEffect(() => {
     fetchData();
   }, []);
+  
   const handleFilterChange = (filterName, filterValue) => {
+    setPage(1);
+    if (filterName === "status") setSelectedStatus(filterValue);
+    if (filterName === "leave_component_id") setSelectedLeaveType(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
 
@@ -95,6 +102,8 @@ const MyLeaves = ({ userProfile }) => {
       return updatedFilters;
     });
   };
+ 
+
 
   return (
     <>
@@ -113,16 +122,20 @@ const MyLeaves = ({ userProfile }) => {
                     name: "status",
                     width: "max-w-[130px]",
                     placeholder: "Status",
+                    values: selectedStatus,
+                    value: selectedStatus
                   },
                   {
                     type: "select-two",
-                    width: "max-w-[130px]",
+                    width: "max-w-[145px]",
                     option: leaveTypesData.map((leave) => ({
                       value: leave.id,
                       label: leave.name,
                     })),
                     name: "leave_component_id",
                     placeholder: "Leave Type",
+                    values: selectedLeaveType,
+                    value: selectedLeaveType
                   },
                 ]}
                 onChange={handleFilterChange}
@@ -145,7 +158,7 @@ const MyLeaves = ({ userProfile }) => {
               <TableBody>
                 <TableRow>
                   <TableCell colSpan={4}>
-                    <div className="w-full flex items-center justify-center">
+                    <div className="flex items-center justify-center w-full">
                       <PageLoader />
                     </div>
                   </TableCell>
