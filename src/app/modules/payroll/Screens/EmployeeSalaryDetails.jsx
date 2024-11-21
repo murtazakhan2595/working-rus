@@ -170,7 +170,6 @@ export default function EmployeeSalaryDetails() {
               : latest
           )
         : {};
-
     setLatestApprovedSalaryRevision(latestApprovedSalaryRevision);
 
     const payslips = await getPayslip({ filterData: { employee_payroll: id } });
@@ -190,7 +189,6 @@ export default function EmployeeSalaryDetails() {
   }, [id]);
 
   useEffect(() => {
-    console.log("payslips", payslips);
     if (payslips && payslips.results?.length > 0) {
       const currentYear = new Date().getFullYear(); // Get current year
       const monthNames = [
@@ -225,7 +223,6 @@ export default function EmployeeSalaryDetails() {
           monthToPayslipIdMap[month] = payslip.id;
         }
       });
-      console.log("uniqueMonths", uniqueMonths);
 
       // Convert the Set to an array of month objects for the dropdown
       const currentYearMonths = Array.from(uniqueMonths).map((monthIndex) => ({
@@ -233,7 +230,6 @@ export default function EmployeeSalaryDetails() {
         label: monthNames[monthIndex],
         payslipId: monthToPayslipIdMap[monthIndex],
       }));
-      console.log("currentYearMonths", currentYearMonths);
       setMonths(currentYearMonths);
     }
   }, [payslips]);
@@ -403,9 +399,9 @@ export default function EmployeeSalaryDetails() {
             payoutPeriod={payrollDetails?.payout_period}
             lastRevisedDate={latestApprovedSalaryRevision?.last_revised_date}
             previousCTC={
-              latestApprovedSalaryRevision?.previous_salary || totalEarnings
+              latestApprovedSalaryRevision?.previous_salary
             }
-            currentCTC={latestApprovedSalaryRevision?.new_salary}
+            currentCTC={latestApprovedSalaryRevision?.new_salary || totalEarnings}
           />
           <Card className="mb-4 h-fit">
             <CardHeader>

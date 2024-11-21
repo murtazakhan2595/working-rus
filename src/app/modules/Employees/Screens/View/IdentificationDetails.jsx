@@ -11,13 +11,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 const IdentificationDetails = ({ isEditable, employeeId }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   const [identificationDetails, setIdentificationDetails] = useState([]);
-  console.log(employeeId, "898989");
   const [loading, setLoading] = useState(false);
   const getDataByHooks = async () => {
     setLoading(true);
     try {
       const visaData = await getEmployeeVisaDetailData(employeeId);
-
       const identificationDetailsData = [
         ...[
           {
@@ -244,6 +242,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
   useEffect(() => {
     getDataByHooks();
   }, [employeeId]);
+
   return (
     <>
       <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2">

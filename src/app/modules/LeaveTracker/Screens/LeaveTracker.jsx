@@ -68,7 +68,7 @@ const LeaveTracker = ({ userProfile, departments }) => {
       filterData: { ...typesFilterData, employee_id_and_org: "null,true" },
     });
     if (leaveTypesData) {
-      setLeaveTypesData(leaveTypesData);
+      setLeaveTypesData(leaveTypesData?.results);
     }
     setIsTypesLoading(false);
   };

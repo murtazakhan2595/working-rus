@@ -72,7 +72,7 @@ export default function MyTasks() {
   const [value, setValue] = React.useState("");
 
   function mergeTasksWithProjects(tasks, projects) {
-    return tasks.map((task) => {
+    return tasks?.results?.map((task) => {
       const project = projects.find((proj) => proj.id === task.project_id);
       return {
         ...task,
@@ -86,8 +86,7 @@ export default function MyTasks() {
     try {
       const projectsData = await getAllProjects({ filterData }, userProfile);
       if (isMounted && projectsData.results) {
-        setAllProjects(projectsData.results);
-        // console.log(projectsData.results, "PROJECTS DATA");
+        setAllProjects(projectsData?.results?.results);
         fetchTasks(isMounted, projectsData.results);
       }
     } catch (error) {
@@ -130,9 +129,10 @@ export default function MyTasks() {
     };
   }, [filterData]);
 
+
   useEffect(() => {
     // console.log(AllProjects);
-    const dynamicOptions = AllProjects.map((project) => ({
+    const dynamicOptions = AllProjects?.map((project) => ({
       label: project.name,
       onClick: () => {
         setIsDropdownOpen(false);

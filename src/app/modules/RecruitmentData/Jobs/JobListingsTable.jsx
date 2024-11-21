@@ -15,49 +15,66 @@ import { PageLoader } from "../../../../components";
 import JobsActions from "./JobsActions";
 import ViewJobDetails from "./ViewJobDetails";
 
-export default function JobListingsTable({ posts, loading ,fetchJobPosts }) {
+export default function JobListingsTable({ posts, loading, fetchJobPosts }) {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [selectedJob, setSelectedJob] = useState(null)
-
+  const [selectedJob, setSelectedJob] = useState(null);
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
-
-
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
-    onRowClick: (row) => {
-      setSelectedJob({
-        isOpen: true,
-        JobId: row
-      })
-      // setIsSelectedLeaveSheet(true);
-      // setSelectedLeave(row);
-    },
+    // onRowClick: (row) => {
+    //   setSelectedJob({
+    //     isOpen: true,
+    //     JobId: row
+    //   })
+    // },
   };
 
   const columns = [
     {
       dataField: "id",
       text: "ID",
-      formatter: (cell, row) => <EmployeeID value={row.serial_number} />,
+      formatter: (cell, row) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => {
+            setSelectedJob({
+              isOpen: true,
+              jobId: row,
+            });
+          }}
+        >
+          <EmployeeID value={row.serial_number} />
+        </div>
+      ),
     },
     {
       dataField: "Job_Title",
       text: "Job Title",
       formatter: (cell, row) => (
-          <EmployeeNameInfo
-            className="relative"
-            name={row.Job_Title}
-            department={false}
-            position={getJobType(row.Job_Type)}
-            showBadge={true}
-            row={row}
-          />
+        <div
+        className="cursor-pointer"
+        onClick={() => {
+          setSelectedJob({
+            isOpen: true,
+            jobId: row,
+          });
+        }}
+      >
+        <EmployeeNameInfo
+          className="relative"
+          name={row.Job_Title}
+          department={false}
+          // position={getJobType(row.Job_Type)}
+          showBadge={true}
+          row={row}
+        />
+        </div>
       ),
     },
     {
@@ -105,16 +122,14 @@ export default function JobListingsTable({ posts, loading ,fetchJobPosts }) {
     {
       dataField: "location",
       text: "Job Location",
-      formatter: (cell, row) => (
-        <Badge variant="outline">{row.location}</Badge>
-      ),
+      formatter: (cell, row) => <Badge variant="outline">{row.location}</Badge>,
     },
     {
-      text:"Action",
-      formatter: (cell, row)=>(
-        <JobsActions row={row} fetchJobPosts={fetchJobPosts}/>
-      )
-    }
+      text: "Action",
+      formatter: (cell, row) => (
+        <JobsActions row={row} fetchJobPosts={fetchJobPosts} />
+      ),
+    },
   ];
 
   return (
@@ -134,17 +149,15 @@ export default function JobListingsTable({ posts, loading ,fetchJobPosts }) {
           />
         )}
       </CardContent>
-      {
-        selectedJob?.isOpen && (
-          <ViewJobDetails
-            isOpen={selectedJob?.isOpen}
-            setIsOpen={()=> setSelectedJob(null)}
-            job={selectedJob?.JobId}
-            fetchJobPosts={fetchJobPosts}
-            posts={posts}
-          />
-        )
-      }
+      {selectedJob?.isOpen && (
+        <ViewJobDetails
+          isOpen={selectedJob?.isOpen}
+          setIsOpen={() => setSelectedJob(null)}
+          job={selectedJob?.JobId}
+          fetchJobPosts={fetchJobPosts}
+          posts={posts}
+        />
+      )}
     </Card>
   );
 }

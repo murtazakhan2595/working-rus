@@ -66,8 +66,9 @@ const getTaskByBoardId = async (payload) => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
+    console.log(response, "TASKS")
     if (response.status === 200) {
-      const data = response.data;
+      const data = response.data?.results;
       const taskList = getTaskFilteredData(data, payload?.filterData ?? {});
       const TasksData = {
         count: taskList.length,
@@ -96,8 +97,9 @@ const getAllBoards = async (payload) => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
+    console.log(response, "BOARD")
     if (response.status === 200) {
-      const data = response.data;
+      const data = response.data?.results;
       const BoardsData = {
         count: data.length,
         results: data,
@@ -485,7 +487,7 @@ const fetchComments = async (filter) => {
         headers: headers(),
       }
     );
-    return response.data;
+    return response.data?.results;
   } catch (error) {
     console.error("Error fetching comments:", error);
     return [];

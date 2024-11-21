@@ -17,11 +17,13 @@ import { saveReimbursement } from "app/hooks/payroll";
 import { toast } from "react-toastify";
 import { validateClaimRequestForm } from "app/utils/FormSchema/payrollFormSchema";
 import { SheetCardExtension } from "components/SheetCardExtension";
+import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
 const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [newAttachment, setNewAttachment] = useState(null);
   const [payroll, setPayroll] = useState({});
+  const [closeSheet , setCloseSheet] = useState(false)
 
   const claimRequest = {
     expense_type: "",
@@ -104,8 +106,14 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
     }
   };
 
+  const handleClose = ()=>{
+    setNewAttachment(null);
+    setCloseSheet(true)
+  }
+
   return (
     <div>
+       {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
       <SheetComponent
         {...formSheetData}
         contentClassName="custom-sheet-width"
@@ -252,10 +260,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                   variant="outline"
                   type="button"
                   size="lg"
-                  onClick={() => {
-                    setNewAttachment(null);
-                    setIsOpen(false);
-                  }}
+                  onClick={handleClose}
                 >
                   Cancel
                 </Button>

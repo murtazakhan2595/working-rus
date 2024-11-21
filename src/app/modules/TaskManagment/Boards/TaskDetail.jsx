@@ -27,14 +27,13 @@ import { addCommentAttachment } from "app/hooks/taskManagment";
 import { getCommentsWithAttachments } from "app/hooks/taskManagment";
 import { filebase64Download } from "utils/fileUtils";
 
-import { Card } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { Trash } from "lucide-react";
 
-import { CardContent } from "components/ui/card";
+import { DetailBox, DetailCard } from "components/SheetCardExtension";
 
 
-const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
+const TaskDetail = ({ task, onClose, employees, handleDelete }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [boardName, setBoardName] = useState("Loading...");
@@ -219,12 +218,9 @@ const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
     return new Blob(byteArrays, { type: mimeType });
   }
 
-  const deleteCard = ()=>{
-    deleteTask()
-  }
+
 
   function CardValues({ values }) {
-    console.log("IN CARD VALUES", values);
     const items = [
       {
         label: "Due Date",
@@ -255,12 +251,11 @@ const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
     return (
       <div className="flex flex-col sm:flex-row items-start justify-between flex-wrap w-[60%] gap-4">
         {items.map(({ label, value }, idx) => (
-          <div className="flex items-center w-full h-5 gap-4">
-            <div className="text-sm ">{label}</div>
-            <div className="flex flex-col items-start">
-              <div className="text-sm text-gray-900">{value}</div>
-            </div>
-          </div>
+          <DetailBox
+            label={label}
+            value={value}
+            className="mt-2"
+          />
         ))}
       </div>
     );
@@ -268,24 +263,6 @@ const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
 
   return (
     <>
-      {/* {isEditCardOpen && (
-        <SheetComponent
-          {...formSheetData}
-          isOpen={isEditCardOpen}
-          setIsOpen={setIsEditCardOpen}
-          width="500px"
-          contentClassName="custom-sheet-width"
-        >
-          <EditCard
-            cardId={task?.id}
-            projectId={task?.project_id}
-            onClose={() => {
-              setIsEditCardOpen(false);
-              onClose();
-            }}
-          />
-        </SheetComponent>
-      )} */}
       {
         isEditCardOpen && (
           <EditCard
@@ -295,7 +272,7 @@ const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
             setIsEditCardOpen(false);
             onClose();
           }}
-        />
+        /> 
         )
       }
       {isTaskDetailVisible && (
@@ -310,7 +287,7 @@ const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
                 Edit
               </Button>
 
-              <Button variant="outline" onClick={deleteCard}>
+              <Button variant="outline" onClick={handleDelete}>
                 <Trash className="mr-2" size={16} />
                 Delete
               </Button>
@@ -327,25 +304,21 @@ const TaskDetail = ({ task, onClose, employees, deleteTask }) => {
               </span>
             </div>
 
-            <Card className="p-2">
-              <CardContent className="p-6">
-                <div className="w-full font-semibold">Card Details</div>
+            <DetailCard detailCardTitle="Card Details">
                 <CardValues values={task} />
-              </CardContent>
-            </Card>
+            </DetailCard>
 
-            <div className="flex items-center gap-4 p-4">
-              <p>Description: </p>
-              <span
-                className="text-sm text-gray-700"
-                dangerouslySetInnerHTML={{ __html: task?.description }}
-              />
-            </div>
 
-            <div className="flex items-center gap-4 p-4">
-              <p>SubTasks: </p>
-              <p className="text-gray-700">SubTasks 1 </p>
-            </div>
+            <DetailBox
+             label="Description"
+             value={<span dangerouslySetInnerHTML={{ __html: task?.description }}/>}
+            />
+            <DetailBox
+             label="Sub Tasks"
+             value="Sub Task 1"
+            />
+
+
 
             <div className="flex mb-3">
               <h2 className="text-base  font-bold text-[#323333] flex gap-x-2 items-center">

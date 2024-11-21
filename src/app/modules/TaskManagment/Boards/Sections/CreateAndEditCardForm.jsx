@@ -33,6 +33,8 @@ import {
 } from "../../../../../src/@/components/ui/popover";
 import { Input } from "components/ui/input";
 import { relationList } from "data/Data";
+import { SheetCardExtension } from "components/SheetCardExtension";
+import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
 const CreateAndEditCardForm = ({
   initialValues,
@@ -40,6 +42,7 @@ const CreateAndEditCardForm = ({
   handleSubmit,
   onClose,
   isEdit,
+  setIsOpen
 }) => {
   const formRef = useRef();
 
@@ -55,6 +58,12 @@ const CreateAndEditCardForm = ({
   const [items, setItems] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [closeSheet, setCloseSheet] = useState(false)
+
+  const handleClose = ()=>{
+    // setIsOpen(false)
+    setCloseSheet(true)
+  }
 
   const handleAddItem = () => {
     const newItem = {
@@ -75,13 +84,12 @@ const CreateAndEditCardForm = ({
   const handleRelationSelect = (task) => {
     console.log("Selected task:", task);
   };
+  const fetchLabels = async () => {
+    const labelList = await getAllLabels();
+    setLabelsList(labelList); // Update this to `labelList`
+  };
 
   useEffect(() => {
-    const fetchLabels = async () => {
-      const labelList = await getAllLabels();
-      setLabelsList(labelList); // Update this to `labelList`
-    };
-
     fetchLabels();
   }, []);
 
@@ -90,7 +98,6 @@ const CreateAndEditCardForm = ({
     const selectedLabelObjects = selectedLabels?.map((selectedId) =>
       labelsList?.results?.find((label) => label.id === selectedId)
     );
-    console.log(selectedLabelObjects, "OBJECT LABEL");
     setLabels(selectedLabelObjects);
   };
 
@@ -150,6 +157,8 @@ const CreateAndEditCardForm = ({
   };
 
   return (
+    <>
+     {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
     <Formik
       initialValues={formInitialValues}
       enableReinitialize={true}
@@ -169,11 +178,9 @@ const CreateAndEditCardForm = ({
     >
       {(props) => (
         <form onSubmit={props.handleSubmit} className="">
-          <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
-            <div className="font-[inter] flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
-              <div className="flex h-[7px] flex-shrink-0 items-end px-px">
-                <div className="text-zinc-950">Card Details</div>
-              </div>
+          <div className={`flex w-full gap-6 flex-col rounded-lg pt-2.5`}>
+
+              <SheetCardExtension title="Card Details">
               <div className="space-y-2">
                 <TextAreaInput
                   name="name"
@@ -253,13 +260,10 @@ const CreateAndEditCardForm = ({
                   </div>
                 )}
               </div>
-            </div>
+              </SheetCardExtension>
 
-            <div className={`flex w-full flex-col rounded-lg pt-2.5 mt-5`}>
-              <div className="font-[inter] flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
-                <div className="flex h-[7px] flex-shrink-0 items-end px-px">
-                  <div className="text-zinc-950">Add To Card</div>
-                </div>
+
+                <SheetCardExtension title="Add To Card">
                 <div className="space-y-2">
                   <DateInput
                     name="end_date"
@@ -321,6 +325,9 @@ const CreateAndEditCardForm = ({
                   <Labels
                     onSelectedLabelsChange={handleSelectedLabelsChange}
                     labelsList={labelsList?.results}
+                    reloadList={()=>{
+                      fetchLabels();
+                    }}
                   />
                 </div>
                 <div>
@@ -436,14 +443,14 @@ const CreateAndEditCardForm = ({
                     }}
                   />
                 </div>
-              </div>
-            </div>
+                </SheetCardExtension>
 
             <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
               <Button
-                type=""
+                type="button"
                 variant="outline"
                 size="lg"
+                onClick={handleClose}
                 // onClick={onClose()}
               >
                 Cancel
@@ -456,6 +463,7 @@ const CreateAndEditCardForm = ({
         </form>
       )}
     </Formik>
+    </>
   );
 };
 

@@ -23,7 +23,7 @@ import {
 import { validationEmployeeInfoFormSchema } from "../../../../../app/utils/FormSchema/employeeFormSchema";
 
 import {
-  HeadOfDepartmentOptions,
+  // HeadOfDepartmentOptions,
   employeeStatus,
   jobRoles,
   workplaceTypes,
@@ -46,6 +46,7 @@ import {
 import { getEmployeeid } from "utils/getValuesFromTables";
 import { saveEmployeePayroll } from "app/hooks/payroll";
 import { PageLoader } from "components";
+import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
 function getManagersStringSelected(managers) {
   if (managers) {
@@ -82,6 +83,8 @@ const SheetOnBorading = ({
   const [isLoading, setIsLoading] = useState(true);
   const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
   const [usernameAlreadyExist, setUsernameAlreadyExist] = useState(false);
+
+  const [closeSheet, setCloseSheet] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -195,12 +198,18 @@ const SheetOnBorading = ({
     }
   };
 
+  const handleClose = ()=>{
+    // setIsOpen(false)
+    setCloseSheet(true)
+  }
+
   if (isLoading) {
     return <PageLoader />;
   }
 
   return (
     <>
+    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
 
       <div
         side="right"
@@ -515,7 +524,7 @@ const SheetOnBorading = ({
                             }}
                           />
                         </div>
-                        <div className="space-y-2">
+                        {/* <div className="space-y-2">
                           <SelectComponent
                             name={"department_manager"}
                             options={HeadOfDepartmentOptions}
@@ -528,7 +537,7 @@ const SheetOnBorading = ({
                               props.setFieldValue(field, value);
                             }}
                           />
-                        </div>
+                        </div> */}
                         <div className="space-y-2">
                           <DateInput
                             name={"joining_date"}
@@ -585,9 +594,7 @@ const SheetOnBorading = ({
                         <Button
                           variant="outline"
                           size="lg"
-                          onClick={() => {
-                            setIsOpen(false);
-                          }}
+                          onClick={handleClose}
                           type="button"
                         >
                           Cancel

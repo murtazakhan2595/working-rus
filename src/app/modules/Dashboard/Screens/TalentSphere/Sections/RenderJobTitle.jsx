@@ -7,9 +7,9 @@ export default function RenderJobTitle({ row }) {
       <div className="flex items-center justify-center gap-2 ">
        
         <div className="inline-flex flex-row items-start justify-start gap-1 ">
-          <div className="">
+          {/* <div className="">
             {row.id}
-          </div>
+          </div> */}
           <div className="">
             {row.Job_Title}
           </div>

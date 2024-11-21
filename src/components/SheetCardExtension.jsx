@@ -3,10 +3,11 @@ import moment from "moment";
 import React from "react";
 import { getFileSizeInKB } from "utils/fileUtils";
 import { Button } from "./ui/button";
+import AlertDialogue from "./ui/AlertDialogue";
 
-export const SheetCardExtension = ({ title, children }) => {
+export const SheetCardExtension = ({ title, children, className }) => {
   return (
-    <div className="font-[inter] flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+    <div className={`font-[inter] ${className} flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900`}>
       <div className="flex h-[7px] flex-shrink-0 items-end px-px">
         <div className="text-zinc-950">{title}</div>
       </div>
@@ -15,16 +16,14 @@ export const SheetCardExtension = ({ title, children }) => {
   );
 };
 
-export const DetailBox = ({ label, value }) => {
+export const DetailBox = ({ label, value, className="mt-3" }) => {
   return (
-    <div>
-      <div className="flex gap-4 items-center mt-4 max-w-full">
+      <div className={`flex gap-4 items-center max-w-full ${className}`}>
         <div className="flex flex-col leading-none min-w-[88px] text-neutral-900 w-[132px]">
           <div>{label}</div>
         </div>
         <div className="flex-1 shrink leading-5 basis-0">{value ?? "N/A"}</div>
       </div>
-    </div>
   );
 };
 
@@ -90,3 +89,25 @@ export const DisplayButton = ({handlePrevious, handleNext})=>{
     </div>
   )
 }
+
+export const handleCloseWithConfirmation = (isOpen, setCloseSheet, setIsOpen, setNewAttachment) => {
+  return (
+    isOpen && (
+      <AlertDialogue
+        isOpen={isOpen}
+        setIsOpen={setCloseSheet}
+        title="Are you sure you want to close?"
+        description="Any unsaved changes will be discarded. Do you want to proceed?"
+        continueText="Discard"
+        cancelText="Keep"
+        handleContinue={() => {
+          setCloseSheet(false);
+          setIsOpen(false);
+          if (setNewAttachment) {
+            setNewAttachment(null);
+          }
+        }}
+      />
+    )
+  );
+};

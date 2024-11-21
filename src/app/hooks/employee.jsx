@@ -191,14 +191,14 @@ const getEmployeeVisaDetailsFiles = async (id) => {
 
   // Construct an object mapping document names to their responses
   const documents = {
-    passport_copy: responseArray[0].data[0],
-    enter_permit: responseArray[1].data[0],
-    visa_page: responseArray[2].data[0],
-    medical: responseArray[3].data[0],
-    id_application: responseArray[4].data[0],
-    id_front: responseArray[5].data[0],
-    id_back: responseArray[6].data[0],
-    insurance_card: responseArray[7].data[0],
+    passport_copy: responseArray[0].data?.results[0],
+    enter_permit: responseArray[1].data?.results[0],
+    visa_page: responseArray[2].data?.results[0],
+    medical: responseArray[3].data?.results[0],
+    id_application: responseArray[4].data?.results[0],
+    id_front: responseArray[5].data?.results[0],
+    id_back: responseArray[6].data?.results[0],
+    insurance_card: responseArray[7].data?.results[0],
   };
 
   return documents;
@@ -395,8 +395,9 @@ const getEmployeeProfessionalExperianceData = async (employeeid) => {
           headers: headers(),
         }
       );
+      console.log(response, "HELLO KASHIF")
       if (response.status === 200) {
-        const employeeData = await getProfessionalExperiance(response.data);
+        const employeeData = await getProfessionalExperiance(response?.data?.results);
         return employeeData;
       }
     } catch (error) {
@@ -564,7 +565,7 @@ const getEmployeeAcademicRecordData = async (employeeid) => {
         }
       );
       if (response.status === 200) {
-        const employeeData = getAcademicRecord(response.data);
+        const employeeData = getAcademicRecord(response.data?.results);
         return employeeData;
       }
     } catch (error) {
@@ -617,7 +618,7 @@ const getEmployeeCerficationData = async (employeeid) => {
         }
       );
       if (response.status === 200) {
-        const employeeData = getCertifications(response.data);
+        const employeeData = getCertifications(response.data?.results);
         return employeeData;
       }
     } catch (error) {

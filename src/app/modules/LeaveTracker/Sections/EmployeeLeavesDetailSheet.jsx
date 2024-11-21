@@ -33,7 +33,7 @@ const EmployeeLeavesDetailSheet = ({
       },
     });
     if (leaveComponents) {
-      setLeaveComponents(leaveComponents);
+      setLeaveComponents(leaveComponents?.results);
     }
   };
   useEffect(() => {

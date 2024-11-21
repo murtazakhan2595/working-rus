@@ -236,7 +236,7 @@ const getLeaveTransaction = async (payload) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      return response.data;
+      return response.data?.results;
     }
   } catch (error) {
     console.error("Error fetching leave transaction data:", error);
@@ -273,7 +273,6 @@ const getAttachmentById = async (attachmentId) => {
         }
       );
       if (response.status === 200) {
-        console.log("get attachment by id", response.data);
         return response.data;
       } else {
         return {};
@@ -299,8 +298,7 @@ const getLeaveComponentsWithUsed = async (employeeId) => {
         headers: headers(),
       }
     );
-    const leaveComponents = leaveComponentsResponse.data;
-
+    const leaveComponents = leaveComponentsResponse.data?.results;
     // Process the leave components to calculate used leaves
     const leaveDataWithUsed = await Promise.all(
       leaveComponents.map(async (leaveType) => {

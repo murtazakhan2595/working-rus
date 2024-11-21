@@ -22,12 +22,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "components/ui/card";
-import { Clock, Layout, ListTodo, Timer } from "lucide-react";
-import AlertDialogue from "components/ui/AlertDialogue";
+import { Layout, ListTodo, Timer } from "lucide-react";
 import TableCustom from "components/CustomTable";
 import { projectBoard } from "app/utils/Types/TableColumns";
+import { Button } from "components/ui/button";
 
 const Projects = ({ userProfile }) => {
   const dispatch = useDispatch();
@@ -60,9 +59,8 @@ const Projects = ({ userProfile }) => {
     setIsLoading(true);
     try {
       const projectsData = await getAllProjects({ filterData }, userProfile);
-      console.log(projectsData, "PROJECTS DATA IS HERE")
       if (isMounted) {
-        setAllProjects(projectsData);
+        setAllProjects(projectsData?.results);
       }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
@@ -105,22 +103,20 @@ const Projects = ({ userProfile }) => {
     setViewMode((prevMode) => (prevMode === "table" ? "grid" : "table"));
   };
 
-  console.log(AllProjects?.results, "TEST KASHIF");
-
   return (
     <div>
       <Header
         content={
           <>
-          <button onClick={toggleViewMode} className="mb-4 p-2">
-          <Layout />
-        </button>
-          <CreateEditProject
-            isEditMode={false}
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            reload={fetchData}
-          />
+            <button onClick={toggleViewMode} className="mb-4 p-2">
+              <Layout />
+            </button>
+            <CreateEditProject
+              isEditMode={false}
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+              reload={fetchData}
+            />
           </>
         }
       />
@@ -177,8 +173,6 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
   const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
-  console.log(project, "PROJECT");
-
   const viewDetails = () => {
     setIsDropdownOpen(false);
     setIsViewBoardDetails(true);
@@ -192,12 +186,15 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
     setIsViewBoardDetails(false);
     setIsEditMode(false);
   };
-
   return (
     <Card className="rounded-lg">
       {project && (
         <>
-          <CardHeader className={`m-2 bg-gray-500 cursor-pointer rounded-t-lg `} onClick={viewDetails} >
+          <CardHeader
+            className="m-2 cursor-pointer rounded-t-lg bg-gray-500"
+            style={project?.color ? { backgroundColor: project.color } : {}}
+            onClick={viewDetails}
+          >
             <CardTitle>
               <Badge
                 variant="dot"
@@ -215,10 +212,13 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
             </div>
           </CardHeader>
           <CardContent>
-            <div onClick={navigateToBoard}>
-              <h3 className="text-lg font-semibold mb-2 text-neutral-1200">
-                {project.name}
-              </h3>
+            <div>
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold mb-2 text-neutral-1200">
+                  {project.name}
+                </h3>
+                <Button onClick={navigateToBoard}>View</Button>
+              </div>
               <div className="flex text-neutral-1100 text-sm mb-4 gap-1">
                 <ListTodo size={18} />
                 <span className="ml-2 font-semibold">
@@ -230,9 +230,10 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
           </CardContent>
           <div className="border border-gray-400 m-2" />
           <CardFooter className="flex justify-between">
-            <div className="text-neutral-1100 text-sm flex justify-center gap-2">
+            <div className="text-neutral-1100 text-sm flex justify-center items-center gap-2">
               {" "}
-              <Timer />{moment(project.start_date).format("MMM D, YYYY")}
+              <Timer />
+              {moment(project.start_date).format("MMM D, YYYY")}
             </div>
             <MembersList members={project?.project_members || []} />
           </CardFooter>

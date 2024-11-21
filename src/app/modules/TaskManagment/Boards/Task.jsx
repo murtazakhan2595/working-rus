@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { deleteTask } from "app/hooks/taskManagment";
 import { PriorityList } from "data/Data";
-import { ConfirmationModal } from "components";
 import { BiComment } from "react-icons/bi";
 import { getStatusClass, getStatusIconColor } from "./Sections";
 import { CustomDropdown, MembersList } from "../Sections";
@@ -15,6 +14,7 @@ import TaskDetail from "./TaskDetail";
 import { fetchComments } from "app/hooks/taskManagment";
 import { Card } from "components/ui/card";
 import SheetComponent from "components/ui/CustomSheet";
+import AlertDialogue from "components/ui/AlertDialogue";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -28,6 +28,10 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
     setIsDropdownOpen(false);
     setIsEditCardOpen(true);
   };
+
+  const handleDelete = ()=>{
+    setIsDeleteModalOpen(true)
+  }
 
   const dropdownOptions = [
     {
@@ -45,11 +49,11 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
     },
     {
       label: "Delete",
-      onClick: () => {
-        setIsDeleteModalOpen(true);
-      },
+      onClick: ()=>handleDelete()
     },
   ];
+
+
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -106,7 +110,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
 
   return (
     <Card
-      className="flex flex-col p-3 mt-6 w-full bg-white rounded-lg shadow cursor-pointer"
+      className="flex flex-col p-3 mt-6 w-full bg-white rounded shadow cursor-pointer"
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
     >
@@ -131,22 +135,24 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
       )}
       {/* Render ConfirmationModal component when isDeleteModalOpen is true */}
       {isDeleteModalOpen && (
-        <ConfirmationModal
+        <AlertDialogue
           isOpen={isDeleteModalOpen}
-          onClose={() => {
-            setIsDeleteModalOpen(false);
-            reloadData();
+          setIsOpen={()=>{
+            setIsDeleteModalOpen(false)
           }}
-          onDelete={confirmDelete}
+          handleContinue={confirmDelete}
+          title="Confirm Delete?"
+          description="This action can't be undone. All information associated with this
+            will be lost."
         />
       )}
-      <div className="flex gap-3 justify-between items-center py-0.5">
+      <div className="flex justify-between items-center py-0.5">
         {PriorityList.find((option) => option.value === task?.priority)?.label}
         <CustomDropdown
           isOpen={isDropdownOpen}
           toggleDropdown={toggleDropdown}
           options={dropdownOptions}
-        />
+        /> 
       </div>
       <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
         <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
@@ -206,7 +212,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
           comments={task.comments} // Pass comments data as props to TaskDetail (if needed)
           attachments={task.attachments} // Pass attachments data as props to TaskDetail (if needed)
           onClose={closeTaskDetail}
-          deleteTask={confirmDelete}
+          handleDelete= {handleDelete}
         />
         </SheetComponent>
       )}
