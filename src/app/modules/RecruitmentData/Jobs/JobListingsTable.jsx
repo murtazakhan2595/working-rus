@@ -36,6 +36,7 @@ export default function JobListingsTable({ posts, loading, fetchJobPosts }) {
     // },
   };
 
+
   const columns = [
     {
       dataField: "id",
@@ -148,7 +149,7 @@ export default function JobListingsTable({ posts, loading, fetchJobPosts }) {
         <ViewJobDetails
           isOpen={selectedJob?.isOpen}
           setIsOpen={() => setSelectedJob(null)}
-          job={selectedJob?.JobId}
+          job={selectedJob?.jobId}
           fetchJobPosts={fetchJobPosts}
           posts={posts}
         />

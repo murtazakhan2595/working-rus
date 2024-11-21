@@ -236,7 +236,7 @@ const getLeaveTransaction = async (payload) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      return response.data?.results;
+      return response.data;
     }
   } catch (error) {
     console.error("Error fetching leave transaction data:", error);
