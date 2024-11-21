@@ -59,7 +59,6 @@ const Projects = ({ userProfile }) => {
     setIsLoading(true);
     try {
       const projectsData = await getAllProjects({ filterData }, userProfile);
-      console.log(projectsData, "PROJECTS DATA IS HERE")
       if (isMounted) {
         setAllProjects(projectsData?.results);
       }
@@ -104,7 +103,6 @@ const Projects = ({ userProfile }) => {
     setViewMode((prevMode) => (prevMode === "table" ? "grid" : "table"));
   };
 
-  console.log(AllProjects?.results, "TEST KASHIF");
 
   return (
     <div>
@@ -176,7 +174,6 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
   const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
-  console.log(project, "PROJECT");
 
   const viewDetails = () => {
     setIsDropdownOpen(false);
