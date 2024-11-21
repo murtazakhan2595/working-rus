@@ -14,7 +14,7 @@ export function ContentLayout({ title, children , isSidebarOpen, userRole }) {
       <Navbar title={title} userRole={userRole}/>
     
     </div>
-    <div className="main-content rounded-[24px]">
+    <div className="main-content rounded-[24px] min-h-screen">
 
       <Outlet isSidebarOpen={isSidebarOpen} />
     </div>

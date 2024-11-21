@@ -254,7 +254,7 @@ const SheetOnBorading = ({
                       <h3 className="text-lg font-semibold">
                         Employee Details
                       </h3>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
                         <div className="space-y-2">
                           <TextInput
                             name={"employeeId"}
@@ -376,7 +376,7 @@ const SheetOnBorading = ({
                             countryOptions={countriesCallingCodes} // Pass the country options here
                           />
                         </div>
-                        <div className="col-span-3 space-y-2">
+                        <div className="col-span-1 space-y-2 xl:col-span-3 lg:col-span-2 md:col-span-2">
                           <TextAreaInput
                             name={"residential_address"}
                             error={props.errors?.residential_address}
@@ -399,7 +399,7 @@ const SheetOnBorading = ({
                       <h3 className="text-lg font-semibold">
                         Official Information
                       </h3>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
                         <div className="space-y-2">
                           <SelectComponent
                             name={"department_name"}
@@ -555,7 +555,7 @@ const SheetOnBorading = ({
                     </div>
                    {!id &&  <div className="space-y-4">
                       <h3 className="text-lg font-semibold">Salary Details</h3>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
                         <div className="space-y-2">
                           <SelectComponent
                             name={"salary_type"}

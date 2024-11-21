@@ -175,20 +175,7 @@ const Applications = () => {
         </SheetComponent>
       )}
 
-      <Header
-        content={
-          <FilterInput
-            filters={[
-              {
-                type: "search",
-                placeholder: "Search",
-                name: "id_and_first_name",
-              },
-            ]}
-            onChange={handleFilterChange}
-          />
-        }
-      />
+      <Header />
       <Stats stats={statsData} />
 
       <Tabs
@@ -204,16 +191,7 @@ const Applications = () => {
           handleFilterChange("job_id", jobId);
         }}
       />
-      {
-        activeTab === 1 && (
-          <Card className="p-4 mb-4">
-             <JobDetails job={jobs[currentJob]} jobIcon={jobIcon} handleJobChange={handleJobChange} jobs={jobs}/>
-          </Card>
-        )
-      }
-      <Card className="p-0">
-        <CardHeader className="flex flex-row justify-end gap-2">
-          <FilterInput
+       <FilterInput
             filters={[
               {
                 type: "search",
@@ -232,15 +210,24 @@ const Applications = () => {
           <DateInput
             placeholder="Applied On"
             value={filterDate}
-            className="flex align-middle items-center"
+            className="flex items-center align-middle"
             name="updated_at"
             onChange={(field, value) => {
               setFilterDate(value);
               handleFilterChange(field, value);
             }}
           />
-        </CardHeader>
-        <CardDescription>
+      {
+        activeTab === 1 && (
+          <Card className="p-4 mb-4">
+             <JobDetails job={jobs[currentJob]} jobIcon={jobIcon} handleJobChange={handleJobChange} jobs={jobs}/>
+          </Card>
+        )
+      }
+     
+         
+       
+        
           {isLoading ? (
             <PageLoader />
           ) : (
@@ -260,8 +247,7 @@ const Applications = () => {
               </CardContent>
             </Card>
           )}
-        </CardDescription>
-      </Card>
+       
     </>
   );
 };

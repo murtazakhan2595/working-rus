@@ -14,7 +14,7 @@ const PageLoader = () => {
     }, []);
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex items-center justify-center min-h-screen ">
             <div className="text-center">
                 <svg
                     className={isActive ? 'active' : ''}
@@ -55,7 +55,7 @@ const PageLoader = () => {
                     </defs>
                 </svg>
 
-                <p className="mt-4 text-gray-600">Loading...</p>
+                <p className="mt-4 text-gray-600">Loading  ...</p>
             </div>
         </div>
     );

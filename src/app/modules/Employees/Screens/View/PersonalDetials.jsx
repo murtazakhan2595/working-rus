@@ -40,7 +40,7 @@ const PersonalInformation = ({ userData, isEditable, getDataByHooks }) => {
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-rows-2 gap-4">
             {personalInfo.map((info, index) => (
               <div className="flex flex-row w-full gap-3" key={index}>
                 <div className="flex-1 text-base text-neutral-1000">
