@@ -15,14 +15,52 @@ import { fetchComments } from "app/hooks/taskManagment";
 import { Card } from "components/ui/card";
 import SheetComponent from "components/ui/CustomSheet";
 import AlertDialogue from "components/ui/AlertDialogue";
+import { getAllLabels } from "app/hooks/taskManagment";
+import { getDarkerTextColor } from "./Sections/getTaskStatus";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [comments, setComments] = useState([]);
+  const [labels, setLabels] = useState(null)
 
-  
+  const fetchLabels = async () => {
+    const labelList = await getAllLabels();
+    console.log(labelList, "LABELS")
+    setLabels(labelList);
+  };
+
+  const LabelList = ({ labels, labelIds }) => {
+    const labelDetails = labelIds
+        ?.map(id => labels.find(label => label.id === id))
+        .filter(label => label !== undefined);
+
+    return (
+        <ul className="flex justify-between gap-1">
+            {labelDetails?.map(label => (
+                <li key={label.id} className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                  label?.color
+                } ${getDarkerTextColor(label?.color)}`}>
+                    {label.name}
+                </li>
+            ))}
+        </ul>
+    );
+};
+
+//   const labelNames = task?.label?.map(id => {
+//     console.log(id, "IDS ARE")
+//     const label = labels?.find(label => label.id === id);
+//     console.log(label, "LABEL EEST")
+//     return label ? label.name : null; // Return the name if found, otherwise null
+// }).filter(name => name !== null);
+
+// console.log(labelNames, "HELLO LABELS")
+
+  useEffect(() => {
+    fetchLabels();
+  }, []);
 
   const editDetails = () => {
     setIsDropdownOpen(false);
@@ -147,7 +185,10 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
         />
       )}
       <div className="flex justify-between items-center py-0.5">
-        {PriorityList.find((option) => option.value === task?.priority)?.label}
+        <div className="flex justify-between">
+          {labels && task?.label && <LabelList labels={labels} labelIds={task?.label} />}
+          <span>{PriorityList.find((option) => option.value === task?.priority)?.label}</span>
+        </div>
         <CustomDropdown
           isOpen={isDropdownOpen}
           toggleDropdown={toggleDropdown}

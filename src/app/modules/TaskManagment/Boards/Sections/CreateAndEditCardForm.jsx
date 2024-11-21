@@ -86,6 +86,7 @@ const CreateAndEditCardForm = ({
   };
   const fetchLabels = async () => {
     const labelList = await getAllLabels();
+    console.log(labelList, "LABELS")
     setLabelsList(labelList); // Update this to `labelList`
   };
 
@@ -96,7 +97,7 @@ const CreateAndEditCardForm = ({
   const handleSelectedLabelsChange = (selectedLabels) => {
     setLabelsAdded(selectedLabels);
     const selectedLabelObjects = selectedLabels?.map((selectedId) =>
-      labelsList?.results?.find((label) => label.id === selectedId)
+      labelsList?.find((label) => label.id === selectedId)
     );
     setLabels(selectedLabelObjects);
   };
@@ -324,7 +325,7 @@ const CreateAndEditCardForm = ({
 
                   <Labels
                     onSelectedLabelsChange={handleSelectedLabelsChange}
-                    labelsList={labelsList?.results}
+                    labelsList={labelsList}
                     reloadList={()=>{
                       fetchLabels();
                     }}
