@@ -217,7 +217,7 @@ const SheetOnBorading = ({
         open={isOpen}
         onOpenChange={setIsOpen}
       >
-        <div className="flex flex-col ">
+        <div className={`flex flex-col   ${window.location.pathname.substring(1)}`}>
           <div className="flex-grow ">
             <div className="p-0">
               {/* <CardHeader className="prose">

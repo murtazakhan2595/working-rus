@@ -1,16 +1,16 @@
 import { EmployeeResignationsColumns } from "app/utils/Types/TableColumns";
-import { Table } from "components";
+
 import React, { useState, useEffect } from "react";
 import ExitDetailsCard from "./ExitDetailsCard";
 import { connect } from "react-redux";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
-import { ResignationStatusOptions } from "data/Data";
-import { FilterInput } from "components/form-control";
+
+
 import { PageLoader } from "components";
-import { Col, Row } from "reactstrap";
+
 import { Card, CardContent } from "../../../components/ui/card.jsx";
 
-import { StatusList } from "./Sections";
+
 import TableCustom from "components/CustomTable";
 
 const Resignations = React.memo(({ filterData }) => {

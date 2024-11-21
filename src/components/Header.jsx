@@ -84,18 +84,7 @@ const Header = ({ content, userProfile }) => {
     <div className="flex flex-row items-center justify-between px-4 py-4">
       <h3 className="text-lg font-semibold capitalize sm:text-xl md:text-2xl lg:text-3xl">{pathName}</h3>
       <div className="flex flex-wrap justify-end gap-3">
-        {/* <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Search",
-              name: "id_and_Job_Title",
-            },
-          ]}
-          onChange={(filterName, filterValue) => {
-            // Handle filter change here if needed
-          }}
-        /> */}
+       
         {content}
       </div>
     </div>

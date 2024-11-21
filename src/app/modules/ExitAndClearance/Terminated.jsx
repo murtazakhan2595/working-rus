@@ -1,10 +1,10 @@
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { Table, PageLoader } from "components";
-import { Row, Col } from "reactstrap";
+import { PageLoader } from "components";
+
 import { ExitTerminatedColumns } from "app/utils/Types/TableColumns";
-import { FilterInput } from "components/form-control";
+
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 import TableCustom from "components/CustomTable";
 import { Card, CardContent } from "../../../components/ui/card.jsx";

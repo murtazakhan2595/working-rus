@@ -49,6 +49,7 @@ const CreateUpdateEmployee = () => {
   }, [showFormSubmittedModal]);
   return (
     <>
+    <div className={`max-w-[840px] mx-auto ${window.location.pathname.substring(1)}`}>
     <Header />
       <Card>
         <CardContent>
@@ -86,6 +87,7 @@ const CreateUpdateEmployee = () => {
         </Dialog>
       )}
       <ToastContainer />
+    </div>
     </>
   );
 };
