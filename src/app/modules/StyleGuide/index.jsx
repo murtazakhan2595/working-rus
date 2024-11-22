@@ -42,6 +42,7 @@ import {
 } from "lucide-react"
 import { Label } from "../../../src/@/components/ui/label"
 import { Avatar, AvatarImage, AvatarFallback } from "../../../src/@/components/ui/avatar"
+import { DateTimePicker } from "../../../components/ui/datetime-picker"
 
 // Add new imports
 
@@ -256,6 +257,7 @@ const typographyData = [
             <Button variant="ghost" className="justify-start w-full" onClick={() => scrollToSection('command')}>Command</Button>
             <Button variant="ghost" className="justify-start w-full" onClick={() => scrollToSection('toast')}>Toast</Button>
             <Button variant="ghost" className="justify-start w-full" onClick={() => scrollToSection('tooltip')}>Tooltip</Button>
+            <Button variant="ghost" className="justify-start w-full" onClick={() => scrollToSection('datetime-picker')}>DateTime Picker</Button>
           </div>
         </ScrollArea>
       </div>
@@ -1070,6 +1072,77 @@ const typographyData = [
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+          </CardContent>
+        </Card>
+
+        {/* DateTime Picker Section */}
+        <h1 id="datetime-picker" className="p-2 text-2xl font-bold rounded-md bg-neutral-300 text-neutral-1200">DateTime Picker</h1>
+        <Card className="p-6">
+          <CardHeader>
+            <CardTitle>DateTime Picker Examples</CardTitle>
+            <CardDescription>Various datetime picker configurations</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6">
+            {/* 24-Hour Format */}
+            <div className="space-y-2">
+              <Label>24-Hour Format</Label>
+              <DateTimePicker />
+            </div>
+
+            {/* 12-Hour Format */}
+            <div className="space-y-2">
+              <Label>12-Hour Format</Label>
+              <DateTimePicker 
+                hourCycle={12}
+                displayFormat={{
+                  hour12: "PP hh:mm:ss b"
+                }}
+              />
+            </div>
+
+            {/* Different Granularities */}
+            <div className="space-y-2">
+              <Label>Minutes Only</Label>
+              <DateTimePicker granularity="minute" />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Hours Only</Label>
+              <DateTimePicker granularity="hour" />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Date Only</Label>
+              <DateTimePicker granularity="day" />
+            </div>
+
+            {/* Custom Year Range */}
+            <div className="space-y-2">
+              <Label>Custom Year Range (±10 years)</Label>
+              <DateTimePicker yearRange={10} />
+            </div>
+
+            {/* Custom Placeholder */}
+            <div className="space-y-2">
+              <Label>Custom Placeholder</Label>
+              <DateTimePicker placeholder="Select date and time" />
+            </div>
+
+            {/* Disabled State */}
+            <div className="space-y-2">
+              <Label>Disabled</Label>
+              <DateTimePicker disabled />
+            </div>
+
+            {/* Custom Format */}
+            <div className="space-y-2">
+              <Label>Custom Format</Label>
+              <DateTimePicker 
+                displayFormat={{
+                  hour24: "PPP 'at' HH:mm:ss"
+                }}
+              />
+            </div>
           </CardContent>
         </Card>
       </div>
