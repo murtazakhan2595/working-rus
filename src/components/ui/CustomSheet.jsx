@@ -27,28 +27,33 @@ const SheetComponent = ({
   formData,
   onSubmit,
   triggerText,
-  width = "100%",
+  width = {
+    base: "95vw",
+    sm: "90vw",
+    md: "80vw",
+    lg: "100%"
+  },
   isOpen,
   setIsOpen,
   children,
   contentClassName,
   footer,
 }) => {
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  // const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
-  const handleInteractOutside = (e) => {
-    e.preventDefault();
-    setShowConfirmationModal(true);
-  };
+  // const handleInteractOutside = (e) => {
+  //   e.preventDefault();
+  //   setShowConfirmationModal(true);
+  // };
 
-  const closeModal = () => {
-    setShowConfirmationModal(false);
-  };
+  // const closeModal = () => {
+  //   setShowConfirmationModal(false);
+  // };
 
-  const handleDiscardChanges = () => {
-    setShowConfirmationModal(false);
-    setIsOpen(false);
-  };
+  // const handleDiscardChanges = () => {
+  //   setShowConfirmationModal(false);
+  //   setIsOpen(false);
+  // };
 
   return (
     <>
@@ -61,7 +66,7 @@ const SheetComponent = ({
         <SheetContent
           style={{ width }}
           className={`${contentClassName} overflow-y-auto sm:max-w-4xl`}
-          onInteractOutside={handleInteractOutside}
+          // onInteractOutside={handleInteractOutside}
         >
           <SheetHeader className="prose text-left">
             <SheetTitle>{title}</SheetTitle>
@@ -84,7 +89,7 @@ const SheetComponent = ({
         </SheetContent>
       </Sheet>
       {/* Confirmation Dialog */}
-      {showConfirmationModal && (
+      {/* {showConfirmationModal && (
         <Dialog
           open={showConfirmationModal}
           onOpenChange={setShowConfirmationModal}
@@ -106,7 +111,7 @@ const SheetComponent = ({
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      )}
+      )} */}
     </>
   );
 };

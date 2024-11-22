@@ -112,8 +112,8 @@ export default function JobsDataTable() {
                 <TabsTrigger
                   key={status.value}
                   value={status.value}
-                  className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
-                >
+                  className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                  >
                   {status.label}
                 </TabsTrigger>
               ))}

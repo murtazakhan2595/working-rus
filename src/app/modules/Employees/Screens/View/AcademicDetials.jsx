@@ -17,7 +17,7 @@ const AcademicInfo = ({
       <Card>
         <CardHeader>
           <div className="flex justify-between">
-            <CardTitle>Academic Details</CardTitle>
+            <CardTitle className="text-primary">Academic Details</CardTitle>
             {isEditable && (
               <div
                 className="flex items-center gap-4"
@@ -31,21 +31,21 @@ const AcademicInfo = ({
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid grid-cols-1 gap-4 mb-4 w-full">
+          <div className="grid w-full grid-cols-1 gap-4 mb-4">
             {educations?.map((edu, index) => (
               <div
                 key={index}
-                className="w-full flex flex-wrap justify-between mb-7"
+                className="flex flex-wrap justify-between w-full mb-7"
               >
                 <div>
-                  <div className="text-[#111827] font-semibold whitespace-nowrap">
+                  <div className="text-sm font-semibold text-black xl:text-base lg:text-base md:text-sm whitespace-nowrap">
                     {edu.institute_name || "------"}
                   </div>
-                  <div className="text-base text-black">
+                  <div className="text-sm text-black break-all xl:break-normal lg:break-all md:break-all xl:text-base lg:text-base md:text-sm">
                     {edu.education_level || "------"} in{" "}
                     {edu.program || "------"}
                   </div>
-                  <div className="text-base text-muted-foreground">
+                  <div className="text-sm xl:text-base lg:text-base md:text-sm text-muted-foreground">
                     {renderDate(edu?.edu_start_date)} -{" "}
                     {renderDate(edu?.edu_end_date)}
                   </div>
@@ -54,7 +54,7 @@ const AcademicInfo = ({
                   {edu.education_body?.file && (
                     <a
                       download={edu.education_body?.name}
-                      className="text-sm flex gap-2 items-center no-underline"
+                      className="flex items-center gap-2 text-sm no-underline"
                       href={edu?.education_body?.file}
                     >
                       Certification <FiDownload />

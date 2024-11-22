@@ -32,8 +32,7 @@ import { Button } from "components/ui/button";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import SheetComponent from "components/ui/SheetComponent";
-import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
-import TableCustom from "components/CustomTable";
+
 import AlertDialogue from "components/ui/AlertDialogue";
 
 const Board = ({ employees }) => {
@@ -44,10 +43,11 @@ const Board = ({ employees }) => {
   const [projectData, setProjectData] = useState(Project);
   const [filterData, setFilterData] = useState({});
   const [AllBoards, setAllBoards] = useState([]);
-  const [filterList, setFilterList] = useState([]);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
+  const [selectedExpenseType, setSelectedExpenseType] = useState("");
 
   const handleFilterChange = (filterName, filterValue) => {
+    if (filterName === "expense_type") setSelectedExpenseType(filterValue);
     // onPageChange("page", 1);
     console.log("filterName", filterName);
     console.log("filterValue", filterValue);
@@ -141,7 +141,7 @@ const Board = ({ employees }) => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
         <Button
           variant="ghost"
@@ -152,7 +152,7 @@ const Board = ({ employees }) => {
         </Button>
           <RenderProject projectId={projectId} />
           </div>
-        <div className="flex justify-center items-center gap-3">
+        <div className="flex items-center justify-center gap-3">
           <Button onClick={toggleAddBoardModal}>
             Add New List
           </Button>
@@ -163,6 +163,8 @@ const Board = ({ employees }) => {
                 option: ClaimExpenseTypeOptions,
                 name: "expense_type",
                 placeholder: "Filters",
+                values: selectedExpenseType,
+                    value: selectedExpenseType
               },
             ]}
             onChange={handleFilterChange}
@@ -170,7 +172,7 @@ const Board = ({ employees }) => {
           <DateInput
             placeholder="Date"
             value={filterDate}
-            className="flex align-middle items-center"
+            className="flex items-center align-middle"
             name="start_date"
             onChange={(field, value) => {
               setFilterDate(value);
@@ -196,7 +198,7 @@ const Board = ({ employees }) => {
           {isLoading ? (
             <PageLoader />
           ) : (
-            <div className="flex gap-5 overflow-x-auto mt-5">
+            <div className="flex gap-5 mt-5 overflow-x-auto">
               {AllBoards.count > 0 ? (
                 AllBoards.results.map((board, index) => (
                   <TaskColumn
@@ -213,7 +215,7 @@ const Board = ({ employees }) => {
                   />
                 ))
               ) : (
-                <div className="text-center w-100 mt-3 mb-5">
+                <div className="mt-3 mb-5 text-center w-100">
                   Project Board is empty
                 </div>
               )}
@@ -313,7 +315,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
       onDrop={handleDrop}
     >
       <div className="flex flex-col ">
-        <header className="flex gap-5 justify-between pl-5 w-full">
+        <header className="flex justify-between w-full gap-5 pl-5">
           <div className="flex gap-4">
             <h2 className="flex gap-2 text-base font-bold text-zinc-800">
               <div
@@ -337,12 +339,12 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
           />
         </header>
         <button
-          className="flex gap-2 justify-center items-center px-5 py-2 mt-10 text-base font-medium bg-white rounded border border-solid border-zinc-300 text-zinc-600"
+          className="flex items-center justify-center gap-2 px-5 py-2 mt-10 text-base font-medium bg-white border border-solid rounded border-zinc-300 text-zinc-600"
           onClick={() => {
             setOpenCreateCard(true);
           }}
         >
-          <RxPlus className=" text-xl" />
+          <RxPlus className="text-xl " />
           <span>Add Card</span>
         </button>
         {tasks &&
@@ -365,7 +367,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
       {...formSheetData}
       isOpen={openCreateCard}
       setIsOpen={setOpenCreateCard}
-      width="500px"
+      width="568px"
       >
           <CreateCard
           onClose={() => {

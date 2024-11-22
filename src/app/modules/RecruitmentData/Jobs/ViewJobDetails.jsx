@@ -27,7 +27,6 @@ const ViewJobDetails = ({ job, onClose, isOpen, setIsOpen ,fetchJobPosts, posts 
   const [viewJob, setViewJob] = useState(job)
   const [currentJob, setCurrentJob] = useState(posts?.results?.findIndex((p) => p.id === job?.id)); 
   const [isLoading, setIsLoading] = useState(false);
-
   const handleEditClick = () => {
     setShowEdit(true);
     // setIsOpen(false)
@@ -140,11 +139,11 @@ const ViewJobDetails = ({ job, onClose, isOpen, setIsOpen ,fetchJobPosts, posts 
               <p>{viewJob?.Job_Requirement}</p>
             </DetailCard>
 
-            {/* <div className="flex justify-between items-center">
+            {/* <div className="flex items-center justify-between">
               <Link
                 to="/applicants"
                 state={{ jobId: job.id }}
-                className="border px-3 py-2 rounded-md border-black flex items-center gap-x-2"
+                className="flex items-center px-3 py-2 border border-black rounded-md gap-x-2"
               >
                 Applications
                 <IoArrowForward className="text-xl" />

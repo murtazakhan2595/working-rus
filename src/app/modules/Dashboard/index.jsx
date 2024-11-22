@@ -1,9 +1,8 @@
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
-import { vectorFilter } from "assets/images";
-import { DashboardFilters, getDashboard } from "./Sections";
+import {  getDashboard } from "./Sections";
 import { Header } from "components";
-import { FilterInput } from "components/form-control";
+
 
 
 

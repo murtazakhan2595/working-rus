@@ -40,7 +40,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   <a
                     href={visaData.id_front.document.file}
                     download={visaData.id_front.document.name}
-                    className="flex items-center no-underline text-black"
+                    className="flex items-center text-black no-underline"
                   >
                     Download <FiDownload />
                   </a>
@@ -52,7 +52,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   <a
                     href={visaData.id_back.document.file}
                     download={visaData.id_back.document.name}
-                    className="flex items-center no-underline text-black"
+                    className="flex items-center text-black no-underline"
                   >
                     Download <FiDownload />
                   </a>
@@ -91,7 +91,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                       <a
                         href={visaData.passport_copy.document.file}
                         download={visaData.passport_copy.document.name}
-                        className="flex items-center no-underline text-black"
+                        className="flex items-center text-black no-underline"
                       >
                         Download <FiDownload />
                       </a>
@@ -133,7 +133,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                       <a
                         href={visaData.insurance_card.document.file}
                         download={visaData.insurance_card.document.name}
-                        className="flex items-center no-underline text-black"
+                        className="flex items-center text-black no-underline"
                       >
                         Download
                         <FiDownload />
@@ -186,7 +186,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                       <a
                         href={visaData.enter_permit.document.file}
                         download={visaData.enter_permit.document.name}
-                        className="flex items-center no-underline text-black"
+                        className="flex items-center text-black no-underline"
                       >
                         Download <FiDownload />
                       </a>
@@ -198,7 +198,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                       <a
                         href={visaData.visa_page.document.file}
                         download={visaData.visa_page.document.name}
-                        className="flex items-center no-underline text-black"
+                        className="flex items-center text-black no-underline"
                       >
                         Download <FiDownload />
                       </a>
@@ -210,7 +210,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                       <a
                         href={visaData.medical.document.file}
                         download={visaData.medical.document.name}
-                        className="flex items-center no-underline text-black"
+                        className="flex items-center text-black no-underline"
                       >
                         Download <FiDownload />
                       </a>
@@ -222,7 +222,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                       <a
                         href={visaData.id_application.document.file}
                         download={visaData.id_application.document.name}
-                        className="flex items-center no-underline text-black"
+                        className="flex items-center text-black no-underline"
                       >
                         Download <FiDownload />
                       </a>
@@ -250,7 +250,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
           <Card key={sectionIndex}>
             <CardHeader>
               <div className="flex justify-between">
-                <CardTitle>{section.title}</CardTitle>
+                <CardTitle className="text-primary">{section.title}</CardTitle>
                 {isEditable && (
                   <div
                     className="flex items-center gap-4"
@@ -264,15 +264,15 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
               </div>
             </CardHeader>
             <CardContent className="flex items-center pt-6 space-x-4">
-              <div className="grid grid-cols-1 gap-4 mb-4 max-w-[400px] w-full">
+              <div className="grid w-full grid-cols-1 gap-4 mb-4">
                 {section &&
                   section.fields &&
                   section.fields.map((object, index) => (
                     <div className="flex justify-between mb-2 " key={index}>
-                      <div className="w-1/2 text-base text-muted-foreground">
+                      <div className="w-1/2 text-sm xl:text-base lg:text-base md:text-sm text-muted-foreground">
                         {object.title}
                       </div>
-                      <div className="w-1/2 text-base text-black">
+                      <div className="w-1/2 text-sm text-black break-all xl:break-normal lg:break-all md:break-all xl:text-base lg:text-base md:text-sm">
                         {object.data || "N/A"}
                       </div>
                     </div>

@@ -124,7 +124,7 @@ const getAllLabels = async () => {
     });
 
     if (response.status === 200) {
-      const data = response.data;
+      const data = response.data?.results;
       return data;
     } else {
       return [];

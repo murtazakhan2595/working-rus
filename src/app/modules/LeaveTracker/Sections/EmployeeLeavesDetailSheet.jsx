@@ -59,7 +59,7 @@ const EmployeeLeavesDetailSheet = ({
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
         setIsOpen={handleClose}
-        width="500px"
+       
       >
         {isEdit ? (
           <EditDetails
@@ -96,10 +96,10 @@ const ViewDetails = ({
     const usedWidth = Math.min((used / total) * 100, 100);
 
     return (
-      <div className="relative w-full h-4 rounded-xl overflow-hidden">
+      <div className="relative w-full h-4 overflow-hidden rounded-xl">
         {/* Total bar */}
         <div
-          className="absolute top-0 left-0 h-full w-full"
+          className="absolute top-0 left-0 w-full h-full"
           style={{ backgroundColor: totalColor }}
         />
         {/* Used bar */}
@@ -126,17 +126,17 @@ const ViewDetails = ({
               setIsEdit(true);
             }}
           >
-            <div className="text-center text-neutral-1200 text-xs font-semibold">
+            <div className="text-xs font-semibold text-center text-neutral-1200">
               Edit Leaves
             </div>
           </Button>
         )}
       </div>
-      <div className="flex flex-col bg-white rounded-lg shadow border border-zinc-200 p-6 mt-8">
-        <h3 className="text-sm font-semibold text-neutral-800 mb-4">
+      <div className="flex flex-col p-6 mt-8 bg-white border rounded-lg shadow border-zinc-200">
+        <h3 className="mb-4 text-sm font-semibold text-neutral-800">
           Consumed Leaves
         </h3>
-        <div className="flex relative gap-4 items-start">
+        <div className="relative flex items-start gap-4">
           <div className="flex flex-col justify-center text-sm leading-tight whitespace-nowrap text-neutral-400">
             {componentsWithUsed.map((leave) => (
               <div
@@ -188,16 +188,16 @@ const EditDetails = ({
         id={employeeLeaves.id}
         src={employeeLeaves.profile_picture?.file}
       />
-      <div className="flex flex-col bg-white rounded-lg shadow border border-zinc-200 p-6 mt-8">
-        <h3 className="text-sm font-semibold text-neutral-800 mb-4">
+      <div className="flex flex-col p-6 mt-8 bg-white border rounded-lg shadow border-zinc-200">
+        <h3 className="mb-4 text-sm font-semibold text-neutral-800">
           Leave Types
         </h3>
         {leaveComponents.map((leave) => (
           <div
-            className="flex justify-between items-center mb-4"
+            className="flex items-center justify-between mb-4"
             key={leave.id}
           >
-            <div className="text-zinc-500 text-sm">{leave.name}</div>
+            <div className="text-sm text-zinc-500">{leave.name}</div>
             <div className="flex items-center gap-4">
               <span className="text-sm font-semibold">
                 {leave.max_days} days

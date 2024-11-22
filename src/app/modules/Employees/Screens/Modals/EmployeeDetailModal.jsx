@@ -38,7 +38,7 @@ function EmployeeDetailModal({
             footer: null,
           }}
           // onSubmit={handleSubmit}
-          width="860px"
+          
           isOpen={openModal}
           setIsOpen={closeModal}
           contentClassName="custom-sheet-width"

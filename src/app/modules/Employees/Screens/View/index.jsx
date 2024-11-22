@@ -128,11 +128,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
                   employeeData?.profile_picture
                 }
                 alt={`${employeeData?.first_name} ${employeeData?.last_name}`}
-                fallbackText={`${employeeData?.first_name} ${employeeData?.last_name}`
-                  ?.split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-                classNam={`w-30 h-30`}
+                fallbackText={employeeData?.first_name[0]}
               />
               <div>
                 <p className="text-base text-black">
@@ -161,15 +157,15 @@ const ViewEmployee = ({ userProfile, profileView }) => {
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
-                  >
+                    className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                    >
                     {tab.label}
                   </TabsTrigger>
                 ))}
               </TabsList>
             </div>
             <TabsContent value="personal">
-              <div className="grid grid-cols-2 gap-4 my-2 mb-4">
+              <div className="grid w-full grid-cols-1 gap-4 my-2 mb-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-1">
                 <PersonalDetials
                   isEditable={profileView}
                   userData={employeeData}
@@ -198,7 +194,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
               />
             </TabsContent>
             <TabsContent value="qualification">
-              <div className="grid grid-cols-1 gap-4 my-2 mb-4">
+              <div className="grid w-full grid-cols-2 gap-4 my-2 mb-4">
                 {Array.isArray(educations) && educations?.length > 0 && (
                   <AcademicInfo
                     isEditable={profileView}

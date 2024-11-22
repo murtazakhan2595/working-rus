@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { IoCalendarOutline } from "react-icons/io5";
-import { jobIcon } from "../../../../../assets/images";
+
 import { fetchJobPosts } from "../../../../hooks/recruitment";
-import { Labels } from "../../Sections";
+import { JobStatusLabel } from "../../../../../components/StatusLabel";
 import {
   getEmployeeType,
   getWorkType,
@@ -15,9 +15,10 @@ import {
   TabsList,
   TabsTrigger,
 } from "../../../../../src/@/components/ui/tabs";
-import { CardTitle } from "components/ui/card";
+
 import { Button } from "components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
 const Message = ({ message }) => {
   return (
     <div className="mt-5">
@@ -42,52 +43,58 @@ export const JobDetails = ({ job, handleJobChange, jobs }) => {
 
 
     return (
-      <div className="flex flex-col justify-between gap-y-12 text-baseGray">
-        <div className="flex justify-between">
-          <div className="flex items-center gap-x-2">
-            <img src={jobIcon} alt="Job Icon" />
-            <div>
-              <p className="text-base">{job?.id}</p>
-              <CardTitle>{job?.Job_Title}</CardTitle>
+      <div className="">
+        <div className="">
+          <div className="flex flex-col gap-4">
+            {/* <img src={jobIcon} alt="Job Icon" /> */}
+            <h3 className="text-primary h6">{job?.Job_Title}</h3>
+            <p className="text-sm text-neutral-1200">Job Id: {job?.id}</p>
+            <div className="flex items-center gap-3 text-base">
+              <IoCalendarOutline className="text-lg" />
+              {`${formattedUpdatedAt} - ${formattedDeadline} `}
             </div>
+              <div className="flex gap-3">
+                <JobStatusLabel
+                  label={job.status === "live" ? "Open" : "Close"}
+                  type="status"
+                />
+                <JobStatusLabel
+                  label={employeeType}
+                  type="employeeType"
+                />
+                <JobStatusLabel
+                  label={workType}
+                  type="workType"
+                />
+                <JobStatusLabel
+                  label={workLocation}
+                  type="workLocation"
+                />
+                <JobStatusLabel
+                  label={jobType}
+                  type="jobType"
+                />
+              </div>
+                <div className="flex justify-start w-full gap-3">
+                <Button
+                  disabled={jobs[0]?.id === job?.id}
+                  onClick={() => handleJobChange(true)}
+                  variant="outline"
+                >
+                  <ChevronLeft /> Previous
+                </Button>
+                <Button variant="outline" onClick={() => handleJobChange(false)}>
+                  Next <ChevronRight />
+                </Button>
+              </div>
+            
           </div>
-          <div className="text-base flex items-center gap-x-2">
-            <IoCalendarOutline className="text-lg" />
-            {`${formattedUpdatedAt} - ${formattedDeadline} `}
-          </div>
-        </div>
-        <div className="flex justify-between items-center flex-wrap gap-3">
-          <div className="flex gap-2">
-          <Labels
-            label={job.status === "live" ? "Open" : "Close"}
-            iconDot={true}
-            iconColor={`${
-              job.status === "live" ? "bg-green-500" : "bg-red-500"
-            }`}
-            backgroungColor={`${
-              job.status === "live" ? "bg-green-100" : "bg-red-100"
-            }`}
-          />
-          <Labels label={employeeType} />
-          <Labels label={workType} />
-          <Labels label={workLocation} />
-          <Labels label={jobType} />
-          </div>
-          <div className="flex items-center gap-2">
-          <Button
-            disabled={jobs[0]?.id === job?.id}
-            onClick={() => handleJobChange(true)}
-            variant="outline"
-          >
-            <ChevronLeft/> Previous
-          </Button>
-          <Button variant="outline" onClick={() => handleJobChange(false)}>
-            Next <ChevronRight/>
-          </Button>
-        </div>
         </div>
 
       </div>
+
+
+
     );
   } else {
     return <Message message={"No job to display"} />;
@@ -144,7 +151,7 @@ const TabComponent = ({
               key={index}
               value={index}
               onClick={() => handleTabChange(index)}
-              className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
+              className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
             >
               {tab}
             </TabsTrigger>
