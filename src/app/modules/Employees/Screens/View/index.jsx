@@ -70,8 +70,6 @@ const ViewEmployee = ({ userProfile, profileView }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log("Current path:", location.pathname);
-
   const getDataByHooks = async () => {
     setLoading(true);
     try {
@@ -165,7 +163,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
               </TabsList>
             </div>
             <TabsContent value="personal">
-              <div className="grid w-full grid-cols-1 gap-4 my-2 mb-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-1">
+              <div className="grid w-full grid-cols-1 gap-4 my-2 mb-4 ">
                 <PersonalDetials
                   isEditable={profileView}
                   userData={employeeData}
@@ -194,7 +192,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
               />
             </TabsContent>
             <TabsContent value="qualification">
-              <div className="grid w-full grid-cols-2 gap-4 my-2 mb-4">
+              <div className="grid w-full grid-cols-1 gap-4 my-2 mb-4">
                 {Array.isArray(educations) && educations?.length > 0 && (
                   <AcademicInfo
                     isEditable={profileView}

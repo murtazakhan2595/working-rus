@@ -144,7 +144,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
     <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}>
       <Header
         content={
-          <RequestTerminationCard closeModel={closeRequestTerminationCard} />
+          userProfile.role=== 1||userProfile.role=== 3 ? <RequestTerminationCard closeModel={closeRequestTerminationCard} />:null
         }
       />
       <Stats stats={statsData} />

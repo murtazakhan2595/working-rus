@@ -8,12 +8,10 @@ import {
 import React, {  useState } from "react";
 
 
-const Experience = ({ errors, touched, values, onChange }) => {
+const Experience = ({ errors, touched, values, onChange ,isCurrentExperience}) => {
   const [date, setDate] = useState(new Date());
-  const [selectedValue, setSelectedValue] = useState('');
   return (
     <>
-    
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -76,6 +74,7 @@ const Experience = ({ errors, touched, values, onChange }) => {
               name={"disableEndDate"}
               value={values.disableEndDate}
               label={"Currently Working Here"}
+              disabled={isCurrentExperience}
               onChange={(field, value) => {
                 onChange(field, value);
                 // if (value) {
@@ -103,7 +102,7 @@ const Experience = ({ errors, touched, values, onChange }) => {
           <div className="col-span-2 space-y-2">
             <CoverFileUpload
               name="exp_letter"
-              label="Experience Letter or drag it here"
+              label={`${isCurrentExperience ? 'Resume':'Experience Letter'} or drag it here`}
               acceptType=".pdf"
               error={errors?.exp_letter}
               touch={touched?.exp_letter}
@@ -111,6 +110,9 @@ const Experience = ({ errors, touched, values, onChange }) => {
               required={true}
               onChange={(field, value) => {
                 onChange(field, value);
+                if(isCurrentExperience){
+                onChange('resume', value);
+                }
               }}
             />
           </div>

@@ -9,7 +9,7 @@ const PersonalInformation = ({ userData, isEditable, getDataByHooks }) => {
   const personalInfo = [
     { title: "First Name", data: userData.first_name },
     { title: "ID Card No", data: userData?.nic },
-    { title: "Nationality", data: userData?.nationality },
+    { title: "Nationality", data: getCountryFullName(userData?.nationality) },
     { title: "Father Name", data: userData?.father_name },
     { title: "Last Name", data: userData?.last_name },
     { title: "Email Address", data: userData?.other_email },
@@ -40,9 +40,9 @@ const PersonalInformation = ({ userData, isEditable, getDataByHooks }) => {
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid w-full grid-rows-2 gap-4">
+          <div className="grid w-full lg:grid-cols-3 gap-4 md:grid-cols-2 grid-cols-1">
             {personalInfo.map((info, index) => (
-              <div className="flex flex-row w-full gap-3" key={index}>
+              <div className="flex flex-row w-full gap-2" key={index}>
                 <div className="flex-1 text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000 ">
                   {info.title}  
                 </div>
