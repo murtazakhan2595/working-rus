@@ -9,7 +9,7 @@ const PersonalInformation = ({ userData, isEditable, getDataByHooks }) => {
   const personalInfo = [
     { title: "First Name", data: userData.first_name },
     { title: "ID Card No", data: userData?.nic },
-    { title: "Nationality", data: userData?.nationality },
+    { title: "Nationality", data: getCountryFullName(userData?.nationality) },
     { title: "Father Name", data: userData?.father_name },
     { title: "Last Name", data: userData?.last_name },
     { title: "Email Address", data: userData?.other_email },
