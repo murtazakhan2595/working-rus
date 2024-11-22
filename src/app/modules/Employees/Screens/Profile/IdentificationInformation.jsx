@@ -82,8 +82,9 @@ const IdentificationInformation = ({
         insurance_card,
         ...payLoad
       } = data;
-
-      const response = await saveEmployeeVisaDetailData(
+console.log(payLoad)
+debugger
+const response = await saveEmployeeVisaDetailData(
         employeeId,
         payLoad,
         documents
@@ -119,6 +120,7 @@ const IdentificationInformation = ({
               initialValues={visaDetails}
               ref={formRef}
               onSubmit={(values, { resetForm }) => {
+                console.log(values,'48758')
                 handleSubmit(values, resetForm);
               }}
               validate={validateEmployeeIdentificationForm}
@@ -168,9 +170,10 @@ const IdentificationInformation = ({
                           }}
                         />
                       </div>
+                      {console.log(props.values)}
                       <div className="space-y-2">
-                        <DateInput
-                          ame={"id_expiry_date"}
+                      <DateInput
+                          name={"id_expiry_date"}
                           error={props.errors.id_expiry_date}
                           touch={props.touched.id_expiry_date}
                           value={props.values.id_expiry_date}
@@ -182,7 +185,6 @@ const IdentificationInformation = ({
                         />
                       </div>
                       <div className="space-y-2">
-                        {console.log(props.values?.id_front)}
                         <CoverFileUpload
                           name={"id_front"}
                           error={props.errors?.id_front}

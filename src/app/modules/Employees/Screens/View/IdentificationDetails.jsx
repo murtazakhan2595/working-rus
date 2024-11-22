@@ -25,7 +25,10 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                 title: "Current Country ID",
                 data: visaData.living_country_id_no,
               },
-              { title: "Issuance Country", data: visaData.place_of_issuance },
+              {
+                title: "Issuance Country",
+                data: getCountryFullName(visaData.place_of_issuance),
+              },
               {
                 title: "ID Issuance Date",
                 data: renderDate(visaData.id_issuance_date),
@@ -72,9 +75,9 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Issuance Country",
-                    data:
-                      visaData?.Passport_Issuance_Country ||
-                      getCountryFullName(visaData.Passport_Issuance_Country),
+                    data: getCountryFullName(
+                      visaData.Passport_Issuance_Country
+                    ),
                   },
                   {
                     title: "Issuance Date",
@@ -82,8 +85,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Expiry Date",
-                    data: renderDate(
-                      visaData?.Passport_Expiry_Date)
+                    data: renderDate(visaData?.Passport_Expiry_Date),
                   },
                   {
                     title: "Passport Copy",
@@ -118,14 +120,12 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Active Date",
-                    data: renderDate(
-                      visaData?.insurance_active_date),
+                    data: renderDate(visaData?.insurance_active_date),
                   },
                   {
                     title: "Expiry Date",
 
-                    data: renderDate(
-                      visaData?.insurance_expiry_date),
+                    data: renderDate(visaData?.insurance_expiry_date),
                   },
                   {
                     title: "Insurance Card",
@@ -163,21 +163,20 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Issuance Date",
-                    data: renderDate(
-                      visaData.visa_issuance_date),
+                    data: renderDate(visaData.visa_issuance_date),
                   },
                   {
                     title: "Expiry Date",
-                    data: renderDate(visaData.visa_expiry_date)
+                    data: renderDate(visaData.visa_expiry_date),
                   },
                   { title: "Visa Duration", data: visaData.visa_duration },
                   {
                     title: "Visa Country Entry Date",
-                    data: renderDate(visaData.visa_country_entry_date)
+                    data: renderDate(visaData.visa_country_entry_date),
                   },
                   {
                     title: "Visa Country Exit Date",
-                    data: renderDate(visaData.visa_country_exit_date)
+                    data: renderDate(visaData.visa_country_exit_date),
                   },
                   { title: "UID Number", data: visaData.uid_number },
                   {

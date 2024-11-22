@@ -31,8 +31,6 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   if (!values.salary_type && !isEditMode)
     errors.salary_type = "Salary type is required";
   if (!values.salary && !isEditMode) errors.salary = "Salary is required";
-  console.log(errors);
-  console.log(values)
      return errors;
 };
 
@@ -133,8 +131,6 @@ const validateEmployeeIdentificationForm = (values) => {
   if (!values.living_country_id_no) errors.living_country_id_no = "Living Country ID is required";
   if (!values.place_of_issuance) errors.place_of_issuance = "Place of Issuance is required";
   if(!values.id_issuance_date) errors.id_issuance_date = "Issuance Date is Required"
-  console.log(values)
-  console.log(errors)
    return errors; 
 }
 const validationPersonalInfoFormSchema = Joi.object({
