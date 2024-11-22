@@ -269,7 +269,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   section.fields &&
                   section.fields.map((object, index) => (
                     <div className="flex justify-between mb-2 " key={index}>
-                      <div className="w-1/2 text-sm xl:text-base lg:text-base md:text-sm text-muted-foreground">
+                      <div className="flex-1 text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000 ">
                         {object.title}
                       </div>
                       <div className="w-1/2 text-sm text-black break-all xl:break-normal lg:break-all md:break-all xl:text-base lg:text-base md:text-sm">
