@@ -1198,7 +1198,6 @@ const CoverFileUpload = ({
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState([]); // Store multiple files
-  console.log(files, "FILES ARE HERE")
   const fileInputRef = useRef(null);
 
   // Initialize files from value
@@ -1268,7 +1267,6 @@ const CoverFileUpload = ({
   };
 
   const formatFileSize = (bytes) => {
-    console.log(bytes, "BYES ARE HERE")
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
