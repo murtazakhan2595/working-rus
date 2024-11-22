@@ -38,6 +38,7 @@ export default function Component() {
   const fetchData = async () => {
     try {
       const response = await getEmployeeCustomList();
+      console.log(response, "HELLO KASHIF")
       setEmployeeData({
         total: response?.count || 0,
         active: response?.ActiveEmployee || 0,
@@ -47,6 +48,8 @@ export default function Component() {
       console.error(err);
     }
   };
+
+  console.log(employeeData?.active, "TOTAL EMPLOYEE")
 
   useEffect(() => {
     fetchData();
@@ -77,7 +80,7 @@ export default function Component() {
     },
   ];
 
-  const totalEmployees = chartData[0].active + chartData[0].offboarding;
+  const totalEmployees = Number(chartData[0].active + chartData[0].offboarding);
 
   return (
     <Card className="flex flex-col min-h-[442px]">
@@ -138,7 +141,7 @@ export default function Component() {
                           y={(viewBox.cy || 0) - 16}
                           className="text-2xl font-bold fill-foreground"
                         >
-                          {totalEmployees.toLocaleString()}
+                          {employeeData?.total}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
