@@ -4,14 +4,14 @@ const StatusList = (isResignation = true) => {
     // Iterate over ResignationStatusOptions and collect the values in the status_list array
     const status_list = ResignationStatusOptions.map(
       (status) => status.value
-    ).filter((value) => value !== "exit interview");
-    console.log(status_list,'123456788');
+    ).filter((value) => value !== "exit interview").join(", ");
+    
     return status_list;
   } else {
     // Iterate over TerminationStatusOptions and collect the values in the status_list array
     const status_list = TerminationStatusOptions.map(
       (status) => status.value
-    ).filter((value) => value !== "exit interview");
+    ).filter((value) => value !== "exit interview").join(", ");
     return status_list;
   }
 };
