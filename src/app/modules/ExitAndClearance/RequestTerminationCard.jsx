@@ -1,18 +1,10 @@
-import React, { useEffect } from "react";
-import { Formik } from "formik";
-import { Col, Form, Row } from "reactstrap";
+import React from "react";
 
 import { connect } from "react-redux";
 
 import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "../../../src/@/components/ui/sheet";
+
 
 import SheetComponent from "components/ui/SheetComponent";
 import RequestTerminationForm from "./Sections/RequestTerminationForm";
@@ -48,7 +40,7 @@ const RequestTerminationCard = ({
       notice_period: values.notice_period,
       employee_id: values.terminate_employee,
       reason_of_termination: values.reason_for_terminating,
-      status_termination: "viwed by manager",
+      status_termination: "viewed by manager",
     };
     console.log("payload", payload);
     try {

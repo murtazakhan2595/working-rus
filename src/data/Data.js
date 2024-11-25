@@ -542,7 +542,7 @@ export const resignationStatus = [
 ];
 
 export const terminationStatus = [
-  { label: "Viewd By Manager", value: "viwed by manager" },
+  { label: "Viewed By Manager", value: "viewed by manager" },
   { label: "Accepted by Employee", value: "accepted by employee" },
   { label: "Rejected by Employee", value: "rejected by employee" },
 ];
@@ -574,7 +574,7 @@ export const ResignationReasons = [
   // { value: "career-advance", label: "Career growth" },
   //{ value: "better-opportunity", label: "Better opportunity" },
   { value: "family-reasons", label: "Personal Reasons" },
-  { value: "Rrelocation", label: "Relocation" },
+  { value: "Relocation", label: "Relocation" },
   { value: "health-reasons", label: "Health reasons" },
   // { value: "Job dissatisfaction", label: "Job dissatisfaction" },
   { value: "Others", label: "Others" },

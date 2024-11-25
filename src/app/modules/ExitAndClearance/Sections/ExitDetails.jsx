@@ -91,7 +91,7 @@ function ExitDetails({ exitData, isTermination }) {
         )}
 
         {isTermination &&
-          (termination_status === "viwed by manager" ||
+          (termination_status === "viewed by manager" ||
             termination_status === "") && (
             <div className="w-[365px] h-10 justify-start items-start gap-5 inline-flex mt-14">
               <button

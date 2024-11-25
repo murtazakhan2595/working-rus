@@ -14,6 +14,7 @@ import {
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { ClaimExpenseTypeOptions } from "data/Data";
+import { ReasonForLeaving } from "data/Data";
 
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
@@ -109,10 +110,10 @@ function ResignationStatus(status) {
   return response ? response.label : "N/A";
 }
 function ResignationReason(value) {
-  const response = ResignationReasons.find((option) => option.value === value);
+  const response = ReasonForLeaving.find((option) => option.value === value);
   return response ? response.label : "N/A";
 }
-function TerminationReason({ value }) {
+function TerminationReason( value ) {
   const reason = terminationReasonsOptions.find(
     (option) => option.value === value
   );
