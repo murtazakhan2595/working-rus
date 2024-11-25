@@ -774,7 +774,6 @@ const employeeExit =async(payload)=>{
     const response = await axios.post(`${baseUrl}/employeeExit`, payload, {
       headers: headers(),
     });
-    console.log(response)
     if(response.status===201){
       return true
     }
