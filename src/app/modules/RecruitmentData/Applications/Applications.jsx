@@ -15,8 +15,6 @@ import TableCustom from "components/CustomTable";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardDescription,
 } from "components/ui/card";
 import { Header } from "components";
 import Stats from "components/ui/Stats";

@@ -7,6 +7,7 @@ import { deleteJob } from "app/hooks/recruitment";
 import AlertDialogue from "components/ui/AlertDialogue";
 
 import Dialogue from "components/Dialogue";
+import { toast } from "react-toastify";
 
 const JobsActions = ({ row, fetchJobPosts, isEdit= false }) => {
   const navigate = useNavigate();
@@ -19,7 +20,15 @@ const JobsActions = ({ row, fetchJobPosts, isEdit= false }) => {
     const jobLink = `${window.location.origin}/job-description/${row?.id}`;
     navigator.clipboard.writeText(jobLink)
       .then(() => {
-        alert('Link copied to clipboard!');
+        toast.success("Link copied to clipboard!", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "colored",
+        });
       })
       .catch((error) => {
         console.error('Failed to copy the link: ', error);
