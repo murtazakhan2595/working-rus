@@ -42,6 +42,7 @@ import {
 import { ClaimRequest, MyClaims } from "app/modules/claims";
 import Attendance from "app/modules/Attendance";
 import StyleGuide from "app/modules/StyleGuide";
+import { OfficeSetting } from "app/modules/OfficeSetting";
 
 const SidebarRoutes = [
 	{
@@ -183,6 +184,12 @@ const SidebarRoutes = [
 	  path: "/attendance",
 	  component: <Attendance />,
 	  name: "Attendance",
+	},
+
+	Config.OFFICE_SETTING && {
+		path: "/office-settings",
+		component: <OfficeSetting/>,
+		name:"Office Setting"
 	},
 	
 	Config.PROFIL_MANAGMENT && {

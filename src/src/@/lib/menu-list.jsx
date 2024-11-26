@@ -43,6 +43,7 @@ import Config from "constants/config";
 export function getMenuList(pathname, userRole) {
   const userRolesMap = {
     isPeopleTeam: userRole === 1 || userRole === 3 || userRole ===2,
+    isOfficeSetting: userRole === 1,
     isSelfServiceHub:  userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
     isPayroll: userRole === 1 || userRole === 2 || userRole === 3,    
     isTaskManagement:
@@ -245,6 +246,13 @@ export function getMenuList(pathname, userRole) {
     ),
   ];
 
+
+
+  const OfficeSettingMenu = [
+    createMenu("/office-settings", "Office Setting", House),
+    // createMenu("/services", "Services", SquareStack),
+  ];
+
   const reportsMenus = [
     createMenu(
       "/reports",
@@ -295,7 +303,8 @@ export function getMenuList(pathname, userRole) {
       groupLabel: "",
       menus: peopleEngagementMenus,
     },
-    userRolesMap.isReportsMenu&& Config.REPORTS && { groupLabel: "", menus: reportsMenus },
+    userRolesMap.isReportsMenu && Config.REPORTS && { groupLabel: "", menus: reportsMenus },
+    userRolesMap.isOfficeSetting && Config.OFFICE_SETTING && { groupLabel: "", menus: OfficeSettingMenu },
   ].filter(Boolean);
 
   return menuList;

@@ -75,6 +75,7 @@ const Header = ({ content, userProfile }) => {
       "job-application": "Job Application",
       "job-application-form": "Job Application Form",
       "job-description": "Job Description",
+      "office-settings":  "Office Setting"
       
     };
     setPathName(pathNames[path] || "Dashboard");
