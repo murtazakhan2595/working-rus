@@ -53,12 +53,12 @@ const ContactInformation = ({
     {
       titile: "Permanent Address",
       fields: [
-        { title: "Address", data: userData?.residential_address },
+        { title: "Address", data: userData?.emergency_permanent_address },
       ],
     },
     {
       titile: "Present Address",
-      fields: [{ title: "Address", data: userData?.current_address }],
+      fields: [{ title: "Address", data: userData?.emergency_current_address }],
     },
   ];
   return (
