@@ -5,20 +5,27 @@ import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { renderDate } from "utils/renderValues";
 import { getEmployeeCerficationData } from "app/hooks/employee";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
+import { PageLoader } from "components";
 
 const Certifications = ({ isEditable, employeeId }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   const [certifications, setCertifications] = useState([{}]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const getDataByHooks = async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const certificationData = await getEmployeeCerficationData(employeeId);
-      setCertifications(certificationData || []);
+      setCertifications(
+        certificationData &&
+          certificationData?.length > 0 &&
+          certificationData[0]?.id
+          ? certificationData
+          : null
+      );
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-    setLoading(false);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -27,18 +34,14 @@ const Certifications = ({ isEditable, employeeId }) => {
   }, [employeeId]);
   console.log(certifications);
 
-  if (certifications?.length <= 0) {
-    return <></>;
-  } else if (certifications[0] && !certifications[0].id) {
-    return <></>;
-  }
-
   return (
     <>
       <Card>
         <CardHeader>
           <div className="flex justify-between">
-            <CardTitle className="text-primary">Certification and License</CardTitle>
+            <CardTitle className="text-primary">
+              Certification and License
+            </CardTitle>
             {isEditable && (
               <div
                 className="flex items-center gap-4"
@@ -51,41 +54,55 @@ const Certifications = ({ isEditable, employeeId }) => {
             )}
           </div>
         </CardHeader>
-        <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid w-full grid-cols-1 gap-4 mb-4">
-            {certifications?.map((cer, index) => (
-              <div
-                key={index}
-                className="flex flex-wrap justify-between w-full mb-7"
-              >
-                <div>
-                  <div className="text-base font-semibold text-black whitespace-nowrap">
-                    {cer.certification_institute || "N/A"}
+        {isLoading ? (
+          <PageLoader />
+        ) : (
+          <CardContent className="flex items-center pt-6 space-x-4">
+            <div className="grid w-full grid-cols-1 gap-4 mb-4">
+              {certifications ? (
+                certifications?.map((cer, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-wrap justify-between w-full mb-7"
+                  >
+                    <div>
+                      <div className="text-base font-semibold text-black whitespace-nowrap">
+                        {cer.certification_institute || "Cetitification Institute (N/A)"}
+                      </div>
+                      <div className="text-base text-black">
+                        {cer.certification_name || "Certification Name (N/A)"}
+                      </div>
+                      <div className="text-base text-black">
+                        {renderDate(cer.completion_date)}
+                        {cer.expiry_date?` - ${renderDate(cer.expiry_date)}`:''}
+                      </div>
+                    </div>
+                    <div>
+                      {cer.certification_body &&
+                        (cer.certification_body[0]?.file ||
+                          cer.certification_body?.file) && (
+                          <a
+                            download={cer.certification_body[0]?.name}
+                            className="flex items-center gap-2 text-sm no-underline"
+                            href={
+                              cer?.certification_body[0]?.file ||
+                              cer?.certification_body?.file
+                            }
+                          >
+                            Certification <FiDownload />
+                          </a>
+                        )}
+                    </div>
                   </div>
-                  <div className="text-base text-black">
-                    {cer.certification_name || "N/A"}
-                  </div>
-                  <div className="text-base text-black">
-                    {renderDate(cer.completion_date)}
-                    {cer.expiry_date && " - "}
-                    {renderDate(cer.expiry_date)}
-                  </div>
+                ))
+              ) : (
+                <div className="flex-1 text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000 ">
+                  No Certifications yet.
                 </div>
-                <div>
-                  {cer.certification_body[0]?.file && (
-                    <a
-                      download={cer.certification_body[0]?.name}
-                      className="flex items-center gap-2 text-sm no-underline"
-                      href={cer?.certification_body[0]?.file}
-                    >
-                      Certification <FiDownload />
-                    </a>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
+              )}
+            </div>
+          </CardContent>
+        )}
       </Card>
       {showPersonalDetailCard && (
         <EmployeeDetailModal

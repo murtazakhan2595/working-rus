@@ -7,6 +7,7 @@ import { getVisaLabel } from "utils/getVisaLabel";
 import { renderDate } from "utils/renderValues";
 import { getCountryFullName } from "utils/getValuesFromTables";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
+import { PageLoader } from "components";
 
 const IdentificationDetails = ({ isEditable, employeeId }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
@@ -235,12 +236,20 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
       setIdentificationDetails(identificationDetailsData);
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
   useEffect(() => {
     getDataByHooks();
   }, [employeeId]);
+  if (loading) {
+    return (
+      <Card>
+        <PageLoader />
+      </Card>
+    );
+  }
 
   return (
     <>
