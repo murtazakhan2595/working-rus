@@ -17,7 +17,7 @@ export default {
     PEOPLE_ENGAGEMENT:false,
     PERSONAL_DEVELOPMENT:false,
     DAILY_TASK_REPORT:false,
-    OFFICE_SETTING: true,
+    OFFICE_SETTING: false,
 
 
     TS_PERSONAL_REQUISITION:false,
