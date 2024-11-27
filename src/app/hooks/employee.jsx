@@ -52,7 +52,7 @@ const getNewEmployeeCode = async () => {
       headers: headers(),
     });
     const value = response.data?.serial_number;
-    const [prefix, numericPart] = value?.split('--');
+    const [prefix, numericPart] = value?.split('-');
     const incrementedNumber = parseInt(numericPart, 10) + 1;
     const formattedNumber = incrementedNumber.toString().padStart(4, '0');
     const employee = `${prefix}--${formattedNumber}`;

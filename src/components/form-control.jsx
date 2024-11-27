@@ -577,7 +577,7 @@ const PhoneNumberInput = ({
 
   useEffect(() => {
     if (value !== undefined && selectedCountryCode) {
-      const formattedValue = `+${selectedCountryCode.value}${value}`;
+      const formattedValue = `+${selectedCountryCode.value}${value ?? ''}`;
       setInputValue(formattedValue);
     }
   }, [value, selectedCountryCode]);
