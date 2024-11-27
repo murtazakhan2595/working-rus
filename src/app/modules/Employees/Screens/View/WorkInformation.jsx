@@ -12,6 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 
 import moment from "moment";
+import { DetailBox } from "components/SheetCardExtension";
 
 const WorkInformation = ({
   userData,
@@ -43,7 +44,7 @@ const WorkInformation = ({
       data: <ManagerName value={userData?.direct_report} />,
     },
 
-    { title: "Department Head", data: userData?.department_manager },
+    // { title: "Department Head", data: userData?.department_manager },
     {
       title: "Joining Date",
       data: moment(userData?.joining_date, "YYYY-MM-DD").format("DD-MM-YYYY"),
@@ -73,7 +74,8 @@ const WorkInformation = ({
           <div className="grid w-full grid-cols-1 gap-4 mb-4 md:grid-cols-3">
             {workInformation.map((info, index) => (
               <div className="flex w-full gap-3" key={index}>
-                <div className="text-sm xl:text-base lg:text-base md:text-sm text-muted-foreground">
+                {/* <DetailBox label={info?.title} value={info?.data}/> */}
+                <div className="text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000">
                   {info.title}
                 </div>
                 <div className="text-sm text-black break-all xl:break-normal lg:break-all md:break-all xl:text-base lg:text-base md:text-sm">
