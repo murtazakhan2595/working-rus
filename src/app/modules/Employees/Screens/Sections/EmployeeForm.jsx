@@ -95,7 +95,7 @@ const SheetOnBorading = ({
           const employeeData = await getEmployeeInformation(response);
           setFormData(employeeData);
           // setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
-          setEmpId(employeeData.id);
+          setEmpId(response.serial_number);
           validateEmail(employeeData.work_email);
           validateUsername(employeeData.username);
         } else {
@@ -134,7 +134,6 @@ const SheetOnBorading = ({
     }
   };
   const handleSubmit = async (data) => {
-    console.log(data);
     // return
     setIsLoading(true);
     let employeePayroll = {};
@@ -169,7 +168,7 @@ const SheetOnBorading = ({
           if (isEditMode) nextStep();
           else navigate("/profile-management");
         } else {
-          await saveEmployeePayroll(employeePayroll);
+          await saveEmployeePayroll({...employeePayroll, employee: response?.id });
           toast.success("Employee Added Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });

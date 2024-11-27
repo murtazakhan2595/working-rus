@@ -66,7 +66,7 @@ const ContactInformation = ({
       <Card>
         <CardHeader>
           <div className="flex justify-between">
-            <CardTitle className="text-primary">Contact Information</CardTitle>
+            <CardTitle className="text-primary">Emergency Contact Information</CardTitle>
             {isEditable && (
               <div
                 className="flex items-center gap-4"
@@ -80,7 +80,7 @@ const ContactInformation = ({
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid w-full lg:grid-cols-3 gap-4 grid-cols-1 gap-4 mb-4">
+          <div className="grid w-full lg:grid-cols-3 gap-4 grid-cols-1  mb-4">
             {contactInformation.map((contactInfo, index) => (
               <div key={index}>
                 <div className="text-[#111827] text-sm font-semibold whitespace-nowrap py-3">
