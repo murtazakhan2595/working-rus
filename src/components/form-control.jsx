@@ -548,6 +548,7 @@ const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
     </>
   );
 };
+
 const PhoneNumberInput = ({
   name,
   disabled,
@@ -558,19 +559,35 @@ const PhoneNumberInput = ({
   required,
   countryCode,
   value,
-  countryOptions, // Receive the country options here
+  countryOptions,
 }) => {
-  const [selectedCountryCode, setSelectedCountryCode] = useState(countryCode);
+  const [selectedCountryCode, setSelectedCountryCode] = useState(null);
   const [inputValue, setInputValue] = useState(value || "");
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Sync state with countryCode prop
+  useEffect(() => {
+    const selectedOption = countryOptions.find((option) => option.value === countryCode);
+    if (selectedOption) {
+      setSelectedCountryCode(selectedOption);
+      setInputValue((prev) => (prev.startsWith(`+${selectedOption.value}`) ? prev : `+${selectedOption.value}`));
+    }
+  }, [countryCode, countryOptions]);
+
+  useEffect(() => {
+    if (value !== undefined && selectedCountryCode) {
+      const formattedValue = `+${selectedCountryCode.value}${value ?? ''}`;
+      setInputValue(formattedValue);
+    }
+  }, [value, selectedCountryCode]);
 
   // Handles the country code selection
   const handleSelectChange = (value) => {
     const selectedOption = countryOptions.find((option) => option.value === value);
     if (selectedOption) {
-      setSelectedCountryCode(selectedOption.value);
-      setInputValue(`+${selectedOption.value}`); // Update the input with the selected country code
+      setSelectedCountryCode(selectedOption);
+      // setInputValue(`+${selectedOption.value}`); // Update the input with the selected country code
       onChange("country_code", selectedOption.value); // Notify parent about country code change
       setOpen(false); // Close the popover
     }
@@ -579,11 +596,11 @@ const PhoneNumberInput = ({
   // Handles the phone number input change
   const handleInputChange = (event) => {
     const regExTelephone = /^[0-9-]+$/;
-    let inputValue = event.target.value.replace(`+${selectedCountryCode}`, "");
-    
-    if (!inputValue || regExTelephone.test(inputValue)) {
-      setInputValue(`+${selectedCountryCode}${inputValue}`);
-      onChange(name, inputValue); // Send the stripped value (without country code) to the parent
+    const strippedValue = event.target.value.replace(`+${selectedCountryCode?.value || ""}`, "");
+
+    if (!strippedValue || regExTelephone.test(strippedValue)) {
+      setInputValue(`+${selectedCountryCode?.value || ""}${strippedValue}`);
+      onChange(name, strippedValue); // Send the stripped value (without country code) to the parent
     }
   };
 
@@ -594,7 +611,10 @@ const PhoneNumberInput = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <Label check>{label}{required && <span className="text-red-600">*</span>}</Label>
+      <Label check>
+        {label}
+        {required && <span className="text-red-600">*</span>}
+      </Label>
       <div className="flex items-center">
         <div className="flex-shrink-0 w-fit">
           <Popover open={open} onOpenChange={setOpen}>
@@ -605,7 +625,7 @@ const PhoneNumberInput = ({
                 aria-expanded={open}
                 className="justify-start w-full rounded-l-sm rounded-r-none text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
               >
-                {selectedCountryCode ?? "Select code"}
+                {selectedCountryCode?.alpha2 ?? "Select code"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0 w-[300px]">
@@ -657,6 +677,8 @@ const PhoneNumberInput = ({
     </div>
   );
 };
+
+
 
 const EmailInput = ({
   name,

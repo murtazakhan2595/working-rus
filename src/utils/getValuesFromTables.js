@@ -94,8 +94,8 @@ function EmployeeID({ value }) {
 }
 
 function getEmployeeid(value) {
-  const employee = value ? `TXB-${value.toString().padStart(4, "0")}` : "N/A";
-  return employee;
+  const employee = value ? `${value.toString().padStart(4, "0")}` : "N/A";
+  return employee; 
 }
 
 function ManagerName({ value }) {

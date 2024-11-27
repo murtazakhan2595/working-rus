@@ -51,8 +51,12 @@ const getNewEmployeeCode = async () => {
     const response = await axios.get(`${baseUrl}/lastemployee`, {
       headers: headers(),
     });
-    const id = response.data?.id;
-    return id + 1;
+    const value = response.data?.serial_number;
+    const [prefix, numericPart] = value?.split('-');
+    const incrementedNumber = parseInt(numericPart, 10) + 1;
+    const formattedNumber = incrementedNumber.toString().padStart(4, '0');
+    const employee = `${prefix}--${formattedNumber}`;
+    return employee;
   } catch (error) {
     if (error?.response?.status === 401) {
       handleLogout();

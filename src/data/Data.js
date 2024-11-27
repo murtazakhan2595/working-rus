@@ -37,7 +37,9 @@ export const countriesCallingCodes = countries.all
       "+",
       ""
     )})`,
+    alpha2: country.alpha2, 
   }));
+
 export const countriesList = countries.all.map((country) => {
   return {
     value: country.name,
