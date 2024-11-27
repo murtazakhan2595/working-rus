@@ -55,7 +55,7 @@ const getNewEmployeeCode = async () => {
     const [prefix, numericPart] = value?.split('-');
     const incrementedNumber = parseInt(numericPart, 10) + 1;
     const formattedNumber = incrementedNumber.toString().padStart(4, '0');
-    const employee = `${prefix}--${formattedNumber}`;
+    const employee = `${prefix}-${formattedNumber}`;
     return employee;
   } catch (error) {
     if (error?.response?.status === 401) {
