@@ -195,7 +195,7 @@ export default function MyTasks() {
               My Tasks
             </div>
             
-            <div className="flex flex-row justify-end w-full gap-4">
+            <div className="flex items-center gap-3">
             <Popover open={openStatus} onOpenChange={setOpenStatus}>
               <PopoverTrigger asChild>
                 <Button
@@ -354,14 +354,14 @@ function RenderTask({ tasks }) {
           formatter: (cell, render) => (
             <div className="flex flex-col w-full gap-2">
               <div className="flex flex-row w-full gap-4">
-                <div className="font-semibold text-[#111827]">
+                <div className="font-semibold text-neutral-1200">
                   {render.project_name}
                 </div>
                 <div className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2 py-2 h-[22px] rounded-full border border-mauve-500 flex items-center justify-center">
                   {getStatusLabel(render.status)}
                 </div>
               </div>
-              <div className="text-mauve-900">
+              <div className="text-neutral-1000">
                 Due on {moment(render?.due_date).format("MMMM DD")} - Created by
                 Name of employee
               </div>
@@ -374,7 +374,7 @@ function RenderTask({ tasks }) {
             <Button
               variant="outline"
               size="sm"
-              className="rounded-sm text-[#000] font-semidbold"
+              className="rounded-sm font-semidbold"
             >
               <Link to="#">View Project</Link>
             </Button>

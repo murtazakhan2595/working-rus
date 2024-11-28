@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { connect } from "react-redux";
 import { RxPlus } from "react-icons/rx";
 import { Members } from "../Sections";
@@ -15,6 +15,7 @@ import { ProjectStatusList } from "data/Data";
 import { ImageInput } from "components/form-control";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { SheetCardExtension } from "components/SheetCardExtension";
+import  { components } from 'react-select';
 
 const ProjectForm = ({
   employees,
@@ -179,11 +180,11 @@ const ProjectForm = ({
  
                         <SheetCardExtension title="Add to Project" className="mt-4">
 
-                        <div className="flex items-center gap-10">
-                          <div className="space-y-2">
-                            <span className="label text-[14px]">Colors</span>
-                          </div>
-                          <div className="flex space-x-2">
+                        <div className="flex items-center gap-4">
+                          
+                            <div className="label text-sm flex-1">Colors</div>
+                         
+                          <div className="flex space-x-2 flex-1">
                             {[
                               "#f7f7f7",
                               "#f9e8f7",
@@ -209,12 +210,12 @@ const ProjectForm = ({
                         </div>
 
                         <div className="flex items-center gap-4">
-                          <div className="space-y-2">
-                            <span className="label text-[14px]">
+                          
+                            <div className="label text-sm flex-1">
                               Team Members
-                            </span>
-                          </div>
-                          <div className="space-y-2">
+                            </div>
+                         
+                          <div className="space-y-2 flex-1">
                             <div className="flex flex-wrap items-center justify-start gap-2 h-100">
                               {props.values.project_members &&
                                 props.values.project_members.length > 0 &&
@@ -233,11 +234,15 @@ const ProjectForm = ({
                                 onClick={() => {
                                   setMembersOpen(!membersOpen);
                                 }}
-                                className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-[#eceaea] border-2"
+                                className={`w-9 h-9 rounded-full flex justify-center items-center cursor-pointer border-2 transition-all duration-300 ${
+                                  membersOpen 
+                                    ? 'bg-red-300 rotate-45' 
+                                    : 'bg-emerald-600'
+                                }`}
                               >
-                                <span className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
+                                <div className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
                                   <RxPlus />
-                                </span>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -245,26 +250,30 @@ const ProjectForm = ({
                         {membersOpen && (
                           <SelectComponent
                             name="project_members"
-                            options={employees}
+                            options={employees.map(emp => ({
+                              ...emp,
+                              isDisabled: props.values.project_members?.includes(emp.value)
+                            }))}
                             error={props.errors.project_members}
                             touch={props.touched.project_members}
-                            // value={props.values.project_members}
                             label="Project Members"
                             required
                             onChange={(field, value) => {
                               setMembersOpen(false);
-                              const members =
-                                props.values.project_members || [];
-                              members.push(value);
-                              props.setFieldValue(field, members);
+                              const members = props.values.project_members || [];
+                              if (!members.includes(value)) {
+                                members.push(value);
+                                props.setFieldValue(field, members);
+                              }
                             }}
+                            isDisabled={option => props.values.project_members?.includes(option.value)}
                           />
                         )}
 
                         <div className="flex items-center gap-4">
-                          <div>
-                            <span className="label text-sm">Status</span>
-                          </div>
+                          
+                            <div className="label text-sm mt-4 flex-1">Status</div>
+                          <div className="flex-1">
                           <SelectComponent
                             name="status"
                             options={ProjectStatusList}
@@ -276,6 +285,7 @@ const ProjectForm = ({
                               props.setFieldValue(field, value);
                             }}
                           />
+                        </div>
                         </div>
                         </SheetCardExtension>
 
