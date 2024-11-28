@@ -250,6 +250,8 @@ const ProjectForm = ({
                         {membersOpen && (
                           <SelectComponent
                             name="project_members"
+                            placeholder="Select Members"
+                            classes="flex-1 flex flex-col gap-4"
                             options={employees.map(emp => ({
                               ...emp,
                               isDisabled: props.values.project_members?.includes(emp.value)
