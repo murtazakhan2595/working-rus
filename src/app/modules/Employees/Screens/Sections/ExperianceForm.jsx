@@ -54,7 +54,7 @@ const Experience = ({ errors, touched, values, onChange ,isCurrentExperience}) =
               }}
             />
           </div>
-          {!values.disableEndDate && (
+          {!values.disableEndDate && !isCurrentExperience && (
             <div className="space-y-2">
               <DateInput
                 name={"exp_end_date"}
@@ -72,7 +72,7 @@ const Experience = ({ errors, touched, values, onChange ,isCurrentExperience}) =
           <div className="flex items-center space-y-2">
             <CheckBoxInput
               name={"disableEndDate"}
-              value={values.disableEndDate}
+              value={values.disableEndDate || isCurrentExperience}
               label={"Currently Working Here"}
               disabled={isCurrentExperience}
               onChange={(field, value) => {

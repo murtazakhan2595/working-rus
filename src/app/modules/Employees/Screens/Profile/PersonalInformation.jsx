@@ -8,8 +8,8 @@ import {
   PhoneNumberInput,
   SelectComponent,
   TextInput,
-} from "../../../../../components/form-control";
-import PageLoader from "../../../../../components/PageLoader.jsx";
+} from "components/form-control";
+import {PageLoader} from "components";
 import {
   countriesCallingCodes,
   countriesList,

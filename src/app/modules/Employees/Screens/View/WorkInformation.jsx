@@ -42,8 +42,6 @@ const WorkInformation = ({
       title: "Direct Report To",
       data: <ManagerName value={userData?.direct_report} />,
     },
-
-    { title: "Department Head", data: userData?.department_manager },
     {
       title: "Joining Date",
       data: moment(userData?.joining_date, "YYYY-MM-DD").format("DD-MM-YYYY"),
@@ -70,13 +68,13 @@ const WorkInformation = ({
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid w-full grid-cols-1 gap-4 mb-4 md:grid-cols-3">
+          <div className="grid w-full lg:grid-cols-3 gap-4 md:grid-cols-2 grid-cols-1">
             {workInformation.map((info, index) => (
-              <div className="flex w-full gap-3" key={index}>
-                <div className="text-sm xl:text-base lg:text-base md:text-sm text-muted-foreground">
+              <div className="flex flex-row w-full gap-2" key={index}>
+                <div className="flex-1 text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000">
                   {info.title}
                 </div>
-                <div className="text-sm text-black break-all xl:break-normal lg:break-all md:break-all xl:text-base lg:text-base md:text-sm">
+                <div className="flex-1 text-sm text-black break-all xl:break-normal lg:break-all md:break-all xl:text-base lg:text-base md:text-sm">
                   {info.data || "N/A"}
                 </div>
               </div>
