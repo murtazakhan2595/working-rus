@@ -101,7 +101,7 @@ const ProjectForm = ({
   };
   return (
     <>
-    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
+    {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
       <div
         open={isOpen}
         onOpenChange={setIsOpen}

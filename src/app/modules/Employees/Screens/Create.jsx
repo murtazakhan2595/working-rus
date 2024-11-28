@@ -58,6 +58,7 @@ const CreateUpdateEmployee = () => {
             setShowFormSubmittedModal={setShowFormSubmittedModal}
             id={id}
             setIsOpen={()=>{}}
+            discard={true}
           />
         </CardContent>
       </Card>

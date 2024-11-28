@@ -193,7 +193,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
 
   return (
     <div>
-    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen, setNewAttachment)}
+    {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen, setNewAttachment})}
       <SheetComponent
         {...formSheetData}
         contentClassName="custom-sheet-width"

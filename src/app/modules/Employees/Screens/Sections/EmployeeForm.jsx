@@ -70,8 +70,10 @@ const SheetOnBorading = ({
   managers,
   isOpen,
   setIsOpen,
+  discard=false
 }) => { 
   const formRef = React.createRef();
+
 
   let dispatch = useDispatch();
   const navigate = useNavigate();
@@ -216,7 +218,7 @@ const SheetOnBorading = ({
 
   return (
     <>
-    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
+    {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen, discard, navigate})}
 
       <div
         side="right"
