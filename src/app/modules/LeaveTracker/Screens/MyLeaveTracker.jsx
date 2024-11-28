@@ -328,7 +328,7 @@ function ConsumedLeaves({ componentsWithUsed }) {
     const usedWidth = Math.min((used / total) * 100, 100);
 
     return (
-      <div className="relative w-full h-4 rounded-xl overflow-hidden">
+      <div className="relative w-full h-2 rounded-xl overflow-hidden">
         {/* Total bar */}
         <div
           className="absolute top-0 left-0 h-full w-full"

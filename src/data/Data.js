@@ -347,14 +347,14 @@ export const ProjectStatusList = [
     value: "upcoming",
     label: (
       <div className="flex justify-center gap-x-2 text-mauve-900 ">
-        Upcoming
+        Up Coming
       </div>
     ),
   },
   {
     value: "on_going",
     label: (
-      <div className="flex justify-center text-yellow-500 gap-x-2">Ongoing</div>
+      <div className="flex justify-center text-yellow-500 gap-x-2">On Going</div>
     ),
   },
   {
