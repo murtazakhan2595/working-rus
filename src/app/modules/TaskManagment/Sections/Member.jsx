@@ -1,7 +1,7 @@
 import { EmployeeName } from "utils/getValuesFromTables";
 
 import React, { useState } from "react";
-import {getRandomColor} from "utils/renderValues"
+import { getRandomColor } from "utils/renderValues"
 import { CircleX } from "lucide-react";
 
 
@@ -10,25 +10,19 @@ const Members = ({ member, isEditMode, removeMember }) => {
   const name = employeeName.props.children;
   return (
     <div
-      className="flex items-center p-1 rounded-lg border border-emerald-600 relative"
+      className="bg-plum-300 text-plum-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-lg flex items-center"
       title={name}
     >
-      <div
-        className={`${getRandomColor(name?.charAt(0))}  flex font-semibold text-md items-center justify-center rounded-full w-10 h-10`}
-        
-      >
-        {name?.toUpperCase().charAt(0)}
-      </div>
+
+      {name?.toUpperCase()}
+
       {isEditMode && (
-        <div 
-          className="flex flex-col mx-2 whitespace-break-spaces flex-wrap cursor-pointer"
-          onClick={() => removeMember(member)}
-        >
-          <div className="">
+        
+          <div className="" onClick={() => removeMember(member)}>
             <CircleX
               className="ml-1 text-sm text-red-600 cursor-pointer"
             />
-          </div>
+          
         </div>
       )}
     </div>
