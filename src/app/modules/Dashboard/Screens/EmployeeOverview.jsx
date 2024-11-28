@@ -112,18 +112,22 @@ console.log(userProfile);
               cursor={false} 
               content={({ payload }) => {
                 if (payload && payload.length > 0) {
-                  const dataKey = payload[0].dataKey;
-                  const value = payload[0].value;
-                  const label = chartConfig[dataKey]?.label || dataKey;
                   return (
                     <div className="p-2 bg-white border rounded shadow">
-                      <p className="flex items-center text-neutral-1100">
-                        <span 
-                          className="inline-block w-2 h-2 mr-2 rounded-full"
-                          style={{ backgroundColor: payload[0].fill }}
-                        />
-                        {label}: {value}
-                      </p>
+                      {payload.map((entry, index) => {
+                        const dataKey = entry.dataKey;
+                        const value = entry.value;
+                        const label = chartConfig[dataKey]?.label || dataKey;
+                        return (
+                          <p key={index} className="flex items-center text-neutral-1100">
+                            <span 
+                              className="inline-block w-2 h-2 mr-2 rounded-full"
+                              style={{ backgroundColor: entry.fill }}
+                            />
+                            {label}: {value}
+                          </p>
+                        );
+                      })}
                     </div>
                   );
                 }
