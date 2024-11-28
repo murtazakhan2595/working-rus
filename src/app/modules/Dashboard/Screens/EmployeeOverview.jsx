@@ -81,7 +81,7 @@ export default function Component() {
   ];
 
   const totalEmployees = Number(chartData[0].active + chartData[0].offboarding);
-
+console.log(userProfile);
   return (
     <Card className="flex flex-col min-h-[442px]">
       <CardHeader className="items-start pb-0">
@@ -89,9 +89,9 @@ export default function Component() {
           <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
             Total Employees
           </div>
-          <Button variant="outline" className="">
+          { (userProfile.role===1 || userProfile.role===3)&&<Button variant="outline" className="">
             <Link to="/profile-management">View Details</Link>
-          </Button>
+          </Button>}
         </CardTitle>
         <CardDescription className="text-slate-900">
           {/* January - June 2024 */}

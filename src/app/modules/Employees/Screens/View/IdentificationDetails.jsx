@@ -40,9 +40,9 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
               },
               {
                 title: "ID Front Image",
-                data: visaData?.id_front?.document?.file && (
+                data: visaData?.id_front?.document && (
                   <a
-                    href={visaData.id_front.document.file}
+                    href={visaData.id_front.document}
                     download={visaData.id_front.document.name}
                     className="flex items-center text-black no-underline"
                   >
@@ -52,9 +52,9 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
               },
               {
                 title: "ID Back Image",
-                data: visaData?.id_back?.document?.file && (
+                data: visaData?.id_back?.document && (
                   <a
-                    href={visaData.id_back.document.file}
+                    href={visaData.id_back.document}
                     download={visaData.id_back.document.name}
                     className="flex items-center text-black no-underline"
                   >
@@ -90,9 +90,9 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Passport Copy",
-                    data: visaData?.passport_copy?.document?.file && (
+                    data: visaData?.passport_copy?.document && (
                       <a
-                        href={visaData.passport_copy.document.file}
+                        href={visaData.passport_copy.document}
                         download={visaData.passport_copy.document.name}
                         className="flex items-center text-black no-underline"
                       >
@@ -130,9 +130,9 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Insurance Card",
-                    data: visaData?.insurance_card?.document?.file && (
+                    data: visaData?.insurance_card?.document && (
                       <a
-                        href={visaData.insurance_card.document.file}
+                        href={visaData.insurance_card.document}
                         download={visaData.insurance_card.document.name}
                         className="flex items-center text-black no-underline"
                       >
@@ -182,9 +182,9 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   { title: "UID Number", data: visaData.uid_number },
                   {
                     title: "Entry Permit",
-                    data: visaData?.enter_permit?.document?.file && (
+                    data: visaData?.enter_permit?.document && (
                       <a
-                        href={visaData.enter_permit.document.file}
+                        href={visaData.enter_permit.document}
                         download={visaData.enter_permit.document.name}
                         className="flex items-center text-black no-underline"
                       >
@@ -194,9 +194,9 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Visa Page",
-                    data: visaData?.visa_page?.document?.file && (
+                    data: visaData?.visa_page?.document && (
                       <a
-                        href={visaData.visa_page.document.file}
+                        href={visaData.visa_page.document}
                         download={visaData.visa_page.document.name}
                         className="flex items-center text-black no-underline"
                       >
@@ -206,9 +206,9 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Medical Result",
-                    data: visaData?.medical?.document?.file && (
+                    data: visaData?.medical?.document && (
                       <a
-                        href={visaData.medical.document.file}
+                        href={visaData.medical.document}
                         download={visaData.medical.document.name}
                         className="flex items-center text-black no-underline"
                       >
@@ -218,9 +218,9 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "ID Application",
-                    data: visaData?.id_application?.document?.file && (
+                    data: visaData?.id_application?.document && (
                       <a
-                        href={visaData.id_application.document.file}
+                        href={visaData.id_application.document}
                         download={visaData.id_application.document.name}
                         className="flex items-center text-black no-underline"
                       >

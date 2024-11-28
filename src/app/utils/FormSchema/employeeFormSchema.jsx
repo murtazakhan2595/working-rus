@@ -50,6 +50,7 @@ const validationEmployeeContactInfoFormSchema = (values) => {
 
 const validateEmployeePersonalInfoForm = (values) => {
   const errors = {};
+  if(!values.profile_picture) errors.profile_picture="Profile image is required"
   if (!values.first_name) errors.first_name = "First Name is required";
   if (!values.last_name) errors.last_name = "Last Name is required";
   if (!values.mobile_no) {
