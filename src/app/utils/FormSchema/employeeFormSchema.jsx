@@ -74,7 +74,7 @@ const validationEmployeeExperienceFormSchema = (values) => {
   if (values.experiences) {
     values.experiences.forEach((value, index) => {
       const experienceErrors = {};
-      if (!value.disableEndDate && !value.exp_end_date)
+      if (!value.disableEndDate && !value.exp_end_date && index!==0)
         experienceErrors.exp_end_date = "End Date is required";
       if (!value.exp_start_date)
         experienceErrors.exp_start_date = "Start Date is required";
