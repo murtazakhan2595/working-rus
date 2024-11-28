@@ -117,7 +117,7 @@ const AddComponentSheet = ({
   return (
     <>
       <div>
-    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
+    {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
         <SheetComponent
           {...formSheetData}
           contentClassName="custom-sheet-width"

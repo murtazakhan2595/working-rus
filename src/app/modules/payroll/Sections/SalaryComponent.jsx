@@ -67,7 +67,7 @@ const SalaryComponent = ({ componentFilterData }) => {
 
   return (
     <div className="flex flex-col gap-4 profile-management">
-      {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
+      {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
       {selectedComponent && (
         <AddComponentSheet
           component={selectedComponent}

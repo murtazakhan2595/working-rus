@@ -90,7 +90,7 @@ export const DisplayButton = ({handlePrevious, handleNext})=>{
   )
 }
 
-export const handleCloseWithConfirmation = (isOpen, setCloseSheet, setIsOpen, setNewAttachment) => {
+export const handleCloseWithConfirmation = ({isOpen, setCloseSheet, setIsOpen, setNewAttachment, ...props}) => {
   return (
     isOpen && (
       <AlertDialogue
@@ -105,6 +105,9 @@ export const handleCloseWithConfirmation = (isOpen, setCloseSheet, setIsOpen, se
           setIsOpen(false);
           if (setNewAttachment) {
             setNewAttachment(null);
+          }
+          if(props?.discard && props?.navigate){
+            props?.navigate('/profile-management')
           }
         }}
       />

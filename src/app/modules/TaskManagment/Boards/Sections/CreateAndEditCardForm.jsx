@@ -159,13 +159,12 @@ const CreateAndEditCardForm = ({
 
   return (
     <>
-     {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
+     {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
     <Formik
       initialValues={formInitialValues}
       enableReinitialize={true}
       innerRef={formRef}
       onSubmit={(values, { resetForm }) => {
-        console.log(values, "VALUES");
         const formValues = {
           ...values,
           label: labelsAdded,
