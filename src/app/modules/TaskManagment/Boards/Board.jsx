@@ -25,7 +25,7 @@ import {
 import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
 import { getRandomColor } from "utils/renderValues";
-import { ArrowLeft, LayoutList } from "lucide-react";
+import { ArrowLeft, LayoutGrid, LayoutList } from "lucide-react";
 import { DateInput } from "components/form-control";
 import { ClaimExpenseTypeOptions } from "data/Data";
 import { Button } from "components/ui/button";
