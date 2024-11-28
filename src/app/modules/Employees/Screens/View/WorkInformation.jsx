@@ -12,6 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 
 import moment from "moment";
+import { DetailBox } from "components/SheetCardExtension";
 
 const WorkInformation = ({
   userData,

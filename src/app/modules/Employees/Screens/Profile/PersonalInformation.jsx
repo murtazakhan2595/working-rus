@@ -21,15 +21,9 @@ import {
 } from "../../../../hooks/employee";
 import {
   validateEmployeePersonalInfoForm,
-  validationPersonalInfoFormSchema,
 } from "../../../../utils/FormSchema/employeeFormSchema";
 import { getPersonalInfo } from "../../../../utils/MappingObjects/mapEmployeeData.jsx";
-import { Label } from "../../../../../src/@/components/ui/label";
-import { Input } from "../../../../../components/ui/input";
 import { Button } from "../../../../../components/ui/button";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "../../../../../src/@/components/ui/calendar";
 import { Card, CardContent, CardFooter } from "components/ui/card";
 
 
@@ -45,9 +39,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
   const [personalInfo, setPersonalInfo] = useState({});
   const [imageError, setImageError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [date, setDate] = useState(new Date());
-  const [selectedMaritalStatus, setSelectedMaritalStatus] = React.useState("");
-  const [selectedCountry, setSelectedCountry] = React.useState("");
+
 
   useEffect(() => {
     getEmployeePersonalInfoData(employeeId)

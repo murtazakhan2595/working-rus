@@ -86,6 +86,7 @@ const SheetOnBorading = ({
 
   const [closeSheet, setCloseSheet] = useState(false)
 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -95,7 +96,7 @@ const SheetOnBorading = ({
           const employeeData = await getEmployeeInformation(response);
           setFormData(employeeData);
           // setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
-          setEmpId(employeeData.id);
+          setEmpId(response.serial_number);
           validateEmail(employeeData.work_email);
           validateUsername(employeeData.username);
         } else {
@@ -134,42 +135,50 @@ const SheetOnBorading = ({
     }
   };
   const handleSubmit = async (data) => {
-    console.log(data);
-    // return
     setIsLoading(true);
     let employeePayroll = {};
+  
+    // Determine the payroll data structure based on salary type
     if (data.salary_type === "hourly") {
       employeePayroll = {
         hourly_rate: data.salary,
         salary_type: data.salary_type,
-        employee: empId,
         is_new: true,
       };
     } else {
       employeePayroll = {
         basic_salary: data.salary,
         salary_type: data.salary_type,
-        employee: empId,
         is_new: true,
       };
     }
+  
     try {
-      // Check if an API call is already in progress
+      // Format indirect report if it exists
       data.indirect_report = data?.indirect_report
         ? getManagersStringSelected(data.indirect_report)
         : "";
+  
+      // Save employee work information
       const response = await saveEmployeeWorkInformationData(data.id, data);
+  
       if (response) {
+        const employeeId = response.id; // Extract employee ID from the response
+  
+        // Dispatch fetch actions to update the state
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
+  
         if (data.id) {
+          // Employee update flow
           toast.success("Employee Updated Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
           if (isEditMode) nextStep();
           else navigate("/profile-management");
         } else {
-          await saveEmployeePayroll(employeePayroll);
+          // Employee creation flow
+          await saveEmployeePayroll({ ...employeePayroll, employee: employeeId });
           toast.success("Employee Added Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
@@ -178,6 +187,7 @@ const SheetOnBorading = ({
         }
       }
     } catch (error) {
+      // Handle errors and rollback form data
       setFormData(data);
       if (
         error.response &&
@@ -189,7 +199,7 @@ const SheetOnBorading = ({
         });
       } else {
         console.error("API Error:", error);
-        toast.error(error, {
+        toast.error(error.message || "An error occurred", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
@@ -197,6 +207,7 @@ const SheetOnBorading = ({
       setIsLoading(false);
     }
   };
+  
 
   const handleClose = ()=>{
     // setIsOpen(false)
@@ -257,9 +268,9 @@ const SheetOnBorading = ({
                       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
                         <div className="space-y-2">
                           <TextInput
-                            name={"employeeId"}
-                            error={props.errors?.employeeId}
-                            touch={props.touched?.employeeId}
+                            name={"serial_number"}
+                            error={props.errors?.serial_number}
+                            touch={props.touched?.serial_number}
                             value={getEmployeeid(empId)}
                             label={"Employee ID"}
                             required={true}
