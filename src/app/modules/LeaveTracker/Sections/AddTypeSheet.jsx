@@ -5,29 +5,13 @@ import { Formik } from "formik";
 import { Switch } from "../../../../src/@/components/ui/switch";
 import { Label } from "../../../../src/@/components/ui/label";
 import { Button } from "../../../../components/ui/button";
-import { TextInput, NumberInput } from "components/form-control";
+import { TextInput } from "components/form-control";
 import { saveLeaveComponents } from "app/hooks/leaveTracker";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "../../../../src/@/components/ui/alert-dialog";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-} from "../../../../components/ui/card";
-import moment from "moment";
 import { deleteLeaveComponent } from "app/hooks/leaveTracker";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
+import AlertDialogue from "components/ui/AlertDialogue";
+import { DetailCard } from "components/SheetCardExtension";
+import { DetailBox } from "components/SheetCardExtension";
 
 const AddTypeSheet = ({
   type,
@@ -56,6 +40,7 @@ const AddTypeSheet = ({
 
   const [isOpen, setIsOpen] = useState(openSheet || false);
   const [isEdit, setIsEdit] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
 
   const [leaveComponentType, setLeaveComponentType] = useState(
     type || (isEmployeeBased ? initialTypeEmployee : initialType)
@@ -108,15 +93,17 @@ const AddTypeSheet = ({
         <SheetComponent
           {...formSheetData}
           contentClassName="custom-sheet-width"
+          width="568px"
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-         
         >
           {type && !isEdit ? (
             <ViewComponent
               type={type}
               handleTypeDelete={handleTypeDelete}
               setIsEdit={setIsEdit}
+              setIsDelete={setIsDelete}
+              isDelete={isDelete}
             />
           ) : (
             <ComponentForm
@@ -142,85 +129,98 @@ const ComponentForm = ({
   editMode,
   setOpenSheet,
 }) => {
-  const [closeSheet, setCloseSheet] = useState(false)
+  const [closeSheet, setCloseSheet] = useState(false);
 
- const handleClose = ()=>{
-  setCloseSheet(true)
-  // setOpenSheet(false)
- }
+  const handleClose = () => {
+    setCloseSheet(true);
+    // setOpenSheet(false)
+  };
   return (
     <>
-    {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
+      {handleCloseWithConfirmation({
+        isOpen: closeSheet,
+        setCloseSheet,
+        setIsOpen,
+      })}
 
-    <Formik
-      initialValues={leaveComponentType}
-      // validationSchema={validationSchema}
-      enableReinitialize={true}
-      onSubmit={handleSubmit}
-    >
-      {(props) => (
-        <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
-          <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
-            <div className="font-[inter] flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
-              <div className="flex h-[7px] flex-shrink-0 items-end px-px">
-                <div className="text-zinc-950">Details</div>
+      <Formik
+        initialValues={leaveComponentType}
+        // validationSchema={validationSchema}
+        enableReinitialize={true}
+        onSubmit={handleSubmit}
+      >
+        {(props) => (
+          <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+            <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
+              <div className="font-[inter] flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900">
+                <div className="flex h-[7px] flex-shrink-0 items-end px-px">
+                  <div className="text-zinc-950">Details</div>
+                </div>
+                <TextInput
+                  name={"name"}
+                  error={props.errors?.name}
+                  touch={props.touched?.name}
+                  value={props.values?.name}
+                  onChange={(field, value) => {
+                    props.handleChange(field)(value);
+                  }}
+                  placeholder="Name"
+                  label="Leave Name"
+                  required="true"
+                />
+                <TextInput
+                  name={"max_days"}
+                  error={props.errors?.max_days}
+                  touch={props.touched?.max_days}
+                  value={props.values?.max_days}
+                  onChange={(field, value) => {
+                    props.handleChange(field)(value);
+                  }}
+                  regEx={/^\d+$/}
+                  placeholder=""
+                  label="No. of Days"
+                  required="true"
+                />
               </div>
-              <TextInput
-                name={"name"}
-                error={props.errors?.name}
-                touch={props.touched?.name}
-                value={props.values?.name}
-                onChange={(field, value) => {
-                  props.handleChange(field)(value);
-                }}
-                placeholder="Name"
-                label="Leave Name"
-                required="true"
-              />
-              <TextInput
-                name={"max_days"}
-                error={props.errors?.max_days}
-                touch={props.touched?.max_days}
-                value={props.values?.max_days}
-                onChange={(field, value) => {
-                  props.handleChange(field)(value);
-                }}
-                regEx={/^\d+$/}
-                placeholder=""
-                label="No. of Days"
-                required="true"
-              />
             </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="status"
-              checked={props.values.status}
-              onCheckedChange={(value) => props.setFieldValue("status", value)}
-            />
-            <Label htmlFor="status">Activate</Label>
-          </div>
-          <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
-            <Button
-              variant="outline"
-              size="lg"
-              type="button"
-              onClick={handleClose}
-            >
-              Cancel 
-            </Button>
-            <Button type="submit" size="lg" variant="default">
-              {"Save"}
-            </Button>
-          </div>
-        </form>
-      )}
-    </Formik>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="status"
+                checked={props.values.status}
+                onCheckedChange={(value) =>
+                  props.setFieldValue("status", value)
+                }
+              />
+              <Label htmlFor="status">Activate</Label>
+            </div>
+            <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
+              <Button
+                variant="outline"
+                size="lg"
+                type="button"
+                onClick={handleClose}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" size="lg" variant="default">
+                {"Save"}
+              </Button>
+            </div>
+          </form>
+        )}
+      </Formik>
     </>
   );
 };
 
-const ViewComponent = ({ type, handleTypeDelete, setIsEdit }) => {
+const ViewComponent = ({
+  type,
+  handleTypeDelete,
+  setIsEdit,
+  isDelete,
+  setIsDelete,
+}) => {
+  console.log(type, "TYPES");
   const details = [
     { label: "Leave name", value: type.name },
     { label: "No. of days", value: type.max_days },
@@ -234,7 +234,7 @@ const ViewComponent = ({ type, handleTypeDelete, setIsEdit }) => {
         </div>
         <div className="flex items-center gap-2">
           <Button
-            variant="default"
+            variant="outline"
             size="sm"
             onClick={() => {
               setIsEdit(true);
@@ -242,65 +242,37 @@ const ViewComponent = ({ type, handleTypeDelete, setIsEdit }) => {
           >
             Edit
           </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="" className="">
-                Delete
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  Are you sure you want to delete this component?
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. Once deleted, the component data
-                  will be permanently removed.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => {
-                    handleTypeDelete(type);
-                  }}
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setIsDelete(true);
+            }}
+          >
+            Delete
+          </Button>
+          {isDelete && (
+            <AlertDialogue
+              isOpen={isDelete}
+              setIsOpen={setIsDelete}
+              handleContinue={() => handleTypeDelete(type)}
+              continueText="Delete"
+              title="Are you sure you want to delete this component?"
+              description="This action cannot be undone. Once deleted, the component data
+                  will be permanently removed."
+            />
+          )}
         </div>
       </div>
-      <section className="flex flex-col pt-14 ">
-        <Card className="mt-0">
-          <CardContent className="p-6">
-            <div className="w-full font-semibold text-gray-900">Details</div>
-            <div className="flex items-start mt-3 max-w-full w-[285px]">
-              <div className="flex flex-col pr-20 min-w-[240px] w-[285px]">
-                {details.map((detail, index) => (
-                  <div className="flex items-start w-full h-5 gap-4 mb-4">
-                    <div className="text-sm ">{detail.label}</div>
-                    <div className="flex flex-col items-start">
-                      <div className="text-sm text-gray-900">
-                        {detail.value}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="flex items-center px-6 pt-3.5 pb-3 w-full text-xs font-medium  border-t  max-md:px-5 ">
-            <div className="flex-1 shrink self-stretch my-auto w-full min-w-[240px] ">
-              Created on:{" "}
-              <time dateTime={moment(type.createdAt).format("YYYY-MM-DD")}>
-                {moment(type.createdAt).format("MMMM D, YYYY")}
-              </time>
-            </div>
-          </CardFooter>
-        </Card>
-      </section>
+      <DetailCard
+        detailCardTitle="Details"
+        date={type?.created_at}
+        dateTitle="Created On"
+      >
+        {details.map((detail, index) => (
+          <DetailBox label={detail?.label} value={detail?.value} />
+        ))}
+      </DetailCard>
     </>
   );
 };
