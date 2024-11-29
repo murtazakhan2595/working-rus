@@ -11,7 +11,7 @@ const validateOrganizationSchema = (values, isEditMode) => {
     if (!values?.date_format) errors.date_format= "Date Format is required";
     if (!values?.country) errors.country= "Country is required";
     if (!values?.payroll_start_date) errors.payroll_start_date= "Payroll Start Date is required";
-    if (!values?.licening_authority) errors.licening_authority= "Licensing Authority is required";
+    if (!values?.licensing_authority) errors.licensing_authority= "Licensing Authority is required";
     if (!values?.registration_number) errors.registration_number= "Licensing Number is required";
 
 

@@ -13,6 +13,12 @@ const AddOrganization = () => {
     footer: null,
   };
 
+  const handleSubmit = (formData, resetForm) => {
+    console.log('Form submitted:', formData);
+    // Perform any API or state update logic here
+    resetForm();
+  };
+
   return (
     <SheetComponent
       {...formSheetData}
@@ -20,7 +26,7 @@ const AddOrganization = () => {
       setIsOpen={setIsOpen}
       width="600px"
     >
-      <AddOrganizationForm isOpen={isOpen} setIsOpen={setIsOpen} />
+      <AddOrganizationForm isOpen={isOpen} setIsOpen={setIsOpen} handleSubmit={handleSubmit}/>
     </SheetComponent>
   );
 };

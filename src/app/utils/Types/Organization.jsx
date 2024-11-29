@@ -10,7 +10,7 @@ const OrganizationInformation = {
     licensing_authority: null,
     website: null,
     logo: null,
-    time_zone: "1",
+    time_zone: null,
     legal_name: null,
     date_format: null,
     payroll_start_date: null,
