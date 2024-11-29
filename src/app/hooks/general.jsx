@@ -29,6 +29,36 @@ const getDepartmentList = async (allData=false) => {
   return [];
 };
 
+const saveDepartment = async (departmentId ,payload)=>{
+  try {
+    if (departmentId) {
+      const response = await axios.patch(
+        `${baseUrl}/department/${departmentId}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        return response?.data;
+      }
+    } else {
+      const response = await axios.post(`${baseUrl}/department/`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201) {
+        return response?.data;
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return false;
+  }
+}
+
 const getDesignationList = async (allData=false) => {
   try {
     const response = await axios.get(`${baseUrl}/designation/`, {
@@ -95,7 +125,7 @@ const getEmployeeList = async () => {
   return [];
 };
 
-const getOrganizationList = async () => {
+const getOrganizationList = async (allData=false) => {
   try {
     const response = await axios.get(`${baseUrl}/organization/`, {
       headers: headers(),
@@ -106,7 +136,7 @@ const getOrganizationList = async () => {
         value: organization.id,
         label: organization.name,
       }));
-      return organizationList;
+      return allData ? organizationResponse : organizationList;
     } else return [];
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -271,4 +301,5 @@ export {
   getEmployeeCustomList,
   getProjectsList,
   getCurrenciesList,
+  saveDepartment,
 };
