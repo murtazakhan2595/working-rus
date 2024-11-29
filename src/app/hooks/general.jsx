@@ -10,7 +10,7 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-const getDepartmentList = async () => {
+const getDepartmentList = async (allData=false) => {
   try {
     const response = await axios.get(`${baseUrl}/department/`, {
       headers: headers(),
@@ -21,7 +21,7 @@ const getDepartmentList = async () => {
         value: department.id,
         label: department.name,
       }));
-      return departmentList;
+      return allData ? departmentResponse : departmentList;
     } else return [];
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -29,7 +29,7 @@ const getDepartmentList = async () => {
   return [];
 };
 
-const getDesignationList = async () => {
+const getDesignationList = async (allData=false) => {
   try {
     const response = await axios.get(`${baseUrl}/designation/`, {
       headers: headers(),
@@ -40,7 +40,7 @@ const getDesignationList = async () => {
         value: designation.id,
         label: designation.name,
       }));
-      return designationList;
+      return allData ? designationResponse : designationList;
     } else return [];
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
