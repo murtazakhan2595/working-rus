@@ -47,7 +47,7 @@ const ContactInformation = ({
           data: userData?.emergency_first_name,
         },
         { title: "Relation", sub: true, data: userData?.emergency_relation },
-        { title: "Emergency Contact", data: userData?.emergency_phone_no },
+        { title: "Emergency Contact", data: `+${userData?.emergency_country_code}${userData?.emergency_phone_no}` },
       ],
     },
     {

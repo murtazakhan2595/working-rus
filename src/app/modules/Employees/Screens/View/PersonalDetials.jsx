@@ -30,7 +30,7 @@ const PersonalInformation = ({ userId, isEditable }) => {
           title: "Date of Birth",
           data: moment(userData.date_of_birth).format("MMM DD, YYYY"),
         },
-        { title: "Contact No", data: userData?.mobile_no },
+        { title: "Contact No", data: `+${userData?.country_code}${userData?.mobile_no}` },
       ]);
     } catch (error) {
       console.error("Error fetching data:", error);
