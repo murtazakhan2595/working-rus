@@ -150,7 +150,7 @@ const ComponentForm = ({
  }
   return (
     <>
-    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
+    {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
 
     <Formik
       initialValues={leaveComponentType}

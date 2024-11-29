@@ -70,11 +70,10 @@ const SheetOnBorading = ({
   managers,
   isOpen,
   setIsOpen,
-}) => {
+  discard=false
+}) => { 
   const formRef = React.createRef();
 
-  console.log("RECEIVED ID:", id);
-  console.log("EDIT MODE", isEditMode);
 
   let dispatch = useDispatch();
   const navigate = useNavigate();
@@ -161,14 +160,13 @@ const SheetOnBorading = ({
   
       // Save employee work information
       const response = await saveEmployeeWorkInformationData(data.id, data);
-  
+      // return 
       if (response) {
         const employeeId = response.id; // Extract employee ID from the response
   
         // Dispatch fetch actions to update the state
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
-  
         if (data.id) {
           // Employee update flow
           toast.success("Employee Updated Successfully!", {
@@ -220,7 +218,7 @@ const SheetOnBorading = ({
 
   return (
     <>
-    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
+    {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen, discard, navigate})}
 
       <div
         side="right"

@@ -80,7 +80,7 @@ const JobForm = forwardRef(
           <PageLoader />
         ) : (
           <>
-     {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
+     {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
 
             <Formik
               initialValues={initialValues}

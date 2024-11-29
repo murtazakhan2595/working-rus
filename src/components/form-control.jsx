@@ -404,43 +404,42 @@ const TextInput = ({
   regEx,
   maxLength,
   placeholder,
+  autoComplete="off"
 }) => {
   return (
-    <>
-      <div className="flex flex-col gap-4">
-        {label && (
-          <Label className="" htmlFor={name}>
-            {label}
-            {required && <span className="text-red-600">* </span>}
-          </Label>
-        )}
-        <Input
-          type="text"
-          maxLength={maxLength ?? "100"}
-          id={name}
-          name={name}
-          autoComplete="Off"
-          placeholder={label ? "Enter " + label : placeholder}
-          value={value ?? ""}
-          disabled={disabled}
-          className={error && touch ? "is-invalid" : "text-neutral-1000"}
-          onChange={(option) => {
-            const value = option.target.value;
-            if (regEx) {
-              if (!value || regEx.test(value)) {
-                onChange(name, value);
-              }
-            } else {
-              onChange(name, value);
+    <div className="flex flex-col gap-4">
+      {label && (
+        <Label htmlFor={name}>
+          {label}
+          {required && <span className="text-red-600">* </span>}
+        </Label>
+      )}
+      <Input
+        type="text"
+        maxLength={maxLength ?? "100"}
+        id={name}
+        name={name}
+        autoComplete={autoComplete} // Use "off" for no autocomplete or specify a valid autocomplete token like "name", "email", etc.
+        placeholder={placeholder || (label ? `Enter ${label}` : "Enter value")}
+        value={value ?? ""}
+        disabled={disabled}
+        className={error && touch ? "is-invalid" : "text-neutral-1000"}
+        onChange={(event) => {
+          const inputValue = event.target.value;
+          if (regEx) {
+            if (!inputValue || regEx.test(inputValue)) {
+              onChange(name, inputValue);
             }
-          }}
-        />
-
-        {error && touch && <div className="text-red-600">{error}</div>}
-      </div>
-    </>
+          } else {
+            onChange(name, inputValue);
+          }
+        }}
+      />
+      {error && touch && <div className="text-red-600">{error}</div>}
+    </div>
   );
 };
+
 const NumberInput = ({
   name,
   value,

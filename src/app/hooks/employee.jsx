@@ -706,14 +706,14 @@ const saveEmployeeWorkInformationData = async (employeeid, payload) => {
         }
       );
       if (response.status === 200) {
-        return true;
+        return response?.data;
       }
     } else {
       const response = await axios.post(`${baseUrl}/emp/add`, payload, {
         headers: headers(),
       });
       if (response.status === 201) {
-        return true;
+        return response?.data;
       }
     }
   } catch (error) {
