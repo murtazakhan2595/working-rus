@@ -33,6 +33,7 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
   }, []);
 
 
+
   const handleClose = () => {
     // setIsOpen(false)
     setCloseSheet(true);
@@ -47,31 +48,32 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
       })}
       <Formik
         initialValues={formData}
-        innerRef={formRef}
+        // innerRef={formRef}
         onSubmit={(values, { resetForm }) => {
-          console.log(values, "VALUES ARE HERE");
-          handleSubmit(values, resetForm);
+          console.log(values, 'VALUES ARE HERE');
+          handleSubmit(values, resetForm); // Call the parent function here
         }}
         validate={validateOrganizationSchema}
+
       >
         {(props) => (
-          <form onSubmit={props.handleSubmit}>
+          <form  onSubmit={props.handleSubmit}>
             {/* Main Office Section */}
             <SheetCardExtension title="Main Office">
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <ImageInput
                   name="logo"
                   label="Company Logo"
-                  required
-                  error={props.errors.logo}
-                  touch={props.touched.logo}
+                  // required
+                  // error={props.errors.logo}
+                  // touch={props.touched.logo}
                   onChange={(field, value) => {
                     props.setFieldValue(field, value);
                     setImageError(null);
                   }}
                   setImageError={setImageError}
                 />
-              </div>
+              </div> */}
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
                 <TextInput
                   name="name"

@@ -2,10 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const URLS = [
   {
-    Frontend: "https://hrms.tecbrix.cloud",
-    Backend: "https://hrms-be.tecbrix.cloud/api",
-  },
-  {
     Frontend: "https://app.cohrus.com",
     Backend: "https://hrms-be.tecbrix.cloud/api",
   },
@@ -19,9 +15,9 @@ const URLS = [
   },
   {
     Frontend:
-      "https://hrms-production-frontend.mangomoss-a52772ee.uaenorth.azurecontainerapps.io/",
+      "https://hrmsblob-fsc9g0a0b5axcufm.z02.azurefd.net/",
     Backend:
-      "https://hrms-production-backend.mangomoss-a52772ee.uaenorth.azurecontainerapps.io/api",
+      "https://staging-hrms-be.tecbrix.cloud/api",
   },
 ];
 

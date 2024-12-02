@@ -47,7 +47,7 @@ export const DetailCard = ({
           <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
             <div>
               <span className="text-[#8b8d98] text-xs font-medium  leading-tight">
-                {dateTitle}
+                {dateTitle}:
               </span>
               <span className="text-[#8b8d98] text-xs font-normal  leading-3">
               {` ${moment(date).format(
