@@ -30,6 +30,7 @@ const getDepartmentList = async (allData=false) => {
 };
 
 const saveDepartment = async (departmentId ,payload)=>{
+  console.log(departmentId, payload, "TEST DEPARMTNET")
   try {
     if (departmentId) {
       const response = await axios.patch(
@@ -44,6 +45,36 @@ const saveDepartment = async (departmentId ,payload)=>{
       }
     } else {
       const response = await axios.post(`${baseUrl}/department/`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201) {
+        return response?.data;
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return false;
+  }
+}
+
+const saveDesignation = async (designationId ,payload)=>{
+  try {
+    if (designationId) {
+      const response = await axios.patch(
+        `${baseUrl}/designation/${designationId}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        return response?.data;
+      }
+    } else {
+      const response = await axios.post(`${baseUrl}/designation/`, payload, {
         headers: headers(),
       });
       if (response.status === 201) {
@@ -302,4 +333,5 @@ export {
   getProjectsList,
   getCurrenciesList,
   saveDepartment,
+  saveDesignation,
 };
