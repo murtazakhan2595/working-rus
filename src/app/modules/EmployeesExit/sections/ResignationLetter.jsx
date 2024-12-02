@@ -3,13 +3,13 @@ import { MdOutlineFileDownload } from 'react-icons/md';
 
 
 function ResignationLetter({ name, file }) {
-  function getFileSizeInKB(base64String) {
-    const base64Data = base64String.split(",")[1];
-    const binaryString = atob(base64Data);
-    const byteLength = binaryString.length;
-    const kbSize = byteLength / 1024;
-    return kbSize.toFixed(0);
-  }
+  // function getFileSizeInKB(base64String) {
+  //   const base64Data = base64String?.split(",")[1];
+  //   const binaryString = atob(base64Data);
+  //   const byteLength = binaryString.length;
+  //   const kbSize = byteLength / 1024;
+  //   return kbSize.toFixed(0);
+  // }
   function handleDownload() {
     const link = document.createElement("a");
     link.href = file.file;
@@ -33,7 +33,7 @@ function ResignationLetter({ name, file }) {
           <div className="flex flex-col">
             <div className="text-sm leading-none text-zinc-800">{name}</div>
             <div className="self-start mt-1 text-xs leading-none text-zinc-600">
-              {getFileSizeInKB(file.file)} KB
+              {/* {getFileSizeInKB(file.file)} KB */}
             </div>
           </div>
         </div>
