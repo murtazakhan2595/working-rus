@@ -5,6 +5,7 @@ import { Card } from "components/ui/card";
 import DepartmentAction from "../sections/DepartmentAction";
 import { getDesignationList } from "app/hooks/general";
 import DesignationAction from "../sections/DesignationAction";
+import { CardContent } from "components/ui/card";
 
 const Designations = () => {
   const [designation, setDesignation] = useState(null);
@@ -54,6 +55,7 @@ const Designations = () => {
 
   return (
     <Card>
+      <CardContent>
       <TableCustom
         columns={columns}
         data={designation || []}
@@ -63,6 +65,7 @@ const Designations = () => {
         itemsPerPage={10}
         className="designation-table"
       />
+      </CardContent>
     </Card>
   );
 };

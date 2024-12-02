@@ -12,9 +12,9 @@ import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const AddDepartmentForm = ({ isOpen, setIsOpen }) => {
+const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
   const [closeSheet, setCloseSheet] = useState(false);
-  const [formData, setFormData] = useState(DepartmentsInformation);
+  const [formData, setFormData] = useState(edit?.data || DepartmentsInformation);
   const [organization, setOrganization] = useState([]);
 
   useEffect(() => {
@@ -49,9 +49,7 @@ const AddDepartmentForm = ({ isOpen, setIsOpen }) => {
     }
   };
 
-  useEffect(()=>{
-    
-  })
+
 
   return (
     <>

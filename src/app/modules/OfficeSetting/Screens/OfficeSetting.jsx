@@ -15,6 +15,7 @@ import Departments from "./Departments";
 import Designations from "./Designations";
 import AddDepartment from "../sections/AddDepartment";
 import { getOrganizationList } from "app/hooks/general";
+import { CardContent } from "components/ui/card";
 
 const OfficeSetting = () => {
   const [data, setData] = useState(null);
@@ -100,6 +101,7 @@ const OfficeSetting = () => {
         </div>
         <TabsContent value="offices">
           <Card>
+            <CardContent>
             <TableCustom
               columns={columns}
               data={data || []}
@@ -109,6 +111,7 @@ const OfficeSetting = () => {
               itemsPerPage={10}
               className="organization-table"
             />
+            </CardContent>
           </Card>
         </TabsContent>
         <TabsContent value="department">
