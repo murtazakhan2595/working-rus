@@ -64,6 +64,20 @@ export const statusOptions = [
   { value: "Done", label: "Done" },
 ];
 
+export const dateFormats = [
+  { label: "YYYY-MM-DD", value: "YYYY-MM-DD" },
+  { label: "DD-MM-YYYY", value: "DD-MM-YYYY" },
+  { label: "MM-DD-YYYY", value: "MM-DD-YYYY" },
+  { label: "YYYY/MM/DD", value: "YYYY/MM/DD" },
+  { label: "DD/MM/YYYY", value: "DD/MM/YYYY" },
+  { label: "MM/DD/YYYY", value: "MM/DD/YYYY" },
+];
+
+export const days = Array?.from({ length: 31 }, (_, index) => {
+  const day = index + 1;
+  return { label: day, value: day };
+});
+
 export const visaOptions = [
   { value: 1, label: "Visit Visa" },
   { value: 2, label: "Tourist visa" },

@@ -11,6 +11,8 @@ import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { currencies } from "country-data";
 import { SelectComponent } from "components/form-control";
 import { getCurrenciesList } from "app/hooks/general";
+import { dateFormats } from "data/Data";
+import { days } from "data/Data";
 
 const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
   const formRef = createRef();
@@ -32,8 +34,6 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
     fetchData();
   }, []);
 
-
-
   const handleClose = () => {
     // setIsOpen(false)
     setCloseSheet(true);
@@ -50,14 +50,13 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
         initialValues={formData}
         // innerRef={formRef}
         onSubmit={(values, { resetForm }) => {
-          console.log(values, 'VALUES ARE HERE');
+          console.log(values, "VALUES ARE HERE");
           handleSubmit(values, resetForm); // Call the parent function here
         }}
         validate={validateOrganizationSchema}
-
       >
         {(props) => (
-          <form  onSubmit={props.handleSubmit}>
+          <form onSubmit={props.handleSubmit}>
             {/* Main Office Section */}
             <SheetCardExtension title="Main Office">
               {/* <div className="space-y-2">
@@ -149,13 +148,14 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
                     props.handleChange(field)(value);
                   }}
                 />
-                <TextInput
+              <SelectComponent
                   name="date_format"
-                  label="Date Format"
-                  required
-                  value={props.values.date_format}
+                  options={dateFormats}
                   error={props.errors.date_format}
                   touch={props.touched.date_format}
+                  value={props.values.date_format}
+                  label="Date Format"
+                  required
                   onChange={(field, value) => {
                     props.handleChange(field)(value);
                   }}
@@ -175,16 +175,22 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
                     props.handleChange(field)(value);
                   }}
                 />
-                <TextInput
+               <SelectComponent
                   name="payroll_start_date"
-                  label="Payroll Starting Date"
-                  required
-                  value={props.values.payroll_start_date}
+                  options={days}
                   error={props.errors.payroll_start_date}
                   touch={props.touched.payroll_start_date}
+                  value={props.values.payroll_start_date}
+                  label="Payroll Starting Date"
+                  required
                   onChange={(field, value) => {
-                    props.handleChange(field)(value);
+                    if (!value) {
+                      console.error('Invalid selection');
+                      return;
+                    }
+                    props.handleChange(field)(value); 
                   }}
+                  
                 />
               </div>
             </SheetCardExtension>
@@ -210,6 +216,30 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
                   value={props.values.state}
                   error={props.errors.state}
                   touch={props.touched.state}
+                  onChange={(field, value) => {
+                    props.handleChange(field)(value);
+                  }}
+                />
+              </div>
+              <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
+                <TextInput
+                  name="country"
+                  label="Country"
+                  required
+                  value={props.values.country}
+                  error={props.errors.country}
+                  touch={props.touched.country}
+                  onChange={(field, value) => {
+                    props.handleChange(field)(value);
+                  }}
+                />
+                <TextInput
+                  name="zipcode"
+                  label="Zip/Postal Code"
+                  required
+                  value={props.values.zipcode}
+                  error={props.errors.zipcode}
+                  touch={props.touched.zipcode}
                   onChange={(field, value) => {
                     props.handleChange(field)(value);
                   }}

@@ -13,11 +13,12 @@ const OrganizationInformation = {
     time_zone: null,
     legal_name: null,
     date_format: null,
-    payroll_start_date: null,
+    payroll_start_date: 1,
     is_active: true,
     state: null,
     city: null,
-    country: null
+    country: null,
+    zipcode: null
 }
 
 export {OrganizationInformation}
