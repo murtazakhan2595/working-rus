@@ -1,7 +1,7 @@
 import { getDepartmentList } from "app/hooks/general";
-import { saveDepartment } from "app/hooks/general";
+import { saveDesignation } from "app/hooks/general";
 import { getOrganizationList } from "app/hooks/general";
-import { DepartmentsInformation } from "app/utils/Types/Departments";
+import { DesignationInfo } from "app/utils/Types/Designation";
 import { SelectComponent } from "components/form-control";
 import { TextAreaInput } from "components/form-control";
 import { TextInput } from "components/form-control";
@@ -12,9 +12,9 @@ import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
+const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
   const [closeSheet, setCloseSheet] = useState(false);
-  const [formData, setFormData] = useState(edit?.data || DepartmentsInformation);
+  const [formData, setFormData] = useState(edit?.data || DesignationInfo);
   const [organization, setOrganization] = useState([]);
 
   useEffect(() => {
@@ -35,13 +35,18 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
   };
 
   const handleSubmit = async (values) => {
+    console.log(values, "VALUES")
     try {
-      const response = await saveDepartment(values?.id, values);
+      const response = await saveDesignation(values?.id, values);
       if (response) {
-        toast.success("Department Added Successfully!", {
+        toast.success("Designation Added Successfully!", {
           position: toast.POSITION.TOP_RIGHT,
         });
         setIsOpen(false);
+        setEdit({
+          open: false,
+          data: null
+        });
         getDepartmentList()
       }
     } catch (error) {
@@ -61,7 +66,7 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
       <Formik initialValues={formData} onSubmit={handleSubmit}>
         {(props) => (
           <form onSubmit={props?.handleSubmit}>
-            <SheetCardExtension title="Department Details">
+            <SheetCardExtension title="Designation Details">
               <SelectComponent
                 name={"organization"}
                 options={organization}
@@ -76,7 +81,7 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
               />
               <TextInput
                 name="name"
-                label="Department Name"
+                label="Designation"
                 required
                 error={props.errors.name}
                 touch={props.touched.name}
@@ -92,16 +97,6 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
                 error={props.errors.description}
                 touch={props.touched.description}
                 value={props.values.description}
-                onChange={(field, value) => {
-                  props.handleChange(field)(value);
-                }}
-              />
-              <TextInput
-                name="parent_department"
-                label="Parent Department"
-                error={props.errors.parent_department}
-                touch={props.touched.parent_department}
-                value={props.values.parent_department}
                 onChange={(field, value) => {
                   props.handleChange(field)(value);
                 }}
@@ -129,4 +124,4 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
   );
 };
 
-export default AddDepartmentForm;
+export default AddDesignationForm;

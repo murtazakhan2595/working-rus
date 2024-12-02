@@ -2,7 +2,7 @@ import { getDepartmentList } from "app/hooks/general";
 import React, { useEffect, useState } from "react";
 import TableCustom from "components/CustomTable";
 import { Card } from "components/ui/card";
-import DepartmentAction from "../sections/DepartmentAction";
+import DepartmentAction from "../sections/Departments/DepartmentAction";
 import { CardContent } from "components/ui/card";
 
 const Departments = () => {

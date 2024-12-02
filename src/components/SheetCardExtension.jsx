@@ -31,7 +31,7 @@ export const DetailCard = ({
   detailCardTitle,
   children,
   date,
-  dateTitle="Sent on:",
+  dateTitle="Sent on",
   classNames=""
 }) => {
   return (

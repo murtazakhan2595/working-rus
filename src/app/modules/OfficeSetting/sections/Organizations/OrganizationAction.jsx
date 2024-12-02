@@ -1,5 +1,5 @@
 import { Button } from 'components/ui/button'
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem }  from '../../../../src/@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem }  from 'src/@/components/ui/dropdown-menu'
 import React, { useState } from 'react'
 import { MoreHorizontal } from 'lucide-react'
 import ViewOrganization from './ViewOrganization'

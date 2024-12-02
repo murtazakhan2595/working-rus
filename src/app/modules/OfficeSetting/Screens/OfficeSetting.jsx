@@ -3,8 +3,8 @@ import { Card } from "components/ui/card";
 import React, { useEffect, useState } from "react";
 // import AddOrganizationForm from "../sections/AddOrganizationForm";
 import TableCustom from "components/CustomTable";
-import OrganizationAction from "../sections/OrganizationAction";
-import AddOrganization from "../sections/AddOrganization";
+import OrganizationAction from "../sections/Organizations/OrganizationAction";
+import AddOrganization from "../sections/Organizations/AddOrganization";
 import {
   Tabs,
   TabsList,
@@ -13,9 +13,10 @@ import {
 } from "src/@/components/ui/tabs";
 import Departments from "./Departments";
 import Designations from "./Designations";
-import AddDepartment from "../sections/AddDepartment";
+import AddDepartment from "../sections/Departments/AddDepartment";
 import { getOrganizationList } from "app/hooks/general";
 import { CardContent } from "components/ui/card";
+import AddDesignation from "../sections/Designations/AddDesignation";
 
 const OfficeSetting = () => {
   const [data, setData] = useState(null);
@@ -77,10 +78,9 @@ const OfficeSetting = () => {
     { value: "designation", label: "Designation" },
   ];
 
-  console.log(edit, editData, "EDIT MODE");
   return (
     <div className="flex flex-col gap-4 profile-management">
-      <Header content={activeTab === "offices" ? <AddOrganization /> : <AddDepartment/>} />
+      <Header content={activeTab === "offices" ? <AddOrganization /> : activeTab ==="department" ? <AddDepartment/> : <AddDesignation/>} />
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
