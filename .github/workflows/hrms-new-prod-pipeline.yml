@@ -1,6 +1,6 @@
 name: Production New Environment - Github Actions
 
-# When this action will be executed
+# When this action will be executed.
 on:
   # Automatically trigger it when detected changes in repo
   push:
