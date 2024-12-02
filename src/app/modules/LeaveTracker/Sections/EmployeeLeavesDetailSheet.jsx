@@ -121,14 +121,12 @@ const ViewDetails = ({
         />
         {userProfile.role !== 2 && (
           <Button
-            className="bg-white border border-[#e8e8ec]"
+          variant="outline"
             onClick={() => {
               setIsEdit(true);
             }}
           >
-            <div className="text-xs font-semibold text-center text-neutral-1200">
               Edit Leaves
-            </div>
           </Button>
         )}
       </div>
