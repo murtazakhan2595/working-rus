@@ -21,7 +21,7 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-export default function Labels({ onSelectedLabelsChange, labelsList, reloadList }) {
+export default function Labels({ onSelectedLabelsChange, labelsList, reloadList,labelsSelected }) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedLabels, setSelectedLabels] = React.useState([]);
   const [showNewLabel, setShowNewLabel] = React.useState(false);
@@ -96,7 +96,21 @@ export default function Labels({ onSelectedLabelsChange, labelsList, reloadList 
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto">
+    <div className="w-full max-w-sm mx-auto flex gap-4">
+       <div style={{maxWidth:'85%'}}>
+          <ul className="flex flex-wrap gap-2">
+                    {labelsSelected?.map((label) => (
+                      <li
+                        key={label.id}
+                        className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                          label?.color
+                        } ${getDarkerTextColor(label?.color)}`}
+                      >
+                        {label?.name}
+                      </li>
+                    ))}
+                  </ul>
+          </div>
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-10 h-10 p-0 rounded-full">

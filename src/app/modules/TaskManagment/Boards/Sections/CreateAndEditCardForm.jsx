@@ -23,7 +23,7 @@ import { getAllLabels } from "app/hooks/taskManagment";
 
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
-import Labels from "../../Sections/Labels";
+import { Labels, Assignee } from "app/modules/TaskManagment/Sections";
 import CheckList from "../../Sections/CheckList";
 import { getDarkerTextColor } from "./getTaskStatus";
 import {
@@ -42,7 +42,7 @@ const CreateAndEditCardForm = ({
   handleSubmit,
   onClose,
   isEdit,
-  setIsOpen
+  setIsOpen,
 }) => {
   const formRef = useRef();
 
@@ -58,12 +58,12 @@ const CreateAndEditCardForm = ({
   const [items, setItems] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [closeSheet, setCloseSheet] = useState(false)
+  const [closeSheet, setCloseSheet] = useState(false);
 
-  const handleClose = ()=>{
+  const handleClose = () => {
     // setIsOpen(false)
-    setCloseSheet(true)
-  }
+    setCloseSheet(true);
+  };
 
   const handleAddItem = () => {
     const newItem = {
@@ -86,7 +86,7 @@ const CreateAndEditCardForm = ({
   };
   const fetchLabels = async () => {
     const labelList = await getAllLabels();
-    console.log(labelList, "LABELS")
+    console.log(labelList, "LABELS");
     setLabelsList(labelList); // Update this to `labelList`
   };
 
@@ -159,111 +159,113 @@ const CreateAndEditCardForm = ({
 
   return (
     <>
-     {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
-    <Formik
-      initialValues={formInitialValues}
-      enableReinitialize={true}
-      innerRef={formRef}
-      onSubmit={(values, { resetForm }) => {
-        const formValues = {
-          ...values,
-          label: labelsAdded,
-        };
-        handleSubmit(formValues, newfiles, files, deleteFiles, resetForm);
-      }}
-      validate={(values) => {
-        // const errors = validationTaskFormSchema(values);
-        return {};
-      }}
-    >
-      {(props) => (
-        <form onSubmit={props.handleSubmit} className="">
-          <div className={`flex w-full gap-6 flex-col rounded-lg pt-2.5`}>
-
+      {handleCloseWithConfirmation({
+        isOpen: closeSheet,
+        setCloseSheet,
+        setIsOpen,
+      })}
+      <Formik
+        initialValues={formInitialValues}
+        enableReinitialize={true}
+        innerRef={formRef}
+        onSubmit={(values, { resetForm }) => {
+          const formValues = {
+            ...values,
+            label: labelsAdded,
+          };
+          handleSubmit(formValues, newfiles, files, deleteFiles, resetForm);
+        }}
+        validate={(values) => {
+          // const errors = validationTaskFormSchema(values);
+          return {};
+        }}
+      >
+        {(props) => (
+          <form onSubmit={props.handleSubmit} className="">
+            <div className={`flex w-full gap-6 flex-col rounded-lg pt-2.5`}>
               <SheetCardExtension title="Card Details">
-              <div className="space-y-2">
-                <TextAreaInput
-                  name="name"
-                  error={props.errors.name}
-                  touch={props.touched.name}
-                  value={props.values.name}
-                  label="Title"
-                  required={true}
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                />
-              </div>
-              <div className="space-y-2">
-                <TextAreaInput
-                  name="description"
-                  error={props.errors.description}
-                  touch={props.touched.description}
-                  value={props.values.description}
-                  required
-                  maxRows={3}
-                  label="Description"
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex gap-5">
-                  <div className="flex items-center gap-2.5 text-lg font-medium leading-4 text-zinc-600">
-                    <RiAttachment2 />
-                    <div>Attachments ({newfiles?.length + files.length})</div>
-                  </div>
+                <div className="space-y-2">
+                  <TextAreaInput
+                    name="name"
+                    error={props.errors.name}
+                    touch={props.touched.name}
+                    value={props.values.name}
+                    label="Title"
+                    required={true}
+                    onChange={(field, value) => {
+                      props.handleChange(field)(value);
+                    }}
+                  />
                 </div>
-                <img
-                  src={plus}
-                  alt=""
-                  className="cursor-pointer"
-                  onClick={() => {
-                    fileInputRef.current.click();
-                  }}
-                />
-                <Input
-                  type="file"
-                  multiple
-                  style={{ display: "none" }}
-                  onChange={(event) => handleAttachmentsChange(event, props)}
-                  ref={fileInputRef}
-                />
-                {(files.length > 0 || newfiles?.length > 0) && (
-                  <div className="">
-                    {[...files, ...newfiles].map((file, index) => (
-                      <div className="flex items-center justify-between p-2 mb-2 bg-gray-100 rounded-lg shadow-md w-fit">
-                        <div className="flex items-center">
-                          <FaRegImage className="w-4 h-4 text-gray-500" />
-                          <span className="ml-4 text-sm text-baseGray">
-                            {file.name}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-x-2">
-                          <a
-                            href="/path/to/your/image.jpg"
-                            download
-                            className="text-gray-500 hover:text-gray-700"
-                          >
-                            <AiOutlineDownload className="w-5 h-5 " />
-                          </a>
-                          <MdClose
-                            className="w-5 h-5 text-gray-500 cursor-pointer"
-                            onClick={() => {
-                              removeFile(file);
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
+                <div className="space-y-2">
+                  <TextAreaInput
+                    name="description"
+                    error={props.errors.description}
+                    touch={props.touched.description}
+                    value={props.values.description}
+                    required
+                    maxRows={3}
+                    label="Description"
+                    onChange={(field, value) => {
+                      props.handleChange(field)(value);
+                    }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex gap-5">
+                    <div className="flex items-center gap-2.5 text-lg font-medium leading-4 text-zinc-600">
+                      <RiAttachment2 />
+                      <div>Attachments ({newfiles?.length + files.length})</div>
+                    </div>
                   </div>
-                )}
-              </div>
+                  <img
+                    src={plus}
+                    alt=""
+                    className="cursor-pointer"
+                    onClick={() => {
+                      fileInputRef.current.click();
+                    }}
+                  />
+                  <Input
+                    type="file"
+                    multiple
+                    style={{ display: "none" }}
+                    onChange={(event) => handleAttachmentsChange(event, props)}
+                    ref={fileInputRef}
+                  />
+                  {(files.length > 0 || newfiles?.length > 0) && (
+                    <div className="">
+                      {[...files, ...newfiles].map((file, index) => (
+                        <div className="flex items-center justify-between p-2 mb-2 bg-gray-100 rounded-lg shadow-md w-fit">
+                          <div className="flex items-center">
+                            <FaRegImage className="w-4 h-4 text-gray-500" />
+                            <span className="ml-4 text-sm text-baseGray">
+                              {file.name}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-x-2">
+                            <a
+                              href="/path/to/your/image.jpg"
+                              download
+                              className="text-gray-500 hover:text-gray-700"
+                            >
+                              <AiOutlineDownload className="w-5 h-5 " />
+                            </a>
+                            <MdClose
+                              className="w-5 h-5 text-gray-500 cursor-pointer"
+                              onClick={() => {
+                                removeFile(file);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </SheetCardExtension>
 
-
-                <SheetCardExtension title="Add To Card">
+              <SheetCardExtension title="Add To Card">
                 <div className="space-y-2">
                   <DateInput
                     name="end_date"
@@ -318,117 +320,69 @@ const CreateAndEditCardForm = ({
                     }}
                   />
                 </div>
-
+                {/* ------------- LABELS ---------------------------------------------------------------------------------------- */}
                 <div className="flex items-center gap-2 space-y-2">
                   <div>Label</div>
 
                   <Labels
                     onSelectedLabelsChange={handleSelectedLabelsChange}
                     labelsList={labelsList}
-                    reloadList={()=>{
+                    reloadList={() => {
                       fetchLabels();
                     }}
+                    labelsSelected={labels}
                   />
                 </div>
-                <div>
-                  <ul className="flex flex-wrap gap-2">
-                    {labels?.map((label) => (
-                      <li
-                        key={label.id}
-                        className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                          label?.color
-                        } ${getDarkerTextColor(label?.color)}`}
-                      >
-                        {label.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
 
-                <div className="flex gap-5">
-                  <div className="flex items-center gap-2.5 text-lg font-medium leading-4 text-zinc-600">
-                    <img
-                      loading="lazy"
-                      src={members}
-                      className="shrink-0 aspect-[1.06] w-[17px]"
-                      alt=""
-                    />
-                    <div>Assignee</div>
-                  </div>
-                </div>
-                {props.errors.assigned_to &&
-                  props.values.assigned_to.length === 0 && (
-                    <div className="pt-1 text-xs text-red-500">
-                      {props.errors.assigned_to}
-                    </div>
-                  )}
-                <div className="flex items-center justify-start gap-2 h-100">
-                  {props.values.assigned_to &&
-                    props.values.assigned_to.length > 0 &&
-                    props.values.assigned_to.map((member, index) => (
-                      <div key={index}>
-                        <Members
-                          member={member}
-                          isEditMode={true}
-                          removeMember={removeMember}
-                        />
-                      </div>
-                    ))}
-                  <div
-                    onClick={() => {
-                      setMembersOpen(!membersOpen);
-                    }}
-                    className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-[#eceaea] border-2"
-                  >
-                    <span className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
-                      <RxPlus />
-                    </span>
-                  </div>
-                </div>
-                {membersOpen && (
-                  <SelectComponent
-                    name="assigned_to"
-                    options={employees}
-                    error={props.errors.assigned_to}
-                    touch={props.touched.assigned_to}
-                    label="Assign to"
-                    required
-                    onChange={(field, value) => {
-                      setMembersOpen(false);
-                      const members = props.values.assigned_to || [];
-                      members.push(value);
-                      props.setFieldValue(field, members);
-                    }}
-                  />
-                )}
+                {/* --------------------ASSIGNEE--------------------------------------------------------------------------------------- */}
 
-              {isEdit &&  <div>
                 <div className="flex items-center gap-2 space-y-2">
-                  <div>CheckList</div>
-                  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsPopoverOpen(true)}
-                      >
-                        +
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="Item name"
-                          value={inputValue}
-                          onChange={(e) => setInputValue(e.target.value)}
-                        />
-                        <Button onClick={handleAddItem}>Add</Button>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                  <div>{/* Pass the items and setItems to CheckList */}</div>
+                  <div>Assignee</div>
+
+                  <Assignee
+                    assigneeSelected={props.values.assigned_to}
+                    removeMember={removeMember}
+                    employees={employees}
+                    onChange={(value) => {
+                      props.setFieldValue("assigned_to", value);
+                    }}
+                  />
                 </div>
-                <CheckList items={items} setItems={setItems} />
-                </div>}
+
+                {isEdit && (
+                  <div>
+                    <div className="flex items-center gap-2 space-y-2">
+                      <div>CheckList</div>
+                      <Popover
+                        open={isPopoverOpen}
+                        onOpenChange={setIsPopoverOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsPopoverOpen(true)}
+                          >
+                            +
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                          <div className="flex gap-2">
+                            <Input
+                              placeholder="Item name"
+                              value={inputValue}
+                              onChange={(e) => setInputValue(e.target.value)}
+                            />
+                            <Button onClick={handleAddItem}>Add</Button>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                      <div>
+                        {/* Pass the items and setItems to CheckList */}
+                      </div>
+                    </div>
+                    <CheckList items={items} setItems={setItems} />
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <SelectComponent
@@ -443,26 +397,26 @@ const CreateAndEditCardForm = ({
                     }}
                   />
                 </div>
-                </SheetCardExtension>
+              </SheetCardExtension>
 
-            <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
-              <Button
-                type="button"
-                variant="outline"
-                size="lg"
-                onClick={handleClose}
-                // onClick={onClose()}
-              >
-                Cancel
-              </Button>
-              <Button type="submit">
-                {initialValues.id ? "Save" : "Add Card"}
-              </Button>
+              <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  onClick={handleClose}
+                  // onClick={onClose()}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit">
+                  {initialValues.id ? "Save" : "Add Card"}
+                </Button>
+              </div>
             </div>
-          </div>
-        </form>
-      )}
-    </Formik>
+          </form>
+        )}
+      </Formik>
     </>
   );
 };
