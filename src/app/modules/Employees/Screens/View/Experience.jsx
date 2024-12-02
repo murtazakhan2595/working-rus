@@ -80,7 +80,7 @@ const Experience = ({ isEditable, employeeId }) => {
                           {exp.exp_designation || "N/A"}
                         </div>
                         <div className="text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000 ">
-                          {renderDate(exp.exp_start_date)}-{" "}
+                          {renderDate(exp.exp_start_date)}{" "}-{" "}
                           {exp.exp_end_date
                             ? renderDate(exp.exp_end_date)
                             : "Till date"}

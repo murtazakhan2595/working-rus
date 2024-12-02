@@ -127,10 +127,10 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
 
                         <div className="space-y-2">
                           <TextAreaInput
-                            name="emergency_permanent_address"
-                            error={props.errors.emergency_permanent_address}
-                            touch={props.touched.emergency_permanent_address}
-                            value={props.values.emergency_permanent_address}
+                            name="residential_address"
+                            error={props.errors.residential_address}
+                            touch={props.touched.residential_address}
+                            value={props.values.residential_address}
                             label="Permanent Address"
                             required
                             onChange={(field, value) => {
@@ -140,10 +140,10 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
                         </div>
                         <div className="col-span-2 space-y-2">
                           <TextAreaInput
-                            name="emergency_current_address"
-                            error={props.errors.emergency_current_address}
-                            touch={props.touched.emergency_current_address}
-                            value={props.values.emergency_current_address}
+                            name="current_address"
+                            error={props.errors.current_address}
+                            touch={props.touched.current_address}
+                            value={props.values.current_address}
                             label="Current Address"
                             required
                             onChange={(field, value) => {

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { CiEdit } from "react-icons/ci";
-import { FiPlus } from "react-icons/fi";
 import {
   DepartmentName,
   DesignationName,
@@ -11,8 +10,7 @@ import {
 } from "utils/getValuesFromTables";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 
-import moment from "moment";
-import { DetailBox } from "components/SheetCardExtension";
+import { renderDate } from "utils/renderValues";
 
 const WorkInformation = ({
   userData,
@@ -45,7 +43,7 @@ const WorkInformation = ({
     },
     {
       title: "Joining Date",
-      data: moment(userData?.joining_date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+      data: renderDate(userData?.joining_date),
     },
   ];
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);

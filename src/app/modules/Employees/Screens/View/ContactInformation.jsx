@@ -47,18 +47,18 @@ const ContactInformation = ({
           data: userData?.emergency_first_name,
         },
         { title: "Relation", sub: true, data: userData?.emergency_relation },
-        { title: "Emergency Contact", data: userData?.emergency_phone_no },
+        { title: "Emergency Contact", data: `+${userData?.emergency_country_code}${userData?.emergency_phone_no}` },
       ],
     },
     {
       titile: "Permanent Address",
       fields: [
-        { title: "Address", data: userData?.emergency_permanent_address },
+        { title: "Address", data: userData?.residential_address },
       ],
     },
     {
       titile: "Present Address",
-      fields: [{ title: "Address", data: userData?.emergency_current_address }],
+      fields: [{ title: "Address", data: userData?.current_address }],
     },
   ];
   return (
