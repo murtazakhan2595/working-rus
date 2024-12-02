@@ -138,5 +138,5 @@ export function numberToWords(number) {
 }
 
 export function renderDate(date){
-  return date? moment(date).format("DD-MM-YYYY"):'N/A';
+  return date? moment(date).format("MMM DD, YYYY"):'N/A';
 }

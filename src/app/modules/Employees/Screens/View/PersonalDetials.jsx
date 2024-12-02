@@ -4,6 +4,7 @@ import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { getCountryFullName } from "utils/getValuesFromTables";
 import moment from "moment";
+import { renderDate } from "utils/renderValues";
 import { PageLoader } from "components";
 import { getEmployeeData } from "app/hooks/employee";
 const PersonalInformation = ({ userId, isEditable }) => {
@@ -28,7 +29,7 @@ const PersonalInformation = ({ userId, isEditable }) => {
         { title: "Mother Name", data: userData?.mother_name },
         {
           title: "Date of Birth",
-          data: moment(userData.date_of_birth).format("MMM DD, YYYY"),
+          data: renderDate(userData?.date_of_birth),
         },
         { title: "Contact No", data: `+${userData?.country_code}${userData?.mobile_no}` },
       ]);

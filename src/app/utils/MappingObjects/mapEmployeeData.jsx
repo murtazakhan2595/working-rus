@@ -53,8 +53,8 @@ function getContactInfo(data) {
     emergency_first_name: data.emergency_first_name,
     emergency_relation: data.emergency_relation,
     emergency_country_code: data.emergency_country_code,
-    emergency_current_address: data.emergency_current_address,
-    emergency_permanent_address: data.emergency_permanent_address,
+    current_address: data.current_address,
+    residential_address: data.residential_address,
   };
   return contactInfo;
 }
