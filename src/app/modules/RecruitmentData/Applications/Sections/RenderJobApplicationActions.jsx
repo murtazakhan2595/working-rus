@@ -28,7 +28,7 @@ const RenderJobApplicationActions = ({ row, handleOptionSelect }) => {
         return dropdownOptions.filter((option) =>
           ["reconsider"].includes(option.value)
         );
-      case "selection":
+      case "selected":
         return dropdownOptions.filter((option) =>
           ["offer_made", "declined", "rejected"].includes(option.value)
         );
