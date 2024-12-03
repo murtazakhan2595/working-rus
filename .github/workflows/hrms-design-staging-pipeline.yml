@@ -37,19 +37,6 @@ jobs:
           tenant-id: ${{ secrets.HRMSDESIGNSTAGINGFE_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.HRMSDESIGNSTAGINGFE_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and push container image to registry
-        uses: azure/container-apps-deploy-action@v2
-        with:
-          appSourcePath: ${{ github.workspace }} 
-          registryUrl: hrmsacr.azurecr.io
-          registryUsername: ${{ secrets.HRMSDESIGNSTAGINGFE_REGISTRY_USERNAME }}
-          registryPassword: ${{ secrets.HRMSDESIGNSTAGINGFE_REGISTRY_PASSWORD }}
-          containerAppName: hrms-design-staging-fe
-          resourceGroup: HRMS-AZURE
-          imageToBuild: hrmsacr.azurecr.io/hrms-design-staging-fe:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
-
       - name: Build Static Files
         run: |
           npm ci --silent
