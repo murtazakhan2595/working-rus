@@ -143,17 +143,17 @@ export const locationTypeOptions = [
 
 export const dropdownOptions = [
   { label: "Pending", value: "pending" },
+  { label: "Review", value: "review application" },
   { label: "Shortlisted", value: "shortlisted" },
+  { label: "Schedule 1st Interview", value: "interview r1" },
+  { label: "Schedule 2nd Interview", value: "interview r2" },
   { label: "Offer Made", value: "offer_made" },
   { label: "Selected", value: "selected" },
-  // { label: "Rejected", value: "rejected" },
   { label: "Onboard", value: "on_board" },
   { label: "Reject", value: "rejected" },
   { label: "Reconsider", value: "reconsider" },
   { label: "Send Email", value: "send_email" },
-  { label: "Offer Declined", value: "declined" },
-  // { label: "Move to Selected", value: "selected" },
-  { label: "Schedule Interview", value: "scheduled" },
+  { label: "Declined by Candidate", value: "declined" },
   { label: "Offer Accepted", value: "offer_accepted" },
 ];
 
