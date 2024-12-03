@@ -36,6 +36,7 @@ const JobApplicationForm = () => {
     const getJobDetails = async () => {
       try {
         const data = await fetchJobById(id);
+        console.log(data, "DATA")
         setJobDetails(data);
       } catch (error) {
         console.error("Error fetching job details:", error);
@@ -280,7 +281,9 @@ const JobApplicationForm = () => {
                   </div>
 
                   <div className="flex justify-end mt-6">
-                    <Button type="submit" className="px-8 text-white bg-black">
+                    <Button type="submit" className="px-8 text-white bg-black"
+                    disabled={new Date() > new Date(jobDetails?.Deadline)}
+                    >
                       Apply
                     </Button>
                   </div>
