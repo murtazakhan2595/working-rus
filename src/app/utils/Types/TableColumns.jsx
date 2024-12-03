@@ -1031,10 +1031,6 @@ export const LeaveRecordColumns = [
     formatter: (cell) => <DepartmentName value={cell} />,
   },
   {
-    dataField: "total_allotted",
-    text: "Total Alloted",
-  },
-  {
     dataField: "used_leaves",
     text: "Total Used",
   },

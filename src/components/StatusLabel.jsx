@@ -29,33 +29,60 @@ export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
   );
 };
 
+export const jobsLabel = (value) => {
+  if (!value) return "";
+
+  let newLabel = value;
+  if (value === "Schedule 1st Interview") {
+    newLabel = "1st Interview";
+  } else if (value === "Schedule 2nd Interview") {
+    newLabel = "2nd Interview";
+  }
+  return newLabel;
+};
+
 export const StatusLabel = ({ status, value }) => {
   if (!status) {
     return "";
   }
+
+  // Assign the appropriate class name based on the status
   let className = "";
-  if (status === "Onboard") {
-    className = "bg-amber-100 text-amber-500";
-  } else if (status === "Contacted" || status === "warning-orange") {
-    className = "label-warning-FF9900";
-  } else if (status === "warning") {
-    className = "label-warning";
-  } else if (status === "Offered") {
-    className = "label-warning-D5D912";
-  } else if (status === "Rejected" || status === "Declined" || status === "Denied" ) {
-    className = "bg-red-100 text-red-500";
-  } else if (status === "Selected" || status === "Approved") {
-    className = "label-success";
-  } else if (status === "Shortlisted") {
-    className = "bg-emerald-100 text-emerald-500";
-  } else if (status === "Pending") {
-    className = "bg-neutral-300 text-neutral-1100";
-  } else {
-    className = "bg-neutral-300 text-neutral-1100";
+  switch (status) {
+    case "Onboard":
+      className = "bg-amber-100 text-amber-500";
+      break;
+    case "Contacted":
+    case "warning-orange":
+      className = "label-warning-FF9900";
+      break;
+    case "warning":
+      className = "label-warning";
+      break;
+    case "Offer Made":
+      className = "label-warning-D5D912";
+      break;
+    case "Reject":
+    case "Declined":
+    case "Denied":
+      className = "bg-red-100 text-red-500";
+      break;
+    case "Selected":
+    case "Approved":
+      className = "label-success";
+      break;
+    case "Shortlisted":
+      className = "bg-emerald-100 text-emerald-500";
+      break;
+    case "Pending":
+    default:
+      className = "bg-neutral-300 text-neutral-1100";
   }
+
+  // Render the badge with the appropriate label and style
   return (
     <Badge className={className}>
-    {value ?? status}
+      {jobsLabel(value ?? status)}
     </Badge>
   );
 };
