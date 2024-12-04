@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@emotion/styled": "^11.11.0",
+    "@fullcalendar/luxon3": "^6.1.15",
+    "@fullcalendar/react": "^6.1.15",
     "@hookform/resolvers": "^3.9.0",
     "@mui/material": "^5.14.19",
     "@mui/x-date-pickers": "^6.18.2",
@@ -57,6 +59,7 @@
     "embla-carousel-react": "^8.2.0",
     "file-saver": "^2.0.5",
     "formik": "^2.4.6",
+    "fullcalendar": "^6.1.15",
     "input-otp": "^1.2.4",
     "joi": "^17.9.2",
     "jszip": "^3.10.1",

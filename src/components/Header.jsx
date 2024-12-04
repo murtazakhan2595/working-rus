@@ -43,6 +43,7 @@ const Header = ({ content, userProfile }) => {
       "my-task": "My Tasks",
       "calender": "Calendar",
       "attendance": "Attendance",
+      "shift-calendar": "Shift Calender",
       "files-data": "Files Data",
       "announcement": "Announcements",
       "recognition": "Recognition",

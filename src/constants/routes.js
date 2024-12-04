@@ -43,6 +43,7 @@ import { ClaimRequest, MyClaims } from "app/modules/claims";
 import Attendance from "app/modules/Attendance";
 import StyleGuide from "app/modules/StyleGuide";
 import { OfficeSetting } from "app/modules/OfficeSetting";
+import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 
 const SidebarRoutes = [
 	{
@@ -185,6 +186,11 @@ const SidebarRoutes = [
 	  component: <Attendance />,
 	  name: "Attendance",
 	},
+	Config.ATTENDANCE && {
+		path: "/shift-calendar",
+		component: <ShiftCalendar />,
+		name: "Shift Calendar",
+	  },
 
 	Config.OFFICE_SETTING && {
 		path: "/office-settings",
