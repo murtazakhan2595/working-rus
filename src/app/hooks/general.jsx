@@ -17,7 +17,7 @@ const getDepartmentList = async (allData=false) => {
     });
     if (response.status === 200) {
       const departmentResponse = response.data;
-      const departmentList = await departmentResponse?.map((department) => ({
+      const departmentList = await departmentResponse?.results?.map((department) => ({
         value: department.id,
         label: department.name,
       }));
