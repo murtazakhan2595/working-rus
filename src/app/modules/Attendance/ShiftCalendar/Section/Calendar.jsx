@@ -8,7 +8,7 @@ import luxonPlugin from '@fullcalendar/luxon3';
 
 const Calendar = () => {
   return (
-    <div className="w-full p-4 bg-gray-100 rounded-lg shadow-lg">
+    <div className="min-w-[75%] p-4 bg-gray-100 rounded-lg shadow-lg">
       <FullCalendar
         plugins={[
           dayGridPlugin,

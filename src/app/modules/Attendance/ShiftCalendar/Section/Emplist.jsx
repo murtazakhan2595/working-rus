@@ -27,7 +27,7 @@ const Emplist = () => {
   }, []);
   return (
     <div className="flex gap-2">
-      <Card>
+      <Card className=" min-w-[25%]">
         <CardHeader>
           <CardTitle>
              <div className="flex justify-between">
