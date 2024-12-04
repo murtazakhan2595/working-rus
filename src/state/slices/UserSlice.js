@@ -14,6 +14,10 @@ const URLS = [
     Backend: "https://staging-hrms-be.tecbrix.cloud/api",
   },
   {
+    Frontend: "https://production-hdfnfucnc9gpcaaw.z02.azurefd.net",
+    Backend: "https://hrms-be.tecbrix.cloud/api",
+  },
+  {
     Frontend:
       "https://hrmsblob-fsc9g0a0b5axcufm.z02.azurefd.net/",
     Backend:
