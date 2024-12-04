@@ -58,11 +58,11 @@ const Designations = () => {
       <CardContent>
       <TableCustom
         columns={columns}
-        data={designation || []}
+        data={designation?.results || []}
         // tableOptions={tableOptions}
         dataTotalSize={designation?.length || 0}
         pagination={true}
-        itemsPerPage={10}
+        itemsPerPage={100}
         className="designation-table"
       />
       </CardContent>

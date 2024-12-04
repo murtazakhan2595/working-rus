@@ -19,15 +19,15 @@ const Calendar = () => {
         ]}
         height="70vh"
         events={[
-          { title: 'Event 1', date: '2024-12-01' },
-          { title: 'Event 2', date: '2024-12-02' },
+          { title: 'Event 1', date: '2024-12-04' },
+          { title: 'Event 2', date: '2024-12-04' },
         ]}
         nowIndicator={true}
-        initialView="timeGridDay"
+        initialView="timeGridWeek"
         headerToolbar={{
-          left: 'prev,today,next',
+          left: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth',
+          right: 'prev,today,next',
         }}
       />
     </div>

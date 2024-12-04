@@ -2,6 +2,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from 'src/@/components/ui/ta
 import { Header } from 'components';
 import React, { useState } from 'react'
 import Emplist from './Section/Emplist';
+import AssignShift from './Section/AssignShift';
 
 const ShiftCalender = () => {
     const [activeTab, setActiveTab] = useState("all");
@@ -14,7 +15,7 @@ const ShiftCalender = () => {
 
   return (
     <div>
-        <Header/>
+        <Header content={<AssignShift/>}/>
         <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
