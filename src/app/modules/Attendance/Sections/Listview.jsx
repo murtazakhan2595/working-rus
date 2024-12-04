@@ -17,7 +17,7 @@ const Listview = ({teamMemeber}) => {
       <div className="flex justify-start text-base font-medium text-neutral-1100">
         {`${teamMemeber.first_name} ${teamMemeber.last_name}`}
       </div>
-      <div className="flex justify-start text-sm text-muted-foreground md:inlin">
+      <div className="flex justify-start text-sm text-muted-foreground md:inline">
         <DesignationName
           className="flex justify-start text-sm text-muted-foreground md:inline"
           value={teamMemeber.department_position}
