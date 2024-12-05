@@ -10,6 +10,7 @@ import {
   getCertifications,
   getContactInfo,
 } from "../utils/MappingObjects/mapEmployeeData";
+import {getFileNameFromURL} from 'utils/downUtils';
 import {
   EmployeeCVDetails,
   EmployeeInformation,
@@ -29,6 +30,10 @@ const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
+});
+const formDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  // Don't explicitly set 'Content-Type' for FormData
 });
 
 const getEmployeeData = async (employeeid) => {
@@ -52,9 +57,9 @@ const getNewEmployeeCode = async () => {
       headers: headers(),
     });
     const value = response.data?.serial_number;
-    const [prefix, numericPart] = value?.split('-');
+    const [prefix, numericPart] = value?.split("-");
     const incrementedNumber = parseInt(numericPart, 10) + 1;
-    const formattedNumber = incrementedNumber.toString().padStart(4, '0');
+    const formattedNumber = incrementedNumber.toString().padStart(4, "0");
     const employee = `${prefix}-${formattedNumber}`;
     return employee;
   } catch (error) {
@@ -90,14 +95,14 @@ const getEmployeePersonalInfoData = async (employeeid) => {
   return EmployeePersonalInformation;
 };
 
-const saveEmployeePersonalInfoData = async (employeeid, personalInfo) => {
-  if (employeeid) {
+const saveEmployeePersonalInfoData = async (employeeId, personalInfo) => {
+  if (employeeId) {
     try {
       const response = await axios.patch(
-        `${baseUrl}/emp/${employeeid}`,
-        personalInfo,
+        `${baseUrl}/emp/${employeeId}`,
+        personalInfo, // FormData object
         {
-          headers: headers(),
+          headers: formDataHeader(),
         }
       );
 
@@ -106,7 +111,7 @@ const saveEmployeePersonalInfoData = async (employeeid, personalInfo) => {
       if (error?.response?.status === 401) {
         handleLogout();
       }
-      console.error("Error fetching Personal Info data :", error);
+      console.error("Error saving Personal Info data:", error);
       return false;
     }
   }
@@ -239,13 +244,15 @@ const getEmployeeVisaDetailData = async (employeeid) => {
 };
 
 const saveEmployeeVisaDetailData = async (
-  employeeid,
+  employeeId,
   visaDetail,
   visaDetailsFiles
 ) => {
-  if (employeeid) {
-    visaDetail.employee_id = employeeid;
+  if (employeeId) {
+    visaDetail.employee_id = employeeId;
+
     try {
+      // Save or update visa details
       if (visaDetail.id) {
         await axios.patch(
           `${baseUrl}/employeevisadetail/${visaDetail.id}`,
@@ -258,36 +265,34 @@ const saveEmployeeVisaDetailData = async (
         });
       }
 
+      // Process each file in visaDetailsFiles
       for (const key in visaDetailsFiles) {
         if (visaDetailsFiles.hasOwnProperty(key)) {
           const file = visaDetailsFiles[key];
           if (file) {
-            if (file?.id) {
-              await axios.patch(
-                `${baseUrl}/attachment/${file?.id}`,
-                {
-                  employee_id: employeeid,
-                  name: key,
-                  description: `${file.name} file`,
-                  document: {
-                    name: file.document.name,
-                    file: file.document.file,
-                  },
-                },
-                { headers: headers() }
-              );
-            } else {
-              // Otherwise, post a new attachment
-              await axios.post(
-                `${baseUrl}/attachment/`,
-                {
-                  employee_id: employeeid,
-                  name: key,
-                  description: `${file.name} file`,
-                  document: file,
-                },
-                { headers: headers() }
-              );
+            const formData = new FormData();
+            formData.append("employee_id", employeeId);
+            formData.append("name", key);
+            formData.append("description", file.description || `${key} file`);
+            formData.append("document", file.document); // Ensure `file.document` is a `File` or `Blob`
+
+            try {
+              // If `id` exists, update the attachment
+              if (file?.id) {
+                await axios.patch(`${baseUrl}/attachment/${file.id}`, formData, {
+                  headers: formDataHeader(),
+                });
+              } else {
+                // Otherwise, post a new attachment
+                await axios.post(`${baseUrl}/attachment/`, formData, {
+                  headers: formDataHeader(),
+                });
+              }
+            } catch (error) {
+              if (error?.response?.status === 401) {
+                handleLogout();
+              }
+              console.error(`Error processing attachment '${key}':`, error);
             }
           }
         }
@@ -297,7 +302,7 @@ const saveEmployeeVisaDetailData = async (
       if (error?.response?.status === 401) {
         handleLogout();
       }
-      console.error("Error fetching Personal Info data :", error);
+      console.error("Error saving visa details:", error);
       return false;
     }
   }
@@ -399,9 +404,11 @@ const getEmployeeProfessionalExperianceData = async (employeeid) => {
           headers: headers(),
         }
       );
-      console.log(response, "HELLO KASHIF")
+      console.log(response, "HELLO KASHIF");
       if (response.status === 200) {
-        const employeeData = await getProfessionalExperiance(response?.data?.results);
+        const employeeData = await getProfessionalExperiance(
+          response?.data?.results
+        );
         return employeeData;
       }
     } catch (error) {
@@ -417,38 +424,67 @@ const getEmployeeProfessionalExperianceData = async (employeeid) => {
 const saveEmployeeProfessionalExperianceData = async (employeeid, payload) => {
   if (employeeid && payload && payload.length > 0) {
     try {
-      payload.map(async (experience, index) => {
-        experience.employee_id = employeeid;
-        try {
-          if (experience?.id) {
-            await axios.patch(
-              `${baseUrl}/experience/${experience.id}`,
-              experience,
-              {
-                headers: headers(),
-              }
-            );
-          } else {
-            await axios.post(`${baseUrl}/experience/`, experience, {
-              headers: headers(),
+      // Iterate over the experiences and process each as FormData
+      await Promise.all(
+        payload.map(async (experience, index) => {
+          const formData = new FormData();
+
+          // Append fields to FormData
+          formData.append("employee_id", employeeid);
+          formData.append(
+            "exp_organization",
+            experience.exp_organization || ""
+          );
+          formData.append("exp_designation", experience.exp_designation || "");
+          formData.append("exp_discription", experience.exp_discription || "");
+          formData.append("exp_start_date", experience.exp_start_date || "");
+          formData.append(
+            "exp_end_date",
+            experience.disableEndDate ? null : experience.exp_end_date || ""
+          );
+
+          // Append files if present
+          if (experience.exp_letter) {
+            formData.append("exp_letter", experience.exp_letter);
+          }
+          if (experience.resume) {
+            formData.append("resume", experience.resume);
+          }
+
+          // Call the appropriate API endpoint (PATCH or POST)
+          try {
+            if (experience?.id) {
+              await axios.patch(
+                `${baseUrl}/experience/${experience.id}`,
+                formData,
+                {
+                  headers: formDataHeader(),
+                }
+              );
+            } else {
+              await axios.post(`${baseUrl}/experience/`, formData, {
+                headers: formDataHeader(),
+              });
+            }
+
+            toast.success(`Experience ${index + 1} updated successfully`, {
+              position: toast.POSITION.TOP_RIGHT,
+              autoClose: 1000,
             });
+          } catch (error) {
+            if (error?.response?.status === 401) {
+              handleLogout();
+            }
+            toast.error(`Experience ${index + 1} updated unsuccessfully`, {
+              position: toast.POSITION.TOP_RIGHT,
+              autoClose: 1000,
+            });
+            console.error("Error updating experience data:", error);
           }
-        } catch (error) {
-          if (error?.response?.status === 401) {
-            handleLogout();
-          }
-          toast.error(`Experience ${index + 1} updated unsuccessfully`, {
-            position: toast.POSITION.TOP_RIGHT,
-            autoClose: 1000,
-          });
-          console.error("Error fetching Personal Info data :", error);
-        }
-      });
+        })
+      );
     } catch (error) {
-      if (error?.response?.status === 401) {
-        handleLogout();
-      }
-      console.error("Error fetching Personal Info data :", error);
+      console.error("Error processing experiences:", error);
       return false;
     }
   }
@@ -480,32 +516,6 @@ const deleteEmployeeProfessionalExperianceData = async (
   }
   return false;
 };
-
-// const deleteEmployeeAcademicRecordData = async (
-//   baseUrl,
-//   employeeid,
-//   token,
-//   payload
-// ) => {
-//   if (employeeid && payload && payload.length > 0) {
-//     try {
-//       payload.map(async (certification) => {
-//         await axios.delete(`${baseUrl}/certification/${certification}`, {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//             "Content-Type": "application/json",
-//           },
-//         });
-//       });
-//     } catch (error) {
-//       if (error?.response?.status === 401) {
-//         handleLogout();
-//       }
-//       console.error("Error fetching Personal Info data :", error);
-//     }
-//   }
-//   return false;
-// };
 
 const deleteEmployeeCertificateData = async (
   baseUrl,
@@ -583,33 +593,64 @@ const getEmployeeAcademicRecordData = async (employeeid) => {
 };
 
 const saveEmployeeAcademicRecordData = async (
-  employeeid,
+  employeeId,
   payloadAttachment
 ) => {
-  if (employeeid && payloadAttachment && payloadAttachment.length > 0) {
+  if (employeeId && payloadAttachment && payloadAttachment.length > 0) {
     try {
-      payloadAttachment.map(async (education) => {
-        education.employee_id = employeeid;
-        if (education?.id) {
-          await axios.patch(`${baseUrl}/education/${education.id}`, education, {
-            headers: headers(),
-          });
-        } else {
-          await axios.post(`${baseUrl}/education/`, education, {
-            headers: headers(),
-          });
-        }
-      });
+      // Process each education record
+      for (const education of payloadAttachment) {
+        const formData = new FormData();
+        formData.append("employee_id", employeeId);
+        formData.append("education_level", education.education_level || "");
+        formData.append("program", education.program || "");
+        formData.append("institute_name", education.institute_name || "");
+        formData.append("edu_start_date", education.edu_start_date || "");
+        formData.append("edu_end_date", education.edu_end_date || "");
 
-      return true;
+        // Only append the certificate if it exists
+        if (education.certificate) {
+          formData.append("certificate", education.certificate);
+        }
+
+        try {
+          // If `id` exists, update the record (PATCH)
+          if (education?.id) {
+            await axios.patch(
+              `${baseUrl}/education/${education.id}`,
+              formData,
+              {
+                headers: formDataHeader(),
+              }
+            );
+          }
+          // Otherwise, create a new record (POST)
+          else {
+            await axios.post(`${baseUrl}/education/`, formData, {
+              headers: formDataHeader(),
+            });
+          }
+        } catch (error) {
+          if (error?.response?.status === 401) {
+            handleLogout();
+          }
+          toast.error(`Education record update failed`, {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 1000,
+          });
+          console.error("Error updating education record:", error);
+        }
+      }
+
+      return true; // All operations completed
     } catch (error) {
       if (error?.response?.status === 401) {
         handleLogout();
       }
-      console.error("Error fetching Personal Info data :", error);
+      console.error("Error saving academic records:", error);
     }
   }
-  return false;
+  return false; // Return false if no valid data
 };
 
 const getEmployeeCerficationData = async (employeeid) => {
@@ -635,54 +676,71 @@ const getEmployeeCerficationData = async (employeeid) => {
   return [EmployeeCertifiation];
 };
 
-const saveEmployeeCertificationData = async (employeeid, payloadAttachment) => {
-  if (employeeid && payloadAttachment && payloadAttachment.length > 0) {
+const saveEmployeeCertificationData = async (employeeId, payloadAttachment) => {
+  if (employeeId && payloadAttachment && payloadAttachment.length > 0) {
     try {
-      payloadAttachment.map(async (certification) => {
-        certification.employee_id = employeeid;
+      // Process each certification record
+      for (const certification of payloadAttachment) {
+        const formData = new FormData();
+        formData.append("employee_id", employeeId);
+        formData.append(
+          "certification_name",
+          certification.certification_name || ""
+        );
+        formData.append("completion_date", certification.completion_date || "");
+        formData.append("expiry_date", certification.expiry_date || "");
+        formData.append(
+          "certification_body",
+          certification.certification_body || ""
+        );
+        formData.append(
+          "certification_institute",
+          certification.certification_institute || ""
+        );
+
         try {
+          // If `id` exists, update the record (PATCH)
           if (certification?.id) {
             await axios.patch(
               `${baseUrl}/certification/${certification.id}`,
-              certification,
+              formData,
               {
-                headers: headers(),
+                headers: formDataHeader(),
               }
             );
-          } else {
-            await axios.post(`${baseUrl}/certification/`, certification, {
-              headers: headers(),
+          }
+          // Otherwise, create a new record (POST)
+          else {
+            await axios.post(`${baseUrl}/certification/`, formData, {
+              headers: formDataHeader(),
             });
           }
         } catch (error) {
           if (error?.response?.status === 401) {
             handleLogout();
           }
-          console.error("Error fetching Personal Info data :", error);
+          console.error(`Error updating certification:`, error);
           return false;
         }
-      });
+      }
 
-      return true;
+      return true; // All operations completed
     } catch (error) {
       if (error?.response?.status === 401) {
         handleLogout();
       }
-      console.error("Error fetching Personal Info data :", error);
+      console.error("Error saving certifications:", error);
     }
   }
-  return false;
+  return false; // Return false if no valid data
 };
 
 const getEmployeeWorkInformationData = async (employeeid) => {
   if (employeeid) {
     try {
-      const response = await axios.get(
-        `${baseUrl}/emp/${employeeid}`,
-        {
-          headers: headers(),
-        }
-      );
+      const response = await axios.get(`${baseUrl}/emp/${employeeid}`, {
+        headers: headers(),
+      });
       const employeeData = getWorkInformation(response.data);
       return employeeData;
     } catch (error) {
@@ -731,7 +789,7 @@ const getEmployeeBankDetailsData = async (baseUrl, employeeid, token) => {
       const response = await axios.get(
         `${baseUrl}/employeebanklist/${employeeid}`,
         {
-          headers: headers()
+          headers: headers(),
         }
       );
 
@@ -757,7 +815,7 @@ const saveEmployeeBankDetailsData = async (
     try {
       await axios
         .patch(`${baseUrl}/emp/${employeeid}`, payload, {
-         headers: headers()
+          headers: headers(),
         })
         .then(() => {
           return true;
@@ -772,67 +830,67 @@ const saveEmployeeBankDetailsData = async (
   return false;
 };
 
-const employeeExit =async(payload)=>{
+const employeeExit = async (payload) => {
   console.log(`${baseUrl}/employeeExit/`);
-  try{
+  try {
     const response = await axios.post(`${baseUrl}/employeeExit`, payload, {
       headers: headers(),
     });
-    if(response.status===201){
-      return true
+    if (response.status === 201) {
+      return true;
     }
-  }catch(error){
-    if(error?.response?.status === 401){
+  } catch (error) {
+    if (error?.response?.status === 401) {
       handleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
-    return false
+    return false;
   }
-}
+};
 
 const getEmployeeExitDataById = async (employeeid) => {
-    try {
-      let URL = `${baseUrl}/employeeExit`;
-      if (employeeid) {
-        URL += `?search=${encodeURIComponent(
-          JSON.stringify({ employee_id: employeeid })
-        )}`;
-      }
-      const response = await axios.get(URL, {
-        headers: headers(),
-      });
-      if (response.status === 200) {
-        return response
-      }
-    } catch (error) {
-      if (error?.response?.status === 401) {
-        handleLogout();
-      }
-      console.error("Error fetching Personal Info data :", error);
+  try {
+    let URL = `${baseUrl}/employeeExit`;
+    if (employeeid) {
+      URL += `?search=${encodeURIComponent(
+        JSON.stringify({ employee_id: employeeid })
+      )}`;
     }
-}
+    const response = await axios.get(URL, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+};
 const getEmployeeExitData = async (payload) => {
   const filterData = payload?.filterData ?? {};
-    try {
-      let URL = `${baseUrl}/employeeExit?search=${encodeURIComponent(
-        JSON.stringify(filterData)
-      )}`;
-      // let URL = `${baseUrl}/employeeExit&?search=${encodeURIComponent(
-      //   JSON.stringify(filterData)
-      // )}`;
-      const response = await axios.get(URL, {
-        headers: headers(),
-      });
-      if (response.status === 200) {
-        return response
-      }
-    } catch (error) {
-      if (error?.response?.status === 401) {
-        handleLogout();
-      }
-      console.error("Error fetching Personal Info data :", error);
+  try {
+    let URL = `${baseUrl}/employeeExit?search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    // let URL = `${baseUrl}/employeeExit&?search=${encodeURIComponent(
+    //   JSON.stringify(filterData)
+    // )}`;
+    const response = await axios.get(URL, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response;
     }
-}
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+};
 const updateExitData = async (payload) => {
   if (payload?.id) {
     try {
@@ -852,7 +910,7 @@ const updateExitData = async (payload) => {
       return false;
     }
   }
-}
+};
 
 export {
   getEmployeeData,

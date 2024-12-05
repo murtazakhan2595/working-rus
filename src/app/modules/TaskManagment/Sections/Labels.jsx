@@ -4,11 +4,11 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../../../src/@/components/ui/popover";
+} from "src/@/components/ui/popover";
 import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
-import { Label } from "../../../../src/@/components/ui/label";
-import { Checkbox } from "../../../../src/@/components/ui/checkbox";
+import { Label } from "src/@/components/ui/label";
+import { Checkbox } from "src/@/components/ui/checkbox";
 import { Card } from "components/ui/card";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -96,7 +96,7 @@ export default function Labels({ onSelectedLabelsChange, labelsList, reloadList,
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto flex gap-4">
+    <div className="w-full max-w-sm mx-auto flex" >
        <div style={{maxWidth:'85%'}}>
           <ul className="flex flex-wrap gap-2">
                     {labelsSelected?.map((label) => (

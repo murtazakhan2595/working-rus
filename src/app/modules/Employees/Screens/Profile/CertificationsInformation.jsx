@@ -51,7 +51,6 @@ const CertificationsInformation = ({
   }, [baseUrl, employeeId, token]);
 
   const handleSubmit = async (data) => {
-    console.log("Submitting data:", data);
     try {
       const response = await saveEmployeeCertificationData(
         employeeId,

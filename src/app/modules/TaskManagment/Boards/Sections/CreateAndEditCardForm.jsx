@@ -23,8 +23,11 @@ import { getAllLabels } from "app/hooks/taskManagment";
 
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
-import { Labels, Assignee } from "app/modules/TaskManagment/Sections";
-import CheckList from "../../Sections/CheckList";
+import {
+  Labels,
+  Assignee,
+  CheckList,
+} from "app/modules/TaskManagment/Sections";
 import { getDarkerTextColor } from "./getTaskStatus";
 import {
   Popover,
@@ -211,6 +214,7 @@ const CreateAndEditCardForm = ({
                     }}
                   />
                 </div>
+
                 <div className="space-y-2">
                   <div className="flex gap-5">
                     <div className="flex items-center gap-2.5 text-lg font-medium leading-4 text-zinc-600">
@@ -266,137 +270,128 @@ const CreateAndEditCardForm = ({
               </SheetCardExtension>
 
               <SheetCardExtension title="Add To Card">
-                <div className="space-y-2">
-                  <DateInput
-                    name="end_date"
-                    error={props.errors.start_date}
-                    touch={props.touched.start_date}
-                    value={props.values.start_date}
-                    label="Due Date"
-                    required
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <TextInput
-                    name="estimated_time"
-                    error={props.errors.estimated_time}
-                    touch={props.touched.estimated_time}
-                    value={props.values.estimated_time}
-                    label="Estimated Time (in hours)"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <TextInput
-                    name="consumed_time"
-                    error={props.errors.consumed_time}
-                    touch={props.touched.consumed_time}
-                    value={props.values.consumed_time}
-                    label="Time Spent (in hours)"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <SelectComponent
-                    name="priority"
-                    options={PriorityList}
-                    error={props.errors.priority}
-                    touch={props.touched.priority}
-                    value={props.values.priority}
-                    required
-                    label="Priority"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
-                {/* ------------- LABELS ---------------------------------------------------------------------------------------- */}
-                <div className="flex items-center gap-2 space-y-2">
-                  <div>Label</div>
-
-                  <Labels
-                    onSelectedLabelsChange={handleSelectedLabelsChange}
-                    labelsList={labelsList}
-                    reloadList={() => {
-                      fetchLabels();
-                    }}
-                    labelsSelected={labels}
-                  />
-                </div>
-
-                {/* --------------------ASSIGNEE--------------------------------------------------------------------------------------- */}
-
-                <div className="flex items-center gap-2 space-y-2">
-                  <div>Assignee</div>
-
-                  <Assignee
-                    assigneeSelected={props.values.assigned_to}
-                    removeMember={removeMember}
-                    employees={employees}
-                    onChange={(value) => {
-                      props.setFieldValue("assigned_to", value);
-                    }}
-                  />
-                </div>
-
-                {isEdit && (
-                  <div>
-                    <div className="flex items-center gap-2 space-y-2">
-                      <div>CheckList</div>
-                      <Popover
-                        open={isPopoverOpen}
-                        onOpenChange={setIsPopoverOpen}
-                      >
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            onClick={() => setIsPopoverOpen(true)}
-                          >
-                            +
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                          <div className="flex gap-2">
-                            <Input
-                              placeholder="Item name"
-                              value={inputValue}
-                              onChange={(e) => setInputValue(e.target.value)}
-                            />
-                            <Button onClick={handleAddItem}>Add</Button>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <div>
-                        {/* Pass the items and setItems to CheckList */}
-                      </div>
+                <TaskInputDetails
+                  title={"Due Date"}
+                  content={
+                    <div className="space-y-2">
+                      <DateInput
+                        name="end_date"
+                        error={props.errors.start_date}
+                        touch={props.touched.start_date}
+                        value={props.values.start_date}
+                        // label="Due Date"
+                        // required
+                        onChange={(field, value) => {
+                          props.setFieldValue(field, value);
+                        }}
+                      />
                     </div>
-                    <CheckList items={items} setItems={setItems} />
-                  </div>
-                )}
+                  }
+                />
 
-                <div className="space-y-2">
-                  <SelectComponent
-                    name="relation"
-                    options={relationList}
-                    error={props.errors.relation}
-                    touch={props.touched.relation}
-                    value={props.values.relation}
-                    label="Relation"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
+                <TaskInputDetails
+                  title={"Estimated Time (in hours)"}
+                  content={
+                    <TextInput
+                      name="estimated_time"
+                      error={props.errors.estimated_time}
+                      touch={props.touched.estimated_time}
+                      value={props.values.estimated_time}
+                      // label=
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                    />
+                  }
+                />
+                <TaskInputDetails
+                  title={"Time Spent (in hours)"}
+                  content={
+                    <TextInput
+                      name="consumed_time"
+                      error={props.errors.consumed_time}
+                      touch={props.touched.consumed_time}
+                      value={props.values.consumed_time}
+                      // label="Time Spent (in hours)"
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                    />
+                  }
+                />
+                <TaskInputDetails
+                  title={"Priority"}
+                  content={
+                    <SelectComponent
+                      name="priority"
+                      options={PriorityList}
+                      error={props.errors.priority}
+                      touch={props.touched.priority}
+                      value={props.values.priority}
+                      // required
+                      // label="Priority"
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                    />
+                  }
+                />
+
+                <TaskInputDetails
+                  title={"Label"}
+                  content={
+                    <Labels
+                      onSelectedLabelsChange={handleSelectedLabelsChange}
+                      labelsList={labelsList}
+                      reloadList={() => {
+                        fetchLabels();
+                      }}
+                      labelsSelected={labels}
+                    />
+                  }
+                />
+                <TaskInputDetails
+                  title={"Assignee"}
+                  content={
+                    <Assignee
+                      assigneeSelected={props.values.assigned_to}
+                      removeMember={removeMember}
+                      employees={employees}
+                      onChange={(value) => {
+                        props.setFieldValue("assigned_to", value);
+                      }}
+                    />
+                  }
+                />
+
+                <TaskInputDetails
+                  title={"CheckList"}
+                  content={
+                    <CheckList
+                      items={items}
+                      setItems={setItems}
+                      checkItemValue={inputValue}
+                      onChange={(value) => setInputValue(value)}
+                      handleAddItem={handleAddItem}
+                    />
+                  }
+                />
+                <TaskInputDetails
+                  title={"Relation"}
+                  content={
+                    <SelectComponent
+                      name="relation"
+                      options={relationList}
+                      error={props.errors.relation}
+                      touch={props.touched.relation}
+                      value={props.values.relation}
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                    />
+                  }
+                />
+
               </SheetCardExtension>
 
               <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
@@ -417,6 +412,17 @@ const CreateAndEditCardForm = ({
           </form>
         )}
       </Formik>
+    </>
+  );
+};
+
+const TaskInputDetails = ({ title, content }) => {
+  return (
+    <>
+      <div className="flex items-center gap-2 space-y-2">
+        <div style={{ width: "18%" }}>{title}</div>
+        {content}
+      </div>
     </>
   );
 };

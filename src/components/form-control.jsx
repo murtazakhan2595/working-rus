@@ -793,9 +793,9 @@ const ImageInput = ({
     <>
       <div className="relative flex flex-row items-center justify-start w-full h-full border-solid rounded-3xl">
         <div className="relative overflow-hidden w-[110px]">
-          {value?.file ? (
+          {value ? (
             <img
-              src={value instanceof File ? URL.createObjectURL(value) : value}
+              src={value}
               alt="Preview"
               className="h-[100px] object-cover border-2 border-gray-400 rounded-full"
               width={"100px"}
@@ -826,7 +826,6 @@ const ImageInput = ({
                     setImageError("Please upload a file smaller than 1 MB.");
                     return;
                   }
-console.log(URL.createObjectURL(selectedFile))
                   // Pass the file object directly
                   onChange(
                     name,
@@ -1255,7 +1254,12 @@ const CoverFileUpload = ({
   // Initialize files from value
   useEffect(() => {
     if (value) {
-      setFiles(Array.isArray(value) ? value : [value]);
+      // If the value is a URL, set the file data with the URL
+      if (typeof value === "string" && value.startsWith("http")) {
+        setFiles([{ name: "Uploaded file", url: value }]);
+      } else {
+        setFiles(Array.isArray(value) ? value : [value]);
+      }
     }
   }, [value]);
 
@@ -1305,8 +1309,8 @@ const CoverFileUpload = ({
         };
 
         // Replace existing files with new file
-        setFiles([fileData]);
-        onChange(name, [fileData]); // Send single file to parent
+        setFiles([file]);
+        onChange(name, file); // Send single file to parent
       };
       reader.readAsDataURL(file);
     }
@@ -1374,9 +1378,20 @@ const CoverFileUpload = ({
             <p className="text-sm font-medium text-neutral-900">
               {fileData.name}
             </p>
-            <p className="text-sm text-neutral-500">
-              {formatFileSize(getFileSizeInKB(fileData?.file) * 1024)}
-            </p>
+            {fileData.url ? (
+              <a
+                href={fileData.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-neutral-500"
+              >
+                View Document
+              </a>
+            ) : (
+              <p className="text-sm text-neutral-500">
+                {formatFileSize(fileData?.file?.length)}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-4">
