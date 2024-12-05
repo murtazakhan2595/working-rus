@@ -218,6 +218,7 @@ export function getMenuList(pathname, userRole) {
       CalendarClockIcon,
       [
         createMenu("/attendance", "Attendance"),
+        createMenu("/shift-calendar", "Shift Calendar"),
       ],
      
     ),

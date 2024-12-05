@@ -59,11 +59,11 @@ const Departments = () => {
       <CardContent>
       <TableCustom
         columns={columns}
-        data={department || []}
+        data={department?.results || []}
         // tableOptions={tableOptions}
-        dataTotalSize={department?.length || 0}
+        dataTotalSize={department?.results?.length || 0}
         pagination={true}
-        itemsPerPage={10}
+        itemsPerPage={100}
         className="organization-table"
       />
       </CardContent>

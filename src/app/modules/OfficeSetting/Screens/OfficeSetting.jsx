@@ -104,7 +104,7 @@ const OfficeSetting = () => {
             <CardContent>
             <TableCustom
               columns={columns}
-              data={data || []}
+              data={data?.results || []}
               // tableOptions={tableOptions}
               dataTotalSize={data?.length || 0}
               pagination={true}

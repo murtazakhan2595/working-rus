@@ -17,7 +17,7 @@ const getDepartmentList = async (allData=false) => {
     });
     if (response.status === 200) {
       const departmentResponse = response.data;
-      const departmentList = await departmentResponse.map((department) => ({
+      const departmentList = await departmentResponse?.map((department) => ({
         value: department.id,
         label: department.name,
       }));
@@ -30,7 +30,6 @@ const getDepartmentList = async (allData=false) => {
 };
 
 const saveDepartment = async (departmentId ,payload)=>{
-  console.log(departmentId, payload, "TEST DEPARMTNET")
   try {
     if (departmentId) {
       const response = await axios.patch(
@@ -97,7 +96,7 @@ const getDesignationList = async (allData=false) => {
     });
     if (response.status === 200) {
       const designationResponse = response.data;
-      const designationList = await designationResponse.map((designation) => ({
+      const designationList = await designationResponse?.results?.map((designation) => ({
         value: designation.id,
         label: designation.name,
       }));
@@ -163,7 +162,7 @@ const getOrganizationList = async (allData=false) => {
     });
     if (response.status === 200) {
       const organizationResponse = response.data;
-      const organizationList = organizationResponse.map((organization) => ({
+      const organizationList = organizationResponse?.results?.map((organization) => ({
         value: organization.id,
         label: organization.name,
       }));

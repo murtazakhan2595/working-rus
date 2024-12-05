@@ -193,7 +193,7 @@ const SelectMultiInputComponent = ({
           <Command>
             <CommandInput
               placeholder="Search options..."
-              className="text-sm font-normal text-neutral-600"
+              className="text-sm font-normal text-neutral-900"
             />
             <CommandList>
               <CommandEmpty>No options found.</CommandEmpty>
