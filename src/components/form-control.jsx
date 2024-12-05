@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 // import Select from "react-select";
 import { Label } from "../src/@/components/ui/label";
 import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
+import {getFileNameFromURL} from 'utils/downUtils';
 import moment from "moment";
 import upload from "../assets/images/upload.png";
 import ReactQuill from "react-quill";
@@ -1256,7 +1256,7 @@ const CoverFileUpload = ({
     if (value) {
       // If the value is a URL, set the file data with the URL
       if (typeof value === "string" && value.startsWith("http")) {
-        setFiles([{ name: "Uploaded file", url: value }]);
+        setFiles([{ name: getFileNameFromURL(value), url: value }]);
       } else {
         setFiles(Array.isArray(value) ? value : [value]);
       }
@@ -1358,7 +1358,7 @@ const CoverFileUpload = ({
         key={index}
         className="flex items-center justify-between p-4 bg-white border rounded-lg border-neutral-500"
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3" style={{maxWidth: '67%', overflow: 'hidden',}}>
           <div className="text-neutral-500">
             <svg
               className="w-6 h-6"
@@ -1465,6 +1465,7 @@ const CoverFileUpload = ({
     </div>
   );
 };
+
 
 export {
   SelectComponent,

@@ -6,6 +6,7 @@ import { renderDate } from "utils/renderValues";
 import { getEmployeeCerficationData } from "app/hooks/employee";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { PageLoader } from "components";
+import { getFileNameFromURL } from "utils/downUtils";
 
 const Certifications = ({ isEditable, employeeId }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
@@ -67,31 +68,30 @@ const Certifications = ({ isEditable, employeeId }) => {
                   >
                     <div>
                       <div className="text-base font-semibold text-black whitespace-nowrap">
-                        {cer.certification_institute || "Cetitification Institute (N/A)"}
+                        {cer.certification_institute ||
+                          "Cetitification Institute (N/A)"}
                       </div>
                       <div className="text-base text-black">
                         {cer.certification_name || "Certification Name (N/A)"}
                       </div>
                       <div className="text-base text-black">
                         {renderDate(cer.completion_date)}
-                        {cer.expiry_date?` - ${renderDate(cer.expiry_date)}`:''}
+                        {cer.expiry_date
+                          ? ` - ${renderDate(cer.expiry_date)}`
+                          : ""}
                       </div>
                     </div>
                     <div>
-                      {cer.certification_body &&
-                        (cer.certification_body[0]?.file ||
-                          cer.certification_body?.file) && (
-                          <a
-                            download={cer.certification_body[0]?.name}
-                            className="flex items-center gap-2 text-sm no-underline"
-                            href={
-                              cer?.certification_body[0]?.file ||
-                              cer?.certification_body?.file
-                            }
-                          >
-                            Certification <FiDownload />
-                          </a>
-                        )}
+                      {cer.certification_body && (
+                        <a
+                          download={getFileNameFromURL(cer.certification_body)}
+                          className="flex items-center gap-2 text-sm no-underline"
+                          href={cer?.certification_body}
+                          target="_blank"
+                        >
+                          Certification <FiDownload />
+                        </a>
+                      )}
                     </div>
                   </div>
                 ))

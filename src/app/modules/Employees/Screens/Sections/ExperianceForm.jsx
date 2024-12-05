@@ -108,7 +108,7 @@ const Experience = ({
             <CoverFileUpload
               name="exp_letter"
               label={`${
-                isCurrentExperience ? "Resume" : "Experience Letter"
+                isCurrentExperience ||values.disableEndDate   ? "Upload Resume" : "Experience Letter"
               } or drag it here`}
               acceptType=".pdf"
               error={errors?.exp_letter}

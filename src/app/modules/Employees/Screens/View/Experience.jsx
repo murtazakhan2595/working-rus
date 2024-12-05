@@ -5,6 +5,7 @@ import { CiEdit } from "react-icons/ci";
 import { renderDate } from "utils/renderValues";
 import { getEmployeeProfessionalExperianceData } from "app/hooks/employee";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
+import { getFileNameFromURL } from "utils/downUtils";
 import { PageLoader } from "components";
 
 const Experience = ({ isEditable, employeeId }) => {
@@ -16,7 +17,9 @@ const Experience = ({ isEditable, employeeId }) => {
     try {
       const expData = await getEmployeeProfessionalExperianceData(employeeId);
       setExperiences(
-        Array.isArray(expData) && expData?.length > 0 && expData[0]?.id ? expData : null
+        Array.isArray(expData) && expData?.length > 0 && expData[0]?.id
+          ? expData
+          : null
       );
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -61,13 +64,10 @@ const Experience = ({ isEditable, employeeId }) => {
                       </div>
                       {exp?.exp_letter && (
                         <a
-                          download={
-                            exp?.exp_letter[0]?.name || exp?.exp_letter?.name
-                          }
+                          download={getFileNameFromURL(exp?.exp_letter)}
+                          target="_blank"
                           className="flex items-center gap-2 text-sm no-underline "
-                          href={
-                            exp?.exp_letter[0]?.file || exp?.exp_letter?.file
-                          }
+                          href={exp?.exp_letter}
                         >
                           {exp.exp_end_date ? `Experience Letter` : `Resume`}{" "}
                           <FiDownload />
@@ -80,7 +80,7 @@ const Experience = ({ isEditable, employeeId }) => {
                           {exp.exp_designation || "N/A"}
                         </div>
                         <div className="text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000 ">
-                          {renderDate(exp.exp_start_date)}{" "}-{" "}
+                          {renderDate(exp.exp_start_date)} -{" "}
                           {exp.exp_end_date
                             ? renderDate(exp.exp_end_date)
                             : "Till date"}
@@ -95,7 +95,7 @@ const Experience = ({ isEditable, employeeId }) => {
               ) : (
                 <div>
                   <div className="flex-1 text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000 ">
-                  Experience is not posted yet.
+                    Experience is not posted yet.
                   </div>
                 </div>
               )}
