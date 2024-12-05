@@ -58,7 +58,7 @@ export default function Assignee({
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto flex gap-4">
+    <div className="w-full max-w-sm mx-auto flex" >
       <div style={{ maxWidth: "85%" }}>
         <ul className="flex flex-wrap gap-2">
           {assigneeSelected &&

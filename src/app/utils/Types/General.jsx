@@ -1,6 +1,6 @@
 const File = {
   description: null,
-  document: { file: null, name: null },
+  document: null,
   employee_id: null,
   id: null,
   name: null,

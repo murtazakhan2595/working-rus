@@ -21,9 +21,12 @@ export const downloadFiles = async (file, name) => {
     }
 };
 
+export const getFileNameFromURL=(url)=>{if (!url) return null;
+    const parts = url.split("/");
+    return parts[parts.length - 1];}
+
 const downloadFile = (data, fileName) => {
     const url = window.URL.createObjectURL(data);
-
     // Create a temporary link element
     const link = document.createElement("a");
     link.href = url;

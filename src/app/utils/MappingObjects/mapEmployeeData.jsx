@@ -114,6 +114,7 @@ async function getProfessionalExperiance(data) {
         exp_designation: profExperience?.exp_designation ?? "",
         exp_discription: profExperience?.exp_discription ?? "",
         exp_letter: profExperience?.exp_letter ?? "",
+        resume: profExperience?.resume ?? "",
         exp_start_date: profExperience.exp_start_date
           ? profExperience.exp_start_date
           : null,
