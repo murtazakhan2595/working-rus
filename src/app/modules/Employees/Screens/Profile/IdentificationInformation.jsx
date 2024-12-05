@@ -186,7 +186,7 @@ const IdentificationInformation = ({
                               name={"id_front"}
                               error={props.errors?.id_front}
                               touch={props.touched?.id_front}
-                              value={props.values?.id_front}
+                              value={props.values?.id_front?.document}
                               label={"ID Front"}
                               required={true}
                               onChange={(field, value) => {
@@ -199,7 +199,7 @@ const IdentificationInformation = ({
                               name={"id_back"}
                               error={props.errors?.id_back}
                               touch={props.touched?.id_back}
-                              value={props.values?.id_back}
+                              value={props.values?.id_back?.document}
                               label={"ID Back"}
                               required={true}
                               onChange={(field, value) => {
@@ -277,7 +277,7 @@ const IdentificationInformation = ({
                                   name={"passport_copy"}
                                   error={props.errors?.passport_copy}
                                   touch={props.touched?.passport_copy}
-                                  value={props.values?.passport_copy}
+                                  value={props.values?.passport_copy?.document}
                                   label={"Passport Copy"}
                                   required={true}
                                   onChange={(field, value) => {
@@ -421,7 +421,7 @@ const IdentificationInformation = ({
                                   name={"enter_permit"}
                                   error={props.errors?.enter_permit}
                                   touch={props.touched?.enter_permit}
-                                  value={props.values?.enter_permit}
+                                  value={props.values?.enter_permit?.document}
                                   label={"Entery Permit"}
                                   required={true}
                                   onChange={(field, value) => {
@@ -435,7 +435,7 @@ const IdentificationInformation = ({
                                   name={"visa_page"}
                                   error={props.errors?.visa_page}
                                   touch={props.touched?.visa_page}
-                                  value={props.values?.visa_page}
+                                  value={props.values?.visa_page?.document}
                                   label={"Visa Page"}
                                   required={true}
                                   onChange={(field, value) => {
@@ -448,7 +448,7 @@ const IdentificationInformation = ({
                                   name={"medical"}
                                   error={props.errors?.medical}
                                   touch={props.touched?.medical}
-                                  value={props.values?.medical}
+                                  value={props.values?.medical?.document}
                                   label={"Medical Result"}
                                   required={true}
                                   onChange={(field, value) => {
@@ -461,7 +461,7 @@ const IdentificationInformation = ({
                                   name={"id_application"}
                                   error={props.errors?.id_application}
                                   touch={props.touched?.id_application}
-                                  value={props.values?.id_application}
+                                  value={props.values?.id_application?.document}
                                   label={"ID Application"}
                                   required={true}
                                   onChange={(field, value) => {
@@ -578,7 +578,7 @@ const IdentificationInformation = ({
                                   name={"insurance_card"}
                                   error={props.errors?.insurance_card}
                                   touch={props.touched?.insurance_card}
-                                  value={props.values?.insurance_card}
+                                  value={props.values?.insurance_card?.document}
                                   label={"Insurance Card"}
                                   required={true}
                                   onChange={(field, value) => {
