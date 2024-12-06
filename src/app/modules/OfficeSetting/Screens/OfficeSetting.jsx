@@ -17,6 +17,7 @@ import AddDepartment from "../sections/Departments/AddDepartment";
 import { getOrganizationList } from "app/hooks/general";
 import { CardContent } from "components/ui/card";
 import AddDesignation from "../sections/Designations/AddDesignation";
+import WorkingHours from "./WorkingHours";
 
 const OfficeSetting = () => {
   const [data, setData] = useState(null);
@@ -76,6 +77,7 @@ const OfficeSetting = () => {
     { value: "offices", label: "Offices" },
     { value: "department", label: "Department" },
     { value: "designation", label: "Designation" },
+    { value: "working-hours", label: "Working Hours" },
   ];
 
   return (
@@ -119,6 +121,9 @@ const OfficeSetting = () => {
         </TabsContent>
         <TabsContent value="designation">
           <Designations />
+        </TabsContent>
+        <TabsContent value="working-hours">
+          <WorkingHours />
         </TabsContent>
       </Tabs>
     </div>

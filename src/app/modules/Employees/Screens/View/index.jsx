@@ -98,7 +98,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
                 />
                 <div>
                   <p className="text-base text-black">
-                    <EmployeeID value={userId} />
+                    <EmployeeID value={employeeData?.serial_number} />
                   </p>
                   <h2 className="text-2xl font-bold text-black">
                     {employeeData?.first_name} {employeeData?.last_name}
