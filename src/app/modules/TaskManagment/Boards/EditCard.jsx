@@ -62,7 +62,7 @@ const EditCard = ({ onClose, employees, cardId }) => {
         if (isMounted) {
           setInitialValues({
             ...cardDetails,
-            attachment: attachment||[],
+            attachment: attachment || [],
           });
         }
       } else if (isMounted) {
@@ -88,12 +88,18 @@ const EditCard = ({ onClose, employees, cardId }) => {
   ) => {
     setIsLoading(true);
     try {
-            // Map over files to get an array of promises
-     
+      // Map over files to get an array of promises
+
       const attachmentPromises = newfiles.map(async (file) => {
-        const payload={attachments:file.attachments};
-        const response = await addAttachments(payload,file.id);
-        return response.id; // Return the attachment ID
+        if (file.attachments) {
+          if (file.attachments instanceof File) {
+            const payload = { attachments: file.attachments };
+            const response = await addAttachments(payload, file.id);
+            return response.id; // Return the attachment ID
+          } else {
+            return file.id;
+          }
+        }
       });
 
       // Wait for all promises to resolve
