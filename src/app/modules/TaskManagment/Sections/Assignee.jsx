@@ -21,16 +21,14 @@ import { toast } from "react-toastify";
 import { getDarkerTextColor } from "../Boards/Sections/getTaskStatus";
 import { Members } from "app/modules/TaskManagment/Sections";
 
-const headers = () => ({
-  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-  "Content-Type": "application/json",
-});
 
 export default function Assignee({
   assigneeSelected,
   removeMember,
   employees,
-  onChange
+  onChange,
+  errors,
+  touched,
 }) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedAssignee, setSelectedLabels] = React.useState([]);
@@ -58,7 +56,7 @@ export default function Assignee({
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto flex" >
+    <div className=" max-w-sm flex" >
       <div style={{ maxWidth: "85%" }}>
         <ul className="flex flex-wrap gap-2">
           {assigneeSelected &&
@@ -93,7 +91,6 @@ export default function Assignee({
                 />
               </div>
               <div className="space-y-3 max-h-[200px] overflow-y-auto scroll-smooth">
-                {console.log(employees)}
                 {filteredEmployees?.map((assignee) => (
                   <div key={assignee?.value} className="flex items-center space-x-2">
                     <Checkbox

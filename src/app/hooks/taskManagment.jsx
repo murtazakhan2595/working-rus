@@ -10,9 +10,12 @@ const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
 });
+const formDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  // Don't explicitly set 'Content-Type' for FormData
+});
 
 const getAllProjects = async (payload, userProfile) => {
-  console.log(userProfile, "PROFILE");
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -66,7 +69,6 @@ const getTaskByBoardId = async (payload) => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
-    console.log(response, "TASKS")
     if (response.status === 200) {
       const data = response.data?.results;
       const taskList = getTaskFilteredData(data, payload?.filterData ?? {});
@@ -97,7 +99,6 @@ const getAllBoards = async (payload) => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
-    console.log(response, "BOARD")
     if (response.status === 200) {
       const data = response.data?.results;
       const BoardsData = {
@@ -209,7 +210,6 @@ const addProject = async (payload) => {
   }
 };
 const addTask = async (payload) => {
-  console.log("addtask payload", payload);
   try {
     if (payload?.id) {
       const response = await axios.patch(
@@ -264,26 +264,40 @@ const moveTask = async (payload) => {
     return false;
   }
 };
-const addAttachments = async (payload) => {
+const addAttachments = async (payload, id = null) => {
   try {
-    const response = await axios.post(
-      `${baseUrl}/TaskmanagementAttachment`,
-      { attachments: payload },
-      {
-        headers: headers(),
-      }
-    );
-    if (response.status === 201) {
+    // Create FormData object
+    const formData = new FormData();
+    formData.append("attachments", payload.attachments);
+
+    const url = id 
+      ? `${baseUrl}/TaskmanagementAttachment/${id}` // Use id if updating
+      : `${baseUrl}/TaskmanagementAttachment`;      // No id means create new
+
+    const method = id ? "PUT" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: formData,
+      headers: formDataHeader(),
+    });
+
+    // Check response status
+    if (response.status === 201 || response.status === 200) {
       return response.data;
     }
   } catch (error) {
+    // Handle errors
     if (error?.response?.status === 401) {
       handleLogout();
     }
-    console.error("Error adding task:", error);
+    console.error("Error adding/updating attachment:", error);
     return false;
   }
 };
+
+
 const addCommentAttachment = async (payload) => {
   try {
     const response = await axios.post(
@@ -438,7 +452,6 @@ const getTaskById = async (taskId) => {
         headers: headers(),
       });
       if (response.status === 200) {
-        console.log("get task by id", response.data);
         return response.data;
       } else {
         return {};
@@ -462,7 +475,6 @@ const getAttachmentById = async (attachmentId) => {
         }
       );
       if (response.status === 200) {
-        console.log("get attachment by id", response.data);
         return response.data;
       } else {
         return {};
@@ -533,7 +545,6 @@ const getCommentsWithAttachments = async (filter) => {
   try {
     const comments = await fetchComments(filter);
     const attachmentIds = comments.flatMap((comment) => comment.commentattach);
-    console.log(attachmentIds);
     const attachments =
       attachmentIds.length > 0
         ? await Promise.all(

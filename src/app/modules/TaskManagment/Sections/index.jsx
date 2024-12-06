@@ -4,11 +4,13 @@ import CustomDropdown from "./CutsomDropdown";
 import Assignee from './Assignee';
 import Labels from "./Labels";
 import CheckList from './CheckList';
+import Attachments from './Attachments';
 export {
   Members,
   MembersList,
   CustomDropdown,
   Assignee,
   Labels,
-  CheckList
+  CheckList,
+  Attachments,
 };
