@@ -36,7 +36,8 @@ const CreateAndUpdateCard = ({ employees, onClose, boardId, projectId , setIsOpe
     try {
       // Map over files to get an array of promises
       const attachmentPromises = files.map(async (file) => {
-        const response = await addAttachments(file);
+        const payload={attachments:file.attachments};
+        const response = await addAttachments(payload,file.id);
         return response.id; // Return the attachment ID
       });
 

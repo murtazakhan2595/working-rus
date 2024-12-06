@@ -4,11 +4,11 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../../../src/@/components/ui/popover";
+} from "src/@/components/ui/popover";
 import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
-import { Label } from "../../../../src/@/components/ui/label";
-import { Checkbox } from "../../../../src/@/components/ui/checkbox";
+import { Label } from "src/@/components/ui/label";
+import { Checkbox } from "src/@/components/ui/checkbox";
 import { Card } from "components/ui/card";
 import axios from "axios";
 import { useSelector } from "react-redux";
@@ -21,9 +21,13 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-export default function Labels({ onSelectedLabelsChange, labelsList, reloadList,labelsSelected }) {
+export default function Labels({
+  onSelectedLabelsChange,
+  labelsList,
+  reloadList,
+  labelsSelected,
+}) {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [selectedLabels, setSelectedLabels] = React.useState([]);
   const [showNewLabel, setShowNewLabel] = React.useState(false);
   const [newLabelTitle, setNewLabelTitle] = React.useState("");
   const [selectedColor, setSelectedColor] = React.useState("");
@@ -54,17 +58,20 @@ export default function Labels({ onSelectedLabelsChange, labelsList, reloadList,
     );
   }, [searchQuery, labelsList]);
 
-
   const handleLabelToggle = (labelId) => {
-    setSelectedLabels((prev) => {
-      const updatedLabels = prev.includes(labelId)
-        ? prev.filter((id) => id !== labelId)
-        : [...prev, labelId];
-
-      onSelectedLabelsChange(updatedLabels); 
+    if (labelsSelected.includes(labelId)) {
+      // Remove the label if it already exists
+      const updatedLabels = labelsSelected.filter((id) => id !== labelId);
+      onSelectedLabelsChange(updatedLabels);
       return updatedLabels;
-    });
+    } else {
+      // Add the label if it doesn't exist
+      const updatedLabels = [...labelsSelected, labelId];
+      onSelectedLabelsChange(updatedLabels);
+      return updatedLabels;
+    }
   };
+  
 
   const handleSaveNewLabel = async () => {
     try {
@@ -96,21 +103,25 @@ export default function Labels({ onSelectedLabelsChange, labelsList, reloadList,
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto flex gap-4">
-       <div style={{maxWidth:'85%'}}>
-          <ul className="flex flex-wrap gap-2">
-                    {labelsSelected?.map((label) => (
-                      <li
-                        key={label.id}
-                        className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                          label?.color
-                        } ${getDarkerTextColor(label?.color)}`}
-                      >
-                        {label?.name}
-                      </li>
-                    ))}
-                  </ul>
-          </div>
+    <div className=" max-w-sm flex">
+      <div style={{ maxWidth: "85%" }}>
+        <ul className="flex flex-wrap gap-2">
+          {labelsSelected?.map((labelId) => {
+            const label = labelsList?.find((label) => label.id === labelId);
+
+            return (
+              <li
+                key={labelId}
+                className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                  label?.color
+                } ${getDarkerTextColor(label?.color)}`}
+              >
+                {label?.name}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-10 h-10 p-0 rounded-full">
@@ -134,10 +145,16 @@ export default function Labels({ onSelectedLabelsChange, labelsList, reloadList,
                 {filteredLabels?.map((label) => (
                   <div key={label?.id} className="flex items-center space-x-2">
                     <Checkbox
-                      checked={selectedLabels.includes(label?.id)}
+                      checked={
+                        labelsSelected && labelsSelected.includes(label?.id)
+                      }
                       onCheckedChange={() => handleLabelToggle(label?.id)}
                     />
-                    <span className={`px-3 py-1 rounded-full ${label?.color} inline-block ${getDarkerTextColor(label?.color)}`}>
+                    <span
+                      className={`px-3 py-1 rounded-full ${
+                        label?.color
+                      } inline-block ${getDarkerTextColor(label?.color)}`}
+                    >
                       {label?.name}
                     </span>
                   </div>

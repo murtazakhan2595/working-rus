@@ -43,6 +43,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                 data: visaData?.id_front?.document && (
                   <a
                     href={visaData.id_front.document}
+                    target="_blank"
                     download={visaData.id_front.document.name}
                     className="flex items-center text-black no-underline"
                   >
@@ -56,6 +57,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   <a
                     href={visaData.id_back.document}
                     download={visaData.id_back.document.name}
+                    target="_blank"
                     className="flex items-center text-black no-underline"
                   >
                     Download <FiDownload />
@@ -93,6 +95,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                     data: visaData?.passport_copy?.document && (
                       <a
                         href={visaData.passport_copy.document}
+                        target="_blank"
                         download={visaData.passport_copy.document.name}
                         className="flex items-center text-black no-underline"
                       >
@@ -133,6 +136,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                     data: visaData?.insurance_card?.document && (
                       <a
                         href={visaData.insurance_card.document}
+                        target="_blank"
                         download={visaData.insurance_card.document.name}
                         className="flex items-center text-black no-underline"
                       >
@@ -185,6 +189,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                     data: visaData?.enter_permit?.document && (
                       <a
                         href={visaData.enter_permit.document}
+                        target="_blank"
                         download={visaData.enter_permit.document.name}
                         className="flex items-center text-black no-underline"
                       >
@@ -198,6 +203,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                       <a
                         href={visaData.visa_page.document}
                         download={visaData.visa_page.document.name}
+                        target="_blank"
                         className="flex items-center text-black no-underline"
                       >
                         Download <FiDownload />
@@ -209,6 +215,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                     data: visaData?.medical?.document && (
                       <a
                         href={visaData.medical.document}
+                        target="_blank"
                         download={visaData.medical.document.name}
                         className="flex items-center text-black no-underline"
                       >
@@ -221,6 +228,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                     data: visaData?.id_application?.document && (
                       <a
                         href={visaData.id_application.document}
+                        target="_blank"
                         download={visaData.id_application.document.name}
                         className="flex items-center text-black no-underline"
                       >

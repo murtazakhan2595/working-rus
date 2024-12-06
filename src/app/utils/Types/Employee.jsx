@@ -131,6 +131,7 @@ const EmployeeProfessionalExperiance = {
   exp_start_date: null,
   exp_end_date: null,
   disableEndDate: false,
+  resume:null,
 };
 const Employee = {
   id: null,

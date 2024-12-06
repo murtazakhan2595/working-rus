@@ -3,12 +3,17 @@ import {
   TextAreaInput,
   TextInput,
   CheckBoxInput,
-  CoverFileUpload
+  CoverFileUpload,
 } from "components/form-control";
-import React, {  useState } from "react";
+import React, { useState } from "react";
 
-
-const Experience = ({ errors, touched, values, onChange ,isCurrentExperience}) => {
+const Experience = ({
+  errors,
+  touched,
+  values,
+  onChange,
+  isCurrentExperience,
+}) => {
   const [date, setDate] = useState(new Date());
   return (
     <>
@@ -102,7 +107,9 @@ const Experience = ({ errors, touched, values, onChange ,isCurrentExperience}) =
           <div className="col-span-2 space-y-2">
             <CoverFileUpload
               name="exp_letter"
-              label={`${isCurrentExperience ? 'Resume':'Experience Letter'} or drag it here`}
+              label={`${
+                isCurrentExperience ||values.disableEndDate   ? "Upload Resume" : "Experience Letter"
+              } or drag it here`}
               acceptType=".pdf"
               error={errors?.exp_letter}
               touch={touched?.exp_letter}
@@ -110,15 +117,16 @@ const Experience = ({ errors, touched, values, onChange ,isCurrentExperience}) =
               required={true}
               onChange={(field, value) => {
                 onChange(field, value);
-                if(isCurrentExperience){
-                onChange('resume', value);
+                if (isCurrentExperience) {
+                  onChange("resume", value);
+                }else{
+                  onChange("resume", null);
                 }
               }}
             />
           </div>
         </div>
-        </div>
-       
+      </div>
     </>
   );
 };

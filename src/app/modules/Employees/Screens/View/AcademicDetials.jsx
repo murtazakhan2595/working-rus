@@ -5,6 +5,7 @@ import { CiEdit } from "react-icons/ci";
 import { renderDate } from "utils/renderValues";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { getEmployeeAcademicRecordData } from "app/hooks/employee";
+import {getFileNameFromURL} from 'utils/downUtils';
 import { PageLoader } from "components";
 
 const AcademicInfo = ({
@@ -78,11 +79,12 @@ const AcademicInfo = ({
                     </div>
                   </div>
                   <div>
-                    {edu.education_body?.file && (
+                    {edu.education_body && (
                       <a
-                        download={edu.education_body?.name}
+                        download={getFileNameFromURL(edu.education_body)}
                         className="flex items-center gap-2 text-sm no-underline"
-                        href={edu?.education_body?.file}
+                        href={edu?.education_body}
+                        target="_blank"
                       >
                         Certification <FiDownload />
                       </a>

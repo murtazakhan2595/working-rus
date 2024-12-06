@@ -52,15 +52,38 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
       });
   }, [baseUrl, employeeId, token]);
 
-  const handleSubmit = (data) => {
+  const handleSubmit = async (data) => {
+    // Prepare personal information from data
     const personalInformation = getPersonalInfo(data);
-
-    const response = saveEmployeePersonalInfoData(
-      employeeId,
-      personalInformation
-    );
-    if (response) nextstep();
+  
+    // Create a FormData object
+    const formData = new FormData();
+  
+    // Append each field in personalInformation to FormData
+    Object.entries(personalInformation).forEach(([key, value]) => {
+      if (value instanceof File) {
+        // Handle file fields
+        formData.append(key, value);
+      } else {
+        // Handle non-file fields
+        formData.append(key, value);
+      }
+    });
+    try {
+      // Call the API with FormData
+      const response = await saveEmployeePersonalInfoData(employeeId, formData);
+  
+      if (response.ok) {
+        // Proceed to the next step
+        nextstep();
+      } else {
+        console.error("Failed to save data:", await response.json());
+      }
+    } catch (error) {
+      console.error("Error during data submission:", error);
+    }
   };
+  
 
   return (
     <>
