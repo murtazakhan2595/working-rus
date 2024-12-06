@@ -60,10 +60,9 @@ const EditCard = ({ onClose, employees, cardId }) => {
           })
         );
         if (isMounted) {
-          console.log(attachment);
           setInitialValues({
             ...cardDetails,
-            attachment: attachment,
+            attachment: attachment||[],
           });
         }
       } else if (isMounted) {

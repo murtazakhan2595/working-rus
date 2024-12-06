@@ -84,38 +84,35 @@ const CreateAndEditCardForm = ({
   }, []);
 
   const handleSelectedLabelsChange = (selectedLabels) => {
+    debugger;
     setLabelsAdded(selectedLabels);
-    const selectedLabelObjects = selectedLabels?.map((selectedId) =>
-      labelsList?.find((label) => label.id === selectedId)
-    );
-    setLabels(selectedLabelObjects);
   };
 
   useEffect(() => {
-    console.log(initialValues.attachment)
     setAttachmentFiles(initialValues.attachment);
-  }, [initialValues.attachment]);
+    setLabelsAdded(initialValues.label);
+  }, [initialValues]);
 
   const userProfile = useSelector((state) => state.user.userProfile);
   const formInitialValues = isEdit
     ? initialValues
     : { ...initialValues, assigned_by: userProfile.id };
 
-    const handleAttachmentsChange = (event, props) => {
-      const selectedFiles = Array.from(event.target.files); // Convert FileList to an array
-      const existingFiles = attachmentfiles;
-    
-      // Map selected files to the desired format
-      const formattedFiles = selectedFiles.map((file) => ({
-        attachments: file,
-        id: null,
-        name: file.name,
-      }));
-    
-      // Merge new files with existing ones
-      setAttachmentFiles([...formattedFiles, ...existingFiles]);
-    };
-    
+  const handleAttachmentsChange = (event, props) => {
+    const selectedFiles = Array.from(event.target.files); // Convert FileList to an array
+    const existingFiles = attachmentfiles;
+
+    // Map selected files to the desired format
+    const formattedFiles = selectedFiles.map((file) => ({
+      attachments: file,
+      id: null,
+      name: file.name,
+    }));
+
+    // Merge new files with existing ones
+    setAttachmentFiles([...formattedFiles, ...existingFiles]);
+  };
+
   const removeFile = (file) => {
     if (file.id) {
       setDeleteFiles([...deleteFiles, file.id]);
@@ -149,7 +146,13 @@ const CreateAndEditCardForm = ({
             ...values,
             label: labelsAdded,
           };
-          handleSubmit(formValues, attachmentfiles, files, deleteFiles, resetForm);
+          handleSubmit(
+            formValues,
+            attachmentfiles,
+            files,
+            deleteFiles,
+            resetForm
+          );
         }}
         validate={(values) => {
           const errors = validationTaskFormSchema(values);
@@ -276,12 +279,12 @@ const CreateAndEditCardForm = ({
                   title={"Label"}
                   content={
                     <Labels
-                      onSelectedLabelsChange={handleSelectedLabelsChange}
+                      onSelectedLabelsChange={setLabelsAdded}
                       labelsList={labelsList}
                       reloadList={() => {
                         fetchLabels();
                       }}
-                      labelsSelected={labels}
+                      labelsSelected={labelsAdded}
                     />
                   }
                 />
