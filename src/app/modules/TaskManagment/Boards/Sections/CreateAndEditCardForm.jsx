@@ -49,7 +49,6 @@ const CreateAndEditCardForm = ({
   const [files, setFiles] = useState([]);
   const [attachmentfiles, setAttachmentFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
-  const [labels, setLabels] = useState([]);
   const [labelsList, setLabelsList] = useState([]);
   const [labelsAdded, setLabelsAdded] = useState([]);
   const [foreignKeys, setForeignKeys] = useState([]);

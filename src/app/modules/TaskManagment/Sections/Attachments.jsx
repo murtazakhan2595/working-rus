@@ -31,23 +31,6 @@ export default function Attachments({
   onChange,
 }) {
   const fileInputRef = useRef(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedAssignee, setSelectedLabels] = useState([]);
-
-  const handleLabelToggle = (labelId) => {
-    setSelectedLabels((prev) => {
-      const updatedLabels = prev.includes(labelId)
-        ? prev.filter((id) => id !== labelId)
-        : [...prev, labelId];
-
-      onChange(updatedLabels);
-      return updatedLabels;
-    });
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
 
   return (
     <div className="w-full max-w-sm mx-auto flex">
@@ -103,8 +86,10 @@ export default function Attachments({
         <Button
           variant="outline"
           className="w-10 h-10 p-0 rounded-full"
-          onClick={() => {
-            fileInputRef.current.click();
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+               fileInputRef.current.click();
           }}
         >
           <Plus className="w-4 h-4" />
@@ -113,6 +98,7 @@ export default function Attachments({
           type="file"
           multiple
           style={{ display: "none" }}
+          onClick={(event) => event.stopPropagation()} // Prevent default behavior
           onChange={(event) => onChange(event)}
           ref={fileInputRef}
         />
