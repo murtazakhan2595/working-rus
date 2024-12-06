@@ -96,7 +96,7 @@ export default function Labels({ onSelectedLabelsChange, labelsList, reloadList,
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto flex" >
+    <div className=" max-w-sm flex" >
        <div style={{maxWidth:'85%'}}>
           <ul className="flex flex-wrap gap-2">
                     {labelsSelected?.map((label) => (

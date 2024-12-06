@@ -18,7 +18,7 @@ import highpriorityIcon from "assets/images/highpriority.svg";
 import lowpriorityIcon from "assets/images/lowpriority.svg";
 import mediumpriorityIcon from "assets/images/mediumpriority.svg";
 import calender from "assets/images/calender.svg";
-import members from "assets/images/members.svg";
+import { getFileNameFromURL } from "utils/downUtils";
 import priority from "assets/images/priority.svg";
 import { addTask, getTaskById } from "app/hooks/taskManagment";
 import { CardTypes } from "app/utils/Types/TaskManagment";
@@ -52,10 +52,15 @@ const EditCard = ({ onClose, employees, cardId }) => {
         const attachment = await Promise.all(
           cardDetails.attachment.map(async (attachmentId) => {
             const response = await getAttachmentById(attachmentId);
-            return { ...response.attachments, id: response.id };
+            return {
+              attachments: response.attachments,
+              id: response.id,
+              name: getFileNameFromURL(response.attachments),
+            };
           })
         );
         if (isMounted) {
+          console.log(attachment);
           setInitialValues({
             ...cardDetails,
             attachment: attachment,
@@ -82,26 +87,21 @@ const EditCard = ({ onClose, employees, cardId }) => {
     deleteFiles = [],
     resetForm
   ) => {
-    // console.log("Files", files);
     setIsLoading(true);
     try {
-      if (deleteFiles.length > 0) {
-        deleteFiles.forEach(async (file) => {
-          await deleteAttachment(file.id);
-        });
-      }
-      // Map over files to get an array of promises
+            // Map over files to get an array of promises
+     
       const attachmentPromises = newfiles.map(async (file) => {
-        const response = await addAttachments(file);
+        const payload={attachments:file.attachments};
+        const response = await addAttachments(payload,file.id);
         return response.id; // Return the attachment ID
       });
 
       // Wait for all promises to resolve
       const attachmentIds = await Promise.all(attachmentPromises);
-      const oldAttachmentIds = files.map((file) => file.id);
 
       // Update formData with attachment IDs
-      formData.attachment = [...attachmentIds, ...oldAttachmentIds];
+      formData.attachment = attachmentIds;
 
       // Now call addTask
       const response = await addTask(formData);

@@ -12,10 +12,6 @@ import {
 import { Input } from "components/ui/input";
 import { useSelector } from "react-redux";
 
-const headers = () => ({
-  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-  "Content-Type": "application/json",
-});
 
 export default function CheckList({
   items,
@@ -47,8 +43,8 @@ export default function CheckList({
 
   return (
     <>
-      <div className="w-full max-w-sm mx-auto flex" >
-        <div style={{maxWidth:'85%'}}>
+    <div className=" max-w-sm flex" >
+    <div style={{maxWidth:'85%'}}>
           {items.map((item) => (
             <div
               key={item.id}

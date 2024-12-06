@@ -27,13 +27,10 @@ import {
   Labels,
   Assignee,
   CheckList,
+  Attachments,
 } from "app/modules/TaskManagment/Sections";
 import { getDarkerTextColor } from "./getTaskStatus";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../../../../../src/@/components/ui/popover";
+import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
 import { Input } from "components/ui/input";
 import { relationList } from "data/Data";
 import { SheetCardExtension } from "components/SheetCardExtension";
@@ -48,11 +45,9 @@ const CreateAndEditCardForm = ({
   setIsOpen,
 }) => {
   const formRef = useRef();
-
-  const fileInputRef = useRef(null);
-  const [membersOpen, setMembersOpen] = useState(false);
   const [newfiles, setNewFiles] = useState([]);
   const [files, setFiles] = useState([]);
+  const [attachmentfiles, setAttachmentFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
   const [labels, setLabels] = useState([]);
   const [labelsList, setLabelsList] = useState([]);
@@ -79,17 +74,8 @@ const CreateAndEditCardForm = ({
     setIsPopoverOpen(false); // Close the popover after adding the item
   };
 
-  const handleCheckListChange = (itemIds) => {
-    setForeignKeys(itemIds);
-    console.log(itemIds, "ITEM IDS");
-  };
-
-  const handleRelationSelect = (task) => {
-    console.log("Selected task:", task);
-  };
   const fetchLabels = async () => {
     const labelList = await getAllLabels();
-    console.log(labelList, "LABELS");
     setLabelsList(labelList); // Update this to `labelList`
   };
 
@@ -106,7 +92,8 @@ const CreateAndEditCardForm = ({
   };
 
   useEffect(() => {
-    setFiles(initialValues.attachment);
+    console.log(initialValues.attachment)
+    setAttachmentFiles(initialValues.attachment);
   }, [initialValues.attachment]);
 
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -114,35 +101,21 @@ const CreateAndEditCardForm = ({
     ? initialValues
     : { ...initialValues, assigned_by: userProfile.id };
 
-  const handleAttachmentsChange = (event, props) => {
-    const selectedFiles = event.target.files;
-    const filesArray = Array.from(selectedFiles);
-
-    Promise.all(
-      filesArray.map((file) => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            const fileData = {
-              name: file.name,
-              file: event.target.result,
-            };
-            resolve(fileData);
-          };
-          reader.onerror = (error) => {
-            reject(error);
-          };
-          reader.readAsDataURL(file);
-        });
-      })
-    )
-      .then((fileDataArray) => {
-        setNewFiles(fileDataArray);
-      })
-      .catch((error) => {
-        console.error("Error reading files:", error);
-      });
-  };
+    const handleAttachmentsChange = (event, props) => {
+      const selectedFiles = Array.from(event.target.files); // Convert FileList to an array
+      const existingFiles = attachmentfiles;
+    
+      // Map selected files to the desired format
+      const formattedFiles = selectedFiles.map((file) => ({
+        attachments: file,
+        id: null,
+        name: file.name,
+      }));
+    
+      // Merge new files with existing ones
+      setAttachmentFiles([...formattedFiles, ...existingFiles]);
+    };
+    
   const removeFile = (file) => {
     if (file.id) {
       setDeleteFiles([...deleteFiles, file.id]);
@@ -176,11 +149,11 @@ const CreateAndEditCardForm = ({
             ...values,
             label: labelsAdded,
           };
-          handleSubmit(formValues, newfiles, files, deleteFiles, resetForm);
+          handleSubmit(formValues, attachmentfiles, files, deleteFiles, resetForm);
         }}
         validate={(values) => {
-          // const errors = validationTaskFormSchema(values);
-          return {};
+          const errors = validationTaskFormSchema(values);
+          return errors;
         }}
       >
         {(props) => (
@@ -215,58 +188,20 @@ const CreateAndEditCardForm = ({
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex gap-5">
-                    <div className="flex items-center gap-2.5 text-lg font-medium leading-4 text-zinc-600">
-                      <RiAttachment2 />
-                      <div>Attachments ({newfiles?.length + files.length})</div>
+                <TaskInputDetails
+                  title={"Attachments"}
+                  content={
+                    <div className="space-y-2">
+                      <Attachments
+                        attachmentSelected={attachmentfiles}
+                        removeFile={removeFile}
+                        onChange={(event) => {
+                          handleAttachmentsChange(event);
+                        }}
+                      />
                     </div>
-                  </div>
-                  <img
-                    src={plus}
-                    alt=""
-                    className="cursor-pointer"
-                    onClick={() => {
-                      fileInputRef.current.click();
-                    }}
-                  />
-                  <Input
-                    type="file"
-                    multiple
-                    style={{ display: "none" }}
-                    onChange={(event) => handleAttachmentsChange(event, props)}
-                    ref={fileInputRef}
-                  />
-                  {(files.length > 0 || newfiles?.length > 0) && (
-                    <div className="">
-                      {[...files, ...newfiles].map((file, index) => (
-                        <div className="flex items-center justify-between p-2 mb-2 bg-gray-100 rounded-lg shadow-md w-fit">
-                          <div className="flex items-center">
-                            <FaRegImage className="w-4 h-4 text-gray-500" />
-                            <span className="ml-4 text-sm text-baseGray">
-                              {file.name}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-x-2">
-                            <a
-                              href="/path/to/your/image.jpg"
-                              download
-                              className="text-gray-500 hover:text-gray-700"
-                            >
-                              <AiOutlineDownload className="w-5 h-5 " />
-                            </a>
-                            <MdClose
-                              className="w-5 h-5 text-gray-500 cursor-pointer"
-                              onClick={() => {
-                                removeFile(file);
-                              }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                  }
+                />
               </SheetCardExtension>
 
               <SheetCardExtension title="Add To Card">
@@ -276,9 +211,9 @@ const CreateAndEditCardForm = ({
                     <div className="space-y-2">
                       <DateInput
                         name="end_date"
-                        error={props.errors.start_date}
-                        touch={props.touched.start_date}
-                        value={props.values.start_date}
+                        error={props.errors.end_date}
+                        touch={props.touched.end_date}
+                        value={props.values.end_date}
                         // label="Due Date"
                         // required
                         onChange={(field, value) => {
@@ -363,6 +298,9 @@ const CreateAndEditCardForm = ({
                     />
                   }
                 />
+                {props.errors.assigned_to && props.touched.assigned_to && (
+                  <div className="text-red-600">{props.errors.assigned_to}</div>
+                )}
 
                 <TaskInputDetails
                   title={"CheckList"}
@@ -376,7 +314,7 @@ const CreateAndEditCardForm = ({
                     />
                   }
                 />
-                <TaskInputDetails
+                {/* <TaskInputDetails
                   title={"Relation"}
                   content={
                     <SelectComponent
@@ -386,12 +324,11 @@ const CreateAndEditCardForm = ({
                       touch={props.touched.relation}
                       value={props.values.relation}
                       onChange={(field, value) => {
-                        props.setFieldValue(field, value);
+                        props.setFieldValue(field, [value]);
                       }}
                     />
                   }
-                />
-
+                /> */}
               </SheetCardExtension>
 
               <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
