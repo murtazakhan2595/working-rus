@@ -89,7 +89,7 @@ function EmployeeName({ value, length }) {
 }
 
 function EmployeeID({ value }) {
-  const employee = value ? `TXB-${value.toString().padStart(4, "")}` : "N/A";
+  const employee = value ?? "N/A";
   return <>{employee}</>;
 }
 
