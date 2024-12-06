@@ -89,9 +89,15 @@ function EmployeeName({ value, length }) {
 }
 
 function EmployeeID({ value }) {
-  const employee = value ?? "N/A";
+  // Ensure value is a string and validate its format
+  const employee = 
+    value && typeof value === "string" && value.startsWith("TBX-")
+      ? value
+      : `TBX-${String(value || "").padStart(4, "0")}`;
+
   return <>{employee}</>;
 }
+
 
 function getEmployeeid(value) {
   const employee = value ? `${value.toString().padStart(4, "0")}` : "N/A";

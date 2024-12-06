@@ -102,9 +102,9 @@ import { MembersList } from "app/modules/TaskManagment/Sections";
  */
 export const EmployeeColumns = [
   {
-    dataField: "id",
+    dataField: "serial_number",
     text: "ID",
-    formatter: (cell) => <EmployeeID value={cell} />,
+    formatter: (cell, row) => <EmployeeID value={cell || row?.id} />,
   },
   {
     dataField: "name",
