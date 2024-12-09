@@ -64,7 +64,13 @@ const SelectComponent = ({
     onChange(name, newValue);
   };
 
-
+  console.log(
+    "name -",
+    name,
+    value,
+    options.find((option) => option.value == value)?.label,
+    options
+  );
   return (
     <div className={`${classes || "flex flex-col gap-4"}`}>
       <Label className={` ${value ? "" : ""}`} htmlFor={name}>

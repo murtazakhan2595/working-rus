@@ -14,6 +14,11 @@ import { getCurrenciesList } from "app/hooks/general";
 import { dateFormats } from "data/Data";
 import { days } from "data/Data";
 import { getOrganizationCountryList } from "app/hooks/officeSetting";
+import { getRegionsList } from "app/hooks/officeSetting";
+import { getCitiesList } from "app/hooks/officeSetting";
+import { getRegionById } from "app/hooks/officeSetting";
+import { getCityById } from "app/hooks/officeSetting";
+import { getCountryById } from "app/hooks/officeSetting";
 
 const AddOrganizationForm = ({
   handleSubmit,
@@ -30,35 +35,75 @@ const AddOrganizationForm = ({
   const [closeSheet, setCloseSheet] = useState(false);
   const [currencies, setCurrencies] = useState([]);
   const [countries, setCountries] = useState([]);
+  const [country, setCountry] = useState(null);
+  const [states, setStates] = useState([]);
+  const [state, setState] = useState(null);
+  const [cities, setCities] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   console.log("formData", formData);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const currencyData = await getCurrenciesList();
-        setCurrencies(currencyData);
-        const countries = await getOrganizationCountryList();
-        if (countries) {
-          const countryList = countries.results.map((country) => ({
-            value: `${country.id}`,
-            label: country.name,
-          }));
-          setCountries(countryList);
-        }
-      } catch (err) {
-        console.log(err);
+  const fetchData = async () => {
+    try {
+      const currencyData = await getCurrenciesList();
+      setCurrencies(currencyData);
+      const countries = await getOrganizationCountryList();
+      if (countries) {
+        const countryList = countries.results.map((country) => ({
+          value: `${country.id}`,
+          label: country.name,
+        }));
+        setCountries(countryList);
       }
-    };
-
+      if(edit){
+        setCountry(formData.country)
+        getStateList(formData.country)
+        getCityList(formData.state, formData.country)
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(()=>{
+    country && getStateList(country)
+    state &&  getCityList(state, country)
+  }, [country, state])
+
+
+  const getStateList = async (country) => { 
+    setLoading(true)
+    let states = await getRegionsList({filterData: {country: country}});
+    if(states){
+      const stateList = states.results.map((state) => ({
+        value: `${state.id}`,
+        label: state.name,
+      }));
+      setStates(stateList);
+    }
+    setLoading(false)
+  }
+
+  const getCityList = async (state, country) => {
+    setLoading(true)
+    let cities = await getCitiesList({filterData: {country: country, state: state}});
+    if(cities){
+      const cityList = cities.results.map((city) => ({
+        value: `${city.id}`,
+        label: city.name,
+      }));
+      setCities(cityList);
+    }
+    setLoading(false)
+  }
 
   const handleClose = () => {
     // setIsOpen(false)
     setCloseSheet(true);
   };
 
-  console.log("COU", countries);
   return (
     <>
       {handleCloseWithConfirmation({
@@ -183,7 +228,7 @@ const AddOrganizationForm = ({
               </div>
 
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
-              {console.log("CURRENCIES", currencies)}
+                {console.log("CURRENCIES", currencies)}
                 <SelectComponent
                   name="currency"
                   options={currencies}
@@ -230,26 +275,30 @@ const AddOrganizationForm = ({
                   touch={props.touched.country}
                   onChange={(field, value) => {
                     props.handleChange(field)(value);
+                    setCountry(value);
                   }}
                 />
 
-                <TextInput
+                <SelectComponent
                   name="state"
                   label="State"
                   required
+                  options={states}
                   value={props.values.state}
                   error={props.errors.state}
                   touch={props.touched.state}
                   onChange={(field, value) => {
+                    setState(value);
                     props.handleChange(field)(value);
                   }}
                 />
               </div>
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
-                <TextInput
+                <SelectComponent
                   name="city"
                   label="City"
                   required
+                  options={cities}
                   value={props.values.city}
                   error={props.errors.city}
                   touch={props.touched.city}
