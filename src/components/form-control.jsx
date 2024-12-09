@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 // import Select from "react-select";
 import { Label } from "../src/@/components/ui/label";
 import DatePicker from "react-datepicker";
-import {getFileNameFromURL} from 'utils/downUtils';
+import { getFileNameFromURL } from "utils/downUtils";
 import moment from "moment";
 import upload from "../assets/images/upload.png";
 import ReactQuill from "react-quill";
@@ -404,7 +404,7 @@ const TextInput = ({
   regEx,
   maxLength,
   placeholder,
-  autoComplete="off"
+  autoComplete = "off",
 }) => {
   return (
     <div className="flex flex-col gap-4">
@@ -795,7 +795,11 @@ const ImageInput = ({
         <div className="relative overflow-hidden w-[110px]">
           {value ? (
             <img
-              src={value}
+              src={
+                typeof value === "string"
+                  ? value // If value is a URL, use it directly
+                  : URL.createObjectURL(value) // If value is a file object, create a temporary URL
+              }
               alt="Preview"
               className="h-[100px] object-cover border-2 border-gray-400 rounded-full"
               width={"100px"}
@@ -1353,12 +1357,16 @@ const CoverFileUpload = ({
   };
 
   const renderUploadedFiles = () => {
+    console.log(files);
     return files.map((fileData, index) => (
       <div
         key={index}
         className="flex items-center justify-between p-4 bg-white border rounded-lg border-neutral-500"
       >
-        <div className="flex items-center gap-3" style={{maxWidth: '67%', overflow: 'hidden',}}>
+        <div
+          className="flex items-center gap-3"
+          style={{ maxWidth: "67%", overflow: "hidden" }}
+        >
           <div className="text-neutral-500">
             <svg
               className="w-6 h-6"
@@ -1378,20 +1386,25 @@ const CoverFileUpload = ({
             <p className="text-sm font-medium text-neutral-900">
               {fileData.name}
             </p>
-            {fileData.url ? (
-              <a
-                href={fileData.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-neutral-500"
-              >
-                View Document
-              </a>
-            ) : (
+            <a
+              href={
+                fileData.url
+                  ? fileData.url
+                  : fileData
+                  ? URL.createObjectURL(fileData)
+                  : "#"
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-neutral-500"
+            >
+              View Document
+            </a>
+            {/* ) : (
               <p className="text-sm text-neutral-500">
                 {formatFileSize(fileData?.file?.length)}
               </p>
-            )}
+            )} */}
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -1465,7 +1478,6 @@ const CoverFileUpload = ({
     </div>
   );
 };
-
 
 export {
   SelectComponent,

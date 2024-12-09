@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-  getEmployeeData,
-} from "app/hooks/employee";
+import { getEmployeeData } from "app/hooks/employee";
 import Avatar from "components/ui/Avatar";
 import { Button } from "components/ui/button";
 import { Card, CardContent } from "components/ui/card";
-import {
-  ArrowLeft,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import {
   Tabs,
   TabsList,
@@ -15,10 +11,7 @@ import {
   TabsContent,
 } from "src/@/components/ui/tabs";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import {
-  DesignationName,
-  EmployeeID,
-} from "utils/getValuesFromTables";
+import { DesignationName, EmployeeID } from "utils/getValuesFromTables";
 import { PageLoader } from "components";
 import { connect } from "react-redux";
 import PersonalDetials from "./PersonalDetials";
@@ -89,10 +82,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
             <Card>
               <CardContent className="flex items-center pt-6 space-x-4">
                 <Avatar
-                  src={
-                    employeeData?.profile_picture?.file ||
-                    employeeData?.profile_picture
-                  }
+                  src={employeeData?.profile_picture}
                   alt={`${employeeData?.first_name} ${employeeData?.last_name}`}
                   fallbackText={employeeData?.first_name[0]}
                 />
