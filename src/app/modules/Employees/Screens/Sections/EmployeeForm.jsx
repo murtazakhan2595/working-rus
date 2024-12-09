@@ -345,7 +345,7 @@ const SheetOnBorading = ({
                               id="password"
                               name="password"
                               autoComplete="Off"
-                              placeholder={"Enter User Name"}
+                              placeholder={"Enter Password"}
                               onChange={(option) => {
                                 props.handleChange("password")(option);
                               }}
