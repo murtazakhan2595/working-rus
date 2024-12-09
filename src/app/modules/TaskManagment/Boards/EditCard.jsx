@@ -29,7 +29,7 @@ import {
   deleteAttachment,
 } from "app/hooks/taskManagment";
 
-const EditCard = ({ onClose, employees, cardId }) => {
+const EditCard = ({ onClose, employees, cardId ,projectId}) => {
   const priorityMapping = {
     High: 1,
     Medium: 2,
@@ -139,6 +139,7 @@ const EditCard = ({ onClose, employees, cardId }) => {
       handleSubmit={handleSubmit}
       onClose={onClose}
       isEdit={true}
+      projectId={projectId}
     />
   );
 };

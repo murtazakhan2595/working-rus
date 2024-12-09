@@ -5,6 +5,7 @@ import Assignee from './Assignee';
 import Labels from "./Labels";
 import CheckList from './CheckList';
 import Attachments from './Attachments';
+import TaskRelation from './TaskRelation'
 export {
   Members,
   MembersList,
@@ -13,4 +14,5 @@ export {
   Labels,
   CheckList,
   Attachments,
+  TaskRelation,
 };

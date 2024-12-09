@@ -10,7 +10,7 @@ import {
   getCertifications,
   getContactInfo,
 } from "../utils/MappingObjects/mapEmployeeData";
-import {getFileNameFromURL} from 'utils/downUtils';
+import { getFileNameFromURL } from "utils/downUtils";
 import {
   EmployeeCVDetails,
   EmployeeInformation,
@@ -274,14 +274,19 @@ const saveEmployeeVisaDetailData = async (
             formData.append("employee_id", employeeId);
             formData.append("name", key);
             formData.append("description", file.description || `${key} file`);
-            formData.append("document", file.document); // Ensure `file.document` is a `File` or `Blob`
+            if (file.document && file.document instanceof File)
+              formData.append("document", file.document); // Ensure `file.document` is a `File` or `Blob`
 
             try {
               // If `id` exists, update the attachment
               if (file?.id) {
-                await axios.patch(`${baseUrl}/attachment/${file.id}`, formData, {
-                  headers: formDataHeader(),
-                });
+                await axios.patch(
+                  `${baseUrl}/attachment/${file.id}`,
+                  formData,
+                  {
+                    headers: formDataHeader(),
+                  }
+                );
               } else {
                 // Otherwise, post a new attachment
                 await axios.post(`${baseUrl}/attachment/`, formData, {
@@ -444,10 +449,10 @@ const saveEmployeeProfessionalExperianceData = async (employeeid, payload) => {
           );
 
           // Append files if present
-          if (experience.exp_letter) {
+          if (experience.exp_letter && experience.exp_letter instanceof File) {
             formData.append("exp_letter", experience.exp_letter);
           }
-          if (experience.resume) {
+          if (experience.resume && experience.resume instanceof File) {
             formData.append("resume", experience.resume);
           }
 
@@ -607,10 +612,9 @@ const saveEmployeeAcademicRecordData = async (
         formData.append("institute_name", education.institute_name || "");
         formData.append("edu_start_date", education.edu_start_date || "");
         formData.append("edu_end_date", education.edu_end_date || "");
-
-        // Only append the certificate if it exists
-        if (education.certificate) {
-          formData.append("certificate", education.certificate);
+        // Only append the education_body if it exists
+        if (education.education_body && education.education_body instanceof File) {
+          formData.append("education_body", education.education_body);
         }
 
         try {
@@ -689,10 +693,15 @@ const saveEmployeeCertificationData = async (employeeId, payloadAttachment) => {
         );
         formData.append("completion_date", certification.completion_date || "");
         formData.append("expiry_date", certification.expiry_date || "");
-        formData.append(
-          "certification_body",
-          certification.certification_body || ""
-        );
+        if (
+          certification.certification_body &&
+          certification.certification_body instanceof File
+        ) {
+          formData.append(
+            "certification_body",
+            certification.certification_body || ""
+          );
+        }
         formData.append(
           "certification_institute",
           certification.certification_institute || ""
