@@ -25,7 +25,6 @@ function getEmployeeType(employeeType) {
   const response = employeeTypeOptions.find(
     (option) => option.value === employeeType
   );
-  console.log(employeeType,employeeTypeOptions,response)
   return response ? response.label : employeeType;
 }
 function UserRole({ value }) {
@@ -90,7 +89,7 @@ function EmployeeName({ value, length }) {
 
 function EmployeeID({ value }) {
   // Ensure value is a string and validate its format
-  const employee = 
+  const employee =
     value && typeof value === "string" && value.startsWith("TBX-")
       ? value
       : `TBX-${String(value || "").padStart(4, "0")}`;
@@ -98,10 +97,9 @@ function EmployeeID({ value }) {
   return <>{employee}</>;
 }
 
-
 function getEmployeeid(value) {
   const employee = value ? `${value.toString().padStart(4, "0")}` : "N/A";
-  return employee; 
+  return employee;
 }
 
 function ManagerName({ value }) {

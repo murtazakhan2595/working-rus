@@ -7,7 +7,7 @@ import {
 } from "utils/getValuesFromTables";
 import { useState } from "react";
 import EditJobDetails from "./EditJobDetails";
-import { getJobById } from "app/hooks/recruitment";
+import { renderDate } from "utils/renderValues";
 import { PageLoader } from "components";
 import { formatNumber } from "data/Data";
 import moment from "moment";
@@ -77,14 +77,11 @@ const ViewJobDetails = ({ job, onClose, isOpen, setIsOpen ,fetchJobPosts, posts 
           </div>
               <div className="flex justify-between w-full">
                 <EmployeeNameInfo
-                  jobId={<EmployeeID value={job?.serial_number} />}
+                  jobId={<EmployeeID value={viewJob?.serial_number} />}
                   name={viewJob?.Job_Title}
                   showPosition={false}
                   position={null}
-                  date={
-                    job?.created_at
-                      ? moment(viewJob?.created_at).format("MMM D, YYYY")
-                      : ""
+                  date={renderDate(viewJob?.created_at)
                   }
                 />
                 <JobsActions row={viewJob} fetchJobPosts={fetchJobPosts} isEdit={handleEditClick}/>
