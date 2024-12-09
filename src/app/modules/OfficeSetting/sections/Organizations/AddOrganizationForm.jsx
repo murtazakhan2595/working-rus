@@ -14,13 +14,14 @@ import { getCurrenciesList } from "app/hooks/general";
 import { dateFormats } from "data/Data";
 import { days } from "data/Data";
 
-const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
+const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen,editData, edit }) => {
   const formRef = createRef();
   const [imageError, setImageError] = useState(null);
-  const [formData, setFormData] = useState(OrganizationInformation);
+  const [formData, setFormData] = useState(edit? editData: OrganizationInformation);
   const [closeSheet, setCloseSheet] = useState(false);
   const [currencies, setCurrencies] = useState([]);
 
+  console.log("formData", formData);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -148,7 +149,7 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
                     props.handleChange(field)(value);
                   }}
                 />
-              <SelectComponent
+                <SelectComponent
                   name="date_format"
                   options={dateFormats}
                   error={props.errors.date_format}
@@ -175,7 +176,7 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
                     props.handleChange(field)(value);
                   }}
                 />
-               <SelectComponent
+                <SelectComponent
                   name="payroll_start_date"
                   options={days}
                   error={props.errors.payroll_start_date}
@@ -184,13 +185,13 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
                   label="Payroll Starting Date"
                   required
                   onChange={(field, value) => {
+                    console.log("MKKK", field, value);
                     if (!value) {
-                      console.error('Invalid selection');
+                      console.error("Invalid selection");
                       return;
                     }
-                    props.handleChange(field)(value); 
+                    props.handleChange(field)(value);
                   }}
-                  
                 />
               </div>
             </SheetCardExtension>
@@ -234,12 +235,12 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
                   }}
                 />
                 <TextInput
-                  name="zipcode"
+                  name="po_box"
                   label="Zip/Postal Code"
                   required
-                  value={props.values.zipcode}
-                  error={props.errors.zipcode}
-                  touch={props.touched.zipcode}
+                  value={props.values.po_box}
+                  error={props.errors.po_box}
+                  touch={props.touched.po_box}
                   onChange={(field, value) => {
                     props.handleChange(field)(value);
                   }}
@@ -261,17 +262,30 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
 
             {/* Contact Info Section */}
             <SheetCardExtension title="Contact Info" className="mt-4">
-              <TextInput
-                name="website"
-                label="Official Website"
-                required
-                value={props.values.website}
-                error={props.errors.website}
-                touch={props.touched.website}
-                onChange={(field, value) => {
-                  props.handleChange(field)(value);
-                }}
-              />
+              <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
+                <TextInput
+                  name="website"
+                  label="Official Website"
+                  required
+                  value={props.values.website}
+                  error={props.errors.website}
+                  touch={props.touched.website}
+                  onChange={(field, value) => {
+                    props.handleChange(field)(value);
+                  }}
+                />
+                <TextInput
+                  name="contact_person"
+                  label="Official Contact Person"
+                  required
+                  value={props.values.contact_person}
+                  error={props.errors.contact_person}
+                  touch={props.touched.contact_person}
+                  onChange={(field, value) => {
+                    props.handleChange(field)(value);
+                  }}
+                />
+              </div>
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
                 <TextInput
                   name="phone_number"
@@ -310,7 +324,7 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
                   Cancel
                 </Button>
                 <Button type="submit" size="lg" variant="default">
-                  Add
+                  {edit? "Update": "Save"}
                 </Button>
               </div>
             </div>

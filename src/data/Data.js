@@ -65,17 +65,14 @@ export const statusOptions = [
 ];
 
 export const dateFormats = [
-  { label: "YYYY-MM-DD", value: "YYYY-MM-DD" },
-  { label: "DD-MM-YYYY", value: "DD-MM-YYYY" },
-  { label: "MM-DD-YYYY", value: "MM-DD-YYYY" },
-  { label: "YYYY/MM/DD", value: "YYYY/MM/DD" },
-  { label: "DD/MM/YYYY", value: "DD/MM/YYYY" },
-  { label: "MM/DD/YYYY", value: "MM/DD/YYYY" },
+  { label: "YYYY-MM-DD", value: "%Y-%m-%d" },
+  { label: "DD-MM-YYYY", value: "%d-%m-%Y" },
+  { label: "MM-DD-YYYY", value: "%m-%d-%Y" },
 ];
 
 export const days = Array?.from({ length: 31 }, (_, index) => {
   const day = index + 1;
-  return { label: day, value: day };
+  return { label: day, value: `${day}` };
 });
 
 export const visaOptions = [

@@ -1,23 +1,44 @@
 import SheetComponent from "components/ui/SheetComponent";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import AddOrganizationForm from "./AddOrganizationForm";
+import { saveOrganization } from "app/hooks/officeSetting";
+import { toast } from "react-toastify";
 
-const AddOrganization = () => {
+const AddOrganization = ({ reload, editData, setEditData, edit, setEdit}) => {
   const formRef = useRef();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(edit??false);
+
+
+  useEffect(() => {
+    if((!isOpen && edit)){
+      setEdit(false);
+      setEditData({});
+    }
+  }, [isOpen]);
 
   const formSheetData = {
-    triggerText: "Add New Organization",
-    title: "Add New Organization",
+    triggerText: edit? "":"Add New Organization",
+    title: edit?"Edit Organization":"Add New Organization",
     description: null,
     footer: null,
   };
 
-  const handleSubmit = (formData, resetForm) => {
-    console.log('Form submitted:', formData);
-    // Perform any API or state update logic here
-    resetForm();
+
+
+  const handleSubmit = async (formData, resetForm) => {
+    console.log("Form submitted:", formData);
+    const response = await saveOrganization(formData);
+    if (response) {
+      resetForm();
+      setIsOpen(false);
+      toast.success("Organization saved successfully");
+      reload();
+    } else {
+      resetForm();
+      toast.error("Error saving organization");
+    }
   };
+
 
   return (
     <SheetComponent
@@ -26,7 +47,13 @@ const AddOrganization = () => {
       setIsOpen={setIsOpen}
       width="600px"
     >
-      <AddOrganizationForm isOpen={isOpen} setIsOpen={setIsOpen} handleSubmit={handleSubmit}/>
+      <AddOrganizationForm
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        handleSubmit={handleSubmit}
+        editData={editData}
+        edit={edit}
+      />
     </SheetComponent>
   );
 };
