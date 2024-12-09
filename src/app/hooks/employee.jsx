@@ -443,10 +443,7 @@ const saveEmployeeProfessionalExperianceData = async (employeeid, payload) => {
           formData.append("exp_designation", experience.exp_designation || "");
           formData.append("exp_discription", experience.exp_discription || "");
           formData.append("exp_start_date", experience.exp_start_date || "");
-          formData.append(
-            "exp_end_date",
-            experience.disableEndDate ? null : experience.exp_end_date || ""
-          );
+          formData.append("exp_end_date", experience.exp_end_date || "");
 
           // Append files if present
           if (experience.exp_letter && experience.exp_letter instanceof File) {

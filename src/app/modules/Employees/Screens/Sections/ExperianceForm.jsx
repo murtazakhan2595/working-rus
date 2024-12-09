@@ -82,9 +82,7 @@ const Experience = ({
               disabled={isCurrentExperience}
               onChange={(field, value) => {
                 onChange(field, value);
-                // if (value) {
-                //   onChange("exp_end_date", null);
-                // }
+                onChange("exp_end_date", '');
               }}
             />
           </div>
@@ -108,7 +106,9 @@ const Experience = ({
             <CoverFileUpload
               name="exp_letter"
               label={`${
-                isCurrentExperience ||values.disableEndDate   ? "Upload Resume" : "Experience Letter"
+                isCurrentExperience || values.disableEndDate
+                  ? "Upload Resume"
+                  : "Experience Letter"
               } or drag it here`}
               acceptType=".pdf"
               error={errors?.exp_letter}
@@ -119,7 +119,7 @@ const Experience = ({
                 onChange(field, value);
                 if (isCurrentExperience) {
                   onChange("resume", value);
-                }else{
+                } else {
                   onChange("resume", null);
                 }
               }}
