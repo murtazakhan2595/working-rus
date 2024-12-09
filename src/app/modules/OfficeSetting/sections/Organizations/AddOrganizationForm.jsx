@@ -13,26 +13,91 @@ import { SelectComponent } from "components/form-control";
 import { getCurrenciesList } from "app/hooks/general";
 import { dateFormats } from "data/Data";
 import { days } from "data/Data";
+import { getOrganizationCountryList } from "app/hooks/officeSetting";
+import { getRegionsList } from "app/hooks/officeSetting";
+import { getCitiesList } from "app/hooks/officeSetting";
+import { getRegionById } from "app/hooks/officeSetting";
+import { getCityById } from "app/hooks/officeSetting";
+import { getCountryById } from "app/hooks/officeSetting";
 
-const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
+const AddOrganizationForm = ({
+  handleSubmit,
+  isOpen,
+  setIsOpen,
+  editData,
+  edit,
+}) => {
   const formRef = createRef();
   const [imageError, setImageError] = useState(null);
-  const [formData, setFormData] = useState(OrganizationInformation);
+  const [formData, setFormData] = useState(
+    edit ? editData : OrganizationInformation
+  );
   const [closeSheet, setCloseSheet] = useState(false);
   const [currencies, setCurrencies] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [country, setCountry] = useState(null);
+  const [states, setStates] = useState([]);
+  const [state, setState] = useState(null);
+  const [cities, setCities] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const currencyData = await getCurrenciesList();
-        setCurrencies(currencyData);
-      } catch (err) {
-        console.log(err);
+  console.log("formData", formData);
+  const fetchData = async () => {
+    try {
+      const currencyData = await getCurrenciesList();
+      setCurrencies(currencyData);
+      const countries = await getOrganizationCountryList();
+      if (countries) {
+        const countryList = countries.results.map((country) => ({
+          value: `${country.id}`,
+          label: country.name,
+        }));
+        setCountries(countryList);
       }
-    };
-
+      if(edit){
+        setCountry(formData.country)
+        getStateList(formData.country)
+        getCityList(formData.state, formData.country)
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(()=>{
+    country && getStateList(country)
+    state &&  getCityList(state, country)
+  }, [country, state])
+
+
+  const getStateList = async (country) => { 
+    setLoading(true)
+    let states = await getRegionsList({filterData: {country: country}});
+    if(states){
+      const stateList = states.results.map((state) => ({
+        value: `${state.id}`,
+        label: state.name,
+      }));
+      setStates(stateList);
+    }
+    setLoading(false)
+  }
+
+  const getCityList = async (state, country) => {
+    setLoading(true)
+    let cities = await getCitiesList({filterData: {country: country, state: state}});
+    if(cities){
+      const cityList = cities.results.map((city) => ({
+        value: `${city.id}`,
+        label: city.name,
+      }));
+      setCities(cityList);
+    }
+    setLoading(false)
+  }
 
   const handleClose = () => {
     // setIsOpen(false)
@@ -148,7 +213,7 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
                     props.handleChange(field)(value);
                   }}
                 />
-              <SelectComponent
+                <SelectComponent
                   name="date_format"
                   options={dateFormats}
                   error={props.errors.date_format}
@@ -163,6 +228,7 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
               </div>
 
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
+                {console.log("CURRENCIES", currencies)}
                 <SelectComponent
                   name="currency"
                   options={currencies}
@@ -172,10 +238,11 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
                   label="Currency"
                   required
                   onChange={(field, value) => {
+                    console.log("MKKK", field, value);
                     props.handleChange(field)(value);
                   }}
                 />
-               <SelectComponent
+                <SelectComponent
                   name="payroll_start_date"
                   options={days}
                   error={props.errors.payroll_start_date}
@@ -184,13 +251,13 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
                   label="Payroll Starting Date"
                   required
                   onChange={(field, value) => {
+                    console.log("MKKK", field, value);
                     if (!value) {
-                      console.error('Invalid selection');
+                      console.error("Invalid selection");
                       return;
                     }
-                    props.handleChange(field)(value); 
+                    props.handleChange(field)(value);
                   }}
-                  
                 />
               </div>
             </SheetCardExtension>
@@ -198,10 +265,40 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
             {/* Address Info Section */}
             <SheetCardExtension title="Address Info" className="mt-4">
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
-                <TextInput
+                <SelectComponent
+                  name="country"
+                  label="Country"
+                  required
+                  options={countries}
+                  value={props.values.country}
+                  error={props.errors.country}
+                  touch={props.touched.country}
+                  onChange={(field, value) => {
+                    props.handleChange(field)(value);
+                    setCountry(value);
+                  }}
+                />
+
+                <SelectComponent
+                  name="state"
+                  label="State"
+                  required
+                  options={states}
+                  value={props.values.state}
+                  error={props.errors.state}
+                  touch={props.touched.state}
+                  onChange={(field, value) => {
+                    setState(value);
+                    props.handleChange(field)(value);
+                  }}
+                />
+              </div>
+              <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
+                <SelectComponent
                   name="city"
                   label="City"
                   required
+                  options={cities}
                   value={props.values.city}
                   error={props.errors.city}
                   touch={props.touched.city}
@@ -210,36 +307,12 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
                   }}
                 />
                 <TextInput
-                  name="state"
-                  label="State"
-                  required
-                  value={props.values.state}
-                  error={props.errors.state}
-                  touch={props.touched.state}
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                />
-              </div>
-              <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
-                <TextInput
-                  name="country"
-                  label="Country"
-                  required
-                  value={props.values.country}
-                  error={props.errors.country}
-                  touch={props.touched.country}
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                />
-                <TextInput
-                  name="zipcode"
+                  name="po_box"
                   label="Zip/Postal Code"
                   required
-                  value={props.values.zipcode}
-                  error={props.errors.zipcode}
-                  touch={props.touched.zipcode}
+                  value={props.values.po_box}
+                  error={props.errors.po_box}
+                  touch={props.touched.po_box}
                   onChange={(field, value) => {
                     props.handleChange(field)(value);
                   }}
@@ -261,17 +334,30 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
 
             {/* Contact Info Section */}
             <SheetCardExtension title="Contact Info" className="mt-4">
-              <TextInput
-                name="website"
-                label="Official Website"
-                required
-                value={props.values.website}
-                error={props.errors.website}
-                touch={props.touched.website}
-                onChange={(field, value) => {
-                  props.handleChange(field)(value);
-                }}
-              />
+              <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
+                <TextInput
+                  name="website"
+                  label="Official Website"
+                  required
+                  value={props.values.website}
+                  error={props.errors.website}
+                  touch={props.touched.website}
+                  onChange={(field, value) => {
+                    props.handleChange(field)(value);
+                  }}
+                />
+                <TextInput
+                  name="contact_person"
+                  label="Official Contact Person"
+                  required
+                  value={props.values.contact_person}
+                  error={props.errors.contact_person}
+                  touch={props.touched.contact_person}
+                  onChange={(field, value) => {
+                    props.handleChange(field)(value);
+                  }}
+                />
+              </div>
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
                 <TextInput
                   name="phone_number"
@@ -310,7 +396,7 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen }) => {
                   Cancel
                 </Button>
                 <Button type="submit" size="lg" variant="default">
-                  Add
+                  {edit ? "Update" : "Save"}
                 </Button>
               </div>
             </div>

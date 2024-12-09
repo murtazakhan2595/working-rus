@@ -68,6 +68,7 @@ const OfficeSetting = () => {
           setEdit={setEdit}
           setEditData={setEditData}
           data={row}
+          reload={getOrganization}
         />
       ),
     },
@@ -80,9 +81,20 @@ const OfficeSetting = () => {
     { value: "working-hours", label: "Working Hours" },
   ];
 
+  console.log("edit, editData", edit, editData);
   return (
     <div className="flex flex-col gap-4 profile-management">
-      <Header content={activeTab === "offices" ? <AddOrganization /> : activeTab ==="department" ? <AddDepartment/> : <AddDesignation/>} />
+      <Header
+        content={
+          activeTab === "offices" ? (
+            <AddOrganization reload={getOrganization} />
+          ) : activeTab === "department" ? (
+            <AddDepartment />
+          ) : (
+            <AddDesignation />
+          )
+        }
+      />
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
@@ -104,15 +116,15 @@ const OfficeSetting = () => {
         <TabsContent value="offices">
           <Card>
             <CardContent>
-            <TableCustom
-              columns={columns}
-              data={data?.results || []}
-              // tableOptions={tableOptions}
-              dataTotalSize={data?.length || 0}
-              pagination={true}
-              itemsPerPage={10}
-              className="organization-table"
-            />
+              <TableCustom
+                columns={columns}
+                data={data?.results || []}
+                // tableOptions={tableOptions}
+                dataTotalSize={data?.length || 0}
+                pagination={true}
+                itemsPerPage={10}
+                className="organization-table"
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -126,6 +138,15 @@ const OfficeSetting = () => {
           <WorkingHours />
         </TabsContent>
       </Tabs>
+      {activeTab === "offices" && edit && (
+        <AddOrganization
+          reload={getOrganization}
+          edit={edit}
+          editData={editData}
+          setEdit={setEdit}
+          setEditData={setEditData}
+        />
+      )}
     </div>
   );
 };
