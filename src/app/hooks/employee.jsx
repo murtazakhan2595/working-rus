@@ -613,7 +613,10 @@ const saveEmployeeAcademicRecordData = async (
         formData.append("edu_start_date", education.edu_start_date || "");
         formData.append("edu_end_date", education.edu_end_date || "");
         // Only append the education_body if it exists
-        if (education.education_body && education.education_body instanceof File) {
+        if (
+          education.education_body &&
+          education.education_body instanceof File
+        ) {
           formData.append("education_body", education.education_body);
         }
 

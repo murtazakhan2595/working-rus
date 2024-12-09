@@ -54,7 +54,6 @@ export function UserNav() {
     setEmployee(employeeData);
     // setNavigation(getNavigation(employeeData.user_role));
     setProfileImage(
-      employeeResponse.data?.profile_picture?.file ||
       employeeResponse.data?.profile_picture
     );
   };
