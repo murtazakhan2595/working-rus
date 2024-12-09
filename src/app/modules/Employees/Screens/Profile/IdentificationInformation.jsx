@@ -21,7 +21,6 @@ import { validateEmployeeIdentificationForm } from "app/utils/FormSchema/employe
 import { CoverFileUpload } from "components/form-control.jsx";
 import { Card, CardContent } from "components/ui/card.jsx";
 
-
 const IdentificationInformation = ({
   nextstep,
   employeeId,
@@ -94,7 +93,7 @@ const IdentificationInformation = ({
   const addUpdateFile = (field, value, props) => {
     const file = props.values[field] || File;
     file.document = value;
-    file.description = `${value.name} file`;
+    file.description = `${value?.name} file`;
     props.setFieldValue(field, file);
   };
 

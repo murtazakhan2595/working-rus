@@ -76,6 +76,7 @@ const CreateAndUpdateCard = ({ employees, onClose, boardId, projectId , setIsOpe
         handleSubmit={handleSubmit}
         onClose={onClose}
         setIsOpen={setIsOpen}
+        projectId={projectId}
       />
       <ToastContainer />
     </>

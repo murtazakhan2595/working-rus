@@ -88,6 +88,54 @@ const getTaskByBoardId = async (payload) => {
   }
   return [];
 };
+const getTaskByprojectId = async (payload) => {
+  try {
+    // Fetch all boards
+    const allBoards = await getAllBoards(payload);
+
+    if (!allBoards || !allBoards.results || allBoards.results.length === 0) {
+      return {
+        count: 0,
+        results: [],
+      };
+    }
+
+    // Fetch tasks for each board concurrently
+    const tasksList = await Promise.all(
+      allBoards.results.map(async (board) => {
+        try {
+          const tasks = await getTaskByBoardId({
+            filterData: { board_id: [board.id] },
+          });
+          return tasks.results; // Extract results from task data
+        } catch (error) {
+          console.error(
+            `Error fetching tasks for board ID ${board.id}:`,
+            error
+          );
+          return []; // Return an empty array for this board if fetching fails
+        }
+      })
+    );
+
+    // Flatten the list of task arrays into a single array
+    const flattenedTasks = tasksList.flat();
+
+    return {
+      count: flattenedTasks.length,
+      results: flattenedTasks,
+    };
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching tasks by project ID:", error);
+    return {
+      count: 0,
+      results: [],
+    };
+  }
+};
 const getAllBoards = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -270,9 +318,9 @@ const addAttachments = async (payload, id = null) => {
     const formData = new FormData();
     formData.append("attachments", payload.attachments);
 
-    const url = id 
+    const url = id
       ? `${baseUrl}/TaskmanagementAttachment/${id}` // Use id if updating
-      : `${baseUrl}/TaskmanagementAttachment`;      // No id means create new
+      : `${baseUrl}/TaskmanagementAttachment`; // No id means create new
 
     const method = id ? "PUT" : "POST"; // Determine method based on existence of id
 
@@ -296,7 +344,6 @@ const addAttachments = async (payload, id = null) => {
     return false;
   }
 };
-
 
 const addCommentAttachment = async (payload) => {
   try {
@@ -594,4 +641,5 @@ export {
   postComment,
   getAllLabels,
   getCommentsWithAttachments,
+  getTaskByprojectId,
 };

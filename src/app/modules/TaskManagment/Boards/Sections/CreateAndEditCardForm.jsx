@@ -28,6 +28,7 @@ import {
   Assignee,
   CheckList,
   Attachments,
+  TaskRelation,
 } from "app/modules/TaskManagment/Sections";
 import { getDarkerTextColor } from "./getTaskStatus";
 import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
@@ -43,6 +44,7 @@ const CreateAndEditCardForm = ({
   onClose,
   isEdit,
   setIsOpen,
+  projectId,
 }) => {
   const formRef = useRef();
   const [newfiles, setNewFiles] = useState([]);
@@ -316,21 +318,18 @@ const CreateAndEditCardForm = ({
                     />
                   }
                 />
-                {/* <TaskInputDetails
+                <TaskInputDetails
                   title={"Relation"}
                   content={
-                    <SelectComponent
-                      name="relation"
-                      options={relationList}
-                      error={props.errors.relation}
-                      touch={props.touched.relation}
-                      value={props.values.relation}
-                      onChange={(field, value) => {
-                        props.setFieldValue(field, [value]);
+                    <TaskRelation
+                      relationsList={props.values.relation || []}
+                      onChange={(value) => {
+                        props.setFieldValue("relation", value);
                       }}
+                      projectId={projectId}
                     />
                   }
-                /> */}
+                />
               </SheetCardExtension>
 
               <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">

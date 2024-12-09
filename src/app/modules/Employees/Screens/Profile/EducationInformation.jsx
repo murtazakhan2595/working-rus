@@ -53,7 +53,6 @@ const EducationInformation = ({
         employeeId,
         data.educations
       );
-      console.log("response", response);
       if (response) nextstep();
     } catch (error) {
       console.error("Error saving academic records:", error);
