@@ -5,9 +5,11 @@ import { MoreHorizontal } from 'lucide-react'
 import ViewOrganization from './ViewOrganization'
 import { toast } from 'react-toastify'
 import { deleteOrganization } from 'app/hooks/officeSetting'
+import AlertDialogue from 'components/ui/AlertDialogue'
 
 const OrganizationAction = ({ data, setEdit, setEditData, reload }) => {
   const [view, setView] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleView = (data) => {
     setView({
@@ -21,17 +23,34 @@ const OrganizationAction = ({ data, setEdit, setEditData, reload }) => {
     setEditData(data);
   };
 
-  const handleDelete = async (data) => {
-    const response = await deleteOrganization(data.id);
-    if (response) {
-      reload();
-      toast.success("Organization deleted successfully");
-    } else {
-      toast.error("Error deleting organization");
-    }
+  const handleDelete = async () => {
+     setIsDeleteModalOpen(true);
+
   };
+    const confirmDelete = async () => {
+      const response = await deleteOrganization(data.id);
+      if (response) {
+        reload();
+        toast.success("Organization deleted successfully");
+      } else {
+        toast.error("Error deleting organization");
+      }
+      setIsDeleteModalOpen(false);
+    };
   return (
     <>
+      {isDeleteModalOpen && (
+        <AlertDialogue
+          isOpen={isDeleteModalOpen}
+          setIsOpen={() => {
+            setIsDeleteModalOpen(false);
+          }}
+          handleContinue={confirmDelete}
+          title="Confirm Delete?"
+          description="This action can't be undone. All information associated with this
+            will be lost."
+        />
+      )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button aria-haspopup="true" size="icon" variant="ghost">

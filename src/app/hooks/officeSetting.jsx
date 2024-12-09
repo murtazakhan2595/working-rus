@@ -60,4 +60,21 @@ const deleteOrganization = async (id) => {
   }
 }
 
-export { saveOrganization, deleteOrganization };
+const getOrganizationCountryList = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/countries/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting country list:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return [];
+  }
+}
+
+export { saveOrganization, deleteOrganization, getOrganizationCountryList };

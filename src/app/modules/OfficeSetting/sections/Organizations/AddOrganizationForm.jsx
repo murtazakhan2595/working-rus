@@ -13,13 +13,23 @@ import { SelectComponent } from "components/form-control";
 import { getCurrenciesList } from "app/hooks/general";
 import { dateFormats } from "data/Data";
 import { days } from "data/Data";
+import { getOrganizationCountryList } from "app/hooks/officeSetting";
 
-const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen,editData, edit }) => {
+const AddOrganizationForm = ({
+  handleSubmit,
+  isOpen,
+  setIsOpen,
+  editData,
+  edit,
+}) => {
   const formRef = createRef();
   const [imageError, setImageError] = useState(null);
-  const [formData, setFormData] = useState(edit? editData: OrganizationInformation);
+  const [formData, setFormData] = useState(
+    edit ? editData : OrganizationInformation
+  );
   const [closeSheet, setCloseSheet] = useState(false);
   const [currencies, setCurrencies] = useState([]);
+  const [countries, setCountries] = useState([]);
 
   console.log("formData", formData);
   useEffect(() => {
@@ -27,6 +37,14 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen,editData, edit })
       try {
         const currencyData = await getCurrenciesList();
         setCurrencies(currencyData);
+        const countries = await getOrganizationCountryList();
+        if (countries) {
+          const countryList = countries.results.map((country) => ({
+            value: `${country.id}`,
+            label: country.name,
+          }));
+          setCountries(countryList);
+        }
       } catch (err) {
         console.log(err);
       }
@@ -40,6 +58,7 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen,editData, edit })
     setCloseSheet(true);
   };
 
+  console.log("COU", countries);
   return (
     <>
       {handleCloseWithConfirmation({
@@ -164,6 +183,7 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen,editData, edit })
               </div>
 
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
+              {console.log("CURRENCIES", currencies)}
                 <SelectComponent
                   name="currency"
                   options={currencies}
@@ -173,6 +193,7 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen,editData, edit })
                   label="Currency"
                   required
                   onChange={(field, value) => {
+                    console.log("MKKK", field, value);
                     props.handleChange(field)(value);
                   }}
                 />
@@ -199,17 +220,19 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen,editData, edit })
             {/* Address Info Section */}
             <SheetCardExtension title="Address Info" className="mt-4">
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
-                <TextInput
-                  name="city"
-                  label="City"
+                <SelectComponent
+                  name="country"
+                  label="Country"
                   required
-                  value={props.values.city}
-                  error={props.errors.city}
-                  touch={props.touched.city}
+                  options={countries}
+                  value={props.values.country}
+                  error={props.errors.country}
+                  touch={props.touched.country}
                   onChange={(field, value) => {
                     props.handleChange(field)(value);
                   }}
                 />
+
                 <TextInput
                   name="state"
                   label="State"
@@ -224,12 +247,12 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen,editData, edit })
               </div>
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
                 <TextInput
-                  name="country"
-                  label="Country"
+                  name="city"
+                  label="City"
                   required
-                  value={props.values.country}
-                  error={props.errors.country}
-                  touch={props.touched.country}
+                  value={props.values.city}
+                  error={props.errors.city}
+                  touch={props.touched.city}
                   onChange={(field, value) => {
                     props.handleChange(field)(value);
                   }}
@@ -324,7 +347,7 @@ const AddOrganizationForm = ({ handleSubmit, isOpen, setIsOpen,editData, edit })
                   Cancel
                 </Button>
                 <Button type="submit" size="lg" variant="default">
-                  {edit? "Update": "Save"}
+                  {edit ? "Update" : "Save"}
                 </Button>
               </div>
             </div>

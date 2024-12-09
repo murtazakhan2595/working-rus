@@ -175,6 +175,11 @@ function getManagerName(value, managers) {
   return manager ? manager.label : "N/A";
 }
 
+function getOrganizationCountryFullName(countryCode, countryOptions) {
+  const country = countryOptions.find((option) => option.value === countryCode);
+  return country ? country.label : countryCode;
+}
+
 export {
   getCountryFullName,
   ResignationReason,
@@ -199,4 +204,5 @@ export {
   getDepartmentName,
   getDesignationName,
   getManagerName,
+  getOrganizationCountryFullName,
 };
