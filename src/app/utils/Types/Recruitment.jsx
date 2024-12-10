@@ -21,7 +21,7 @@ const ApplicationDetail = {
   last_name: "",
   phone_number: "",
   email: "",
-  Year_of_Experience: null,
+  experience: null,
   location: "",
   cv: null,
   country_code: null,

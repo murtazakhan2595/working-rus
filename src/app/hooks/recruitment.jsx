@@ -10,6 +10,11 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
+const formDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+});
+
+
 export const fetchJobPosts = async (filterData, sortData) => {
   filterData = filterData ?? {};
   sortData = sortData && sortData === "dsc" ? "-updated_at" : "updated_at";
@@ -182,8 +187,11 @@ const getNewJobCode = async () => {
 };
 
 export const addApplication = async (values) => {
+  console.log(values, "VALUES")
   try {
-    const response = await axios.post(`${baseUrl}/candidate/`, values);
+    const response = await axios.post(`${baseUrl}/candidate/`, values,         {
+      headers: formDataHeader(),
+    });
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
