@@ -10,6 +10,13 @@ import { connect } from "react-redux";
 import { getEmployeeList } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import moment from "moment";
+import { getShiftAssignment } from "app/hooks/attendance";
+
+
+import { CardContent } from "components/ui/card";
+import { Card } from "components/ui/card";
+import { CardHeader } from "components/ui/card";
+import { CardTitle } from "components/ui/card";
 
 const AssignShift = ({ users,shifts }) => {
 
@@ -61,9 +68,10 @@ const AssignShiftForm = ({
   users,
   shifts,
 }) => {
-  console.log("INFO", users);
-
+  const [loading, setLoading] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
+  const [showShiftsList, setShowShiftsList] = useState(false);
+  const [employeeShiftsList, setEmployeeShiftsList] = useState([]);
   const [formData, setFormData] = useState({
     employee: null,
     shift: null,
@@ -72,16 +80,34 @@ const AssignShiftForm = ({
     value: `${user.id}`,
     label: `${user.first_name} ${user.last_name}`,
   }));
-
-  const shiftsList = shifts?.map((shift) => ({
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [shiftsList, setShiftsList] = useState(shifts?.map((shift) => ({
     value: `${shift.id}`,
     label: `${shift.name} (${moment(shift.start_time).format('h:mm a')} - ${moment(shift.end_time).format('h:mm a')})`,
-  }));
+  })));
 
-  console.log("USERS", users);
+  
+  useEffect(() => {
+    const fetchShifts = async () => {
+      const shiftData = await getShiftAssignment({
+        filterData: { employee: selectedEmployee },
+      });
+      if(shiftData){
+        setEmployeeShiftsList(shiftData.results);
+        let filteredShifts = shiftsList?.filter(shift => !shiftData.results.some(shiftData => shiftData.shift === shift.value));
+        console.log("Filtered Shifts", filteredShifts);
+        setShiftsList(filteredShifts);
+      }
+    }
+    fetchShifts();
+  }, [selectedEmployee]);
+
+  console.log("selected employee", selectedEmployee)
+
   const handleClose = () => {
     // setIsOpen(false)
     setCloseSheet(true);
+     setShowShiftsList(false);
   };
 
   return (
@@ -111,7 +137,7 @@ const AssignShiftForm = ({
       >
         {(props) => (
           <form onSubmit={props.handleSubmit}>
-            <div className="space-y-2">
+            <div className="space-y-2 pb-2">
               <SelectComponent
                 name="employee"
                 options={usersList}
@@ -121,21 +147,54 @@ const AssignShiftForm = ({
                 label="User"
                 required
                 onChange={(field, value) => {
+                  setSelectedEmployee(value);
                   props.handleChange(field)(value);
                 }}
               />
-              <SelectComponent
-                name="shift"
-                options={shiftsList}
-                error={props.errors.shift}
-                touch={props.touched.shift}
-                value={props.values.shift}
-                label="Shift"
-                required
-                onChange={(field, value) => {
-                  props.handleChange(field)(value);
-                }}
-              />
+              {selectedEmployee &&
+                employeeShiftsList.length > 0 &&
+                employeeShiftsList.map((shift, index) => (
+                  <Card className="p-0 ">
+                    <CardHeader className="p-1">
+                      <CardTitle className=" text-[20px]">
+                        {" "}
+                        {"First Shift"}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-2">
+                      <div className="text-[16px]">
+                        <p>{"Shift Type: General"} </p>
+                        <p>{"Shift Time: 9:00Am to 5:00Pm"} </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+
+              {showShiftsList && ( // Only show this when the sheet is open
+                <SelectComponent
+                  name="shift"
+                  options={shiftsList}
+                  error={props.errors.shift}
+                  touch={props.touched.shift}
+                  value={props.values.shift}
+                  label="Shift"
+                  required
+                  onChange={(field, value) => {
+                    props.handleChange(field)(value);
+                  }}
+                />
+              )}
+
+              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
+                <Button
+                  onClick={() => setShowShiftsList(true)}
+                  size="lg"
+                  variant="default"
+                  type="button"
+                >
+                  Add Shift
+                </Button>
+              </div>
             </div>
             {/* Form Actions */}
             <div className="p-6 border-t border-gray-200 bg-gray-50">
