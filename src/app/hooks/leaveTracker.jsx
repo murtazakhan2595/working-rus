@@ -5,7 +5,12 @@ import moment from "moment";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-  "Content-Type": "application/json",
+  "Content-Type": "application/json", 
+});
+
+const formDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  // Don't explicitly set 'Content-Type' for FormData
 });
 
 const saveLeaveComponents = async (payload) => {
@@ -248,8 +253,8 @@ const getLeaveTransaction = async (payload) => {
 };
 const saveAttachment = async (payload) => {
   try {
-    const response = await axios.post(`${baseUrl}/leaveattachments`, payload, {
-      headers: headers(),
+    const response = await axios.post(`${baseUrl}/leaveattachments`, payload,         {
+      headers: formDataHeader(),
     });
     if (response.status === 201 || response.status === 200) {
       return response.data;
