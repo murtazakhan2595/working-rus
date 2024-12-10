@@ -50,7 +50,7 @@ export default function EmployeeManagement() {
         setActiveEmployee(data.ActiveEmployee || 0);
         setTotalEmployee(data.TotalEmployee || 0);
         setTotalManagers(data.TotalManager || 0);
-        setTotalOffboard(data?.count - data?.ActiveEmployee || 0)
+        setTotalOffboard(data?.TotalEmployee - data?.ActiveEmployee || 0)
       } catch (error) {
         console.error("Error fetching employees:", error);
       } finally {
@@ -58,7 +58,7 @@ export default function EmployeeManagement() {
       }
     };
     fetchData();
-  }, [options, filterData, selectedStatus]);
+  }, [options, filterData, selectedStatus]); 
 
   useEffect(() => {
     const fetchLists = async () => {
@@ -97,7 +97,9 @@ export default function EmployeeManagement() {
     { label: "Total Employees", value: totalEmployee, icon: UsersRound },
     { label: "Managers", value: totalManagers, icon: Contact },
     { label: "Active Employees", value: activeEmployee, icon: UserRoundCheck },
-    { label: "Offboarded Employees", value: totalOffboard, icon: UserRoundCheck },
+    ...(Object.keys(filterData).length === 0
+    ? [{ label: "Offboarded Employees", value: totalOffboard, icon: UserRoundCheck }]
+    : []),
   ];
 
   const onEmpStatusChange = (newStatus) => {
