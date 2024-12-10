@@ -35,7 +35,6 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
   };
 
   const handleSubmit = async (values) => {
-    console.log(values, "VALUES")
     try {
       const response = await saveDepartment(values?.id, values);
       if (response) {
