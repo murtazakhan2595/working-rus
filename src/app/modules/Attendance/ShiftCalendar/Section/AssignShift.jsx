@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import { getShiftAssignment } from "app/hooks/attendance";
 
+import { Switch } from "../../../../../src/@/components/ui/switch";
 
 import { CardContent } from "components/ui/card";
 import { Card } from "components/ui/card";
@@ -72,6 +73,7 @@ const AssignShiftForm = ({
   const [closeSheet, setCloseSheet] = useState(false);
   const [showShiftsList, setShowShiftsList] = useState(false);
   const [employeeShiftsList, setEmployeeShiftsList] = useState([]);
+  const [isModify, setIsModify] = useState(false)
   const [formData, setFormData] = useState({
     employee: null,
     shift: null,
@@ -85,7 +87,13 @@ const AssignShiftForm = ({
     value: `${shift.id}`,
     label: `${shift.name} (${moment(shift.start_time).format('h:mm a')} - ${moment(shift.end_time).format('h:mm a')})`,
   })));
-
+const [weekdays, setWeekdays] = useState([
+    { monday: true },
+    { tuesday: true },
+    { wednesday: true },
+    { thursday: true },
+    { friday: true },
+  ]);
   
   useEffect(() => {
     const fetchShifts = async () => {
@@ -102,7 +110,13 @@ const AssignShiftForm = ({
     fetchShifts();
   }, [selectedEmployee]);
 
-  console.log("selected employee", selectedEmployee)
+    const handleSwitchChange = (dayIndex, value) => {
+    setWeekdays((prevWeekdays) =>
+      prevWeekdays.map((day, index) =>
+        index === dayIndex ? { [Object.keys(day)[0]]: value } : day
+      )
+    );
+  };
 
   const handleClose = () => {
     // setIsOpen(false)
@@ -151,24 +165,53 @@ const AssignShiftForm = ({
                   props.handleChange(field)(value);
                 }}
               />
-              {selectedEmployee &&
-                employeeShiftsList.length > 0 &&
-                employeeShiftsList.map((shift, index) => (
-                  <Card className="p-0 ">
-                    <CardHeader className="p-1">
-                      <CardTitle className=" text-[20px]">
-                        {" "}
-                        {"First Shift"}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-2">
-                      <div className="text-[16px]">
-                        <p>{"Shift Type: General"} </p>
-                        <p>{"Shift Time: 9:00Am to 5:00Pm"} </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+     {!isModify ? (
+  selectedEmployee &&
+  employeeShiftsList.length > 0 &&
+  employeeShiftsList.map((shift, index) => (
+    <Card className="p-0" key={index}>
+      <CardHeader className="p-1">
+        <CardTitle className="text-[20px]">
+          {`Shift ${index + 1}`}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-2 flex items-center justify-between">
+        <div className="text-[16px]">
+          <p>{`Shift Type: ${shift.type || "General"}`}</p>
+          <p>{`Shift Time: ${shift.startTime || "9:00AM"} to ${shift.endTime || "5:00PM"}`}</p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={() => {
+            setIsModify(shift);
+          }}
+        >
+          Modify days
+        </Button>
+      </CardContent>
+    </Card>
+  ))
+) :  (
+  weekdays.map((day, index) => {
+    // Extract the key and value from each object
+    const [dayName, isTrue] = Object.entries(day)[0];
+    return (
+      <div key={index} className="flex justify-between items-center p-2 border-b">
+        <span className="text-[18px] capitalize">
+          {dayName}
+        </span>
+        <Switch 
+          id="status"
+          checked={isTrue}
+          onCheckedChange={(value) =>
+              handleSwitchChange(index, value)
+          }
+        />
+      </div>
+    );
+  })
+  )}
+
 
               {showShiftsList && ( // Only show this when the sheet is open
                 <SelectComponent
