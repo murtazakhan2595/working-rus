@@ -18,6 +18,7 @@ import { getOrganizationList } from "app/hooks/general";
 import { CardContent } from "components/ui/card";
 import AddDesignation from "../sections/Designations/AddDesignation";
 import WorkingHours from "./WorkingHours";
+import Shift from "../sections/Shift/Shift";
 
 const OfficeSetting = () => {
   const [data, setData] = useState(null);
@@ -90,8 +91,10 @@ const OfficeSetting = () => {
             <AddOrganization reload={getOrganization} />
           ) : activeTab === "department" ? (
             <AddDepartment />
-          ) : (
+          ) : activeTab === 'designation' ? (
             <AddDesignation />
+          ) : (
+            <Shift/>
           )
         }
       />

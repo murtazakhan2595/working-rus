@@ -108,6 +108,36 @@ const getDesignationList = async (allData=false) => {
   return [];
 };
 
+const saveShift = async (shiftId ,payload)=>{
+  try {
+    if (shiftId) {
+      const response = await axios.patch(
+        `${baseUrl}/shift/${shiftId}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        return response?.data;
+      }
+    } else {
+      const response = await axios.post(`${baseUrl}/shift/`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201) {
+        return response?.data;
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return false;
+  }
+}
+
 const getManagersList = async () => {
   try {
     const response = await axios.get(`${baseUrl}/emplistofmanager/`, {
@@ -307,6 +337,26 @@ const deleteRecord = async (URL, recordName) => {
   }
 };
 
+const getWorkingHours = async (URL) => {
+  try {
+    const response = await axios.get(`${baseUrl}/shift/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const workingHours = response.data;
+      return workingHours;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Working Hours data :", error);
+  }
+  return [];
+};
+
 const handleLogout = () => {
   if (window.localStorage.getItem("token")) {
     window.location.href = "/login";
@@ -333,4 +383,6 @@ export {
   getCurrenciesList,
   saveDepartment,
   saveDesignation,
+  getWorkingHours,
+  saveShift
 };

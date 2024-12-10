@@ -177,6 +177,15 @@ export const jobsStatusOptions = [
   { label: "Closed", value: "expired" },
 ];
 
+export const shiftType = [
+  {
+    label: "General", value:"General"
+  },
+  {
+    label:"Weekend", value: "Weekend"
+  }
+]
+
 export const HeadOfDepartment = [
   { label: "Naveed Rahman - CEO", value: "Naveed" },
   { label: "Komal Zaman - Peoples Teams Head", value: "Komal" },

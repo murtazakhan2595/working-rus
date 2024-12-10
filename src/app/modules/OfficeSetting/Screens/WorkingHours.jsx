@@ -1,75 +1,53 @@
 import { Switch } from 'src/@/components/ui/switch';
 import TableCustom from 'components/CustomTable';
 import { CardTitle, CardHeader, CardContent, Card } from 'components/ui/card';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getWorkingHours } from 'app/hooks/general';
+import dayjs from 'dayjs';
 
 const WorkingHours = () => {
-  const [data, setData] = useState([
-    {
-      day: "Monday",
-      is_active: true,
-      time_range: "9:00 AM - 6:00 PM GST",
-    },
-    {
-      day: "Tuesday",
-      is_active: true,
-      time_range: "9:00 AM - 6:00 PM GST",
-    },
-    {
-      day: "Wednesday",
-      is_active: true,
-      time_range: "9:00 AM - 6:00 PM GST",
-    },
-    {
-      day: "Thursday",
-      is_active: true,
-      time_range: "9:00 AM - 6:00 PM GST",
-    },
-    {
-      day: "Friday",
-      is_active: true,
-      time_range: "9:00 AM - 6:00 PM GST",
-    },
-    {
-      day: "Saturday",
-      is_active: false,
-      time_range: "--:--",
-    },
-    {
-      day: "Sunday",
-      is_active: false,
-      time_range: "--:--",
-    },
-  ]);
+  const [data, setData] = useState([]);
 
   const columns = [
     {
-      dataField: "is_active",
-      text: "Day",
-      formatter: (cell, row) => (
-        <div onClick={(event) => event.stopPropagation()}>
-          <Switch
-            id={`activate-${row.day}`}
-            checked={cell}
-            onCheckedChange={(value) => {
-              const updatedData = data.map((item) =>
-                item.day === row.day ? { ...item, is_active: value } : item
-              );
-              setData(updatedData);
-            }}
-          />
-        </div>
-      ),
+      dataField: "name",
+      text: "Shift Name",
     },
     {
-      dataField: "day",
-      text: "Day",
+      dataField: "type",
+      text: "Shift Type",
     },
     {
-      dataField: "time_range",
-      text: "Time Range",
+      dataField: "starttime",
+      text: "Start Time",
+      formatter: (cell) => (dayjs(cell).isValid() ? dayjs(cell).format("hh:mm A") : "--"),
+    },
+    {
+      dataField: "endtime",
+      text: "End Time",
+      formatter: (cell) => (dayjs(cell).isValid() ? dayjs(cell).format("hh:mm A") : "--"),
     },
   ];
+
+  const fetchShifts = async () => {
+    try {
+      const response = await getWorkingHours();
+      if (response?.results) {
+        const formattedData = response.results.map((item) => ({
+          ...item,
+          // starttime: dayjs(item.starttime).format("hh:mm A"),
+          // endtime: dayjs(item.endtime).format("hh:mm A"),
+        }));
+        setData(formattedData);
+      }
+    } catch (error) {
+      console.log(error, "ERROR");
+    }
+  };
+
+  useEffect(() => {
+    fetchShifts();
+  }, []);
 
   return (
     <Card>
