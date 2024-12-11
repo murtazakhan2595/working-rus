@@ -61,25 +61,35 @@ export const DetailCard = ({
     </div>
   );
 };
-
-export const DisplayFile = ({ firstName, lastName, file, onDownload })=>{
-  return(
+export const DisplayFile = ({ firstName, lastName, file, onDownload }) => {
+  return (
     <div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-2 max-w-64 px-4 border border-[#f0f0f3] flex justify-between items-center gap-4">
-    <div className="flex gap-x-3 items-center">
-      <Paperclip size={16} />
-      <div className="flex flex-col">
-      <p className="text-sm text-[#323333]">
-        {firstName} {lastName}
-      </p>
-      <p>{getFileSizeInKB(file)}KB</p>
+      <div className="flex gap-x-3 items-center">
+        <Paperclip size={16} />
+        <div className="flex flex-col">
+          <p className="text-sm text-[#323333] font-medium">
+            {firstName} {lastName}
+          </p>
+          {/* <p className="text-xs text-gray-500">
+            {getFileSizeInKB(file)} KB
+          </p> */}
+        </div>
+      </div>
+      <div className="flex gap-2">
+        {/* View CV Button */}
+        <a
+          href={file}
+          target="_blank"
+          rel="noopener noreferrer"
+          className=" text-sm"
+        >
+          Download
+        </a>
       </div>
     </div>
-    <Button variant="link" onClick={() => onDownload(file, `${firstName} ${lastName}`)}>
-      Download
-    </Button>
-  </div>
-  )
-}
+  );
+};
+
 
 export const DisplayButton = ({handlePrevious, handleNext})=>{
   return(
