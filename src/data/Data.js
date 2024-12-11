@@ -762,7 +762,6 @@ export const salarySummary = {
 };
 
 export const handleUpdateProfile = (dispatch, data) => {
-  console.log("data", data);
   const userprofile = {
     id: data.id,
     username: data.username,

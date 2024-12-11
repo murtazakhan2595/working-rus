@@ -25,6 +25,7 @@ const ProjectForm = ({
   isOpen,
   setIsOpen,
   editProject,
+  userProfile,
 }) => {
   const formRef = useRef();
   let dispatch = useDispatch();
@@ -82,7 +83,7 @@ const ProjectForm = ({
         color: selectedColor, // Send the selected color
       });
       if (response) {
-        dispatch(fetchProjects());
+        dispatch(fetchProjects(userProfile));
         reload(true);
         setIsOpen(false);
       }
@@ -322,6 +323,8 @@ const mapStateToProps = (state) => {
   return {
     token: state.user.token,
     employees: state.emp.employees,
+    userProfile: state.user.userProfile,
+
   };
 };
 export default connect(mapStateToProps)(ProjectForm);

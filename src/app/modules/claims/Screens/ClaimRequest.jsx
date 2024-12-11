@@ -56,8 +56,6 @@ const ClaimRequest = ({userProfile}) => {
     onPageChange("page", 1);
     if (filterName === "status") setSelectedStatus(filterValue);
     if (filterName === "expense_type") setSelectedExpenseType(filterValue);
-    console.log("filterName", filterName);
-    console.log("filterValue", filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
