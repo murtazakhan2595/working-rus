@@ -4,6 +4,7 @@ import { CardTitle, CardHeader, CardContent, Card } from 'components/ui/card';
 import React, { useEffect, useState } from 'react';
 import { getWorkingHours } from 'app/hooks/general';
 import dayjs from 'dayjs';
+import ShiftActions from '../sections/Shift/ShiftActions';
 
 const WorkingHours = () => {
   const [data, setData] = useState([]);
@@ -27,6 +28,10 @@ const WorkingHours = () => {
       text: "End Time",
       formatter: (cell) => (dayjs(cell).isValid() ? dayjs(cell).format("hh:mm A") : "--"),
     },
+    {
+      text: "Action",
+      formatter: (cell, row)=> <ShiftActions data={row}/>
+    }
   ];
 
   const fetchShifts = async () => {
