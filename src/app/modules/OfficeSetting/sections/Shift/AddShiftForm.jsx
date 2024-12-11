@@ -17,8 +17,20 @@ import { validateShiftFormSchema } from "app/utils/FormSchema/ShiftFormSchema";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
 const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
-  const [formData, setFormData] = useState(ShiftInformation);
+  const [formData, setFormData] = useState(() => {
+    if (edit?.data) {
+      const localStartTime = moment(edit.data.starttime).local().format("hh:mm A");
+      const localEndTime = moment(edit.data.endtime).local().format("hh:mm A");
+      return {
+        ...edit.data,
+        starttime: localStartTime,
+        endtime: localEndTime,
+      };
+    }
+    return ShiftInformation;
+  });
   const [closeSheet, setCloseSheet] = useState(false);
+
 
 
 
