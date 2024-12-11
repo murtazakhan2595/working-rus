@@ -34,7 +34,6 @@ export default function TaskRelation({
     const taskList = await getTaskByprojectId({
       filterData: { project_id: [projectId] },
     });
-    console.log(taskList);
     setTaskList(taskList.results); // Update this to `tasklList`
   };
 

@@ -13,7 +13,6 @@ import moment from "moment";
 import { PriorityListIcons } from "data/Data";
 import { TimeIcon } from "@mui/x-date-pickers";
 import CustomDropdown from "./CustomDropdown";
-import CreateCardModal from "./CreateCardModal";
 import {
   Card,
   CardContent,
@@ -63,7 +62,6 @@ export default function MyTasks() {
   const [filterOption, setFilterOption] = useState("All Projects");
   const [options, setOptions] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [openCreateCard, setOpenCreateCard] = useState(false);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState(null);
   const [open, setOpen] = React.useState(false);
@@ -106,8 +104,6 @@ export default function MyTasks() {
           ? {}
           : { filterData: { project_id: [filterOption.id] } };
       const tasksData = await getAllTasks(filter);
-      // console.log(tasksData, "TASKS DATA");
-      // console.log(tasksData, "TASKS DATA");
       if (isMounted) {
         const mergedResult = mergeTasksWithProjects(tasksData, projects);
         setTasks(mergedResult);
@@ -131,7 +127,6 @@ export default function MyTasks() {
 
 
   useEffect(() => {
-    // console.log(AllProjects);
     const dynamicOptions = AllProjects?.map((project) => ({
       label: project.name,
       onClick: () => {
@@ -151,8 +146,6 @@ export default function MyTasks() {
     setOptions(dynamicOptions);
   }, [AllProjects]);
 
-  // console.log(options, "OPTIONS");
-  // console.log(options, "OPTIONS");
 
   useEffect(() => {
     if (AllProjects.length > 0) {
@@ -284,18 +277,6 @@ export default function MyTasks() {
                 </Command>
               </PopoverContent>
             </Popover>
-
-           
-              <Button variant="secondary">
-                <Link
-                to="#"
-                onClick={() => {
-                  setOpenCreateCard(true);
-                }}
-              >
-                Add New Task
-              </Link>
-            </Button>
             </div>
             
            
@@ -312,17 +293,6 @@ export default function MyTasks() {
           )}
         </CardContent>
       </Card>
-
-      {/* Modal for creating tasks */}
-      {openCreateCard && (
-        <CreateCardModal
-          open={openCreateCard}
-          setOpen={setOpenCreateCard}
-          onSave={() => {
-            fetchTasks(true, AllProjects);
-          }}
-        />
-      )}
     </>
   );
 }
@@ -342,7 +312,6 @@ const getStatusLabel = (status) => {
   }
 };
 function RenderTask({ tasks }) {
-  // console.log(tasks, "HELLO TASKS")
   return (
     <CustomTable
       showHeader={false}

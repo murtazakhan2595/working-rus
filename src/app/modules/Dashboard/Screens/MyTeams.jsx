@@ -56,9 +56,10 @@ const MyTeams = ({ userProfile, employees }) => {
             <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
               Team Members
             </div>
-            <Button variant="outline">
+            {/* Hiding button untill My Team page developed */}
+            {/* <Button variant="outline">
               <Link to="/my-team">View Detail</Link>
-            </Button>
+            </Button> */}
           </CardTitle>
         </CardHeader>
         <CardContent>

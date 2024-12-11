@@ -63,7 +63,6 @@ const SelectComponent = ({
     setOpen(false);
     onChange(name, newValue);
   };
-
   return (
     <div className={`${classes || "flex flex-col gap-4"}`}>
       <Label className={` ${value ? "" : ""}`} htmlFor={name}>
@@ -1393,6 +1392,7 @@ const CoverFileUpload = ({
                   ? URL.createObjectURL(fileData)
                   : "#"
               }
+              download
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-neutral-500"
