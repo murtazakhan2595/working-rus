@@ -9,15 +9,55 @@ import React, { useState } from "react";
 import { SelectComponent } from "components/form-control";
 import { shiftType } from "data/Data";
 import { toast } from "react-toastify";
+import moment from "moment";
+
+
 import { saveShift } from "app/hooks/general";
+import { validateShiftFormSchema } from "app/utils/FormSchema/ShiftFormSchema";
+import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
 const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
-  const [formData, setFormData] = useState(ShiftInformation);
+  const [formData, setFormData] = useState(() => {
+    if (edit?.data) {
+      const localStartTime = moment(edit.data.starttime).local().format("hh:mm A");
+      const localEndTime = moment(edit.data.endtime).local().format("hh:mm A");
+      return {
+        ...edit.data,
+        starttime: localStartTime,
+        endtime: localEndTime,
+      };
+    }
+    return ShiftInformation;
+  });
   const [closeSheet, setCloseSheet] = useState(false);
+
+
+
 
   const handleSubmit = async (values) => {
     try {
-      const response = await saveShift(values?.id, values);
+      const localDate = moment().format("YYYY-MM-DD"); 
+      const startTimeUTC = moment(
+        `${localDate} ${values.starttime}`,
+        "YYYY-MM-DD hh:mm A"
+      )
+        .utc()
+        .format(); 
+      const endTimeUTC = moment(
+        `${localDate} ${values.endtime}`,
+        "YYYY-MM-DD hh:mm A"
+      )
+        .utc()
+        .format();
+  
+      const updatedValues = {
+        ...values,
+        starttime: startTimeUTC,
+        endtime: endTimeUTC,
+      };
+  
+  
+      const response = await saveShift(updatedValues?.id, updatedValues);
       if (response) {
         toast.success("Shift Added Successfully!", {
           position: toast.POSITION.TOP_RIGHT,
@@ -25,25 +65,32 @@ const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
         setIsOpen(false);
         setEdit({
           open: false,
-          data: null
+          data: null,
         });
       }
     } catch (error) {
-      console.log("ERROR", error);
+      console.error("Error during submission:", error);
     }
   };
+  
+  
 
   const handleClose = () => {
     setCloseSheet(true);
   };
 
   const handleTimeChange = (field, time, props) => {
-   console.log(time, props, "TIME")
     props.setFieldValue(field, time);
   };
 
   return (
-    <Formik initialValues={formData} onSubmit={handleSubmit}>
+    <>
+          {handleCloseWithConfirmation({
+        isOpen: closeSheet,
+        setCloseSheet,
+        setIsOpen: setIsOpen
+      })}
+    <Formik initialValues={formData} onSubmit={handleSubmit} validate={validateShiftFormSchema}>
       {(props) => (
         <form onSubmit={props?.handleSubmit}>
           <SheetCardExtension title="Shift Details">
@@ -102,6 +149,7 @@ const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
         </form>
       )}
     </Formik>
+    </>
   );
 };
 

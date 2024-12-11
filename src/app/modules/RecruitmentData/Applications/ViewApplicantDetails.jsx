@@ -24,6 +24,7 @@ const ViewApplicantDetails = ({
     useState(applicantIndex);
   const [applicant, setApplicant] = useState(null);
 
+
   useEffect(() => {
     let isMounted = true; // Track if the component is still mounted
     const fetchDetails = async () => {
@@ -132,15 +133,19 @@ const ViewApplicantDetails = ({
           <DisplayFile
             firstName={applicant?.first_name}
             lastName={applicant?.last_name}
-            file={applicant?.cv?.file}
-            onDownload={() =>
-              downloadCV(
-                applicant?.cv?.file,
-                `${applicant?.first_name} ${applicant?.last_name}`
-              )
-            }
+            file={applicant?.cv}
           />
         </div>
+
+        <div className="mt-3 flex gap-24">
+          <h3 className="font-bold text-base text-[#323333]">Cover Letter</h3>
+          <DisplayFile
+            firstName={applicant?.first_name}
+            lastName={applicant?.last_name}
+            file={applicant?.coverletter}
+          />
+        </div>
+
       </DetailCard>
     </div>
   );

@@ -179,7 +179,7 @@ export const jobsStatusOptions = [
 
 export const shiftType = [
   {
-    label: "General", value:"General"
+    label: "Weekdays", value:"Weekdays"
   },
   {
     label:"Weekend", value: "Weekend"
