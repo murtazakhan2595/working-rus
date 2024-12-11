@@ -7,8 +7,20 @@ import Calender from "./Calendar";
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import Listview from "../../Sections/Listview";
+import { getShiftAssignment } from "app/hooks/attendance";
 
 const Emplist = ({ teamMembers }) => {
+  const [activeMember, setActiveMember] = useState(null);
+  const [employeeShift, setEmployeeShift] = useState([]);
+  const handleSelect = async(memberId) => {
+    setActiveMember(memberId);
+    const shiftData = await getShiftAssignment({ filterData: { employee_id: memberId } });
+    console.log("Shift Data", shiftData);
+    if(shiftData){
+      setEmployeeShift(shiftData.results);
+    }
+
+  }
   return (
     <div className="flex gap-2">
       <Card className=" min-w-[25%]">
@@ -23,11 +35,16 @@ const Emplist = ({ teamMembers }) => {
         <CardContent className="max-h-[450px] overflow-auto">
           {teamMembers?.count > 0 &&
             teamMembers?.results?.map((member, index) => (
-              <Listview teamMemeber={member} key={index} />
+              <Listview
+                teamMemeber={member}
+                key={index}
+                handleSelect={handleSelect}
+                activeMember={activeMember}
+              />
             ))}
         </CardContent>
       </Card>
-      <Calender />
+      <Calender shifts={employeeShift} />
     </div>
   );
 };
