@@ -104,6 +104,7 @@ export const updateApplicationStatus = async (selectedApplicant, option) => {
         email: selectedApplicant.email,
         // cv: selectedApplicant.cv,
         job_id: selectedApplicant.job_id,
+        reason: selectedApplicant?.reason
       },
       {
         headers: headers(),
