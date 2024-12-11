@@ -372,21 +372,6 @@ export const AllJobApplicationColumns = (
       setIsViewApplicationDetailOpen(true)
     },
   },
-  // {
-  //   dataField: "phone_number",
-  //   text: "Phone",
-  //   formatter: (cell, row) => (
-  //     <>
-  //       <div className="text-base ">{cell || ""}</div>
-  //       {/* <div className="text-base ">{row.email || ""}</div> */}
-  //     </>
-  //   ),
-  // },
-  // {
-  //   dataField: "current_salary",
-  //   text: "Current Salary",
-  //   formatter: (cell) => <>{formatNumber(cell)}</>,
-  // },
   {
     dataField: "updated_at",
     text: "Applied On",
@@ -412,9 +397,11 @@ export const AllJobApplicationColumns = (
           <span title={row?.cv} className="text-base text-baseGray">
             File
           </span>
-          <button onClick={() => downloadCV(row?.cv, row?.first_name)}>
-            <AiOutlineDownload />
-          </button>
+          <a href={row?.cv} target="_blank" rel="noopener noreferrer">
+            <button>
+              <AiOutlineDownload />
+            </button>
+          </a>
         </div>
       </>
     ),
