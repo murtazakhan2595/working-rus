@@ -102,7 +102,7 @@ export const updateApplicationStatus = async (selectedApplicant, option) => {
         last_name: selectedApplicant.last_name,
         phone_number: selectedApplicant.phone_number,
         email: selectedApplicant.email,
-        cv: selectedApplicant.cv,
+        // cv: selectedApplicant.cv,
         job_id: selectedApplicant.job_id,
       },
       {

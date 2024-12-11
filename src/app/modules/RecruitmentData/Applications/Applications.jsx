@@ -275,7 +275,6 @@ const Applications = () => {
             initialValues={{ reason: "" }}
             onSubmit={async (values) => {
               try {
-                console.log(values);
                 // Pass rejection reason and status
                 const response = await updateApplicationStatus(
                   {
