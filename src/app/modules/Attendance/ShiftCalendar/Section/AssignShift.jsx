@@ -10,10 +10,16 @@ import { connect } from "react-redux";
 import { getEmployeeList } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import moment from "moment";
+import { getShiftAssignment } from "app/hooks/attendance";
 
-const AssignShift = ({ users,shifts }) => {
+import { Switch } from "../../../../../src/@/components/ui/switch";
 
+import { CardContent } from "components/ui/card";
+import { Card } from "components/ui/card";
+import { CardHeader } from "components/ui/card";
+import { CardTitle } from "components/ui/card";
 
+const AssignShift = ({ users, shifts }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (formData, resetForm) => {
@@ -61,9 +67,10 @@ const AssignShiftForm = ({
   users,
   shifts,
 }) => {
-  console.log("INFO", users);
-
+  const [loading, setLoading] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
+  const [employeeShiftsList, setEmployeeShiftsList] = useState([]);
+  const [isModify, setIsModify] = useState(false);
   const [formData, setFormData] = useState({
     employee: null,
     shift: null,
@@ -72,13 +79,37 @@ const AssignShiftForm = ({
     value: `${user.id}`,
     label: `${user.first_name} ${user.last_name}`,
   }));
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [shiftsList, setShiftsList] = useState(
+    shifts?.map((shift) => ({
+      value: `${shift.id}`,
+      label: `${shift.name} (${moment(shift.start_time).format(
+        "h:mm a"
+      )} - ${moment(shift.end_time).format("h:mm a")})`,
+    }))
+  );
+  useEffect(() => {
+    const fetchShifts = async () => {
+      const shiftData = await getShiftAssignment({
+        filterData: { employee_id: selectedEmployee },
+      });
+      if (shiftData) {
+        setEmployeeShiftsList(shiftData.results);
+        let filteredShifts = shiftsList?.filter(
+          (shift) =>
+            !shiftData.results.some(
+              (shiftData) => shiftData.shift === shift.value
+            )
+        );
+        console.log("Filtered Shifts", filteredShifts);
+        setShiftsList(filteredShifts);
+      }
+    };
+    fetchShifts();
+  }, [selectedEmployee]);
 
-  const shiftsList = shifts?.map((shift) => ({
-    value: `${shift.id}`,
-    label: `${shift.name} (${moment(shift.start_time).format('h:mm a')} - ${moment(shift.end_time).format('h:mm a')})`,
-  }));
 
-  console.log("USERS", users);
+
   const handleClose = () => {
     // setIsOpen(false)
     setCloseSheet(true);
@@ -111,7 +142,7 @@ const AssignShiftForm = ({
       >
         {(props) => (
           <form onSubmit={props.handleSubmit}>
-            <div className="space-y-2">
+            <div className="space-y-2 pb-2">
               <SelectComponent
                 name="employee"
                 options={usersList}
@@ -121,9 +152,33 @@ const AssignShiftForm = ({
                 label="User"
                 required
                 onChange={(field, value) => {
+                  setSelectedEmployee(value);
                   props.handleChange(field)(value);
                 }}
               />
+
+              {selectedEmployee &&
+                employeeShiftsList.length > 0 &&
+                employeeShiftsList.map((shift, index) => (
+                  <Card className="p-0" key={index}>
+                    <CardHeader className="p-1">
+                      <CardTitle className="text-[20px]">
+                        {shift.shift_name}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-2 flex items-center justify-between">
+                      <div className="text-[16px]">
+                        <p>{`Shift Type: ${shift.shift_type}`}</p>
+                        <p>{`Shift Time: ${moment(
+                          shift.shift_start_time
+                        ).format("h:mm A")} to ${moment(
+                          shift.shift_end_time
+                        ).format("h:mm A")}`}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+
               <SelectComponent
                 name="shift"
                 options={shiftsList}
