@@ -19,9 +19,7 @@ import { Card } from "components/ui/card";
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 
-const AssignShift = ({ users,shifts }) => {
-
-
+const AssignShift = ({ users, shifts }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (formData, resetForm) => {
@@ -71,9 +69,8 @@ const AssignShiftForm = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
-  const [showShiftsList, setShowShiftsList] = useState(false);
   const [employeeShiftsList, setEmployeeShiftsList] = useState([]);
-  const [isModify, setIsModify] = useState(false)
+  const [isModify, setIsModify] = useState(false);
   const [formData, setFormData] = useState({
     employee: null,
     shift: null,
@@ -83,45 +80,39 @@ const AssignShiftForm = ({
     label: `${user.first_name} ${user.last_name}`,
   }));
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [shiftsList, setShiftsList] = useState(shifts?.map((shift) => ({
-    value: `${shift.id}`,
-    label: `${shift.name} (${moment(shift.start_time).format('h:mm a')} - ${moment(shift.end_time).format('h:mm a')})`,
-  })));
-const [weekdays, setWeekdays] = useState([
-    { monday: true },
-    { tuesday: true },
-    { wednesday: true },
-    { thursday: true },
-    { friday: true },
-  ]);
-  
+  const [shiftsList, setShiftsList] = useState(
+    shifts?.map((shift) => ({
+      value: `${shift.id}`,
+      label: `${shift.name} (${moment(shift.start_time).format(
+        "h:mm a"
+      )} - ${moment(shift.end_time).format("h:mm a")})`,
+    }))
+  );
   useEffect(() => {
     const fetchShifts = async () => {
       const shiftData = await getShiftAssignment({
-        filterData: { employee: selectedEmployee },
+        filterData: { employee_id: selectedEmployee },
       });
-      if(shiftData){
+      if (shiftData) {
         setEmployeeShiftsList(shiftData.results);
-        let filteredShifts = shiftsList?.filter(shift => !shiftData.results.some(shiftData => shiftData.shift === shift.value));
+        let filteredShifts = shiftsList?.filter(
+          (shift) =>
+            !shiftData.results.some(
+              (shiftData) => shiftData.shift === shift.value
+            )
+        );
         console.log("Filtered Shifts", filteredShifts);
         setShiftsList(filteredShifts);
       }
-    }
+    };
     fetchShifts();
   }, [selectedEmployee]);
 
-    const handleSwitchChange = (dayIndex, value) => {
-    setWeekdays((prevWeekdays) =>
-      prevWeekdays.map((day, index) =>
-        index === dayIndex ? { [Object.keys(day)[0]]: value } : day
-      )
-    );
-  };
+
 
   const handleClose = () => {
     // setIsOpen(false)
     setCloseSheet(true);
-     setShowShiftsList(false);
   };
 
   return (
@@ -165,79 +156,41 @@ const [weekdays, setWeekdays] = useState([
                   props.handleChange(field)(value);
                 }}
               />
-     {!isModify ? (
-  selectedEmployee &&
-  employeeShiftsList.length > 0 &&
-  employeeShiftsList.map((shift, index) => (
-    <Card className="p-0" key={index}>
-      <CardHeader className="p-1">
-        <CardTitle className="text-[20px]">
-          {`Shift ${index + 1}`}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-2 flex items-center justify-between">
-        <div className="text-[16px]">
-          <p>{`Shift Type: ${shift.type || "General"}`}</p>
-          <p>{`Shift Time: ${shift.startTime || "9:00AM"} to ${shift.endTime || "5:00PM"}`}</p>
-        </div>
-        <Button
-          variant="outline"
-          onClick={() => {
-            setIsModify(shift);
-          }}
-        >
-          Modify days
-        </Button>
-      </CardContent>
-    </Card>
-  ))
-) :  (
-  weekdays.map((day, index) => {
-    // Extract the key and value from each object
-    const [dayName, isTrue] = Object.entries(day)[0];
-    return (
-      <div key={index} className="flex justify-between items-center p-2 border-b">
-        <span className="text-[18px] capitalize">
-          {dayName}
-        </span>
-        <Switch 
-          id="status"
-          checked={isTrue}
-          onCheckedChange={(value) =>
-              handleSwitchChange(index, value)
-          }
-        />
-      </div>
-    );
-  })
-  )}
 
+              {selectedEmployee &&
+                employeeShiftsList.length > 0 &&
+                employeeShiftsList.map((shift, index) => (
+                  <Card className="p-0" key={index}>
+                    <CardHeader className="p-1">
+                      <CardTitle className="text-[20px]">
+                        {shift.shift_name}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-2 flex items-center justify-between">
+                      <div className="text-[16px]">
+                        <p>{`Shift Type: ${shift.shift_type}`}</p>
+                        <p>{`Shift Time: ${moment(
+                          shift.shift_start_time
+                        ).format("h:mm A")} to ${moment(
+                          shift.shift_end_time
+                        ).format("h:mm A")}`}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
 
-              {showShiftsList && ( // Only show this when the sheet is open
-                <SelectComponent
-                  name="shift"
-                  options={shiftsList}
-                  error={props.errors.shift}
-                  touch={props.touched.shift}
-                  value={props.values.shift}
-                  label="Shift"
-                  required
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                />
-              )}
-
-              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                <Button
-                  onClick={() => setShowShiftsList(true)}
-                  size="lg"
-                  variant="default"
-                  type="button"
-                >
-                  Add Shift
-                </Button>
-              </div>
+              <SelectComponent
+                name="shift"
+                options={shiftsList}
+                error={props.errors.shift}
+                touch={props.touched.shift}
+                value={props.values.shift}
+                label="Shift"
+                required
+                onChange={(field, value) => {
+                  props.handleChange(field)(value);
+                }}
+              />
             </div>
             {/* Form Actions */}
             <div className="p-6 border-t border-gray-200 bg-gray-50">

@@ -9,13 +9,15 @@ import rrulePlugin from "@fullcalendar/rrule";
 import { DateTime } from "luxon"; // Import Luxon's DateTime
 
 const Calendar = ({ shifts }) => {
+
+  console.log("Shifts", shifts);
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
     if (shifts && shifts.length > 0) {
       const eventsArray = shifts.map((shift) => {
-        const startDate = DateTime.fromISO(shift.starttime);
-        const endDate = DateTime.fromISO(shift.endtime);
+        const startDate = DateTime.fromISO(shift.shift_start_time);
+        const endDate = DateTime.fromISO(shift.shift_end_time);
 
         // Calculate the duration using Luxon's Duration
         const duration = endDate.diff(startDate, ["hours", "minutes"]); // Duration in hours and minutes
@@ -29,17 +31,20 @@ const Calendar = ({ shifts }) => {
 
         // Create recurring event using rrule
         return {
-          title: `${shift.name} Shift`,
+          title: `${shift.emp_name} Shift`,
           rrule: {
             freq: "daily", // Repeat daily
-            dtstart: shift.starttime,
+            dtstart: shift.shift_start_time,
             // until: "2025-12-31T17:00:00", // Optional: define an end date for the recurring event
           },
           duration: formattedDuration,
         };
       });
 
+      console.log("Events Array", eventsArray);
       setEvents(eventsArray);
+    }else{
+      setEvents([]);
     }
   }, [shifts]); // Update when shifts prop changes
 

@@ -14,24 +14,11 @@ const Emplist = ({ teamMembers }) => {
   const [employeeShift, setEmployeeShift] = useState([]);
   const handleSelect = async(memberId) => {
     setActiveMember(memberId);
-    // const shiftData = await getShiftAssignment({ filterData: { employee: memberId } });
-    // console.log("Shift Data", shiftData);
-    setEmployeeShift([
-      {
-        id: 1,
-        employee: 496,
-        starttime: "2024-12-10T09:00:00", // Shift start time
-        endtime: "2024-12-10T13:00:00", // Shift end time
-        name: "ahmed",
-      },
-      {
-        id: 2,
-        employee: 496,
-        starttime: "2024-12-10T16:00:00", // Shift start time
-        endtime: "2024-12-10T18:00:00", // Shift end time
-        name: "ahmed",
-      },
-    ]);
+    const shiftData = await getShiftAssignment({ filterData: { employee_id: memberId } });
+    console.log("Shift Data", shiftData);
+    if(shiftData){
+      setEmployeeShift(shiftData.results);
+    }
 
   }
   return (
@@ -52,6 +39,7 @@ const Emplist = ({ teamMembers }) => {
                 teamMemeber={member}
                 key={index}
                 handleSelect={handleSelect}
+                activeMember={activeMember}
               />
             ))}
         </CardContent>
