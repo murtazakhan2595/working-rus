@@ -20,7 +20,7 @@ const ShiftActions = ({ data }) => {
 
   const formSheetData = {
     triggerText: null,
-    title: "Update Department",
+    title: "Update Shift Details",
     description: null,
     footer: null,
   };
