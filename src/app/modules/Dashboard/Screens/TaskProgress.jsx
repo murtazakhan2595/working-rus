@@ -33,7 +33,7 @@ export default function Component() {
     const fetchData = async () => {
       try {
         const response = await getAllProjects({ }, userProfile);
-        setData(response?.results?.results ?? [])
+        setData(response?.results?? [])
       } catch (error) {
         console.error("Error fetching data:", error);
       }
