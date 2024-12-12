@@ -166,7 +166,6 @@ const IdentificationInformation = ({
                               }}
                             />
                           </div>
-                          {console.log(props.values)}
                           <div className="space-y-2">
                             <DateInput
                               name={"id_expiry_date"}

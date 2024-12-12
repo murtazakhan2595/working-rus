@@ -409,7 +409,6 @@ const getEmployeeProfessionalExperianceData = async (employeeid) => {
           headers: headers(),
         }
       );
-      console.log(response, "HELLO KASHIF");
       if (response.status === 200) {
         const employeeData = await getProfessionalExperiance(
           response?.data?.results
@@ -840,7 +839,6 @@ const saveEmployeeBankDetailsData = async (
 };
 
 const employeeExit = async (payload) => {
-  console.log(`${baseUrl}/employeeExit/`);
   try {
     const response = await axios.post(`${baseUrl}/employeeExit`, payload, {
       headers: headers(),

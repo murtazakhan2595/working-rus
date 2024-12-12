@@ -49,8 +49,6 @@ const Board = ({ employees }) => {
   const handleFilterChange = (filterName, filterValue) => {
     if (filterName === "expense_type") setSelectedExpenseType(filterValue);
     // onPageChange("page", 1);
-    console.log("filterName", filterName);
-    console.log("filterValue", filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -58,7 +56,6 @@ const Board = ({ employees }) => {
       } else {
         updatedFilters[filterName] = filterValue;
       }
-      console.log(updatedFilters, "UPDATED FILTERS")
       return updatedFilters;
     });
   };
