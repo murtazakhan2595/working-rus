@@ -58,7 +58,7 @@ const Projects = ({ userProfile }) => {
     try {
       const projectsData = await getAllProjects({ filterData }, userProfile);
       if (isMounted) {
-        setAllProjects(projectsData?.results);
+        setAllProjects(projectsData);
       }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
@@ -207,7 +207,7 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
             </CardTitle>
             <div className="flex justify-center">
               <img
-                src={project?.profile?.file || logo}
+                src={project?.profile || logo}
                 alt={project.name}
                 className="h-10 mb-3 transition-transform duration-300 hover:scale-105"
               />

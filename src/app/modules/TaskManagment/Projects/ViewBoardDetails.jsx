@@ -64,7 +64,7 @@ const ViewBoardDetails = ({
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <img
-            src={project?.profile?.file}
+            src={project?.profile}
             alt="Testing"
             className="h-[50px] w-[50px] object-cover border-2 border-gray-400 rounded-full"
           />
