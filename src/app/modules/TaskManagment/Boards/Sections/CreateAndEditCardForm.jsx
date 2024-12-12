@@ -18,9 +18,11 @@ import { AiOutlineDownload } from "react-icons/ai";
 import { FaRegImage } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import { useSelector } from "react-redux";
-
-import { getAllLabels } from "app/hooks/taskManagment";
-
+import {
+  addTask,
+  addAttachments,
+  addTaskCheckListItem,
+} from "app/hooks/taskManagment";
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
 import {
@@ -30,9 +32,10 @@ import {
   Attachments,
   TaskRelation,
 } from "app/modules/TaskManagment/Sections";
+import { toast, ToastContainer } from "react-toastify";
 import { getDarkerTextColor } from "./getTaskStatus";
 import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
-import { Input } from "components/ui/input";
+import moment from "moment";
 import { relationList } from "data/Data";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
@@ -40,58 +43,113 @@ import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 const CreateAndEditCardForm = ({
   initialValues,
   employees,
-  handleSubmit,
   onClose,
   isEdit,
   setIsOpen,
   projectId,
 }) => {
   const formRef = useRef();
+  const [isLoading, setIsLoading] = useState(false);
   const [newfiles, setNewFiles] = useState([]);
   const [files, setFiles] = useState([]);
   const [attachmentfiles, setAttachmentFiles] = useState([]);
   const [deleteFiles, setDeleteFiles] = useState([]);
-  const [labelsList, setLabelsList] = useState([]);
-  const [labelsAdded, setLabelsAdded] = useState([]);
-  const [foreignKeys, setForeignKeys] = useState([]);
-  const [items, setItems] = useState([]);
-  const [inputValue, setInputValue] = useState("");
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
-
+  const priorityMapping = {
+    High: 1,
+    Medium: 2,
+    Low: 3,
+  };
   const handleClose = () => {
     // setIsOpen(false)
     setCloseSheet(true);
   };
 
-  const handleAddItem = () => {
-    const newItem = {
-      id: Date.now(), // use unique ID
-      label: inputValue,
-      checked: false,
+  const handleSubmit = async (formData) => {
+    const getAttachmentFileIds = async () => {
+      try {
+        const attachmentPromises = attachmentfiles.map(async (file) => {
+          if (file.attachments instanceof File) {
+            const payload = { attachments: file.attachments };
+            const response = await addAttachments(payload, file.id);
+            return response.id; // Return the attachment ID
+          } else {
+            return file.id;
+          }
+        });
+        return await Promise.all(attachmentPromises);
+      } catch (error) {
+        console.error("Error uploading attachments:", error);
+        toast.error(
+          "Failed to upload one or more attachments. Please try again.",
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+        throw error; // Propagate the error
+      }
     };
-    setItems((prevItems) => [...prevItems, newItem]);
-    setInputValue("");
-    setIsPopoverOpen(false); // Close the popover after adding the item
-  };
 
-  const fetchLabels = async () => {
-    const labelList = await getAllLabels();
-    setLabelsList(labelList); // Update this to `labelList`
-  };
+    const getCheckListIds = async (task_checklist) => {
+      try {
+        const checkListPromises = task_checklist.map(async (task_check) => {
+          const response = await addTaskCheckListItem(
+            task_check,
+            task_check.id
+          );
+          return response.id; // Return the checklist item ID
+        });
+        return await Promise.all(checkListPromises);
+      } catch (error) {
+        console.error("Error adding checklist items:", error);
+        toast.error(
+          "Failed to add one or more checklist items. Please try again.",
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+        throw error; // Propagate the error
+      }
+    };
 
-  useEffect(() => {
-    fetchLabels();
-  }, []);
+    setIsLoading(true);
 
-  const handleSelectedLabelsChange = (selectedLabels) => {
-    debugger;
-    setLabelsAdded(selectedLabels);
+    try {
+      // Prepare final data
+      const finalData = {
+        ...formData,
+        start_date: moment(new Date()).format("YYYY-MM-DD"),
+        attachment: await getAttachmentFileIds(),
+        task_checklist: await getCheckListIds(formData.task_checklist),
+        priority: priorityMapping[formData.priority], // Map priority to the expected value
+      };
+
+      // Submit the task
+      const response = await addTask(finalData);
+
+      if (response) {
+        toast.success("Task added successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        onClose(); // Close the modal or perform any other action upon success
+      }
+    } catch (error) {
+      console.error("Error submitting task:", error);
+
+      // Display a detailed error message
+      const errorMessage =
+        error.response?.data?.detail ||
+        "An unexpected error occurred while submitting the task.";
+      toast.error(errorMessage, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } finally {
+      setIsLoading(false); // Stop the loading indicator
+    }
   };
 
   useEffect(() => {
     setAttachmentFiles(initialValues.attachment);
-    setLabelsAdded(initialValues.label);
   }, [initialValues]);
 
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -115,14 +173,14 @@ const CreateAndEditCardForm = ({
   };
 
   const removeFile = (file) => {
-    if (file.id) {
-      setDeleteFiles([...deleteFiles, file.id]);
-      const filteredFiles = files.filter((f) => f.id !== file.id);
-      setFiles(filteredFiles);
-    } else {
-      const filteredFiles = newfiles.filter((f) => f.name !== file.name);
-      setNewFiles(filteredFiles);
-    }
+    // if (file.id) {
+    //   setDeleteFiles([...deleteFiles, file.id]);
+    //   const filteredFiles = files.filter((f) => f.id !== file.id);
+    //   setFiles(filteredFiles);
+    // } else {
+    //   const filteredFiles = newfiles.filter((f) => f.name !== file.name);
+    //   setNewFiles(filteredFiles);
+    // }
   };
 
   const removeMember = (member) => {
@@ -142,18 +200,8 @@ const CreateAndEditCardForm = ({
         initialValues={formInitialValues}
         enableReinitialize={true}
         innerRef={formRef}
-        onSubmit={(values, { resetForm }) => {
-          const formValues = {
-            ...values,
-            label: labelsAdded,
-          };
-          handleSubmit(
-            formValues,
-            attachmentfiles,
-            files,
-            deleteFiles,
-            resetForm
-          );
+        onSubmit={(values) => {
+          handleSubmit(values);
         }}
         validate={(values) => {
           const errors = validationTaskFormSchema(values);
@@ -280,12 +328,10 @@ const CreateAndEditCardForm = ({
                   title={"Label"}
                   content={
                     <Labels
-                      onSelectedLabelsChange={setLabelsAdded}
-                      labelsList={labelsList}
-                      reloadList={() => {
-                        fetchLabels();
+                      labelsSelected={props.values.label || []}
+                      onSelectedLabelsChange={(value) => {
+                        props.setFieldValue("label", value);
                       }}
-                      labelsSelected={labelsAdded}
                     />
                   }
                 />
@@ -310,11 +356,10 @@ const CreateAndEditCardForm = ({
                   title={"CheckList"}
                   content={
                     <CheckList
-                      items={items}
-                      setItems={setItems}
-                      checkItemValue={inputValue}
-                      onChange={(value) => setInputValue(value)}
-                      handleAddItem={handleAddItem}
+                      items={props.values.task_checklist || []}
+                      onChange={(items) => {
+                        props.setFieldValue("task_checklist", items);
+                      }}
                     />
                   }
                 />

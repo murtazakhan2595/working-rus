@@ -1,52 +1,56 @@
-import React, { useEffect, useRef, useState } from "react";
-import { RxCross2, RxPlus } from "react-icons/rx";
-import { toast, ToastContainer } from "react-toastify";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 import { connect } from "react-redux";
-import { Members } from "../Sections";
-import { FaChevronLeft } from "react-icons/fa";
-import { Card, CardHeader, CardBody, Row, Col, Button, Form } from "reactstrap";
-import { Formik } from "formik";
-import {
-  TextInput,
-  SelectComponent,
-  TextAreaEditorInput,
-  TextAreaInput,
-  DateInput,
-} from "components/form-control.jsx";
-import highpriorityIcon from "assets/images/highpriority.svg";
-import lowpriorityIcon from "assets/images/lowpriority.svg";
-import mediumpriorityIcon from "assets/images/mediumpriority.svg";
-import calender from "assets/images/calender.svg";
 import { getFileNameFromURL } from "utils/downUtils";
-import priority from "assets/images/priority.svg";
-import { addTask, getTaskById } from "app/hooks/taskManagment";
+import { getTaskById } from "app/hooks/taskManagment";
 import { CardTypes } from "app/utils/Types/TaskManagment";
 import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
 import {
-  addAttachments,
   getAttachmentById,
-  deleteAttachment,
+  getTaskCheckListItem,
 } from "app/hooks/taskManagment";
+import { PageLoader } from "components";
 
 const EditCard = ({ onClose, employees, cardId, projectId, setIsOpen }) => {
-
   const [initialValues, setInitialValues] = useState({
     ...CardTypes,
     board_id: "",
     project_id: "",
   });
-  const [membersOpen, setMembersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
-    try {
-      const cardDetails = await getTaskById(cardId);
-      if (cardDetails?.attachment.length > 0) {
-        const attachment = await Promise.all(
-          cardDetails.attachment.map(async (attachmentId) => {
-            const response = await getAttachmentById(attachmentId);
+
+    // Helper function to fetch checklist item details
+    const getCheckListItemDetails = async (checklistIds) => {
+      if (!checklistIds || checklistIds.length === 0) return [];
+      try {
+        const checklistDetails = await Promise.all(
+          checklistIds.map(async (id) => {
+            const response = await getTaskCheckListItem(id);
+            return {
+              id: response.id,
+              description: response.description,
+              is_completed: response.is_completed,
+            };
+          })
+        );
+        return checklistDetails;
+      } catch (error) {
+        console.error("Error fetching checklist items:", error);
+        throw error; // Propagate error to the caller
+      }
+    };
+
+    // Helper function to fetch attachment details
+    const getAttachmentDetails = async (attachmentIds) => {
+      if (!attachmentIds || attachmentIds.length === 0) return [];
+      try {
+        const attachmentDetails = await Promise.all(
+          attachmentIds.map(async (id) => {
+            const response = await getAttachmentById(id);
             return {
               attachments: response.attachments,
               id: response.id,
@@ -54,68 +58,45 @@ const EditCard = ({ onClose, employees, cardId, projectId, setIsOpen }) => {
             };
           })
         );
-        if (isMounted) {
-          setInitialValues({
-            ...cardDetails,
-            attachment: attachment || [],
-          });
-        }
-      } else if (isMounted) {
+        return attachmentDetails;
+      } catch (error) {
+        console.error("Error fetching attachments:", error);
+        toast.error("Failed to fetch attachments.");
+        throw error; // Propagate error to the caller
+      }
+    };
+
+    try {
+      // Fetch card details
+      const cardDetails = await getTaskById(cardId);
+
+      if (!cardDetails) {
+        throw new Error("Card details not found.");
+      }
+
+      // Fetch attachment and checklist details if they exist
+      const attachments = cardDetails.attachment?.length
+        ? await getAttachmentDetails(cardDetails.attachment)
+        : [];
+      const checklistItems = cardDetails.task_checklist?.length
+        ? await getCheckListItemDetails(cardDetails.task_checklist)
+        : [];
+
+      // Update state only if the component is still mounted
+      if (isMounted) {
         setInitialValues({
           ...cardDetails,
+          attachment: attachments,
+          task_checklist: checklistItems,
         });
       }
     } catch (error) {
-      console.error("Error fetching employeeLeaveTypes:", error);
+      console.error("Error fetching task data:", error);
+      toast.error("Failed to load task details. Please try again later.");
     } finally {
       if (isMounted) {
-        setIsLoading(false);
+        setIsLoading(false); // Stop loading spinner
       }
-    }
-  };
-
-  const handleSubmit = async (
-    formData,
-    newfiles,
-    files,
-    deleteFiles = [],
-    resetForm
-  ) => {
-    setIsLoading(true);
-    try {
-      // Map over files to get an array of promises
-
-      const attachmentPromises = newfiles.map(async (file) => {
-        if (file.attachments) {
-          if (file.attachments instanceof File) {
-            const payload = { attachments: file.attachments };
-            const response = await addAttachments(payload, file.id);
-            return response.id; // Return the attachment ID
-          } else {
-            return file.id;
-          }
-        }
-      });
-
-      // Wait for all promises to resolve
-      const attachmentIds = await Promise.all(attachmentPromises);
-
-      // Update formData with attachment IDs
-      formData.attachment = attachmentIds;
-
-      // Now call addTask
-      const response = await addTask(formData);
-
-      if (response) {
-        onClose();
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error(error.response.data.detail, {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -127,11 +108,12 @@ const EditCard = ({ onClose, employees, cardId, projectId, setIsOpen }) => {
     };
   }, [cardId]);
 
-  return (
+  return isLoading ? (
+    <PageLoader />
+  ) : (
     <CreateAndEditCardForm
       initialValues={initialValues}
       employees={employees}
-      handleSubmit={handleSubmit}
       onClose={onClose}
       isEdit={true}
       setIsOpen={setIsOpen}

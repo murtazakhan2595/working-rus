@@ -109,7 +109,7 @@ export default function TaskRelation({
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Search Label"
+                  placeholder="Search Task"
                   className="pl-9"
                   value={searchQuery}
                   onChange={handleSearchChange}

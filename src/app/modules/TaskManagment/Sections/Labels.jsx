@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { Plus, Search } from "lucide-react";
 import {
   Popover,
@@ -21,13 +21,9 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-export default function Labels({
-  onSelectedLabelsChange,
-  labelsList,
-  reloadList,
-  labelsSelected,
-}) {
+export default function Labels({ onSelectedLabelsChange, labelsSelected }) {
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [labelsList, setLabelsList] = useState([]);
   const [showNewLabel, setShowNewLabel] = React.useState(false);
   const [newLabelTitle, setNewLabelTitle] = React.useState("");
   const [selectedColor, setSelectedColor] = React.useState("");
@@ -51,6 +47,15 @@ export default function Labels({
     "bg-brown-700",
   ];
 
+  const fetchLabels = async () => {
+    const labelList = await getAllLabels();
+    setLabelsList(labelList); // Update this to `labelList`
+  };
+
+  useEffect(() => {
+    fetchLabels();
+  }, []);
+
   // Filter labels based on search query
   const filteredLabels = React.useMemo(() => {
     return labelsList?.filter((label) =>
@@ -71,7 +76,6 @@ export default function Labels({
       return updatedLabels;
     }
   };
-  
 
   const handleSaveNewLabel = async () => {
     try {
@@ -84,7 +88,7 @@ export default function Labels({
       });
 
       if (response.status === 201) {
-        reloadList();
+        fetchLabels();
         toast.success("Label Added!", {
           position: toast.POSITION.TOP_RIGHT,
         });
