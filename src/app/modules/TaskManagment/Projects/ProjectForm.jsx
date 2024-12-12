@@ -55,7 +55,6 @@ const ProjectForm = ({
   }, [projectId]);
 
   const handleSubmit = async (payload) => {
-    debugger;
     setIsLoading(true);
     const formData = new FormData();
     formData.append("name", payload.name || "");
@@ -81,7 +80,7 @@ const ProjectForm = ({
         setIsOpen(false);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error('Error:', error);
       toast.error(error?.response?.data?.detail, {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -89,6 +88,8 @@ const ProjectForm = ({
       setIsLoading(false);
     }
   };
+  
+  
   const removeMember = (member) => {
     const members = formRef.current.values.project_members || [];
     const updatedMembers = members.filter((m) => m !== member);

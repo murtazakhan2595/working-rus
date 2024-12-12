@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../src/@/components/ui/table";
 import { Progress } from "../../../src/@/components/ui/progress";
 import { CalendarIcon, FilterIcon, PlayCircle } from "lucide-react";
+import AttendanceReport from './Sections/AttendenceFile';
 
 const Attendance = () => {
   return (
@@ -163,6 +164,7 @@ const Attendance = () => {
         </CardContent>
       </Card>
     </div>
+    // <AttendanceReport/>
   );
 };
 
