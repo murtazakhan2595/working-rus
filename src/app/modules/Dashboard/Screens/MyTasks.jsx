@@ -197,7 +197,7 @@ export default function MyTasks() {
                   aria-expanded={openStatus}
                   className="w-[110px] justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
                 >
-                  {value ? value : "Status"}
+                  {value ? value : "Status"} 
                   <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
                 </Button>
               </PopoverTrigger>
@@ -324,7 +324,7 @@ function RenderTask({ tasks }) {
             <div className="flex flex-col w-full gap-2">
               <div className="flex flex-row w-full gap-4">
                 <div className="font-semibold text-neutral-1200">
-                  {render.project_name}
+                  {render.name}
                 </div>
                 <div className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2 py-2 h-[22px] rounded-full border border-mauve-500 flex items-center justify-center">
                   {getStatusLabel(render.status)}
@@ -339,34 +339,34 @@ function RenderTask({ tasks }) {
         },
         {
           text: "View Project",
-          formatter: (cell) => (
+          formatter: (cell, render) => (
             <Button
               variant="outline"
               size="sm"
               className="rounded-sm font-semidbold"
             >
-              <Link to="#">View Project</Link>
+              <Link to={`project-board/${render?.project_id}`}>View Task</Link>
             </Button>
           ),
         },
-        {
-          text: "Action",
-          formatter: () => (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button aria-haspopup="true" size="icon" variant="ghost">
-                  <MoreHorizontal className="w-4 h-4" />
-                  <span className="sr-only">Toggle menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem>Edit</DropdownMenuItem>
-                <DropdownMenuItem>Delete</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ),
-        },
+        // {
+        //   text: "Action",
+        //   formatter: () => (
+        //     <DropdownMenu>
+        //       <DropdownMenuTrigger asChild>
+        //         <Button aria-haspopup="true" size="icon" variant="ghost">
+        //           <MoreHorizontal className="w-4 h-4" />
+        //           <span className="sr-only">Toggle menu</span>
+        //         </Button>
+        //       </DropdownMenuTrigger>
+        //       <DropdownMenuContent align="end">
+        //         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        //         <DropdownMenuItem>Edit</DropdownMenuItem>
+        //         <DropdownMenuItem>Delete</DropdownMenuItem>
+        //       </DropdownMenuContent>
+        //     </DropdownMenu>
+        //   ),
+        // },
       ]}
       data={tasks?.slice(0, 5).map((task) => ({
         ...task,
