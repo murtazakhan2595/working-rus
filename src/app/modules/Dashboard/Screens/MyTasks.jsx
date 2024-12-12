@@ -1,29 +1,22 @@
 // / done
 import { getAllTasks, getAllProjects } from "app/hooks/taskManagment";
 import { useEffect, useState } from "react";
-import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { MembersList } from "app/modules/TaskManagment/Sections";
 import {
   getStatusClass,
   getStatusIconColor,
 } from "app/modules/TaskManagment/Boards/Sections";
 import moment from "moment";
 import { PriorityListIcons } from "data/Data";
-import { TimeIcon } from "@mui/x-date-pickers";
-import CustomDropdown from "./CustomDropdown";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
-  CardSubtitle,
 } from "../../../../components/ui/card.jsx";
 import { Button } from "../../../../components/ui/button";
-import { Check, ChevronsUpDown, MoreHorizontal } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "../../../../src/@/lib/utils";
@@ -41,16 +34,8 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "../../../../src/@/components/ui/popover";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-} from "../../../../src/@/components/ui/dropdown-menu";
+
 import CustomTable from "components/CustomTable";
-import { StatusLabel } from "components";
 // import { Status } from "app/modules/LeaveManagment/Sections";
 
 export default function MyTasks() {
@@ -84,7 +69,7 @@ export default function MyTasks() {
     try {
       const projectsData = await getAllProjects({ filterData }, userProfile);
       if (isMounted && projectsData.results) {
-        setAllProjects(projectsData?.results?.results);
+        setAllProjects(projectsData?.results);
         fetchTasks(isMounted, projectsData.results);
       }
     } catch (error) {

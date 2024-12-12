@@ -22,9 +22,8 @@ export default function AllProjects(){
       setIsLoading(true);
       try {
         const projectsData = await getAllProjects({  }, userProfile);
-        console.log(projectsData, "DATA")
         if (isMounted) {
-          setAllProjects(projectsData?.results);
+          setAllProjects(projectsData);
         }
       } catch (error) {
         console.error("Error fetching employeeLeaveTypes:", error);
