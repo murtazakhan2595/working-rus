@@ -14,19 +14,24 @@ const formDataHeader = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
 });
 
-
-export const fetchJobPosts = async (filterData, sortData) => {
-  filterData = filterData ?? {};
-  sortData = sortData && sortData === "dsc" ? "-updated_at" : "updated_at";
+export const fetchJobPosts = async (filterData = {}, sortData = "asc", options = { page: 1, sizePerPage: 10 }) => {
   try {
-    const response = await axios.get(
-      `${baseUrl}/recruitment/?ordering=${sortData}&search=${encodeURIComponent(
-        JSON.stringify(filterData)
-      )}`,
-      {
-        headers: headers(),
-      }
-    );
+    // Determine the sorting order
+    const ordering = sortData === "dsc" ? "-updated_at" : "updated_at";
+
+    // Prepare query parameters
+    const queryParams = new URLSearchParams({
+      ordering,
+      page: options.page,
+      page_size: options.sizePerPage,
+      search: JSON.stringify(filterData),
+    });
+
+    // Make API request
+    const response = await axios.get(`${baseUrl}/recruitment/?${queryParams}`, {
+      headers: headers(),
+    });
+
     return response.data;
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -36,6 +41,7 @@ export const fetchJobPosts = async (filterData, sortData) => {
     throw error;
   }
 };
+
 
 export const fetchJobById = async (id) => {
   try {
