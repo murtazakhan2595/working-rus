@@ -15,26 +15,11 @@ import { PageLoader } from "../../../../components";
 import JobsActions from "./JobsActions";
 import ViewJobDetails from "./ViewJobDetails";
 import { JobStatusLabel } from "../../../../components/StatusLabel";
+import TableCustom from "../../../../components/CustomTable";
 
-export default function JobListingsTable({ posts, loading, fetchJobPosts }) {
-  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+export default function JobListingsTable({ posts, loading, fetchJobPosts , tableOptions }) {
   const [selectedJob, setSelectedJob] = useState(null);
 
-  const onPageChange = (name, value) => {
-    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
-  };
-
-  const tableOptions = {
-    page: options.page,
-    sizePerPage: options.sizePerPage,
-    onPageChange: onPageChange,
-    // onRowClick: (row) => {
-    //   setSelectedJob({
-    //     isOpen: true,
-    //     JobId: row
-    //   })
-    // },
-  };
 
 
   const columns = [
@@ -134,13 +119,13 @@ export default function JobListingsTable({ posts, loading, fetchJobPosts }) {
         {loading ? (
           <PageLoader />
         ) : (
-          <CustomTable
+          <TableCustom 
             columns={columns}
             data={posts.results || []}
             tableOptions={tableOptions}
             dataTotalSize={posts.count || 0}
             pagination={true}
-            itemsPerPage={10}
+            // itemsPerPage={10}
             className="job-listings-table"
           />
         )}
