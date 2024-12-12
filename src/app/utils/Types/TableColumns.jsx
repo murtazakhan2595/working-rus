@@ -241,15 +241,15 @@ export const ExitRequestColumns = (
       text: "Application",
       formatter: (cell, row) => (
         <>
-          {row?.resignation_letter ? (
-            <div className="justify-start items-center gap-2.5 inline-flex">
+          {row?.termination_letter ? (
+            <a className="justify-start items-center gap-2.5 inline-flex"
+            href={row.termination_letter}
+            target="_blank"
+            download>
               <div className="text-[#5c5e64] text-base font-normal">File</div>
-              <button
-                onClick={() => filebase64Download(row?.resignation_letter)}
-              >
+              
                 <AiOutlineDownload />
-              </button>
-            </div>
+            </a>
           ) : (
             "N/A"
           )}
@@ -316,20 +316,19 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
       formatter: (cell, row) => (
         <>
           {row?.resignation_letter ? (
-            <div className="justify-start items-center gap-2.5 inline-flex">
+            <a className="justify-start items-center gap-2.5 inline-flex"
+            href={row.resignation_letter}
+            target="_blank"
+            download>
               <div className="text-[#5c5e64] text-base font-normal">File</div>
-              <button
-                onClick={() =>
-                  filebase64Download(row?.resignation_letter, row?.emp_name)
-                }
-              >
+              
                 <AiOutlineDownload />
-              </button>
-            </div>
+            </a>
           ) : (
             "N/A"
           )}
         </>
+        
       ),
     },
     {
