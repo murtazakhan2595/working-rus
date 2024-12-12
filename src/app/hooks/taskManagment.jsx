@@ -29,12 +29,12 @@ const getAllProjects = async (payload, userProfile) => {
     if (response.status === 200) {
       const data = response.data;
       if (userProfile.role === 4 || userProfile.role === 2) {
-        const filteredResults = data.filter(
+        const filteredResults = data?.results?.filter(
           (project) =>
             project.project_members.includes(userProfile.id) ||
             project.created_by === userProfile.id
         );
-
+        
         const ProjectsData = {
           count: filteredResults.length,
           results: filteredResults,
@@ -42,8 +42,8 @@ const getAllProjects = async (payload, userProfile) => {
         return ProjectsData;
       } else {
         const ProjectsData = {
-          count: data.length,
-          results: data,
+          count: data?.results?.length,
+          results: data?.results,
         };
         return ProjectsData;
       }
