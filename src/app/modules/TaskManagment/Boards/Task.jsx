@@ -168,6 +168,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
             setIsTaskDetailOpen(false)
             reloadData();
           }}
+          setIsOpen={setIsEditCardOpen}
         /> 
         </SheetComponent>
       )}

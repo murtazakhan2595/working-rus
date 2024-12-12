@@ -290,6 +290,8 @@ const TaskDetail = ({ task, onClose, employees, handleDelete }) => {
             setIsEditCardOpen(false);
             onClose();
           }}
+          setIsOpen={setIsEditCardOpen}
+
         /> 
         )
       }
