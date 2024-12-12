@@ -50,10 +50,7 @@ const CreateAndEditCardForm = ({
 }) => {
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
-  const [newfiles, setNewFiles] = useState([]);
-  const [files, setFiles] = useState([]);
   const [attachmentfiles, setAttachmentFiles] = useState([]);
-  const [deleteFiles, setDeleteFiles] = useState([]);
   const [closeSheet, setCloseSheet] = useState(false);
   const priorityMapping = {
     High: 1,
