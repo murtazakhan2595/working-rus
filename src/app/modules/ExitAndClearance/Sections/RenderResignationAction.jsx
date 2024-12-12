@@ -29,27 +29,27 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
     setOpenDropdownRow(index === openDropdownRow ? null : index);
   };
 
-  console.log("application:", row);
   const HRApproval = Status(row.status_resignation, 2);
   const managerApproval = Status(status, 1);
   const resignationCurrentStep = ExitStatusCurrentStep(status);
-  console.log("HRApproval", HRApproval);
-  console.log("managerApproval", managerApproval);
-  console.log("resignationCurrentStep", resignationCurrentStep);
 
   const handleOptionSelect = async (status) => {
     try {
       if (row) {
-        const payload = {
-          ...row,
-          status_resignation: status,
-        };
-        const response = await saveEmployeeExitDetail(payload);
+        // Create a new FormData object
+        const formData = new FormData();
+        
+        // Append values to the FormData object
+        formData.append("id", row.id);
+        formData.append("status_resignation", status);
+  
+        const response = await saveEmployeeExitDetail(formData);
         if (response && reload) {
+          // Check the status and perform additional actions if required
           if (status === "accepted by hr") {
-            await saveEmployeeWorkInformationData(payload.employee_id, {
+            await saveEmployeeWorkInformationData(row.employee_id, {
               employee_status: "Notice Period",
-              id: payload.employee_id,
+              id: row.employee_id,
             });
           }
           reload();
@@ -59,6 +59,7 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
       console.error("Error updating application status:", error);
     }
   };
+  
   return (
     <div>
       {open && (
