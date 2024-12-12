@@ -312,6 +312,77 @@ const moveTask = async (payload) => {
     return false;
   }
 };
+const addTaskCheckListItem = async (payload, id = null) => {
+  try {
+    // Create FormData object
+    const url = id
+      ? `${baseUrl}/taskchecklist/${id}` // Use id if updating
+      : `${baseUrl}/taskchecklist`; // No id means create new
+
+    const method = id ? "PUT" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: payload,
+      headers: headers(),
+    });
+
+    // Check response status
+    if (response.status === 201 || response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    // Handle errors
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding/updating CheckList:", error);
+    return false;
+  }
+};
+const getTaskCheckListItem = async (checkListID) => {
+  try {
+    const response = await axios.get(`${baseUrl}/taskchecklist/${checkListID}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+    return false;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error deleting task Check List Item:", error);
+    toast.error("Error deleting task Check List Item!", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
+};
+const deleteTaskCheckListItem = async (checkListID) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/taskchecklist/${checkListID}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      toast.success("Task Check List Item Deleted!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+    return response;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error deleting task Check List Item:", error);
+    toast.error("Error deleting task Check List Item!", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
+};
 const addAttachments = async (payload, id = null) => {
   try {
     // Create FormData object
@@ -635,6 +706,9 @@ export {
   moveTask,
   addAttachments,
   addCommentAttachment,
+  addTaskCheckListItem,
+  getTaskCheckListItem,
+  deleteTaskCheckListItem,
   getAttachmentById,
   deleteAttachment,
   fetchComments,

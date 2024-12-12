@@ -24,7 +24,10 @@ export const downloadFiles = async (file, name) => {
 export const getFileNameFromURL = (url) => {
   if (!url) return null;
   const parts = url.split("/");
-  return parts[parts.length - 1];
+  const name = parts[parts.length - 1];
+  return name && typeof name === "string"
+    ? name.replace(/_/g, " ")
+    : "Attachment Document";
 };
 
 const downloadFile = (data, fileName) => {
