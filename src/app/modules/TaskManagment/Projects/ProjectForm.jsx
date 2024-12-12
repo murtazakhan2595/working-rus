@@ -46,26 +46,6 @@ const ProjectForm = ({
     setCloseSheet(true)
   }
 
-  // const fetchData = async (isMounted) => {
-  //   setIsLoading(true);
-  //   try {
-  //     const projectDetails = await getProjectById(projectId);
-  //     if (isMounted) {
-  //       setInitialValues({
-  //         ...projectDetails,
-  //         color: projectDetails.color || "", // Fetch color if available
-  //       });
-  //       setSelectedColor(projectDetails.color || "#f7f7f7");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching employeeLeaveTypes:", error);
-  //   } finally {
-  //     if (isMounted) {
-  //       setIsLoading(false);
-  //     }
-  //   }
-  // };
-
 
   useEffect(() => {
     let isMounted = true;
@@ -75,13 +55,21 @@ const ProjectForm = ({
     };
   }, [projectId]);
 
-  const handleSubmit = async (formData) => {
+  const handleSubmit = async (payload) => {
     setIsLoading(true);
+    const formData = new FormData();
+    Object.entries(payload).forEach(([key, value]) => {
+      if (key === "profile") {
+        if (value instanceof File)
+          // Handle file fields
+          formData.append(key, value);
+      } else {
+        // Handle non-file fields
+        formData.append(key, value);
+      }
+    });
     try {
-      const response = await addProject({
-        ...formData,
-        color: selectedColor, // Send the selected color
-      });
+      const response = await addProject(formData);
       if (response) {
         dispatch(fetchProjects(userProfile));
         reload(true);

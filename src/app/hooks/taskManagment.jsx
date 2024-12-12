@@ -229,7 +229,7 @@ const addProject = async (payload) => {
         `${baseUrl}/project/${payload.id}/`,
         payload,
         {
-          headers: headers(),
+          headers: formDataHeader(),
         }
       );
       if (response.status === 200) {
@@ -240,7 +240,7 @@ const addProject = async (payload) => {
       return response;
     } else {
       const response = await axios.post(`${baseUrl}/project/`, payload, {
-        headers: headers(),
+        headers: formDataHeader(),
       });
       if (response.status === 201) {
         toast.success("Project Added!", {
