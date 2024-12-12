@@ -31,21 +31,23 @@ const RequestTerminationCard = ({
   const formRef = React.createRef();
 
   const handleSubmit = async (values, resetForm) => {
-    const payload = {
-      exit_date: values.last_working_day,
-      exit_interview_date: values.exit_interview_date,
-      final_working_day: values.last_working_day,
-      exit_category: "termination",
-      termination_letter: values.termination_letter,
-      notice_period: values.notice_period,
-      employee_id: values.terminate_employee,
-      reason_of_termination: values.reason_for_terminating,
-      status_termination: "viewed by manager",
-    };
-    console.log("payload", payload);
+    // Create a new FormData object
+    const formData = new FormData();
+  
+    // Append key-value pairs to the FormData object
+    formData.append("exit_date", values.last_working_day);
+    formData.append("exit_interview_date", values.exit_interview_date);
+    formData.append("final_working_day", values.last_working_day);
+    formData.append("exit_category", "termination");
+    formData.append("termination_letter", values.termination_letter);
+    formData.append("notice_period", values.notice_period);
+    formData.append("employee_id", values.terminate_employee);
+    formData.append("reason_of_termination", values.reason_for_terminating);
+    formData.append("status_termination", "viewed by manager");
+  
     try {
-      console.log("payload", payload);
-      const response = await employeeExit(payload);
+      // Send the FormData object via the employeeExit function
+      const response = await employeeExit(formData);
       if (response) {
         toast.success("Termination request submitted successfully");
         closeModel();
@@ -57,6 +59,7 @@ const RequestTerminationCard = ({
       toast.error("Failed to submit the form");
     }
   };
+  
   const formSheetData = {
     triggerText: "Request Termination +",
     title: "Request Termination",
