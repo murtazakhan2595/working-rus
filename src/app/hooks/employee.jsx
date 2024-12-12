@@ -841,7 +841,7 @@ const saveEmployeeBankDetailsData = async (
 const employeeExit = async (payload) => {
   try {
     const response = await axios.post(`${baseUrl}/employeeExit`, payload, {
-      headers: headers(),
+      headers: formDataHeader(),
     });
     if (response.status === 201) {
       return true;

@@ -21,21 +21,20 @@ const RenderTerminationAction = ({ row, reload, viewMode }) => {
   const loggedInUser = useSelector((state) => state.user.userProfile);
   const status = row.status_termination;
   const employeeApproval = Status(status, 0);
-  console.log("status", status);
   const terminationCurrentStep = ExitStatusCurrentStep(status);
   const [open, setIsOpen] = useState(null);
 
-console.log("termination step", terminationCurrentStep);
-
   const handleOptionSelect = async (status) => {
-
     try {
       if (row) {
-        const payload = {
-          ...row,
-          status_termination: status,
-        };
-        const response = await saveEmployeeExitDetail(payload);
+        // Create a new FormData object
+        const formData = new FormData();
+        
+        // Append values to the FormData object
+        formData.append("id", row.id);
+        formData.append("status_termination", status);
+  
+        const response = await saveEmployeeExitDetail(formData);
         if (response && reload) {
           reload();
         }
@@ -44,6 +43,7 @@ console.log("termination step", terminationCurrentStep);
       console.error("Error updating application status:", error);
     }
   };
+  
 
   if (loggedInUser.role === 2 || loggedInUser.role === 4) {
     return null;
