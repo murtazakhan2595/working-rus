@@ -32,7 +32,7 @@ function EmployeeDetailModal({
       <div>
         <SheetComponent
           {...{
-            triggerText: getTitle(currentClick),
+            triggerText: null,
             title: getTitle(currentClick),
             description: null,
             footer: null,
