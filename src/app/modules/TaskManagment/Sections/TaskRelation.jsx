@@ -123,9 +123,7 @@ export default function TaskRelation({
                       onCheckedChange={() => handleTaskToggle(task?.id)}
                     />
                     <span
-                      className={`px-3 py-1 rounded-full ${
-                        task?.color
-                      } inline-block ${getDarkerTextColor(task?.color)}`}
+                      className={`px-3 py-1 rounded-full inline-block`}
                     >
                       {task?.name}
                     </span>
