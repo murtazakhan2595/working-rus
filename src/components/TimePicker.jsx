@@ -24,6 +24,22 @@ const TimePicker = ({ value = "12:00 AM", onChange, className }) => {
   const minute = selectedMinute || "00";
   const period = selectedPeriod || "AM";
 
+  const validateHour = (value) => {
+    const numericValue = parseInt(value, 10);
+    if (isNaN(numericValue) || numericValue < 1 || numericValue > 12) {
+      return "12";
+    }
+    return String(numericValue).padStart(2, "0");
+  };
+
+  const validateMinute = (value) => {
+    const numericValue = parseInt(value, 10);
+    if (isNaN(numericValue) || numericValue < 0 || numericValue > 59) {
+      return "00";
+    }
+    return String(numericValue).padStart(2, "0");
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className={cn("px-4 py-2 border rounded-md cursor-pointer", className)}>
@@ -34,10 +50,12 @@ const TimePicker = ({ value = "12:00 AM", onChange, className }) => {
           <span className="text-sm font-medium">Hours</span>
           <input
             type="number"
-            min=""
+            min="1"
             max="12"
             value={hour}
-            onChange={(e) => handleTimeChange(`${e.target.value}:${minute} ${period}`)}
+            onChange={(e) =>
+              handleTimeChange(`${validateHour(e.target.value)}:${minute} ${period}`)
+            }
             className="border rounded-md p-1"
           />
         </div>
@@ -45,10 +63,12 @@ const TimePicker = ({ value = "12:00 AM", onChange, className }) => {
           <span className="text-sm font-medium">Minutes</span>
           <input
             type="number"
-            min=""
+            min="0"
             max="59"
             value={minute}
-            onChange={(e) => handleTimeChange(`${hour}:${e.target.value} ${period}`)}
+            onChange={(e) =>
+              handleTimeChange(`${hour}:${validateMinute(e.target.value)} ${period}`)
+            }
             className="border rounded-md p-1"
           />
         </div>
