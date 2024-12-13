@@ -37,7 +37,6 @@ function App() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("i am getProfile respnse from app.js", response);
       if (response.status === 200) {
         setUserRole(response.data.user_role);
         if (!response.data.is_filled) {
@@ -115,12 +114,7 @@ function App() {
             </Route>
           </>
         )}
-        {/* {!isLogin && (
-          <>
-            <Route path="/" element={<Login />} />
-            <Route path="*" element={<Err404 />} />
-          </>
-        )} */}
+       
         {GeneralRoutes.map((route) => {
           return <Route path={route.path} element={route.component} />;
         })}

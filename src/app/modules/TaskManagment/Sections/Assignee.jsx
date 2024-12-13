@@ -100,7 +100,7 @@ export default function Assignee({
                     <span
                       className={`px-3 py-1 rounded-full ${
                         assignee?.color
-                      } inline-block ${getDarkerTextColor(assignee?.color)}`}
+                      } inline-block`}
                     >
                       {assignee?.name}
                     </span>
