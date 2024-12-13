@@ -60,7 +60,7 @@ function getManagersStringSelected(managers) {
 
 const SheetOnBorading = ({
   isEditMode,
-  nextStep,
+  nextstep,
   setShowFormSubmittedModal,
   setEmail,
   id,
@@ -70,7 +70,7 @@ const SheetOnBorading = ({
   managers,
   isOpen,
   setIsOpen,
-  discard=false
+  discard=false,
 }) => { 
   const formRef = React.createRef();
 
@@ -172,7 +172,9 @@ const SheetOnBorading = ({
           toast.success("Employee Updated Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
-          if (isEditMode) nextStep();
+          if (isEditMode) {
+            nextstep()
+          }
           else navigate("/profile-management");
         } else {
           // Employee creation flow
@@ -208,7 +210,6 @@ const SheetOnBorading = ({
   
 
   const handleClose = ()=>{
-    // setIsOpen(false)
     setCloseSheet(true)
   }
 
@@ -600,14 +601,14 @@ const SheetOnBorading = ({
                     </div>}
                     <div className="p-6 border-t border-gray-200 bg-gray-50">
                       <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                        <Button
+                        {!nextstep && <Button
                           variant="outline"
                           size="lg"
                           onClick={handleClose}
                           type="button"
                         >
                           Cancel
-                        </Button>
+                        </Button>}
                         <Button type="submit" size="lg" variant="default">
                           {id ? "Update" : "Add"}
                         </Button>
