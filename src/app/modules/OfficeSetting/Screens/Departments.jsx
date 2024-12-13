@@ -7,6 +7,17 @@ import { CardContent } from "components/ui/card";
 
 const Departments = () => {
   const [department, setDepartments] = useState(null);
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+  };
 
   const columns = [
     {
@@ -63,7 +74,7 @@ const Departments = () => {
         // tableOptions={tableOptions}
         dataTotalSize={department?.results?.length || 0}
         pagination={true}
-        itemsPerPage={100}
+        tableOptions={tableOptions}
         className="organization-table"
       />
       </CardContent>
