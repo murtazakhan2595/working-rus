@@ -61,7 +61,7 @@ const RequestTerminationCard = ({
   };
   
   const formSheetData = {
-    triggerText: "Request Termination +",
+    triggerText: "Request Termination",
     title: "Request Termination",
 
     description: null,

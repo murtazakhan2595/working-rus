@@ -662,7 +662,7 @@ export const SalaryComponentColumns = (onCheckedChange) => [
 
 export const SalarySetupColumns = [
   {
-    dataField: "id",
+    dataField: "serial_number",
     text: "ID",
     formatter: (cell) => <EmployeeID value={cell} />,
   },
