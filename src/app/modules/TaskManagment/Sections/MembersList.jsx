@@ -1,5 +1,8 @@
 import Avatar from "components/ui/Avatar";
-import { EmployeeName } from "utils/getValuesFromTables"; // Check if this uses hooks
+import {
+  EmployeeName,
+  EmployeeProfilePicture,
+} from "utils/getValuesFromTables"; // Check if this uses hooks
 import { getRandomColor } from "utils/renderValues";
 
 const MembersList = ({ members }) => {
@@ -12,16 +15,17 @@ const MembersList = ({ members }) => {
       {displayedMembers?.map((member, index) => {
         // Instead of calling EmployeeName within the loop, extract necessary data here
         // Assuming EmployeeName is only used to retrieve a formatted name, refactor it:
-        const employeeName = EmployeeName({ value: member, length: 1 });
-        const name = employeeName?.props?.children; // If EmployeeName is a hook, this will cause issues
+        const { profile_picture, name } = EmployeeProfilePicture(member);
+        // const name = employeeName?.props?.children; // If EmployeeName is a hook, this will cause issues
 
         return (
           <Avatar
-            src="/placeholder-user.jpg"
+            src={profile_picture}
             alt="Avatar"
-            fallbackText={name}
+            fallbackText={name.slice(0, 2)}
             className={`${getRandomColor(name?.charAt(0))} h-8 w-8`}
             key={index}
+            text={name}
           />
         );
       })}

@@ -13,7 +13,7 @@ import {
 } from "components/form-control.jsx";
 import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
-import { Label } from "../../../../src/@/components/ui/label";
+import { filebase64Download } from "utils/fileUtils";
 import { Checkbox } from "../../../../src/@/components/ui/checkbox";
 import { Card } from "components/ui/card";
 import { AiOutlineDownload } from "react-icons/ai";
@@ -29,6 +29,7 @@ export default function Attachments({
   attachmentSelected,
   removeFile,
   onChange,
+  editMode = true,
 }) {
   const fileInputRef = useRef(null);
 
@@ -37,72 +38,103 @@ export default function Attachments({
       <div style={{ maxWidth: "85%" }}>
         {attachmentSelected.length > 0 && (
           <div className="">
-            {attachmentSelected.map((file, index) => (
+            {attachmentSelected?.map((file, index) => (
               <div
-                className="flex items-center justify-between p-2 mb-2 bg-gray-100 rounded-lg shadow-md w-fit"
                 key={index}
+                className="flex items-center justify-between w-full gap-2 p-4 my-1 border border-gray-400 rounded-lg"
               >
                 <div className="flex items-center">
-                  <FaRegImage className="w-4 h-4 text-gray-500" />
+                  <div
+                    className="flex items-center justify-center w-8 h-8"
+                    style={{ minWidth: "2rem" }}
+                  >
+                    {" "}
+                    {/* File preview based on type */}
+                    {(() => {
+                      const fileType = file?.attachments
+                        ?.split(".")
+                        .pop()
+                        ?.toLowerCase();
+                      if (["jpg", "jpeg", "png", "gif"].includes(fileType)) {
+                        return (
+                          <img
+                            src={file?.attachments}
+                            alt={file?.name}
+                            className="w-8 h-8"
+                          />
+                        );
+                      } else {
+                        return (
+                          <span className="text-xs font-semibold justify-center items-center text-gray-700 m-auto bg-gray-300 rounded-lg w-full h-full flex">
+                            {fileType?.toUpperCase() || "FILE"}
+                          </span>
+                        );
+                      }
+                    })()}
+                  </div>
                   <span className="ml-4 text-sm text-baseGray">
-                    {file.attachments instanceof File ? (
-                      // Handle file objects
-                      <a
-                        href={URL.createObjectURL(file.attachments)} // Create a blob URL for the file
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-500 hover:text-gray-700"
-                      >
-                        {file.name || "Attachment"}
-                      </a>
-                    ) : (typeof file && file.attachments === "string") ||
-                      file.attachments ? (
-                      // Handle URLs
-                      <a
-                        href={file.attachments} // Use the URL directly
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-500 hover:text-gray-700"
-                      >
-                        {file.name || "Attachment"}
-                      </a>
-                    ) : null}
+                    <a
+                      href={
+                        file.attachments instanceof File
+                          ? URL.createObjectURL(file.attachments)
+                          : file.attachments
+                      } // Create a blob URL for the file
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-gray-700"
+                    >
+                      {file.name || "Attachment"}
+                    </a>
                   </span>
                 </div>
                 <div className="flex items-center gap-x-2">
-                  <MdClose
-                    className="w-5 h-5 text-gray-500 cursor-pointer"
+                  <div
+                    href={file?.attachments}
+                    download
                     onClick={() => {
-                      removeFile(file);
+                      filebase64Download(file?.attachments, file?.name);
                     }}
-                  />
+                    className="text-gray-500 hover:text-gray-700 download-icon"
+                  >
+                    <AiOutlineDownload className="w-5 h-5" />
+                  </div>
+                  {editMode && (
+                    <MdClose
+                      className="w-5 h-5 text-gray-500 cursor-pointer"
+                      onClick={() => {
+                        removeFile(file);
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
-      <Popover>
-        <Button
-          variant="outline"
-          className="w-10 h-10 p-0 rounded-full"
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-               fileInputRef.current.click();
-          }}
-        >
-          <Plus className="w-4 h-4" />
-        </Button>
-        <Input
-          type="file"
-          multiple
-          style={{ display: "none" }}
-          onClick={(event) => event.stopPropagation()} // Prevent default behavior
-          onChange={(event) => onChange(event)}
-          ref={fileInputRef}
-        />
-      </Popover>
+      {editMode && (
+        <Popover>
+          <Button
+            variant="outline"
+            className="w-10 h-10 p-0 rounded-full"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              fileInputRef.current.click();
+            }}
+          >
+            <Plus className="w-4 h-4" />
+          </Button>
+          <Input
+            type="file"
+            multiple
+            style={{ display: "none" }}
+            onClick={(event) => event.stopPropagation()} // Prevent default behavior
+            onChange={(event) => onChange(event)}
+            ref={fileInputRef}
+          />
+        </Popover>
+      )}
     </div>
   );
 }

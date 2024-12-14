@@ -4,6 +4,7 @@ import { initialState } from "state/slices/UserSlice";
 import { handleLogout } from "./general";
 import { Project } from "app/utils/Types/TaskManagment";
 import { getTaskFilteredData } from "utils/Lists";
+import { getFileNameFromURL } from "utils/downUtils";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -34,7 +35,7 @@ const getAllProjects = async (payload, userProfile) => {
             project.project_members.includes(userProfile.id) ||
             project.created_by === userProfile.id
         );
-        
+
         const ProjectsData = {
           count: filteredResults.length,
           results: filteredResults,
@@ -343,9 +344,12 @@ const addTaskCheckListItem = async (payload, id = null) => {
 };
 const getTaskCheckListItem = async (checkListID) => {
   try {
-    const response = await axios.get(`${baseUrl}/taskchecklist/${checkListID}`, {
-      headers: headers(),
-    });
+    const response = await axios.get(
+      `${baseUrl}/taskchecklist/${checkListID}`,
+      {
+        headers: headers(),
+      }
+    );
     if (response.status === 200) {
       return response.data;
     }
@@ -363,9 +367,12 @@ const getTaskCheckListItem = async (checkListID) => {
 };
 const deleteTaskCheckListItem = async (checkListID) => {
   try {
-    const response = await axios.delete(`${baseUrl}/taskchecklist/${checkListID}`, {
-      headers: headers(),
-    });
+    const response = await axios.delete(
+      `${baseUrl}/taskchecklist/${checkListID}`,
+      {
+        headers: headers(),
+      }
+    );
     if (response.status === 200) {
       toast.success("Task Check List Item Deleted!", {
         position: toast.POSITION.TOP_RIGHT,
@@ -564,13 +571,72 @@ const deleteAttachment = async (attachmentId) => {
 };
 
 const getTaskById = async (taskId) => {
+  // Helper function to fetch checklist item details
+  const getCheckListItemDetails = async (checklistIds) => {
+    if (!checklistIds || checklistIds.length === 0) return [];
+    try {
+      const checklistDetails = await Promise.all(
+        checklistIds.map(async (id) => {
+          const response = await getTaskCheckListItem(id);
+          return {
+            id: response.id,
+            description: response.description,
+            is_completed: response.is_completed,
+          };
+        })
+      );
+      return checklistDetails;
+    } catch (error) {
+      console.error("Error fetching checklist items:", error);
+      throw error; // Propagate error to the caller
+    }
+  };
+
+  // Helper function to fetch attachment details
+  const getAttachmentDetails = async (attachmentIds) => {
+    if (!attachmentIds || attachmentIds.length === 0) return [];
+    try {
+      const attachmentDetails = await Promise.all(
+        attachmentIds.map(async (id) => {
+          const response = await getAttachmentById(id);
+          return {
+            attachments: response.attachments,
+            id: response.id,
+            name: getFileNameFromURL(response.attachments),
+          };
+        })
+      );
+      return attachmentDetails;
+    } catch (error) {
+      console.error("Error fetching attachments:", error);
+      throw error; // Propagate error to the caller
+    }
+  };
   try {
     if (taskId) {
       const response = await axios.get(`${baseUrl}/task/${taskId}`, {
         headers: headers(),
       });
       if (response.status === 200) {
-        return response.data;
+        const cardDetails = response.data;
+        if (!cardDetails) {
+          throw new Error("Card details not found.");
+        }
+        // Fetch attachment and checklist details if they exist
+        const attachments = cardDetails.attachment?.length
+          ? await getAttachmentDetails(cardDetails.attachment)
+          : [];
+        const checklistItems = cardDetails.task_checklist?.length
+          ? await getCheckListItemDetails(cardDetails.task_checklist)
+          : [];
+
+        // Update state only if the component is still mounted
+        const finalDetails = {
+          ...cardDetails,
+          attachment: attachments,
+          task_checklist: checklistItems,
+        };
+        return finalDetails;
       } else {
         return {};
       }

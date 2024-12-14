@@ -185,6 +185,33 @@ const getEmployeeList = async () => {
   return [];
 };
 
+const getEmployeeListWithDetail = async () => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/emp`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      const employeeResponse = response.data?.results ?? [];
+      const employeeList = employeeResponse.map((employee) => ({
+        value: employee.id,
+        label: `${employee.username}`,
+        name: `${employee.first_name} ${employee.last_name}`,
+        department_name: employee.department_name,
+        department_position: employee.department_position,
+        work_email: employee.work_email,
+        profile_picture:employee.profile_picture,
+      }));
+      return employeeList;
+    } else return [];
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
 const getOrganizationList = async (allData=false) => {
   try {
     const response = await axios.get(`${baseUrl}/organization/`, {
@@ -384,5 +411,6 @@ export {
   saveDepartment,
   saveDesignation,
   getWorkingHours,
+  getEmployeeListWithDetail,
   saveShift
 };

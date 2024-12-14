@@ -4,13 +4,15 @@ import { Label } from "../src/@/components/ui/label";
 import DatePicker from "react-datepicker";
 import { getFileNameFromURL } from "utils/downUtils";
 import moment from "moment";
+import { Card } from "components/ui/card";
 import upload from "../assets/images/upload.png";
 import ReactQuill from "react-quill";
 import CheckboxMenu from "./SortingFilters";
 import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
+import { Button } from "components/ui/button";
+import { useSelector } from "react-redux";
 import { Calendar as LucideCalendar } from "lucide-react";
-
+import { AiOutlinePaperClip } from "react-icons/ai";
 import {
   Popover,
   PopoverTrigger,
@@ -1478,7 +1480,165 @@ const CoverFileUpload = ({
   );
 };
 
+const InputComments = ({ commentsList }) => {
+  const employees = useSelector((state) => state.emp.employees);
+  const fileInputRef = useRef(null);
+  const commentRef = useRef(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [newComment, setNewComment] = useState("");
+
+  const handleCommentChange = (e) => {
+    const value = e.target.value;
+    setNewComment(value);
+    const mentionStart = value.lastIndexOf("@");
+    if (mentionStart !== -1) {
+      const mentionQuery = value.substring(mentionStart + 1);
+      const matches = employees.filter((user) =>
+        user.label.toLowerCase().includes(mentionQuery.toLowerCase())
+      );
+      setFilteredUsers(matches);
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(false);
+    }
+  };
+  const handleUserSelect = (user) => {
+    const mentionStart = newComment.lastIndexOf("@");
+    const comment = newComment.substring(0, mentionStart) + `@${user.label} `;
+    setNewComment(comment);
+    setShowDropdown(false);
+
+    // Move cursor to the end of the inserted mention
+    setTimeout(() => {
+      commentRef.current.selectionStart = comment.length;
+      commentRef.current.selectionEnd = comment.length;
+      commentRef.current.focus();
+    }, 0);
+  };
+  return (
+    <>
+      <div className="pb-1">
+        <div className="flex items-center">
+          <div className="relative w-full">
+            <div className="flex w-full flex-col rounded-md border border-neutral-500 bg-white py-3  px-1 h-auto">
+              <Input
+                type="textarea"
+                maxLength={"5000"}
+                id={"comment"}
+                name={"comment"}
+                autoComplete="Off"
+                placeholder="Type your comment here"
+                value={newComment}
+                rows={5}
+                className={`h-auto rounded-none border-none focus:outline-none`}
+                onChange={handleCommentChange}
+                style={{ "--tw-ring-color": "transparent" }}
+              />
+              <div className="flex flex-row justify-between mt-2">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  // onChange={handleFileChange}
+                  className="hidden"
+                />
+                <AiOutlinePaperClip
+                    onClick={()=>{fileInputRef.current.click()}}
+                  className="w-5 h-5 mx-2 text-black cursor-pointer"
+                />
+                <Button type="button"
+                  variant="outline"
+                  size="sm">
+                  {"Comment"}
+                </Button>
+              </div>
+            </div>
+            {showDropdown && (
+              <Popover>
+                <PopoverContent className="w-80 p-0" align="start">
+                  <Card className="border-0 shadow-none">
+                    <div className="p-4 space-y-4">
+                      <div className="space-y-3 max-h-[200px] overflow-y-auto scroll-smooth">
+                        {filteredUsers?.map((user) => (
+                          <div
+                            key={user?.value}
+                            className="flex items-center space-x-2"
+                            onClick={() => {
+                              handleUserSelect(user);
+                            }}
+                          >
+                            <span
+                              className={`px-3 py-1 rounded-full ${user?.color} inline-block`}
+                            >
+                              {user?.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </Card>
+                </PopoverContent>
+              </Popover>
+            )}
+          </div>
+
+          {/* <AiOutlinePaperClip
+            onClick={handleFileClick}
+            className="w-5 h-5 mx-2 text-black cursor-pointer"
+          />
+          <div
+            className="flex items-center justify-center w-6 h-6 mr-1 bg-black rounded-full"
+            onClick={handleAddComment}
+          >
+            <RiSendPlaneFill className="w-3 h-3 text-white cursor-pointer" />
+          </div> */}
+        </div>
+      </div>
+      {/* <div className="mt-3 space-y-4">
+        {commentsList?.map((comment, index) => (
+          <div key={index} className="flex items-start space-x-3">
+            <div className="flex-shrink-0">
+              <div className="flex items-center justify-center font-semibold text-white bg-pink-500 rounded-full h-9 w-9">
+                <EmployeeName value={comment.user_id} length={2} />
+              </div>
+            </div>
+            <div className="flex items-center justify-between w-full ">
+              <div>
+                {comment?.commentattach?.length > 0 &&
+                  comment?.attachments?.length > 0 &&
+                  comment?.attachments[0]?.attachment && (
+                    <button
+                      className="flex items-center gap-2 hover:bg-[#E8EAED] p-1"
+                      onClick={() => {
+                        console.log(comment?.attachments[0]?.attachment?.file);
+                        filebase64Download(comment?.attachments[0]?.attachment);
+                      }}
+                    >
+                      <AiOutlineFile className="w-5 h-5 text-black" />
+                      <span className="text-sm text-black">
+                        {comment?.attachments[0]?.attachment?.name}
+                      </span>
+                    </button>
+                  )}
+                <p className="mt-1 text-[#323333]  text-base">
+                  {comment.comment}
+                </p>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[12px]  text-baseGray">
+                  {moment(comment.created_at?.slice(0, 10)).format("DD-MMM-YY")}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div> */}
+    </>
+  );
+};
+
 export {
+  InputComments,
   SelectComponent,
   SelectMultiInputComponent,
   DateInput,
