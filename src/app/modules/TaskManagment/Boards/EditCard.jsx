@@ -23,49 +23,6 @@ const EditCard = ({ onClose, employees, cardId, projectId, setIsOpen }) => {
   const fetchData = async (isMounted) => {
     setIsLoading(true);
 
-    // Helper function to fetch checklist item details
-    const getCheckListItemDetails = async (checklistIds) => {
-      if (!checklistIds || checklistIds.length === 0) return [];
-      try {
-        const checklistDetails = await Promise.all(
-          checklistIds.map(async (id) => {
-            const response = await getTaskCheckListItem(id);
-            return {
-              id: response.id,
-              description: response.description,
-              is_completed: response.is_completed,
-            };
-          })
-        );
-        return checklistDetails;
-      } catch (error) {
-        console.error("Error fetching checklist items:", error);
-        throw error; // Propagate error to the caller
-      }
-    };
-
-    // Helper function to fetch attachment details
-    const getAttachmentDetails = async (attachmentIds) => {
-      if (!attachmentIds || attachmentIds.length === 0) return [];
-      try {
-        const attachmentDetails = await Promise.all(
-          attachmentIds.map(async (id) => {
-            const response = await getAttachmentById(id);
-            return {
-              attachments: response.attachments,
-              id: response.id,
-              name: getFileNameFromURL(response.attachments),
-            };
-          })
-        );
-        return attachmentDetails;
-      } catch (error) {
-        console.error("Error fetching attachments:", error);
-        toast.error("Failed to fetch attachments.");
-        throw error; // Propagate error to the caller
-      }
-    };
-
     try {
       // Fetch card details
       const cardDetails = await getTaskById(cardId);
@@ -73,22 +30,8 @@ const EditCard = ({ onClose, employees, cardId, projectId, setIsOpen }) => {
       if (!cardDetails) {
         throw new Error("Card details not found.");
       }
-
-      // Fetch attachment and checklist details if they exist
-      const attachments = cardDetails.attachment?.length
-        ? await getAttachmentDetails(cardDetails.attachment)
-        : [];
-      const checklistItems = cardDetails.task_checklist?.length
-        ? await getCheckListItemDetails(cardDetails.task_checklist)
-        : [];
-
-      // Update state only if the component is still mounted
       if (isMounted) {
-        setInitialValues({
-          ...cardDetails,
-          attachment: attachments,
-          task_checklist: checklistItems,
-        });
+        setInitialValues(cardDetails);
       }
     } catch (error) {
       console.error("Error fetching task data:", error);

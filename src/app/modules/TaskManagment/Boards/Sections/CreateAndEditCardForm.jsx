@@ -240,7 +240,6 @@ const CreateAndEditCardForm = ({
                 <TaskInputDetails
                   title={"Attachments"}
                   content={
-                    <div className="space-y-2">
                       <Attachments
                         attachmentSelected={attachmentfiles}
                         removeFile={removeFile}
@@ -248,7 +247,6 @@ const CreateAndEditCardForm = ({
                           handleAttachmentsChange(event);
                         }}
                       />
-                    </div>
                   }
                 />
               </SheetCardExtension>
@@ -400,8 +398,8 @@ const TaskInputDetails = ({ title, content }) => {
   return (
     <>
       <div className="flex items-center gap-2 space-y-2">
-        <div style={{ width: "18%" }}>{title}</div>
-        {content}
+        <div style={{ width: "20%", marginRight: "1rem" }}>{title}</div>
+        <div style={{minWidth:'47%'}}>{content}</div>
       </div>
     </>
   );

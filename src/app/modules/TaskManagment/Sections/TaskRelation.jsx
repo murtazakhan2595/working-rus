@@ -26,6 +26,7 @@ export default function TaskRelation({
   relationsList,
   onChange,
   projectId,
+  editMode=true,
 }) {
   const [taskList, setTaskList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -97,7 +98,7 @@ export default function TaskRelation({
           </div>
         )}
       </div>
-      <Popover>
+    {editMode&&  <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-10 h-10 p-0 rounded-full">
             <Plus className="w-4 h-4" />
@@ -133,7 +134,7 @@ export default function TaskRelation({
             </div>
           </Card>
         </PopoverContent>
-      </Popover>
+      </Popover>}
     </div>
   );
 }
