@@ -19,6 +19,7 @@ import {
   PopoverContent,
 } from "../src/@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "../src/@/components/ui/radio-group";
+import AttachmentUI from "components/ui/AttachmentUI";
 
 import {
   ChevronsUpDown,
@@ -1480,13 +1481,13 @@ const CoverFileUpload = ({
   );
 };
 
-const InputComments = ({ commentsList }) => {
-  const employees = useSelector((state) => state.emp.employees);
+const InputComments = ({ handleAddComment, users }) => {
   const fileInputRef = useRef(null);
   const commentRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [commentAttachments, setCommentAttachment] = useState([]);
 
   const handleCommentChange = (e) => {
     const value = e.target.value;
@@ -1494,7 +1495,7 @@ const InputComments = ({ commentsList }) => {
     const mentionStart = value.lastIndexOf("@");
     if (mentionStart !== -1) {
       const mentionQuery = value.substring(mentionStart + 1);
-      const matches = employees.filter((user) =>
+      const matches = users.filter((user) =>
         user.label.toLowerCase().includes(mentionQuery.toLowerCase())
       );
       setFilteredUsers(matches);
@@ -1516,6 +1517,22 @@ const InputComments = ({ commentsList }) => {
       commentRef.current.focus();
     }, 0);
   };
+  const handleFileChange = (event) => {
+    const file = event.target.files[0]; // Get the single file
+    if (file) {
+      const attachment = {
+        attachment: file,
+        name: file.name,
+      };
+      setCommentAttachment([...commentAttachments, ...[attachment]]);
+    }
+  };
+  const removeFile = (file) => {
+    const filteredFiles = commentAttachments.filter(
+      (f) => f.name !== file.name
+    );
+    setCommentAttachment(filteredFiles);
+  };
   return (
     <>
       <div className="pb-1">
@@ -1535,20 +1552,43 @@ const InputComments = ({ commentsList }) => {
                 onChange={handleCommentChange}
                 style={{ "--tw-ring-color": "transparent" }}
               />
+              {commentAttachments.length > 0 && (
+                <div className="">
+                  {commentAttachments?.map((file, index) => (
+                    <div key={index}>
+                      <AttachmentUI
+                        attachment={file.attachment}
+                        name={file.name}
+                        removeFile={removeFile}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="flex flex-row justify-between mt-2">
                 <input
                   type="file"
                   ref={fileInputRef}
-                  // onChange={handleFileChange}
+                  onClick={(event) => event.stopPropagation()} // Prevent default behavior
+                  onChange={handleFileChange}
                   className="hidden"
                 />
                 <AiOutlinePaperClip
-                    onClick={()=>{fileInputRef.current.click()}}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    fileInputRef.current.click();
+                  }}
                   className="w-5 h-5 mx-2 text-black cursor-pointer"
                 />
-                <Button type="button"
+                <Button
+                  type="button"
                   variant="outline"
-                  size="sm">
+                  size="sm"
+                  onClick={() => {
+                    handleAddComment(newComment, commentAttachments);
+                  }}
+                >
                   {"Comment"}
                 </Button>
               </div>
@@ -1581,58 +1621,8 @@ const InputComments = ({ commentsList }) => {
               </Popover>
             )}
           </div>
-
-          {/* <AiOutlinePaperClip
-            onClick={handleFileClick}
-            className="w-5 h-5 mx-2 text-black cursor-pointer"
-          />
-          <div
-            className="flex items-center justify-center w-6 h-6 mr-1 bg-black rounded-full"
-            onClick={handleAddComment}
-          >
-            <RiSendPlaneFill className="w-3 h-3 text-white cursor-pointer" />
-          </div> */}
         </div>
       </div>
-      {/* <div className="mt-3 space-y-4">
-        {commentsList?.map((comment, index) => (
-          <div key={index} className="flex items-start space-x-3">
-            <div className="flex-shrink-0">
-              <div className="flex items-center justify-center font-semibold text-white bg-pink-500 rounded-full h-9 w-9">
-                <EmployeeName value={comment.user_id} length={2} />
-              </div>
-            </div>
-            <div className="flex items-center justify-between w-full ">
-              <div>
-                {comment?.commentattach?.length > 0 &&
-                  comment?.attachments?.length > 0 &&
-                  comment?.attachments[0]?.attachment && (
-                    <button
-                      className="flex items-center gap-2 hover:bg-[#E8EAED] p-1"
-                      onClick={() => {
-                        console.log(comment?.attachments[0]?.attachment?.file);
-                        filebase64Download(comment?.attachments[0]?.attachment);
-                      }}
-                    >
-                      <AiOutlineFile className="w-5 h-5 text-black" />
-                      <span className="text-sm text-black">
-                        {comment?.attachments[0]?.attachment?.name}
-                      </span>
-                    </button>
-                  )}
-                <p className="mt-1 text-[#323333]  text-base">
-                  {comment.comment}
-                </p>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[12px]  text-baseGray">
-                  {moment(comment.created_at?.slice(0, 10)).format("DD-MMM-YY")}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div> */}
     </>
   );
 };

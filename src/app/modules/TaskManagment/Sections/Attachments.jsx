@@ -48,7 +48,6 @@ export default function Attachments({
                     className="flex items-center justify-center w-8 h-8"
                     style={{ minWidth: "2rem" }}
                   >
-                    {" "}
                     {/* File preview based on type */}
                     {(() => {
                       const fileType = file?.attachments

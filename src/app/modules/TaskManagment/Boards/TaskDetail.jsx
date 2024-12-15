@@ -328,7 +328,7 @@ const TaskDetail = ({ taskId, onClose, employees, handleDelete }) => {
                 />
               }
             />
-            <DetailBox label="Comments" value={<>kjhk</>} />
+            <DetailBox label="Comments" value={<></>} />
             <TaskComments taskId={taskId} />
           </div>
         </>
