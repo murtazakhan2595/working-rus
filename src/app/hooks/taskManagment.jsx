@@ -423,23 +423,35 @@ const addAttachments = async (payload, id = null) => {
   }
 };
 
-const addCommentAttachment = async (payload) => {
+const addCommentAttachment = async (payload, id) => {
   try {
-    const response = await axios.post(
-      `${baseUrl}/CommentAttachment`,
-      { attachment: payload },
-      {
-        headers: headers(),
-      }
-    );
-    if (response.status === 201) {
+    // Create FormData object
+    const formData = new FormData();
+    formData.append("attachment", payload.attachment);
+
+    const url = id
+      ? `${baseUrl}/CommentAttachment/${id}` // Use id if updating
+      : `${baseUrl}/CommentAttachment`; // No id means create new
+
+    const method = id ? "PUT" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: formData,
+      headers: formDataHeader(),
+    });
+
+    // Check response status
+    if (response.status === 201 || response.status === 200) {
       return response.data;
     }
   } catch (error) {
+    // Handle errors
     if (error?.response?.status === 401) {
       handleLogout();
     }
-    console.error("Error adding task:", error);
+    console.error("Error adding/updating attachment:", error);
     return false;
   }
 };
@@ -587,6 +599,9 @@ const getTaskById = async (taskId) => {
       );
       return checklistDetails;
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching checklist items:", error);
       throw error; // Propagate error to the caller
     }
@@ -608,6 +623,9 @@ const getTaskById = async (taskId) => {
       );
       return attachmentDetails;
     } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
       console.error("Error fetching attachments:", error);
       throw error; // Propagate error to the caller
     }
@@ -685,6 +703,9 @@ const fetchComments = async (filter) => {
     );
     return response.data?.results;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching comments:", error);
     return [];
   }
@@ -695,8 +716,11 @@ const postComment = async (payload) => {
     const response = await axios.post(`${baseUrl}/comments/`, payload, {
       headers: headers(),
     });
-    return response.data;
+    return response;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error posting comment:", error);
     throw error; // Re-throw the error to handle it in the component
   }
@@ -726,32 +750,60 @@ const getAllTasks = async (payload) => {
 };
 
 const getCommentsWithAttachments = async (filter) => {
+  // Helper function to fetch attachment details
+  const getAttachmentDetails = async (attachmentIds) => {
+    if (!attachmentIds || attachmentIds.length === 0) return [];
+    try {
+      const attachmentDetails = await Promise.all(
+        attachmentIds.map(async (id) => {
+          const response = await axios.get(
+            `${baseUrl}/CommentAttachment/${id}`,
+            {
+              headers: headers(),
+            }
+          );
+          return {
+            attachment: response?.data?.attachment,
+            id: response?.data?.id,
+            name: getFileNameFromURL(response?.data?.attachment),
+          };
+        })
+      );
+      return attachmentDetails;
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error("Error fetching attachments:", error);
+      throw error; // Propagate error to the caller
+    }
+  };
   try {
     const comments = await fetchComments(filter);
-    const attachmentIds = comments.flatMap((comment) => comment.commentattach);
-    const attachments =
-      attachmentIds.length > 0
-        ? await Promise.all(
-            attachmentIds.map((id) =>
-              axios
-                .get(`${baseUrl}/CommentAttachment/${id}`, {
-                  headers: headers(),
-                })
-                .then((response) => response.data)
-            )
-          )
-        : [];
-    const attachmentsMap = new Map(attachments.map((att) => [att.id, att]));
+    if (!comments) {
+      return [];
+    }
 
     // Merge attachments with comments
-    const commentsWithAttachments = comments.map((comment) => ({
-      ...comment,
-      attachments: comment.commentattach.map(
-        (id) => attachmentsMap.get(id) || null
-      ),
-    }));
+    const commentsWithAttachments = await Promise.all(
+      comments.map(async (comment) => {
+        // Fetch attachment and checklist details if they exist
+        const attachments =
+          comment.commentattach?.length > 0
+            ? await getAttachmentDetails(comment.commentattach)
+            : [];
+        return {
+          ...comment,
+          commentattach: attachments,
+        };
+      })
+    );
+    console.log(commentsWithAttachments);
     return commentsWithAttachments;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
     console.error("Error fetching comments:", error);
   }
 };
