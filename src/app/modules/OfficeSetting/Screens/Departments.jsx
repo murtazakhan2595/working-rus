@@ -55,14 +55,14 @@ const Departments = () => {
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        const departmentResponse = await getDepartmentList(true);
+        const departmentResponse = await getDepartmentList(true, options);
         setDepartments(departmentResponse);
       } catch (error) {
         console.error("Error fetching lists:", error);
       }
     };
     fetchLists();
-  }, []);
+  }, [options]);
 
 
   return (
@@ -71,10 +71,9 @@ const Departments = () => {
       <TableCustom
         columns={columns}
         data={department?.results || []}
-        // tableOptions={tableOptions}
-        dataTotalSize={department?.results?.length || 0}
-        pagination={true}
         tableOptions={tableOptions}
+        dataTotalSize={department?.count || 0}
+        pagination={true}
         className="organization-table"
       />
       </CardContent>
