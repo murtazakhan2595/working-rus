@@ -9,6 +9,10 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
+const formDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+});
+
 const getEmployeePayroll = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -435,14 +439,13 @@ const saveEmployeeEarnDeduction = async (payload) => {
 }
 
 const saveReimbursement = async (payload) => {
-  console.log(payload, "PAYLOAD")
   try {
     if (payload?.id) {
       const response = await axios.patch(
         `${baseUrl}/payroll/reimbursement/${payload.id}`,
         payload,
         {
-          headers: headers(),
+          headers: formDataHeader(),
         }
       );
       if (response.status === 201 || response.status === 200) {
@@ -453,7 +456,7 @@ const saveReimbursement = async (payload) => {
         `${baseUrl}/payroll/reimbursement/`,
         payload,
         {
-          headers: headers(),
+          headers: formDataHeader(),
         }
       );
       if (response.status === 201 || response.status === 200) {

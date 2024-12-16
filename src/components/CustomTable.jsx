@@ -100,6 +100,7 @@ export default function TableCustom({
   };
 
   const handlePageChange = (name, page) => {
+    // setCurrentPage(page);
     if (page >= 1 && page <= totalPages) {
       tableOptions.onPageChange("page", page);
     }
@@ -126,7 +127,7 @@ export default function TableCustom({
 
   // Handle select all rows
   const handleSelectAllRows = () => {
-    if (selectedRows.length === paginatedData.length) {
+    if (selectedRows?.length === paginatedData?.length) {
       setSelectedRows([]); // Deselect all rows
     } else {
       setSelectedRows(paginatedData.map((row) => row.id)); // Select all rows

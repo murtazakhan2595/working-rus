@@ -88,6 +88,7 @@ const ReimbursmentDetailsSheet = ({
   const userProfile = useSelector((state) => state.user.userProfile);
 
   const handleStatusChange = async (status) => {
+    // Update the status based on user role
     if (userProfile.role === 3) {
       claimRequest.status_hr = {
         status: status,
@@ -106,6 +107,8 @@ const ReimbursmentDetailsSheet = ({
         date: moment().format("YYYY-MM-DD"),
       };
     }
+  
+    // Determine the overall claim request status
     if (
       claimRequest?.status_manager?.status === "approved" &&
       claimRequest?.status_hr?.status === "approved" &&
@@ -118,13 +121,24 @@ const ReimbursmentDetailsSheet = ({
       claimRequest.approval_date = null;
       claimRequest.rejection_date = moment().format("YYYY-MM-DD");
     }
-    const response = await saveReimbursement(claimRequest);
-    if (response) {
-      toast.success("Claim request updated successfully");
-      setIsOpen(false);
-      reload();
+  
+    // Exclude the attachment field from the request
+    const { attachment, ...updatedClaimRequest } = claimRequest;
+  
+    try {
+      // Send the updated claim request (without the attachment)
+      const response = await saveReimbursement(updatedClaimRequest);
+      if (response) {
+        toast.success("Claim request updated successfully");
+        setIsOpen(false);
+        reload();
+      }
+    } catch (error) {
+      console.error("Error updating claim request:", error);
+      toast.error("Failed to update claim request");
     }
   };
+  
   const hasPendingApprovalForUser = () => {
     if (userProfile.role === 3) {
       // HR role

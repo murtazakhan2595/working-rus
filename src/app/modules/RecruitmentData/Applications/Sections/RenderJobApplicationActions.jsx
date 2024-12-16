@@ -32,6 +32,8 @@ const RenderJobApplicationActions = ({ row, handleOptionSelect }) => {
         return dropdownOptions.filter((option) =>
           ["offer_made", "declined", "rejected"].includes(option.value)
         );
+      case "offer_made":
+        return dropdownOptions.filter((option)=>["declined"].includes(option.value))
       case "interview r1":
         return dropdownOptions.filter((option)=>
         ["interview r2", "selected", "rejected"].includes(option.value))
@@ -39,7 +41,7 @@ const RenderJobApplicationActions = ({ row, handleOptionSelect }) => {
           return dropdownOptions.filter((option)=>
           ["selected", "rejected"].includes(option.value))
       default:
-        return dropdownOptions.slice(0, 5); // Show first 5 options by default
+        return dropdownOptions.slice(0, 5); 
     }
   };
 
