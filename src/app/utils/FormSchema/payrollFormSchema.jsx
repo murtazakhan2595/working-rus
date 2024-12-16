@@ -23,7 +23,7 @@ const validateClaimRequestForm = (values) =>{
   }
   if(!values.description){
     errors.description = "Description is required";
-  }
+  } 
   return errors;
 }
 

@@ -32,6 +32,7 @@ const ApplicationDetail = {
   availability_for_interview: null,
   application_status: "pending",
   notice_period:null,
+  attachment: null,
 };
 
 export { JobDetail, ApplicationDetail };

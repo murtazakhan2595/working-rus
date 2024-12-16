@@ -18,19 +18,20 @@ import { toast } from "react-toastify";
 import { validateClaimRequestForm } from "app/utils/FormSchema/payrollFormSchema";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
+import { CoverFileUpload } from "components/form-control";
 
 const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [newAttachment, setNewAttachment] = useState(null);
   const [payroll, setPayroll] = useState({});
-  const [closeSheet , setCloseSheet] = useState(false)
+  const [closeSheet, setCloseSheet] = useState(false);
 
   const claimRequest = {
     expense_type: "",
     payment_date: "",
     amount: "",
     description: "",
-    attachment: "",
+    attachment: null,
   };
   const formSheetData = {
     triggerText: "Send Request",
@@ -55,16 +56,10 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
   }, []);
 
   const handleFormSubmit = async (values) => {
-    if (!newAttachment) {
-      toast.error("Please upload an attachment");
-      return;
-    }
-    values.attachment = newAttachment ? newAttachment : "";
-
     values.status_hr = {
       status: "pending",
     };
-    values.status_manager = {
+    values.status_manager = { 
       status: "pending",
     };
     values.status_superadmin = {
@@ -73,54 +68,59 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
     values.status = "pending";
     values.is_paid = false;
     values.employee_payroll = payroll.id;
-    const response = await saveReimbursement(values);
-    if (response) {
-      toast.success("Reimbursement request sent successfully");
-      setNewAttachment(null);
-      reload();
-
-      setIsOpen(false);
+  
+    const formData = new FormData();
+  
+    Object.keys(values).forEach((key) => {
+      if (key === "attachment") {
+        if (values[key]) formData.append(key, values[key]);
+      } else if (
+        key === "status_hr" || 
+        key === "status_manager" || 
+        key === "status_superadmin"
+      ) {
+        // Serialize status objects as JSON strings
+        formData.append(key, JSON.stringify(values[key]));
+      } else {
+        formData.append(key, values[key]);
+      }
+    });
+  
+    try {
+      const response = await saveReimbursement(formData);
+      if (response) {
+        toast.success("Reimbursement request sent successfully");
+        setNewAttachment(null);
+        reload();
+        setIsOpen(false);
+      }
+    } catch (error) {
+      console.error("Error submitting reimbursement request:", error);
+      toast.error("Failed to send reimbursement request");
     }
   };
+  
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0]; // Get the selected file
+ 
 
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onload = (event) => {
-        const fileData = {
-          name: file.name, // File name
-          file: event.target.result, // Base64 data URL
-        };
-        setNewAttachment(fileData); // Update state with file data
-        console.log("File uploaded:", fileData);
-      };
-
-      reader.onerror = (error) => {
-        console.error("Error reading file:", error); // Handle errors
-      };
-
-      reader.readAsDataURL(file); // Read file as data URL
-    }
-  };
-
-  const handleClose = ()=>{
+  const handleClose = () => {
     setNewAttachment(null);
-    setCloseSheet(true)
-  }
+    setCloseSheet(true);
+  };
 
   return (
     <div>
-       {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
+      {handleCloseWithConfirmation({
+        isOpen: closeSheet,
+        setCloseSheet,
+        setIsOpen,
+      })}
 
       <SheetComponent
         {...formSheetData}
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        
       >
         <Formik
           initialValues={claimRequest}
@@ -198,63 +198,20 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                   placeholder="Type your description here"
                 />
 
-                <div className="h-[118px] flex-col justify-start  gap-2 inline-flex">
-                  <div className="justify-center gap-12 ">
-                    <div className="inline-flex flex-col justify-start text-sm font-medium  text-neutral-800">
-                      Attachments
-                    </div>
-                    <div className="flex flex-col gap-3">
-                      <div className="inline-flex flex-col justify-start p-4 pr-5 border border-solid rounded-md grow border-zinc-200">
-                        <div className="flex items-center">
-                          <div>
-                            <div className="flex items-center text-[#8b8d98] text-sm  gap-2">
-                              <Paperclip size={16} />
-                              {newAttachment && newAttachment.name ? (
-                                <span className="mr-2">
-                                  {newAttachment.name}
-                                </span>
-                              ) : (
-                                <>
-                                  <span className="text-[#ab4aba] text-sm font-semibold ">
-                                    Upload a file
-                                  </span>
-                                  <span>or drag and drop</span>
-                                </>
-                              )}
-                            </div>
-                            {!(newAttachment && newAttachment.name) && (
-                              <div className="w-[263px] h-3 pl-8 pr-[26.62px] flex-col justify-start items-start inline-flex">
-                                <div className="text-[#8b8d98] text-xs  ">
-                                  PNG, JPG, PDF up to 10MB
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                          <Button
-                            className="bg-white border border-[#e8e8ec] text-neutral-1200"
-                            type="button"
-                            onClick={() =>
-                              document.getElementById("fileInput").click()
-                            }
-                          >
-                            Upload
-                          </Button>
-                        </div>
-                      </div>
-                      {/* Hidden file input */}
-                      <input
-                        id="fileInput"
-                        type="file"
-                        accept="image/png, image/jpeg, application/pdf"
-                        style={{ display: "none" }} // Hide the file input
-                        onChange={handleFileChange} // Call the file change handler
-                      />
-                      {/* <Button className="bg-white border border-[#e8e8ec] text-neutral-1200 text-sm font-medium w-fit">
-                          + Add another
-                        </Button> */}
-                    </div>
-                  </div>
-                </div>
+                <CoverFileUpload
+                  name="attachment"
+                  label="Attachment"
+                  acceptType=".png,.jpg,.pdf"
+                  maxSize="10MB"
+                  error={props.errors?.attachment}
+                  touch={props.touched?.attachment}
+                  value={props.values?.attachment}
+                  required={true}
+                  onChange={(field, value) => {
+                    props.setFieldValue(field, value);
+                    props.setFieldTouched(field, true);
+                  }}
+                />
               </SheetCardExtension>
               <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
                 <Button
