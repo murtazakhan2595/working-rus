@@ -55,14 +55,14 @@ const Designations = () => {
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        const response = await getDesignationList(true);
+        const response = await getDesignationList(true, options);
         setDesignation(response);
       } catch (error) {
         console.error("Error fetching lists:", error);
       }
     };
     fetchLists();
-  }, []);
+  }, [options]);
 
 
   return (

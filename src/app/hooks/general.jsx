@@ -10,11 +10,17 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-const getDepartmentList = async (allData=false) => {
+const getDepartmentList = async (allData=false, options = { page: 1, sizePerPage: 10 }) => {
+  const queryParams = new URLSearchParams({
+    page: options.page,
+    page_size: options.sizePerPage,
+    // search: JSON.stringify(filterData),
+  });
+
   try {
-    const response = await axios.get(`${baseUrl}/department/`, {
+    const response = await axios.get(`${baseUrl}/department/?${queryParams}`, {
       headers: headers(),
-    });
+  }); 
     if (response.status === 200) {
       const departmentResponse = response.data;
       const departmentList = await departmentResponse?.results?.map((department) => ({
@@ -89,9 +95,15 @@ const saveDesignation = async (designationId ,payload)=>{
   }
 }
 
-const getDesignationList = async (allData=false) => {
+const getDesignationList = async (allData=false,  options = { page: 1, sizePerPage: 10 }) => {
+  const queryParams = new URLSearchParams({
+    page: options.page,
+    page_size: options.sizePerPage,
+    // search: JSON.stringify(filterData),
+  });
+
   try {
-    const response = await axios.get(`${baseUrl}/designation/`, {
+    const response = await axios.get(`${baseUrl}/designation/?${queryParams}`, {
       headers: headers(),
     });
     if (response.status === 200) {

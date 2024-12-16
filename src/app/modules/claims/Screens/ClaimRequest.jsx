@@ -71,7 +71,6 @@ const ClaimRequest = ({userProfile}) => {
 
 
   const fetchMyClaims = async () => {
-    console.log("FETCHING MY CLAIMS")
      setLoading(true);
     const payroll = await getEmployeePayroll({
       filterData: { employee_id: userProfile.id },
@@ -81,10 +80,9 @@ const ClaimRequest = ({userProfile}) => {
     if (empData) {
       setEmployeeData(empData);
     }
-    console.log("FILTERDATA", { employee_payroll: payroll?.results[0]?.id, ...filterData })
     const response = await getReimbursement({
       filterData: { employee_payroll: payroll?.results[0]?.id, ...filterData },
-    });
+    }, options);
     if (response) {
       console.log(response);
       setMyClaims(response);
@@ -105,7 +103,7 @@ const ClaimRequest = ({userProfile}) => {
     console.log("filter", filter);
     const response = await getReimbursement({
       filterData: filter,
-    });
+    }, options);
     if (response) {
       setClaimRequests(response);
     }
@@ -118,11 +116,11 @@ const ClaimRequest = ({userProfile}) => {
     } else {
       fetchClaimRequests();
     }
-  }, [filterData]);
+  }, [filterData, options]);
   useEffect(() => {
     setFilterData({})
     setFilterDate(null)
-  },[isMyClaims])
+  },[isMyClaims, options])
 const handleDeleteClaims = async () => {
   if (selectedRows.length === 0) return; // Ensure there are selected rows
 
