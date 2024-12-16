@@ -435,6 +435,7 @@ const saveEmployeeEarnDeduction = async (payload) => {
 }
 
 const saveReimbursement = async (payload) => {
+  console.log(payload, "PAYLOAD")
   try {
     if (payload?.id) {
       const response = await axios.patch(
@@ -467,9 +468,9 @@ const saveReimbursement = async (payload) => {
     return false;
   }
 }
-const getReimbursement = async (payload) => {
-  const pageNo = payload?.options?.page ?? "";
-  const pageSize = payload?.options?.sizePerPage ?? "";
+const getReimbursement = async (payload, options) => {
+  const pageNo = options?.page ?? "";
+  const pageSize = options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   console.log("payload - ", payload)
   console.log("filterData - ", filterData)
