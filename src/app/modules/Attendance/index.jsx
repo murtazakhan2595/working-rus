@@ -36,6 +36,7 @@ const Attendance = () => {
   const [attendance, setAttendance] = useState(null);
   const [attendanceData, setAttendanceData] = useState([]);
   const [onBreak, setOnBreak] = useState(false);
+
   const [stats, setStats] = useState([
     { label: "Today", value: "4.45", total: "8" },
     { label: "This Week", value: "25", total: "40" },
@@ -44,12 +45,16 @@ const Attendance = () => {
     { label: "Overtime", value: "5", total: "160" },
   ]);
   const userProfile = useSelector((state) => state.user.userProfile);
+  const [filterData, setFilterData] = useState({
+    date_range: "2024-12-10,2024-12-20",
+    employee_id: userProfile.id,
+  });
   console.log("ATTENDANCE -",attendance)
   console.log("ON BREAK -",onBreak)
 
   const getAttendanceList = async () => {
     const attendanceData = await getAttendance({
-      employee_id: userProfile.id,
+      filterData: filterData
     });
     if (attendanceData) {
       setAttendanceData(attendanceData.results);
@@ -431,15 +436,15 @@ const Attendance = () => {
                       </TableCell>
                       <TableCell>
                         {row.date
-                          ? new Date(row.checkin).toLocaleDateString("en-GB") // or 'en-US' based on your preference
+                          ? new Date(row.date).toLocaleDateString("en-GB") // or 'en-US' based on your preference
                           : "No Date"}
                       </TableCell>
                       <TableCell>
-                        {moment(attendance.checkin).format("h:mm A")}
+                        {moment(attendance?.checkin).format("h:mm A")}
                       </TableCell>
                       <TableCell>
                         {row.checkout
-                          ? moment(row.checkout.replace("Z","")).format("h:mm A")
+                          ? moment(row?.checkout.replace("Z","")).format("h:mm A")
                           : "Not Checked Out"}
                       </TableCell>
                       <TableCell>{row.break_duration || 0.0} hrs</TableCell>
