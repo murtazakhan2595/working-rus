@@ -17,7 +17,7 @@ const AddOrganization = ({ reload, editData, setEditData, edit, setEdit}) => {
   }, [isOpen]);
 
   const formSheetData = {
-    triggerText: edit? "":"Add New Organization",
+    triggerText: edit? "":null,
     title: edit?"Edit Organization":"Add New Organization",
     description: null,
     footer: null,

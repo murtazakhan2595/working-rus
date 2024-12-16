@@ -41,7 +41,6 @@ const AddOrganizationForm = ({
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  console.log("formData", formData);
   const fetchData = async () => {
     try {
       const currencyData = await getCurrenciesList();

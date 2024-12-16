@@ -10,11 +10,17 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-const getDepartmentList = async (allData=false) => {
+const getDepartmentList = async (allData=false, options = { page: 1, sizePerPage: 10 }) => {
+  const queryParams = new URLSearchParams({
+    page: options.page,
+    page_size: options.sizePerPage,
+    // search: JSON.stringify(filterData),
+  });
+
   try {
-    const response = await axios.get(`${baseUrl}/department/`, {
+    const response = await axios.get(`${baseUrl}/department/?${queryParams}`, {
       headers: headers(),
-    });
+  }); 
     if (response.status === 200) {
       const departmentResponse = response.data;
       const departmentList = await departmentResponse?.results?.map((department) => ({
@@ -89,9 +95,15 @@ const saveDesignation = async (designationId ,payload)=>{
   }
 }
 
-const getDesignationList = async (allData=false) => {
+const getDesignationList = async (allData=false,  options = { page: 1, sizePerPage: 10 }) => {
+  const queryParams = new URLSearchParams({
+    page: options.page,
+    page_size: options.sizePerPage,
+    // search: JSON.stringify(filterData),
+  });
+
   try {
-    const response = await axios.get(`${baseUrl}/designation/`, {
+    const response = await axios.get(`${baseUrl}/designation/?${queryParams}`, {
       headers: headers(),
     });
     if (response.status === 200) {
@@ -176,6 +188,33 @@ const getEmployeeList = async () => {
         department_name: employee.department_name,
         department_position: employee.department_position,
         work_email: employee.work_email,
+      }));
+      return employeeList;
+    } else return [];
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
+const getEmployeeListWithDetail = async () => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/emp`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      const employeeResponse = response.data?.results ?? [];
+      const employeeList = employeeResponse.map((employee) => ({
+        value: employee.id,
+        label: `${employee.username}`,
+        name: `${employee.first_name} ${employee.last_name}`,
+        department_name: employee.department_name,
+        department_position: employee.department_position,
+        work_email: employee.work_email,
+        profile_picture:employee.profile_picture,
       }));
       return employeeList;
     } else return [];
@@ -384,5 +423,6 @@ export {
   saveDepartment,
   saveDesignation,
   getWorkingHours,
+  getEmployeeListWithDetail,
   saveShift
 };

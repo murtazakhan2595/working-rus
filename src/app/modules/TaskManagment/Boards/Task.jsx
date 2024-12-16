@@ -27,7 +27,6 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
 
   const fetchLabels = async () => {
     const labelList = await getAllLabels();
-    console.log(labelList, "LABELS")
     setLabels(labelList);
   };
 
@@ -48,15 +47,6 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
         </ul>
     );
 };
-
-//   const labelNames = task?.label?.map(id => {
-//     console.log(id, "IDS ARE")
-//     const label = labels?.find(label => label.id === id);
-//     console.log(label, "LABEL EEST")
-//     return label ? label.name : null; // Return the name if found, otherwise null
-// }).filter(name => name !== null);
-
-// console.log(labelNames, "HELLO LABELS")
 
   useEffect(() => {
     fetchLabels();
@@ -251,7 +241,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
        
         >
         <TaskDetail
-          task={task} // Pass task data as props to TaskDetail
+          taskId={task.id} // Pass task Id as props to TaskDetail
           comments={task.comments} // Pass comments data as props to TaskDetail (if needed)
           attachments={task.attachments} // Pass attachments data as props to TaskDetail (if needed)
           onClose={closeTaskDetail}

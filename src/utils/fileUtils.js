@@ -1,7 +1,6 @@
 import axios from "axios";
 
 export const downloadAttachment = async (file, name) => {
-  console.log("downloading", file, name);
   try {
     const response = await axios.get(file, {
       responseType: "blob",
@@ -22,15 +21,18 @@ export const downloadAttachment = async (file, name) => {
   }
 };
 
-const downloadFile = (data, fileName) => {
-  const url = window.URL.createObjectURL(data);
-
-  const link = document.createElement("a");
-  link.href = url;
-  window.open(url, "_blank");
-
-  // Revoke the object URL to free up memory
-  window.URL.revokeObjectURL(url);
+export const downloadFile = (attachment, fileName) => {
+  if (!attachment) return null;
+  if (attachment instanceof File) {
+    const blobURL = URL.createObjectURL(attachment);
+    const link = document.createElement("a");
+    link.href = blobURL;
+    link.download = fileName || attachment.name || "download";
+    link.click();
+    URL.revokeObjectURL(blobURL);
+  } else {
+    filebase64Download(attachment, fileName);
+  }
 };
 
 const getImageExtension = (contentType) => {
@@ -47,10 +49,10 @@ const getImageExtension = (contentType) => {
   }
 };
 
-export function filebase64Download(file) {
+export function filebase64Download(file, fileName) {
   const link = document.createElement("a");
-  link.href = file.file;
-  link.download = file.name || "downloaded-file";
+  link.href = file;
+  link.download = fileName || "downloaded-file";
   link.click();
 }
 export function getFileSizeInKB(base64String) {

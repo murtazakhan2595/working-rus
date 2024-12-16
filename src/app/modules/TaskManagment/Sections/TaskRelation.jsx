@@ -26,6 +26,7 @@ export default function TaskRelation({
   relationsList,
   onChange,
   projectId,
+  editMode=true,
 }) {
   const [taskList, setTaskList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -97,7 +98,7 @@ export default function TaskRelation({
           </div>
         )}
       </div>
-      <Popover>
+    {editMode&&  <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-10 h-10 p-0 rounded-full">
             <Plus className="w-4 h-4" />
@@ -109,7 +110,7 @@ export default function TaskRelation({
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Search Label"
+                  placeholder="Search Task"
                   className="pl-9"
                   value={searchQuery}
                   onChange={handleSearchChange}
@@ -123,9 +124,7 @@ export default function TaskRelation({
                       onCheckedChange={() => handleTaskToggle(task?.id)}
                     />
                     <span
-                      className={`px-3 py-1 rounded-full ${
-                        task?.color
-                      } inline-block ${getDarkerTextColor(task?.color)}`}
+                      className={`px-3 py-1 rounded-full inline-block`}
                     >
                       {task?.name}
                     </span>
@@ -135,7 +134,7 @@ export default function TaskRelation({
             </div>
           </Card>
         </PopoverContent>
-      </Popover>
+      </Popover>}
     </div>
   );
 }

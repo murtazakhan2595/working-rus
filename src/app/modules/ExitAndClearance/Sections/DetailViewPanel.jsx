@@ -28,7 +28,7 @@ export const ViewAttachmentDetail = ({ title, attachments }) => {
       <h3 className="font-bold text-base text-[#323333] text-left">{title}</h3>
       {attachments &&
         attachments.map((attachment, index) => {
-          if (!attachment.file || !attachment?.file?.file) return "";
+          if (!attachment.file) return "";
           return (
             <div
               key={index}
@@ -38,11 +38,15 @@ export const ViewAttachmentDetail = ({ title, attachments }) => {
                 <img src={pdfIcon} alt="" />
                 <p class="text-[14px] text-[#323333]">
                   <span>{attachment?.name}</span>
-                  <span>
-                    <p className="self-start mt-1 text-xs leading-none text-zinc-600 text-left">
-                      {getFileSizeInKB(attachment?.file?.file)} KB
-                    </p>
-                  </span>
+                  <div>
+                    <a
+                      className="self-start mt-1 text-xs leading-none text-zinc-600 text-left"
+                      href={attachment.file}
+                      target="_blank"
+                    >
+                      View Document
+                    </a>
+                  </div>
                 </p>
               </div>
               <div

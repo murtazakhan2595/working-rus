@@ -11,6 +11,10 @@ const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
 });
+const formDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  // Don't explicitly set 'Content-Type' for FormData
+});
 const getEmployeesExitCount = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const pageNo = payload?.options?.page ?? "";
@@ -115,7 +119,7 @@ const saveEmployeeExitDetail = async (payload) => {
     if (payload?.id) {
       const URL = `${baseUrl}/employeeExit/${payload?.id}`;
       const response = await axios.patch(URL, payload, {
-        headers: headers(),
+        headers: formDataHeader(),
       });
       if (response) {
         return response;
@@ -123,7 +127,7 @@ const saveEmployeeExitDetail = async (payload) => {
     } else {
       const URL = `${baseUrl}/employeeExit`;
       const response = await axios.post(URL, payload, {
-        headers: headers(),
+        headers: formDataHeader(),
       });
       if (response) {
         return response;

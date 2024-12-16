@@ -7,6 +7,17 @@ import { CardContent } from "components/ui/card";
 
 const Departments = () => {
   const [department, setDepartments] = useState(null);
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+  };
 
   const columns = [
     {
@@ -44,14 +55,14 @@ const Departments = () => {
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        const departmentResponse = await getDepartmentList(true);
+        const departmentResponse = await getDepartmentList(true, options);
         setDepartments(departmentResponse);
       } catch (error) {
         console.error("Error fetching lists:", error);
       }
     };
     fetchLists();
-  }, []);
+  }, [options]);
 
 
   return (
@@ -60,10 +71,9 @@ const Departments = () => {
       <TableCustom
         columns={columns}
         data={department?.results || []}
-        // tableOptions={tableOptions}
-        dataTotalSize={department?.results?.length || 0}
+        tableOptions={tableOptions}
+        dataTotalSize={department?.count || 0}
         pagination={true}
-        itemsPerPage={100}
         className="organization-table"
       />
       </CardContent>

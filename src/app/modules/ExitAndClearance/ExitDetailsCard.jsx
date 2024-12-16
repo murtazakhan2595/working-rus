@@ -41,7 +41,7 @@ const ExitDetailsCard = ({
   const [resignation, setResignation] = useState(
     resignationsList?.find((item) => item.id === resignationId)
   );
- 
+
   const [currentResignationId, setCurrentResignationId] =
     useState(resignationId);
 
@@ -79,14 +79,18 @@ const ExitDetailsCard = ({
   const handleSubmit = async (data) => {
     try {
       if (data) {
-        data.exit_type='Relocation';
-        const payload = {
-          ...data,
-          ...(isResignation
-            ? { status_resignation: "exit interview" }
-            : { status_termination: "exit interview" }),
-        };
-        const response = await saveEmployeeExitDetail(payload);
+        // Create a new FormData object
+        const formData = new FormData();
+
+        // Append the values to the FormData object
+        formData.append("id", data.id);
+        formData.append("clearance_report", data.clearance_report);
+        if (isResignation) {
+          formData.append("status_resignation", "exit interview");
+        } else {
+          formData.append("status_termination", "exit interview");
+        }
+        const response = await saveEmployeeExitDetail(formData);
         if (response && reload) {
           reload();
         }

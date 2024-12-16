@@ -8,7 +8,19 @@ import DesignationAction from "../sections/Designations/DesignationAction";
 import { CardContent } from "components/ui/card";
 
 const Designations = () => {
-  const [designation, setDesignation] = useState(null);
+  const [designation, setDesignation] = useState(null); 
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+
+
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+  };
 
   const columns = [
     {
@@ -43,14 +55,14 @@ const Designations = () => {
   useEffect(() => {
     const fetchLists = async () => {
       try {
-        const response = await getDesignationList(true);
+        const response = await getDesignationList(true, options);
         setDesignation(response);
       } catch (error) {
         console.error("Error fetching lists:", error);
       }
     };
     fetchLists();
-  }, []);
+  }, [options]);
 
 
   return (
@@ -60,9 +72,9 @@ const Designations = () => {
         columns={columns}
         data={designation?.results || []}
         // tableOptions={tableOptions}
-        dataTotalSize={designation?.length || 0}
+        dataTotalSize={designation?.count || 0}
         pagination={true}
-        itemsPerPage={100}
+        tableOptions={tableOptions}
         className="designation-table"
       />
       </CardContent>

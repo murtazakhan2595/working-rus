@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getEmployeeList } from "app/hooks/general";
+import { getEmployeeList,getEmployeeListWithDetail } from "app/hooks/general";
 import {
   getManagersList,
 } from "app/hooks/general";
@@ -7,6 +7,7 @@ import {
 // Define the initial state
 const initialState = {
   employees: [],
+  employees_detail: [],
   reportingManagers: [],
   apiStatus: "idle",
   error: null,
@@ -24,6 +25,19 @@ export const fetchEmployees = createAsyncThunk(
     }
   }
 );
+// Define the thunk to fetch employees details
+export const fetchEmployeesDetail = createAsyncThunk(
+  "employees/fetchEmployeesDetail",
+  async () => {
+    try {
+      const response = await getEmployeeListWithDetail();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
 // Define the thunk to fetch reporting managers
 export const fetchReportingManagers = createAsyncThunk(
   "employees/fetchReportingManagers",
@@ -44,6 +58,21 @@ const employeesSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // When the fetchEmployeesDetail thunk is pending
+      .addCase(fetchEmployeesDetail.pending, (state) => {
+        state.apiStatus = "loading";
+      })
+      // When the fetchEmployeesDetail thunk is fulfilled
+      .addCase(fetchEmployeesDetail.fulfilled, (state, action) => {
+        state.apiStatus = "succeeded";
+        state.employees_detail = action.payload;
+      })
+      // When the fetchEmployeesDetail thunk is rejected
+      .addCase(fetchEmployeesDetail.rejected, (state, action) => {
+        state.apiStatus = "failed";
+        state.error = action.error.message;
+      })
+      
       // When the fetchEmployees thunk is pending
       .addCase(fetchEmployees.pending, (state) => {
         state.apiStatus = "loading";
@@ -52,7 +81,6 @@ const employeesSlice = createSlice({
       .addCase(fetchEmployees.fulfilled, (state, action) => {
         state.apiStatus = "succeeded";
         state.employees = action.payload;
-        // console.log("Employees data:", action.payload);
       })
       // When the fetchEmployees thunk is rejected
       .addCase(fetchEmployees.rejected, (state, action) => {

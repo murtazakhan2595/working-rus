@@ -15,7 +15,7 @@ import { ProjectStatusList } from "data/Data";
 import { ImageInput } from "components/form-control";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { SheetCardExtension } from "components/SheetCardExtension";
-import  { components } from 'react-select';
+import { components } from "react-select";
 
 const ProjectForm = ({
   employees,
@@ -39,33 +39,12 @@ const ProjectForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [imageError, setImageError] = useState(null);
   const [selectedColor, setSelectedColor] = useState("#f7f7f7");
-  const [closeSheet, setCloseSheet] = useState(false)
+  const [closeSheet, setCloseSheet] = useState(false);
 
-  const handleClose = ()=>{
+  const handleClose = () => {
     // setIsOpen(false)
-    setCloseSheet(true)
-  }
-
-  // const fetchData = async (isMounted) => {
-  //   setIsLoading(true);
-  //   try {
-  //     const projectDetails = await getProjectById(projectId);
-  //     if (isMounted) {
-  //       setInitialValues({
-  //         ...projectDetails,
-  //         color: projectDetails.color || "", // Fetch color if available
-  //       });
-  //       setSelectedColor(projectDetails.color || "#f7f7f7");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching employeeLeaveTypes:", error);
-  //   } finally {
-  //     if (isMounted) {
-  //       setIsLoading(false);
-  //     }
-  //   }
-  // };
-
+    setCloseSheet(true);
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -75,20 +54,33 @@ const ProjectForm = ({
     };
   }, [projectId]);
 
-  const handleSubmit = async (formData) => {
+  const handleSubmit = async (payload) => {
     setIsLoading(true);
+    const formData = new FormData();
+    formData.append("name", payload.name || "");
+    formData.append("description", payload.description || "");
+    formData.append("start_date", payload.start_date || "");
+    // Append each member to formData
+    if (Array.isArray(payload.project_members)) {
+      payload.project_members.forEach((member) =>
+        formData.append("project_members", member)
+      );
+    }
+    formData.append("end_date", payload.end_date || "");
+    formData.append("color", payload.color || "");
+    formData.append("status", payload.status || "");
+    if (payload.profile instanceof File)
+      // Handle file fields
+      formData.append("profile", payload.profile);
     try {
-      const response = await addProject({
-        ...formData,
-        color: selectedColor, // Send the selected color
-      });
+      const response = await addProject(formData);
       if (response) {
         dispatch(fetchProjects(userProfile));
         reload(true);
         setIsOpen(false);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error('Error:', error);
       toast.error(error?.response?.data?.detail, {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -96,6 +88,8 @@ const ProjectForm = ({
       setIsLoading(false);
     }
   };
+  
+  
   const removeMember = (member) => {
     const members = formRef.current.values.project_members || [];
     const updatedMembers = members.filter((m) => m !== member);
@@ -103,11 +97,12 @@ const ProjectForm = ({
   };
   return (
     <>
-    {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
-      <div
-        open={isOpen}
-        onOpenChange={setIsOpen}
-      >
+      {handleCloseWithConfirmation({
+        isOpen: closeSheet,
+        setCloseSheet,
+        setIsOpen,
+      })}
+      <div open={isOpen} onOpenChange={setIsOpen}>
         <div className="flex flex-col ">
           <div className="flex-grow ">
             <div className="p-0">
@@ -126,8 +121,7 @@ const ProjectForm = ({
                 {(props) => (
                   <form onSubmit={props.handleSubmit}>
                     <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
-
-                        <SheetCardExtension title="Project Details">
+                      <SheetCardExtension title="Project Details">
                         <div className="space-y-2">
                           <ImageInput
                             name={"profile"}
@@ -154,7 +148,7 @@ const ProjectForm = ({
                             onChange={(field, value) => {
                               props.handleChange(field)(value);
                             }}
-                          /> 
+                          />
                         </div>
                         <div className="space-y-2">
                           <TextAreaInput
@@ -173,110 +167,107 @@ const ProjectForm = ({
                             Give important details regarding the new project
                           </p>
                         </div>
-                    </SheetCardExtension>
-
-                      </div>
+                      </SheetCardExtension>
+                    </div>
 
                     {/* Color Selection */}
- 
-                        <SheetCardExtension title="Add to Project" className="mt-4">
 
-                        <div className="flex items-center gap-4">
-                          
-                            <div className="label text-sm flex-1">Colors</div>
-                         
-                          <div className="flex space-x-2 flex-1">
-                            {[
-                              "#f7f7f7",
-                              "#f9e8f7",
-                              "#e7f9f7",
-                              "#fdf7e7",
-                              "#f9f7f9",
-                            ].map((color, index) => (
-                              <span
-                                key={index}
-                                className={`w-6 h-6 rounded-full border border-gray-300 cursor-pointer ${
-                                  selectedColor === color
-                                    ? "ring-2 ring-blue-500"
-                                    : ""
-                                }`}
-                                style={{ backgroundColor: color }}
-                                onClick={() => {
-                                  setSelectedColor(color);
-                                  props.setFieldValue("color", color); // Update Formik field
-                                }}
-                              ></span>
-                            ))}
-                          </div>
+                    <SheetCardExtension title="Add to Project" className="mt-4">
+                      <div className="flex items-center gap-4">
+                        <div className="label text-sm flex-1">Colors</div>
+
+                        <div className="flex space-x-2 flex-1">
+                          {[
+                            "#f7f7f7",
+                            "#f9e8f7",
+                            "#e7f9f7",
+                            "#fdf7e7",
+                            "#f9f7f9",
+                          ].map((color, index) => (
+                            <span
+                              key={index}
+                              className={`w-6 h-6 rounded-full border border-gray-300 cursor-pointer ${
+                                selectedColor === color
+                                  ? "ring-2 ring-blue-500"
+                                  : ""
+                              }`}
+                              style={{ backgroundColor: color }}
+                              onClick={() => {
+                                setSelectedColor(color);
+                                props.setFieldValue("color", color); // Update Formik field
+                              }}
+                            ></span>
+                          ))}
                         </div>
+                      </div>
 
-                        <div className="flex items-center gap-4">
-                          
-                            <div className="label text-sm flex-1">
-                              Team Members
-                            </div>
-                         
-                          <div className="space-y-2 flex-1">
-                            <div className="flex flex-wrap items-center justify-start gap-2 h-100">
-                              {props.values.project_members &&
-                                props.values.project_members.length > 0 &&
-                                props.values.project_members.map(
-                                  (member, index) => (
-                                    <div key={index}>
-                                      <Members
-                                        member={member}
-                                        isEditMode={true}
-                                        removeMember={removeMember}
-                                      />
-                                    </div>
-                                  )
-                                )}
-                              <div
-                                onClick={() => {
-                                  setMembersOpen(!membersOpen);
-                                }}
-                                className={`w-9 h-9 rounded-full flex justify-center items-center cursor-pointer border-2 transition-all duration-300 ${
-                                  membersOpen 
-                                    ? 'bg-red-300 rotate-45' 
-                                    : 'bg-emerald-600'
-                                }`}
-                              >
-                                <div className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
-                                  <RxPlus />
-                                </div>
+                      <div className="flex items-center gap-4">
+                        <div className="label text-sm flex-1">Team Members</div>
+
+                        <div className="space-y-2 flex-1">
+                          <div className="flex flex-wrap items-center justify-start gap-2 h-100">
+                            {props.values.project_members &&
+                              props.values.project_members.length > 0 &&
+                              props.values.project_members.map(
+                                (member, index) => (
+                                  <div key={index}>
+                                    <Members
+                                      member={member}
+                                      isEditMode={true}
+                                      removeMember={removeMember}
+                                    />
+                                  </div>
+                                )
+                              )}
+                            <div
+                              onClick={() => {
+                                setMembersOpen(!membersOpen);
+                              }}
+                              className={`w-9 h-9 rounded-full flex justify-center items-center cursor-pointer border-2 transition-all duration-300 ${
+                                membersOpen
+                                  ? "bg-red-300 rotate-45"
+                                  : "bg-emerald-600"
+                              }`}
+                            >
+                              <div className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
+                                <RxPlus />
                               </div>
                             </div>
                           </div>
                         </div>
-                        {membersOpen && (
-                          <SelectComponent
-                            name="project_members"
-                            placeholder="Select Members"
-                            classes="flex-1 flex flex-col gap-4"
-                            options={employees.map(emp => ({
-                              ...emp,
-                              isDisabled: props.values.project_members?.includes(emp.value)
-                            }))}
-                            error={props.errors.project_members}
-                            touch={props.touched.project_members}
-                            label="Project Members"
-                            required
-                            onChange={(field, value) => {
-                              setMembersOpen(false);
-                              const members = props.values.project_members || [];
-                              if (!members.includes(value)) {
-                                members.push(value);
-                                props.setFieldValue(field, members);
-                              }
-                            }}
-                            isDisabled={option => props.values.project_members?.includes(option.value)}
-                          />
-                        )}
+                      </div>
+                      {membersOpen && (
+                        <SelectComponent
+                          name="project_members"
+                          placeholder="Select Members"
+                          classes="flex-1 flex flex-col gap-4"
+                          options={employees.map((emp) => ({
+                            ...emp,
+                            isDisabled: props.values.project_members?.includes(
+                              emp.value
+                            ),
+                          }))}
+                          error={props.errors.project_members}
+                          touch={props.touched.project_members}
+                          label="Project Members"
+                          required
+                          onChange={(field, value) => {
+                            setMembersOpen(false);
+                            const members = props.values.project_members || [];
+                            if (!members.includes(value)) {
+                              members.push(value);
+                              props.setFieldValue(field, members);
+                            }
+                          }}
+                          isDisabled={(option) =>
+                            props.values.project_members?.includes(option.value)
+                          }
+                        />
+                      )}
 
-                        <div className="flex items-center gap-4">
-                          
-                            <div className="label text-sm mt-4 flex-1">Status</div>
-                          <div className="flex-1">
+                      <div className="flex items-center gap-4">
+                        <div className="label text-sm mt-4 flex-1">Status</div>
+                        <div className="flex-1">
                           <SelectComponent
                             name="status"
                             options={ProjectStatusList}
@@ -289,9 +280,8 @@ const ProjectForm = ({
                             }}
                           />
                         </div>
-                        </div>
-                        </SheetCardExtension>
-
+                      </div>
+                    </SheetCardExtension>
 
                     <div className="p-6 border-t border-gray-200 ">
                       <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
@@ -324,7 +314,6 @@ const mapStateToProps = (state) => {
     token: state.user.token,
     employees: state.emp.employees,
     userProfile: state.user.userProfile,
-
   };
 };
 export default connect(mapStateToProps)(ProjectForm);

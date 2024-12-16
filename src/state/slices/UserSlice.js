@@ -18,10 +18,8 @@ const URLS = [
     Backend: "https://hrms-be.tecbrix.cloud/api",
   },
   {
-    Frontend:
-      "https://hrmsblob-fsc9g0a0b5axcufm.z02.azurefd.net/",
-    Backend:
-      "https://staging-hrms-be.tecbrix.cloud/api",
+    Frontend: "https://hrmsblob-fsc9g0a0b5axcufm.z02.azurefd.net/",
+    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
   },
 ];
 
@@ -65,6 +63,7 @@ const userSlice = createSlice({
         is_filled: null,
         role: null,
       };
+      window.localStorage.setItem("token", '');
     },
     setToken(state, action) {
       state.token = action.payload;

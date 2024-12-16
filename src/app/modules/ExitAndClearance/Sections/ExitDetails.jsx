@@ -79,6 +79,7 @@ function ExitDetails({ exitData, isTermination }) {
                 />
               ))}
         </div>
+        {console.log(exitData.resignation_letter,'qwert')}
         {exitData.resignation_letter && (
           <Letter name={exitData.emp_name} file={exitData.resignation_letter} />
         )}
