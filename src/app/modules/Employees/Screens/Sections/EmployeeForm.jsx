@@ -41,12 +41,17 @@ import {
   SelectComponent,
   SelectMultiInputComponent,
   DateInput,
+  CheckBoxInput,
 } from "../../../../../components/form-control";
 
 import { getEmployeeid } from "utils/getValuesFromTables";
 import { saveEmployeePayroll } from "app/hooks/payroll";
 import { PageLoader } from "components";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
+import { getShift } from "app/hooks/attendance";
+import AddShiftForm from "app/modules/OfficeSetting/sections/Shift/AddShiftForm";
+import SheetComponent from "components/ui/CustomSheet";
+import moment from "moment";
 
 function getManagersStringSelected(managers) {
   if (managers) {
@@ -82,10 +87,26 @@ const SheetOnBorading = ({
   const [isLoading, setIsLoading] = useState(true);
   const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
   const [usernameAlreadyExist, setUsernameAlreadyExist] = useState(false);
-
+  const [shiftList, setShiftList] = useState([]);
+ const[addShift, setAddShift] = useState(false)
   const [closeSheet, setCloseSheet] = useState(false)
+  const [shiftSelect, setShiftSelect] = useState(false)
 
 
+  const getShiftList = async () => {
+     const shiftData =await getShift()
+          if(shiftData){
+            const shiftList = shiftData.results.map((shift) => {
+              return {
+                value: shift.id,
+                label: `${shift.name} (${moment(shift.starttime).format(
+                  "h:mm a"
+                )} - ${moment(shift.endtime).format("h:mm a")})`,
+              };
+            });
+            setShiftList(shiftList)
+          }
+  }
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -102,6 +123,7 @@ const SheetOnBorading = ({
           const response = await getNewEmployeeCode();
           // setEmpId(`TXB-${response.toString().padStart(4, "0")}`);
           setEmpId(response);
+          getShiftList()
         }
       } catch (error) {
         console.log(error);
@@ -217,9 +239,16 @@ const SheetOnBorading = ({
     return <PageLoader />;
   }
 
+  console.log("shiftlist", shiftList)
   return (
     <>
-    {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen, discard, navigate})}
+      {handleCloseWithConfirmation({
+        isOpen: closeSheet,
+        setCloseSheet,
+        setIsOpen,
+        discard,
+        navigate,
+      })}
 
       <div
         side="right"
@@ -227,7 +256,9 @@ const SheetOnBorading = ({
         open={isOpen}
         onOpenChange={setIsOpen}
       >
-        <div className={`flex flex-col   ${window.location.pathname.substring(1)}`}>
+        <div
+          className={`flex flex-col   ${window.location.pathname.substring(1)}`}
+        >
           <div className="flex-grow ">
             <div className="p-0">
               {/* <CardHeader className="prose">
@@ -337,7 +368,10 @@ const SheetOnBorading = ({
                         </div>
                         <div className="space-y-2">
                           <div className="flex flex-col gap-4">
-                            <Label htmlFor="password" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-baseGray">
+                            <Label
+                              htmlFor="password"
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-baseGray"
+                            >
                               <span className="text-red-600">* </span>Password
                             </Label>
                             <Input
@@ -403,8 +437,6 @@ const SheetOnBorading = ({
                       </div>
                     </div>
 
-
-                    
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold">
                         Official Information
@@ -563,52 +595,103 @@ const SheetOnBorading = ({
                         </div>
                       </div>
                     </div>
-                   {!id &&  <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">Salary Details</h3>
-                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <SelectComponent
-                            name={"salary_type"}
-                            options={salaryTypeOptions}
-                            error={props.errors?.salary_type}
-                            touch={props.touched.salary_type}
-                            value={props.values.salary_type}
-                            label={"Salary Type"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
+                    {!id && (
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Shift Details</h3>
+                        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <CheckBoxInput
+                              label="Choose Shift"
+                              name="shift-select"
+                              value={shiftSelect}
+                              onChange={(name, value) => {
+                                console.log(value);
+                                setShiftSelect(value);
+                              }}
+                            />
+                          </div>
+                          {shiftSelect && (
+                            <div className="space-y-2">
+                              <SelectComponent
+                                name={"shift_assignment"}
+                                options={shiftList}
+                                error={props.errors?.shift_assignment}
+                                touch={props.touched.shift_assignment}
+                                value={props.values.shift_assignment}
+                                label={"Shift"}
+                                required={true}
+                                onChange={(field, value) => {
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            </div>
+                          )}
                         </div>
                         <div className="space-y-2">
-                          <TextInput
-                            name={"salary"}
-                            error={props.errors?.salary}
-                            touch={props.touched?.salary}
-                            value={props.values?.salary}
-                            label={
-                              props.values.salary_type === "hourly"
-                                ? "Employee Hourly Salary"
-                                : "Employee Monthly Salary"
-                            }
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
+                          <CheckBoxInput
+                            label="Custom Shift"
+                            name="custom-shift"
+                            value={addShift}
+                            onChange={(name, value) => {
+                              console.log(value);
+                              setAddShift(value);
                             }}
                           />
                         </div>
                       </div>
-                    </div>}
+                    )}
+                    {!id && (
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                          Salary Details
+                        </h3>
+                        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <SelectComponent
+                              name={"salary_type"}
+                              options={salaryTypeOptions}
+                              error={props.errors?.salary_type}
+                              touch={props.touched.salary_type}
+                              value={props.values.salary_type}
+                              label={"Salary Type"}
+                              required={true}
+                              onChange={(field, value) => {
+                                props.setFieldValue(field, value);
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <TextInput
+                              name={"salary"}
+                              error={props.errors?.salary}
+                              touch={props.touched?.salary}
+                              value={props.values?.salary}
+                              label={
+                                props.values.salary_type === "hourly"
+                                  ? "Employee Hourly Salary"
+                                  : "Employee Monthly Salary"
+                              }
+                              required={true}
+                              onChange={(field, value) => {
+                                props.handleChange(field)(value);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     <div className="p-6 border-t border-gray-200 bg-gray-50">
                       <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                        {!nextstep && <Button
-                          variant="outline"
-                          size="lg"
-                          onClick={handleClose}
-                          type="button"
-                        >
-                          Cancel
-                        </Button>}
+                        {!nextstep && (
+                          <Button
+                            variant="outline"
+                            size="lg"
+                            onClick={handleClose}
+                            type="button"
+                          >
+                            Cancel
+                          </Button>
+                        )}
                         <Button type="submit" size="lg" variant="default">
                           {id ? "Update" : "Add"}
                         </Button>
@@ -621,7 +704,39 @@ const SheetOnBorading = ({
           </div>
         </div>
       </div>
+      {addShift && (
+        <ShiftAction
+          isOpen={addShift}
+          setIsOpen={setAddShift}
+          reload={getShiftList}
+        />
+      )}
     </>
+  );
+};
+
+const ShiftAction = ({ isOpen, setIsOpen, reload }) => {
+  const formSheetData = {
+    triggerText: null,
+    title: "Update Shift Details",
+    description: null,
+    footer: null,
+  };
+  return (
+    <SheetComponent
+      {...formSheetData}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      width="568px"
+    >
+      <AddShiftForm
+        isOpen={isOpen}
+        setIsOpen={(value) => {
+          reload();
+          setIsOpen(value);
+        }}
+      />
+    </SheetComponent>
   );
 };
 const mapStateToProps = (state) => {
