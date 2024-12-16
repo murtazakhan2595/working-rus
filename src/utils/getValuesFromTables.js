@@ -86,6 +86,13 @@ function EmployeeName({ value, length }) {
 
   return <>{displayedName}</>;
 }
+function EmployeeProfilePicture(id) {
+  const employees = useSelector((state) => state.emp.employees_detail);
+  const employee = employees.find((option) => option.value === parseInt(id));
+  const employeeProfilePicture = employee ? employee.profile_picture ?? employee.name : "N/A";
+
+  return {profile_picture:employeeProfilePicture,name: employee.name};
+}
 
 function EmployeeID({ value }) {
   // Ensure value is a string and validate its format
@@ -195,6 +202,7 @@ export {
   UserRole,
   ProjectName,
   TerminationStatus,
+  EmployeeProfilePicture,
   ResignationStatus,
   TerminationReason,
   getExperience,
