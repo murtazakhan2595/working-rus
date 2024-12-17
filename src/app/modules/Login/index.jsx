@@ -195,14 +195,14 @@ function Login() {
                     <Button
                       type="button"
                       onClick={handlePasswordVisibility}
-                      className={`absolute top-[25px] right-0 bg-transparent${
+                      className={`absolute top-7 right-0 bg-transparent${
                         showPassword ? "text-gray-400" : ""
                       }`}
                     >
                       {showPassword ? (
-                        <BiShow className="text-gray-400" />
+                        <BiShow className="text-plum-800" />
                       ) : (
-                        <TbEyeClosed className="text-gray-400" />
+                        <TbEyeClosed className="text-plum-800" />
                       )}
                     </Button>
 
