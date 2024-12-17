@@ -105,15 +105,16 @@ const Projects = ({ userProfile }) => {
     <div>
       <Header
         content={
-          <>
-           
+          userProfile.role !== 4 ? (
             <CreateEditProject
               isEditMode={false}
               isOpen={isOpen}
               setIsOpen={setIsOpen}
               reload={fetchData}
             />
-          </>
+          ) : (
+            <></>
+          )
         }
       />
 
@@ -121,12 +122,12 @@ const Projects = ({ userProfile }) => {
         <PageLoader />
       ) : (
         <>
-        <div className="flex flex-row justify-end w-full gap-4">
-        <button onClick={toggleViewMode} className="mb-4 p-2 ">
+          <div className="flex flex-row justify-end w-full gap-4">
+            <button onClick={toggleViewMode} className="mb-4 p-2 ">
               {viewMode === "table" ? <LayoutGrid /> : <TableOfContents />}
             </button>
-        </div>
-      
+          </div>
+
           {viewMode === "table" && userProfile.role !== 4 && (
             <RenderProject
               toggleAddProject={toggleAddProject}

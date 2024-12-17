@@ -2,17 +2,20 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { connect } from "react-redux";
-import { getFileNameFromURL } from "utils/downUtils";
 import { getTaskById } from "app/hooks/taskManagment";
 import { CardTypes } from "app/utils/Types/TaskManagment";
 import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
-import {
-  getAttachmentById,
-  getTaskCheckListItem,
-} from "app/hooks/taskManagment";
+import SheetComponent from "components/ui/CustomSheet";
 import { PageLoader } from "components";
 
-const EditCard = ({ onClose, employees, cardId, projectId, setIsOpen }) => {
+const EditCard = ({
+  onClose,
+  employees,
+  cardId,
+  projectId,
+  setIsOpen,
+  isOpen,
+}) => {
   const [initialValues, setInitialValues] = useState({
     ...CardTypes,
     board_id: "",
@@ -51,6 +54,13 @@ const EditCard = ({ onClose, employees, cardId, projectId, setIsOpen }) => {
     };
   }, [cardId]);
 
+  const formSheetEditData = {
+    triggerText: null,
+    title: "Edit Card",
+    description: null,
+    footer: null,
+  };
+
   return isLoading ? (
     <PageLoader />
   ) : (
@@ -59,6 +69,7 @@ const EditCard = ({ onClose, employees, cardId, projectId, setIsOpen }) => {
       employees={employees}
       onClose={onClose}
       isEdit={true}
+      isOpen={isOpen}
       setIsOpen={setIsOpen}
       projectId={projectId}
     />

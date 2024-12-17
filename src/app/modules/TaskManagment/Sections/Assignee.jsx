@@ -6,10 +6,10 @@ import {
   PopoverTrigger,
 } from "../../../../src/@/components/ui/popover";
 import {
-    TextInput,
-    SelectComponent,
-    DateInput,
-  } from "components/form-control.jsx";
+  TextInput,
+  SelectComponent,
+  DateInput,
+} from "components/form-control.jsx";
 import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
 import { Label } from "../../../../src/@/components/ui/label";
@@ -20,7 +20,6 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { getDarkerTextColor } from "../Boards/Sections/getTaskStatus";
 import { Members } from "app/modules/TaskManagment/Sections";
-
 
 export default function Assignee({
   assigneeSelected,
@@ -36,8 +35,8 @@ export default function Assignee({
   // Filter labels based on search query
   const filteredEmployees = React.useMemo(() => {
     return employees?.filter((employee) =>
-        employee.name.toLowerCase().includes(searchQuery.toLowerCase())
-);
+      employee.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   }, [searchQuery, employees]);
 
   const handleLabelToggle = (labelId) => {
@@ -56,8 +55,8 @@ export default function Assignee({
   };
 
   return (
-    <div className=" max-w-sm flex" >
-      <div style={{ maxWidth: "85%" }}>
+    <div className=" max-w-sm flex">
+      <div>
         <ul className="flex flex-wrap gap-2">
           {assigneeSelected &&
             assigneeSelected.length > 0 &&
@@ -72,46 +71,50 @@ export default function Assignee({
             ))}
         </ul>
       </div>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline" className="w-10 h-10 p-0 rounded-full">
-            <Plus className="w-4 h-4" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-80 p-0" align="start">
-          <Card className="border-0 shadow-none">
-            <div className="p-4 space-y-4">
-            <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search Label"
-                  className="pl-9"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                />
-              </div>
-              <div className="space-y-3 max-h-[200px] overflow-y-auto scroll-smooth">
-                {filteredEmployees?.map((assignee) => (
-                  <div key={assignee?.value} className="flex items-center space-x-2">
-                    <Checkbox
-                      checked={selectedAssignee.includes(assignee?.value)}
-                      onCheckedChange={() => handleLabelToggle(assignee?.value)}
-                    />
-                    <span
-                      className={`px-3 py-1 rounded-full ${
-                        assignee?.color
-                      } inline-block`}
+      <div style={{ minWidth: "15%", marginLeft: "1rem" }}>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="w-10 h-10 p-0 rounded-full">
+              <Plus className="w-4 h-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80 p-0" align="start">
+            <Card className="border-0 shadow-none">
+              <div className="p-4 space-y-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search Label"
+                    className="pl-9"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                  />
+                </div>
+                <div className="space-y-3 max-h-[200px] overflow-y-auto scroll-smooth">
+                  {filteredEmployees?.map((assignee) => (
+                    <div
+                      key={assignee?.value}
+                      className="flex items-center space-x-2"
                     >
-                      {assignee?.name}
-                    </span>
-                  </div>
-                ))}
-                
+                      <Checkbox
+                        checked={selectedAssignee.includes(assignee?.value)}
+                        onCheckedChange={() =>
+                          handleLabelToggle(assignee?.value)
+                        }
+                      />
+                      <span
+                        className={`px-3 py-1 rounded-full ${assignee?.color} inline-block`}
+                      >
+                        {assignee?.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          </Card>
-        </PopoverContent>
-      </Popover>
+            </Card>
+          </PopoverContent>
+        </Popover>
+      </div>
     </div>
   );
 }

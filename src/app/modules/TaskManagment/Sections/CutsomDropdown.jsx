@@ -6,12 +6,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "src/@/components/ui/dropdown-menu";
+import { Item } from "@radix-ui/react-dropdown-menu";
+import { alignProperty } from "@mui/material/styles/cssUtils";
 
 const CustomDropdown = ({ options }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button aria-haspopup="true" size="icon" variant="ghost">
+        <Button aria-haspopup="true" size="icon" variant="ghost" className="mt-1" style={{alignItems:'start'}}>
           <MoreVertical className="w-4 h-4" />
           <span className="sr-only">Toggle menu</span>
         </Button>

@@ -1,27 +1,27 @@
-import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from "../../../components/ui/card"
-import { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption } from "../../../src/@/components/ui/table"
-import { Calendar } from "../../../src/@/components/ui/calendar"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../../src/@/components/ui/tabs"
-import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription, DrawerClose } from "../../../src/@/components/ui/drawer"
-import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetFooter, SheetTitle, SheetDescription, SheetClose } from "../../../src/@/components/ui/sheet"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../src/@/components/ui/select"
-import { Menubar, MenubarMenu, MenubarTrigger, MenubarContent, MenubarItem } from "../../../src/@/components/ui/menubar"
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "../../../src/@/components/ui/accordion"
+import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from "components/ui/card"
+import { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption } from "src/@/components/ui/table"
+import { Calendar } from "src/@/components/ui/calendar"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "src/@/components/ui/tabs"
+import { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription, DrawerClose } from "src/@/components/ui/drawer"
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetFooter, SheetTitle, SheetDescription, SheetClose } from "src/@/components/ui/sheet"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "src/@/components/ui/select"
+import { Menubar, MenubarMenu, MenubarTrigger, MenubarContent, MenubarItem } from "src/@/components/ui/menubar"
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "src/@/components/ui/accordion"
 
-import { Button } from "../../../components/ui/button"
-import { RadioGroup, RadioGroupItem } from "../../../src/@/components/ui/radio-group"
-import { Switch } from "../../../src/@/components/ui/switch"
-import { ScrollArea } from "../../../src/@/components/ui/scroll-area"
-import { Input } from "../../../components/ui/input"
-import { Textarea } from "../../../src/@/components/ui/textarea"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "../../../src/@/components/ui/dialog"
+import { Button } from "components/ui/button"
+import { RadioGroup, RadioGroupItem } from "src/@/components/ui/radio-group"
+import { Switch } from "src/@/components/ui/switch"
+import { ScrollArea } from "src/@/components/ui/scroll-area"
+import { Input } from "components/ui/input"
+import { Textarea } from "src/@/components/ui/textarea"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "src/@/components/ui/dialog"
 
-import { Checkbox } from "../../../src/@/components/ui/checkbox"
-import { Slider } from "../../../src/@/components/ui/slider"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "../../../src/@/components/ui/command"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "../../../src/@/components/ui/hover-card"
-import { toast } from "../../../src/@/components/ui/use-toast"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../../src/@/components/ui/tooltip"
+import { Checkbox } from "src/@/components/ui/checkbox"
+import { Slider } from "src/@/components/ui/slider"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "src/@/components/ui/command"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "src/@/components/ui/hover-card"
+import { toast } from "src/@/components/ui/use-toast"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "src/@/components/ui/tooltip"
 
 import { 
   CircleHelp, 
@@ -40,9 +40,9 @@ import {
   Calculator,
   Smile
 } from "lucide-react"
-import { Label } from "../../../src/@/components/ui/label"
-import { Avatar, AvatarImage, AvatarFallback } from "../../../src/@/components/ui/avatar"
-import { DateTimePicker } from "../../../components/ui/datetime-picker"
+import { Label } from "src/@/components/ui/label"
+import { Avatar, AvatarImage, AvatarFallback } from "src/@/components/ui/avatar"
+import { DateTimePicker } from "components/ui/datetime-picker"
 
 // Add new imports
 
