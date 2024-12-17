@@ -14,9 +14,9 @@ const Avatar = ({ src, alt, fallbackText, className, text = null }) => (
   <TooltipProvider>
     <Tooltip>
       <TooltipTrigger asChild>
-        <AvatarUI className={className}>
+        <AvatarUI className={`${className} cursor-pointer `}>
           <AvatarImage src={src} alt={alt} />
-          <AvatarFallback className="flex items-center justify-center rounded-full border-plum-500 bg-plum-300 cursor-pointer">
+          <AvatarFallback className="flex items-center justify-center text-sm border rounded-full border-plum-1100 bg-plum-300 text-plum-1100">
             {fallbackText?.toUpperCase()}
           </AvatarFallback>
         </AvatarUI>

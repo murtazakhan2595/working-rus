@@ -118,7 +118,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
       <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
         <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
         <p
-          className="text-sm leading-5 truncate-text"
+          className="text-sm leading-5 truncate-text text-neutral-1000"
           style={{ maxHeight: "100px" }}
         >
           <span
