@@ -116,7 +116,9 @@ const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
         ? [
             {
               label: "Assign",
-              value: <MembersList members={values?.assigned_to} displayAll={true}/>,
+              value: (
+                <MembersList members={values?.assigned_to} displayAll={true} />
+              ),
             },
           ]
         : []),
@@ -211,34 +213,38 @@ const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
                   />
                 }
               />
-              <DetailBox
-                label="Attachments"
-                value={
-                  <Attachments
-                    attachmentSelected={taskData.attachment || []}
-                    onChange={() => {}}
-                    editMode={false}
-                  />
-                }
-              />
+              {taskData.attachment && taskData.attachment.length > 0 && (
+                <DetailBox
+                  label="Attachments"
+                  value={
+                    <Attachments
+                      attachmentSelected={taskData.attachment || []}
+                      onChange={() => {}}
+                      editMode={false}
+                    />
+                  }
+                />
+              )}
               <DetailBox label="Comments" value={<></>} />
               <TaskComments taskId={taskId} />
             </div>
           </>
         )}
       </SheetComponent>
-      <EditCard
-        cardId={taskData?.id}
-        projectId={taskData?.project_id}
-        onClose={() => {
-          setIsEditCardOpen(false);
-          fetchTaskData(true);
-        }}
-        setIsOpen={() => {
-          setIsEditCardOpen();
-        }}
-        isOpen={isEditCardOpen}
-      />
+      {isEditCardOpen && (
+        <EditCard
+          cardId={taskData?.id}
+          projectId={taskData?.project_id}
+          onClose={() => {
+            setIsEditCardOpen(false);
+            fetchTaskData(true);
+          }}
+          setIsOpen={() => {
+            setIsEditCardOpen();
+          }}
+          isOpen={isEditCardOpen}
+        />
+      )}
     </>
   );
 };

@@ -5,11 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../../../../src/@/components/ui/popover";
-import {
-  TextInput,
-  SelectComponent,
-  DateInput,
-} from "components/form-control.jsx";
+import { TaskDetailBox } from "app/modules/TaskManagment/Sections";
 import { MdClose } from "react-icons/md";
 import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
@@ -67,10 +63,11 @@ export default function TaskRelation({
   };
 
   return (
-    <div className=" max-w-sm flex">
-      <div>
-        {relationsList.length > 0 && (
-          <div className="">
+    <TaskDetailBox
+      dataContent={
+        relationsList &&
+        relationsList.length > 0 && (
+          <div className="flex flex-col w-full">
             {relationsList.map((taskId, index) => {
               const task = taskList.find((obj) => obj.id === taskId);
               if (!task) return null;
@@ -84,62 +81,60 @@ export default function TaskRelation({
                       <span>{task.name || "Task Titile (N/A)"}</span>
                     </span>
                   </div>
-                  <div className="flex items-center gap-x-2">
-                    <MdClose
-                      className="w-5 h-5 text-gray-500 cursor-pointer"
-                      onClick={() => {
-                        handleTaskToggle(taskId);
-                      }}
-                    />
-                  </div>
+                  {editMode && (
+                    <div className="flex items-center gap-x-2">
+                      <MdClose
+                        className="w-5 h-5 text-gray-500 cursor-pointer"
+                        onClick={() => {
+                          handleTaskToggle(taskId);
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
-        )}
-      </div>
-      {editMode && (
-        <div style={{ minWidth: "15%", marginLeft: "1rem" }}>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-10 h-10 p-0 rounded-full">
-                <Plus className="w-4 h-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 p-0" align="start">
-              <Card className="border-0 shadow-none">
-                <div className="p-4 space-y-4">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      placeholder="Search Task"
-                      className="pl-9"
-                      value={searchQuery}
-                      onChange={handleSearchChange}
-                    />
-                  </div>
-                  <div className="space-y-3 max-h-[200px] overflow-y-auto scroll-smooth">
-                    {filteredTasks?.map((task) => (
-                      <div
-                        key={task?.id}
-                        className="flex items-center space-x-2"
-                      >
-                        <Checkbox
-                          checked={relationsList.includes(task?.id)}
-                          onCheckedChange={() => handleTaskToggle(task?.id)}
-                        />
-                        <span className={`px-3 py-1 rounded-full inline-block`}>
-                          {task?.name}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+        )
+      }
+      inputDataContent={
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="w-10 h-10 p-0 rounded-full">
+              <Plus className="w-4 h-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80 p-0" align="start">
+            <Card className="border-0 shadow-none">
+              <div className="p-4 space-y-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search Task"
+                    className="pl-9"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                  />
                 </div>
-              </Card>
-            </PopoverContent>
-          </Popover>
-        </div>
-      )}
-    </div>
+                <div className="space-y-3 max-h-[200px] overflow-y-auto scroll-smooth">
+                  {filteredTasks?.map((task) => (
+                    <div key={task?.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={relationsList.includes(task?.id)}
+                        onCheckedChange={() => handleTaskToggle(task?.id)}
+                      />
+                      <span className={`px-3 py-1 rounded-full inline-block`}>
+                        {task?.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </PopoverContent>
+        </Popover>
+      }
+      editMode={editMode}
+    />
   );
 }

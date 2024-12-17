@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { connect } from "react-redux";
 import { Formik, Form } from "formik";
 import {
   TextInput,
@@ -12,6 +13,7 @@ import {
   addTask,
   addAttachments,
   addTaskCheckListItem,
+  getTaskById,
 } from "app/hooks/taskManagment";
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
@@ -27,21 +29,23 @@ import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFor
 import moment from "moment";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
+import { CardTypes } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
 
 const CreateAndEditCardForm = ({
-  initialValues,
+  taskId,
   employees,
   onClose,
   isEdit,
   setIsOpen,
   isOpen,
   projectId,
+  boardId,
 }) => {
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
-  const [attachmentfiles, setAttachmentFiles] = useState([]);
   const [closeSheet, setCloseSheet] = useState(false);
+  const [initialValues, setInitialValues] = useState(CardTypes);
   const priorityMapping = {
     High: 1,
     Medium: 2,
@@ -52,8 +56,45 @@ const CreateAndEditCardForm = ({
     setCloseSheet(true);
   };
 
+  const fetchData = async (isMounted) => {
+    setIsLoading(true);
+    try {
+      // Fetch card details
+      const cardDetails = await getTaskById(taskId);
+
+      if (!cardDetails) {
+        throw new Error("Card details not found.");
+      }
+      if (isMounted) {
+        setInitialValues(cardDetails);
+      }
+    } catch (error) {
+      console.error("Error fetching task data:", error);
+      toast.error("Failed to load task details. Please try again later.");
+    } finally {
+      if (isMounted) {
+        setIsLoading(false); // Stop loading spinner
+      }
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (taskId) fetchData(isMounted);
+    else
+      setInitialValues({
+        ...initialValues,
+        assigned_by: userProfile.id,
+        project_id: projectId,
+        board_id: boardId,
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [taskId]);
+
   const handleSubmit = async (formData) => {
-    const getAttachmentFileIds = async () => {
+    const getAttachmentFileIds = async (attachmentfiles) => {
       try {
         const attachmentPromises = attachmentfiles.map(async (file) => {
           if (file.attachments instanceof File) {
@@ -106,8 +147,8 @@ const CreateAndEditCardForm = ({
       const finalData = {
         ...formData,
         start_date: moment(new Date()).format("YYYY-MM-DD"),
-        attachment: await getAttachmentFileIds(),
-        task_checklist: await getCheckListIds(formData.task_checklist),
+        attachment: await getAttachmentFileIds(formData.attachment || []),
+        task_checklist: await getCheckListIds(formData.task_checklist || []),
         priority: priorityMapping[formData.priority], // Map priority to the expected value
       };
 
@@ -135,20 +176,8 @@ const CreateAndEditCardForm = ({
     }
   };
 
-  useEffect(() => {
-    setAttachmentFiles(initialValues.attachment);
-  }, [initialValues]);
-
   const userProfile = useSelector((state) => state.user.userProfile);
-  const formInitialValues = isEdit
-    ? initialValues
-    : { ...initialValues, assigned_by: userProfile.id };
 
-  const removeMember = (member) => {
-    const members = formRef.current.values.assigned_to || [];
-    const updatedMembers = members.filter((m) => m !== member);
-    formRef.current.setFieldValue("assigned_to", updatedMembers);
-  };
   const formSheetEditData = {
     triggerText: null,
     title: isEdit ? "Edit Card" : "Add Card",
@@ -174,15 +203,14 @@ const CreateAndEditCardForm = ({
           <PageLoader />
         ) : (
           <Formik
-            initialValues={formInitialValues}
-            enableReinitialize={true}
+            initialValues={initialValues}
             innerRef={formRef}
+            enableReinitialize={true}
             onSubmit={(values) => {
               handleSubmit(values);
             }}
             validate={(values) => {
               const errors = validationTaskFormSchema(values);
-              console.log(errors)
               return errors;
             }}
           >
@@ -222,10 +250,9 @@ const CreateAndEditCardForm = ({
                       title={"Attachments"}
                       content={
                         <Attachments
-                          attachmentSelected={attachmentfiles}
+                          attachmentSelected={props.values.attachment}
                           onChange={(attachments) => {
-                            props.setFieldValue('attachment', attachments);
-                            setAttachmentFiles(attachments);
+                            props.setFieldValue("attachment", attachments);
                           }}
                         />
                       }
@@ -237,7 +264,7 @@ const CreateAndEditCardForm = ({
                     )}
                   </SheetCardExtension>
 
-                  <SheetCardExtension title="Add To Card">
+                  <SheetCardExtension title={`${isEdit?"Update To Card":"Add To Card"}`}>
                     <TaskInputDetails
                       title={"Due Date"}
                       content={
@@ -318,8 +345,7 @@ const CreateAndEditCardForm = ({
                       title={"Assignee"}
                       content={
                         <Assignee
-                          assigneeSelected={props.values.assigned_to}
-                          removeMember={removeMember}
+                          assigneeSelected={props.values.assigned_to || []}
                           employees={employees}
                           onChange={(value) => {
                             props.setFieldValue("assigned_to", value);
@@ -387,10 +413,15 @@ const TaskInputDetails = ({ title, content }) => {
     <>
       <div className="flex items-center gap-2 space-y-2">
         <div style={{ width: "20%", marginRight: "1rem" }}>{title}</div>
-        <div style={{ minWidth: "47%" }}>{content}</div>
+        <div style={{ width: "100%" }}>{content}</div>
       </div>
     </>
   );
 };
+const mapStateToProps = (state) => {
+  return {
+    employees: state.emp.employees,
+  };
+};
 
-export default CreateAndEditCardForm;
+export default connect(mapStateToProps)(CreateAndEditCardForm);

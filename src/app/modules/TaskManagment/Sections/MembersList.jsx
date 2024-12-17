@@ -31,7 +31,7 @@ const MembersList = ({ members, displayAll = false }) => {
       })}
       {remainingCount > 0 && !displayAll && (
         <span
-          className="bg-plum-300 border-plum-500 h-6 w-6 flex items-center justify-center text-white text-sm rounded-full"
+          className="bg-plum-300 border-plum-500 h-6 w-6 flex items-center justify-center text-sm rounded-full"
           key="remaining-count"
         >
           +{remainingCount}

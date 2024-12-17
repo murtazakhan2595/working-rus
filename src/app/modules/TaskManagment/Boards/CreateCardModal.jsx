@@ -9,22 +9,16 @@ const CreateAndUpdateCard = ({
   boardId,
   projectId,
   setIsOpen,
-  isOpen
+  isOpen,
 }) => {
-  const initialValues = {
-    ...CardTypes,
-    board_id: boardId,
-    project_id: projectId,
-  };
 
   return (
     <>
       <CreateAndEditCardForm
-        initialValues={initialValues}
-        employees={employees}
         onClose={onClose}
         setIsOpen={setIsOpen}
         projectId={projectId}
+        boardId={boardId}
         isOpen={isOpen}
       />
       <ToastContainer />

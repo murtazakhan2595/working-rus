@@ -5,6 +5,11 @@ import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
 import { deleteAttachment } from "app/hooks/taskManagment";
 import AttachmentUI from "components/ui/AttachmentUI";
+import {
+  TaskDetailBox,
+  TaskFieldDataContent,
+  TaskFieldInputContent,
+} from "app/modules/TaskManagment/Sections";
 
 export default function Attachments({
   attachmentSelected,
@@ -13,7 +18,6 @@ export default function Attachments({
 }) {
   const fileInputRef = useRef(null);
   const removeFile = async (file, id) => {
-    debugger;
     if (id) {
       try {
         const response = await deleteAttachment(id);
@@ -45,47 +49,49 @@ export default function Attachments({
     // Merge new files with existing ones
     onChange([...formattedFiles, ...existingFiles]);
   };
+  console.log(attachmentSelected);
   return (
-    <div className="max-w-sm flex">
-      {attachmentSelected.length > 0 && (
-        <div className="flex flex-col w-full">
-          {attachmentSelected?.map((file, index) => (
-            <div key={index}>
-              <AttachmentUI
-                attachment={file.attachments}
-                name={file.name}
-                removeFile={removeFile}
-                id={file.id}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-      {editMode && (
-        <div style={{ minWidth: "15%", marginLeft: "1rem" }}>
-          <Popover>
-            <Button
-              variant="outline"
-              className="w-10 h-10 p-0 rounded-full"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                fileInputRef.current.click();
-              }}
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
-            <Input
-              type="file"
-              multiple
-              style={{ display: "none" }}
-              onClick={(event) => event.stopPropagation()} // Prevent default behavior
-              onChange={(event) => handleAttachmentsChange(event)}
-              ref={fileInputRef}
-            />
-          </Popover>
-        </div>
-      )}
-    </div>
+    <TaskDetailBox
+      dataContent={
+        attachmentSelected&&attachmentSelected.length > 0 ? (
+          <div className="flex flex-col w-full">
+            {attachmentSelected?.map((file, index) => (
+              <div key={index}>
+                <AttachmentUI
+                  attachment={file.attachments}
+                  name={file.name}
+                  removeFile={removeFile}
+                  id={file.id}
+                />
+              </div>
+            ))}
+          </div>
+        ) : null
+      }
+      inputDataContent={
+        <Popover>
+          <Button
+            variant="outline"
+            className="w-10 h-10 p-0 rounded-full"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              fileInputRef.current.click();
+            }}
+          >
+            <Plus className="w-4 h-4" />
+          </Button>
+          <Input
+            type="file"
+            multiple
+            style={{ display: "none" }}
+            onClick={(event) => event.stopPropagation()} // Prevent default behavior
+            onChange={(event) => handleAttachmentsChange(event)}
+            ref={fileInputRef}
+          />
+        </Popover>
+      }
+      editMode={editMode}
+    />
   );
 }
