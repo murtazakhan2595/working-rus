@@ -3,14 +3,17 @@ import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
 import moment from "moment";
 import { Button } from "components/ui/button";
 import { getExpenseType } from "utils/getValuesFromTables";
-import { filebase64Download } from "utils/fileUtils";
 import statusApprovedIcon from "assets/images/status-approved.png";
 import statusPendingIcon from "assets/images/status-pending.svg";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { saveReimbursement } from "app/hooks/payroll";
 import statusRejectedIcon from "assets/images/status-rejected.svg";
-import { DetailCard, DetailBox, DisplayFile } from "components/SheetCardExtension";
+import {
+  DetailCard,
+  DetailBox,
+  DisplayFile,
+} from "components/SheetCardExtension";
 
 // Function to calculate "X days ago"
 const calculateTimeAgo = (date) => {
@@ -107,7 +110,7 @@ const ReimbursmentDetailsSheet = ({
         date: moment().format("YYYY-MM-DD"),
       };
     }
-  
+
     // Determine the overall claim request status
     if (
       claimRequest?.status_manager?.status === "approved" &&
@@ -121,10 +124,10 @@ const ReimbursmentDetailsSheet = ({
       claimRequest.approval_date = null;
       claimRequest.rejection_date = moment().format("YYYY-MM-DD");
     }
-  
+
     // Exclude the attachment field from the request
     const { attachment, ...updatedClaimRequest } = claimRequest;
-  
+
     try {
       // Send the updated claim request (without the attachment)
       const response = await saveReimbursement(updatedClaimRequest);
@@ -138,7 +141,7 @@ const ReimbursmentDetailsSheet = ({
       toast.error("Failed to update claim request");
     }
   };
-  
+
   const hasPendingApprovalForUser = () => {
     if (userProfile.role === 3) {
       // HR role
@@ -160,7 +163,6 @@ const ReimbursmentDetailsSheet = ({
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        
       >
         <EmployeeDataInfo
           name={claimRequest.full_name}
@@ -183,15 +185,16 @@ const ReimbursmentDetailsSheet = ({
                 <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
                   <div className="text-neutral-900">Attachment</div>
                 </div>
-                {claimRequest?.attachment?.file ? (
-                  <DisplayFile
-                    firstName="Receipt"
-                    lastName=""
-                    file={claimRequest?.attachment?.file}
-                    onDownload={()=>filebase64Download(claimRequest?.attachment)}
-                  />
+                {claimRequest?.attachment ? (
+                  <a
+                    href={claimRequest?.attachment}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Receipt
+                  </a>
                 ) : (
-                  "No attachment found"
+                  "No Attachment Found"
                 )}
               </div>
             </div>
