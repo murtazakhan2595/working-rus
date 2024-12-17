@@ -1064,6 +1064,7 @@ const FilterInput = ({
   isClearable = true,
   type,
 }) => {
+  console.log(filters, "TEST");
   const classNamesStyle = "";
   const width = "w-56";
   const height = "h-[38px]";
@@ -1126,12 +1127,14 @@ const FilterInput = ({
             } justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200`}
           >
             <span
-              className={
+              className={`${
                 selectedOption ? "text-neutral-1000" : "text-muted-foreground"
-              }
+              } truncate max-w-full`}
+              style={{ display: "block" }}
             >
               {selectedOption ? selectedOption.label : filter.placeholder}
             </span>
+
             <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
           </Button>
         </PopoverTrigger>
