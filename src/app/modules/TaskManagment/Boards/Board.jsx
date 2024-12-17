@@ -299,7 +299,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
 
   return (
     <div
-      className="flex flex-col min-w-[290px] max-w-[320px] mb-5"
+      className="flex flex-col min-w-[320px] max-w-[320px] mb-5"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >

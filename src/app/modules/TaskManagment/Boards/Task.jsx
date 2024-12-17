@@ -137,10 +137,10 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
             <MembersList members={task?.assigned_to} />
           </div>
         </div>
-        <div className="flex items-center gap-2 text-zinc-600">
+        <div className="flex items-center gap-2 text-neutral-1000">
           {task?.end_date && (
             <div
-              className={`flex gap-1 justify-center items-center text-sm p-2 rounded`}
+              className={`flex gap-0.5 justify-center items-center text-sm p-2 rounded`}
             >
               {/* Render TimeIcon component */}
               <TimeIcon color={getStatusIconColor(task?.end_date)} />
@@ -150,11 +150,11 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
               </div>
             </div>
           )}
-          <div className="flex gap-0.5 items-center my-auto whitespace-nowrap">
+          <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
             <BiComment />
             <div>{comments?.length || 0}</div>
           </div>
-          <div className="flex items-center gap-0.5 my-auto whitespace-nowrap">
+          <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
             <ImAttachment />
             <div>{task?.attachment?.length || 0}</div>
           </div>
