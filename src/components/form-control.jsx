@@ -1401,7 +1401,7 @@ const CoverFileUpload = ({
               download
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-neutral-500"
+              className="text-sm text-neutral-700"
             >
               View Document
             </a>

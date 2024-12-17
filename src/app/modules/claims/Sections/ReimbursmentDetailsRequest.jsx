@@ -25,6 +25,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
   const [newAttachment, setNewAttachment] = useState(null);
   const [payroll, setPayroll] = useState({});
   const [closeSheet, setCloseSheet] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const claimRequest = {
     expense_type: "",
@@ -56,6 +57,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
   }, []);
 
   const handleFormSubmit = async (values) => {
+    setLoading(true); 
     values.status_hr = {
       status: "pending",
     };
@@ -97,6 +99,8 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
     } catch (error) {
       console.error("Error submitting reimbursement request:", error);
       toast.error("Failed to send reimbursement request");
+    } finally {
+      setLoading(false); 
     }
   };
   
@@ -222,8 +226,8 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="lg" variant="default">
-                  Submit
+                <Button type="submit" size="lg" variant="default" disabled={loading}>
+                {loading ? "Submitting..." : "Submit"}
                 </Button>
               </div>
             </form>

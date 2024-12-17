@@ -746,23 +746,19 @@ export const ClaimRequestColumns = [
   {
     dataField: "attachment",
     text: "Receipt",
-    formatter: (cell, row) =>
-      cell?.file ? (
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            filebase64Download(cell);
-          }}
-        >
-          <div className="items-center gap-2 inline-flex cursor-pointer">
-            <Download size={16} color="#ab4aba" />
-            <div className="text-[#ab4aba] text-sm font-medium">Receipt</div>
-          </div>
-        </div>
-      ) : (
-        "No Attachment"
-      ),
+    formatter: (cell) => (
+      <>
+        {cell ? (
+          <a href={cell} target="_blank" rel="noopener noreferrer">
+            View Receipt
+          </a>
+        ) : (
+          "No Attachment"
+        )}
+      </>
+    ),
   },
+
 
   {
     dataField: "status",
@@ -858,22 +854,17 @@ export const MyClaimsRequestColumns = [
   {
     dataField: "attachment",
     text: "Receipt",
-    formatter: (cell, row) =>
-      cell?.file ? (
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            filebase64Download(cell);
-          }}
-        >
-          <div className="items-center gap-2 inline-flex cursor-pointer">
-            <Download size={16} color="#ab4aba" />
-            <div className="text-[#ab4aba] text-sm font-medium">Receipt</div>
-          </div>
-        </div>
-      ) : (
-        "No Attachment"
-      ),
+    formatter: (cell) => (
+      <>
+        {cell ? (
+          <a href={cell} target="_blank" rel="noopener noreferrer">
+            View Receipt
+          </a>
+        ) : (
+          "No Attachment"
+        )}
+      </>
+    ),
   },
   {
     dataField: "status",
