@@ -687,7 +687,7 @@ const getAttachmentById = async (attachmentId) => {
 const fetchComments = async (filter) => {
   try {
     const response = await axios.get(
-      `${baseUrl}/comments/?search=${encodeURIComponent(
+      `${baseUrl}/comments/?ordering=-created_at&search=${encodeURIComponent(
         JSON.stringify(filter)
       )}`,
       {

@@ -53,14 +53,14 @@ export default function Attachments({
   return (
     <TaskDetailBox
       dataContent={
-        attachmentSelected&&attachmentSelected.length > 0 ? (
+        attachmentSelected && attachmentSelected.length > 0 ? (
           <div className="flex flex-col w-full">
             {attachmentSelected?.map((file, index) => (
               <div key={index}>
                 <AttachmentUI
                   attachment={file.attachments}
                   name={file.name}
-                  removeFile={removeFile}
+                  removeFile={editMode ? removeFile : null}
                   id={file.id}
                 />
               </div>

@@ -10,7 +10,7 @@ import {
   postComment,
   getCommentsWithAttachments,
 } from "app/hooks/taskManagment";
-import { Members } from "app/modules/TaskManagment/Sections";
+import { MembersList } from "app/modules/TaskManagment/Sections";
 
 export default function TaskComments({ taskId }) {
   const employees = useSelector((state) => state.emp.employees);
@@ -82,17 +82,19 @@ export default function TaskComments({ taskId }) {
   return (
     <div className="mt-3">
       <InputComments handleAddComment={handleAddComment} users={employees} />
-      <div className="mt-3 space-y-4">
+      <div className="mt-3 space-y-4 flex flex-col gap-6">
         {comments?.map((comment, index) => (
           <div key={index} className="flex items-start space-x-3">
-            <div className="flex-shrink-0">
-              <div className="flex items-center justify-center font-semibold text-white bg-pink-500 rounded-full h-9 w-9">
-                <EmployeeName value={comment.user_id} length={2} />
+            <MembersList members={[comment.user_id]} display={true} />
+            <div className="flex items-start flex-col w-full ">
+              <div className="flex items-start justify-between w-full">
+               <div className="font-semibold"> <EmployeeName value={comment.user_id} /></div>
+                <div className="text-[12px]  text-baseGray">
+                  {moment(comment.created_at).format("DD-MMM-YY")}
+                </div>
               </div>
-            </div>
-            <div className="flex items-center justify-between w-full ">
-              <div>
-                <p className="mt-1 text-[#323333]  text-base">
+              <div className="w-full">
+                <p className="mt-1 text-neutral-1000 ">
                   {comment.comment}
                 </p>
                 {comment?.commentattach?.length > 0 &&
@@ -104,11 +106,6 @@ export default function TaskComments({ taskId }) {
                       />
                     </div>
                   ))}
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[12px]  text-baseGray">
-                  {moment(comment.created_at).format("DD-MMM-YY")}
-                </span>
               </div>
             </div>
           </div>

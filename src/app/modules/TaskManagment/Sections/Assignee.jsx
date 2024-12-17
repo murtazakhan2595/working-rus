@@ -66,7 +66,7 @@ export default function Assignee({
       dataContent={
         assigneeSelected &&
         assigneeSelected.length > 0 && (
-          <ul className="flex flex-wrap gap-2">
+          <ul className="flex flex-wrap gap-1">
             {assigneeSelected?.map((member, index) => (
               <div key={index}>
                 <Members

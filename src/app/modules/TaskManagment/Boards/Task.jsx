@@ -61,7 +61,6 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   // State to manage TaskDetail visibility
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
 
-
   const fetchData = async () => {
     try {
       const data = await fetchComments({ task_id: [task.id] });
@@ -166,7 +165,10 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
         taskId={task.id} // Pass task Id as props to TaskDetail
         handleDelete={handleDelete}
         isOpen={isTaskDetailOpen}
-        setIsOpen={setIsTaskDetailOpen}
+        setIsOpen={(value) => {
+          setIsTaskDetailOpen(value);
+          reloadData();
+        }}
       />
       <EditCard
         cardId={task.id}
