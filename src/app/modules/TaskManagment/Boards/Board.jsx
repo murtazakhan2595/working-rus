@@ -16,11 +16,7 @@ import { FaPlus } from "react-icons/fa";
 import { RxPlus } from "react-icons/rx";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { CustomDropdown } from "../Sections";
-import {
-  AddNewListModel,
-  MembersDropdown,
-  RenderProject,
-} from "./Sections";
+import { AddNewListModel, MembersDropdown, RenderProject } from "./Sections";
 import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
 import { getRandomColor } from "utils/renderValues";
@@ -148,7 +144,6 @@ const Board = ({ employees }) => {
           <RenderProject projectId={projectId} />
         </div>
         <div className="flex items-center justify-center gap-3">
-          <Button onClick={toggleAddBoardModal}>Add New List</Button>
           <FilterInput
             filters={[
               {
@@ -173,7 +168,6 @@ const Board = ({ employees }) => {
             }}
           />
           <MembersDropdown members={projectData?.project_members || []} />
-
           <LayoutList size={18} />
         </div>
       </div>
@@ -191,8 +185,8 @@ const Board = ({ employees }) => {
           {isLoading ? (
             <PageLoader />
           ) : (
-            <div className="flex gap-5 mt-5 overflow-x-auto">
-              {AllBoards.count > 0 ? (
+            <div className="flex gap-8 mt-5 overflow-x-auto">
+              {AllBoards.count > 0 &&
                 AllBoards.results.map((board, index) => (
                   <TaskColumn
                     key={index}
@@ -206,12 +200,24 @@ const Board = ({ employees }) => {
                       board_id: [board.id],
                     }}
                   />
-                ))
-              ) : (
-                <div className="mt-3 mb-5 text-center w-100">
-                  Project Board is empty
+                ))}
+              <div className="flex flex-col min-w-[290px] max-w-[320px] mb-5">
+                <div className="flex flex-col ">
+                  <header className="">
+                    <Button
+                      variant="outline"
+                      type="button"
+                      size="lg"
+                      className="w-full text-start"
+                      onClick={toggleAddBoardModal}
+                    >
+                      <RxPlus className="text-xl " />
+                      <span className="ml-2">Add New List</span>
+                    </Button>
+                  </header>
                 </div>
-              )}
+              </div>
+
               {/* <Button variant="outline" onClick={toggleAddBoardModal}>Add New List</Button> */}
             </div>
           )}
@@ -301,16 +307,16 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
         <header className="flex justify-between w-full gap-5 pl-5">
           <div className="flex gap-4">
             <h2 className="flex gap-2 text-base font-bold text-zinc-800">
-              <div
+              {/* <div
                 className={`shrink-0 my-auto w-2 h-2 ${getRandomColor(
                   board.name?.charAt(0)
                 )} rounded-full`}
-              />
+              /> */}
               <span>{board.name}</span>
             </h2>
-            <span className="justify-center flex text-sm bg-white text-zinc-600 w-[22px] h-[22px]">
+            {/* <span className="justify-center flex text-sm bg-white text-zinc-600 w-[22px] h-[22px]">
               {tasks?.count || 0}
-            </span>
+            </span> */}
           </div>
 
           <CustomDropdown
@@ -321,15 +327,19 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
             options={dropdownOptions}
           />
         </header>
-        <button
-          className="flex items-center justify-center gap-2 px-5 py-2 mt-10 text-base font-medium bg-white border border-solid rounded border-zinc-300 text-zinc-600"
+
+        <Button
+          variant="outline"
+          type="button"
+          size="lg"
+          className="w-full"
           onClick={() => {
             setOpenCreateCard(true);
           }}
         >
           <RxPlus className="text-xl " />
-          <span>Add Card</span>
-        </button>
+          <span className="ml-2">Add Card</span>
+        </Button>
         {tasks &&
           tasks.count > 0 &&
           tasks.results.map((task, index) => (

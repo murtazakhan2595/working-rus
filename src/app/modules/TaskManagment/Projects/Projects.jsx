@@ -234,8 +234,6 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
           <div className="border border-gray-400 m-2" />
           <CardFooter className="flex justify-between">
             <div className="text-neutral-1100 text-sm flex justify-center items-center gap-2">
-              {" "}
-              <Timer />
               {moment(project.start_date).format("MMM D, YYYY")}
             </div>
             <MembersList members={project?.project_members || []} />
