@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Pencil, X } from "lucide-react";
 import { Plus, Search } from "lucide-react";
-
+import { TaskDetailBox } from "app/modules/TaskManagment/Sections";
 import { Checkbox } from "src/@/components/ui/checkbox";
 import { Button } from "components/ui/button";
 import {
@@ -52,109 +52,113 @@ export default function CheckList({ items, onChange, editMode = true }) {
   };
 
   return (
-    <div className="max-w-sm flex">
-      <div>
-        {items.map((item, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-between gap-2 p-2 rounded-lg"
-          >
-            <div className="flex items-center gap-2">
-              <Checkbox
-                checked={item.is_completed}
-                onCheckedChange={() => {
-                  if (editMode) handleCheck(index);
-                }}
-                disabled={true}
-              />
-              {item.isEditing ? (
-                <input
-                  type="text"
-                  defaultValue={item.description}
-                  className="border border-gray-300 rounded p-1"
-                  onBlur={(e) => handleEditSubmit(index, e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleEditSubmit(index, e.target.value);
-                    }
-                  }}
-                />
-              ) : (
-                <span
-                  className={
-                    item.is_completed
-                      ? "line-through text-muted-foreground"
-                      : ""
-                  }
-                >
-                  {item.description}
-                </span>
-              )}
-            </div>
-            {editMode && (
-              <div className="flex items-center gap-2">
-                {!item.isEditing && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-primary hover:text-primary"
-                    onClick={() => handleEdit(index)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                    <span className="sr-only">Edit</span>
-                  </Button>
-                )}
+    <TaskDetailBox
+      dataContent={
+        items &&
+        items.length > 0 && (
+          <div className="flex flex-col w-full">
+            {items.map((item, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between gap-2 p-2 rounded-lg"
+              >
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    checked={item.is_completed}
+                    onCheckedChange={() => {
+                      if (editMode) handleCheck(index);
+                    }}
+                    disabled={!editMode}
+                  />
+                  {item.isEditing ? (
+                    <input
+                      type="text"
+                      defaultValue={item.description}
+                      className="border border-gray-300 rounded p-1"
+                      onBlur={(e) => handleEditSubmit(index, e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleEditSubmit(index, e.target.value);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <span
+                      className={
+                        item.is_completed
+                          ? "line-through text-muted-foreground"
+                          : ""
+                      }
+                    >
+                      {item.description}
+                    </span>
+                  )}
+                </div>
+                {editMode && (
+                  <div className="flex items-center gap-2">
+                    {!item.isEditing && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-primary hover:text-primary"
+                        onClick={() => handleEdit(index)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                        <span className="sr-only">Edit</span>
+                      </Button>
+                    )}
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-destructive hover:text-destructive"
-                  onClick={() => handleRemove(index)}
-                >
-                  <X className="h-4 w-4" />
-                  <span className="sr-only">Remove</span>
-                </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => handleRemove(index)}
+                    >
+                      <X className="h-4 w-4" />
+                      <span className="sr-only">Remove</span>
+                    </Button>
+                  </div>
+                )}
               </div>
-            )}
+            ))}
           </div>
-        ))}
-      </div>
-      {editMode && (
-        <div style={{ minWidth: "15%", marginLeft: "1rem" }}>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-10 h-10 p-0 rounded-full">
-                <Plus className="w-4 h-4" />
+        )
+      }
+      inputDataContent={
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="w-10 h-10 p-0 rounded-full">
+              <Plus className="w-4 h-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80 p-0" align="start">
+            <div className="flex gap-2">
+              <Input
+                placeholder="Item name"
+                value={newItem}
+                onChange={(e) => {
+                  setNewItem(e.target.value);
+                }}
+              />
+              <Button
+                onClick={() => {
+                  const prevItems = items || [];
+                  const newItemObj = {
+                    description: newItem,
+                    is_completed: false,
+                  };
+                  const checkList = [...prevItems, newItemObj];
+                  onChange(checkList);
+                  setNewItem(""); // Clear input after adding
+                }}
+              >
+                Add
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 p-0" align="start">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Item name"
-                  value={newItem}
-                  onChange={(e) => {
-                    setNewItem(e.target.value);
-                  }}
-                />
-                <Button
-                  onClick={() => {
-                    const prevItems = items || [];
-                    const newItemObj = {
-                      description: newItem,
-                      is_completed: false,
-                    };
-                    const checkList = [...prevItems, newItemObj];
-                    onChange(checkList);
-                    setNewItem(""); // Clear input after adding
-                  }}
-                >
-                  Add
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-      )}
-    </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      }
+      editMode={editMode}
+    />
   );
 }

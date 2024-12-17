@@ -7,6 +7,7 @@ import CheckList from './CheckList';
 import Attachments from './Attachments';
 import TaskRelation from './TaskRelation';
 import TaskComments from './TaskComments';
+import TaskDetailBox from './TaskDetailsBox';
 export {
   Members,
   MembersList,
@@ -17,4 +18,5 @@ export {
   Attachments,
   TaskRelation,
   TaskComments,
+  TaskDetailBox,
 };

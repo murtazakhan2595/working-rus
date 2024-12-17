@@ -19,7 +19,6 @@ import { CustomDropdown } from "../Sections";
 import {
   AddNewListModel,
   MembersDropdown,
-  TaskSortingFilters,
   RenderProject,
 } from "./Sections";
 import CreateCard from "./CreateCardModal";
@@ -290,13 +289,6 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
     await deleteBoard(board.id);
     reloadData();
     setIsDeleteModalOpen(false);
-  };
-
-  const formSheetData = {
-    triggerText: null,
-    title: "Add Card",
-    description: null,
-    footer: null,
   };
 
   return (

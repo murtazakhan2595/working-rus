@@ -20,5 +20,9 @@ const CardTypes = {
   assigned_by: "",
   assigned_to: [],
   attachment: [],
+  board_id: "",
+  project_id: "",
+  task_checklist: [],
+  relation: [],
 };
 export { Project, AddList, CardTypes };

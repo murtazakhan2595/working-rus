@@ -12,7 +12,7 @@ import {
 } from "components/form-control.jsx";
 import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
-import { Label } from "../../../../src/@/components/ui/label";
+import { TaskDetailBox } from "app/modules/TaskManagment/Sections";
 import { Checkbox } from "../../../../src/@/components/ui/checkbox";
 import { Card } from "components/ui/card";
 import axios from "axios";
@@ -23,15 +23,11 @@ import { Members } from "app/modules/TaskManagment/Sections";
 
 export default function Assignee({
   assigneeSelected,
-  removeMember,
   employees,
   onChange,
-  errors,
-  touched,
 }) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedAssignee, setSelectedLabels] = React.useState([]);
-
   // Filter labels based on search query
   const filteredEmployees = React.useMemo(() => {
     return employees?.filter((employee) =>
@@ -39,28 +35,39 @@ export default function Assignee({
     );
   }, [searchQuery, employees]);
 
-  const handleLabelToggle = (labelId) => {
-    setSelectedLabels((prev) => {
-      const updatedLabels = prev.includes(labelId)
-        ? prev.filter((id) => id !== labelId)
-        : [...prev, labelId];
-
-      onChange(updatedLabels);
-      return updatedLabels;
-    });
+  const handleLabelToggle = (assigneeId) => {
+    if (assigneeSelected.includes(assigneeId)) {
+      // Remove the label if it already exists
+      const updatedAssignee = assigneeSelected.filter(
+        (id) => id !== assigneeId
+      );
+      onChange(updatedAssignee);
+      return updatedAssignee;
+    } else {
+      // Add the label if it doesn't exist
+      const updatedAssignee = [...assigneeSelected, assigneeId];
+      onChange(updatedAssignee);
+      return updatedAssignee;
+    }
   };
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
+  const removeMember = (member) => {
+    const members = assigneeSelected || [];
+    const updatedMembers = members.filter((m) => m !== member);
+    onChange(updatedMembers);
+  };
+
   return (
-    <div className=" max-w-sm flex">
-      <div>
-        <ul className="flex flex-wrap gap-2">
-          {assigneeSelected &&
-            assigneeSelected.length > 0 &&
-            assigneeSelected?.map((member, index) => (
+    <TaskDetailBox
+      dataContent={
+        assigneeSelected &&
+        assigneeSelected.length > 0 && (
+          <ul className="flex flex-wrap gap-2">
+            {assigneeSelected?.map((member, index) => (
               <div key={index}>
                 <Members
                   member={member}
@@ -69,9 +76,10 @@ export default function Assignee({
                 />
               </div>
             ))}
-        </ul>
-      </div>
-      <div style={{ minWidth: "15%", marginLeft: "1rem" }}>
+          </ul>
+        )
+      }
+      inputDataContent={
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" className="w-10 h-10 p-0 rounded-full">
@@ -84,7 +92,7 @@ export default function Assignee({
                 <div className="relative">
                   <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   <Input
-                    placeholder="Search Label"
+                    placeholder="Search Assignee"
                     className="pl-9"
                     value={searchQuery}
                     onChange={handleSearchChange}
@@ -97,7 +105,7 @@ export default function Assignee({
                       className="flex items-center space-x-2"
                     >
                       <Checkbox
-                        checked={selectedAssignee.includes(assignee?.value)}
+                        checked={assigneeSelected.includes(assignee?.value)}
                         onCheckedChange={() =>
                           handleLabelToggle(assignee?.value)
                         }
@@ -114,7 +122,8 @@ export default function Assignee({
             </Card>
           </PopoverContent>
         </Popover>
-      </div>
-    </div>
+      }
+      editMode={true}
+    />
   );
 }
