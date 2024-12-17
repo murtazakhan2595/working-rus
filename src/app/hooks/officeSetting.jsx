@@ -8,15 +8,20 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
+const formDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+});
 
-const saveOrganization = async (payload) => {
+
+const saveOrganization = async (id, payload) => {
+  console.log(id, "ID")
   try {
-    if (payload?.id) {
+    if (id) {
       const response = await axios.patch(
-        `${baseUrl}/organization/${payload.id}`,
+        `${baseUrl}/organization/${id}`,
         payload,
         {
-          headers: headers(),
+          headers: formDataHeader()
         }
       );
       if (response.status === 200 || response.status === 201) {
@@ -27,7 +32,7 @@ const saveOrganization = async (payload) => {
         `${baseUrl}/organization/`,
         payload,
         {
-          headers: headers(),
+          headers: formDataHeader(),
         }
       );
       if (response.status === 201 || response.status === 200) {
