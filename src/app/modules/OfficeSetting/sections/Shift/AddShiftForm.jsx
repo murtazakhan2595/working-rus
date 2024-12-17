@@ -144,7 +144,7 @@ const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
                   Cancel
                 </Button>
                 <Button type="submit" size="lg" variant="default">
-                  Add
+                  {edit ? "Update": "Add"}
                 </Button>
               </div>
             </div>

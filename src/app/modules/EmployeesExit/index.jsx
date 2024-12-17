@@ -61,13 +61,13 @@ console.log("termination", termination);
             <TabsList className="flex justify-center mb-4">
               <TabsTrigger
                 value="exit-request"
-                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                className="data-[state=active]:bg-primary-200 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
                 >
                 Exit Request
               </TabsTrigger>
               <TabsTrigger
                 value="termination-letter"
-                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                className="data-[state=active]:bg-primary-200 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
                  >
                 Termination Letter
               </TabsTrigger>
