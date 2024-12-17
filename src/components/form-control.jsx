@@ -782,14 +782,7 @@ const CustomLightOutlineButton = ({ label, onClick, disabled, style }) => {
   );
 };
 
-const ImageInput = ({
-  label,
-  value,
-  error,
-  onChange,
-  touch,
-  name,
-}) => {
+const ImageInput = ({ label, value, error, onChange, touch, name }) => {
   return (
     <>
       <div className="relative flex flex-row items-center justify-start w-full h-full border-solid rounded-3xl">
@@ -1535,6 +1528,16 @@ const InputComments = ({ handleAddComment, users }) => {
     );
     setCommentAttachment(filteredFiles);
   };
+
+  const handleSubmitComment = (newComment, commentAttachments) => {
+    handleAddComment(newComment, commentAttachments);
+    // Reinitialize state variables after successfully adding a comment
+    setNewComment("");
+    setCommentAttachment([]);
+    setFilteredUsers([]);
+    setShowDropdown(false);
+  };
+
   return (
     <>
       <div className="pb-1">
@@ -1588,7 +1591,7 @@ const InputComments = ({ handleAddComment, users }) => {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    handleAddComment(newComment, commentAttachments);
+                    handleSubmitComment(newComment, commentAttachments);
                   }}
                 >
                   {"Comment"}
