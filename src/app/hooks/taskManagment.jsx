@@ -20,7 +20,7 @@ const getAllProjects = async (payload, userProfile) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/project/?order=-date&${pageNo ? `page=${pageNo}&` : ""}${
+  const URL = `/project/?ordering=-created_at&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
@@ -268,22 +268,14 @@ const addTask = async (payload) => {
           headers: headers(),
         }
       );
-      if (response.status === 200) {
-        toast.success("Task Updated!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
-      return response;
+      if (response.status === 200) return true;
+      else return false;
     } else {
       const response = await axios.post(`${baseUrl}/task/`, payload, {
         headers: headers(),
       });
-      if (response.status === 201) {
-        toast.success("Task Added!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
-      return response;
+      if (response.status === 201) return true;
+      else return false;
     }
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -572,7 +564,8 @@ const deleteAttachment = async (attachmentId) => {
         headers: headers(),
       }
     );
-    return response;
+    if (response.status === 204) return true;
+    else return false;
   } catch (error) {
     if (error?.response?.status === 401) {
       handleLogout();

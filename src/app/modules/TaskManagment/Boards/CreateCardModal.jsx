@@ -9,6 +9,7 @@ const CreateAndUpdateCard = ({
   boardId,
   projectId,
   setIsOpen,
+  isOpen
 }) => {
   const initialValues = {
     ...CardTypes,
@@ -24,6 +25,7 @@ const CreateAndUpdateCard = ({
         onClose={onClose}
         setIsOpen={setIsOpen}
         projectId={projectId}
+        isOpen={isOpen}
       />
       <ToastContainer />
     </>

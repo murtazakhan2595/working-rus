@@ -118,11 +118,10 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                             value={props.values.profile_picture}
                             label={"Your Photo"}
                             required={true}
-                            onChange={(field, value) => {
+                            onChange={(field, value,error) => {
                               props.setFieldValue(field, value);
-                              setImageError(null);
+                              setImageError(error);
                             }}
-                            setImageError={setImageError}
                           />
                         </div>
                       </CardContent>

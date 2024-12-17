@@ -135,24 +135,21 @@ const Board = ({ employees }) => {
     setshowAddNewListModel(!showAddNewListModel);
   };
 
-
   return (
     <>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
-        <Button
-          variant="ghost"
-          onClick={() => navigate(-1)}
-          className="p-4 text-xl text-balance"
-        >
-          <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
-        </Button>
-          <RenderProject projectId={projectId} />
-          </div>
-        <div className="flex items-center justify-center gap-3">
-          <Button onClick={toggleAddBoardModal}>
-            Add New List
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+            className="p-4 text-xl text-balance"
+          >
+            <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
           </Button>
+          <RenderProject projectId={projectId} />
+        </div>
+        <div className="flex items-center justify-center gap-3">
+          <Button onClick={toggleAddBoardModal}>Add New List</Button>
           <FilterInput
             filters={[
               {
@@ -161,7 +158,7 @@ const Board = ({ employees }) => {
                 name: "expense_type",
                 placeholder: "Filters",
                 values: selectedExpenseType,
-                    value: selectedExpenseType
+                value: selectedExpenseType,
               },
             ]}
             onChange={handleFilterChange}
@@ -216,12 +213,9 @@ const Board = ({ employees }) => {
                   Project Board is empty
                 </div>
               )}
-          {/* <Button variant="outline" onClick={toggleAddBoardModal}>Add New List</Button> */}
-
+              {/* <Button variant="outline" onClick={toggleAddBoardModal}>Add New List</Button> */}
             </div>
-
           )}
-
         </CardContent>
       </Card>
 
@@ -360,24 +354,17 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
           ))}
       </div>
 
-      <SheetComponent
-      {...formSheetData}
-      isOpen={openCreateCard}
-      setIsOpen={setOpenCreateCard}
-      width="568px"
-      >
-          <CreateCard
-          onClose={() => {
-            setOpenCreateCard(false);
-            reloadData();
-          }}
-          boardId={board.id}
-          projectId={projectId}
-          setIsOpen={setOpenCreateCard}
-          />
-      </SheetComponent>
+      <CreateCard
+        onClose={() => {
+          setOpenCreateCard(false);
+          reloadData();
+        }}
+        boardId={board.id}
+        isOpen={openCreateCard}
+        projectId={projectId}
+        setIsOpen={setOpenCreateCard}
+      />
       {showAddNewListModel && (
-        
         <AddNewListModel
           boardId={board.id}
           onClose={() => {
@@ -391,7 +378,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
       {isDeleteModalOpen && (
         <AlertDialogue
           isOpen={isDeleteModalOpen}
-          setIsOpen={()=> setIsDeleteModalOpen(false)}
+          setIsOpen={() => setIsDeleteModalOpen(false)}
           handleContinue={confirmDelete}
           title="Confirm Delete"
           description="This action can't be undone. All information associated with this

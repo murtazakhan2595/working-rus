@@ -786,7 +786,6 @@ const ImageInput = ({
   label,
   value,
   error,
-  setImageError,
   onChange,
   touch,
   name,
@@ -827,20 +826,20 @@ const ImageInput = ({
                 if (selectedFile) {
                   // Check file size
                   const maxSize = 1024 * 1024; // 1 MB in bytes
+                  let imageError = null;
                   if (selectedFile.size > maxSize) {
                     // File size exceeds 1 MB, handle error
-                    setImageError("Please upload a file smaller than 1 MB.");
-                    return;
+                    imageError = "Please upload a file smaller than 1 MB.";
                   }
                   // Pass the file object directly
                   onChange(
                     name,
-                    selectedFile // Pass the file object instead of Base64
+                    selectedFile, // Pass the file object instead of Base64
+                    imageError
                   );
                 }
               }}
             />
-
             {error && touch && <div className="text-red-600">{error}</div>}
           </div>
           <span>JPEG or PNG. Max size of 100KB</span>

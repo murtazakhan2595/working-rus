@@ -3,7 +3,7 @@ import { downloadFile } from "utils/fileUtils";
 import { AiOutlineDownload } from "react-icons/ai";
 import { MdClose } from "react-icons/md";
 
-export default function AttachmentUI({ attachment, name, removeFile }) {
+export default function AttachmentUI({ attachment, name, removeFile, id = null }) {
   if (!attachment) return null;
 
   // Extract file type for rendering
@@ -71,7 +71,7 @@ export default function AttachmentUI({ attachment, name, removeFile }) {
         {removeFile && (
           <MdClose
             className="w-5 h-5 text-gray-500 cursor-pointer"
-            onClick={() => removeFile(attachment)}
+            onClick={() => removeFile(attachment,id)}
           />
         )}
       </div>

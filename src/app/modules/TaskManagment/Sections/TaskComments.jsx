@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  InputComments,
-} from "components/form-control.jsx";
+import { InputComments } from "components/form-control.jsx";
 import { EmployeeName } from "utils/getValuesFromTables";
 import moment from "moment";
 import AttachmentUI from "components/ui/AttachmentUI";
@@ -29,7 +27,7 @@ export default function TaskComments({ taskId }) {
     }
   };
 
-  useEffect(async () => {
+  useEffect(() => {
     let isMounted = true;
     if (taskId) fetchComments(isMounted);
     return () => {

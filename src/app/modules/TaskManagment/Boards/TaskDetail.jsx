@@ -2,10 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { CiEdit } from "react-icons/ci";
 import { PriorityList } from "data/Data";
 import moment from "moment";
-import {
-  postComment,
-  getBoardById,
-} from "app/hooks/taskManagment";
+import { postComment, getBoardById } from "app/hooks/taskManagment";
 import { connect, useSelector } from "react-redux";
 import EditCard from "./EditCard";
 import { addCommentAttachment } from "app/hooks/taskManagment";
@@ -14,6 +11,7 @@ import {
   getTaskById,
 } from "app/hooks/taskManagment";
 import { toast } from "react-toastify";
+import SheetComponent from "components/ui/CustomSheet";
 import {
   Labels,
   MembersList,
@@ -26,25 +24,25 @@ import { Button } from "components/ui/button";
 import { Trash } from "lucide-react";
 
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
+import { PageLoader } from "components";
 
-const TaskDetail = ({ taskId, onClose, handleDelete }) => {
+const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [taskData, setTaskData] = useState({});
   const [boardName, setBoardName] = useState("Loading...");
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
-  const [isTaskDetailVisible, setIsTaskDetailVisible] = useState(true);
 
   const fetchTaskData = async (isMounted) => {
     setIsLoading(true);
     try {
       // Fetch card details
       const cardDetails = await getTaskById(taskId);
-
       if (!cardDetails) {
         throw new Error("Card details not found.");
       }
       if (isMounted) {
         setTaskData(cardDetails);
+        setIsLoading(false); // Stop loading spinner
       }
     } catch (error) {
       console.error("Error fetching task data:", error);
@@ -55,7 +53,6 @@ const TaskDetail = ({ taskId, onClose, handleDelete }) => {
       }
     }
   };
-
   useEffect(() => {
     let isMounted = true;
     if (taskId) fetchTaskData(isMounted);
@@ -79,7 +76,6 @@ const TaskDetail = ({ taskId, onClose, handleDelete }) => {
 
   const editDetails = () => {
     setIsEditCardOpen(true);
-    setIsTaskDetailVisible(false);
   };
 
   function CardValues({ values }) {
@@ -120,7 +116,7 @@ const TaskDetail = ({ taskId, onClose, handleDelete }) => {
         ? [
             {
               label: "Assign",
-              value: <MembersList members={values?.assigned_to} />,
+              value: <MembersList members={values?.assigned_to} displayAll={true}/>,
             },
           ]
         : []),
@@ -163,77 +159,86 @@ const TaskDetail = ({ taskId, onClose, handleDelete }) => {
       </div>
     );
   }
+  const formSheetData = {
+    triggerText: null,
+    title: "View Details",
+    description: null,
+    footer: null,
+  };
   return (
     <>
-      {isEditCardOpen && (
-        <EditCard
-          cardId={taskData?.id}
-          projectId={taskData?.project_id}
-          onClose={() => {
-            setIsEditCardOpen(false);
-            setIsTaskDetailVisible(true);
-            let isMounted = true;
-            if (taskId) fetchTaskData(isMounted);
-            return () => {
-              isMounted = false;
-            };
-          }}
-          setIsOpen={setIsEditCardOpen}
-        />
-      )}
-      {isTaskDetailVisible && (
-        <>
-          <header className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-[#323333] ">
-              {taskData?.name}
-            </h1>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={editDetails}>
-                <CiEdit className="mr-2" />
-                Edit
-              </Button>
+      <SheetComponent
+        {...formSheetData}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        width="568px"
+      >
+        {isLoading ? (
+          <PageLoader />
+        ) : (
+          <>
+            <header className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold text-[#323333] ">
+                {taskData?.name}
+              </h1>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={editDetails}>
+                  <CiEdit className="mr-2" />
+                  Edit
+                </Button>
 
-              <Button variant="outline" onClick={handleDelete}>
-                <Trash className="mr-2" size={16} />
-                Delete
-              </Button>
+                <Button variant="outline" onClick={handleDelete}>
+                  <Trash className="mr-2" size={16} />
+                  Delete
+                </Button>
+              </div>
+            </header>
+            <div className="p-2">
+              <div className="mb-4">
+                <span className="text-[14px]  text-baseGray">Is in list </span>
+                <span className="text-[14px]  text-baseGray">{boardName}</span>
+              </div>
+
+              <DetailCard detailCardTitle="Card Details">
+                <CardValues values={taskData} />
+              </DetailCard>
+
+              <DetailBox
+                label="Description"
+                value={
+                  <span
+                    dangerouslySetInnerHTML={{ __html: taskData?.description }}
+                  />
+                }
+              />
+              <DetailBox
+                label="Attachments"
+                value={
+                  <Attachments
+                    attachmentSelected={taskData.attachment || []}
+                    onChange={() => {}}
+                    editMode={false}
+                  />
+                }
+              />
+              <DetailBox label="Comments" value={<></>} />
+              <TaskComments taskId={taskId} />
             </div>
-          </header>
-
-          <div className="p-2">
-            <div className="mb-4">
-              <span className="text-[14px]  text-baseGray">Is in list </span>
-              <span className="text-[14px]  text-baseGray">{boardName}</span>
-            </div>
-
-            <DetailCard detailCardTitle="Card Details">
-              <CardValues values={taskData} />
-            </DetailCard>
-
-            <DetailBox
-              label="Description"
-              value={
-                <span
-                  dangerouslySetInnerHTML={{ __html: taskData?.description }}
-                />
-              }
-            />
-            <DetailBox label="Sub Tasks" value="Sub Task 1" />
-            <DetailBox
-              label="Attachments"
-              value={
-                <Attachments
-                  attachmentSelected={taskData.attachment || []}
-                  onChange={() => {}}
-                  editMode={false}
-                />
-              }
-            />
-            <DetailBox label="Comments" value={<></>} />
-            <TaskComments taskId={taskId} />
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </SheetComponent>
+      <EditCard
+        cardId={taskData?.id}
+        projectId={taskData?.project_id}
+        onClose={() => {
+          setIsEditCardOpen(false);
+          fetchTaskData(true);
+        }}
+        setIsOpen={() => {
+          setIsEditCardOpen();
+        }}
+        isOpen={isEditCardOpen}
+      />
     </>
   );
 };
