@@ -53,10 +53,10 @@ const AddOrganizationForm = ({
         }));
         setCountries(countryList);
       }
-      if(edit){
-        setCountry(formData.country)
-        getStateList(formData.country)
-        getCityList(formData.state, formData.country)
+      if (edit) {
+        setCountry(formData.country);
+        getStateList(formData.country);
+        getCityList(formData.state, formData.country);
       }
     } catch (err) {
       console.log(err);
@@ -66,37 +66,38 @@ const AddOrganizationForm = ({
     fetchData();
   }, []);
 
-  useEffect(()=>{
-    country && getStateList(country)
-    state &&  getCityList(state, country)
-  }, [country, state])
+  useEffect(() => {
+    country && getStateList(country);
+    state && getCityList(state, country);
+  }, [country, state]);
 
-
-  const getStateList = async (country) => { 
-    setLoading(true)
-    let states = await getRegionsList({filterData: {country: country}});
-    if(states){
+  const getStateList = async (country) => {
+    setLoading(true);
+    let states = await getRegionsList({ filterData: { country: country } });
+    if (states) {
       const stateList = states.results.map((state) => ({
         value: `${state.id}`,
         label: state.name,
       }));
       setStates(stateList);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const getCityList = async (state, country) => {
-    setLoading(true)
-    let cities = await getCitiesList({filterData: {country: country, state: state}});
-    if(cities){
+    setLoading(true);
+    let cities = await getCitiesList({
+      filterData: { country: country, state: state },
+    });
+    if (cities) {
       const cityList = cities.results.map((city) => ({
         value: `${city.id}`,
         label: city.name,
       }));
       setCities(cityList);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleClose = () => {
     // setIsOpen(false)
@@ -114,7 +115,6 @@ const AddOrganizationForm = ({
         initialValues={formData}
         // innerRef={formRef}
         onSubmit={(values, { resetForm }) => {
-          console.log(values, "VALUES ARE HERE");
           handleSubmit(values, resetForm); // Call the parent function here
         }}
         validate={validateOrganizationSchema}
@@ -123,20 +123,21 @@ const AddOrganizationForm = ({
           <form onSubmit={props.handleSubmit}>
             {/* Main Office Section */}
             <SheetCardExtension title="Main Office">
-              {/* <div className="space-y-2">
+              <div className="space-y-2">
                 <ImageInput
-                  name="logo"
-                  label="Company Logo"
-                  // required
-                  // error={props.errors.logo}
-                  // touch={props.touched.logo}
+                  name={"logo"}
+                  error={props.errors.logo}
+                  touch={props.touched.logo}
+                  value={props.values.logo}
+                  label={"Company Logo"}
+                  required={true}
                   onChange={(field, value) => {
                     props.setFieldValue(field, value);
                     setImageError(null);
                   }}
                   setImageError={setImageError}
                 />
-              </div> */}
+              </div>
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
                 <TextInput
                   name="name"
@@ -227,7 +228,6 @@ const AddOrganizationForm = ({
               </div>
 
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
-                {console.log("CURRENCIES", currencies)}
                 <SelectComponent
                   name="currency"
                   options={currencies}

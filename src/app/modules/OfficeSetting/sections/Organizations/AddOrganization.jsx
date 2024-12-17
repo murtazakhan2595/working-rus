@@ -9,6 +9,7 @@ const AddOrganization = ({ reload, editData, setEditData, edit, setEdit}) => {
   const [isOpen, setIsOpen] = useState(edit??false);
 
 
+
   useEffect(() => {
     if((!isOpen && edit)){
       setEdit(false);
@@ -27,7 +28,23 @@ const AddOrganization = ({ reload, editData, setEditData, edit, setEdit}) => {
 
   const handleSubmit = async (formData, resetForm) => {
     console.log("Form submitted:", formData);
-    const response = await saveOrganization(formData);
+  
+    const preparedFormData = new FormData();
+  
+    // Loop through formData and append keys and values to FormData
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === "logo") {
+        if (value instanceof File)
+          // Handle file fields
+          preparedFormData.append(key, value);
+      } else {
+        // Handle non-file fields
+        preparedFormData.append(key, value);
+      }
+    });
+  
+    // Pass the FormData to saveOrganization
+    const response = await saveOrganization(formData?.id , preparedFormData);
     if (response) {
       resetForm();
       setIsOpen(false);
@@ -38,6 +55,7 @@ const AddOrganization = ({ reload, editData, setEditData, edit, setEdit}) => {
       toast.error("Error saving organization");
     }
   };
+  
 
 
   return (

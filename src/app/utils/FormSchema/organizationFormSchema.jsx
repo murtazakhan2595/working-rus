@@ -16,6 +16,7 @@ const validateOrganizationSchema = (values, isEditMode) => {
     if (!values?.licensing_authority) errors.licensing_authority= "Licensing Authority is required";
     if (!values?.registration_number) errors.registration_number= "Licensing Number is required";
     if(!values?.contact_person) errors.contact_person= "Contact Person is required";
+    if(!values?.logo) errors.logo = "Logo is Required"
 
 
     return errors;
