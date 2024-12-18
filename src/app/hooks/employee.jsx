@@ -840,9 +840,11 @@ const saveEmployeeBankDetailsData = async (
 
 const employeeExit = async (payload) => {
   try {
-    const response = await axios.post(`${baseUrl}/employeeExit`, payload, {
-      headers: formDataHeader(),
-    });
+    const response = await axios.post(`${baseUrl}/employeeExit`, payload, 
+      {
+        headers: formDataHeader(),
+      }
+    );
     if (response.status === 201) {
       return true;
     }

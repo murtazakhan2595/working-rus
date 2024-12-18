@@ -214,6 +214,15 @@ const validationAcademicRecordSchema = Joi.object({
     .label("Education Body"),
 });
 
+const validateExitRequestForm = (values)=>{
+  const errors = {};
+  if(!values?.exit_date) errors.exit_date = "Exit Date is required";
+  if(!values?.notice_period) errors.notice_period = "Notice Period is required";
+  if(!values?.reason_for_leaving) errors.reason_for_leaving = "Reason for Leaving is required";
+  if(!values?.resignation_Letter) errors.resignation_Letter = "Resignation letter is required"
+  return errors
+}
+
 const validationDepartmentInfoFormSchema = Joi.object({
   department_name: Joi.string().required().label("Department Name").messages({
     "string.empty": `Department Name is required`,
@@ -326,4 +335,7 @@ export {
   validateEmployeeBankInformationForm,
   validateEmployeeEducationForm,
   validateEmployeeIdentificationForm,
+  validateExitRequestForm
 };
+
+
