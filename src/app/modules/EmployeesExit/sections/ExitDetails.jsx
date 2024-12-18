@@ -6,11 +6,16 @@ import { Card } from "components/ui/card";
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardContent } from "components/ui/card";
+import { ReasonForLeaving } from "data/Data";
 
 
 function ExitDetails({ exitData }) {
   const exitDetails = [
-    { label: "Leaving Reason", value: exitData.exit_type },
+    { label: "Leaving Reason", 
+      value:
+      ReasonForLeaving.find((reason) => reason.value === exitData.exit_type)
+        ?.label || "Unknown Reason",
+    },
     {
       label: "Exit date",
       value: moment(exitData.exit_date).format("DD-MM-YYYY") || "Invalid Date",
@@ -18,7 +23,7 @@ function ExitDetails({ exitData }) {
     { label: "Notice period", value: exitData.notice_period },
   ];
   return (
-    <Card className="border shadow">
+    <Card className="border shadow"> 
       <CardHeader>
           <CardTitle> Exit Details</CardTitle> 
         </CardHeader>
