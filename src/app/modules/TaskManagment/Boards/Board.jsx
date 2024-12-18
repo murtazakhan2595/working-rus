@@ -237,6 +237,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const fetchData = async (isMounted) => {
     try {
       const TaskData = await getTaskByBoardId({ filterData });
@@ -261,10 +262,6 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
     e.dataTransfer.setData("sourceBoardId", board.id);
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
   const handleDrop = async (e) => {
     e.preventDefault();
     const taskId = e.dataTransfer.getData("taskId");
@@ -279,51 +276,36 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
   const dropdownOptions = [
     {
       label: "Edit",
-      onClick: () => {
-        setshowAddNewListModel(true);
-      },
+      onClick: () => setshowAddNewListModel(true),
     },
     {
       label: "Delete",
-      onClick: () => {
-        setIsDeleteModalOpen(true);
-      },
+      onClick: () => setIsDeleteModalOpen(true),
     },
   ];
 
   const confirmDelete = async () => {
     await deleteBoard(board.id);
-    reloadData();
+    fetchData(true);
     setIsDeleteModalOpen(false);
   };
 
   return (
     <div
       className="flex flex-col min-w-[320px] max-w-[320px] mb-5"
-      onDragOver={handleDragOver}
+      onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
     >
-      <div className="flex flex-col ">
+      <div className="flex flex-col">
         <header className="flex justify-between w-full gap-5 pl-5">
           <div className="flex gap-4">
             <h2 className="flex gap-2 text-base font-bold text-zinc-800">
-              {/* <div
-                className={`shrink-0 my-auto w-2 h-2 ${getRandomColor(
-                  board.name?.charAt(0)
-                )} rounded-full`}
-              /> */}
               <span>{board.name}</span>
             </h2>
-            {/* <span className="justify-center flex text-sm bg-white text-zinc-600 w-[22px] h-[22px]">
-              {tasks?.count || 0}
-            </span> */}
           </div>
-
           <CustomDropdown
             isOpen={isDropdownOpen}
-            toggleDropdown={() => {
-              setIsDropdownOpen(!isDropdownOpen);
-            }}
+            toggleDropdown={() => setIsDropdownOpen(!isDropdownOpen)}
             options={dropdownOptions}
           />
         </header>
@@ -333,63 +315,61 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
           type="button"
           size="lg"
           className="w-full"
-          onClick={() => {
-            setOpenCreateCard(true);
-          }}
+          onClick={() => setOpenCreateCard(true)}
         >
-          <RxPlus className="text-xl " />
+          <RxPlus className="text-xl" />
           <span className="ml-2">Add Card</span>
         </Button>
         {tasks &&
           tasks.count > 0 &&
           tasks.results.map((task, index) => (
-            <TaskCard
-              key={index}
-              task={task}
-              projectId={projectId}
-              boardId={board.id}
-              reloadData={() => {
-                fetchData(true);
-              }}
-              onDragStart={handleDragStart}
-            />
-          ))}
+          <TaskCard
+            key={index}
+            task={task}
+            projectId={projectId}
+            boardId={board.id}
+            reloadData={() => fetchData(true)}
+            onDragStart={handleDragStart}
+          />
+        ))}
       </div>
 
       <CreateCard
         onClose={() => {
           setOpenCreateCard(false);
-          reloadData();
+          fetchData(true);
         }}
         boardId={board.id}
         isOpen={openCreateCard}
         projectId={projectId}
         setIsOpen={setOpenCreateCard}
       />
+
       {showAddNewListModel && (
         <AddNewListModel
           boardId={board.id}
           onClose={() => {
             setshowAddNewListModel(false);
-            reloadData();
+            fetchData(true);
           }}
-          isEditMode={showAddNewListModel}
+          isEditMode
           setIsOpen={setshowAddNewListModel}
         />
       )}
+
       {isDeleteModalOpen && (
         <AlertDialogue
           isOpen={isDeleteModalOpen}
           setIsOpen={() => setIsDeleteModalOpen(false)}
           handleContinue={confirmDelete}
           title="Confirm Delete"
-          description="This action can't be undone. All information associated with this
-            will be lost."
+          description="This action can't be undone. All information associated with this will be lost."
         />
       )}
     </div>
   );
 };
+
 
 const mapStateToProps = (state) => {
   return {

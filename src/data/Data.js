@@ -9,7 +9,7 @@ import {
   fetchOrganizations,
 } from "state/slices/CommonSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
-import { fetchEmployees, fetchReportingManagers,fetchEmployeesDetail } from "state/slices/EmpSlice";
+import { fetchEmployees, fetchReportingManagers,fetchEmployeesDetail,fetchUser } from "state/slices/EmpSlice";
 import { options } from "joi";
 import {
   ArrowDown,
@@ -771,6 +771,7 @@ export const handleUpdateProfile = (dispatch, data) => {
   };
   dispatch(setUserProfile(userprofile));
   dispatch(fetchEmployeesDetail());
+  dispatch(fetchUser(userprofile.id));
   dispatch(fetchEmployees());
   dispatch(fetchDepartments());
   dispatch(fetchDesignations());

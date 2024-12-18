@@ -9,7 +9,7 @@ import {
   locationTypeOptions,
   countryOptions,
   UserRoles,
-  workplaceTypes
+  workplaceTypes,
 } from "data/Data";
 import { useSelector } from "react-redux";
 import moment from "moment";
@@ -36,7 +36,9 @@ function getWorkType(workType) {
   return response ? response.label : workType;
 }
 function getWorkPlaceType(workPlaceType) {
-  const response = workplaceTypes.find((option) => option.value === workPlaceType);
+  const response = workplaceTypes.find(
+    (option) => option.value === workPlaceType
+  );
   return response ? response.label : workPlaceType;
 }
 function getJobType(jobType, includeAllOption = false) {
@@ -86,12 +88,26 @@ function EmployeeName({ value, length }) {
 
   return <>{displayedName}</>;
 }
+function GetUser(id) {
+  const employees = useSelector((state) => state.emp.employees_detail);
+  const employee = employees.find((option) => option.value === parseInt(id));
+  return employee ?? null;
+}
 function EmployeeProfilePicture(id) {
   const employees = useSelector((state) => state.emp.employees_detail);
   const employee = employees.find((option) => option.value === parseInt(id));
-  const employeeProfilePicture = employee ? employee.profile_picture ?? employee.name : "N/A";
-
-  return {profile_picture:employeeProfilePicture,name: employee.name};
+  if (employee) {
+    const employeeProfilePicture = employee.profile_picture ?? null;
+    return {
+      profile_picture: employeeProfilePicture,
+      name: `${employee?.first_name} ${employee?.last_name}`,
+    };
+  } else {
+    return {
+      profile_picture: null,
+      name: `N/A`,
+    };
+  }
 }
 
 function EmployeeID({ value }) {
@@ -124,7 +140,7 @@ function ResignationReason(value) {
   const response = ReasonForLeaving.find((option) => option.value === value);
   return response ? response.label : "N/A";
 }
-function TerminationReason( value ) {
+function TerminationReason(value) {
   const reason = terminationReasonsOptions.find(
     (option) => option.value === value
   );
@@ -199,6 +215,7 @@ export {
   EmployeeName,
   EmployeeID,
   getEmployeeid,
+  GetUser,
   UserRole,
   ProjectName,
   TerminationStatus,

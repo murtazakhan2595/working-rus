@@ -41,6 +41,7 @@ import {
 } from "app/modules/payroll";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
 import Attendance from "app/modules/Attendance";
+import MyAttendance from "app/modules/Attendance/MyAttendance";
 import StyleGuide from "app/modules/StyleGuide";
 import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
@@ -185,6 +186,11 @@ const SidebarRoutes = [
 	  path: "/attendance",
 	  component: <Attendance />,
 	  name: "Attendance",
+	},
+	Config.MY_ATTENDANCE && {
+	  path: "/my-attendance",
+	  component: <MyAttendance />,
+	  name: "My Attendance",
 	},
 	Config.ATTENDANCE && {
 		path: "/shift-calendar",
