@@ -10,7 +10,7 @@ import {
 } from "src/@/components/ui/table";
 import { PageLoader } from "components";
 
-const TodayStatic = ({ userId }) => {
+const TodayStatistics = ({ userId }) => {
   //  const userProfile = useSelector((state) => state.user.userProfile);
   const [isLoading, setIsLoading] = useState(false);
   const [todayAttendanceData, setTodayAttendanceData] = useState({});
@@ -97,4 +97,4 @@ const TodayStatic = ({ userId }) => {
   );
 };
 
-export default TodayStatic;
+export default TodayStatistics;

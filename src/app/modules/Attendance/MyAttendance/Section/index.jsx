@@ -1,5 +1,6 @@
-import TodayStatic from './TodayStatic';
+import TodayStatistics from './TodayStatistics';
 import EmployeeInfo from './EmployeeInfo';
 import MyAttendanceHistory from './MyAttendanceHistory';
+import HourlyStatistics from './HourlyStatistics';
 
-export {TodayStatic,EmployeeInfo,MyAttendanceHistory};
+export {TodayStatistics,EmployeeInfo,MyAttendanceHistory,HourlyStatistics};

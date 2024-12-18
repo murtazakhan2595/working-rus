@@ -18,8 +18,9 @@ import {
 } from "utils/getValuesFromTables";
 import moment from "moment";
 import {
-  TodayStatic,
+  TodayStatistics,
   EmployeeInfo,
+  HourlyStatistics,
 } from "app/modules/Attendance/MyAttendance/Section";
 import EmployeeSelfTimesheet from "app/modules/Attendance/Sections/EmployeeSelfTimesheet";
 import {
@@ -71,27 +72,27 @@ const MyAttendanceHistory = () => {
     };
   }, []);
 
-//   useEffect(async () => {
-//     let isMounted = true;
-//     const attendanceData = await saveAttendance({
-//       checkin: "2024-12-18T07:18:51.419Z",
-//       checkout: "2024-12-18T07:18:51.419Z",
-//       total_hours: 8,
-//       payable_hours: 8,
-//       break_duration: 1,
-//       date: "2024-12-19",
-//       remarks: "Good",
-//       overtime_hours: 1,
-//       status: "Present",
-//       is_weekend: false,
-//       is_absent: false,
-//       is_late: false,
-//       employee_id: 88,
-//     });
-//     return () => {
-//       isMounted = false;
-//     };
-//   }, []);
+  //   useEffect(async () => {
+  //     let isMounted = true;
+  //     const attendanceData = await saveAttendance({
+  //       checkin: "2024-12-18T07:18:51.419Z",
+  //       checkout: "2024-12-18T07:18:51.419Z",
+  //       total_hours: 8,
+  //       payable_hours: 8,
+  //       break_duration: 1,
+  //       date: "2024-12-19",
+  //       remarks: "Good",
+  //       overtime_hours: 1,
+  //       status: "Present",
+  //       is_weekend: false,
+  //       is_absent: false,
+  //       is_late: false,
+  //       employee_id: 88,
+  //     });
+  //     return () => {
+  //       isMounted = false;
+  //     };
+  //   }, []);
 
   return (
     <>
@@ -101,10 +102,10 @@ const MyAttendanceHistory = () => {
         <div className="p-4 space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <Card>
-              <CardContent className='mt-5'>
+              <CardContent className="mt-5">
                 <div className="flex justify-start flex-col">
                   <EmployeeInfo />
-                  <TodayStatic />
+                  <TodayStatistics userId={userProfile.id} />
                 </div>
               </CardContent>
             </Card>
@@ -116,26 +117,7 @@ const MyAttendanceHistory = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {stats.map((item) => (
-                    <div key={item.label}>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-slate-900">{item.label}</span>
-                        <span>
-                          <span className="text-slate-1200">{item.value}</span>/
-                          {item.total} hrs
-                        </span>
-                      </div>
-                      <Progress
-                        value={
-                          (parseFloat(item.value) / parseFloat(item.total)) *
-                          100
-                        }
-                        className="h-2"
-                      />
-                    </div>
-                  ))}
-                </div>
+                <HourlyStatistics userId={userProfile.id} />
               </CardContent>
             </Card>
 

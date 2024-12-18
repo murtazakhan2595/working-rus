@@ -18,7 +18,7 @@ import {
 } from "utils/getValuesFromTables";
 import moment from "moment";
 import {
-  TodayStatic,
+  TodayStatistics,
   EmployeeInfo,
 } from "app/modules/Attendance/MyAttendance/Section";
 import EmployeeSelfTimesheet from "app/modules/Attendance/Sections/EmployeeSelfTimesheet";
@@ -110,7 +110,7 @@ const MyAttendance = () => {
               <CardContent className="mt-5">
                 <div className="flex justify-start flex-col">
                   <EmployeeInfo />
-                  <TodayStatic userId={userProfile.id} />
+                  <TodayStatistics userId={userProfile.id} />
                 </div>
               </CardContent>
             </Card>

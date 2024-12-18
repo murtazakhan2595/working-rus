@@ -10,7 +10,6 @@ import { useSelector } from "react-redux";
 
 const EmployeeInfo = () => {
   const userDetail = useSelector((state) => state.emp.user_details);
-  console.log(userDetail);
   if (!userDetail) return null;
   return (
     <div className="flex justify-start flex-col">
