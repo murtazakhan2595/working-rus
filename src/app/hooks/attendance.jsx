@@ -92,6 +92,24 @@ const getShift = async(payload) =>{
   }
 }
 
+const getShiftById = async(id) =>{
+  let URL = `/shift/${id}`;
+try{
+  const response = await axios.get(`${baseUrl}${URL}`, {
+    headers: headers(),
+  });
+  if (response.status === 200) {
+    return response.data;
+  }
+}catch(error){
+ console.error("Error fetching shift list:", error);
+ if(error?.response?.status === 401){
+   handleLogout();
+ }
+ return false;
+}
+}
+
 const getShiftAssignment = async(payload) =>{
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -366,4 +384,5 @@ export {
   convertUTCToLocal,
   formatTimeWithAMPM,
   getStats,
+  getShiftById,
 };

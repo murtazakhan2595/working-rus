@@ -31,6 +31,7 @@ import { SheetCardExtension } from "components/SheetCardExtension";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { CardTypes } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
+import DialogBox from "components/DialogBox";
 
 const CreateAndEditCardForm = ({
   taskId,
@@ -46,11 +47,7 @@ const CreateAndEditCardForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
   const [initialValues, setInitialValues] = useState(CardTypes);
-  const priorityMapping = {
-    High: 1,
-    Medium: 2,
-    Low: 3,
-  };
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const handleClose = () => {
     // setIsOpen(false)
     setCloseSheet(true);
@@ -149,14 +146,12 @@ const CreateAndEditCardForm = ({
         start_date: moment(new Date()).format("YYYY-MM-DD"),
         attachment: await getAttachmentFileIds(formData.attachment || []),
         task_checklist: await getCheckListIds(formData.task_checklist || []),
-        priority: priorityMapping[formData.priority], // Map priority to the expected value
       };
-
       // Submit the task
       const response = await addTask(finalData);
-
       if (response) {
-        toast.success("Task added successfully!", {
+        //  setShowSuccessMessage(true);
+        toast.success(`Task ${isEdit ? "Updated" : "Added"} Successfully!`, {
           position: toast.POSITION.TOP_RIGHT,
         });
         onClose(); // Close the modal or perform any other action upon success
@@ -186,225 +181,245 @@ const CreateAndEditCardForm = ({
   };
 
   return (
-    <SheetComponent
-      {...formSheetEditData}
-      isOpen={isOpen}
-      setIsOpen={onClose}
-      width="568px"
-      contentClassName="custom-sheet-width"
-    >
-      <>
-        {handleCloseWithConfirmation({
-          isOpen: closeSheet,
-          setCloseSheet,
-          setIsOpen,
-        })}
-        {isLoading ? (
-          <PageLoader />
-        ) : (
-          <Formik
-            initialValues={initialValues}
-            innerRef={formRef}
-            enableReinitialize={true}
-            onSubmit={(values) => {
-              handleSubmit(values);
-            }}
-            validate={(values) => {
-              const errors = validationTaskFormSchema(values);
-              return errors;
-            }}
-          >
-            {(props) => (
-              <form onSubmit={props.handleSubmit} className="">
-                <div className={`flex w-full gap-6 flex-col rounded-lg pt-2.5`}>
-                  <SheetCardExtension title="Card Details">
-                    <div className="space-y-2">
-                      <TextAreaInput
-                        name="name"
-                        error={props.errors.name}
-                        touch={props.touched.name}
-                        value={props.values.name}
-                        label="Title"
-                        required={true}
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <TextAreaInput
-                        name="description"
-                        error={props.errors.description}
-                        touch={props.touched.description}
-                        value={props.values.description}
-                        required
-                        maxRows={3}
-                        label="Description"
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                      />
-                    </div>
-
-                    <TaskInputDetails
-                      title={"Attachments"}
-                      content={
-                        <Attachments
-                          attachmentSelected={props.values.attachment}
-                          onChange={(attachments) => {
-                            props.setFieldValue("attachment", attachments);
+    <>
+      {" "}
+      <SheetComponent
+        {...formSheetEditData}
+        isOpen={isOpen}
+        setIsOpen={onClose}
+        width="568px"
+        contentClassName="custom-sheet-width"
+      >
+        <>
+          {handleCloseWithConfirmation({
+            isOpen: closeSheet,
+            setCloseSheet,
+            setIsOpen,
+          })}
+          {isLoading ? (
+            <PageLoader />
+          ) : (
+            <Formik
+              initialValues={initialValues}
+              innerRef={formRef}
+              enableReinitialize={true}
+              onSubmit={(values) => {
+                handleSubmit(values);
+              }}
+              validate={(values) => {
+                const errors = validationTaskFormSchema(values);
+                return errors;
+              }}
+            >
+              {(props) => (
+                <form onSubmit={props.handleSubmit} className="">
+                  <div
+                    className={`flex w-full gap-6 flex-col rounded-lg pt-2.5`}
+                  >
+                    <SheetCardExtension title="Card Details">
+                      <div className="space-y-2">
+                        <TextAreaInput
+                          name="name"
+                          error={props.errors.name}
+                          touch={props.touched.name}
+                          value={props.values.name}
+                          label="Title"
+                          required={true}
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
                           }}
                         />
-                      }
-                    />
-                    {props.errors.attachment && props.touched.attachment && (
-                      <div className="text-red-600">
-                        {props.errors.attachment}
                       </div>
-                    )}
-                  </SheetCardExtension>
+                      <div className="space-y-2">
+                        <TextAreaInput
+                          name="description"
+                          error={props.errors.description}
+                          touch={props.touched.description}
+                          value={props.values.description}
+                          required
+                          maxRows={3}
+                          label="Description"
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
+                          }}
+                        />
+                      </div>
 
-                  <SheetCardExtension title={`${isEdit?"Update To Card":"Add To Card"}`}>
-                    <TaskInputDetails
-                      title={"Due Date"}
-                      content={
-                        <div className="space-y-2">
-                          <DateInput
-                            name="end_date"
-                            error={props.errors.end_date}
-                            touch={props.touched.end_date}
-                            value={props.values.end_date}
+                      <TaskInputDetails
+                        title={"Attachments"}
+                        content={
+                          <Attachments
+                            attachmentSelected={props.values.attachment}
+                            onChange={(attachments) => {
+                              props.setFieldValue("attachment", attachments);
+                            }}
+                          />
+                        }
+                      />
+                      {props.errors.attachment && props.touched.attachment && (
+                        <div className="text-red-600">
+                          {props.errors.attachment}
+                        </div>
+                      )}
+                    </SheetCardExtension>
+
+                    <SheetCardExtension
+                      title={`${isEdit ? "Update To Card" : "Add To Card"}`}
+                    >
+                      <TaskInputDetails
+                        title={"Due Date"}
+                        content={
+                          <div className="space-y-2">
+                            <DateInput
+                              name="end_date"
+                              error={props.errors.end_date}
+                              touch={props.touched.end_date}
+                              value={props.values.end_date}
+                              onChange={(field, value) => {
+                                props.setFieldValue(field, value);
+                              }}
+                            />
+                          </div>
+                        }
+                      />
+
+                      <TaskInputDetails
+                        title={"Estimated Time (in hours)"}
+                        content={
+                          <TextInput
+                            name="estimated_time"
+                            error={props.errors.estimated_time}
+                            touch={props.touched.estimated_time}
+                            value={props.values.estimated_time}
+                            // label=
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
                             }}
                           />
-                        </div>
-                      }
-                    />
+                        }
+                      />
+                      <TaskInputDetails
+                        title={"Time Spent (in hours)"}
+                        content={
+                          <TextInput
+                            name="consumed_time"
+                            error={props.errors.consumed_time}
+                            touch={props.touched.consumed_time}
+                            value={props.values.consumed_time}
+                            // label="Time Spent (in hours)"
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        }
+                      />
+                      <TaskInputDetails
+                        title={"Priority"}
+                        content={
+                          <SelectComponent
+                            name="priority"
+                            options={PriorityList}
+                            error={props.errors.priority}
+                            touch={props.touched.priority}
+                            value={props.values.priority}
+                            // required
+                            // label="Priority"
+                            onChange={(field, value) => {
+                              debugger;
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        }
+                      />
 
-                    <TaskInputDetails
-                      title={"Estimated Time (in hours)"}
-                      content={
-                        <TextInput
-                          name="estimated_time"
-                          error={props.errors.estimated_time}
-                          touch={props.touched.estimated_time}
-                          value={props.values.estimated_time}
-                          // label=
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
-                      }
-                    />
-                    <TaskInputDetails
-                      title={"Time Spent (in hours)"}
-                      content={
-                        <TextInput
-                          name="consumed_time"
-                          error={props.errors.consumed_time}
-                          touch={props.touched.consumed_time}
-                          value={props.values.consumed_time}
-                          // label="Time Spent (in hours)"
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
-                      }
-                    />
-                    <TaskInputDetails
-                      title={"Priority"}
-                      content={
-                        <SelectComponent
-                          name="priority"
-                          options={PriorityList}
-                          error={props.errors.priority}
-                          touch={props.touched.priority}
-                          value={props.values.priority}
-                          // required
-                          // label="Priority"
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                          }}
-                        />
-                      }
-                    />
+                      <TaskInputDetails
+                        title={"Label"}
+                        content={
+                          <Labels
+                            labelsSelected={props.values.label || []}
+                            onSelectedLabelsChange={(value) => {
+                              props.setFieldValue("label", value);
+                            }}
+                          />
+                        }
+                      />
+                      <TaskInputDetails
+                        title={"Assignee"}
+                        content={
+                          <Assignee
+                            assigneeSelected={props.values.assigned_to || []}
+                            employees={employees}
+                            onChange={(value) => {
+                              props.setFieldValue("assigned_to", value);
+                            }}
+                          />
+                        }
+                      />
+                      {props.errors.assigned_to &&
+                        props.touched.assigned_to && (
+                          <div className="text-red-600">
+                            {props.errors.assigned_to}
+                          </div>
+                        )}
 
-                    <TaskInputDetails
-                      title={"Label"}
-                      content={
-                        <Labels
-                          labelsSelected={props.values.label || []}
-                          onSelectedLabelsChange={(value) => {
-                            props.setFieldValue("label", value);
-                          }}
-                        />
-                      }
-                    />
-                    <TaskInputDetails
-                      title={"Assignee"}
-                      content={
-                        <Assignee
-                          assigneeSelected={props.values.assigned_to || []}
-                          employees={employees}
-                          onChange={(value) => {
-                            props.setFieldValue("assigned_to", value);
-                          }}
-                        />
-                      }
-                    />
-                    {props.errors.assigned_to && props.touched.assigned_to && (
-                      <div className="text-red-600">
-                        {props.errors.assigned_to}
-                      </div>
-                    )}
+                      <TaskInputDetails
+                        title={"CheckList"}
+                        content={
+                          <CheckList
+                            items={props.values.task_checklist || []}
+                            onChange={(items) => {
+                              props.setFieldValue("task_checklist", items);
+                            }}
+                          />
+                        }
+                      />
+                      <TaskInputDetails
+                        title={"Relation"}
+                        content={
+                          <TaskRelation
+                            relationsList={props.values.relation || []}
+                            onChange={(value) => {
+                              props.setFieldValue("relation", value);
+                            }}
+                            projectId={projectId}
+                          />
+                        }
+                      />
+                    </SheetCardExtension>
 
-                    <TaskInputDetails
-                      title={"CheckList"}
-                      content={
-                        <CheckList
-                          items={props.values.task_checklist || []}
-                          onChange={(items) => {
-                            props.setFieldValue("task_checklist", items);
-                          }}
-                        />
-                      }
-                    />
-                    <TaskInputDetails
-                      title={"Relation"}
-                      content={
-                        <TaskRelation
-                          relationsList={props.values.relation || []}
-                          onChange={(value) => {
-                            props.setFieldValue("relation", value);
-                          }}
-                          projectId={projectId}
-                        />
-                      }
-                    />
-                  </SheetCardExtension>
-
-                  <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="lg"
-                      onClick={handleClose}
-                      // onClick={onClose()}
-                    >
-                      Cancel
-                    </Button>
-                    <Button type="submit">
-                      {initialValues.id ? "Save" : "Add Card"}
-                    </Button>
+                    <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="lg"
+                        onClick={handleClose}
+                        // onClick={onClose()}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit">
+                        {initialValues.id ? "Save" : "Add Card"}
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </form>
-            )}
-          </Formik>
-        )}
-      </>
-    </SheetComponent>
+                </form>
+              )}
+            </Formik>
+          )}
+        </>
+      </SheetComponent>
+      {showSuccessMessage && (
+        <DialogBox
+          isOpen={showSuccessMessage}
+          setIsOpen={(value) => {
+            setShowSuccessMessage(value);
+            onClose(); // Close the modal or perform any other action upon success
+          }}
+          title={`Task ${isEdit ? "Updated" : "Added"} Successfully!`}
+          // description=""
+        />
+      )}
+    </>
   );
 };
 

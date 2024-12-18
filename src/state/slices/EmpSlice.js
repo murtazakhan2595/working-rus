@@ -1,18 +1,31 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getEmployeeList,getEmployeeListWithDetail } from "app/hooks/general";
+import { getEmployeeList,getEmployeeListWithDetail,getManagersList } from "app/hooks/general";
 import {
-  getManagersList,
-} from "app/hooks/general";
+  getEmployeeData,
+} from "app/hooks/employee";
 
 // Define the initial state
 const initialState = {
   employees: [],
   employees_detail: [],
   reportingManagers: [],
+  user_details:{},
   apiStatus: "idle",
   error: null,
 };
 
+// Define the thunk to fetch User
+export const fetchUser = createAsyncThunk(
+  "employees/fetchUser",
+  async (userId) => {
+    try {
+      const response = await getEmployeeData(userId);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
 // Define the thunk to fetch employees
 export const fetchEmployees = createAsyncThunk(
   "employees/fetchEmployees",
@@ -58,6 +71,21 @@ const employeesSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // When the fetchUser thunk is pending
+      .addCase(fetchUser.pending, (state) => {
+        state.apiStatus = "loading";
+      })
+      // When the fetchUser thunk is fulfilled
+      .addCase(fetchUser.fulfilled, (state, action) => {
+        state.apiStatus = "succeeded";
+        state.user_details = action.payload;
+      })
+      // When the fetchUser thunk is rejected
+      .addCase(fetchUser.rejected, (state, action) => {
+        state.apiStatus = "failed";
+        state.error = action.error.message;
+      })
+      
       // When the fetchEmployeesDetail thunk is pending
       .addCase(fetchEmployeesDetail.pending, (state) => {
         state.apiStatus = "loading";

@@ -25,4 +25,8 @@ export default {
     TS_ON_BOARDING:false,
     TS_JOBS:true,
     TS_APPLICANTS:true,
+
+
+    MY_ATTENDANCE:true,
+    
 };
