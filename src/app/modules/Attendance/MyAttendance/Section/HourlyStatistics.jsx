@@ -2,12 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getAttendance, getShiftById } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import moment from "moment";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "src/@/components/ui/table";
+import { CalculateHoursWorked } from "app/modules/Attendance/Sections/CalculateWorkHours";
 import { Progress } from "src/@/components/ui/progress";
 import { PageLoader } from "components";
 
@@ -27,7 +22,7 @@ const HourlyStatistics = ({ userId }) => {
     try {
       const todayAttendanceData = await getAttendance({
         filterData: {
-          date_range: "2024-12-18,2024-12-18",
+          date: moment().format("YYYY-MM-DD"),
           employee_id: userId,
         },
       });
@@ -36,12 +31,18 @@ const HourlyStatistics = ({ userId }) => {
         todayAttendanceData.results &&
         todayAttendanceData.results.length > 0
           ? todayAttendanceData.results[0]
-          : {};
+          : null;
       if (todayAttendance) {
-        return {
-          totalhours: todayAttendance.total_hours,
-          spentHours: todayAttendance.total_hours,
+        const totalhoursCalculated = CalculateHoursWorked([todayAttendance]);
+        const statistics = stats;
+        statistics[0] = {
+          ...statistics[0],
+          ...{
+            value: totalhoursCalculated.totalHours,
+            value: totalhoursCalculated.totalWorkedHours,
+          },
         };
+        setStats(statistics);
       }
     } catch (error) {
       console.error(error);
@@ -51,7 +52,6 @@ const HourlyStatistics = ({ userId }) => {
   };
 
   const getWeeklyAttendanceData = async () => {
-    debugger;
     try {
       const todayAttendanceData = await getAttendance({
         filterData: {
@@ -66,7 +66,16 @@ const HourlyStatistics = ({ userId }) => {
           ? todayAttendanceData.results
           : {};
       if (todayAttendance) {
-        return todayAttendance;
+        if (todayAttendance) {
+          const totalhoursCalculated = CalculateHoursWorked(todayAttendance);
+          const statistics = [...stats]; // Create a shallow copy of the stats array
+          statistics[1] = {
+            ...statistics[1],
+            total: totalhoursCalculated.totalHours, // Store total hours
+            value: totalhoursCalculated.totalWorkedHours, // Store worked hours
+          };
+          setStats(statistics); // Update the state
+        }
       }
     } catch (error) {
       console.error(error);
@@ -78,7 +87,6 @@ const HourlyStatistics = ({ userId }) => {
   const getUserStatistics = async (isMounted) => {
     setIsLoading(true);
     try {
-      debugger;
       if (isMounted) {
         const todayStatistics = await getTodayAttendanceData();
         const weeklyStatistics = await getWeeklyAttendanceData();

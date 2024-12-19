@@ -16,7 +16,7 @@ import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActio
 //   RenderLeaveAction,
 // } from "app/modules/LeaveManagment/Sections";
 import moment from "moment";
-import { IoIosArrowDown } from "react-icons/io";
+import { renderDate } from "utils/renderValues";
 import { downloadCV } from "app/hooks/recruitment";
 import { AiOutlineDownload } from "react-icons/ai";
 import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExitTableAction";
@@ -35,7 +35,6 @@ import { getExpenseType } from "utils/getValuesFromTables";
 import { Clock, Download } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
 import { MembersList } from "app/modules/TaskManagment/Sections";
-
 
 /**
  * LeaveHistoryColumns
@@ -242,13 +241,15 @@ export const ExitRequestColumns = (
       formatter: (cell, row) => (
         <>
           {row?.termination_letter ? (
-            <a className="justify-start items-center gap-2.5 inline-flex"
-            href={row.termination_letter}
-            target="_blank"
-            download>
+            <a
+              className="justify-start items-center gap-2.5 inline-flex"
+              href={row.termination_letter}
+              target="_blank"
+              download
+            >
               <div className="text-[#5c5e64] text-base font-normal">File</div>
-              
-                <AiOutlineDownload />
+
+              <AiOutlineDownload />
             </a>
           ) : (
             "N/A"
@@ -316,19 +317,20 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
       formatter: (cell, row) => (
         <>
           {row?.resignation_letter ? (
-            <a className="justify-start items-center gap-2.5 inline-flex"
-            href={row.resignation_letter}
-            target="_blank"
-            download>
+            <a
+              className="justify-start items-center gap-2.5 inline-flex"
+              href={row.resignation_letter}
+              target="_blank"
+              download
+            >
               <div className="text-[#5c5e64] text-base font-normal">File</div>
-              
-                <AiOutlineDownload />
+
+              <AiOutlineDownload />
             </a>
           ) : (
             "N/A"
           )}
         </>
-        
       ),
     },
     {
@@ -360,15 +362,15 @@ export const AllJobApplicationColumns = (
     dataField: "first_name",
     text: "Candidate",
     formatter: (cell, row) => (
-        <EmployeeNameInfo
-          name={`${cell} ${row?.last_name}`}
-          date={row?.email}
-          department={false}
-        />
+      <EmployeeNameInfo
+        name={`${cell} ${row?.last_name}`}
+        date={row?.email}
+        department={false}
+      />
     ),
     onClick: (index, list) => {
       setViewApplicationDetails({ index, list });
-      setIsViewApplicationDetailOpen(true)
+      setIsViewApplicationDetailOpen(true);
     },
   },
   {
@@ -377,9 +379,9 @@ export const AllJobApplicationColumns = (
     formatter: (cell) => <>{moment(cell).format("MMM D, YYYY")}</>,
   },
   {
-    dataField:"Year_of_Experience",
-    text:"Experience",
-    formatter:(cell)=> <p>{cell} Years</p>
+    dataField: "Year_of_Experience",
+    text: "Experience",
+    formatter: (cell) => <p>{cell} Years</p>,
   },
   {
     dataField: "expected_salary",
@@ -759,7 +761,6 @@ export const ClaimRequestColumns = [
     ),
   },
 
-
   {
     dataField: "status",
     text: "Status",
@@ -1074,7 +1075,11 @@ export const LeaveAplicationColumns = [
     dataField: "",
     text: "Department",
     formatter: (cell, row) => (
-      <><DepartmentName value={row?.leave_request?.employee_info?.department_name}/></>
+      <>
+        <DepartmentName
+          value={row?.leave_request?.employee_info?.department_name}
+        />
+      </>
     ),
   },
   {
@@ -1118,5 +1123,57 @@ export const LeaveAplicationColumns = [
           : "Pending"}
       </span>
     ),
+  },
+];
+
+/**
+ * Attendance History
+ *
+ * Returns an array of column definitions for the Employee table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const MyAttendanceHistoryColumns = [
+  {
+    dataField: "serial_number",
+    text: "Data",
+    formatter: (cell, row) => <>{`${renderDate(row?.date)}`}</>,
+  },
+  {
+    dataField: "name",
+    text: "Check In",
+
+    formatter: (cell, row) => <>{`${moment(row.checkin).format("hh:mm A")}`}</>,
+
+  },
+
+  {
+    dataField: "user_role",
+    text: "Check Out",
+    formatter: (cell, row) => <>{`${row.checkout ? moment(row.checkout).format("hh:mm A"):'Working'}`}</>,
+  },
+  {
+    dataField: "break_duration",
+    text: "Break",
+    formatter: (cell, row) => <>{`${row.break_duration} hrs`}</>,
+
+  },
+  {
+    dataField: "overtime_hours",
+    text: "Overtime",
+    formatter: (cell, row) => <>{`${row.overtime_hours} hrs`}</>,
+  },
+  {
+    dataField: "payable_hours",
+    text: "Productivity",
+  },
+  {
+    dataField: "status",
+    text: "Status",
+  },
+  {
+    dataField: "",
+    text: "Actions",
+    formatter: (cell, row) => <EmployeeAction row={row} />,
   },
 ];

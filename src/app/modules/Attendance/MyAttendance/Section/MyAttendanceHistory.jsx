@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "src/@/components/ui/table";
-import { Progress } from "src/@/components/ui/progress";
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "src/@/components/ui/tabs";
+import TableCustom from "components/CustomTable";
 import Avatar from "components/ui/Avatar";
 import {
   EmployeeID,
@@ -22,7 +20,7 @@ import {
   EmployeeInfo,
   HourlyStatistics,
 } from "app/modules/Attendance/MyAttendance/Section";
-import EmployeeSelfTimesheet from "app/modules/Attendance/Sections/EmployeeSelfTimesheet";
+import { FilterInput, SelectComponent } from "components/form-control";
 import {
   getShiftAssignment,
   getAttendance,
@@ -30,9 +28,9 @@ import {
   saveBreak,
   getBreak,
 } from "app/hooks/attendance";
-import { PageLoader } from "components";
+import { PageLoader, Header } from "components";
 import { toast } from "react-toastify";
-import { calculateBreak } from "app/hooks/attendance";
+import { MyAttendanceHistoryColumns } from "app/utils/Types/TableColumns";
 import { getBreakStatus } from "app/hooks/attendance";
 import { endBreak } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
@@ -41,26 +39,54 @@ import { use } from "react";
 
 const MyAttendanceHistory = () => {
   const userProfile = useSelector((state) => state.user.userProfile);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
-  const [attendance, setAttendance] = useState(null);
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [filterData, setFilterData] = useState({
-    date_range: "2024-12-10,2024-12-20",
+    // date_range: "2024-12-10,2024-12-20",
     employee_id: userProfile.id,
   });
-  const [stats, setStats] = useState([
-    { label: "Today", value: "4.45", total: "8" },
-    { label: "This Week", value: "25", total: "40" },
-    { label: "This Month", value: "48.15", total: "160" },
-    { label: "Remaining", value: "111.85", total: "160" },
-    { label: "Overtime", value: "5", total: "160" },
-  ]);
-  const getAttendanceList = async () => {
-    const attendanceData = await getAttendance({
-      filterData: filterData,
-    });
-    if (attendanceData) {
-      setAttendanceData(attendanceData.results);
+  const [activeTab, setActiveTab] = useState("week");
+
+  const tabsData = [
+    {
+      value: "day",
+      label: "Day",
+      filter: { data: moment().format("YYYY-MM-DD") },
+    },
+    { value: "week", label: "Week" },
+    { value: "month", label: "Month" },
+  ];
+  const onPageChange = (name, value) => {
+    console.log(name, value, "NAME");
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+  };
+  const tabFilter = [
+    { day: { data: moment().format("YYYY-MM-DD") } },
+    { week: { data: moment().format("YYYY-MM-DD") } },
+    { month: { data: moment().format("YYYY-MM-DD") } },
+  ];
+  const getAttendanceList = async (isMounted) => {
+    setIsLoading(true);
+
+    try {
+      const attendanceData = await getAttendance({
+        filterData: { ...filterData },
+      });
+
+      if (attendanceData && isMounted) {
+        setAttendanceData(attendanceData);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -70,152 +96,118 @@ const MyAttendanceHistory = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [activeTab]);
 
-  //   useEffect(async () => {
-  //     let isMounted = true;
-  //     const attendanceData = await saveAttendance({
-  //       checkin: "2024-12-18T07:18:51.419Z",
-  //       checkout: "2024-12-18T07:18:51.419Z",
-  //       total_hours: 8,
-  //       payable_hours: 8,
-  //       break_duration: 1,
-  //       date: "2024-12-19",
-  //       remarks: "Good",
-  //       overtime_hours: 1,
-  //       status: "Present",
-  //       is_weekend: false,
-  //       is_absent: false,
-  //       is_late: false,
-  //       employee_id: 88,
-  //     });
-  //     return () => {
-  //       isMounted = false;
-  //     };
-  //   }, []);
+  const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
+    // if (filterName === "department_name") setSelectedDepartment(filterValue);
+    // if (filterName === "department_position") setSelectedDesignation(filterValue);
+    // if (filterName === "user_role") setSelectedRole(filterValue);
+
+    // setFilterData((prevFilters) => {
+    //   const updatedFilters = { ...prevFilters };
+    //   if (filterValue === "") {
+    //     delete updatedFilters[filterName];
+    //   } else {
+    //     updatedFilters[filterName] = filterValue;
+    //   }
+    //   return updatedFilters;
+    // });
+  };
 
   return (
-    <>
-      {loading ? (
-        <PageLoader />
-      ) : (
-        <div className="p-4 space-y-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <Card>
-              <CardContent className="mt-5">
-                <div className="flex justify-start flex-col">
-                  <EmployeeInfo />
-                  <TodayStatistics userId={userProfile.id} />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-plum-900">
-                  Hours Statistics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <HourlyStatistics userId={userProfile.id} />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-plum-900">Overview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    {
-                      time: "10:30 am",
-                      activity: "Check in",
-                      description: "Back",
-                    },
-                    {
-                      time: "10:10 am",
-                      activity: "Check out",
-                      description: "Away for Bank",
-                    },
-                    {
-                      time: "09:10 am",
-                      activity: "Check In",
-                      description: "Start Working",
-                    },
-                  ].map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between"
-                    >
-                      <div>
-                        <div>{item.time}</div>
-                        <div className="text-slate-900">{item.description}</div>
-                      </div>
-                      <div className="text-slate-900">{item.activity}</div>
-                      <hr />
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-plum-900">Attendance History</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <>
+          <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
+            <FilterInput
+              filters={[
+                {
+                  type: "search",
+                  placeholder: "Search by ID and Name",
+                  name: "id_and_first_name",
+                },
+                {
+                  type: "select-one",
+                  option: [],
+                  name: "department_name",
+                  placeholder: "Department",
+                  values: "",
+                },
+                {
+                  type: "select-two",
+                  option: [],
+                  name: "department_position",
+                  placeholder: "Designation",
+                  values: "",
+                },
+                {
+                  type: "select-three",
+                  option: [],
+                  name: "user_role",
+                  placeholder: "Role",
+                  values: "",
+                },
+              ]}
+              onChange={handleFilterChange}
+            />
           </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span className="text-plum-900">Attendance History</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>S. No</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Punch In</TableHead>
-                    <TableHead>Punch Out</TableHead>
-                    <TableHead>Break</TableHead>
-                    <TableHead>Overtime</TableHead>
-                    <TableHead>Productivity</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {attendanceData.map((row, index) => (
-                    <TableRow
-                      key={index}
-                      className={index % 2 === 1 ? "bg-purple-50" : ""}
+          {isLoading ? (
+            <PageLoader />
+          ) : (
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              defaultValue="week"
+            >
+              <div className="flex justify-start">
+                <TabsList className="flex justify-center mb-4">
+                  {tabsData?.map((tab) => (
+                    <TabsTrigger
+                      key={tab.value}
+                      value={tab.value}
+                      className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
                     >
-                      <TableCell>
-                        {(index + 1).toString().padStart(2, "0")}
-                      </TableCell>
-                      <TableCell>
-                        {row.date
-                          ? new Date(row.date).toLocaleDateString("en-GB") // or 'en-US' based on your preference
-                          : "No Date"}
-                      </TableCell>
-                      <TableCell>
-                        {moment(attendance?.checkin).format("h:mm A")}
-                      </TableCell>
-                      <TableCell>
-                        {row.checkout
-                          ? moment(row?.checkout.replace("Z", "")).format(
-                              "h:mm A"
-                            )
-                          : "Not Checked Out"}
-                      </TableCell>
-                      <TableCell>{row.break_duration || 0.0} hrs</TableCell>
-                      <TableCell>{row.overtime_hours || 0.0} hrs</TableCell>
-                      <TableCell>{row.payable_hours || 0.0} hrs</TableCell>
-                    </TableRow>
+                      {tab.label}
+                    </TabsTrigger>
                   ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-    </>
+                </TabsList>
+              </div>
+              <TabsContent value="day">
+                <TableCustom
+                  data={attendanceData.results}
+                  columns={MyAttendanceHistoryColumns}
+                  pagination={true}
+                  dataTotalSize={attendanceData.count || 0}
+                  tableOptions={tableOptions}
+                />
+              </TabsContent>
+              <TabsContent value="week">
+                <TableCustom
+                  data={attendanceData.results}
+                  columns={MyAttendanceHistoryColumns}
+                  pagination={true}
+                  dataTotalSize={attendanceData.count || 0}
+                  tableOptions={tableOptions}
+                />
+              </TabsContent>
+              <TabsContent value="month">
+                <TableCustom
+                  data={attendanceData.results}
+                  columns={MyAttendanceHistoryColumns}
+                  pagination={true}
+                  dataTotalSize={attendanceData.count || 0}
+                  tableOptions={tableOptions}
+                />
+              </TabsContent>
+            </Tabs>
+          )}
+        </>
+      </CardContent>
+    </Card>
   );
 };
 

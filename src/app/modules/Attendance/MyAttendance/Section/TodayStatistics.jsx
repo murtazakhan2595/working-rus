@@ -20,7 +20,7 @@ const TodayStatistics = ({ userId }) => {
     try {
       const attendanceData = await getAttendance({
         filterData: {
-          date_range: "2024-12-18,2024-12-18",
+          date: moment().format("YYYY-MM-DD"),
           employee_id: userId,
         },
       });

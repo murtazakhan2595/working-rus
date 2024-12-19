@@ -26,7 +26,7 @@ const EmployeeInfo = () => {
         <div className="text-neutral-1000 text-xs font-normal">
           <EmployeeID value={userDetail.id} />
         </div>
-        <div className="font-large capitalize text-neutral-1200">
+        <div className="font-large capitalize text-lg text-neutral-1200">
           <EmployeeName value={userDetail.id} />
         </div>
         <div className="text-sm flex flex-col items-start gap-1 ">

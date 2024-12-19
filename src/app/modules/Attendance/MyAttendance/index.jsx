@@ -20,6 +20,8 @@ import moment from "moment";
 import {
   TodayStatistics,
   EmployeeInfo,
+  HourlyStatistics,
+  MyAttendanceHistory
 } from "app/modules/Attendance/MyAttendance/Section";
 import EmployeeSelfTimesheet from "app/modules/Attendance/Sections/EmployeeSelfTimesheet";
 import {
@@ -55,45 +57,46 @@ const MyAttendance = () => {
     { label: "Remaining", value: "111.85", total: "160" },
     { label: "Overtime", value: "5", total: "160" },
   ]);
-  const getAttendanceList = async () => {
-    const attendanceData = await getAttendance({
-      filterData: filterData,
-    });
-    if (attendanceData) {
-      setAttendanceData(attendanceData.results);
-    }
-  };
+  // const getAttendanceList = async () => {
+  //   const attendanceData = await getAttendance({
+  //     filterData: filterData,
+  //   });
+  //   if (attendanceData) {
+  //     setAttendanceData(attendanceData.results);
+  //   }
+  // };
 
-  useEffect(() => {
-    let isMounted = true;
-    getAttendanceList(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  // useEffect(() => {
+  //   let isMounted = true;
+  //   getAttendanceList(isMounted);
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, []);
 
   useEffect(async () => {
     let isMounted = true;
-    const attendanceData = await saveAttendance({
-        // checkin: "2024-12-18T07:18:51.419Z",
-        // checkout: "2024-12-18T07:18:51.419Z",
-        // total_hours: 8,
-        // payable_hours: 8,
-        // break_duration: 1,
-        // date: "2024-12-19",
-        // remarks: "Good",
-        // overtime_hours: 1,
-        // status: "Present",
-        // is_weekend: false,
-        // is_absent: false,
-        // is_late: false,
-        // employee_id: 88,
-        shift_id:11,
-
-        id:62,
-    //   employee_id: [88],
-    //   id: 11,
-    });
+    // const attendanceData = await saveAttendance({
+    //   checkin: "2024-12-19T10:00:00.000Z", // 17 Dec 2024, 10:00 AM in UTC
+    //   // checkout: "", // 17 Dec 2024, 7:00 PM in UTC
+    //   total_hours: "8.00",
+    //   payable_hours: "8.00",
+    //   break_duration: "1.00",
+    //   date: "2024-12-19",
+    //   remarks: "Good",
+    //   overtime_hours: "1.00",
+    //   status: "Present",
+    //   is_weekend: false,
+    //   is_absent: false,
+    //   is_late: false,
+    //   employee_id: 88,
+    //   shift_id: null,
+    //   shift_name: null,
+    //   shift_starttime: null,
+    //   shift_endtime: null,
+    //   shift_is_org_based: null,
+    //   shift_organization: null,
+    // });
     return () => {
       isMounted = false;
     };
@@ -122,26 +125,8 @@ const MyAttendance = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {stats.map((item) => (
-                    <div key={item.label}>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-slate-900">{item.label}</span>
-                        <span>
-                          <span className="text-slate-1200">{item.value}</span>/
-                          {item.total} hrs
-                        </span>
-                      </div>
-                      <Progress
-                        value={
-                          (parseFloat(item.value) / parseFloat(item.total)) *
-                          100
-                        }
-                        className="h-2"
-                      />
-                    </div>
-                  ))}
-                </div>
+                              <HourlyStatistics userId={userProfile.id} />
+              
               </CardContent>
             </Card>
 
@@ -185,58 +170,7 @@ const MyAttendance = () => {
             </Card>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span className="text-plum-900">Attendance History</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>S. No</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Punch In</TableHead>
-                    <TableHead>Punch Out</TableHead>
-                    <TableHead>Break</TableHead>
-                    <TableHead>Overtime</TableHead>
-                    <TableHead>Productivity</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {attendanceData.map((row, index) => (
-                    <TableRow
-                      key={index}
-                      className={index % 2 === 1 ? "bg-purple-50" : ""}
-                    >
-                      <TableCell>
-                        {(index + 1).toString().padStart(2, "0")}
-                      </TableCell>
-                      <TableCell>
-                        {row.date
-                          ? new Date(row.date).toLocaleDateString("en-GB") // or 'en-US' based on your preference
-                          : "No Date"}
-                      </TableCell>
-                      <TableCell>
-                        {moment(attendance?.checkin).format("h:mm A")}
-                      </TableCell>
-                      <TableCell>
-                        {row.checkout
-                          ? moment(row?.checkout.replace("Z", "")).format(
-                              "h:mm A"
-                            )
-                          : "Not Checked Out"}
-                      </TableCell>
-                      <TableCell>{row.break_duration || 0.0} hrs</TableCell>
-                      <TableCell>{row.overtime_hours || 0.0} hrs</TableCell>
-                      <TableCell>{row.payable_hours || 0.0} hrs</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+         <MyAttendanceHistory userId={userProfile.id} />
         </div>
       )}
     </>

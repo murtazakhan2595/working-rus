@@ -22,6 +22,7 @@ export default function TaskRelation({
   relationsList,
   onChange,
   projectId,
+  taskId,
   editMode = true,
 }) {
   const [taskList, setTaskList] = useState([]);
@@ -31,7 +32,11 @@ export default function TaskRelation({
     const taskList = await getTaskByprojectId({
       filterData: { project_id: [projectId] },
     });
-    setTaskList(taskList.results); // Update this to `tasklList`
+    const tasks = taskList.results || [];
+    const finalTaskList = taskId
+      ? tasks.filter((obj) => obj.id === taskId)
+      : tasks;
+    setTaskList(finalTaskList || []); // Update this to `tasklList`
   };
 
   useEffect(() => {
