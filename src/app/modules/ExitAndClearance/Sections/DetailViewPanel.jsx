@@ -1,7 +1,5 @@
 import pdfIcon from "assets/images/pdfIcon.svg";
-import { filebase64Download, getFileSizeInKB } from "utils/fileUtils";
 import { AiOutlineDownload } from "react-icons/ai";
-import { RxCross2 } from "react-icons/rx";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
 export const ViewDetailBox = ({ labelList }) => {
@@ -49,15 +47,16 @@ export const ViewAttachmentDetail = ({ title, attachments }) => {
                   </div>
                 </p>
               </div>
-              <div
-                className="flex gap-x-2 cursor-pointer"
-                onClick={() =>
-                  filebase64Download(attachment?.file, attachment?.name)
-                }
+
+              <a
+                href={attachment.file}
+                className="flex gap-2 items-center"
+                target="_blank"
               >
                 <p class="text-[14px] text-[#323333]">Download</p>
+
                 <AiOutlineDownload />
-              </div>
+              </a>
             </div>
           );
         })}
