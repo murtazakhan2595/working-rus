@@ -382,6 +382,7 @@ const CreateAndEditCardForm = ({
                               props.setFieldValue("relation", value);
                             }}
                             projectId={projectId}
+                            taskId={taskId}
                           />
                         }
                       />
