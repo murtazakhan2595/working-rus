@@ -29,12 +29,13 @@ export default function TaskRelation({
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchTasks = async () => {
+    debugger
     const taskList = await getTaskByprojectId({
       filterData: { project_id: [projectId] },
     });
     const tasks = taskList.results || [];
     const finalTaskList = taskId
-      ? tasks.filter((obj) => obj.id === taskId)
+      ? tasks.filter((obj) => obj.id !== taskId)
       : tasks;
     setTaskList(finalTaskList || []); // Update this to `tasklList`
   };
