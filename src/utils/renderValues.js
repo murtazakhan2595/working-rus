@@ -1,44 +1,44 @@
 import moment from "moment";
 
 export const getRandomColor = (letter) => {
-    letter = letter?.toUpperCase();
-    const colors = {
-      A: "bg-plum-300",
-      B: "bg-plum-400",
-      C: "bg-plum-500",
-      D: "bg-plum-600",
-      E: "bg-plum-300",
-      F: "bg-plum-400",
-      G: "bg-plum-500",
-      H: "bg-plum-600",
-      I: "bg-plum-300",
-      J: "bg-plum-400",
-      K: "bg-plum-500",
-      L: "bg-plum-600",
-      M: "bg-plum-300",
-      N: "bg-plum-400",
-      O: "bg-splum-500",
-      P: "bg-plume-600",
-      Q: "bg-plum-300",
-      R: "bg-plum-400",
-      S: "bg-plum-500",
-      T: "bg-plum-600",
-      U: "bg-plum-300",
-      V: "bg-plum-400",
-      W: "bg-plum-500",
-      X: "bg-plum-600",
-      Y: "bg-plum-300",
-      Z: "bg-plum-400"
-    };
-  
-    if (letter && colors[letter]) {
-      return colors[letter];
-    } else {
-      const colorValues = Object.values(colors);
-      return colorValues[Math.floor(Math.random() * colorValues.length)];
-    }
+  letter = letter?.toUpperCase();
+  const colors = {
+    A: "bg-plum-300",
+    B: "bg-plum-400",
+    C: "bg-plum-500",
+    D: "bg-plum-600",
+    E: "bg-plum-300",
+    F: "bg-plum-400",
+    G: "bg-plum-500",
+    H: "bg-plum-600",
+    I: "bg-plum-300",
+    J: "bg-plum-400",
+    K: "bg-plum-500",
+    L: "bg-plum-600",
+    M: "bg-plum-300",
+    N: "bg-plum-400",
+    O: "bg-splum-500",
+    P: "bg-plume-600",
+    Q: "bg-plum-300",
+    R: "bg-plum-400",
+    S: "bg-plum-500",
+    T: "bg-plum-600",
+    U: "bg-plum-300",
+    V: "bg-plum-400",
+    W: "bg-plum-500",
+    X: "bg-plum-600",
+    Y: "bg-plum-300",
+    Z: "bg-plum-400",
   };
-  
+
+  if (letter && colors[letter]) {
+    return colors[letter];
+  } else {
+    const colorValues = Object.values(colors);
+    return colorValues[Math.floor(Math.random() * colorValues.length)];
+  }
+};
+
 export function numberToWords(number) {
   const ones = [
     "",
@@ -137,8 +137,8 @@ export function numberToWords(number) {
   return result.trim();
 }
 
-export function renderDate(date){
-  return date? moment(date).format("MMM DD, YYYY"):'N/A';
+export function renderDate(date) {
+  return date ? moment(date).format("MMM DD, YYYY") : "N/A";
 }
 
 export const GetDateRange = (period) => {
@@ -154,4 +154,42 @@ export const GetDateRange = (period) => {
     return `${startOfMonth},${endOfMonth}`;
   }
   return moment().format("YYYY-MM-DD"); // Default case: single day
+};
+
+
+export const GetShiftTotalHours = (shiftStartTime, shiftEndTime, period) => {
+  const calculateHoursForDays = (start, end) => {
+    let totalHours = 0;
+    const current = moment(start).startOf("day");
+    const endDate = moment(end).endOf("day");
+
+    while (current.isBefore(endDate)) {
+      const dayOfWeek = current.isoWeekday(); // ISO weekday (1 = Monday, 7 = Sunday)
+      if (dayOfWeek >= 1 && dayOfWeek <= 5) { // Monday to Friday
+        const shiftStart = moment(`${current.format("YYYY-MM-DD")}T${shiftStartTime}`);
+        const shiftEnd = moment(`${current.format("YYYY-MM-DD")}T${shiftEndTime}`);
+        totalHours += moment.duration(shiftEnd.diff(shiftStart)).asHours();
+      }
+      current.add(1, "day");
+    }
+    return totalHours;
+  };
+
+  if (period === "day") {
+    const today = moment().format("YYYY-MM-DD");
+    const shiftStart = moment(`${today}T${shiftStartTime}`);
+    const shiftEnd = moment(`${today}T${shiftEndTime}`);
+    return moment.duration(shiftEnd.diff(shiftStart)).asHours();
+  } else if (period === "week") {
+    const weekStart = moment().startOf("isoWeek");
+    const weekEnd = moment().endOf("isoWeek");
+    return calculateHoursForDays(weekStart, weekEnd);
+  } else if (period === "month") {
+    const monthStart = moment().startOf("month");
+    const monthEnd = moment().endOf("month");
+    return calculateHoursForDays(monthStart, monthEnd);
+  } else {
+    const [startDate, endDate] = period.split(",");
+    return calculateHoursForDays(startDate, endDate);
+  }
 };

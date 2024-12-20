@@ -9,7 +9,7 @@ import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applica
 import { dropdownOptions, formatNumber } from "data/Data";
 import { EmployeeNameInfo, StatusLabel } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
-import {EmployeeAttendenceHistoryActions} from "app/modules/Attendance/MyAttendance/Section";
+import {EmployeeAttendenceHistoryActions} from "app/modules/Attendance/EmployeeAttendance/Section";
 // import {
 //   Status,
 //   RenderStatus,
