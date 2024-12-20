@@ -5,8 +5,9 @@ import moment from "moment";
 import { CalculateHoursWorked } from "app/modules/Attendance/Sections/CalculateWorkHours";
 import { Progress } from "src/@/components/ui/progress";
 import { PageLoader } from "components";
+import { GetDateRange, GetShiftTotalHours } from "utils/renderValues";
 
-const HourlyStatistics = ({ userId }) => {
+const HourlyStatistics = ({ userId, shiftId, attendanceData }) => {
   //  const userProfile = useSelector((state) => state.user.userProfile);
   const [isLoading, setIsLoading] = useState(false);
   const [todayAttendanceData, setTodayAttendanceData] = useState({});
@@ -55,7 +56,39 @@ const HourlyStatistics = ({ userId }) => {
     try {
       const todayAttendanceData = await getAttendance({
         filterData: {
-          date_range: "2024-12-15,2024-12-22",
+          date_range: GetDateRange("week"),
+          employee_id: userId,
+        },
+      });
+      const todayAttendance =
+        todayAttendanceData &&
+        todayAttendanceData.results &&
+        todayAttendanceData.results.length > 0
+          ? todayAttendanceData.results
+          : {};
+      if (todayAttendance) {
+        if (todayAttendance) {
+          const totalhoursCalculated = CalculateHoursWorked(todayAttendance);
+          const statistics = [...stats]; // Create a shallow copy of the stats array
+          statistics[1] = {
+            ...statistics[1],
+            total: totalhoursCalculated.totalHours, // Store total hours
+            value: totalhoursCalculated.totalWorkedHours, // Store worked hours
+          };
+          setStats(statistics); // Update the state
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      return {};
+    }
+  };
+  const getMonthlAttendanceData = async () => {
+    try {
+      const todayAttendanceData = await getAttendance({
+        filterData: {
+          date_range: GetDateRange("month"),
           employee_id: userId,
         },
       });
@@ -88,6 +121,40 @@ const HourlyStatistics = ({ userId }) => {
     setIsLoading(true);
     try {
       if (isMounted) {
+        const shiftData = await getShiftById(shiftId);
+        if (shiftData) {
+          setStats([
+            {
+              label: "Today",
+              value: "0",
+              total: GetShiftTotalHours(
+                moment(shiftData.starttime).format("hh:mm A"),
+                moment(shiftData.endtime).format("hh:mm A"),
+                "day"
+              ),
+            },
+            {
+              label: "This Week",
+              value: "0",
+              total: GetShiftTotalHours(
+                moment(shiftData.starttime).format("hh:mm A"),
+                moment(shiftData.endtime).format("hh:mm A"),
+                "week"
+              ),
+            },
+            {
+              label: "This Month",
+              value: "0",
+              total: GetShiftTotalHours(
+                moment(shiftData.starttime).format("hh:mm A"),
+                moment(shiftData.endtime).format("hh:mm A"),
+                "month"
+              ),
+            },
+            { label: "Remaining", value: "0", total: "0" },
+            { label: "Overtime", value: "0", total: "0" },
+          ]);
+        }
         const todayStatistics = await getTodayAttendanceData();
         const weeklyStatistics = await getWeeklyAttendanceData();
       }
@@ -123,7 +190,7 @@ const HourlyStatistics = ({ userId }) => {
           </div>
           <Progress
             value={(parseFloat(item.value) / parseFloat(item.total)) * 100}
-            className="h-2"
+            className="h-2 bg-plum-900"
           />
         </div>
       ))}

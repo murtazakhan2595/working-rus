@@ -37,7 +37,7 @@ import { useSelector } from "react-redux";
 import { getStats } from "app/hooks/attendance";
 import { use } from "react";
 
-const MyAttendanceHistory = () => {
+const EmployeeAttendanceHistory = () => {
   const userProfile = useSelector((state) => state.user.userProfile);
   const [isLoading, setIsLoading] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
@@ -200,4 +200,4 @@ const MyAttendanceHistory = () => {
   );
 };
 
-export default MyAttendanceHistory;
+export default EmployeeAttendanceHistory;
