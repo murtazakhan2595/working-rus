@@ -16,6 +16,8 @@ import Newlogo from "assets/images/NewLogo";
 import { Button } from "components/ui/button";
 import { usePDF } from "react-to-pdf";
 import TableCustom from "components/CustomTable";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 ChartJS.register(
   CategoryScale,
@@ -27,8 +29,9 @@ ChartJS.register(
 );
 
 const AttendanceReport = () => {
+  const navigate = useNavigate()
   const { toPDF, targetRef } = usePDF({
-    filename: "payslip.pdf",
+    filename: "my-attendance.pdf",
     page: {
       format: "A4",
       orientation: "portrait",
@@ -121,8 +124,19 @@ const AttendanceReport = () => {
   ];
 
   return (
-    <div className="p-6 space-y-6 bg-white" ref={targetRef}>
-      {/* Header */}
+    <div>
+            <div className="mb-4">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="p-2 text-lg text-balance"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2 bg-white rounded-lg shadow-sm" />
+          Attendance Detail
+        </Button>
+      </div>
+      <div  className="p-6 space-y-6 bg-white" ref={targetRef}>
+
       <CardHeader className="py-2 text-white bg-plum-400">
         <div className="flex items-center justify-between">
           <Newlogo />
@@ -205,6 +219,7 @@ const AttendanceReport = () => {
           Download PDF
         </Button>
       </CardFooter>
+      </div>
     </div>
   );
 };

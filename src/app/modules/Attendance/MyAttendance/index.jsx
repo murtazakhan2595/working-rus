@@ -27,6 +27,8 @@ import { getBreakStatus } from "app/hooks/attendance";
 import { endBreak } from "app/hooks/attendance";
 import { getLocalTime } from "app/hooks/attendance";
 import { getStats } from "app/hooks/attendance";
+import { Button } from "components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -36,6 +38,7 @@ const Attendance = () => {
   const [attendance, setAttendance] = useState(null);
   const [attendanceData, setAttendanceData] = useState([]);
   const [onBreak, setOnBreak] = useState(false);
+  const navigate = useNavigate()
 
   const [stats, setStats] = useState([
     { label: "Today", value: "4.45", total: "8" },
@@ -409,6 +412,7 @@ const Attendance = () => {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span className="text-plum-900">Attendance History</span>
+                <Button variant="outline" onClick={()=> navigate('/attendance-reports')}>Download </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
