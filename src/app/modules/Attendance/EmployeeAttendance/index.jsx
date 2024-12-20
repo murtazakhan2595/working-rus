@@ -39,11 +39,13 @@ import { getBreakStatus } from "app/hooks/attendance";
 import { endBreak } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import { getStats } from "app/hooks/attendance";
-import { use } from "react";
+import { GetUser } from "utils/getValuesFromTables";
 import { GetDateRange } from "utils/renderValues";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 const EmployeeAttendance = () => {
-  const userProfile = useSelector((state) => state.emp.user_details);
+  const { id } = useParams();
+  const userProfile = GetUser(id);
   const [isLoading, setIsLoading] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
   const [filterData, setFilterData] = useState({
