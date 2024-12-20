@@ -50,7 +50,7 @@ const EmployeeAttendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [filterData, setFilterData] = useState({
     date_range: GetDateRange("week"),
-    employee_id: userProfile.id,
+    employee_id: id,
   });
 
   const getAttendanceList = async (isMounted) => {
@@ -108,6 +108,7 @@ const EmployeeAttendance = () => {
   // }, []);
 
   if (isLoading) return <PageLoader />;
+  console.log(userProfile)
   return (
     <>
       <div className="p-4 space-y-4">
@@ -115,10 +116,10 @@ const EmployeeAttendance = () => {
           <Card>
             <CardContent className="mt-5">
               <div className="flex justify-start flex-col">
-                <EmployeeInfo />
+                <EmployeeInfo user={userProfile} />
                 <TodayStatistics
-                  userId={userProfile.id}
-                  shiftId={userProfile.shift_assignment}
+                  userId={id}
+                  shiftId={userProfile?.shift_assignment || 1}
                 />
               </div>
             </CardContent>
@@ -129,7 +130,16 @@ const EmployeeAttendance = () => {
               <CardTitle className="text-plum-900">Hours Statistics</CardTitle>
             </CardHeader>
             <CardContent>
-              <HourlyStatistics userId={userProfile.id} />
+              <HourlyStatistics
+                userId={id}
+                shiftId={userProfile?.shift_assignment ||1}
+                dateRange={
+                  filterData && filterData.date_range
+                    ? filterData.date_range
+                    : null
+                }
+                attendanceData={attendanceData}
+              />
             </CardContent>
           </Card>
 
@@ -139,14 +149,14 @@ const EmployeeAttendance = () => {
             </CardHeader>
             <CardContent>
               <EmployeeAttendanceOverview
-                userId={userProfile.id}
+                userId={id}
                 attendanceData={attendanceData}
               />
             </CardContent>
           </Card>
         </div>
 
-        <EmployeeAttendanceHistory userId={userProfile.id} />
+        <EmployeeAttendanceHistory userId={id} />
       </div>
     </>
   );

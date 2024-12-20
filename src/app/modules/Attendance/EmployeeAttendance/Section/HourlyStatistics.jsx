@@ -1,201 +1,188 @@
 import React, { useEffect, useState } from "react";
 import { getAttendance, getShiftById } from "app/hooks/attendance";
-import { useSelector } from "react-redux";
 import moment from "moment";
 import { CalculateHoursWorked } from "app/modules/Attendance/Sections/CalculateWorkHours";
 import { Progress } from "src/@/components/ui/progress";
 import { PageLoader } from "components";
 import { GetDateRange, GetShiftTotalHours } from "utils/renderValues";
 
-const HourlyStatistics = ({ userId, shiftId, attendanceData }) => {
-  //  const userProfile = useSelector((state) => state.user.userProfile);
+const HourlyStatistics = ({ userId, shiftId, attendanceData, dateRange }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [todayAttendanceData, setTodayAttendanceData] = useState({});
-  const [todayShiftData, setTodayShiftData] = useState({});
-  const [stats, setStats] = useState([
-    { label: "Today", value: "0", total: "0" },
-    { label: "This Week", value: "0", total: "0" },
-    { label: "This Month", value: "0", total: "0" },
-    { label: "Remaining", value: "0", total: "0" },
-    { label: "Overtime", value: "0", total: "0" },
-  ]);
-  const getTodayAttendanceData = async () => {
+  const [weeklyAttendanceData, setWeeklyAttendanceData] = useState({});
+  const [monthlyAttendanceData, setMonthlyAttendanceData] = useState({});
+  const [remainingAttendanceData, setRemainingAttendanceData] = useState({});
+  const [overtimeAttendanceData, setOvertimeAttendanceData] = useState({});
+
+  const [shiftData, setShiftData] = useState({});
+
+  const calculateAttendanceStats = (attendance, shiftDuration, rangeType) => {
+    const totalHours = CalculateHoursWorked(attendance);
+    const total = GetShiftTotalHours(
+      moment(shiftDuration.starttime).format("HH:mm"),
+      moment(shiftDuration.endtime).format("HH:mm"),
+      rangeType
+    );
+    return {
+      value: totalHours.totalWorkedHours,
+      total: total,
+    };
+  };
+
+  const fetchAttendanceData = async (filterData, rangeType) => {
     try {
-      const todayAttendanceData = await getAttendance({
-        filterData: {
-          date: moment().format("YYYY-MM-DD"),
-          employee_id: userId,
-        },
-      });
-      const todayAttendance =
-        todayAttendanceData &&
-        todayAttendanceData.results &&
-        todayAttendanceData.results.length > 0
-          ? todayAttendanceData.results[0]
-          : null;
-      if (todayAttendance) {
-        const totalhoursCalculated = CalculateHoursWorked([todayAttendance]);
-        const statistics = stats;
-        statistics[0] = {
-          ...statistics[0],
-          ...{
-            value: totalhoursCalculated.totalHours,
-            value: totalhoursCalculated.totalWorkedHours,
-          },
-        };
-        setStats(statistics);
-      }
+      const attendanceData = await getAttendance({ filterData });
+      return attendanceData?.results || [];
     } catch (error) {
       console.error(error);
-    } finally {
-      return {};
+      return [];
     }
   };
 
-  const getWeeklyAttendanceData = async () => {
-    try {
-      const todayAttendanceData = await getAttendance({
-        filterData: {
-          date_range: GetDateRange("week"),
-          employee_id: userId,
-        },
-      });
-      const todayAttendance =
-        todayAttendanceData &&
-        todayAttendanceData.results &&
-        todayAttendanceData.results.length > 0
-          ? todayAttendanceData.results
-          : {};
-      if (todayAttendance) {
-        if (todayAttendance) {
-          const totalhoursCalculated = CalculateHoursWorked(todayAttendance);
-          const statistics = [...stats]; // Create a shallow copy of the stats array
-          statistics[1] = {
-            ...statistics[1],
-            total: totalhoursCalculated.totalHours, // Store total hours
-            value: totalhoursCalculated.totalWorkedHours, // Store worked hours
-          };
-          setStats(statistics); // Update the state
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      return {};
-    }
+  const getTodayAttendanceStats = async () => {
+    const todayAttendance = await fetchAttendanceData(
+      {
+        date: moment().format("YYYY-MM-DD"),
+        employee_id: userId,
+      },
+      "day"
+    );
+    setTodayAttendanceData(
+      calculateAttendanceStats(todayAttendance, shiftData, "day")
+    );
   };
-  const getMonthlAttendanceData = async () => {
+
+  const getWeeklyAttendanceStats = async () => {
+    const weeklyAttendance = await fetchAttendanceData(
+      {
+        date_range: GetDateRange("week"),
+        employee_id: userId,
+      },
+      "week"
+    );
+    setWeeklyAttendanceData(
+      calculateAttendanceStats(weeklyAttendance, shiftData, "week")
+    );
+  };
+
+  const getMonthlyAttendanceStats = async () => {
+    const monthlyAttendance = await fetchAttendanceData(
+      {
+        date_range: GetDateRange("month"),
+        employee_id: userId,
+      },
+      "month"
+    );
+    setMonthlyAttendanceData(
+      calculateAttendanceStats(monthlyAttendance, shiftData, "month")
+    );
+  };
+
+  const getRemainingHoursData = () => {
+    const totalHours = CalculateHoursWorked(attendanceData);
+    setRemainingAttendanceData({
+      value: totalHours.totalWorkedHours,
+      total: dateRange ? totalHours.totalHours : todayAttendanceData.total,
+    });
+  };
+
+  const getOvertimeHoursData = () => {
+    const totalHours = CalculateHoursWorked(attendanceData, "overtime_hours");
+    setOvertimeAttendanceData({
+      value: totalHours.totalWorkedHours,
+      total: dateRange ? totalHours.totalHours : todayAttendanceData.total,
+    });
+  };
+
+  const loadUserData = async (isMounted) => {
+    if (!isMounted) return;
+
     try {
-      const todayAttendanceData = await getAttendance({
-        filterData: {
-          date_range: GetDateRange("month"),
-          employee_id: userId,
-        },
-      });
-      const todayAttendance =
-        todayAttendanceData &&
-        todayAttendanceData.results &&
-        todayAttendanceData.results.length > 0
-          ? todayAttendanceData.results
-          : {};
-      if (todayAttendance) {
-        if (todayAttendance) {
-          const totalhoursCalculated = CalculateHoursWorked(todayAttendance);
-          const statistics = [...stats]; // Create a shallow copy of the stats array
-          statistics[1] = {
-            ...statistics[1],
-            total: totalhoursCalculated.totalHours, // Store total hours
-            value: totalhoursCalculated.totalWorkedHours, // Store worked hours
-          };
-          setStats(statistics); // Update the state
-        }
-      }
+      const shiftData = await getShiftById(shiftId);
+      setShiftData(shiftData);
+
+      await Promise.all([
+        await getTodayAttendanceStats(),
+        await getWeeklyAttendanceStats(),
+        await getMonthlyAttendanceStats(),
+      ]);
     } catch (error) {
       console.error(error);
     } finally {
-      return {};
+      if (isMounted) setIsLoading(false);
     }
   };
 
-  const getUserStatistics = async (isMounted) => {
-    setIsLoading(true);
-    try {
-      if (isMounted) {
-        const shiftData = await getShiftById(shiftId);
-        if (shiftData) {
-          setStats([
-            {
-              label: "Today",
-              value: "0",
-              total: GetShiftTotalHours(
-                moment(shiftData.starttime).format("hh:mm A"),
-                moment(shiftData.endtime).format("hh:mm A"),
-                "day"
-              ),
-            },
-            {
-              label: "This Week",
-              value: "0",
-              total: GetShiftTotalHours(
-                moment(shiftData.starttime).format("hh:mm A"),
-                moment(shiftData.endtime).format("hh:mm A"),
-                "week"
-              ),
-            },
-            {
-              label: "This Month",
-              value: "0",
-              total: GetShiftTotalHours(
-                moment(shiftData.starttime).format("hh:mm A"),
-                moment(shiftData.endtime).format("hh:mm A"),
-                "month"
-              ),
-            },
-            { label: "Remaining", value: "0", total: "0" },
-            { label: "Overtime", value: "0", total: "0" },
-          ]);
-        }
-        const todayStatistics = await getTodayAttendanceData();
-        const weeklyStatistics = await getWeeklyAttendanceData();
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      if (isMounted) {
-        setIsLoading(false); // Stop loading spinner
-      }
-    }
+  const loadDynamicUserData = async (isMounted) => {
+    if (!isMounted) return;
+    await Promise.all([getRemainingHoursData(), getOvertimeHoursData()]);
   };
 
   useEffect(() => {
     let isMounted = true;
-    getUserStatistics(isMounted);
+    setIsLoading(true);
+    loadUserData(isMounted);
     return () => {
       isMounted = false;
     };
-  }, []);
-  console.log("poiu");
+  }, [shiftId, userId]);
+
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+    loadDynamicUserData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [attendanceData]);
 
   if (isLoading) return <PageLoader />;
+
   return (
     <div className="space-y-4">
-      {stats.map((item) => (
-        <div key={item.label}>
-          <div className="flex justify-between mb-1">
-            <span className="text-slate-900">{item.label}</span>
-            <span>
-              <span className="text-slate-1200">{item.value}</span>/{item.total}{" "}
-              hrs
-            </span>
-          </div>
-          <Progress
-            value={(parseFloat(item.value) / parseFloat(item.total)) * 100}
-            className="h-2 bg-plum-900"
-          />
-        </div>
-      ))}
+      
+      <Statistics
+        value={todayAttendanceData.value || 0}
+        label={"Today"}
+        total={todayAttendanceData.total || 0}
+      />
+      <Statistics
+        value={weeklyAttendanceData.value || 0}
+        label={"This Week"}
+        total={weeklyAttendanceData.total || 0}
+      />
+      <Statistics
+        value={monthlyAttendanceData.value || 0}
+        label={"This Month"}
+        total={monthlyAttendanceData.total || 0}
+      />
+      <Statistics
+        value={remainingAttendanceData.value || 0}
+        label={"Remaining"}
+        total={remainingAttendanceData.total || 0}
+      />
+      <Statistics
+        value={overtimeAttendanceData.value || 0}
+        label={"Overtime"}
+        total={overtimeAttendanceData.total || 0}
+      />
     </div>
   );
 };
+
+const Statistics = ({ value, total, label }) => (
+  <div>
+    <div className="flex justify-between mb-1">
+      <span className="text-slate-900">{label}</span>
+      <span>
+        <span className="text-slate-1200">{value}</span>/{total}hrs
+      </span>
+    </div>
+    <Progress
+      value={(parseFloat(value) / parseFloat(total)) * 100}
+      className="h-2"
+    />
+  </div>
+);
 
 export default HourlyStatistics;

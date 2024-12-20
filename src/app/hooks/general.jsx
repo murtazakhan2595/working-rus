@@ -10,7 +10,10 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-const getDepartmentList = async (allData=false, options = { page: 1, sizePerPage: 10 }) => {
+const getDepartmentList = async (
+  allData = false,
+  options = { page: 1, sizePerPage: 10 }
+) => {
   const queryParams = new URLSearchParams({
     page: options.page,
     page_size: options.sizePerPage,
@@ -20,13 +23,15 @@ const getDepartmentList = async (allData=false, options = { page: 1, sizePerPage
   try {
     const response = await axios.get(`${baseUrl}/department/?${queryParams}`, {
       headers: headers(),
-  }); 
+    });
     if (response.status === 200) {
       const departmentResponse = response.data;
-      const departmentList = await departmentResponse?.results?.map((department) => ({
-        value: department.id,
-        label: department.name,
-      }));
+      const departmentList = await departmentResponse?.results?.map(
+        (department) => ({
+          value: department.id,
+          label: department.name,
+        })
+      );
       return allData ? departmentResponse : departmentList;
     } else return [];
   } catch (error) {
@@ -35,7 +40,7 @@ const getDepartmentList = async (allData=false, options = { page: 1, sizePerPage
   return [];
 };
 
-const saveDepartment = async (departmentId ,payload)=>{
+const saveDepartment = async (departmentId, payload) => {
   try {
     if (departmentId) {
       const response = await axios.patch(
@@ -63,9 +68,9 @@ const saveDepartment = async (departmentId ,payload)=>{
     console.error("Error fetching Personal Info data :", error);
     return false;
   }
-}
+};
 
-const saveDesignation = async (designationId ,payload)=>{
+const saveDesignation = async (designationId, payload) => {
   try {
     if (designationId) {
       const response = await axios.patch(
@@ -93,9 +98,12 @@ const saveDesignation = async (designationId ,payload)=>{
     console.error("Error fetching Personal Info data :", error);
     return false;
   }
-}
+};
 
-const getDesignationList = async (allData=false,  options = { page: 1, sizePerPage: 10 }) => {
+const getDesignationList = async (
+  allData = false,
+  options = { page: 1, sizePerPage: 10 }
+) => {
   const queryParams = new URLSearchParams({
     page: options.page,
     page_size: options.sizePerPage,
@@ -108,10 +116,12 @@ const getDesignationList = async (allData=false,  options = { page: 1, sizePerPa
     });
     if (response.status === 200) {
       const designationResponse = response.data;
-      const designationList = await designationResponse?.results?.map((designation) => ({
-        value: designation.id,
-        label: designation.name,
-      }));
+      const designationList = await designationResponse?.results?.map(
+        (designation) => ({
+          value: designation.id,
+          label: designation.name,
+        })
+      );
       return allData ? designationResponse : designationList;
     } else return [];
   } catch (error) {
@@ -120,7 +130,7 @@ const getDesignationList = async (allData=false,  options = { page: 1, sizePerPa
   return [];
 };
 
-const saveShift = async (shiftId ,payload)=>{
+const saveShift = async (shiftId, payload) => {
   try {
     if (shiftId) {
       const response = await axios.patch(
@@ -148,7 +158,7 @@ const saveShift = async (shiftId ,payload)=>{
     console.error("Error fetching Personal Info data :", error);
     return false;
   }
-}
+};
 
 const getManagersList = async () => {
   try {
@@ -199,22 +209,24 @@ const getEmployeeList = async () => {
 
 const getEmployeeListWithDetail = async () => {
   try {
-    const response = await axios.get(
-      `${baseUrl}/emp`,
-      {
-        headers: headers(),
-      }
-    );
+    const response = await axios.get(`${baseUrl}/emp`, {
+      headers: headers(),
+    });
     if (response.status === 200) {
       const employeeResponse = response.data?.results ?? [];
       const employeeList = employeeResponse.map((employee) => ({
         value: employee.id,
+        id: employee.id,
         label: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
+        first_name:employee.first_name,
+        last_name: employee.last_name,
         department_name: employee.department_name,
         department_position: employee.department_position,
         work_email: employee.work_email,
-        profile_picture:employee.profile_picture,
+        profile_picture: employee.profile_picture,
+        shift_assignment: employee.shift_assignment,
+        serial_number: employee.serial_number,
       }));
       return employeeList;
     } else return [];
@@ -224,17 +236,19 @@ const getEmployeeListWithDetail = async () => {
   return [];
 };
 
-const getOrganizationList = async (allData=false) => {
+const getOrganizationList = async (allData = false) => {
   try {
     const response = await axios.get(`${baseUrl}/organization/`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const organizationResponse = response.data;
-      const organizationList = organizationResponse?.results?.map((organization) => ({
-        value: organization.id,
-        label: organization.name,
-      }));
+      const organizationList = organizationResponse?.results?.map(
+        (organization) => ({
+          value: organization.id,
+          label: organization.name,
+        })
+      );
       return allData ? organizationResponse : organizationList;
     } else return [];
   } catch (error) {
@@ -424,5 +438,5 @@ export {
   saveDesignation,
   getWorkingHours,
   getEmployeeListWithDetail,
-  saveShift
+  saveShift,
 };
