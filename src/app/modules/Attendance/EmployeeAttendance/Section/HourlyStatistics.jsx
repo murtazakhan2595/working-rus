@@ -6,7 +6,12 @@ import { Progress } from "src/@/components/ui/progress";
 import { PageLoader } from "components";
 import { GetDateRange, GetShiftTotalHours } from "utils/renderValues";
 
-const HourlyStatistics = ({ userId, shiftId, attendanceData, dateRange }) => {
+const HourlyStatistics = ({
+  userId,
+  shiftId,
+  attendanceData,
+  dateRange,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [todayAttendanceData, setTodayAttendanceData] = useState({});
   const [weeklyAttendanceData, setWeeklyAttendanceData] = useState({});
@@ -96,7 +101,6 @@ const HourlyStatistics = ({ userId, shiftId, attendanceData, dateRange }) => {
 
   const loadUserData = async (isMounted) => {
     if (!isMounted) return;
-
     try {
       const shiftData = await getShiftById(shiftId);
       setShiftData(shiftData);
@@ -135,12 +139,8 @@ const HourlyStatistics = ({ userId, shiftId, attendanceData, dateRange }) => {
       isMounted = false;
     };
   }, [attendanceData]);
-
-  if (isLoading) return <PageLoader />;
-
   return (
     <div className="space-y-4">
-      
       <Statistics
         value={todayAttendanceData.value || 0}
         label={"Today"}

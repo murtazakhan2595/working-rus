@@ -177,13 +177,12 @@ const Attendance = () => {
       ),
       employee_id: userProfile.id,
       shift_assignment: employeeShift.id,
-      checkout: null,
       is_weekend: [0, 6].includes(moment().day()),
       is_absent: false,
       break_duration: "0",
       overtime_hours: "0",
       payable_hours: "0",
-      date: moment().format("YYYY-MM-DDTHH:mm:ss"),
+      date: moment().format("YYYY-MM-DD"),
     };
     const response = await saveAttendance(payload);
     if (response) {
