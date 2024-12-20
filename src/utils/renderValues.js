@@ -140,3 +140,18 @@ export function numberToWords(number) {
 export function renderDate(date){
   return date? moment(date).format("MMM DD, YYYY"):'N/A';
 }
+
+export const GetDateRange = (period) => {
+  if (period === "week") {
+    // Current week start and end
+    const startOfWeek = moment().startOf("week").format("YYYY-MM-DD");
+    const endOfWeek = moment().endOf("week").format("YYYY-MM-DD");
+    return `${startOfWeek},${endOfWeek}`;
+  } else if (period === "month") {
+    // Current month start and end
+    const startOfMonth = moment().startOf("month").format("YYYY-MM-DD");
+    const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
+    return `${startOfMonth},${endOfMonth}`;
+  }
+  return moment().format("YYYY-MM-DD"); // Default case: single day
+};

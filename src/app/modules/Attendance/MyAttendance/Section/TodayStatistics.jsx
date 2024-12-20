@@ -10,11 +10,11 @@ import {
 } from "src/@/components/ui/table";
 import { PageLoader } from "components";
 
-const TodayStatistics = ({ userId }) => {
+const TodayStatistics = ({ userId, shiftId }) => {
   //  const userProfile = useSelector((state) => state.user.userProfile);
   const [isLoading, setIsLoading] = useState(false);
   const [todayAttendanceData, setTodayAttendanceData] = useState({});
-  const [todayShiftData, setTodayShiftData] = useState({});
+  const [shiftTime, setShiftTime] = useState(null);
   const getTodayAttendanceData = async (isMounted) => {
     setIsLoading(true);
     try {
@@ -30,11 +30,26 @@ const TodayStatistics = ({ userId }) => {
           attendanceData.results &&
           attendanceData.results.length > 0
             ? attendanceData.results[0]
-            : {};
+            : null;
         if (todayAttendance) {
           setTodayAttendanceData(todayAttendance);
-          const shiftData = await getShiftById(todayAttendance.shift_id ?? 11);
-          setTodayShiftData(shiftData);
+        } else {
+          setTodayAttendanceData(null);
+        }
+        const shiftData = await getShiftById(shiftId);
+        if (shiftData) {
+          const shiftTime = shiftData
+            ? `${
+                shiftTime.starttime
+                  ? moment(shiftTime.starttime).format("hh:mm A")
+                  : "---"
+              } - ${
+                shiftTime.endtime
+                  ? moment(shiftTime.endtime).format("hh:mm A")
+                  : "---"
+              }`
+            : "---";
+          setShiftTime(shiftTime);
         }
       }
     } catch (error) {
@@ -64,29 +79,14 @@ const TodayStatistics = ({ userId }) => {
             <TableCell>
               {todayAttendanceData
                 ? moment(todayAttendanceData.checkin).format("hh:mm A")
-                : "---"}
+                : "---/---"}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="pl-0">Shift Time</TableCell>
-            <TableCell>
-              {todayShiftData
-                ? `${
-                    todayShiftData.starttime
-                      ? moment(todayShiftData.starttime).format("hh:mm A")
-                      : "---"
-                  } - ${
-                    todayShiftData.endtime
-                      ? moment(todayShiftData.endtime).format("hh:mm A")
-                      : "---"
-                  }`
-                : "---"}
-            </TableCell>
+            <TableCell>{shiftTime ? shiftTime : "---/---"}</TableCell>
           </TableRow>
-          <TableRow>
-            <TableCell className="pl-0">Allowance</TableCell>
-            <TableCell>Enable</TableCell>
-          </TableRow>
+
           <TableRow>
             <TableCell className="pl-0">Annual Leave</TableCell>
             <TableCell>Not Applicable</TableCell>
