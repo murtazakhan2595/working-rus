@@ -174,7 +174,6 @@ export const GetShiftTotalHours = (shiftStartTime, shiftEndTime, period) => {
     }
     return totalHours;
   };
-
   if (period === "day") {
     const today = moment().format("YYYY-MM-DD");
     const shiftStart = moment(`${today}T${shiftStartTime}`);

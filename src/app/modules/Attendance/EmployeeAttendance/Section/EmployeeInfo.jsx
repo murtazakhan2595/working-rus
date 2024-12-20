@@ -8,30 +8,29 @@ import {
 } from "utils/getValuesFromTables";
 import { useSelector } from "react-redux";
 
-const EmployeeInfo = () => {
-  const userDetail = useSelector((state) => state.emp.user_details);
-  if (!userDetail) return null;
+const EmployeeInfo = ({user}) => {
+  if (!user) return null;
   return (
     <div className="flex justify-start flex-col">
       <Avatar
         className="h-14 w-14"
-        src={userDetail.profile_picture}
-        fallbackText={`${userDetail.first_name?.charAt(
+        src={user.profile_picture}
+        fallbackText={`${user.first_name?.charAt(
           0
-        )}${userDetail.lasst_name?.charAt(0)}`}
-        text={`${userDetail.first_name} ${userDetail.lasst_name}`}
-        alt={userDetail.first_name?.charAt(0).toUpperCase()}
+        )}${user.lasst_name?.charAt(0)}`}
+        text={`${user.name}`}
+        alt={user.first_name?.charAt(0).toUpperCase()}
       />
       <div className="flex flex-col mt-4 flex-wrap whitespace-break-spaces">
         <div className="text-neutral-1000 text-xs font-normal">
-          <EmployeeID value={userDetail.id} />
+          <EmployeeID value={user.id} />
         </div>
         <div className="font-large capitalize text-lg text-neutral-1200">
-          <EmployeeName value={userDetail.id} />
+          <EmployeeName value={user.id} />
         </div>
         <div className="text-sm flex flex-col items-start gap-1 ">
-          <DesignationName value={userDetail.department_position} /> |{" "}
-          <DepartmentName value={userDetail.department_name} />
+          <DesignationName value={user.department_position} /> |{" "}
+          <DepartmentName value={user.department_name} />
         </div>
       </div>
     </div>
