@@ -40,12 +40,12 @@ const TodayStatistics = ({ userId, shiftId }) => {
         if (shiftData) {
           const shiftTime = shiftData
             ? `${
-                shiftTime.starttime
-                  ? moment(shiftTime.starttime).format("hh:mm A")
+                shiftData.starttime
+                  ? moment(shiftData.starttime).format("hh:mm A")
                   : "---"
               } - ${
-                shiftTime.endtime
-                  ? moment(shiftTime.endtime).format("hh:mm A")
+                shiftData.endtime
+                  ? moment(shiftData.endtime).format("hh:mm A")
                   : "---"
               }`
             : "---";

@@ -22,7 +22,7 @@ import {
   EmployeeInfo,
   HourlyStatistics,
   MyAttendanceHistory,
-  EmployeeAttendanceOverview
+  EmployeeAttendanceOverview,
 } from "app/modules/Attendance/MyAttendance/Section";
 import EmployeeSelfTimesheet from "app/modules/Attendance/Sections/EmployeeSelfTimesheet";
 import {
@@ -44,27 +44,29 @@ import { use } from "react";
 import { GetDateRange } from "utils/renderValues";
 
 const MyAttendance = () => {
-  const userProfile = useSelector((state) => state.user.userProfile);
-  const [loading, setLoading] = useState(false);
+  const userProfile = useSelector((state) => state.emp.user_details);
+  const [isLoading, setIsLoading] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
-  const [attendance, setAttendance] = useState(null);
   const [filterData, setFilterData] = useState({
-    date_range:  GetDateRange("week"),
+    date_range: GetDateRange("week"),
     employee_id: userProfile.id,
   });
-  const [stats, setStats] = useState([
-    { label: "Today", value: "4.45", total: "8" },
-    { label: "This Week", value: "25", total: "40" },
-    { label: "This Month", value: "48.15", total: "160" },
-    { label: "Remaining", value: "111.85", total: "160" },
-    { label: "Overtime", value: "5", total: "160" },
-  ]);
-  const getAttendanceList = async () => {
-    const attendanceData = await getAttendance({
-      filterData: filterData,
-    });
-    if (attendanceData) {
-      setAttendanceData(attendanceData.results);
+
+  const getAttendanceList = async (isMounted) => {
+    setIsLoading(true);
+    try {
+      const attendanceData = await getAttendance({
+        filterData: filterData,
+      });
+      if (isMounted) {
+        if (attendanceData) {
+          setAttendanceData(attendanceData.results);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -74,39 +76,39 @@ const MyAttendance = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [filterData]);
 
-  useEffect(async () => {
-    let isMounted = true;
-    // const attendanceData = await saveAttendance({
-    //   checkin: "2024-12-19T10:00:00.000Z", // 17 Dec 2024, 10:00 AM in UTC
-    //   // checkout: "", // 17 Dec 2024, 7:00 PM in UTC
-    //   total_hours: "8.00",
-    //   payable_hours: "8.00",
-    //   break_duration: "1.00",
-    //   date: "2024-12-19",
-    //   remarks: "Good",
-    //   overtime_hours: "1.00",
-    //   status: "Present",
-    //   is_weekend: false,
-    //   is_absent: false,
-    //   is_late: false,
-    //   employee_id: 88,
-    //   shift_id: null,
-    //   shift_name: null,
-    //   shift_starttime: null,
-    //   shift_endtime: null,
-    //   shift_is_org_based: null,
-    //   shift_organization: null,
-    // });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  // useEffect(async () => {
+  //   let isMounted = true;
+  //   // const attendanceData = await saveAttendance({
+  //   //   checkin: "2024-12-19T10:00:00.000Z", // 17 Dec 2024, 10:00 AM in UTC
+  //   //   // checkout: "", // 17 Dec 2024, 7:00 PM in UTC
+  //   //   total_hours: "8.00",
+  //   //   payable_hours: "8.00",
+  //   //   break_duration: "1.00",
+  //   //   date: "2024-12-19",
+  //   //   remarks: "Good",
+  //   //   overtime_hours: "1.00",
+  //   //   status: "Present",
+  //   //   is_weekend: false,
+  //   //   is_absent: false,
+  //   //   is_late: false,
+  //   //   employee_id: 88,
+  //   //   shift_id: null,
+  //   //   shift_name: null,
+  //   //   shift_starttime: null,
+  //   //   shift_endtime: null,
+  //   //   shift_is_org_based: null,
+  //   //   shift_organization: null,
+  //   // });
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, []);
 
   return (
     <>
-      {loading ? (
+      {isLoading ? (
         <PageLoader />
       ) : (
         <div className="p-4 space-y-4">
@@ -115,7 +117,10 @@ const MyAttendance = () => {
               <CardContent className="mt-5">
                 <div className="flex justify-start flex-col">
                   <EmployeeInfo />
-                  <TodayStatistics userId={userProfile.id} shiftId={userProfile.shiftId} />
+                  <TodayStatistics
+                    userId={userProfile.id}
+                    shiftId={userProfile.shift_assignment}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -136,7 +141,10 @@ const MyAttendance = () => {
                 <CardTitle className="text-plum-900">Overview</CardTitle>
               </CardHeader>
               <CardContent>
-                <EmployeeAttendanceOverview userId={userProfile.id} attendanceData={attendanceData}/>
+                <EmployeeAttendanceOverview
+                  userId={userProfile.id}
+                  attendanceData={attendanceData}
+                />
               </CardContent>
             </Card>
           </div>
