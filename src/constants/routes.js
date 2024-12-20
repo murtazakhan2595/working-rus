@@ -46,6 +46,7 @@ import EmployeeAttendance from "app/modules/Attendance/EmployeeAttendance";
 import StyleGuide from "app/modules/StyleGuide";
 import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
+import AttendanceReport from "app/modules/Attendance/Sections/AttendenceFile";
 
 const SidebarRoutes = [
   {
@@ -203,6 +204,13 @@ const SidebarRoutes = [
     component: <ShiftCalendar />,
     name: "Shift Calendar",
   },
+
+  Config.ATTENDANCE && {
+    path: "attendance-reports",
+    component: <AttendanceReport/>,
+    name: "Attendance Report"
+  },
+
   Config.ATTENDANCE && {
     path: "/attendance/:id",
     component: <EmployeeAttendance />,
