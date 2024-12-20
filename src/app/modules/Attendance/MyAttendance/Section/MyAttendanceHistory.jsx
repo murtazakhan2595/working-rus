@@ -20,7 +20,7 @@ import {
   EmployeeInfo,
   HourlyStatistics,
 } from "app/modules/Attendance/MyAttendance/Section";
-import { FilterInput, SelectComponent } from "components/form-control";
+import { FilterInput, DateRangeInput } from "components/form-control";
 import {
   getShiftAssignment,
   getAttendance,
@@ -32,7 +32,7 @@ import { PageLoader, Header } from "components";
 import { toast } from "react-toastify";
 import { MyAttendanceHistoryColumns } from "app/utils/Types/TableColumns";
 import { getBreakStatus } from "app/hooks/attendance";
-import { endBreak } from "app/hooks/attendance";
+import { GetDateRange } from "utils/renderValues";
 import { useSelector } from "react-redux";
 import { getStats } from "app/hooks/attendance";
 import { use } from "react";
@@ -41,9 +41,9 @@ const MyAttendanceHistory = () => {
   const userProfile = useSelector((state) => state.user.userProfile);
   const [isLoading, setIsLoading] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
+  const [selectedDateRange, setSelectedDateRange] = useState(null);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [filterData, setFilterData] = useState({
-    // date_range: "2024-12-10,2024-12-20",
     employee_id: userProfile.id,
   });
   const [activeTab, setActiveTab] = useState("week");
@@ -52,7 +52,6 @@ const MyAttendanceHistory = () => {
     {
       value: "day",
       label: "Day",
-      filter: { data: moment().format("YYYY-MM-DD") },
     },
     { value: "week", label: "Week" },
     { value: "month", label: "Month" },
@@ -67,17 +66,31 @@ const MyAttendanceHistory = () => {
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
   };
-  const tabFilter = [
-    { day: { data: moment().format("YYYY-MM-DD") } },
-    { week: { data: moment().format("YYYY-MM-DD") } },
-    { month: { data: moment().format("YYYY-MM-DD") } },
-  ];
+
+  useEffect(() => {
+    if (activeTab === "day") {
+      setFilterData({
+        employee_id: userProfile.id,
+        date: moment().format("YYYY-MM-DD"),
+      });
+    } else if (activeTab === "week") {
+      setFilterData({
+        employee_id: userProfile.id,
+        date_range: GetDateRange("week"),
+      });
+    } else if (activeTab === "month") {
+      setFilterData({
+        employee_id: userProfile.id,
+        date_range: GetDateRange("month"),
+      });
+    }
+  }, [activeTab]);
+
   const getAttendanceList = async (isMounted) => {
     setIsLoading(true);
-
     try {
       const attendanceData = await getAttendance({
-        filterData: { ...filterData },
+        filterData: filterData,
       });
 
       if (attendanceData && isMounted) {
@@ -96,23 +109,13 @@ const MyAttendanceHistory = () => {
     return () => {
       isMounted = false;
     };
-  }, [activeTab]);
+  }, [filterData]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    // if (filterName === "department_name") setSelectedDepartment(filterValue);
-    // if (filterName === "department_position") setSelectedDesignation(filterValue);
-    // if (filterName === "user_role") setSelectedRole(filterValue);
+    if (filterName === "date_range") setSelectedDateRange(filterValue);
 
-    // setFilterData((prevFilters) => {
-    //   const updatedFilters = { ...prevFilters };
-    //   if (filterValue === "") {
-    //     delete updatedFilters[filterName];
-    //   } else {
-    //     updatedFilters[filterName] = filterValue;
-    //   }
-    //   return updatedFilters;
-    // });
+    setFilterData({ employee_id: userProfile.id, date_range: filterValue });
   };
 
   return (
@@ -122,61 +125,39 @@ const MyAttendanceHistory = () => {
       </CardHeader>
       <CardContent>
         <>
-          <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
-            <FilterInput
-              filters={[
-                {
-                  type: "search",
-                  placeholder: "Search by ID and Name",
-                  name: "id_and_first_name",
-                },
-                {
-                  type: "select-one",
-                  option: [],
-                  name: "department_name",
-                  placeholder: "Department",
-                  values: "",
-                },
-                {
-                  type: "select-two",
-                  option: [],
-                  name: "department_position",
-                  placeholder: "Designation",
-                  values: "",
-                },
-                {
-                  type: "select-three",
-                  option: [],
-                  name: "user_role",
-                  placeholder: "Role",
-                  values: "",
-                },
-              ]}
-              onChange={handleFilterChange}
-            />
-          </div>
-          {isLoading ? (
-            <PageLoader />
-          ) : (
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              defaultValue="week"
-            >
-              <div className="flex justify-start">
-                <TabsList className="flex justify-center mb-4">
-                  {tabsData?.map((tab) => (
-                    <TabsTrigger
-                      key={tab.value}
-                      value={tab.value}
-                      className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-                    >
-                      {tab.label}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </div>
-              <TabsContent value="day">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            defaultValue="week"
+          >
+            <div className="flex justify-start">
+              <TabsList className="flex justify-center mb-4">
+                {tabsData?.map((tab) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                  >
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              <FilterInput
+                filters={[
+                  {
+                    type: "date-range",
+                    name: "date_range",
+                    value: selectedDateRange,
+                    placeholder:'Date Range'
+                  },
+                ]}
+                onChange={handleFilterChange}
+              />
+            </div>
+            <TabsContent value="day">
+              {isLoading ? (
+                <PageLoader />
+              ) : (
                 <TableCustom
                   data={attendanceData.results}
                   columns={MyAttendanceHistoryColumns}
@@ -184,8 +165,12 @@ const MyAttendanceHistory = () => {
                   dataTotalSize={attendanceData.count || 0}
                   tableOptions={tableOptions}
                 />
-              </TabsContent>
-              <TabsContent value="week">
+              )}
+            </TabsContent>
+            <TabsContent value="week">
+              {isLoading ? (
+                <PageLoader />
+              ) : (
                 <TableCustom
                   data={attendanceData.results}
                   columns={MyAttendanceHistoryColumns}
@@ -193,8 +178,12 @@ const MyAttendanceHistory = () => {
                   dataTotalSize={attendanceData.count || 0}
                   tableOptions={tableOptions}
                 />
-              </TabsContent>
-              <TabsContent value="month">
+              )}
+            </TabsContent>
+            <TabsContent value="month">
+              {isLoading ? (
+                <PageLoader />
+              ) : (
                 <TableCustom
                   data={attendanceData.results}
                   columns={MyAttendanceHistoryColumns}
@@ -202,9 +191,9 @@ const MyAttendanceHistory = () => {
                   dataTotalSize={attendanceData.count || 0}
                   tableOptions={tableOptions}
                 />
-              </TabsContent>
-            </Tabs>
-          )}
+              )}
+            </TabsContent>
+          </Tabs>
         </>
       </CardContent>
     </Card>

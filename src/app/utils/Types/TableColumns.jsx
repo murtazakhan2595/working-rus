@@ -9,6 +9,7 @@ import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applica
 import { dropdownOptions, formatNumber } from "data/Data";
 import { EmployeeNameInfo, StatusLabel } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
+import {EmployeeAttendenceHistoryActions} from "app/modules/Attendance/MyAttendance/Section";
 // import {
 //   Status,
 //   RenderStatus,
@@ -1135,45 +1136,53 @@ export const LeaveAplicationColumns = [
  */
 export const MyAttendanceHistoryColumns = [
   {
-    dataField: "serial_number",
+    dataField: "date",
     text: "Data",
-    formatter: (cell, row) => <>{`${renderDate(row?.date)}`}</>,
+    formatter: (cell) => <>{`${renderDate(cell)}`}</>,
   },
   {
-    dataField: "name",
+    dataField: "checkin",
     text: "Check In",
 
-    formatter: (cell, row) => <>{`${moment(row.checkin).format("hh:mm A")}`}</>,
-
+    formatter: (cell) => <>{`${moment(cell).format("hh:mm A")}`}</>,
   },
 
   {
-    dataField: "user_role",
+    dataField: "checkout",
     text: "Check Out",
-    formatter: (cell, row) => <>{`${row.checkout ? moment(row.checkout).format("hh:mm A"):'Working'}`}</>,
+    formatter: (cell) => (
+      <>{`${
+        cell? moment(cell).format("hh:mm A") : "Working"
+      }`}</>
+    ),
   },
   {
     dataField: "break_duration",
     text: "Break",
-    formatter: (cell, row) => <>{`${row.break_duration} hrs`}</>,
-
+    formatter: (cell) => <>{`${cell} hrs`}</>,
   },
   {
     dataField: "overtime_hours",
     text: "Overtime",
-    formatter: (cell, row) => <>{`${row.overtime_hours} hrs`}</>,
+    formatter: (cell) => <>{`${cell} hrs`}</>,
   },
   {
     dataField: "payable_hours",
     text: "Productivity",
+    formatter: (cell, row) => (
+      <>{`${
+        parseFloat(row.total_hours) + parseFloat(row.overtime_hours)
+      } hrs`}</>
+    ),
   },
   {
     dataField: "status",
     text: "Status",
+    formatter: (cell) => <StatusLabel status={cell} />,
   },
   {
     dataField: "",
     text: "Actions",
-    formatter: (cell, row) => <EmployeeAction row={row} />,
+    formatter: (cell, row) => <EmployeeAttendenceHistoryActions row={row} />,
   },
 ];

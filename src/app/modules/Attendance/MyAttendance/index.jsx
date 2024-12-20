@@ -21,7 +21,8 @@ import {
   TodayStatistics,
   EmployeeInfo,
   HourlyStatistics,
-  MyAttendanceHistory
+  MyAttendanceHistory,
+  EmployeeAttendanceOverview
 } from "app/modules/Attendance/MyAttendance/Section";
 import EmployeeSelfTimesheet from "app/modules/Attendance/Sections/EmployeeSelfTimesheet";
 import {
@@ -40,6 +41,7 @@ import { endBreak } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import { getStats } from "app/hooks/attendance";
 import { use } from "react";
+import { GetDateRange } from "utils/renderValues";
 
 const MyAttendance = () => {
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -47,7 +49,7 @@ const MyAttendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [attendance, setAttendance] = useState(null);
   const [filterData, setFilterData] = useState({
-    date_range: "2024-12-10,2024-12-20",
+    date_range:  GetDateRange("week"),
     employee_id: userProfile.id,
   });
   const [stats, setStats] = useState([
@@ -57,22 +59,22 @@ const MyAttendance = () => {
     { label: "Remaining", value: "111.85", total: "160" },
     { label: "Overtime", value: "5", total: "160" },
   ]);
-  // const getAttendanceList = async () => {
-  //   const attendanceData = await getAttendance({
-  //     filterData: filterData,
-  //   });
-  //   if (attendanceData) {
-  //     setAttendanceData(attendanceData.results);
-  //   }
-  // };
+  const getAttendanceList = async () => {
+    const attendanceData = await getAttendance({
+      filterData: filterData,
+    });
+    if (attendanceData) {
+      setAttendanceData(attendanceData.results);
+    }
+  };
 
-  // useEffect(() => {
-  //   let isMounted = true;
-  //   getAttendanceList(isMounted);
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, []);
+  useEffect(() => {
+    let isMounted = true;
+    getAttendanceList(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(async () => {
     let isMounted = true;
@@ -113,7 +115,7 @@ const MyAttendance = () => {
               <CardContent className="mt-5">
                 <div className="flex justify-start flex-col">
                   <EmployeeInfo />
-                  <TodayStatistics userId={userProfile.id} />
+                  <TodayStatistics userId={userProfile.id} shiftId={userProfile.shiftId} />
                 </div>
               </CardContent>
             </Card>
@@ -125,8 +127,7 @@ const MyAttendance = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                              <HourlyStatistics userId={userProfile.id} />
-              
+                <HourlyStatistics userId={userProfile.id} />
               </CardContent>
             </Card>
 
@@ -135,42 +136,12 @@ const MyAttendance = () => {
                 <CardTitle className="text-plum-900">Overview</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {[
-                    {
-                      time: "10:30 am",
-                      activity: "Check in",
-                      description: "Back",
-                    },
-                    {
-                      time: "10:10 am",
-                      activity: "Check out",
-                      description: "Away for Bank",
-                    },
-                    {
-                      time: "09:10 am",
-                      activity: "Check In",
-                      description: "Start Working",
-                    },
-                  ].map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between"
-                    >
-                      <div>
-                        <div>{item.time}</div>
-                        <div className="text-slate-900">{item.description}</div>
-                      </div>
-                      <div className="text-slate-900">{item.activity}</div>
-                      <hr />
-                    </div>
-                  ))}
-                </div>
+                <EmployeeAttendanceOverview userId={userProfile.id} attendanceData={attendanceData}/>
               </CardContent>
             </Card>
           </div>
 
-         <MyAttendanceHistory userId={userProfile.id} />
+          <MyAttendanceHistory userId={userProfile.id} />
         </div>
       )}
     </>

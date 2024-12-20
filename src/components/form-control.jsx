@@ -355,6 +355,130 @@ const DateInput = ({
   );
 };
 
+const DateRangeInput = ({
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  label,
+  disabled,
+  required,
+  minDate,
+  className,
+  placeholder,
+}) => {
+  const [date, setDate] = useState(
+    value && isValid(parse(value, "yyyy-MM-dd", new Date()))
+      ? parse(value, "yyyy-MM-dd", new Date())
+      : null
+  );
+  const [inputValue, setInputValue] = useState(
+    value && isValid(parse(value, "yyyy-MM-dd", new Date()))
+      ? format(parse(value, "yyyy-MM-dd", new Date()), "dd/MM/yyyy")
+      : ""
+  );
+  const [calendarDate, setCalendarDate] = useState(date || new Date());
+
+  // Sync the input field and calendar when the value changes externally
+  useEffect(() => {
+    if (value) {
+      const parsedDate = parse(value, "yyyy-MM-dd", new Date());
+      if (isValid(parsedDate)) {
+        setDate(parsedDate);
+        setInputValue(format(parsedDate, "dd/MM/yyyy"));
+        setCalendarDate(parsedDate);
+      } else {
+        resetFields();
+      }
+    } else {
+      resetFields();
+    }
+  }, [value]);
+
+  const resetFields = () => {
+    setDate(null);
+    setInputValue("");
+    setCalendarDate(new Date());
+    onChange(name, ""); // Reset the form value
+  };
+
+  // Handle manual input changes and sync with calendar
+  const handleInputChange = (values) => {
+    const { formattedValue } = values;
+    setInputValue(formattedValue);
+
+    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+    if (dateRegex.test(formattedValue)) {
+      const parsedDate = parse(formattedValue, "dd/MM/yyyy", new Date());
+      if (isValid(parsedDate)) {
+        setDate(parsedDate);
+        setCalendarDate(parsedDate); // Sync with the calendar
+        onChange(name, format(parsedDate, "yyyy-MM-dd"));
+      }
+    }
+  };
+
+  // Handle date selection from the calendar and sync with input
+  const handleCalendarSelect = (selectedDate) => {
+    if (selectedDate) {
+      setDate(selectedDate);
+      setInputValue(format(selectedDate, "dd/MM/yyyy"));
+      setCalendarDate(selectedDate);
+      onChange(name, format(selectedDate, "yyyy-MM-dd"));
+    }
+  };
+
+  return (
+    <div className={`flex flex-col gap-4 ${className}`}>
+      {label && (
+        <Label htmlFor={name}>
+          {required && <span className="text-red-600">* </span>} {label}
+        </Label>
+      )}
+      <div className={cn("grid gap-2", className)}>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              id="date"
+              variant={"outline"}
+              className={cn(
+                "w-[300px] justify-start text-left font-normal",
+                !date && "text-muted-foreground"
+              )}
+            >
+              {/* <CalendarIcon /> */}
+              {date?.from ? (
+                date.to ? (
+                  <>
+                    {format(date.from, "LLL dd, y")} -{" "}
+                    {format(date.to, "LLL dd, y")}
+                  </>
+                ) : (
+                  format(date.from, "LLL dd, y")
+                )
+              ) : (
+                <span>Pick a date</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={date?.from}
+              selected={date}
+              onSelect={setDate}
+              numberOfMonths={2}
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+      {error && touch && <div className="text-red-600">{error}</div>}
+    </div>
+  );
+};
+
 const RadioGroupInput = ({
   name,
   value,
@@ -1056,14 +1180,12 @@ const FilterInput = ({
   isClearable = true,
   type,
 }) => {
-  console.log(filters, "TEST");
   const classNamesStyle = "";
   const width = "w-56";
   const height = "h-[38px]";
   const [openRole, setOpenRole] = useState(false);
   const [openDesignation, setOpenDesignation] = useState(false);
   const [openDepartment, setOpenDepartment] = useState(false);
-  const [selectedValue, setValue] = useState("");
   const [inputValues, setInputValues] = useState({});
 
   const handleInputChange = (filter, event) => {
@@ -1190,8 +1312,71 @@ const FilterInput = ({
       </div>
     );
   };
+  const renderDateRangePicker = (filter, index) => {
+    const dateRange = filter.value ? filter.value?.split(",") : null;
+    const date = {
+      from:
+        dateRange &&
+        dateRange[0] &&
+        isValid(parse(dateRange[0], "yyyy-MM-dd", new Date()))
+          ? parse(dateRange[0], "yyyy-MM-dd", new Date())
+          : null,
+      to:
+        dateRange &&
+        dateRange[1] &&
+        isValid(parse(dateRange[1], "yyyy-MM-dd", new Date()))
+          ? parse(dateRange[1], "yyyy-MM-dd", new Date())
+          : null,
+    };
+    return (
+      <div key={index} style={{ width: "fit-content" }}>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              id="date"
+              variant={"ghost"}
+              className={cn(
+                "border-neutral-400 round justify-start border font-normal",
+                !date && "text-muted-foreground"
+              )}
+            >
+              {/* <CalendarIcon /> */}
+              {dateRange && date?.from ? (
+                date.to ? (
+                  <>
+                    {format(date.from, "LLL dd, y")} -{" "}
+                    {format(date.to, "LLL dd, y")}
+                  </>
+                ) : (
+                  format(date.from, "LLL dd, y")
+                )
+              ) : (
+                <span>{filter.placeholder}</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={date?.from}
+              selected={date}
+              onSelect={(date) => {
+                if (date) {
+                  const startOfWeek = moment(date.from).format("YYYY-MM-DD");
+                  const endOfWeek = moment(date.to).format("YYYY-MM-DD");
+                  onChange(filter.name, `${startOfWeek},${endOfWeek}`);
+                }
+              }}
+              numberOfMonths={2}
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+    );
+  };
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
+    <div className="flex flex-wrap items-start gap-x-3 gap-y-3">
       {filters &&
         filters?.map((filter, index) => {
           switch (filter.type) {
@@ -1215,6 +1400,8 @@ const FilterInput = ({
               return renderPopoverSelect(filter, index, openRole, setOpenRole);
             case "date":
               return renderDatePicker(filter, index);
+            case "date-range":
+              return renderDateRangePicker(filter, index);
             case "sorting":
               return (
                 <CheckboxMenu
@@ -1637,6 +1824,7 @@ export {
   SelectComponent,
   SelectMultiInputComponent,
   DateInput,
+  DateRangeInput,
   TextInput,
   PhoneNumberInput,
   EmailInput,
