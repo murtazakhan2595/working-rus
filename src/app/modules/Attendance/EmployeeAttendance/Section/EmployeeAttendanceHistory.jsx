@@ -37,17 +37,16 @@ import { useSelector } from "react-redux";
 import { getStats } from "app/hooks/attendance";
 import { use } from "react";
 
-const EmployeeAttendanceHistory = () => {
-  const userProfile = useSelector((state) => state.user.userProfile);
-  const [isLoading, setIsLoading] = useState(false);
-  const [attendanceData, setAttendanceData] = useState([]);
-  const [selectedDateRange, setSelectedDateRange] = useState(null);
+const EmployeeAttendanceHistory = ({
+  userId,
+  attendanceData,
+  activeTab,
+  setActiveTab,
+  selectedDateRange,
+  setSelectedDateRange,
+  isLoading,
+}) => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [filterData, setFilterData] = useState({
-    employee_id: userProfile.id,
-  });
-  const [activeTab, setActiveTab] = useState("week");
-
   const tabsData = [
     {
       value: "day",
@@ -57,7 +56,6 @@ const EmployeeAttendanceHistory = () => {
     { value: "month", label: "Month" },
   ];
   const onPageChange = (name, value) => {
-    console.log(name, value, "NAME");
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
@@ -67,57 +65,11 @@ const EmployeeAttendanceHistory = () => {
     onPageChange: onPageChange,
   };
 
-  useEffect(() => {
-    if (activeTab === "day") {
-      setFilterData({
-        employee_id: userProfile.id,
-        date: moment().format("YYYY-MM-DD"),
-      });
-    } else if (activeTab === "week") {
-      setFilterData({
-        employee_id: userProfile.id,
-        date_range: GetDateRange("week"),
-      });
-    } else if (activeTab === "month") {
-      setFilterData({
-        employee_id: userProfile.id,
-        date_range: GetDateRange("month"),
-      });
-    }
-  }, [activeTab]);
-
-  const getAttendanceList = async (isMounted) => {
-    setIsLoading(true);
-    try {
-      const attendanceData = await getAttendance({
-        filterData: filterData,
-      });
-
-      if (attendanceData && isMounted) {
-        setAttendanceData(attendanceData);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    getAttendanceList(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [filterData]);
-
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
     if (filterName === "date_range") setSelectedDateRange(filterValue);
-
-    setFilterData({ employee_id: userProfile.id, date_range: filterValue });
+    setActiveTab({ employee_id: userId, date_range: filterValue });
   };
-
   return (
     <Card>
       <CardHeader>
@@ -148,7 +100,7 @@ const EmployeeAttendanceHistory = () => {
                     type: "date-range",
                     name: "date_range",
                     value: selectedDateRange,
-                    placeholder:'Date Range'
+                    placeholder: "Date Range",
                   },
                 ]}
                 onChange={handleFilterChange}
@@ -193,6 +145,19 @@ const EmployeeAttendanceHistory = () => {
                 />
               )}
             </TabsContent>
+            {activeTab &&
+              activeTab.date_range &&
+              (isLoading ? (
+                <PageLoader />
+              ) : (
+                <TableCustom
+                  data={attendanceData.results}
+                  columns={MyAttendanceHistoryColumns}
+                  pagination={true}
+                  dataTotalSize={attendanceData.count || 0}
+                  tableOptions={tableOptions}
+                />
+              ))}
           </Tabs>
         </>
       </CardContent>

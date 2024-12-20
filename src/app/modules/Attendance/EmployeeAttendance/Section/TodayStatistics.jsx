@@ -11,7 +11,6 @@ import {
 import { PageLoader } from "components";
 
 const TodayStatistics = ({ userId, shiftId }) => {
-  //  const userProfile = useSelector((state) => state.user.userProfile);
   const [isLoading, setIsLoading] = useState(false);
   const [todayAttendanceData, setTodayAttendanceData] = useState({});
   const [shiftTime, setShiftTime] = useState(null);

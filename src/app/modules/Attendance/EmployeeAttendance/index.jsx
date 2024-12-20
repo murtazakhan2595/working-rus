@@ -42,16 +42,25 @@ import { getStats } from "app/hooks/attendance";
 import { GetUser } from "utils/getValuesFromTables";
 import { GetDateRange } from "utils/renderValues";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { isEqual } from "lodash"; // For deep comparison of objects
 
 const EmployeeAttendance = () => {
   const { id } = useParams();
   const userProfile = GetUser(id);
   const [isLoading, setIsLoading] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
-  const [filterData, setFilterData] = useState({
+  const [activeTab, setActiveTab] = useState("week");
+   const [selectedDateRange, setSelectedDateRange] = useState(null);
+  const [filterData, setFilterDataState] = useState({
     date_range: GetDateRange("week"),
     employee_id: id,
   });
+
+  const setFilterData = (newFilterData) => {
+    if (!isEqual(filterData, newFilterData)) {
+      setFilterDataState(newFilterData);
+    }
+  };
 
   const getAttendanceList = async (isMounted) => {
     setIsLoading(true);
@@ -61,7 +70,7 @@ const EmployeeAttendance = () => {
       });
       if (isMounted) {
         if (attendanceData) {
-          setAttendanceData(attendanceData.results);
+          setAttendanceData(attendanceData);
         }
       }
     } catch (error) {
@@ -70,6 +79,26 @@ const EmployeeAttendance = () => {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    if (activeTab === "day") {
+      setFilterData({
+        employee_id: id,
+        date: moment().format("YYYY-MM-DD"),
+      });
+    } else if (activeTab === "week") {
+      setFilterData({
+        employee_id: id,
+        date_range: GetDateRange("week"),
+      });
+    } else if (activeTab === "month") {
+      setFilterData({
+        employee_id: id,
+        date_range: GetDateRange("month"),
+      });
+    }else{
+      setFilterData(activeTab);
+    }
+  }, [activeTab]);
 
   useEffect(() => {
     let isMounted = true;
@@ -79,86 +108,64 @@ const EmployeeAttendance = () => {
     };
   }, [filterData]);
 
-  // useEffect(async () => {
-  //   let isMounted = true;
-  //   // const attendanceData = await saveAttendance({
-  //   //   checkin: "2024-12-19T10:00:00.000Z", // 17 Dec 2024, 10:00 AM in UTC
-  //   //   // checkout: "", // 17 Dec 2024, 7:00 PM in UTC
-  //   //   total_hours: "8.00",
-  //   //   payable_hours: "8.00",
-  //   //   break_duration: "1.00",
-  //   //   date: "2024-12-19",
-  //   //   remarks: "Good",
-  //   //   overtime_hours: "1.00",
-  //   //   status: "Present",
-  //   //   is_weekend: false,
-  //   //   is_absent: false,
-  //   //   is_late: false,
-  //   //   employee_id: 88,
-  //   //   shift_id: null,
-  //   //   shift_name: null,
-  //   //   shift_starttime: null,
-  //   //   shift_endtime: null,
-  //   //   shift_is_org_based: null,
-  //   //   shift_organization: null,
-  //   // });
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, []);
-
-  if (isLoading) return <PageLoader />;
-  console.log(userProfile)
   return (
-    <>
-      <div className="p-4 space-y-4">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Card>
-            <CardContent className="mt-5">
-              <div className="flex justify-start flex-col">
-                <EmployeeInfo user={userProfile} />
-                <TodayStatistics
-                  userId={id}
-                  shiftId={userProfile?.shift_assignment || 1}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-plum-900">Hours Statistics</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <HourlyStatistics
+    <div className="p-4 space-y-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <Card>
+          <CardContent className="mt-5">
+            <div className="flex justify-start flex-col">
+              <EmployeeInfo user={userProfile} />
+              <TodayStatistics
                 userId={id}
-                shiftId={userProfile?.shift_assignment ||1}
-                dateRange={
-                  filterData && filterData.date_range
-                    ? filterData.date_range
-                    : null
-                }
-                attendanceData={attendanceData}
+                shiftId={userProfile?.shift_assignment || 1}
               />
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-plum-900">Overview</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <EmployeeAttendanceOverview
-                userId={id}
-                attendanceData={attendanceData}
-              />
-            </CardContent>
-          </Card>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-plum-900">Hours Statistics</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <HourlyStatistics
+              userId={id}
+              shiftId={userProfile?.shift_assignment || 1}
+              dateRange={
+                filterData && filterData.date_range
+                  ? filterData.date_range
+                  : null
+              }
+              attendanceData={attendanceData?.results}
+            />
+          </CardContent>
+        </Card>
 
-        <EmployeeAttendanceHistory userId={id} />
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-plum-900">Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <EmployeeAttendanceOverview
+              userId={id}
+              attendanceData={attendanceData?.results}
+              isLoading={isLoading}
+            />
+          </CardContent>
+        </Card>
       </div>
-    </>
+
+      <EmployeeAttendanceHistory
+        userId={id}
+        setFilterData={setFilterData}
+        attendanceData={attendanceData}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        setSelectedDateRange={setSelectedDateRange}
+        selectedDateRange={selectedDateRange}
+        isLoading={isLoading}
+      />
+    </div>
   );
 };
 
