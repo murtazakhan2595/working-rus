@@ -21,7 +21,7 @@ import {
   TodayStatistics,
   EmployeeInfo,
   HourlyStatistics,
-  MyAttendanceHistory,
+  EmployeeAttendanceHistory,
   EmployeeAttendanceOverview,
 } from "app/modules/Attendance/EmployeeAttendance/Section";
 import {
@@ -146,7 +146,7 @@ const EmployeeAttendance = () => {
           </Card>
         </div>
 
-        <MyAttendanceHistory userId={userProfile.id} />
+        <EmployeeAttendanceHistory userId={userProfile.id} />
       </div>
     </>
   );
