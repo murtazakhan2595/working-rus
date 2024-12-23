@@ -412,7 +412,7 @@ const Attendance = () => {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span className="text-plum-900">Attendance History</span>
-                <Button variant="outline" onClick={()=> navigate('/attendance-reports')}>Download </Button>
+                <Button variant="outline" onClick={()=> navigate(`/attendance-reports/?employeeID=${userProfile?.id}`)}>Download </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
