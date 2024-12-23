@@ -1,5 +1,5 @@
 // Import necessary libraries and components
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,8 +16,9 @@ import Newlogo from "assets/images/NewLogo";
 import { Button } from "components/ui/button";
 import { usePDF } from "react-to-pdf";
 import TableCustom from "components/CustomTable";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { getAttendance } from "app/hooks/attendance";
 
 ChartJS.register(
   CategoryScale,
@@ -30,6 +31,10 @@ ChartJS.register(
 
 const AttendanceReport = () => {
   const navigate = useNavigate()
+  const location = useLocation();
+  const [attendanceData, setAttendanceData] = useState([])
+  const employeeID = new URLSearchParams(location.search).get("employeeID");
+  console.log(employeeID, "EMPLOYEE ID")
   const { toPDF, targetRef } = usePDF({
     filename: "my-attendance.pdf",
     page: {
@@ -55,11 +60,11 @@ const AttendanceReport = () => {
 
   const columns = [
     { text: "Date", dataField: "date" },
-    { text: "Check In", dataField: "checkIn" },
-    { text: "Check Out", dataField: "checkOut" },
-    { text: "Break", dataField: "break" },
-    { text: "Overtime", dataField: "overtime" },
-    { text: "Productivity", dataField: "productivity" },
+    { text: "Check In", dataField: "checkin" },
+    { text: "Check Out", dataField: "checkout" },
+    { text: "Break", dataField: "break_duration" },
+    { text: "Overtime", dataField: "overtime_hours" },
+    { text: "Productivity", dataField: "total_hours" },
     { text: "Status", dataField: "status" },
   ];
 
@@ -84,44 +89,59 @@ const AttendanceReport = () => {
     ],
   };
 
-  const attendanceData = [
-    {
-      date: "Sep 4, 2024",
-      checkIn: "09:30 am",
-      checkOut: "Working",
-      break: "1.5 hrs",
-      overtime: "1 hr",
-      productivity: "9 hrs",
-      status: "Present",
-    },
-    {
-      date: "Sep 3, 2024",
-      checkIn: "09:05 am",
-      checkOut: "17:55 pm",
-      break: "1.5 hrs",
-      overtime: "0",
-      productivity: "8 hrs",
-      status: "Present",
-    },
-    {
-      date: "Sep 2, 2024",
-      checkIn: "09:01 am",
-      checkOut: "17:51 pm",
-      break: "1 hr",
-      overtime: "0",
-      productivity: "8 hrs",
-      status: "Present",
-    },
-    {
-      date: "Sep 1, 2024",
-      checkIn: "--",
-      checkOut: "--",
-      break: "--",
-      overtime: "--",
-      productivity: "--",
-      status: "Off Day",
-    },
-  ];
+  const getAttendanceList = async ()=>{
+    const attendanceList = await getAttendance({
+      filterData: {
+        employeeID,
+      }
+    });
+    if (attendanceList) {
+      console.log(attendanceList, "ATTENDANC DAtA")
+      setAttendanceData(attendanceList.results);
+    }
+  }
+
+  useEffect(()=>{
+    getAttendanceList()
+  },[employeeID])
+  // const attendanceData = [
+  //   {
+  //     date: "Sep 4, 2024",
+  //     checkIn: "09:30 am",
+  //     checkOut: "Working",
+  //     break: "1.5 hrs",
+  //     overtime: "1 hr",
+  //     productivity: "9 hrs",
+  //     status: "Present",
+  //   },
+  //   {
+  //     date: "Sep 3, 2024",
+  //     checkIn: "09:05 am",
+  //     checkOut: "17:55 pm",
+  //     break: "1.5 hrs",
+  //     overtime: "0",
+  //     productivity: "8 hrs",
+  //     status: "Present",
+  //   },
+  //   {
+  //     date: "Sep 2, 2024",
+  //     checkIn: "09:01 am",
+  //     checkOut: "17:51 pm",
+  //     break: "1 hr",
+  //     overtime: "0",
+  //     productivity: "8 hrs",
+  //     status: "Present",
+  //   },
+  //   {
+  //     date: "Sep 1, 2024",
+  //     checkIn: "--",
+  //     checkOut: "--",
+  //     break: "--",
+  //     overtime: "--",
+  //     productivity: "--",
+  //     status: "Off Day",
+  //   },
+  // ];
 
   return (
     <div>
