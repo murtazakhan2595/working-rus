@@ -529,7 +529,7 @@ export const ExitResignedColumns = [
 
 export const EmployeePayrollColumns = [
   {
-    dataField: "employee",
+    dataField: "serial_number",
     text: "ID",
     formatter: (cell) => <EmployeeID value={cell} />,
   },
@@ -721,7 +721,7 @@ export const SalarySetupColumns = [
 
 export const ClaimRequestColumns = [
   {
-    dataField: "employeeid",
+    dataField: "serial_number",
     text: "ID",
     formatter: (cell) => <EmployeeID value={cell} />,
   },
