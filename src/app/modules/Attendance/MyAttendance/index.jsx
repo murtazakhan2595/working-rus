@@ -11,7 +11,7 @@ import {
 import { Progress } from "src/@/components/ui/progress";
 import { CalendarIcon, FilterIcon, PlayCircle } from "lucide-react";
 import moment from "moment";
-import {EmployeeSelfTimesheet} from "app/modules/Attendance/MyAttendance/Section";
+import { EmployeeSelfTimesheet } from "app/modules/Attendance/MyAttendance/Section";
 import {
   getShiftAssignment,
   getAttendance,
@@ -24,13 +24,11 @@ import { PageLoader } from "components";
 import { toast } from "react-toastify";
 import { calculateBreak } from "app/hooks/attendance";
 import { getBreakStatus } from "app/hooks/attendance";
-import { endBreak } from "app/hooks/attendance";
+import { endBreak, getShiftById } from "app/hooks/attendance";
 import { getLocalTime } from "app/hooks/attendance";
 import { getStats } from "app/hooks/attendance";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
-
-
 
 const Attendance = () => {
   const [loading, setLoading] = useState(false);
@@ -38,7 +36,7 @@ const Attendance = () => {
   const [attendance, setAttendance] = useState(null);
   const [attendanceData, setAttendanceData] = useState([]);
   const [onBreak, setOnBreak] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [stats, setStats] = useState([
     { label: "Today", value: "4.45", total: "8" },
@@ -48,16 +46,17 @@ const Attendance = () => {
     { label: "Overtime", value: "5", total: "160" },
   ]);
   const userProfile = useSelector((state) => state.user.userProfile);
+  const user_details = useSelector((state) => state.emp.user_details);
   const [filterData, setFilterData] = useState({
     date_range: "2024-12-10,2024-12-20",
     employee_id: userProfile.id,
   });
-  console.log("ATTENDANCE -",attendance)
-  console.log("ON BREAK -",onBreak)
+  console.log("ATTENDANCE -", attendance);
+  console.log("ON BREAK -", onBreak);
 
   const getAttendanceList = async () => {
     const attendanceData = await getAttendance({
-      filterData: filterData
+      filterData: filterData,
     });
     if (attendanceData) {
       setAttendanceData(attendanceData.results);
@@ -68,31 +67,25 @@ const Attendance = () => {
     if (attendance) {
       setAttendance({
         ...attendance,
-        checkin: attendance.checkin.replace("Z","")
       });
     }
   };
 
   const fetchData = async () => {
     setLoading(true);
-    const shift = await getShiftAssignment({
-      filterData: { employee_id: userProfile.id },
-    });
+    const shift = await getShiftById(user_details?.shift_assignment || 1);
     if (shift) {
-      const formattedShift = {
-        ...shift.results[0],
-        shift_start_time: moment(shift.results[0].shift_start_time).format(
-          "h:mm a"
+      setEmployeeShift({
+        shift_start_time: moment(
+          moment(shift.starttime).format("HH:mm:ss"),
+          "HH:mm:ss"
         ),
-        shift_end_time: moment(shift.results[0].shift_end_time).format(
-          "h:mm a"
+        shift_end_time: moment(
+          moment(shift.endtime).format("HH:mm:ss"),
+          "HH:mm:ss"
         ),
-      };
+      });
     }
-    setEmployeeShift({
-      shift_start_time: moment("2024-12-11T19:50:00").format("h:mm a"),
-      shift_end_time: moment("2024-12-11T20:50:00").format("h:mm a"),
-    });
 
     const attendance = await getAttendance({
       filterData: {
@@ -118,23 +111,26 @@ const Attendance = () => {
       });
       setOnBreak(breakStatus);
     }
-        // const stats = await getStats();
+    // const stats = await getStats();
 
     setLoading(false);
   };
   const endShift = async () => {
     const checkout = moment().format("YYYY-MM-DDTHH:mm:ss");
-    await updatePayableHours()
-    await endBreak({
-      filterData: {
-        employee_id: userProfile.id,
-        attendance_id: attendance.id,
+    await updatePayableHours();
+    await endBreak(
+      {
+        filterData: {
+          employee_id: userProfile.id,
+          attendance_id: attendance.id,
+        },
+        options: {
+          page: 1,
+          sizePerPage: 1,
+        },
       },
-      options: {
-        page: 1,
-        sizePerPage: 1,
-      },
-    }, checkout);
+      checkout
+    );
 
     const breakDuration = await calculateBreak({
       filterData: {
@@ -155,7 +151,7 @@ const Attendance = () => {
     };
     const response = await saveAttendance(payload);
     if (response) {
-      await getAttendanceList()
+      await getAttendanceList();
       toast.success("Shift ended");
       setAttendanceWithLocalTime(response);
     }
@@ -169,15 +165,14 @@ const Attendance = () => {
     const startTime = moment(employeeShift.shift_start_time, "h:mm a");
     const endTime = moment(employeeShift.shift_end_time, "h:mm a");
     const totalHours = endTime.diff(startTime, "hours", true);
+    const is_late = moment(moment().format("HH:mm:ss"), "HH:mm:ss").isAfter(
+      employeeShift.shift_start_time
+    );
     const payload = {
       total_hours: totalHours,
-      checkin: moment().format("YYYY-MM-DDTHH:mm:ss"),
-      status: moment().isAfter(moment(employeeShift.shift_start_time, "h:mm a"))
-        ? "Late"
-        : "Present",
-      is_late: moment().isAfter(
-        moment(employeeShift.shift_start_time, "h:mm a")
-      ),
+      checkin: moment().utc().format("YYYY-MM-DDTHH:mm:ss[Z]"),
+      status: is_late ? "Late" : "Present",
+      is_late: is_late,
       employee_id: userProfile.id,
       shift_assignment: employeeShift.id,
       is_weekend: [0, 6].includes(moment().day()),
@@ -195,7 +190,6 @@ const Attendance = () => {
   };
 
   const updateAttendanceAttributes1 = async () => {
-
     let overTime = 0;
     if (parseFloat(attendance.payable_hours) > attendance.total_hours) {
       overTime = parseFloat(attendance.payable_hours) - attendance.total_hours;
@@ -231,7 +225,7 @@ const Attendance = () => {
       setAttendanceWithLocalTime(response);
       await getAttendanceList();
     }
-  }
+  };
 
   const updatePayableHours = async () => {
     let startTime;
@@ -269,7 +263,7 @@ const Attendance = () => {
     }
   };
   const startShift = async () => {
-    console.log("SHIFT START FUNCTION")
+    console.log("SHIFT START FUNCTION");
     if (attendance && attendance.checkout) {
       toast.success("Shift already ended");
       return;
@@ -321,7 +315,6 @@ const Attendance = () => {
     await updateAttendanceAttributes1();
     await getAttendanceList();
   };
-
 
   return (
     <>
@@ -412,7 +405,12 @@ const Attendance = () => {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span className="text-plum-900">Attendance History</span>
-                <Button variant="outline" onClick={()=> navigate('/attendance-reports')}>Download </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate("/attendance-reports")}
+                >
+                  Download{" "}
+                </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -447,7 +445,9 @@ const Attendance = () => {
                       </TableCell>
                       <TableCell>
                         {row.checkout
-                          ? moment(row?.checkout.replace("Z","")).format("h:mm A")
+                          ? moment(row?.checkout.replace("Z", "")).format(
+                              "h:mm A"
+                            )
                           : "Not Checked Out"}
                       </TableCell>
                       <TableCell>{row.break_duration || 0.0} hrs</TableCell>

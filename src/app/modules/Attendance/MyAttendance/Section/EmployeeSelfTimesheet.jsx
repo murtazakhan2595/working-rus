@@ -87,9 +87,9 @@ export default function EmployeeSelfTimesheet({
           <div className="flex justify-between">
             <span className="text-slate-1200">Shift Time</span>
             <span>
-              {employeeShift.shift_start_time +
+              {moment(employeeShift.shift_start_time).format("hh:mm A") +
                 " - " +
-                employeeShift.shift_end_time}
+               moment( employeeShift.shift_end_time).format("hh:mm A")}
             </span>
           </div>
           <div className="flex items-center justify-center mt-4">
