@@ -11,6 +11,7 @@ import {
 import { Progress } from "src/@/components/ui/progress";
 import { CalendarIcon, FilterIcon, PlayCircle } from "lucide-react";
 import moment from "moment";
+import { EmployeeSelfTimesheet } from "app/modules/Attendance/MyAttendance/Section";
 import {
   getShiftAssignment,
   getAttendance,
@@ -23,11 +24,11 @@ import { PageLoader } from "components";
 import { toast } from "react-toastify";
 import { calculateBreak } from "app/hooks/attendance";
 import { getBreakStatus } from "app/hooks/attendance";
-import { endBreak } from "app/hooks/attendance";
+import { endBreak, getShiftById } from "app/hooks/attendance";
 import { getLocalTime } from "app/hooks/attendance";
 import { getStats, employeeData } from "app/hooks/attendance";
-import { getShiftById } from "app/hooks/attendance";
-import { EmployeeSelfTimesheet } from "./Section";
+
+
 
 const Attendance = () => {
   const [loading, setLoading] = useState(false);
@@ -48,6 +49,7 @@ const Attendance = () => {
     { label: "Overtime", value: "0", total: "160" },
   ]);
   const userProfile = useSelector((state) => state.user.userProfile);
+  const user_details = useSelector((state) => state.emp.user_details);
   const [filterData, setFilterData] = useState({
     employee_id: userProfile.id,
     date: moment().format("YYYY-MM-DD"),
@@ -68,26 +70,24 @@ const Attendance = () => {
     if (attendance) {
       setAttendance({
         ...attendance,
-        checkin: attendance.checkin?.replace("Z", ""),
       });
     }
   };
 
   const fetchData = async () => {
     setLoading(true);
-    setDisable(true)
-    const empData = await employeeData(userProfile.id);
-
-    const shift = await getShiftById(empData.shift_assignment);
+    const shift = await getShiftById(user_details?.shift_assignment || 1);
     if (shift) {
-      const formattedShift = {
-        ...shift,
-        shift_start_time: moment(shift.starttime?.replace("Z", "")).format(
-          "h:mm a"
+      setEmployeeShift({
+        shift_start_time: moment(
+          moment(shift.starttime).format("HH:mm:ss"),
+          "HH:mm:ss"
         ),
-        shift_end_time: moment(shift.endtime?.replace("Z", "")).format("h:mm a"),
-      };
-      setEmployeeShift(formattedShift);
+        shift_end_time: moment(
+          moment(shift.endtime).format("HH:mm:ss"),
+          "HH:mm:ss"
+        ),
+      });
     }
 
     const attendance = await getAttendance({
@@ -211,15 +211,14 @@ const Attendance = () => {
     const startTime = moment(employeeShift.shift_start_time, "h:mm a");
     const endTime = moment(employeeShift.shift_end_time, "h:mm a");
     const totalHours = endTime.diff(startTime, "hours", true);
+    const is_late = moment(moment().format("HH:mm:ss"), "HH:mm:ss").isAfter(
+      employeeShift.shift_start_time
+    );
     const payload = {
       total_hours: totalHours,
-      checkin: moment().format("YYYY-MM-DDTHH:mm:ss"),
-      status: moment().isAfter(moment(employeeShift.shift_start_time, "h:mm a"))
-        ? "Late"
-        : "Present",
-      is_late: moment().isAfter(
-        moment(employeeShift.shift_start_time, "h:mm a")
-      ),
+      checkin: moment().utc().format("YYYY-MM-DDTHH:mm:ss[Z]"),
+      status: is_late ? "Late" : "Present",
+      is_late: is_late,
       employee_id: userProfile.id,
       shift_assignment: employeeShift.id,
       checkout: null,
