@@ -1,4 +1,5 @@
 
+
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import moment from "moment";
 import {
@@ -19,6 +20,8 @@ export default function EmployeeSelfTimesheet({
   endShift,
   OnBreak,
 }) {
+
+  console.log("employeeshift", employeeShift)
 
   // Determine which icons to show
   const renderShiftControlIcons = () => {
@@ -86,11 +89,15 @@ export default function EmployeeSelfTimesheet({
           </div>
           <div className="flex justify-between">
             <span className="text-slate-1200">Shift Time</span>
-            <span>
-              {employeeShift.shift_start_time +
-                " - " +
-                employeeShift.shift_end_time}
-            </span>
+            {employeeShift?.start_time && employeeShift?.end_time ? (
+              <span>
+                {employeeShift.shift_start_time +
+                  " - " +
+                  employeeShift.shift_end_time}
+              </span>
+            ) : (
+              "No shift assigned"
+            )}
           </div>
           <div className="flex items-center justify-center mt-4">
             <div className="relative">
@@ -126,7 +133,9 @@ export default function EmployeeSelfTimesheet({
                 {attendance?.payable_hours ?? "0"} hrs
               </div>
             </div>
-            {renderShiftControlIcons()}
+            {employeeShift?.start_time &&
+              employeeShift?.end_time &&
+              renderShiftControlIcons()}
           </div>
           <div className="flex justify-between mt-4">
             <div>
