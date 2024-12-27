@@ -92,24 +92,6 @@ const getShift = async(payload) =>{
   }
 }
 
-const getShiftById = async(id) =>{
-  let URL = `/shift/${id}`;
-try{
-  const response = await axios.get(`${baseUrl}${URL}`, {
-    headers: headers(),
-  });
-  if (response.status === 200) {
-    return response.data;
-  }
-}catch(error){
- console.error("Error fetching shift list:", error);
- if(error?.response?.status === 401){
-   handleLogout();
- }
- return false;
-}
-}
-
 const getShiftAssignment = async(payload) =>{
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -285,14 +267,17 @@ const getBreakStatus = async (payload) => {
 };
 
 const endBreak = async (payload, endtime) => {
+  console.log("endbreak", payload, endtime);
   const lastBreak = await getBreak(payload);
   const lastBreakId = lastBreak?.results[0]?.id;
   const lastBreakEnd = lastBreak?.results[0]?.endtime;
-  if (!lastBreakEnd) {
+  if (!lastBreakEnd && lastBreakId) {
     const breakPayload = {
       id: lastBreakId,
       endtime: endtime,
     };
+
+    console.log("breakPayload last break", breakPayload, lastBreakEnd);
     return await saveBreak(breakPayload);
   }
   return false;
@@ -364,9 +349,47 @@ function formatTimeWithAMPM(timeString) {
   return `${hour}:${formattedMinute} ${ampm}`;
 }
 
-const getStats = async () => {
-  
+const getStats = async (id) => {
+ try{
+   const response = await axios.get(`${baseUrl}/api/employee-hours${id}/`, {
+     headers: headers(),
+   });
+   return response.data;
+ }catch(error){
+    console.error("Error fetching stats:", error);
+    if(error?.response?.status === 401){
+      handleLogout();
+    }
+    return false;
+ }
 }
+
+  const employeeData = async (id) => {
+    const employeeResponse = await axios.get(
+      `${baseUrl}/emp/${id}`,
+      {
+        headers: headers()
+      }
+    );
+    const employeeData = employeeResponse.data;
+    return employeeData;
+  };
+
+  const getShiftById = async (id) => {
+    try{
+    const shiftResponse = await axios.get(`${baseUrl}/shift/${id}`, {
+      headers: headers(),
+    });
+    const shiftData = shiftResponse.data;
+    return shiftData;
+    }catch(error){
+      console.error("Error fetching shift by id:", error);
+      if(error?.response?.status === 401){
+        handleLogout();
+      }
+      return false;
+    }
+  }
 
 export {
   saveShiftAssignment,
@@ -384,5 +407,6 @@ export {
   convertUTCToLocal,
   formatTimeWithAMPM,
   getStats,
+  employeeData,
   getShiftById,
 };

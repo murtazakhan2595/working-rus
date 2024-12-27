@@ -119,11 +119,12 @@ const SheetOnBorading = ({
           setEmpId(response.serial_number);
           validateEmail(employeeData.work_email);
           validateUsername(employeeData.username);
+           getShiftList();
         } else {
           const response = await getNewEmployeeCode();
           // setEmpId(`TXB-${response.toString().padStart(4, "0")}`);
           setEmpId(response);
-          getShiftList()
+          getShiftList();
         }
       } catch (error) {
         console.log(error);
@@ -595,7 +596,6 @@ const SheetOnBorading = ({
                         </div>
                       </div>
                     </div>
-                    {!id && (
                       <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Shift Details</h3>
                         <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
@@ -639,7 +639,6 @@ const SheetOnBorading = ({
                           />
                         </div>
                       </div>
-                    )}
                     {!id && (
                       <div className="space-y-4">
                         <h3 className="text-lg font-semibold">

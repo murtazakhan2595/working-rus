@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import moment from "moment";
 import {
@@ -18,20 +17,23 @@ export default function EmployeeSelfTimesheet({
   pauseShift,
   endShift,
   OnBreak,
+  disable,
 }) {
-
   // Determine which icons to show
-  const renderShiftControlIcons = () => {
-
-    if(attendance && attendance.checkout){
-      return null
+  const renderShiftControlIcons = (disable) => {
+    if (attendance && attendance.checkout) {
+      return null;
     }
     if (!attendance?.checkin) {
       // If no attendance, show only Play
       return (
         <PlayCircle
           className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-          onClick={startShift}
+          onClick={() => {
+            if (!disable) {
+              startShift();
+            }
+          }}
         />
       );
     }
@@ -42,11 +44,19 @@ export default function EmployeeSelfTimesheet({
         <>
           <PlayCircle
             className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-            onClick={startShift}
+            onClick={()=>{
+              if (!disable) {
+                pauseShift();
+              }
+            }}
           />
           <StopCircle
             className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-            onClick={endShift}
+            onClick={()=>{
+              if (!disable) {
+                endShift();
+              }
+            }}
           />
         </>
       );
@@ -86,11 +96,16 @@ export default function EmployeeSelfTimesheet({
           </div>
           <div className="flex justify-between">
             <span className="text-slate-1200">Shift Time</span>
-            <span>
-              {moment(employeeShift.shift_start_time).format("hh:mm A") +
-                " - " +
-               moment( employeeShift.shift_end_time).format("hh:mm A")}
-            </span>
+            {employeeShift?.shift_start_time &&
+            employeeShift?.shift_end_time ? (
+              <span>
+                {moment(employeeShift.shift_start_time).format("hh:mm A") +
+                  " - " +
+                 moment( employeeShift.shift_end_time).format("hh:mm A")}
+              </span>
+            ) : (
+              "No shift assigned"
+            )}
           </div>
           <div className="flex items-center justify-center mt-4">
             <div className="relative">
@@ -126,7 +141,9 @@ export default function EmployeeSelfTimesheet({
                 {attendance?.payable_hours ?? "0"} hrs
               </div>
             </div>
-            {renderShiftControlIcons()}
+            {employeeShift?.shift_start_time &&
+              employeeShift?.shift_end_time &&
+              renderShiftControlIcons(disable)}
           </div>
           <div className="flex justify-between mt-4">
             <div>

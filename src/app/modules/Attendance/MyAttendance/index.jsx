@@ -26,41 +26,43 @@ import { calculateBreak } from "app/hooks/attendance";
 import { getBreakStatus } from "app/hooks/attendance";
 import { endBreak, getShiftById } from "app/hooks/attendance";
 import { getLocalTime } from "app/hooks/attendance";
-import { getStats } from "app/hooks/attendance";
-import { Button } from "components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { getStats, employeeData } from "app/hooks/attendance";
+
+
 
 const Attendance = () => {
   const [loading, setLoading] = useState(false);
+  const [disable, setDisable] = useState(false);
   const [employeeShift, setEmployeeShift] = useState({});
   const [attendance, setAttendance] = useState(null);
   const [attendanceData, setAttendanceData] = useState([]);
   const [onBreak, setOnBreak] = useState(false);
-  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("day");
+  const [attendanceHistoryLoading, setAttendanceHistoryLoading] = useState(false);
 
   const [stats, setStats] = useState([
-    { label: "Today", value: "4.45", total: "8" },
-    { label: "This Week", value: "25", total: "40" },
-    { label: "This Month", value: "48.15", total: "160" },
-    { label: "Remaining", value: "111.85", total: "160" },
-    { label: "Overtime", value: "5", total: "160" },
+    { label: "Today", value: "0", total: "8" },
+    { label: "This Week", value: "0", total: "40" },
+    { label: "This Month", value: "0", total: "160" },
+    { label: "Remaining", value: "0", total: "160" },
+    { label: "Overtime", value: "0", total: "160" },
   ]);
   const userProfile = useSelector((state) => state.user.userProfile);
   const user_details = useSelector((state) => state.emp.user_details);
   const [filterData, setFilterData] = useState({
-    date_range: "2024-12-10,2024-12-20",
     employee_id: userProfile.id,
+    date: moment().format("YYYY-MM-DD"),
   });
-  console.log("ATTENDANCE -", attendance);
-  console.log("ON BREAK -", onBreak);
 
   const getAttendanceList = async () => {
+    setAttendanceHistoryLoading(true)
     const attendanceData = await getAttendance({
       filterData: filterData,
     });
     if (attendanceData) {
       setAttendanceData(attendanceData.results);
     }
+    setAttendanceHistoryLoading(false)
   };
 
   const setAttendanceWithLocalTime = (attendance) => {
@@ -70,6 +72,8 @@ const Attendance = () => {
       });
     }
   };
+  
+  console.log("EMPLOYEE SHIFT", employeeShift);
 
   const fetchData = async () => {
     setLoading(true);
@@ -91,18 +95,17 @@ const Attendance = () => {
       filterData: {
         employee_id: userProfile.id,
         date: moment().format("YYYY-MM-DD"),
-        // date: "2024-12-15",
       },
     });
     if (attendance) {
       setAttendanceWithLocalTime(attendance.results[0]);
     }
-    await getAttendanceList();
+    
     if (attendance && attendance.results.length > 0) {
       const breakStatus = await getBreakStatus({
         filterData: {
           employee_id: userProfile.id,
-          attendance_id: attendance.id,
+          attendance: attendance.id,
         },
         options: {
           page: 1,
@@ -111,31 +114,68 @@ const Attendance = () => {
       });
       setOnBreak(breakStatus);
     }
-    // const stats = await getStats();
+    let stats = await getStats(userProfile.id);
+    stats = stats[0];
+    console.log("STATS", stats);
+    if(stats){
+      // [
+      //   { label: "Today", value: "4.45", total: "8" },
+      //   { label: "This Week", value: "25", total: "40" },
+      //   { label: "This Month", value: "48.15", total: "160" },
+      //   { label: "Remaining", value: "111.85", total: "160" },
+      //   { label: "Overtime", value: "5", total: "160" },
+      // ];
+      setStats([
+        {
+          label: "Today",
+          value: stats.daily_hours.value,
+          total: stats.daily_hours.total,
+        },
+        {
+          label: "This Week",
+          value: stats.weekly_hours.value,
+          total: stats.weekly_hours.total,
+        },
+        {
+          label: "This Month",
+          value: stats.monthly_hours.value,
+          total: stats.monthly_hours.total,
+        },
+        {
+          label: "Remaining",
+          value: stats.remaining_hours["total value"],
+          total: stats.monthly_hours.total,
+        },
+        {
+          label: "Overtime",
+          value: stats.overtime_hours.overtimehours,
+          total: 160,
+        },
+      ]);
+    }
 
     setLoading(false);
+    setDisable(false);
   };
   const endShift = async () => {
+    setDisable(true);
     const checkout = moment().format("YYYY-MM-DDTHH:mm:ss");
-    await updatePayableHours();
-    await endBreak(
-      {
-        filterData: {
-          employee_id: userProfile.id,
-          attendance_id: attendance.id,
-        },
-        options: {
-          page: 1,
-          sizePerPage: 1,
-        },
+    await updatePayableHours()
+    await endBreak({
+      filterData: {
+        employee_id: userProfile.id,
+        attendance: attendance.id,
       },
-      checkout
-    );
+      options: {
+        page: 1,
+        sizePerPage: 1,
+      },
+    }, checkout);
 
     const breakDuration = await calculateBreak({
       filterData: {
         employee_id: userProfile.id,
-        attendance_id: attendance.id,
+        attendance: attendance.id,
       },
     });
 
@@ -156,11 +196,18 @@ const Attendance = () => {
       setAttendanceWithLocalTime(response);
     }
     setOnBreak(false);
+    setDisable(false);
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(()=>{
+     getAttendanceList();
+  },[filterData])
+
+
   const initializeAttendance = async () => {
     const startTime = moment(employeeShift.shift_start_time, "h:mm a");
     const endTime = moment(employeeShift.shift_end_time, "h:mm a");
@@ -175,6 +222,7 @@ const Attendance = () => {
       is_late: is_late,
       employee_id: userProfile.id,
       shift_assignment: employeeShift.id,
+      checkout: null,
       is_weekend: [0, 6].includes(moment().day()),
       is_absent: false,
       break_duration: "0",
@@ -208,7 +256,7 @@ const Attendance = () => {
     const breakDuration = await calculateBreak({
       filterData: {
         employee_id: userProfile.id,
-        attendance_id: attendance.id,
+        attendance: attendance.id,
       },
     });
     let overTime = 0;
@@ -233,7 +281,7 @@ const Attendance = () => {
     const lastBreak = await getBreak({
       filterData: {
         employee_id: userProfile.id,
-        attendance_id: attendance.id,
+        attendance: attendance.id,
       },
       options: {
         page: 1,
@@ -247,7 +295,6 @@ const Attendance = () => {
       startTime = moment(lastBreak.results[0].endtime.replace("Z", ""));
       endTime = moment(moment().format("YYYY-MM-DDTHH:mm:ss"));
     }
-    console.log("startTime", startTime, "endTime", endTime);
     const totalHours = endTime.diff(startTime, "hours", true);
     const payableHours =
       parseFloat(attendance.payable_hours) + parseFloat(totalHours);
@@ -263,7 +310,8 @@ const Attendance = () => {
     }
   };
   const startShift = async () => {
-    console.log("SHIFT START FUNCTION");
+    setDisable(true);
+    console.log("SHIFT START FUNCTION")
     if (attendance && attendance.checkout) {
       toast.success("Shift already ended");
       return;
@@ -278,7 +326,7 @@ const Attendance = () => {
         {
           filterData: {
             employee_id: userProfile.id,
-            attendance_id: attendance.id,
+            attendance: attendance.id,
           },
           options: {
             page: 1,
@@ -295,9 +343,11 @@ const Attendance = () => {
       }
     }
     await getAttendanceList();
+    setDisable(false);
   };
 
   const pauseShift = async () => {
+    setDisable(true);
     const startTime = moment().format("YYYY-MM-DDTHH:mm:ss");
     await updatePayableHours();
     const payload = {
@@ -314,6 +364,24 @@ const Attendance = () => {
     }
     await updateAttendanceAttributes1();
     await getAttendanceList();
+    setDisable(false);
+  };
+
+  const handleFilterChange = (name, filterValue) => {
+    let filterName = "date";
+    if(name === "day"){
+      filterName= "date";
+      filterValue = moment().format("YYYY-MM-DD");
+    }
+    else if(name === "week"){
+      // {"date_range":"2024-12-10,2024-12-15","employee_id":327}
+      filterName = "date_range";
+      filterValue = moment().startOf("week").format("YYYY-MM-DD") + "," + moment().endOf("week").format("YYYY-MM-DD");
+    }
+    setFilterData( {
+      [filterName]: filterValue,
+      employee_id: userProfile.id,
+    });
   };
 
   return (
@@ -330,6 +398,7 @@ const Attendance = () => {
               pauseShift={pauseShift}
               endShift={endShift}
               OnBreak={onBreak}
+              disable={disable}
             />
 
             <Card>
@@ -404,16 +473,37 @@ const Attendance = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span className="text-plum-900">Attendance History</span>
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("/attendance-reports")}
-                >
-                  Download{" "}
-                </Button>
+                <div className="text-plum-900">Attendance History</div>
+                <div className="flex items-center gap-2 text-lg font-normal text-slate-900">
+                  <button
+                    className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${activeTab === "day" ? "bg-plum-400 text-plum-900" : ""}`}
+                    onClick={() => {
+                      setActiveTab("day");
+                      handleFilterChange("day");
+                    }}
+                  >
+                    Day
+                  </button>
+                  <button className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${activeTab === "week" ? "bg-plum-400 text-plum-900" : ""}`}
+                  onClick={()=>{
+                    setActiveTab("week")
+                    handleFilterChange("week");
+                  }}
+                  >
+                    Week
+                  </button>
+                  <button className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${activeTab === "month" ? "bg-plum-400 text-plum-900" : ""}`}
+                  onClick={()=>{
+                    setActiveTab("month")
+                    handleFilterChange("month");
+                  }}
+                  >
+                    Month
+                  </button>
+                </div>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+           {attendanceHistoryLoading ? <PageLoader/> :<CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -457,7 +547,7 @@ const Attendance = () => {
                   ))}
                 </TableBody>
               </Table>
-            </CardContent>
+            </CardContent>}
           </Card>
         </div>
       )}
@@ -466,3 +556,5 @@ const Attendance = () => {
 };
 
 export default Attendance;
+
+
