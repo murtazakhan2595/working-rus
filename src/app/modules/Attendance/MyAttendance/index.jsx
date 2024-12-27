@@ -11,7 +11,6 @@ import {
 import { Progress } from "src/@/components/ui/progress";
 import { CalendarIcon, FilterIcon, PlayCircle } from "lucide-react";
 import moment from "moment";
-import EmployeeSelfTimesheet from "./Section/EmployeeSelfTimesheet";
 import {
   getShiftAssignment,
   getAttendance,
@@ -28,18 +27,18 @@ import { endBreak } from "app/hooks/attendance";
 import { getLocalTime } from "app/hooks/attendance";
 import { getStats, employeeData } from "app/hooks/attendance";
 import { getShiftById } from "app/hooks/attendance";
-
-
+import { EmployeeSelfTimesheet } from "./Section";
 
 const Attendance = () => {
   const [loading, setLoading] = useState(false);
-  const [disable, setDisable] = useState(false);
   const [employeeShift, setEmployeeShift] = useState({});
   const [attendance, setAttendance] = useState(null);
   const [attendanceData, setAttendanceData] = useState([]);
   const [onBreak, setOnBreak] = useState(false);
   const [activeTab, setActiveTab] = useState("day");
-  const [attendanceHistoryLoading, setAttendanceHistoryLoading] = useState(false);
+  const [disable, setDisable] = useState(false);
+  const [attendanceHistoryLoading, setAttendanceHistoryLoading] =
+    useState(false);
 
   const [stats, setStats] = useState([
     { label: "Today", value: "0", total: "8" },
@@ -55,48 +54,40 @@ const Attendance = () => {
   });
 
   const getAttendanceList = async () => {
-    setAttendanceHistoryLoading(true)
+    setAttendanceHistoryLoading(true);
     const attendanceData = await getAttendance({
-      filterData: filterData
+      filterData: filterData,
     });
     if (attendanceData) {
       setAttendanceData(attendanceData.results);
     }
-    setAttendanceHistoryLoading(false)
+    setAttendanceHistoryLoading(false);
   };
 
   const setAttendanceWithLocalTime = (attendance) => {
     if (attendance) {
       setAttendance({
         ...attendance,
-        checkin: attendance.checkin.replace("Z","")
+        checkin: attendance.checkin?.replace("Z", ""),
       });
     }
   };
-  
-  console.log("EMPLOYEE SHIFT", employeeShift);
 
   const fetchData = async () => {
     setLoading(true);
-    setDisable(true);
+    setDisable(true)
     const empData = await employeeData(userProfile.id);
 
     const shift = await getShiftById(empData.shift_assignment);
-    console.log("SHIFT", shift);
     if (shift) {
-      console.log("SHIFT", shift);
       const formattedShift = {
         ...shift,
-        shift_start_time: moment(
-          shift.starttime.replace("Z", "")
-        ).format("h:mm a"),
-        shift_end_time: moment(shift.endtime.replace("Z", "")).format(
+        shift_start_time: moment(shift.starttime?.replace("Z", "")).format(
           "h:mm a"
         ),
+        shift_end_time: moment(shift.endtime?.replace("Z", "")).format("h:mm a"),
       };
       setEmployeeShift(formattedShift);
-    }else{
-      toast.error("No Shift Assigned");
     }
 
     const attendance = await getAttendance({
@@ -108,12 +99,12 @@ const Attendance = () => {
     if (attendance) {
       setAttendanceWithLocalTime(attendance.results[0]);
     }
-    
-    if (attendance && attendance.results.length > 0) {
+
+    if (attendance && attendance.results.length > 0 ) {
       const breakStatus = await getBreakStatus({
         filterData: {
           employee_id: userProfile.id,
-          attendance: attendance.id,
+          attendance: attendance.results[0].id,
         },
         options: {
           page: 1,
@@ -124,8 +115,7 @@ const Attendance = () => {
     }
     let stats = await getStats(userProfile.id);
     stats = stats[0];
-    console.log("STATS", stats);
-    if(stats){
+    if (stats) {
       // [
       //   { label: "Today", value: "4.45", total: "8" },
       //   { label: "This Week", value: "25", total: "40" },
@@ -161,24 +151,26 @@ const Attendance = () => {
         },
       ]);
     }
-
+    setDisable(false)
     setLoading(false);
-    setDisable(false);
   };
   const endShift = async () => {
-    setDisable(true);
+    setDisable(true)
     const checkout = moment().format("YYYY-MM-DDTHH:mm:ss");
-    await updatePayableHours()
-    await endBreak({
-      filterData: {
-        employee_id: userProfile.id,
-        attendance: attendance.id,
+    await updatePayableHours();
+    await endBreak(
+      {
+        filterData: {
+          employee_id: userProfile.id,
+          attendance: attendance.id,
+        },
+        options: {
+          page: 1,
+          sizePerPage: 1,
+        },
       },
-      options: {
-        page: 1,
-        sizePerPage: 1,
-      },
-    }, checkout);
+      checkout
+    );
 
     const breakDuration = await calculateBreak({
       filterData: {
@@ -199,22 +191,21 @@ const Attendance = () => {
     };
     const response = await saveAttendance(payload);
     if (response) {
-      await getAttendanceList()
+      await getAttendanceList();
       toast.success("Shift ended");
       setAttendanceWithLocalTime(response);
     }
     setOnBreak(false);
-    setDisable(false);
+    setDisable(false)
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  useEffect(()=>{
-     getAttendanceList();
-  },[filterData])
-
+  useEffect(() => {
+    getAttendanceList();
+  }, [filterData]);
 
   const initializeAttendance = async () => {
     const startTime = moment(employeeShift.shift_start_time, "h:mm a");
@@ -247,7 +238,6 @@ const Attendance = () => {
   };
 
   const updateAttendanceAttributes1 = async () => {
-
     let overTime = 0;
     if (parseFloat(attendance.payable_hours) > attendance.total_hours) {
       overTime = parseFloat(attendance.payable_hours) - attendance.total_hours;
@@ -283,9 +273,13 @@ const Attendance = () => {
       setAttendanceWithLocalTime(response);
       await getAttendanceList();
     }
-  }
+  };
 
   const updatePayableHours = async () => {
+    if(!attendance && attendance.results.length >0){
+      toast.error("No attendance found");
+      return;
+    }
     let startTime;
     let endTime;
     const lastBreak = await getBreak({
@@ -302,13 +296,12 @@ const Attendance = () => {
       startTime = moment(attendance.checkin);
       endTime = moment(moment().format("YYYY-MM-DDTHH:mm:ss"));
     } else {
-      startTime = moment(lastBreak.results[0].endtime.replace("Z", ""));
+      startTime = moment(lastBreak.results[0].endtime?.replace("Z", ""));
       endTime = moment(moment().format("YYYY-MM-DDTHH:mm:ss"));
     }
     const totalHours = endTime.diff(startTime, "hours", true);
     const payableHours =
       parseFloat(attendance.payable_hours) + parseFloat(totalHours);
-    console.log("payableHours", payableHours);
     const payload = {
       id: attendance.id,
       payable_hours: payableHours.toFixed(2),
@@ -320,8 +313,7 @@ const Attendance = () => {
     }
   };
   const startShift = async () => {
-    setDisable(true);
-    console.log("SHIFT START FUNCTION")
+    setDisable(true)
     if (attendance && attendance.checkout) {
       toast.success("Shift already ended");
       return;
@@ -353,11 +345,11 @@ const Attendance = () => {
       }
     }
     await getAttendanceList();
-    setDisable(false);
+    setDisable(false)
   };
 
   const pauseShift = async () => {
-    setDisable(true);
+    setDisable(true)
     const startTime = moment().format("YYYY-MM-DDTHH:mm:ss");
     await updatePayableHours();
     const payload = {
@@ -374,21 +366,23 @@ const Attendance = () => {
     }
     await updateAttendanceAttributes1();
     await getAttendanceList();
-    setDisable(false);
+    setDisable(false)
   };
 
   const handleFilterChange = (name, filterValue) => {
     let filterName = "date";
-    if(name === "day"){
-      filterName= "date";
+    if (name === "day") {
+      filterName = "date";
       filterValue = moment().format("YYYY-MM-DD");
-    }
-    else if(name === "week"){
+    } else if (name === "week") {
       // {"date_range":"2024-12-10,2024-12-15","employee_id":327}
       filterName = "date_range";
-      filterValue = moment().startOf("week").format("YYYY-MM-DD") + "," + moment().endOf("week").format("YYYY-MM-DD");
+      filterValue =
+        moment().startOf("week").format("YYYY-MM-DD") +
+        "," +
+        moment().endOf("week").format("YYYY-MM-DD");
     }
-    setFilterData( {
+    setFilterData({
       [filterName]: filterValue,
       employee_id: userProfile.id,
     });
@@ -408,7 +402,6 @@ const Attendance = () => {
               pauseShift={pauseShift}
               endShift={endShift}
               OnBreak={onBreak}
-              disable={disable}
             />
 
             <Card>
@@ -486,7 +479,9 @@ const Attendance = () => {
                 <div className="text-plum-900">Attendance History</div>
                 <div className="flex items-center gap-2 text-lg font-normal text-slate-900">
                   <button
-                    className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${activeTab === "day" ? "bg-plum-400 text-plum-900" : ""}`}
+                    className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${
+                      activeTab === "day" ? "bg-plum-400 text-plum-900" : ""
+                    }`}
                     onClick={() => {
                       setActiveTab("day");
                       handleFilterChange("day");
@@ -494,70 +489,80 @@ const Attendance = () => {
                   >
                     Day
                   </button>
-                  <button className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${activeTab === "week" ? "bg-plum-400 text-plum-900" : ""}`}
-                  onClick={()=>{
-                    setActiveTab("week")
-                    handleFilterChange("week");
-                  }}
+                  <button
+                    className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${
+                      activeTab === "week" ? "bg-plum-400 text-plum-900" : ""
+                    }`}
+                    onClick={() => {
+                      setActiveTab("week");
+                      handleFilterChange("week");
+                    }}
                   >
                     Week
                   </button>
-                  <button className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${activeTab === "month" ? "bg-plum-400 text-plum-900" : ""}`}
-                  onClick={()=>{
-                    setActiveTab("month")
-                    handleFilterChange("month");
-                  }}
+                  <button
+                    className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${
+                      activeTab === "month" ? "bg-plum-400 text-plum-900" : ""
+                    }`}
+                    onClick={() => {
+                      setActiveTab("month");
+                      handleFilterChange("month");
+                    }}
                   >
                     Month
                   </button>
                 </div>
               </CardTitle>
             </CardHeader>
-           {attendanceHistoryLoading ? <PageLoader/> :<CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>S. No</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Punch In</TableHead>
-                    <TableHead>Punch Out</TableHead>
-                    <TableHead>Break</TableHead>
-                    <TableHead>Overtime</TableHead>
-                    <TableHead>Productivity</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {attendanceData.map((row, index) => (
-                    <TableRow
-                      key={index}
-                      className={index % 2 === 1 ? "bg-purple-50" : ""}
-                    >
-                      <TableCell>
-                        {(index + 1).toString().padStart(2, "0")}
-                      </TableCell>
-                      <TableCell>
-                        {row.date
-                          ? new Date(row.date).toLocaleDateString("en-GB") // or 'en-US' based on your preference
-                          : "No Date"}
-                      </TableCell>
-                      <TableCell>
-                        {moment(attendance?.checkin).format("h:mm A")}
-                      </TableCell>
-                      <TableCell>
-                        {row.checkout
-                          ? moment(row?.checkout.replace("Z", "")).format(
-                              "h:mm A"
-                            )
-                          : "Not Checked Out"}
-                      </TableCell>
-                      <TableCell>{row.break_duration || 0.0} hrs</TableCell>
-                      <TableCell>{row.overtime_hours || 0.0} hrs</TableCell>
-                      <TableCell>{row.payable_hours || 0.0} hrs</TableCell>
+            {attendanceHistoryLoading ? (
+              <PageLoader />
+            ) : (
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>S. No</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Punch In</TableHead>
+                      <TableHead>Punch Out</TableHead>
+                      <TableHead>Break</TableHead>
+                      <TableHead>Overtime</TableHead>
+                      <TableHead>Productivity</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>}
+                  </TableHeader>
+                  <TableBody>
+                    {attendanceData.map((row, index) => (
+                      <TableRow
+                        key={index}
+                        className={index % 2 === 1 ? "bg-purple-50" : ""}
+                      >
+                        <TableCell>
+                          {(index + 1).toString().padStart(2, "0")}
+                        </TableCell>
+                        <TableCell>
+                          {row.date
+                            ? new Date(row.date).toLocaleDateString("en-GB") // or 'en-US' based on your preference
+                            : "No Date"}
+                        </TableCell>
+                        <TableCell>
+                          {moment(attendance?.checkin).format("h:mm A")}
+                        </TableCell>
+                        <TableCell>
+                          {row.checkout
+                            ? moment(row?.checkout?.replace("Z", "")).format(
+                                "h:mm A"
+                              )
+                            : "Not Checked Out"}
+                        </TableCell>
+                        <TableCell>{row.break_duration || 0.0} hrs</TableCell>
+                        <TableCell>{row.overtime_hours || 0.0} hrs</TableCell>
+                        <TableCell>{row.payable_hours || 0.0} hrs</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            )}
           </Card>
         </div>
       )}
@@ -566,5 +571,3 @@ const Attendance = () => {
 };
 
 export default Attendance;
-
-
