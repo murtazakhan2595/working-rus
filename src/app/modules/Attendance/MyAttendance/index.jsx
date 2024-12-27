@@ -33,6 +33,7 @@ import { getShiftById } from "app/hooks/attendance";
 
 const Attendance = () => {
   const [loading, setLoading] = useState(false);
+  const [disable, setDisable] = useState(false);
   const [employeeShift, setEmployeeShift] = useState({});
   const [attendance, setAttendance] = useState(null);
   const [attendanceData, setAttendanceData] = useState([]);
@@ -72,12 +73,16 @@ const Attendance = () => {
       });
     }
   };
+  
+  console.log("EMPLOYEE SHIFT", employeeShift);
 
   const fetchData = async () => {
     setLoading(true);
+    setDisable(true);
     const empData = await employeeData(userProfile.id);
 
     const shift = await getShiftById(empData.shift_assignment);
+    console.log("SHIFT", shift);
     if (shift) {
       console.log("SHIFT", shift);
       const formattedShift = {
@@ -158,8 +163,10 @@ const Attendance = () => {
     }
 
     setLoading(false);
+    setDisable(false);
   };
   const endShift = async () => {
+    setDisable(true);
     const checkout = moment().format("YYYY-MM-DDTHH:mm:ss");
     await updatePayableHours()
     await endBreak({
@@ -197,6 +204,7 @@ const Attendance = () => {
       setAttendanceWithLocalTime(response);
     }
     setOnBreak(false);
+    setDisable(false);
   };
 
   useEffect(() => {
@@ -312,6 +320,7 @@ const Attendance = () => {
     }
   };
   const startShift = async () => {
+    setDisable(true);
     console.log("SHIFT START FUNCTION")
     if (attendance && attendance.checkout) {
       toast.success("Shift already ended");
@@ -344,9 +353,11 @@ const Attendance = () => {
       }
     }
     await getAttendanceList();
+    setDisable(false);
   };
 
   const pauseShift = async () => {
+    setDisable(true);
     const startTime = moment().format("YYYY-MM-DDTHH:mm:ss");
     await updatePayableHours();
     const payload = {
@@ -363,6 +374,7 @@ const Attendance = () => {
     }
     await updateAttendanceAttributes1();
     await getAttendanceList();
+    setDisable(false);
   };
 
   const handleFilterChange = (name, filterValue) => {
@@ -396,6 +408,7 @@ const Attendance = () => {
               pauseShift={pauseShift}
               endShift={endShift}
               OnBreak={onBreak}
+              disable={disable}
             />
 
             <Card>

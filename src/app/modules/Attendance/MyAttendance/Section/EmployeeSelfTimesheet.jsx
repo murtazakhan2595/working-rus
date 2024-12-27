@@ -1,5 +1,3 @@
-
-
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import moment from "moment";
 import {
@@ -19,22 +17,23 @@ export default function EmployeeSelfTimesheet({
   pauseShift,
   endShift,
   OnBreak,
+  disable,
 }) {
-
-  console.log("employeeshift", employeeShift)
-
   // Determine which icons to show
-  const renderShiftControlIcons = () => {
-
-    if(attendance && attendance.checkout){
-      return null
+  const renderShiftControlIcons = (disable) => {
+    if (attendance && attendance.checkout) {
+      return null;
     }
     if (!attendance?.checkin) {
       // If no attendance, show only Play
       return (
         <PlayCircle
           className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-          onClick={startShift}
+          onClick={() => {
+            if (!disable) {
+              startShift();
+            }
+          }}
         />
       );
     }
@@ -45,11 +44,19 @@ export default function EmployeeSelfTimesheet({
         <>
           <PlayCircle
             className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-            onClick={startShift}
+            onClick={()=>{
+              if (!disable) {
+                pauseShift();
+              }
+            }}
           />
           <StopCircle
             className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-            onClick={endShift}
+            onClick={()=>{
+              if (!disable) {
+                endShift();
+              }
+            }}
           />
         </>
       );
@@ -89,7 +96,8 @@ export default function EmployeeSelfTimesheet({
           </div>
           <div className="flex justify-between">
             <span className="text-slate-1200">Shift Time</span>
-            {employeeShift?.start_time && employeeShift?.end_time ? (
+            {employeeShift?.shift_start_time &&
+            employeeShift?.shift_end_time ? (
               <span>
                 {employeeShift.shift_start_time +
                   " - " +
@@ -133,9 +141,9 @@ export default function EmployeeSelfTimesheet({
                 {attendance?.payable_hours ?? "0"} hrs
               </div>
             </div>
-            {employeeShift?.start_time &&
-              employeeShift?.end_time &&
-              renderShiftControlIcons()}
+            {employeeShift?.shift_start_time &&
+              employeeShift?.shift_end_time &&
+              renderShiftControlIcons(disable)}
           </div>
           <div className="flex justify-between mt-4">
             <div>
