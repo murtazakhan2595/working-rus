@@ -19,6 +19,7 @@ export default function EmployeeSelfTimesheet({
   OnBreak,
   disable,
 }) {
+  console.log("BREAK STAUS", OnBreak);
   // Determine which icons to show
   const renderShiftControlIcons = (disable) => {
     if (attendance && attendance.checkout) {
@@ -46,7 +47,7 @@ export default function EmployeeSelfTimesheet({
             className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
             onClick={()=>{
               if (!disable) {
-                pauseShift();
+                startShift();
               }
             }}
           />
