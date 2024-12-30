@@ -1186,3 +1186,34 @@ export const MyAttendanceHistoryColumns = [
     formatter: (cell, row) => <EmployeeAttendenceHistoryActions row={row} />,
   },
 ];
+
+
+export const EmployeesAttendance = [
+  {
+    dataField: "first_name",
+    text: "Employee",
+    formatter:(cell,row)=> (
+      <EmployeeDataInfo
+      name={cell}
+      email={row?.work_email}
+      src={row?.profile_picture?.file}
+    />
+    )
+  },
+  {
+    dataField: "date",
+    text: "Present Days",
+  },
+  {
+    dataField: "date",
+    text: "Absent Days",
+  },
+  {
+    dataField: "date",
+    text: "Late Days",
+  },
+  {
+    dataField:"attendance_percentage",
+    text:"Attendance %",
+  }
+]
