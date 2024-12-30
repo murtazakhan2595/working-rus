@@ -31,6 +31,7 @@ import { LeaveStatusOverview } from "./Sections/LeaveStatusOverview";
 import { StatisticsChart } from "./Sections/StatisticsChart";
 import DepartmentOverview from "./Sections/DepartmentOverview";
 import { StatsCards } from "./Sections/StatsCards";
+import EmployeesAttendence from "./Sections/EmployeesAttendence";
 
 const Attendance = () => {
   // const navigate = useNavigate();
@@ -45,6 +46,10 @@ const Attendance = () => {
 
       <div>
          <StatsCards/>
+      </div>
+      
+      <div>
+        <EmployeesAttendence/>
       </div>
       {/* // <div className="p-4 space-y-4">
         //   <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
