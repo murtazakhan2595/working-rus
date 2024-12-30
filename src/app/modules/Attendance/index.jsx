@@ -27,13 +27,25 @@ import { endBreak } from "app/hooks/attendance";
 import { getLocalTime } from "app/hooks/attendance";
 import { getStats } from "app/hooks/attendance";
 import { useNavigate } from "react-router-dom";
+import { LeaveStatusOverview } from "./Sections/LeaveStatusOverview";
+import { StatisticsChart } from "./Sections/StatisticsChart";
+import DepartmentOverview from "./Sections/DepartmentOverview";
+import { StatsCards } from "./Sections/StatsCards";
 
 const Attendance = () => {
-  const navigate = useNavigate();
-  navigate("/attendance/502");
+  // const navigate = useNavigate();
+  // navigate("/attendance/502");
   return (
-    <>
-      <>Attendence MAin Page</>
+    <div>
+      <div className="p-6 flex  gap-4">
+        <LeaveStatusOverview/>
+        <StatisticsChart/>
+        <DepartmentOverview/>
+      </div>
+
+      <div>
+         <StatsCards/>
+      </div>
       {/* // <div className="p-4 space-y-4">
         //   <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         //     <EmployeeSelfTimesheet
@@ -165,7 +177,7 @@ const Attendance = () => {
         //     </CardContent>
         //   </Card>
         // </div> */}
-    </>
+    </div>
   );
 };
 
