@@ -36,8 +36,8 @@ const Attendance = () => {
   // const navigate = useNavigate();
   // navigate("/attendance/502");
   return (
-    <div className="bg-white">
-      <div className="p-6 flex bg-gray-100 gap-4">
+    <div>
+      <div className="p-6 flex  gap-4">
         <LeaveStatusOverview/>
         <StatisticsChart/>
         <DepartmentOverview/>

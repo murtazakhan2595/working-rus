@@ -27,7 +27,7 @@ const barColors = {
 
 export function StatisticsChart() {
   return (
-    <Card className="flex flex-col shadow-lg border rounded-xl bg-white p-6 min-w-[33%]">
+    <Card className="flex flex-col shadow-lg border rounded-xl bg-white  min-w-[33%]">
       <CardHeader className="pb-4">
         <CardTitle className="text-xl font-bold text-plum-900">Statistics</CardTitle>
       </CardHeader>
