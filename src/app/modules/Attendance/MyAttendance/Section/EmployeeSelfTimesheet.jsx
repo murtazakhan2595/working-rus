@@ -100,9 +100,9 @@ export default function EmployeeSelfTimesheet({
             {employeeShift?.shift_start_time &&
             employeeShift?.shift_end_time ? (
               <span>
-                {employeeShift.shift_start_time +
+                {moment(employeeShift.shift_start_time).format("hh:mm A") +
                   " - " +
-                  employeeShift.shift_end_time}
+                 moment( employeeShift.shift_end_time).format("hh:mm A")}
               </span>
             ) : (
               "No shift assigned"

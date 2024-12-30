@@ -49,7 +49,7 @@ const TodayStatistics = ({ userId, shiftId }) => {
               }`
             : "---";
           setShiftTime(shiftTime);
-        }
+           }
       }
     } catch (error) {
       console.error(error);
@@ -67,7 +67,7 @@ const TodayStatistics = ({ userId, shiftId }) => {
       isMounted = false;
     };
   }, []);
-
+ 
   if (isLoading) return <PageLoader />;
   return (
     <div className="space-y-4">
