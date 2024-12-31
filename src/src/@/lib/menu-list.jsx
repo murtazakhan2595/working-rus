@@ -115,6 +115,7 @@ export function getMenuList(pathname, userRole) {
         // createMenu("/my-team", "My Team"),
         // createMenu("/calendar", "Calendar"),
         Config.MY_ATTENDANCE &&
+        createMenu("/my-dtr", "My DTR"),
           createMenu("/my-attendance", "My Attendance"),
         createMenu("/my-leave-tracker", " My Leave Tracker"),
         // createMenu("/files-data", "Files & Data"),
