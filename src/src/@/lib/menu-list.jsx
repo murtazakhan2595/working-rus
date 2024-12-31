@@ -55,7 +55,7 @@ export function getMenuList(pathname, userRole) {
     isReportsMenu: userRole === 1 || userRole === 2,
     performanceManagementMenus:
       userRole === 1 || userRole === 2 || userRole === 3,
-    dailyTaskReportMenus: userRole === 1 || userRole === 2 || userRole === 3,
+    dailyTaskReportMenus: userRole === 1 || userRole === 2 || userRole === 3 || userRole ===4,
     personalDevelopmentMenus:
       userRole === 1 || userRole === 2 || userRole === 3,
     peopleEngagementMenus:
