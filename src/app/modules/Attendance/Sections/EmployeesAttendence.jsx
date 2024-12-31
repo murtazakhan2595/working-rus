@@ -13,7 +13,7 @@ import { PageLoader } from 'components';
 import { getAttendance } from 'app/hooks/attendance';
 import { getEmployeeCustomList } from 'app/hooks/general';
 import TableCustom from 'components/CustomTable';
-import { EmployeesAttendance } from 'app/utils/Types/TableColumns';
+// import { EmployeesAttendance } from 'app/utils/Types/TableColumns';
 
 const EmployeesAttendence = () => {
   const [activeTab, setActiveTab] = useState('day');
@@ -110,6 +110,8 @@ const EmployeesAttendence = () => {
     fetchEmployeeDataAndMerge();
   }, [attendanceData]);
 
+  
+
   return (
     <Card>
       <CardHeader>
@@ -137,45 +139,10 @@ const EmployeesAttendence = () => {
         <PageLoader />
       ) : (
         <CardContent>
-          <TableCustom
+          {/* <TableCustom
            data={allData}
            columns={EmployeesAttendance}
-          />
-          {/* <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>S. No</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Punch In</TableHead>
-                <TableHead>Punch Out</TableHead>
-                <TableHead>Break</TableHead>
-                <TableHead>Overtime</TableHead>
-                <TableHead>Productivity</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {attendanceData.map((row, index) => (
-                <TableRow
-                  key={row.id || index}
-                  className={index % 2 === 1 ? 'bg-purple-50' : ''}
-                >
-                  <TableCell>{(index + 1).toString().padStart(2, '0')}</TableCell>
-                  <TableCell>
-                    {row.date ? moment(row.date).format('DD-MM-YYYY') : 'No Date'}
-                  </TableCell>
-                  <TableCell>
-                    {row.checkin ? moment(row.checkin).format('h:mm A') : 'Not Checked In'}
-                  </TableCell>
-                  <TableCell>
-                    {row.checkout ? moment(row.checkout).format('h:mm A') : 'Not Checked Out'}
-                  </TableCell>
-                  <TableCell>{row.break_duration || '0.0'} hrs</TableCell>
-                  <TableCell>{row.overtime_hours || '0.0'} hrs</TableCell>
-                  <TableCell>{row.payable_hours || '0.0'} hrs</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table> */}
+          /> */}
         </CardContent>
       )}
     </Card>

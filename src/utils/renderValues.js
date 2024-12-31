@@ -192,3 +192,8 @@ export const GetShiftTotalHours = (shiftStartTime, shiftEndTime, period) => {
     return calculateHoursForDays(startDate, endDate);
   }
 };
+
+export const calculatePercentage = (stats) => {
+  const total = stats.Present + stats.Absent 
+  return total > 0 ? ((stats.Present / total) * 100).toFixed(2) : "0.00";
+};

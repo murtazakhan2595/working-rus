@@ -21,7 +21,6 @@ const EmployeeNameInfo = ({
   showDepartment = false,
 }) => {
   const userProfile = GetUser(id);
-  console.log(userProfile);
   return (
     <div className={`flex items-start ${className??''}`}>
       <Avatar
