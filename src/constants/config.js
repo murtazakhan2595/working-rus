@@ -16,7 +16,7 @@ export default {
     PERFORMANCE_MANAGEMENT:false,
     PEOPLE_ENGAGEMENT:false,
     PERSONAL_DEVELOPMENT:false,
-    DAILY_TASK_REPORT:false,
+    DAILY_TASK_REPORT:true,
     OFFICE_SETTING: true,
 
 

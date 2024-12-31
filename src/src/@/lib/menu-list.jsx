@@ -55,7 +55,7 @@ export function getMenuList(pathname, userRole) {
     isReportsMenu: userRole === 1 || userRole === 2,
     performanceManagementMenus:
       userRole === 1 || userRole === 2 || userRole === 3,
-    dailyTaskReportMenus: userRole === 1 || userRole === 2 || userRole === 3,
+    dailyTaskReportMenus: userRole === 1 || userRole === 2 || userRole === 3 || userRole ===4,
     personalDevelopmentMenus:
       userRole === 1 || userRole === 2 || userRole === 3,
     peopleEngagementMenus:
@@ -115,6 +115,7 @@ export function getMenuList(pathname, userRole) {
         // createMenu("/my-team", "My Team"),
         // createMenu("/calendar", "Calendar"),
         Config.MY_ATTENDANCE &&
+        createMenu("/my-dtr", "My DTR"),
           createMenu("/my-attendance", "My Attendance"),
         createMenu("/my-leave-tracker", " My Leave Tracker"),
         // createMenu("/files-data", "Files & Data"),

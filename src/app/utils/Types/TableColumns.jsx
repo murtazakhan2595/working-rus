@@ -1,15 +1,16 @@
 import {
   EmployeeID,
   ManagerName,
-  LeaveType,
+  GetUser,
   LeaveTypeOfEmployee,
   UserRole,
 } from "utils/getValuesFromTables";
+import { Badge } from "components/ui/badge";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions, formatNumber } from "data/Data";
 import { EmployeeNameInfo, StatusLabel } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
-import {EmployeeAttendenceHistoryActions} from "app/modules/Attendance/EmployeeAttendance/Section";
+import { EmployeeAttendenceHistoryActions } from "app/modules/Attendance/EmployeeAttendance/Section";
 // import {
 //   Status,
 //   RenderStatus,
@@ -35,64 +36,8 @@ import { Switch } from "../../../src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
 import { Clock, Download } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
+import { CalculateHoursWorked,EmployeeAttendenceActions } from "app/modules/Attendance/Sections";
 import { MembersList } from "app/modules/TaskManagment/Sections";
-
-/**
- * LeaveHistoryColumns
- *
- * Returns an array of column definitions for the Leave History table.
- *
- * @param {function} updateLeaveType - A function to update the leave type.
- * @returns {array} An array of column definitions.
- */
-// export const LeaveHistoryColumns = (updateLeaveType) => [
-//   {
-//     dataField: "name",
-//     text: "Employees",
-//     formatter: (cell, row) => (
-//       <EmployeeNameInfo
-//         name={`${row.first_name} ${row.last_name}`}
-//         department={row.department_name}
-//         position={row.department_position}
-//       />
-//     ),
-//   },
-//   {
-//     dataField: "id",
-//     text: "ID",
-//     formatter: (cell, row) => <EmployeeID value={cell} />,
-//   },
-//   {
-//     dataField: "direct_report",
-//     text: "Report To",
-//     formatter: (cell, row) => <ManagerName value={cell} />,
-//   },
-//   {
-//     dataField: "leaveTypes",
-//     text: "Leaves Type",
-//     formatter: (cell, row) => (
-//       <RenderLeaveType row={row} updateLeaveType={updateLeaveType} />
-//     ),
-//   },
-//   {
-//     dataField: "allotedLeaves",
-//     text: "Leaves Alloted",
-//   },
-//   {
-//     dataField: "usedLeaves",
-//     text: "Leaves Used",
-//   },
-//   {
-//     dataField: "remainingLeaves",
-//     text: "Remaining Leaves",
-//   },
-//   {
-//     dataField: "",
-//     text: "",
-//     formatter: (cell) => <IoIosArrowDown className="cursor-pointer" />,
-//     roWExpandOnClick: true,
-//   },
-// ];
 /**
  * EmployeeColumns
  *
@@ -428,83 +373,6 @@ export const AllJobApplicationColumns = (
   },
 ];
 
-// export const AllLeavesApplicationColumns = (reload, userRole) => {
-//   const columns = [
-//     {
-//       dataField: "employee_id",
-//       text: "Employees",
-//       // formatter: (cell, row) => (
-//       //   <EmployeeNameInfo
-//       //     name={`${row.name}`}
-//       //     department={row.department_name}
-//       //     position={row.position}
-//       //   />
-//       // ),
-//     },
-//     {
-//       dataField: "employee_id",
-//       text: "ID",
-//       formatter: (cell, row) => <EmployeeID value={cell} />,
-//     },
-//     {
-//       dataField: "report_to",
-//       text: "Report To",
-//       formatter: (cell, row) => <ManagerName value={cell} />,
-//     },
-//     {
-//       dataField: "leave_component_name",
-//       text: "Leave Type",
-//     },
-//     {
-//       dataField: "total_leave",
-//       text: "No. of Leaves",
-//     },
-//     {
-//       dataField: "start_date",
-//       text: "Start Date",
-//       formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
-//     },
-//     {
-//       dataField: "end_date",
-//       text: "End Date",
-//       formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
-//     },
-//     {
-//       dataField: "status_hr",
-//       text: "Status",
-//       formatter: (cell) => <StatusLabel status={Status(cell)} />,
-//     },
-//     {
-//       dataField: "",
-//       text: "",
-//       formatter: (cell, row) => <RenderStatus row={row} />,
-//     },
-//   ];
-//   if (userRole === 1 || userRole === 3) {
-//     columns.push({
-//       dataField: "action",
-//       text: "Action",
-//       formatter: (cell, row) => <RenderLeaveAction row={row} reload={reload} />,
-//     });
-//   }
-
-//   return columns;
-// };
-
-// export const LeaveAllotmentColumns = (reload) => [
-//   {
-//     dataField: "employee_id",
-//     text: "",
-//     formatter: (cell, row, list) => (
-//       <RenderEmployeesLeaveAllotement
-//         employee={row}
-//         employeeList={list}
-//         reload={reload}
-//       />
-//     ),
-//   },
-// ];
-
 export const ExitTerminatedColumns = [
   {
     dataField: "employee_id",
@@ -540,7 +408,7 @@ export const EmployeePayrollColumns = [
       <EmployeeDataInfo
         name={cell}
         email={row.work_email}
-        src={row?.profile_picture?.file}
+        src={row?.profile_picture}
       />
     ),
   },
@@ -1151,9 +1019,7 @@ export const MyAttendanceHistoryColumns = [
     dataField: "checkout",
     text: "Check Out",
     formatter: (cell) => (
-      <>{`${
-        cell? moment(cell).format("hh:mm A") : "Working"
-      }`}</>
+      <>{`${cell ? moment(cell).format("hh:mm A") : "Working"}`}</>
     ),
   },
   {
@@ -1187,33 +1053,145 @@ export const MyAttendanceHistoryColumns = [
   },
 ];
 
+export const MyDtrTasksColumns = [
+  {
+    dataField: "",
+    text: "Task",
+    formatter: (cell, row) => (
+      <div>
+        <div>{row?.name}</div>
+        <div>{row?.id}</div>
+      </div>
+    ),
+  },
+  {
+    dataField: "dueDate",
+    text: "Due Date",
+  },
+  {
+    dataField: "priority",
+    text: "Priority",
+    formatter: (cell) => (
+      <span
+        className={`
+                      px-2 py-1 rounded-full text-sm
+                      ${
+                        cell === "High"
+                          ? "text-[#60646c] "
+                          : cell === "Medium"
+                          ? "text-[#825312]"
+                          : "text-[#911030]"
+                      }
+                    `}
+      >
+        {cell}
+      </span>
+    ),
+  },
+  {
+    dataField: "timeEst",
+    text: "Time Est",
+    formatter: (cell) => (
+      <div className="flex items-center gap-2">
+        {" "}
+        <Clock size={16} /> {cell}
+      </div>
+    ),
+  },
+  {
+    dataField: "timeSpent",
+    text: "Time Spent",
+    formatter: (cell) => (
+      <div className="flex items-center gap-2">
+        {" "}
+        <Clock size={16} /> {cell}
+      </div>
+    ),
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell) => (
+      <span
+        className={`
+                      px-2 py-1 rounded-full text-xs
+                      ${
+                        cell === "Completed"
+                          ? "bg-green-100 text-green-800"
+                          : cell === "In-Progress"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-gray-100 text-gray-800"
+                      }
+                    `}
+      >
+        {cell}
+      </span>
+    ),
+  },
+];
 
-export const EmployeesAttendance = [
+/**
+ * EmployeeColumns
+ *
+ * Returns an array of column definitions for the Employee table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const EmployeesAttendanceColumns = [
   {
-    dataField: "first_name",
-    text: "Employee",
-    formatter:(cell,row)=> (
-      <EmployeeDataInfo
-      name={cell}
-      email={row?.work_email}
-      src={row?.profile_picture?.file}
-    />
-    )
+    dataField: "employee_id",
+    text: "Employees",
+    formatter: (cell, row) => (
+      <EmployeeNameInfo id={cell} showId showPosition />
+    ),
+  },
+
+  {
+    dataField: "is_late",
+    text: "",
+    formatter: (cell, row) => cell === true && <Badge variant='error'>Late</Badge>,
   },
   {
-    dataField: "date",
-    text: "Present Days",
+    dataField: "employee_id",
+    text: "Department",
+    formatter: (cell) => {
+      const user = GetUser(cell);
+      if (!user) return "";
+      return (
+        <>
+          <DepartmentName value={user?.department_name} />
+        </>
+      );
+    },
   },
   {
-    dataField: "date",
-    text: "Absent Days",
+    dataField: "checkin",
+    text: "Check In",
+    formatter: (cell, row) => (
+      <div>
+        <div>{`${moment(cell).format("hh:mm A")}`}</div>
+        <div>{`${
+          row.checkout ? moment(row.checkout).format("hh:mm A") : "Working"
+        }`}</div>
+      </div>
+    ),
   },
   {
-    dataField: "date",
-    text: "Late Days",
+    dataField: "checkout",
+    text: "Hours",
+    formatter: (cell, row) => {
+      const hours = CalculateHoursWorked([row]);
+      return <>{`${hours.totalWorkedHours}hr`}</>;
+    },
   },
   {
-    dataField:"attendance_percentage",
-    text:"Attendance %",
-  }
-]
+    dataField: "status",
+    text: "Status",
+    formatter: (cell) => <StatusLabel status={cell} />,
+  },
+  {
+    dataField: "",
+    text: "Actions",
+    formatter: (cell, row) => <EmployeeAttendenceActions row={row} />,
+  },
+];

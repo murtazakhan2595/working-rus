@@ -52,7 +52,7 @@ const Header = ({ content, userProfile }) => {
       "leave-calender": "Leave Calendar",
       "my-payroll": "My Payroll",
       "create-task": "Create Task",
-      "my-dtr": "My DTR",
+      "my-dtr": "Daily Tasks Report",
       "settings": "Settings",
       "travel-details": "Travel Details",
       "customise-employees": "Customize Employees",

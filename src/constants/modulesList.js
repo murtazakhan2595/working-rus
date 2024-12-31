@@ -242,7 +242,7 @@ const ModuleListByUserRole = [
   {
     moduleId: 41,
     moduleName: "Daily Task Report",
-    parentModuleId: null,
+    parentModuleId: 12,
     userRole: [1,2,3],
   },
   {
