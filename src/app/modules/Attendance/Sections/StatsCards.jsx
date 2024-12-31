@@ -1,18 +1,26 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "components/ui/card"
+import * as React from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "components/ui/card";
+import { useSelector } from "react-redux";
 
-const statsData = [
-  { title: "Total Employees", value: 120 },
-  { title: "Present", value: 98 },
-  { title: "Late", value: 12 },
-  { title: "Absent", value: 7 },
-  { title: "Not Arrived", value: 3 },
-  { title: "Attendance Requests", value: 5 },
-]
-
-export function StatsCards() {
+export function StatsCards({ attendanceData }) {
+  const employees = useSelector((state) => state.emp.employees);
+  const lateCount = attendanceData.filter((record) => record.is_late).length;
+  const absenteCount = attendanceData.filter(
+    (record) => record.is_absent
+  ).length;
+  const statsData = [
+    { title: "Total Employees", value: employees?.length || 0 },
+    { title: "Present", value: attendanceData?.length || 0 },
+    { title: "Late", value: lateCount },
+    { title: "Absent", value: absenteCount || 0 },
+    {
+      title: "Not Arrived",
+      value: parseInt(employees?.length - attendanceData?.length),
+    },
+    { title: "Attendance Requests", value: 5 },
+  ];
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
       {statsData.map((stat, index) => (
@@ -31,5 +39,5 @@ export function StatsCards() {
         </Card>
       ))}
     </div>
-  )
+  );
 }

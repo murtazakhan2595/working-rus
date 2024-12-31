@@ -28,8 +28,6 @@ import { endBreak, getShiftById } from "app/hooks/attendance";
 import { getLocalTime } from "app/hooks/attendance";
 import { getStats, employeeData } from "app/hooks/attendance";
 
-
-
 const Attendance = () => {
   const [loading, setLoading] = useState(false);
   const [employeeShift, setEmployeeShift] = useState({});
@@ -100,7 +98,7 @@ const Attendance = () => {
       setAttendanceWithLocalTime(attendance.results[0]);
     }
 
-    if (attendance && attendance.results.length > 0 ) {
+    if (attendance && attendance.results.length > 0) {
       const breakStatus = await getBreakStatus({
         filterData: {
           employee_id: userProfile.id,
@@ -151,12 +149,12 @@ const Attendance = () => {
         },
       ]);
     }
-    setDisable(false)
+    setDisable(false);
     setLoading(false);
   };
   const endShift = async () => {
-    setDisable(true)
-    const checkout = moment().format("YYYY-MM-DDTHH:mm:ss");
+    setDisable(true);
+    const checkout = moment().utc().format("YYYY-MM-DDTHH:mm:ss[Z]");
     await updatePayableHours();
     await endBreak(
       {
@@ -196,7 +194,7 @@ const Attendance = () => {
       setAttendanceWithLocalTime(response);
     }
     setOnBreak(false);
-    setDisable(false)
+    setDisable(false);
   };
 
   useEffect(() => {
@@ -275,7 +273,7 @@ const Attendance = () => {
   };
 
   const updatePayableHours = async () => {
-    if(!attendance && attendance.results.length >0){
+    if (!attendance && attendance.results.length > 0) {
       toast.error("No attendance found");
       return;
     }
@@ -312,7 +310,7 @@ const Attendance = () => {
     }
   };
   const startShift = async () => {
-    setDisable(true)
+    setDisable(true);
     if (attendance && attendance.checkout) {
       toast.success("Shift already ended");
       return;
@@ -344,11 +342,11 @@ const Attendance = () => {
       }
     }
     await getAttendanceList();
-    setDisable(false)
+    setDisable(false);
   };
 
   const pauseShift = async () => {
-    setDisable(true)
+    setDisable(true);
     const startTime = moment().format("YYYY-MM-DDTHH:mm:ss");
     await updatePayableHours();
     const payload = {
@@ -365,7 +363,7 @@ const Attendance = () => {
     }
     await updateAttendanceAttributes1();
     await getAttendanceList();
-    setDisable(false)
+    setDisable(false);
   };
 
   const handleFilterChange = (name, filterValue) => {
