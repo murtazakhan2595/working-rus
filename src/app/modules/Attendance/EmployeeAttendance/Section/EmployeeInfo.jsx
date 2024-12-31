@@ -17,7 +17,7 @@ const EmployeeInfo = ({user}) => {
         src={user.profile_picture}
         fallbackText={`${user.first_name?.charAt(
           0
-        )}${user.lasst_name?.charAt(0)}`}
+        )}${user.last_name?.charAt(0)}`}
         text={`${user.name}`}
         alt={user.first_name?.charAt(0).toUpperCase()}
       />
