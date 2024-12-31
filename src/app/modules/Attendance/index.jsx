@@ -19,153 +19,142 @@ import {
   getBreak,
 } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
-import { PageLoader } from "components";
+import { PageLoader, Header } from "components";
 import { toast } from "react-toastify";
-import { calculateBreak } from "app/hooks/attendance";
+import { EmployeesAttendanceColumns } from "app/utils/Types/TableColumns";
 import { getBreakStatus } from "app/hooks/attendance";
 import { endBreak } from "app/hooks/attendance";
 import { getLocalTime } from "app/hooks/attendance";
 import { getStats } from "app/hooks/attendance";
 import { useNavigate } from "react-router-dom";
+import { LeaveStatusOverview } from "./Sections/LeaveStatusOverview";
+import { StatisticsChart } from "./Sections/StatisticsChart";
+import DepartmentOverview from "./Sections/DepartmentOverview";
+import { StatsCards } from "./Sections/StatsCards";
+import EmployeesAttendence from "./Sections/EmployeesAttendence";
+import Stats from "../../../components/ui/Stats";
+import TableCustom from "components/CustomTable";
 
 const Attendance = () => {
-  const navigate = useNavigate();
-  navigate("/attendance/502");
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [attendanceData, setAttendanceData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [filterData, setFilterDataState] = useState({
+    date: moment().format("YYYY-MM-DD"),
+  });
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+  };
+
+  const handleFilterChange = (filterName, filterValue) => {
+    // onPageChange("page", 1);
+    // if (filterName === "date_range") setSelectedDateRange(filterValue);
+    // setActiveTab({ employee_id: userId, date_range: filterValue });
+  };
+  const getAttendanceList = async (isMounted) => {
+    setIsLoading(true);
+    try {
+      const attendanceData = await getAttendance({
+        filterData: filterData,
+      });
+      if (isMounted) {
+        if (attendanceData) {
+          setAttendanceData(attendanceData);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    let isMounted = true;
+    getAttendanceList(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [filterData]);
   return (
-    <>
-      <>Attendence MAin Page</>
-      {/* // <div className="p-4 space-y-4">
-        //   <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        //     <EmployeeSelfTimesheet
-        //       employeeShift={employeeShift}
-        //       attendance={attendance}
-        //       startShift={startShift}
-        //       pauseShift={pauseShift}
-        //       endShift={endShift}
-        //       OnBreak={onBreak}
-        //     />
+    <div>
+      <div
+        className={`flex flex-col gap-4 ${window.location.pathname.substring(
+          1
+        )}`}
+      >
+        <div className="p-6 flex  gap-4">
+          <LeaveStatusOverview />
+          <StatisticsChart />
+          <DepartmentOverview />
+        </div>
+        {/* <Header /> */}
+        <StatsCards />
+        {/* <Stats stats={statsData} /> */}
+        <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
+          {/* <FilterInput
+            filters={[
+              {
+                type: "search",
+                placeholder: "Search by ID and Name",
+                name: "id_and_first_name",
+              },
+              {
+                type: "select-one",
+                option: departments,
+                name: "department_name",
+                placeholder: "Department",
+                values: selectedDepartment,
+              },
+              {
+                type: "select-two",
+                option: designations,
+                name: "department_position",
+                placeholder: "Designation",
+                values: selectedDesignation,
+              },
+              {
+                type: "select-three",
+                option: UserRoles,
+                name: "user_role",
+                placeholder: "Role",
+                values: selectedRole,
+              },
+            ]}
+            onChange={handleFilterChange}
+          /> */}
+        </div>
+        {isLoading ? (
+          <PageLoader />
+        ) : (
+          <Card>
+            <CardContent>
+              <TableCustom
+                data={attendanceData.results}
+                columns={EmployeesAttendanceColumns}
+                pagination={true}
+                dataTotalSize={attendanceData.count || 0}
+                tableOptions={tableOptions}
+              />
+            </CardContent>
+          </Card>
+        )}
+      </div>
+      {/* 
 
-        //     <Card>
-        //       <CardHeader>
-        //         <CardTitle className="text-plum-900">Statistics</CardTitle>
-        //       </CardHeader>
-        //       <CardContent>
-        //         <div className="space-y-4">
-        //           {stats.map((item) => (
-        //             <div key={item.label}>
-        //               <div className="flex justify-between mb-1">
-        //                 <span className="text-slate-900">{item.label}</span>
-        //                 <span>
-        //                   <span className="text-slate-1200">{item.value}</span>/
-        //                   {item.total} hrs
-        //                 </span>
-        //               </div>
-        //               <Progress
-        //                 value={
-        //                   (parseFloat(item.value) / parseFloat(item.total)) *
-        //                   100
-        //                 }
-        //                 className="h-2"
-        //               />
-        //             </div>
-        //           ))}
-        //         </div>
-        //       </CardContent>
-        //     </Card>
+      <div>
+        <StatsCards />
+      </div>
 
-        //     <Card>
-        //       <CardHeader>
-        //         <CardTitle className="text-plum-900">
-        //           Recent Activities
-        //         </CardTitle>
-        //       </CardHeader>
-        //       <CardContent>
-        //         <div className="space-y-4">
-        //           {[
-        //             {
-        //               time: "10:30 am",
-        //               activity: "Check in",
-        //               description: "Back",
-        //             },
-        //             {
-        //               time: "10:10 am",
-        //               activity: "Check out",
-        //               description: "Away for Bank",
-        //             },
-        //             {
-        //               time: "09:10 am",
-        //               activity: "Check In",
-        //               description: "Start Working",
-        //             },
-        //           ].map((item, index) => (
-        //             <div
-        //               key={index}
-        //               className="flex items-center justify-between"
-        //             >
-        //               <div>
-        //                 <div>{item.time}</div>
-        //                 <div className="text-slate-900">{item.description}</div>
-        //               </div>
-        //               <div className="text-slate-900">{item.activity}</div>
-        //             </div>
-        //           ))}
-        //         </div>
-        //       </CardContent>
-        //     </Card>
-        //   </div>
-
-        //   <Card>
-        //     <CardHeader>
-        //       <CardTitle className="flex items-center justify-between">
-        //         <span className="text-plum-900">Attendance History</span>
-        //       </CardTitle>
-        //     </CardHeader>
-        //     <CardContent>
-        //       <Table>
-        //         <TableHeader>
-        //           <TableRow>
-        //             <TableHead>S. No</TableHead>
-        //             <TableHead>Date</TableHead>
-        //             <TableHead>Punch In</TableHead>
-        //             <TableHead>Punch Out</TableHead>
-        //             <TableHead>Break</TableHead>
-        //             <TableHead>Overtime</TableHead>
-        //             <TableHead>Productivity</TableHead>
-        //           </TableRow>
-        //         </TableHeader>
-        //         <TableBody>
-        //           {attendanceData.map((row, index) => (
-        //             <TableRow
-        //               key={index}
-        //               className={index % 2 === 1 ? "bg-purple-50" : ""}
-        //             >
-        //               <TableCell>
-        //                 {(index + 1).toString().padStart(2, "0")}
-        //               </TableCell>
-        //               <TableCell>
-        //                 {row.date
-        //                   ? new Date(row.date).toLocaleDateString("en-GB") // or 'en-US' based on your preference
-        //                   : "No Date"}
-        //               </TableCell>
-        //               <TableCell>
-        //                 {moment(attendance?.checkin).format("h:mm A")}
-        //               </TableCell>
-        //               <TableCell>
-        //                 {row.checkout
-        //                   ? moment(row?.checkout.replace("Z","")).format("h:mm A")
-        //                   : "Not Checked Out"}
-        //               </TableCell>
-        //               <TableCell>{row.break_duration || 0.0} hrs</TableCell>
-        //               <TableCell>{row.overtime_hours || 0.0} hrs</TableCell>
-        //               <TableCell>{row.payable_hours || 0.0} hrs</TableCell>
-        //             </TableRow>
-        //           ))}
-        //         </TableBody>
-        //       </Table>
-        //     </CardContent>
-        //   </Card>
-        // </div> */}
-    </>
+      <div>
+        <EmployeesAttendence />
+      </div> */}
+          </div>
   );
 };
 
