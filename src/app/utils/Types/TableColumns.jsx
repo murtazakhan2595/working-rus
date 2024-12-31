@@ -1176,3 +1176,41 @@ export const EmployeesAttendanceColumns = [
     formatter: (cell, row) => <EmployeeAttendenceActions row={row} />,
   },
 ];
+
+
+export const myAttendanceColumn = [
+  {
+    text: "S. No",
+    formatter: (_,row, index, test) => {
+      const displayIndex = test + 1;
+      return displayIndex < 10 ? `0${displayIndex}` : displayIndex;
+    },
+  },
+{
+  text:"Date",
+  dataField:"date",
+  formatter:(cell)=> new Date(cell)?.toLocaleDateString("en-GB")
+},
+{
+  text:"Punch In",
+  dataField:"checkin",
+  formatter: (cell)=>  <span>{moment(cell).format("h:mm A")}</span>
+},
+{
+  text:"Punch Out",
+  dataField:"checkout",
+  formatter:(cell) => cell ? <span>{moment(cell).format("h:mm A")}</span> : "Not Checked Out"
+},
+{
+  text:"Break",
+  dataField:"break_duration"
+},
+{
+  text:"Overtime",
+  dataField:"overtime_hours"
+},
+{
+  text:"Productivity",
+  dataField:"payable_hours"
+},
+]
