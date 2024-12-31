@@ -1,611 +1,169 @@
-import { useEffect, useState } from "react";
-import { FaPlus } from "react-icons/fa";
-import { IoCalendarOutline } from "react-icons/io5";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import { connect } from "react-redux";
-import { openModal, closeModal, openEmpDropdown, closeEmpDropdown } from '../../../state/slices/ModalSlice';
-import { RxCross2, RxPlus } from "react-icons/rx";
-import { PiHeadlightsBold, PiUsersLight } from "react-icons/pi";
-import { AiOutlineUnorderedList } from "react-icons/ai";
-import { TbCircleDashed } from "react-icons/tb";
-import { PriorityList, status2Options, typeOptions } from "../../../data/Data";
-import Select from "react-select";
-import { fetchEmployees } from "../../../state/slices/EmpSlice";
-import { postTasks } from "../../../state/slices/DtrPostSlice";
-import { CiViewBoard } from "react-icons/ci";
-import { CiCircleMore } from "react-icons/ci";
-import { IoMdArrowDropdownCircle, IoMdArrowDropupCircle } from "react-icons/io";
-import { FiMinusCircle } from "react-icons/fi";
-import { fetchDTRByEmployeeId } from "../../../state/slices/GetDtrSlice";
-import { FaAngleUp } from "react-icons/fa6";
-import SuccessPopup from "./SuccessPop";
-import UpdateModal from "./UpdateModal";
-import ViewTaskDetails from "./ViewTaskDetails";
+import { Button } from "components/ui/button";
+import { cn } from "../../../src/@/lib/utils";
+import { Header } from 'components'
+import Stats from 'components/ui/Stats';
+import { CalendarClock, CalendarDays, ClipboardCheck, ClipboardList, Contact, Download, Hourglass, LayoutGrid, ListTodo, UserRoundCheck, UsersRound } from 'lucide-react';
+import React, { useState } from 'react'
+import DailyReportList from "./Sections/DailyReportList";
 
-const MyDtr = ({ baseUrl, token }) => {
+ const TIME_FILTERS = {
+  DAY: "Day",
+  WEEK: "Week",
+  MONTH: "Month",
+};
 
-    const statusStyles = {
-        Inprogress: "bg-[#FFE8CD] text-[#FF9A1F]",
-        Pending: "bg-[#DADADA] text-baseGray",
-        Completed: "bg-[#CCEFE3] text-[#5B8C7B]"
-    };
+ const VIEW_TYPES = {
+  LIST: "list",
+  GRID: "grid",
+};
 
-    const statusIcons = {
-        Low: <IoMdArrowDropdownCircle className=" text-baseGray text-2xl" />,
-        Medium: <FiMinusCircle className="text-[#FF9A1F] text-xl" />,
-        High: <IoMdArrowDropupCircle className="text-[#D12C15] text-2xl" />,
-    };
+const TimeLog = () => {
+  const [selectedFilter, setSelectedFilter] = useState(TIME_FILTERS.WEEK);
+  const [selectedView, setSelectedView] = useState(VIEW_TYPES.LIST);
 
-
-    const [formData, setFormData] = useState({
-        title: "",
-        taskDetails: "",
-        startDate: "",
-        dueDate: "",
-        taskType: null,
-        priorty: null,
-        taskStatus: null,
-        assigne: null
-    });
-
-    const isOpen = useSelector(state => state.modal.isModalOpen);
-    const empDropdown = useSelector(state => state.modal.isEmpDropdownOpen);
-    const employees = useSelector(state => state.emp.employees);
-    const dtrs = useSelector(state => state.getDtr.dtr);
-    const apiStatus = useSelector(state => state.postDtr.apiStatus);
-    const error = useSelector(state => state.postDtr.error);
-    const dispatch = useDispatch();
-    const [loading, setLoading] = useState(false);
-    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-
-    console.log('i am the dtrs', dtrs);
-
-    const [currentDate, setCurrentDate] = useState('');
-    const [taskType, setTaskType] = useState(null);
-    const [priorty, setPriority] = useState(null);
-    const [taskStatus, setTaskStatus] = useState(null);
-    const [assignToOpen, setAssignToOpen] = useState(false);
-    const [assignToUser, setAssignToUser] = useState(null);
-    const [assignToSearchQuery, setAssignToSearchQuery] = useState("");
-    // const [tasks, setTasks] = useState([]);
-    const [dropdownStates, setDropdownStates] = useState({});
-    const [selectedTask, setSelectedTask] = useState(null);
-    const [openUpdateModal, setOpenUpdateModal] = useState(false);
-    const [hoveredTask, setHoveredTask] = useState(null);
-    const [showHoveredTask, setShowHoveredTask] = useState(false);
-
-    const userProfile = useSelector(state => state.user.userProfile);
-
-    // Access the id from the userProfile object
-    const userId = userProfile.id;
-
-
-    // console.log(tasks);
-
-
-    useEffect(() => {
-        dispatch(fetchEmployees());
-    }, [dispatch]);
-
-    useEffect(() => {
-        dispatch(fetchDTRByEmployeeId(userId));
-    }, [dispatch, userId]);
-
-
-    useEffect(() => {
-        const formatDate = () => {
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const today = new Date();
-            const formattedDate = `${today.getDate()}-${months[today.getMonth()]}-${String(today.getFullYear()).slice(-2)}`;
-            return formattedDate;
-        };
-
-        setCurrentDate(formatDate());
-    }, []);
-
-    // const handleAddTaskClick = () => {
-    //     dispatch(openModal());
-    // };
-
-    const handleCloseModal = () => {
-        dispatch(closeModal());
-    };
-
-    const filteredAssignToUsers = Object.values(employees).filter((user) =>
-        user.username.toLowerCase().includes(assignToSearchQuery.toLowerCase())
-    );
-
-    const handleChange = (name, value) => {
-        setFormData({ ...formData, [name]: value });
-    };
-
-
-    const handleAddTask = async (e) => {
-        e.preventDefault();
-
-        const formattedStartDate = formatDate(formData.startDate);
-        const formattedDueDate = formatDate(formData.dueDate);
-
-
-        // Create a new task object
-        const newTask = {
-            ...formData,
-            startDate: formattedStartDate,
-            dueDate: formattedDueDate,
-            assigne: assignToUser
-        };
-
-        console.log("Form Data:", newTask);
-        // // Update tasks array state by adding the new task
-        // setTasks(prevTasks => [...prevTasks, newTask]);
-
-
-        try {
-            await dispatch(postTasks(newTask)); // Dispatch the postTasks action with tasks data
-            setShowSuccessPopup(true); // Show success pop-up after successful API call
-            // setTasks([]);
-            dispatch(fetchDTRByEmployeeId(userId));
-        } catch (error) {
-            console.error("Error posting tasks:", error);
-            // Handle error (e.g., show error message)
-        }
-
-        // Clear form data
-        setFormData({
-            title: "",
-            taskDetails: "",
-            dueDate: "",
-            taskType: null,
-            priorty: null,
-            taskStatus: null,
-            assigne: null
-        });
-        setAssignToUser(null);
-
-        // Close the modal
-        // handleCloseModal();
-        dispatch(closeModal())
-    };
-
-    const formatDate = (dateString) => {
-        const [year, month, day] = dateString.split("-");
-        return `${day}-${month}-${year}`;
-    };
-
-    const getReportingManager = (userId) => {
-        const reportingManager = employees?.find((user) => user.id === userId);
-        return reportingManager ? reportingManager.username.toUpperCase().slice(0, 2) : null;
-    };
-
-    const groupedTasks = dtrs
-        ? dtrs.reduce((acc, dtr) => {
-            acc[dtr.date] = acc[dtr.date] || [];
-            acc[dtr.date].push(dtr);
-            return acc;
-        }, {})
-        : {};
-
-
-    const toggleDropdown = (date) => {
-        setDropdownStates(prevState => ({
-            ...prevState,
-            [date]: !prevState[date]
-        }));
-    };
-
-
-    // open update modal
-
-    const handleTaskClick = (task) => {
-        setSelectedTask(task);
-        setOpenUpdateModal(true);
+  const timeFilters = [
+    {
+      text: TIME_FILTERS.DAY,
+      isActive: selectedFilter === TIME_FILTERS.DAY,
+      onClick: () => setSelectedFilter(TIME_FILTERS.DAY)
+    },
+    {
+      text: TIME_FILTERS.WEEK,
+      isActive: selectedFilter === TIME_FILTERS.WEEK,
+      onClick: () => setSelectedFilter(TIME_FILTERS.WEEK)
+    },
+    {
+      text: TIME_FILTERS.MONTH,
+      isActive: selectedFilter === TIME_FILTERS.MONTH,
+      onClick: () => setSelectedFilter(TIME_FILTERS.MONTH)
     }
+  ];
 
-    const currenDate = new Date();
-    const day = currenDate.getDate().toString().padStart(2, '0'); // Add leading zero if needed
-    const month = (currenDate.getMonth() + 1).toString().padStart(2, '0'); // Add leading zero if needed
-    const year = currenDate.getFullYear();
+  const viewButtons = [
+    {
+      icon: LayoutGrid,
+      isActive: selectedView === VIEW_TYPES.LIST,
+      onClick: () => setSelectedView(VIEW_TYPES.LIST),
+    },
+    {
+      icon: ListTodo,
+      isActive: selectedView === VIEW_TYPES.GRID,
+      onClick: () => setSelectedView(VIEW_TYPES.GRID),
+    },
+  ];
 
-    const formattedDate = `${day}-${month}-${year}`
-
-
+  const IconButton = ({ icon:Icon, isActive, onClick }) => {
     return (
-        <div className="flex w-full flex-col h-[100vh] lg:px-6 lg:py-2 bg-gray-50">
-            {showSuccessPopup && (
-                <SuccessPopup onClose={() => setShowSuccessPopup(false)} heading="DTR Submitted" message="Your daily task report was successfully submitted." />
-            )}
-            <div className="flex justify-between lg:p-6">
-                <h1 className=" lg:text-[24px] text-baseGray font-bold"> My Daily Task Report</h1>
-                <div>Filter here</div>
-            </div>
-            <div>
-                <div className="flex flex-col bg-white lg:px-6 lg:pb-1 lg:pt-3 rounded-lg mb-3">
-                    <div className="flex justify-between border-b pb-3">
-                        <div className="flex items-center gap-x-2">
-                            <div className="w-3 h-3 rounded-full bg-[#25A8E0]"></div>
-                            <h3 className=" lg:text-[25px] text-[#323333] font-bold">Today</h3>
-                            <div className="text-[#323333]">{currentDate}</div>
-                        </div>
-                        <div className="flex items-center gap-x-3">
-                            <div className=" text-[20px] text-[#47484C] font-bold">Add Task</div>
-                            <button onClick={() => dispatch(openModal())} className="p-2 rounded-md bg-black"><FaPlus className="text-white" /></button>
-                        </div>
-
-                        {/* modal open */}
-                        {isOpen && (
-                            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50
-                             z-50 w-screen overflow-y-auto scroll h-screen">
-                                <div className="bg-white lg:p-8 rounded-lg lg:w-[40%] lg:h-[100vh] relative">
-                                    <h2 className="text-xl  text-[#323333] font-bold lg:pt-3 lg:mb-3">Add Task</h2>
-                                    <button onClick={() => dispatch(closeModal())} className="absolute top-6 right-8"><RxCross2 /></button>
-                                    <form onSubmit={handleAddTask}>
-                                        <label htmlFor="title" className="text-[18px]  font-semibold text-baseGray">Title</label>
-                                        <input id="title" placeholder="Add here" type="text" required name="title" value={formData.title} onChange={(e) => handleChange(e.target.name, e.target.value)} className="block pl-2 lg:w-full outline-none border rounded-lg h-9 border-baseGray placeholder: lg:mb-4" />
-                                        <label htmlFor="taskDetails" className="text-[18px]  font-semibold text-baseGray">Task Details</label>
-                                        <textarea name="taskDetails" required value={formData.taskDetails} onChange={(e) => handleChange(e.target.name, e.target.value)} id="taskDetails" className="block pl-2 lg:w-full outline-none border rounded-lg border-baseGray lg:mb-4 placeholder:" cols="30" rows="4" placeholder="Add here"></textarea>
-
-
-                                        <div className="flex items-center gap-x-6">
-                                            <div className="flex lg:flex-col lg:gap-y-3">
-                                                <div className="text-baseGray flex items-center gap-x-2 h-9"><PiUsersLight className="text-xl" />
-                                                    <h3 className="font-medium text-[18px] ">Assignee</h3>
-                                                </div>
-                                                <div className="text-baseGray flex items-center gap-x-2 h-9"><IoCalendarOutline className="text-xl" />
-                                                    <h3 className="font-medium text-[18px] ">Start Date</h3>
-                                                </div>
-                                                <div className="text-baseGray flex items-center gap-x-2 h-9"><IoCalendarOutline className="text-xl" />
-                                                    <h3 className="font-medium text-[18px] ">Due Date</h3>
-                                                </div>
-                                                <div className="text-baseGray flex items-center gap-x-2 h-9"><AiOutlineUnorderedList className="text-xl" />
-                                                    <h3 className="font-medium text-[18px] ">Type</h3>
-                                                </div>
-                                                <div className="text-baseGray flex items-center gap-x-2 h-9"><PiHeadlightsBold className="text-xl" />
-                                                    <h3 className="font-medium text-[18px] ">priorty</h3>
-                                                </div>
-                                                <div className="text-baseGray flex items-center gap-x-2 h-9"><TbCircleDashed className="text-xl" />
-                                                    <h3 className="font-medium text-[18px] ">Status</h3>
-                                                </div>
-                                            </div>
-                                            <div className="flex lg:flex-col lg:gap-y-2.5 lg:w-[60%]">
-                                                <div className="flex mt-2 gap-2">
-                                                    {assignToUser && (
-                                                        <div className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-pink-500 border-2">
-                                                            <span className="text-white text-sm flex justify-center items-center plus-icon w-9 h-9">
-                                                                {/* {assignToUser?.username?.toUpperCase().slice(0, 2)} */}
-                                                                {getReportingManager(assignToUser)}
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                    <div
-                                                        // onClick={() => {
-                                                        //     setAssignToOpen(!assignToOpen);
-                                                        // }}
-                                                        onClick={() => dispatch(openEmpDropdown())}
-                                                        className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-[#eceaea] border-2"
-                                                    >
-                                                        <span className="text-white text-2xl flex justify-center items-center plus-icon w-9 h-9">
-                                                            <RxPlus />
-                                                        </span>
-                                                    </div>
-
-                                                    <div className="relative">
-                                                        {empDropdown && (
-                                                            <div className="absolute w-40  bg-white rounded-md border border-gray-300 shadow-md z-50">
-                                                                <div className="flex justify-end pt-[5px] px-[5px]">
-                                                                    <RxCross2
-                                                                        // onClick={() => {
-                                                                        //     setAssignToOpen(!assignToOpen);
-                                                                        // }}
-                                                                        onClick={() => dispatch(openEmpDropdown())}
-                                                                    />
-                                                                </div>
-                                                                <input
-                                                                    type="search"
-                                                                    placeholder="Search"
-                                                                    className="mt-1 border-b border-t bg-[#D7D7D7] w-[158px] focus:outline-none pl-2 text-gray-600"
-                                                                    onChange={(e) =>
-                                                                        setAssignToSearchQuery(e.target.value)
-                                                                    }
-                                                                />
-
-                                                                <div className="overflow-y-auto max-h-24 roundScrollsm">
-                                                                    <ul className="text-black">
-                                                                        {filteredAssignToUsers.map((user) => (
-                                                                            <div
-                                                                                onClick={() => {
-                                                                                    // setAssignToUser({
-                                                                                    //     id: user.id,
-                                                                                    //     username: user.username,
-                                                                                    // });
-                                                                                    setAssignToUser(user.id);
-                                                                                    dispatch(closeEmpDropdown())
-                                                                                }}
-                                                                                className="flex gap-3 px-2 py-1 relative items-center group cursor-pointer"
-                                                                                key={user.id}
-                                                                            >
-                                                                                <div className="rounded-full text-sm bg-cyan-600 text-white flex p-1 w-7 h-7 opacity-60 border justify-center items-center ">
-                                                                                    {user.username.toUpperCase().slice(0, 2)}
-                                                                                </div>
-                                                                                <p className="gap-3 text-sm">
-                                                                                    {user.username}
-                                                                                </p>
-                                                                            </div>
-                                                                        ))}
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-
-
-                                                <input type="date" name="startDate" required value={formData.startDate} onChange={(e) => handleChange(e.target.name, e.target.value)} className="w-[60%] border border-baseGray h-9 rounded-lg px-2" />
-                                                <input type="date" name="dueDate" required value={formData.dueDate} onChange={(e) => handleChange(e.target.name, e.target.value)} className="w-[60%] border border-baseGray h-9 rounded-lg px-2" />
-
-                                                <Select
-                                                    name="taskType"
-                                                    value={typeOptions.find(
-                                                        (opt) => opt.value === taskType
-                                                    )}
-                                                    options={typeOptions}
-                                                    className="w-[60%]"
-                                                    isSearchable={false}
-                                                    // onChange={(selectedOption) => {
-                                                    //     setPriority(selectedOption.value);
-                                                    // }}
-                                                    onChange={(selectedOption) => {
-                                                        handleChange("taskType", selectedOption.value)
-                                                    }}
-                                                    required
-                                                    styles={{
-                                                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                                                        control: (provided) => ({
-                                                            ...provided,
-                                                            border: "1px solid #5C5E64",
-                                                            borderRadius: "8px",
-                                                        }),
-                                                        option: (provided, state) => ({
-                                                            ...provided,
-                                                            fontSize: "16px",
-                                                            fontWeight: state.isSelected ? "bold" : "normal",
-                                                            color: state.isSelected ? "#000" : "#777",
-                                                            padding: "8px 12px",
-                                                            backgroundColor: state.isSelected ? '#E0F3FB' : 'transparent'
-                                                        }),
-                                                        menu: (provided) => ({
-                                                            ...provided,
-                                                            borderRadius: "8px",
-                                                            overflow: "hidden",
-                                                        }),
-                                                        scrollbarWidth: (base) => ({
-                                                            ...base,
-                                                            borderRadius: "8px",
-                                                            backgroundColor: "#ccc",
-                                                        }),
-                                                        dropdownIndicator: (provided) => ({
-                                                            ...provided,
-                                                            color: "#555",
-                                                        }),
-                                                    }}
-                                                />
-                                                <Select
-                                                    name="priorty"
-                                                    value={PriorityList.find(
-                                                        (opt) => opt.value === priorty
-                                                    )}
-                                                    options={PriorityList}
-                                                    className="w-[60%]"
-                                                    isSearchable={false}
-                                                    // onChange={(selectedOption) => {
-                                                    //     setPriority(selectedOption.value);
-                                                    // }}
-                                                    onChange={(selectedOption) => {
-                                                        handleChange("priorty", selectedOption.value)
-                                                    }}
-                                                    required
-                                                    menuPlacement="auto"
-                                                    styles={{
-                                                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                                                        control: (provided) => ({
-                                                            ...provided,
-                                                            border: "1px solid #5C5E64",
-                                                            borderRadius: "8px",
-                                                        }),
-                                                        option: (provided, state) => ({
-                                                            ...provided,
-                                                            fontSize: "16px",
-                                                            fontWeight: state.isSelected ? "bold" : "normal",
-                                                            color: state.isSelected ? "#000" : "#777",
-                                                            padding: "8px 12px",
-                                                            backgroundColor: state.isSelected ? '#E0F3FB' : 'transparent'
-                                                        }),
-                                                        menu: (provided) => ({
-                                                            ...provided,
-                                                            borderRadius: "8px",
-                                                            overflow: "hidden",
-                                                        }),
-                                                        scrollbarWidth: (base) => ({
-                                                            ...base,
-                                                            borderRadius: "8px",
-                                                            backgroundColor: "#ccc",
-                                                        }),
-                                                        dropdownIndicator: (provided) => ({
-                                                            ...provided,
-                                                            color: "#555",
-                                                        }),
-                                                    }}
-                                                />
-                                                <Select
-                                                    name="status"
-                                                    value={status2Options.find(
-                                                        (opt) => opt.value === taskStatus
-                                                    )}
-                                                    options={status2Options}
-                                                    className="w-[60%]"
-                                                    isSearchable={false}
-                                                    // onChange={(selectedOption) => {
-                                                    //     setPriority(selectedOption.value);
-                                                    // }}
-                                                    onChange={(selectedOption) => {
-                                                        handleChange("taskStatus", selectedOption.value)
-                                                    }}
-                                                    required
-                                                    menuPlacement="auto"
-                                                    styles={{
-                                                        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-                                                        control: (provided) => ({
-                                                            ...provided,
-                                                            border: "1px solid #5C5E64",
-                                                            borderRadius: "8px",
-                                                        }),
-                                                        option: (provided, state) => ({
-                                                            ...provided,
-                                                            fontSize: "16px",
-                                                            fontWeight: state.isSelected ? "bold" : "normal",
-                                                            color: state.isSelected ? "#000" : "#777",
-                                                            padding: "8px 12px",
-                                                            backgroundColor: state.isSelected ? '#E0F3FB' : 'transparent'
-                                                        }),
-                                                        menu: (provided) => ({
-                                                            ...provided,
-                                                            borderRadius: "8px",
-                                                            overflow: "hidden",
-                                                        }),
-                                                        scrollbarWidth: (base) => ({
-                                                            ...base,
-                                                            borderRadius: "8px",
-                                                            backgroundColor: "#ccc",
-                                                        }),
-                                                        dropdownIndicator: (provided) => ({
-                                                            ...provided,
-                                                            color: "#555",
-                                                        }),
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <button type="submit" className="mt-4 bg-black rounded-lg flex items-center justify-center gap-x-2 text-white  text-base font-semibold w-28 h-10"><FaPlus className="text-white font-normal" />Add</button>
-                                    </form>
-                                </div>
-                            </div>
-                        )}
-                        {/* modal close */}
-                    </div>
-                    {/* <div className="max-h-36 overflow-y-auto">
-                        {tasks.map((task) => (
-                            <div key={task.title} className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg">
-                                <div className="lg:w-[70%]  lg:flex items-center gap-x-3">
-                                    <div className="text-xl font-bold">{task.taskType === "Project" ? <CiViewBoard className="text-[#FF61C0] bg-[#FFE8F6] rounded-full p-0.5" /> : <CiCircleMore className="text-[#935AF2] bg-[#F1E8FF] rounded-full p-0.5" />}</div>
-                                    <div className="flex items-center gap-x-2 text-sm px-3 text-baseGray">
-                                        <IoCalendarOutline className="text-xl" /> Due
-                                        <div className="">{task.dueDate.slice(0, 5)}</div>
-                                    </div>
-                                    <h3 className="text-[18px] font-bold text-[#323333]">{task.title}</h3>
-                                </div>
-                                <div className="lg:w-[30%] flex items-center justify-end gap-x-4">
-                                    <div className="text-2xl">{statusIcons[task.priorty]}</div>
-                                    <div className="flex justify-between items-center lg:w-24">
-                                        <div className={`px-3 py-1 rounded-lg ${statusStyles[task.taskStatus]}`}>{task.taskStatus}</div>
-                                    </div>
-                                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#DF418D] text-sm">
-                                        {getReportingManager(task.employee_id)}
-                                        </div>
-                                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#DF418D] text-sm">{task.assignee?.username?.split(' ')
-                                    .map(word => word[0].toUpperCase())
-                                    .join('')
-                                    .slice(0, 2)}</div>
-                                </div>
-                            </div>
-                        ))}
-                    </div> */}
-                    {/* <div className="flex justify-end border-t">
-                        {tasks.length > 0 && <button className="my-2 py-2 px-6 rounded-lg bg-[#323333] text-white" onClick={handlePostTasks}>Submit</button>
-                        }
-                    </div> */}
-                </div>
-
-                {/* update pop */}
-                {(openUpdateModal && selectedTask) && (
-                    <UpdateModal
-                        task={selectedTask}
-                        onClose={() => setOpenUpdateModal(false)}
-                        getReportingManager={getReportingManager}
-                        setAssignToSearchQuery={setAssignToSearchQuery}
-                        filteredAssignToUsers={filteredAssignToUsers}
-                    />
-                )}
-
-                {/* view Dtr */}
-                <div className="space-y-2 rounded-lg bg-white">
-                    {Object.entries(groupedTasks).map(([date, tasks]) => (
-                        <div key={date} className="w-full m-0">
-                            <div className={`font-normal  text-[18px] text-[#323333] rounded-lg px-4 py-2 border-b ${dropdownStates[date] ? 'bg-blue-100' : ''}`}>
-                                <div onClick={() => toggleDropdown(date)} className="focus:outline-none flex items-center justify-between cursor-pointer">
-                                    {date}
-                                    <FaAngleUp className={`text-sm transform transition-transform duration-300 ${dropdownStates[date] ? 'rotate-180' : ''}`} />
-                                </div>
-                            </div>
-
-                            <div className={dropdownStates[date] ? '' : 'hidden'}>
-                                {tasks.map(task => (
-                                    <div key={task.task}
-                                        onClick={() => handleTaskClick(task)}
-                                        onMouseEnter={() => setHoveredTask(task)}
-                                        onMouseLeave={() => setHoveredTask(null)}
-                                        className="flex items-center lg:gap-x-20 lg:px-3 lg:py-1 hover:border my-1 transition-all hover:border-blue-500 hover:rounded-lg">
-                                        <div className="lg:w-[70%]  lg:flex items-center gap-x-3">
-                                            <div className="text-xl font-bold">
-                                                {task.Type === "Project" ? (
-                                                    <CiViewBoard className="text-[#FF61C0] bg-[#FFE8F6] rounded-full p-0.5" />
-                                                ) : (
-                                                    <CiCircleMore className="text-[#935AF2] bg-[#F1E8FF] rounded-full p-0.5" />
-                                                )}
-                                            </div>
-                                            <div className={`flex items-center gap-x-2 text-sm px-3 ${task?.due_date < formattedDate ? 'text-[#D96C6C] bg-[#F2DCDA] rounded-lg py-1' : 'text-baseGray'}`}>
-                                                <IoCalendarOutline className="text-xl" /> Due
-                                                <div className="">{task?.due_date?.slice(0, 5)}</div>
-                                            </div>
-                                            <h3 className="text-[18px] font-bold text-[#323333]">{task.task}</h3>
-                                        </div>
-                                        <div className="lg:w-[30%] flex items-center justify-end gap-x-4">
-                                            <div className="text-2xl">{statusIcons[task.priorty]}</div>
-                                            <div className="flex justify-between items-center lg:w-24">
-                                                <div className={`px-3 py-1 rounded-lg ${statusStyles[task.status]}`}>
-                                                    {task.status}
-                                                </div>
-                                            </div>
-                                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white bg-[#DF418D] text-sm">
-                                                {/* {getReportingManager(task.assigne)} */}
-                                                {getReportingManager(task.employee_id)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-
-            {/* view task card started */}
-            {(hoveredTask) && (
-                <ViewTaskDetails hoveredTask={hoveredTask} setShowHoveredTask={setShowHoveredTask} statusIcons={statusIcons} getReportingManager={getReportingManager} statusStyles={statusStyles} />
-            )}
-            {/* view task card ended */}
-
-
-        </div>
+      <Button
+        onClick={onClick}
+        variant="ghost"
+        size="icon"
+        className={cn(
+          "h-8 w-10",
+          isActive && "bg-fuchsia-50",
+          !isActive && "bg-white"
+        )}
+      >
+        <Icon className="h-4 w-4 text-plum-1100" aria-hidden="true" />
+      </Button>
     );
+  };
+
+  const TimeFilterButton = ({ text, isActive, onClick }) => {
+    return (
+      <Button
+        onClick={onClick}
+        variant="ghost"
+        size="sm"
+        className={cn(
+          "h-8 px-3 text-sm font-medium leading-tight",
+          isActive && "bg-fuchsia-50 text-fuchsia-700",
+          !isActive && "text-neutral-400"
+        )}
+      >
+        {text}
+      </Button>
+    );
+  };
+
+  return (
+    <div className="flex flex-wrap items-center">
+      <div className="flex flex-col justify-center self-stretch my-auto text-xl font-semibold tracking-normal leading-none text-fuchsia-700 w-[123px]">
+        <div className="self-stretch pb-px w-full min-h-[28px] text-nowrap">
+          My Time Log
+        </div>
+      </div>
+      <div className="flex flex-1 shrink self-stretch pt-1.5 my-auto basis-0 h-[38px] min-w-[76px] w-[227px]" />
+      <div className="flex flex-wrap gap-4 items-center self-stretch my-auto min-w-[240px] max-md:max-w-full">
+        <div className="flex flex-wrap gap-1 items-center self-stretch p-1 my-auto bg-white rounded-xl border border-gray-100 border-solid min-h-[40px] min-w-[240px] max-md:max-w-full">
+          {timeFilters.map((filter, index) => (
+            <TimeFilterButton
+              key={index}
+              text={filter.text}
+              isActive={filter.isActive}
+              onClick={filter.onClick}
+            />
+          ))}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 gap-2 text-neutral-400"
+          >
+            <CalendarDays />
+            <span>11 Nov 2024 - 15 Nov 2024</span>
+          </Button>
+        </div>
+        <div className="flex gap-1 items-center self-stretch p-1 my-auto bg-white rounded-xl border border-gray-100 border-solid min-h-[40px]">
+          {viewButtons.map((button, index) => (
+            <IconButton
+              key={index}
+              icon={button.icon}
+              isActive={button.isActive}
+              onClick={button.onClick}
+            />
+          ))}
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-10 gap-1 rounded-3xl border-gray-100"
+        >
+          <Download size={16}/>
+          <span>Download</span>
+        </Button>
+      </div>
+    </div>
+  );
 };
 
-const mapStateToProps = (state) => {
-    return {
-        token: state.user.token,
-        baseUrl: state.user.baseUrl,
-    };
-};
 
-export default connect(mapStateToProps)(MyDtr);
+
+const MyDtr = () => {
+    const statsData = [
+      { label: "Hours Logged", value: 10, icon: Hourglass },
+      { label: "Tasks Completed", value: 2, icon: ClipboardCheck },
+      {
+        label: "Pending Tasks",
+        value: 5,
+        icon: ClipboardList,
+      },
+      {
+        label: "Pending DTR",
+        value: 5,
+        icon: CalendarClock,
+      },
+    ];
+
+  return (
+    <div
+      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
+    >
+      <Header />
+      <Stats stats={statsData} />
+      <TimeLog/>
+      <DailyReportList/>
+    </div>
+  );
+}
+
+export default MyDtr

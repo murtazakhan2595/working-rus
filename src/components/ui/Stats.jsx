@@ -1,7 +1,6 @@
 import React from 'react';
 
 const Stats = ({ stats }) => {
-  console.log('Stats data:', stats); // Debugging log
 
   return (
     <div className="flex flex-col items-start gap-2 xl:flex-row xl:items-center lg:flex-row lg:items-center md:flex-row md:items-center stats">
