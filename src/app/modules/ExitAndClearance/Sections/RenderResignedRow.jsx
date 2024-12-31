@@ -155,7 +155,7 @@ const ResignedDetails = ({
                   },
                   {
                     label: "Reason for leaving",
-                    value: ResignationReason(ResignedData.exit_type),
+                    value: ResignationReason(ResignedData.exit_type), 
                   },
 
                   {

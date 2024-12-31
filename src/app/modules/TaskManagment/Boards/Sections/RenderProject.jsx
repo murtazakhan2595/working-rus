@@ -3,7 +3,7 @@ import { ProjectName } from "utils/getValuesFromTables";
 import { IoIosArrowDown } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownTrigger } from "../../../../../src/@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownTrigger } from "src/@/components/ui/dropdown-menu";
 
 const RenderProject = ({ projectId }) => {
   const navigate = useNavigate();
@@ -15,7 +15,6 @@ const RenderProject = ({ projectId }) => {
   };
 
   const handleProjectChange = (project) => {
-    console.log(project, "PROJECTS")
     navigate(`/project-board/${project?.value}`);
   };
 

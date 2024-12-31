@@ -11,25 +11,37 @@ const RenderJobApplicationActions = ({ row, handleOptionSelect }) => {
     switch (status) {
       case "shortlisted":
         return dropdownOptions.filter((option) =>
-          ["schedule", "selected", "rejected"].includes(option.value)
+          ["interview r1", "rejected"].includes(option.value)
         );
       case "pending":
         return [
           // { label: "Review Application", value: "review" },
           ...dropdownOptions.filter((option) =>
-            ["shortlisted", "rejected"].includes(option.value)
+            ["review application", "rejected"].includes(option.value)
           ),
         ];
+        case "review application":
+          return dropdownOptions.filter((option) =>
+            ["shortlisted", "interview r1", "rejected"].includes(option.value)
+          );
       case "rejected":
         return dropdownOptions.filter((option) =>
-          ["send_email", "reconsider"].includes(option.value)
+          ["reconsider"].includes(option.value)
+        );
+      case "selected":
+        return dropdownOptions.filter((option) =>
+          ["offer_made", "rejected"].includes(option.value)
         );
       case "offer_made":
-        return dropdownOptions.filter((option) =>
-          ["offer_accepted", "declined"].includes(option.value)
-        );
+        return dropdownOptions.filter((option)=>["declined"].includes(option.value))
+      case "interview r1":
+        return dropdownOptions.filter((option)=>
+        ["interview r2", "selected", "rejected"].includes(option.value))
+        case "interview r2":
+          return dropdownOptions.filter((option)=>
+          ["selected", "rejected"].includes(option.value))
       default:
-        return dropdownOptions.slice(0, 5); // Show first 5 options by default
+        return dropdownOptions.slice(0, 5); 
     }
   };
 

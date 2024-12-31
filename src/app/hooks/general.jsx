@@ -10,18 +10,29 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-const getDepartmentList = async () => {
+const getDepartmentList = async (
+  allData = false,
+  options = { page: 1, sizePerPage: 10 }
+) => {
+  const queryParams = new URLSearchParams({
+    page: options.page,
+    page_size: options.sizePerPage,
+    // search: JSON.stringify(filterData),
+  });
+
   try {
-    const response = await axios.get(`${baseUrl}/department/`, {
+    const response = await axios.get(`${baseUrl}/department/?${queryParams}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const departmentResponse = response.data;
-      const departmentList = await departmentResponse.map((department) => ({
-        value: department.id,
-        label: department.name,
-      }));
-      return departmentList;
+      const departmentList = await departmentResponse?.results?.map(
+        (department) => ({
+          value: department.id,
+          label: department.name,
+        })
+      );
+      return allData ? departmentResponse : departmentList;
     } else return [];
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -29,23 +40,124 @@ const getDepartmentList = async () => {
   return [];
 };
 
-const getDesignationList = async () => {
+const saveDepartment = async (departmentId, payload) => {
   try {
-    const response = await axios.get(`${baseUrl}/designation/`, {
+    if (departmentId) {
+      const response = await axios.patch(
+        `${baseUrl}/department/${departmentId}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        return response?.data;
+      }
+    } else {
+      const response = await axios.post(`${baseUrl}/department/`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201) {
+        return response?.data;
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return false;
+  }
+};
+
+const saveDesignation = async (designationId, payload) => {
+  try {
+    if (designationId) {
+      const response = await axios.patch(
+        `${baseUrl}/designation/${designationId}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        return response?.data;
+      }
+    } else {
+      const response = await axios.post(`${baseUrl}/designation/`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201) {
+        return response?.data;
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return false;
+  }
+};
+
+const getDesignationList = async (
+  allData = false,
+  options = { page: 1, sizePerPage: 10 }
+) => {
+  const queryParams = new URLSearchParams({
+    page: options.page,
+    page_size: options.sizePerPage,
+    // search: JSON.stringify(filterData),
+  });
+
+  try {
+    const response = await axios.get(`${baseUrl}/designation/?${queryParams}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const designationResponse = response.data;
-      const designationList = await designationResponse.map((designation) => ({
-        value: designation.id,
-        label: designation.name,
-      }));
-      return designationList;
+      const designationList = await designationResponse?.results?.map(
+        (designation) => ({
+          value: designation.id,
+          label: designation.name,
+        })
+      );
+      return allData ? designationResponse : designationList;
     } else return [];
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
   }
   return [];
+};
+
+const saveShift = async (shiftId, payload) => {
+  try {
+    if (shiftId) {
+      const response = await axios.patch(
+        `${baseUrl}/shift/${shiftId}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        return response?.data;
+      }
+    } else {
+      const response = await axios.post(`${baseUrl}/shift/`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201) {
+        return response?.data;
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return false;
+  }
 };
 
 const getManagersList = async () => {
@@ -95,18 +207,49 @@ const getEmployeeList = async () => {
   return [];
 };
 
-const getOrganizationList = async () => {
+const getEmployeeListWithDetail = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/emp`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const employeeResponse = response.data?.results ?? [];
+      const employeeList = employeeResponse.map((employee) => ({
+        value: employee.id,
+        id: employee.id,
+        label: `${employee.username}`,
+        name: `${employee.first_name} ${employee.last_name}`,
+        first_name:employee.first_name,
+        last_name: employee.last_name,
+        department_name: employee.department_name,
+        department_position: employee.department_position,
+        work_email: employee.work_email,
+        profile_picture: employee.profile_picture,
+        shift_assignment: employee.shift_assignment,
+        serial_number: employee.serial_number,
+      }));
+      return employeeList;
+    } else return [];
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
+const getOrganizationList = async (allData = false) => {
   try {
     const response = await axios.get(`${baseUrl}/organization/`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const organizationResponse = response.data;
-      const organizationList = organizationResponse.map((organization) => ({
-        value: organization.id,
-        label: organization.name,
-      }));
-      return organizationList;
+      const organizationList = organizationResponse?.results?.map(
+        (organization) => ({
+          value: organization.id,
+          label: organization.name,
+        })
+      );
+      return allData ? organizationResponse : organizationList;
     } else return [];
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -247,6 +390,26 @@ const deleteRecord = async (URL, recordName) => {
   }
 };
 
+const getWorkingHours = async (URL) => {
+  try {
+    const response = await axios.get(`${baseUrl}/shift/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const workingHours = response.data;
+      return workingHours;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching Working Hours data :", error);
+  }
+  return [];
+};
+
 const handleLogout = () => {
   if (window.localStorage.getItem("token")) {
     window.location.href = "/login";
@@ -271,4 +434,9 @@ export {
   getEmployeeCustomList,
   getProjectsList,
   getCurrenciesList,
+  saveDepartment,
+  saveDesignation,
+  getWorkingHours,
+  getEmployeeListWithDetail,
+  saveShift,
 };

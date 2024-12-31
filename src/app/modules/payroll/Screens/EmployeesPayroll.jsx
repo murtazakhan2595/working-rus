@@ -31,7 +31,6 @@ const EmployeesPayroll = ({ departments }) => {
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
     onRowClick: (row) => {
-      console.log("Row clicked:", row);
       navigate(`/payroll/${row.id}?employeeID=${row.employee}`);
     },
   };
@@ -52,6 +51,7 @@ const EmployeesPayroll = ({ departments }) => {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
+    
     if (filterName === "department_name") {
       const department = departments.find(
         (option) => option.value === parseInt(filterValue)
@@ -75,54 +75,38 @@ const EmployeesPayroll = ({ departments }) => {
       {isLoading ? (
         <PageLoader />
       ) : (
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="h-[47px] flex-col justify-center items-start inline-flex">
-                <div className="flex-col justify-start items-start flex">
-                  <div className="self-stretch text-[#ab4aba] text-2xl font-medium  ">
-                    Employee Payroll
-                  </div>
-                </div>
-                <div className="pt-1.5 flex-col justify-start items-start flex">
-                  <div className="flex-col justify-start items-start flex">
-                    <div className="self-stretch text-[#8b8d98] text-sm font-normal ">
-                      Payrolls of all employees are listed below
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col justify-end lg:flex-row md:flex-row xl:flex-row">
-                <FilterInput
-                  filters={[
-                    {
-                      type: "select-one",
-                      option: departments,
-                      name: "department_name",
-                      placeholder: "Department",
-                    },
-                    {
-                      type: "select-two",
-                      option: salaryTypeOptions,
-                      name: "salary_type",
-                      placeholder: "Salary Type",
-                    },
-                  ]}
-                  onChange={handleFilterChange}
-                />
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <CustomTable
-              data={employeeData?.results || 0}
-              columns={EmployeePayrollColumns}
-              pagination={true}
-              dataTotalSize={employeeData.count || 0}
-              tableOptions={tableOptions}
+        <div>
+          <div className="flex justify-end mb-4">
+            <FilterInput
+              filters={[
+                {
+                  type: "select-one",
+                  option: departments,
+                  name: "department_name",
+                  placeholder: "Department",
+                },
+                {
+                  type: "select-two",
+                  option: salaryTypeOptions,
+                  name: "salary_type",
+                  placeholder: "Salary Type",
+                },
+              ]}
+              onChange={handleFilterChange}
             />
-          </CardContent>
-        </Card>
+          </div>
+          <Card>
+            <CardContent>
+              <CustomTable
+                data={employeeData?.results || 0}
+                columns={EmployeePayrollColumns}
+                pagination={true}
+                dataTotalSize={employeeData.count || 0}
+                tableOptions={tableOptions}
+              />
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );

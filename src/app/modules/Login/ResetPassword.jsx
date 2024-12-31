@@ -16,16 +16,12 @@ import { Label } from "./../../../src/@/components/ui/label";
 import NewLogo from "../.././../assets/images/NewLogo";
 import { setToken } from '../../../state/actions/UserAction.js';
 import enterNewpassword  from "../../../assets/images/enterNewPassword.jpg";
-import { StepBack  } from 'lucide-react';
 
-import { IoWarningOutline } from "react-icons/io5";
 
 import { useLocation } from "react-router-dom";
 
 
 
-import confirm from "../.././../assets/images/confirm.png";
-import { PiCaretCircleLeftFill } from "react-icons/pi";
 
 
 const ResetPassword = () => {
@@ -112,14 +108,7 @@ const ResetPassword = () => {
 
   return (
     <>
-    <div className="container max-w-full mx-auto ">
-        <div className="absolute top-3 right-3">
-        <Button >
-                
-              <Link className="flex items-center" to="/"><StepBack  className="w-4 h-4 mr-2" /> Go back</Link> 
-           </Button>
-        </div>
-            
+    <div className="container max-w-full mx-auto ">            
         <div className={"lg:grid lg:grid-cols-2" }>
         <div className="flex items-center justify-center">
           <div className="grid gap-6 mx-auto">
@@ -239,7 +228,7 @@ const ResetPassword = () => {
         </div>
       </div>
       <div className="items-center hidden bg-white lg:flex">
-        <img src={enterNewpassword} alt="Enter New Password page Cover Image" />       
+        <img src={enterNewpassword} className="w-full max-h-screen" alt="Enter New Password page Cover Image" />       
       </div>
       </div>
      

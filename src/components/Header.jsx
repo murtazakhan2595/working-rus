@@ -43,6 +43,7 @@ const Header = ({ content, userProfile }) => {
       "my-task": "My Tasks",
       "calender": "Calendar",
       "attendance": "Attendance",
+      "shift-calendar": "Shift Calender",
       "files-data": "Files Data",
       "announcement": "Announcements",
       "recognition": "Recognition",
@@ -75,6 +76,8 @@ const Header = ({ content, userProfile }) => {
       "job-application": "Job Application",
       "job-application-form": "Job Application Form",
       "job-description": "Job Description",
+      "office-settings":  "Office Setting",
+      "my-attendance":"Attendance History"
       
     };
     setPathName(pathNames[path] || "Dashboard");
@@ -82,20 +85,9 @@ const Header = ({ content, userProfile }) => {
 
   return (
     <div className="flex flex-row items-center justify-between px-4 py-4">
-      <h3 className="capitalize h4 ">{pathName}</h3>
+      <h3 className="text-lg font-semibold capitalize sm:text-xl md:text-2xl lg:text-3xl">{pathName}</h3>
       <div className="flex flex-wrap justify-end gap-3">
-        {/* <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Search",
-              name: "id_and_Job_Title",
-            },
-          ]}
-          onChange={(filterName, filterValue) => {
-            // Handle filter change here if needed
-          }}
-        /> */}
+       
         {content}
       </div>
     </div>

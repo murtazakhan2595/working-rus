@@ -1,30 +1,22 @@
 // / done
 import { getAllTasks, getAllProjects } from "app/hooks/taskManagment";
 import { useEffect, useState } from "react";
-import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { MembersList } from "app/modules/TaskManagment/Sections";
 import {
   getStatusClass,
   getStatusIconColor,
 } from "app/modules/TaskManagment/Boards/Sections";
 import moment from "moment";
 import { PriorityListIcons } from "data/Data";
-import { TimeIcon } from "@mui/x-date-pickers";
-import CustomDropdown from "./CustomDropdown";
-import CreateCardModal from "./CreateCardModal";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
-  CardSubtitle,
 } from "../../../../components/ui/card.jsx";
 import { Button } from "../../../../components/ui/button";
-import { Check, ChevronsUpDown, MoreHorizontal } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "../../../../src/@/lib/utils";
@@ -42,16 +34,8 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "../../../../src/@/components/ui/popover";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-} from "../../../../src/@/components/ui/dropdown-menu";
+
 import CustomTable from "components/CustomTable";
-import { StatusLabel } from "components";
 // import { Status } from "app/modules/LeaveManagment/Sections";
 
 export default function MyTasks() {
@@ -63,7 +47,6 @@ export default function MyTasks() {
   const [filterOption, setFilterOption] = useState("All Projects");
   const [options, setOptions] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [openCreateCard, setOpenCreateCard] = useState(false);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState(null);
   const [open, setOpen] = React.useState(false);
@@ -86,7 +69,7 @@ export default function MyTasks() {
     try {
       const projectsData = await getAllProjects({ filterData }, userProfile);
       if (isMounted && projectsData.results) {
-        setAllProjects(projectsData?.results?.results);
+        setAllProjects(projectsData?.results);
         fetchTasks(isMounted, projectsData.results);
       }
     } catch (error) {
@@ -106,8 +89,6 @@ export default function MyTasks() {
           ? {}
           : { filterData: { project_id: [filterOption.id] } };
       const tasksData = await getAllTasks(filter);
-      // console.log(tasksData, "TASKS DATA");
-      // console.log(tasksData, "TASKS DATA");
       if (isMounted) {
         const mergedResult = mergeTasksWithProjects(tasksData, projects);
         setTasks(mergedResult);
@@ -131,7 +112,6 @@ export default function MyTasks() {
 
 
   useEffect(() => {
-    // console.log(AllProjects);
     const dynamicOptions = AllProjects?.map((project) => ({
       label: project.name,
       onClick: () => {
@@ -151,8 +131,6 @@ export default function MyTasks() {
     setOptions(dynamicOptions);
   }, [AllProjects]);
 
-  // console.log(options, "OPTIONS");
-  // console.log(options, "OPTIONS");
 
   useEffect(() => {
     if (AllProjects.length > 0) {
@@ -194,31 +172,65 @@ export default function MyTasks() {
             <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
               My Tasks
             </div>
-            <Button variant="secondary">
-              <Link
-                to="#"
-                onClick={() => {
-                  setOpenCreateCard(true);
-                }}
-              >
-                Add New Task
-              </Link>
-            </Button>
-          </CardTitle>
-          <div className="flex flex-row justify-end w-full gap-4">
+            
+            <div className="flex items-center gap-3">
+            <Popover open={openStatus} onOpenChange={setOpenStatus}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={openStatus}
+                  className="w-[110px] justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
+                >
+                  {value ? value : "Status"} 
+                  <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="max-w-[2000px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search status..." />
+                  <CommandList>
+                    <CommandEmpty>No status found.</CommandEmpty>
+                    <CommandGroup>
+                      {statusDropdownOptions.map((option) => (
+                        <CommandItem
+                          key={option.label}
+                          value={option.label}
+                          onSelect={() => {
+                            option.onClick();
+                            setValue(option.label);
+                            setOpenStatus(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              value === option.label
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {option.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+              </Popover>
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   role="combobox"
                   aria-expanded={open}
-                  className="w-[200px] justify-between"
+                  className="w-[110px] justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
                 >
-                  {selectedProject ? selectedProject : "Select Project..."}
+                  {selectedProject ? selectedProject : "Projects"}
                   <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
+              <PopoverContent className="max-w-[200px] p-0">
                 <Command>
                   <CommandInput placeholder="Search project..." />
                   <CommandList>
@@ -250,52 +262,13 @@ export default function MyTasks() {
                 </Command>
               </PopoverContent>
             </Popover>
-
-            <Popover open={openStatus} onOpenChange={setOpenStatus}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={openStatus}
-                  className="w-[200px] justify-between"
-                >
-                  {value ? value : "Select Status..."}
-                  <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
-                <Command>
-                  <CommandInput placeholder="Search status..." />
-                  <CommandList>
-                    <CommandEmpty>No status found.</CommandEmpty>
-                    <CommandGroup>
-                      {statusDropdownOptions.map((option) => (
-                        <CommandItem
-                          key={option.label}
-                          value={option.label}
-                          onSelect={() => {
-                            option.onClick();
-                            setValue(option.label);
-                            setOpenStatus(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              value === option.label
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {option.label}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-          </div>
+            </div>
+            
+           
+             
+           
+          </CardTitle>
+          
         </CardHeader>
         <CardContent>
           {tasks.length > 0 ? (
@@ -305,17 +278,6 @@ export default function MyTasks() {
           )}
         </CardContent>
       </Card>
-
-      {/* Modal for creating tasks */}
-      {openCreateCard && (
-        <CreateCardModal
-          open={openCreateCard}
-          setOpen={setOpenCreateCard}
-          onSave={() => {
-            fetchTasks(true, AllProjects);
-          }}
-        />
-      )}
     </>
   );
 }
@@ -335,7 +297,6 @@ const getStatusLabel = (status) => {
   }
 };
 function RenderTask({ tasks }) {
-  // console.log(tasks, "HELLO TASKS")
   return (
     <CustomTable
       showHeader={false}
@@ -347,14 +308,14 @@ function RenderTask({ tasks }) {
           formatter: (cell, render) => (
             <div className="flex flex-col w-full gap-2">
               <div className="flex flex-row w-full gap-4">
-                <div className="font-semibold text-[#111827]">
-                  {render.project_name}
+                <div className="font-semibold text-neutral-1200">
+                  {render.name}
                 </div>
                 <div className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2 py-2 h-[22px] rounded-full border border-mauve-500 flex items-center justify-center">
                   {getStatusLabel(render.status)}
                 </div>
               </div>
-              <div className="text-mauve-900">
+              <div className="text-neutral-1000">
                 Due on {moment(render?.due_date).format("MMMM DD")} - Created by
                 Name of employee
               </div>
@@ -363,34 +324,34 @@ function RenderTask({ tasks }) {
         },
         {
           text: "View Project",
-          formatter: (cell) => (
+          formatter: (cell, render) => (
             <Button
               variant="outline"
               size="sm"
-              className="rounded-sm text-[#000] font-semidbold"
+              className="rounded-sm font-semidbold"
             >
-              <Link to="#">View Project</Link>
+              <Link to={`project-board/${render?.project_id}`}>View Task</Link>
             </Button>
           ),
         },
-        {
-          text: "Action",
-          formatter: () => (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button aria-haspopup="true" size="icon" variant="ghost">
-                  <MoreHorizontal className="w-4 h-4" />
-                  <span className="sr-only">Toggle menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem>Edit</DropdownMenuItem>
-                <DropdownMenuItem>Delete</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ),
-        },
+        // {
+        //   text: "Action",
+        //   formatter: () => (
+        //     <DropdownMenu>
+        //       <DropdownMenuTrigger asChild>
+        //         <Button aria-haspopup="true" size="icon" variant="ghost">
+        //           <MoreHorizontal className="w-4 h-4" />
+        //           <span className="sr-only">Toggle menu</span>
+        //         </Button>
+        //       </DropdownMenuTrigger>
+        //       <DropdownMenuContent align="end">
+        //         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        //         <DropdownMenuItem>Edit</DropdownMenuItem>
+        //         <DropdownMenuItem>Delete</DropdownMenuItem>
+        //       </DropdownMenuContent>
+        //     </DropdownMenu>
+        //   ),
+        // },
       ]}
       data={tasks?.slice(0, 5).map((task) => ({
         ...task,

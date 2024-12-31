@@ -42,14 +42,12 @@ const SalarySetup = ({ departments }) => {
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
     onRowClick: (row) => {
-      console.log("Row clicked:", row);
       if (row.is_eos_applicable){
         navigate(`/payroll/salary-setup-eos/${row.id}`);
       }else navigate(`/payroll/salary-setup/${row.id}`);
     },
   };
 
-  console.log("FILTER DATA", filterData, componentFilterData);
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -61,7 +59,6 @@ const SalarySetup = ({ departments }) => {
     };
     fetchData();
   }, [options, filterData]);
-  console.log("SALARY SETUP DATA", salarySetupData);
 
   // Separate handler for Salary filters
   const handleSalaryFilterChange = (filterName, filterValue) => {
@@ -128,7 +125,6 @@ const SalarySetup = ({ departments }) => {
           },
         ];
 
-        console.log("ACTIVE TAB", activeTab);
   return (
     <div className="flex flex-col gap-4 salary-startup">
       <Header
@@ -146,8 +142,8 @@ const SalarySetup = ({ departments }) => {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="data-[state=active]:bg-plum-500 w-28 data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
-              >
+                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                 >
                 {tab.label}
               </TabsTrigger>
             ))}
@@ -157,7 +153,7 @@ const SalarySetup = ({ departments }) => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="h-[47px] flex-col justify-center items-start inline-flex">
-                <div className="flex-col justify-start items-start flex">
+                <div className="flex flex-col items-start justify-start">
                   <div className="self-stretch text-[#ab4aba] text-2xl font-medium  leading-normal">
                     {activeTab === "components"
                       ? "Components"
@@ -165,7 +161,7 @@ const SalarySetup = ({ departments }) => {
                   </div>
                 </div>
                 <div className="pt-1.5 flex-col justify-start items-start flex">
-                  <div className="flex-col justify-start items-start flex">
+                  <div className="flex flex-col items-start justify-start">
                     <div className="self-stretch text-[#8b8d98] text-sm font-normal  leading-[16.80px]">
                       {activeTab === "components"
                         ? "Types details are listed here"

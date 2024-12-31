@@ -80,7 +80,7 @@ const JobForm = forwardRef(
           <PageLoader />
         ) : (
           <>
-     {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
+     {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
 
             <Formik
               initialValues={initialValues}
@@ -367,7 +367,7 @@ const CreateUpdateJob = ({ baseUrl, token, onClose, isEditMode, formData, fetchJ
       isOpen={isOpen}
       setIsOpen={setIsOpen}
       contentClassName="custom-sheet-width"
-      width="600px"
+      
     >
       <JobForm
         isLoading={isLoading}

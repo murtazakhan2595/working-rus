@@ -7,6 +7,7 @@ import { getVisaLabel } from "utils/getVisaLabel";
 import { renderDate } from "utils/renderValues";
 import { getCountryFullName } from "utils/getValuesFromTables";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
+import { PageLoader } from "components";
 
 const IdentificationDetails = ({ isEditable, employeeId }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
@@ -25,7 +26,10 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                 title: "Current Country ID",
                 data: visaData.living_country_id_no,
               },
-              { title: "Issuance Country", data: visaData.place_of_issuance },
+              {
+                title: "Issuance Country",
+                data: getCountryFullName(visaData.place_of_issuance),
+              },
               {
                 title: "ID Issuance Date",
                 data: renderDate(visaData.id_issuance_date),
@@ -36,11 +40,12 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
               },
               {
                 title: "ID Front Image",
-                data: visaData?.id_front?.document?.file && (
+                data: visaData?.id_front?.document && (
                   <a
-                    href={visaData.id_front.document.file}
+                    href={visaData.id_front.document}
+                    target="_blank"
                     download={visaData.id_front.document.name}
-                    className="flex items-center no-underline text-black"
+                    className="flex items-center text-black no-underline"
                   >
                     Download <FiDownload />
                   </a>
@@ -48,11 +53,12 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
               },
               {
                 title: "ID Back Image",
-                data: visaData?.id_back?.document?.file && (
+                data: visaData?.id_back?.document && (
                   <a
-                    href={visaData.id_back.document.file}
+                    href={visaData.id_back.document}
                     download={visaData.id_back.document.name}
-                    className="flex items-center no-underline text-black"
+                    target="_blank"
+                    className="flex items-center text-black no-underline"
                   >
                     Download <FiDownload />
                   </a>
@@ -72,9 +78,9 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Issuance Country",
-                    data:
-                      visaData?.Passport_Issuance_Country ||
-                      getCountryFullName(visaData.Passport_Issuance_Country),
+                    data: getCountryFullName(
+                      visaData.Passport_Issuance_Country
+                    ),
                   },
                   {
                     title: "Issuance Date",
@@ -82,16 +88,16 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Expiry Date",
-                    data: renderDate(
-                      visaData?.Passport_Expiry_Date)
+                    data: renderDate(visaData?.Passport_Expiry_Date),
                   },
                   {
                     title: "Passport Copy",
-                    data: visaData?.passport_copy?.document?.file && (
+                    data: visaData?.passport_copy?.document && (
                       <a
-                        href={visaData.passport_copy.document.file}
+                        href={visaData.passport_copy.document}
+                        target="_blank"
                         download={visaData.passport_copy.document.name}
-                        className="flex items-center no-underline text-black"
+                        className="flex items-center text-black no-underline"
                       >
                         Download <FiDownload />
                       </a>
@@ -118,22 +124,21 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Active Date",
-                    data: renderDate(
-                      visaData?.insurance_active_date),
+                    data: renderDate(visaData?.insurance_active_date),
                   },
                   {
                     title: "Expiry Date",
 
-                    data: renderDate(
-                      visaData?.insurance_expiry_date),
+                    data: renderDate(visaData?.insurance_expiry_date),
                   },
                   {
                     title: "Insurance Card",
-                    data: visaData?.insurance_card?.document?.file && (
+                    data: visaData?.insurance_card?.document && (
                       <a
-                        href={visaData.insurance_card.document.file}
+                        href={visaData.insurance_card.document}
+                        target="_blank"
                         download={visaData.insurance_card.document.name}
-                        className="flex items-center no-underline text-black"
+                        className="flex items-center text-black no-underline"
                       >
                         Download
                         <FiDownload />
@@ -163,30 +168,30 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Issuance Date",
-                    data: renderDate(
-                      visaData.visa_issuance_date),
+                    data: renderDate(visaData.visa_issuance_date),
                   },
                   {
                     title: "Expiry Date",
-                    data: renderDate(visaData.visa_expiry_date)
+                    data: renderDate(visaData.visa_expiry_date),
                   },
                   { title: "Visa Duration", data: visaData.visa_duration },
                   {
                     title: "Visa Country Entry Date",
-                    data: renderDate(visaData.visa_country_entry_date)
+                    data: renderDate(visaData.visa_country_entry_date),
                   },
                   {
                     title: "Visa Country Exit Date",
-                    data: renderDate(visaData.visa_country_exit_date)
+                    data: renderDate(visaData.visa_country_exit_date),
                   },
                   { title: "UID Number", data: visaData.uid_number },
                   {
                     title: "Entry Permit",
-                    data: visaData?.enter_permit?.document?.file && (
+                    data: visaData?.enter_permit?.document && (
                       <a
-                        href={visaData.enter_permit.document.file}
+                        href={visaData.enter_permit.document}
+                        target="_blank"
                         download={visaData.enter_permit.document.name}
-                        className="flex items-center no-underline text-black"
+                        className="flex items-center text-black no-underline"
                       >
                         Download <FiDownload />
                       </a>
@@ -194,11 +199,12 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Visa Page",
-                    data: visaData?.visa_page?.document?.file && (
+                    data: visaData?.visa_page?.document && (
                       <a
-                        href={visaData.visa_page.document.file}
+                        href={visaData.visa_page.document}
                         download={visaData.visa_page.document.name}
-                        className="flex items-center no-underline text-black"
+                        target="_blank"
+                        className="flex items-center text-black no-underline"
                       >
                         Download <FiDownload />
                       </a>
@@ -206,11 +212,12 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Medical Result",
-                    data: visaData?.medical?.document?.file && (
+                    data: visaData?.medical?.document && (
                       <a
-                        href={visaData.medical.document.file}
+                        href={visaData.medical.document}
+                        target="_blank"
                         download={visaData.medical.document.name}
-                        className="flex items-center no-underline text-black"
+                        className="flex items-center text-black no-underline"
                       >
                         Download <FiDownload />
                       </a>
@@ -218,11 +225,12 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "ID Application",
-                    data: visaData?.id_application?.document?.file && (
+                    data: visaData?.id_application?.document && (
                       <a
-                        href={visaData.id_application.document.file}
+                        href={visaData.id_application.document}
+                        target="_blank"
                         download={visaData.id_application.document.name}
-                        className="flex items-center no-underline text-black"
+                        className="flex items-center text-black no-underline"
                       >
                         Download <FiDownload />
                       </a>
@@ -236,12 +244,20 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
       setIdentificationDetails(identificationDetailsData);
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
   useEffect(() => {
     getDataByHooks();
   }, [employeeId]);
+  if (loading) {
+    return (
+      <Card>
+        <PageLoader />
+      </Card>
+    );
+  }
 
   return (
     <>
@@ -250,7 +266,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
           <Card key={sectionIndex}>
             <CardHeader>
               <div className="flex justify-between">
-                <CardTitle>{section.title}</CardTitle>
+                <CardTitle className="text-primary">{section.title}</CardTitle>
                 {isEditable && (
                   <div
                     className="flex items-center gap-4"
@@ -264,15 +280,15 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
               </div>
             </CardHeader>
             <CardContent className="flex items-center pt-6 space-x-4">
-              <div className="grid grid-cols-1 gap-4 mb-4 max-w-[400px] w-full">
+              <div className="grid w-full grid-cols-1 gap-4 mb-4">
                 {section &&
                   section.fields &&
                   section.fields.map((object, index) => (
                     <div className="flex justify-between mb-2 " key={index}>
-                      <div className="w-1/2 text-base text-muted-foreground">
+                      <div className="flex-1 text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000 ">
                         {object.title}
                       </div>
-                      <div className="w-1/2 text-base text-black">
+                      <div className="w-1/2 text-sm text-black break-all xl:break-normal lg:break-all md:break-all xl:text-base lg:text-base md:text-sm">
                         {object.data || "N/A"}
                       </div>
                     </div>

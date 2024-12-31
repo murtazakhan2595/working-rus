@@ -1,19 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { FiDownload } from "react-icons/fi";
 import { CiEdit } from "react-icons/ci";
-import { FiPlus } from "react-icons/fi";
-import moment from "moment";
+import { renderDate } from "utils/renderValues";
+import { getEmployeeProfessionalExperianceData } from "app/hooks/employee";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
+import { getFileNameFromURL } from "utils/downUtils";
+import { PageLoader } from "components";
 
-const Experience = ({ experience, isEditable, employeeId, getDataByHooks }) => {
+const Experience = ({ isEditable, employeeId }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
+  const [experiences, setExperiences] = useState([{}]);
+  const [isLoading, setIsLoading] = useState(true);
+  const getDataByHooks = async () => {
+    setIsLoading(true);
+    try {
+      const expData = await getEmployeeProfessionalExperianceData(employeeId);
+      setExperiences(
+        Array.isArray(expData) && expData?.length > 0 && expData[0]?.id
+          ? expData
+          : null
+      );
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getDataByHooks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [employeeId]);
   return (
     <>
-     <Card>
+      <Card>
         <CardHeader>
           <div className="flex justify-between">
-            <CardTitle>Experience</CardTitle>
+            <CardTitle className="text-primary">Experience</CardTitle>
             {isEditable && (
               <div
                 className="flex items-center gap-4"
@@ -26,55 +50,66 @@ const Experience = ({ experience, isEditable, employeeId, getDataByHooks }) => {
             )}
           </div>
         </CardHeader>
-        <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid grid-cols-1 gap-4 mb-4 w-full">
-          {experience?.map((exp, index) => (
-            <div key={index} className="w-full mb-7">
-              <div className="flex flex-col md:flex-row justify-between mb-2">
-                <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">{exp.exp_organization || "N/A"}</div>
-                {exp?.exp_letter && (
-                  <a
-                    download={exp?.exp_letter[0]?.name}
-                    className="text-sm flex gap-2 items-center no-underline"
-                    href={exp?.exp_letter[0].file}
-                  >
-                    Experience Letter <FiDownload />
-                  </a>
-                )}
-              </div>
-              <div className="flex flex-col md:flex-row">
-                <div className="md:w-[250px] mb-3 md:mb-0">
-                  <div className="text-base text-muted-foreground">
-                    {exp.exp_designation || "------"}
+        {isLoading ? (
+          <PageLoader />
+        ) : (
+          <CardContent className="flex items-center pt-6 space-x-4">
+            <div className="grid w-full grid-cols-1 gap-4 mb-4">
+              {experiences ? (
+                experiences?.map((exp, index) => (
+                  <div key={index} className="w-full mb-7">
+                    <div className="flex flex-col justify-between mb-2 md:flex-row">
+                      <div className="text-sm text-black break-all xl:text-base lg:text-base md:text-sm xl:break-normal lg:break-all md:break-all">
+                        {exp.exp_organization || "N/A"}
+                      </div>
+                      {exp?.exp_letter && (
+                        <a
+                          download={getFileNameFromURL(exp?.exp_letter)}
+                          target="_blank"
+                          className="flex items-center gap-2 text-sm no-underline "
+                          href={exp?.exp_letter}
+                        >
+                          {exp.exp_end_date ? `Experience Letter` : `Resume`}{" "}
+                          <FiDownload />
+                        </a>
+                      )}
+                    </div>
+                    <div className="flex flex-col md:flex-row">
+                      <div className="mb-3 md:mb-0">
+                        <div className="text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000 ">
+                          {exp.exp_designation || "N/A"}
+                        </div>
+                        <div className="text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000 ">
+                          {renderDate(exp.exp_start_date)} -{" "}
+                          {exp.exp_end_date
+                            ? renderDate(exp.exp_end_date)
+                            : "Till date"}
+                        </div>
+                      </div>
+                      <div className="text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000 ">
+                        {exp.exp_discription}
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-base text-muted-foreground">
-                    {moment(exp.exp_start_date, "YYYY-MM-DD").format(
-                      "DD MMMM, YYYY"
-                    ) || "00/00/0000"}{" "}
-                    -{" "}
-                    {exp.exp_end_date
-                      ? moment(exp.exp_end_date, "YYYY-MM-DD").format(
-                          "DD MMMM, YYYY"
-                        )
-                      : "Till date"}{" "}
+                ))
+              ) : (
+                <div>
+                  <div className="flex-1 text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000 ">
+                    Experience is not posted yet.
                   </div>
                 </div>
-                <div className="md:w-[calc(100%-250px)] text-base text-muted-foreground">
-                  {exp.exp_discription || "--------"}
-                </div>
-              </div>
+              )}
             </div>
-          ))}
-          </div>
-        </CardContent>
+          </CardContent>
+        )}
       </Card>
-     
+
       {showPersonalDetailCard && (
         <EmployeeDetailModal
           openModal={showPersonalDetailCard}
           closeModal={() => {
             setShowPersonalDetailCard(false);
-            getDataByHooks()
+            getDataByHooks();
           }}
           employeeId={employeeId}
           currentClick={4}

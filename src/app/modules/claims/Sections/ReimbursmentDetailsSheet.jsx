@@ -3,14 +3,17 @@ import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
 import moment from "moment";
 import { Button } from "components/ui/button";
 import { getExpenseType } from "utils/getValuesFromTables";
-import { filebase64Download } from "utils/fileUtils";
 import statusApprovedIcon from "assets/images/status-approved.png";
 import statusPendingIcon from "assets/images/status-pending.svg";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { saveReimbursement } from "app/hooks/payroll";
 import statusRejectedIcon from "assets/images/status-rejected.svg";
-import { DetailCard, DetailBox, DisplayFile } from "components/SheetCardExtension";
+import {
+  DetailCard,
+  DetailBox,
+  DisplayFile,
+} from "components/SheetCardExtension";
 
 // Function to calculate "X days ago"
 const calculateTimeAgo = (date) => {
@@ -88,6 +91,7 @@ const ReimbursmentDetailsSheet = ({
   const userProfile = useSelector((state) => state.user.userProfile);
 
   const handleStatusChange = async (status) => {
+    // Update the status based on user role
     if (userProfile.role === 3) {
       claimRequest.status_hr = {
         status: status,
@@ -106,6 +110,8 @@ const ReimbursmentDetailsSheet = ({
         date: moment().format("YYYY-MM-DD"),
       };
     }
+
+    // Determine the overall claim request status
     if (
       claimRequest?.status_manager?.status === "approved" &&
       claimRequest?.status_hr?.status === "approved" &&
@@ -118,13 +124,24 @@ const ReimbursmentDetailsSheet = ({
       claimRequest.approval_date = null;
       claimRequest.rejection_date = moment().format("YYYY-MM-DD");
     }
-    const response = await saveReimbursement(claimRequest);
-    if (response) {
-      toast.success("Claim request updated successfully");
-      setIsOpen(false);
-      reload();
+
+    // Exclude the attachment field from the request
+    const { attachment, ...updatedClaimRequest } = claimRequest;
+
+    try {
+      // Send the updated claim request (without the attachment)
+      const response = await saveReimbursement(updatedClaimRequest);
+      if (response) {
+        toast.success("Claim request updated successfully");
+        setIsOpen(false);
+        reload();
+      }
+    } catch (error) {
+      console.error("Error updating claim request:", error);
+      toast.error("Failed to update claim request");
     }
   };
+
   const hasPendingApprovalForUser = () => {
     if (userProfile.role === 3) {
       // HR role
@@ -146,7 +163,6 @@ const ReimbursmentDetailsSheet = ({
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        width="500px"
       >
         <EmployeeDataInfo
           name={claimRequest.full_name}
@@ -160,24 +176,25 @@ const ReimbursmentDetailsSheet = ({
           )}`}
           dateTitle="Create on:"
         >
-          <div className="flex mt-3 w-full">
+          <div className="flex w-full mt-3">
             <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
               {detailItems.map((item, index) => (
                 <DetailBox label={item?.label} value={item?.value} />
               ))}
-              <div className="flex gap-4 items-center mt-4 max-w-full">
+              <div className="flex items-center max-w-full gap-4 mt-4">
                 <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
                   <div className="text-neutral-900">Attachment</div>
                 </div>
-                {claimRequest?.attachment?.file ? (
-                  <DisplayFile
-                    firstName="Receipt"
-                    lastName=""
-                    file={claimRequest?.attachment?.file}
-                    onDownload={()=>filebase64Download(claimRequest?.attachment)}
-                  />
+                {claimRequest?.attachment ? (
+                  <a
+                    href={claimRequest?.attachment}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Receipt
+                  </a>
                 ) : (
-                  "No attachment found"
+                  "No Attachment Found"
                 )}
               </div>
             </div>
@@ -187,7 +204,7 @@ const ReimbursmentDetailsSheet = ({
         <DetailCard detailCardTitle="Approval Status">
           <div className="flex absolute -bottom-0.5 z-0 justify-center items-start w-6 h-[150px] left-[5px] min-h-[150px]" />
           {approvalSteps.map((step, index) => (
-            <div className="flex z-0 gap-10 justify-between items-center w-full">
+            <div className="z-0 flex items-center justify-between w-full gap-10">
               <div className="flex gap-4 self-stretch my-auto w-[194px]">
                 <div className="flex justify-center items-center px-1 bg-white h-[33px] w-[33px]">
                   <img
@@ -210,7 +227,7 @@ const ReimbursmentDetailsSheet = ({
           ))}
         </DetailCard>
         {!isMyClaims && hasPendingApprovalForUser() && (
-          <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
+          <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
             <Button
               variant="outline"
               size="lg"

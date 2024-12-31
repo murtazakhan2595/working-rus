@@ -25,6 +25,7 @@ import { validateLeaveRequestFormSchema } from "app/utils/FormSchema/leaveTracke
 import { saveAttachment } from "app/hooks/leaveTracker";
 import { getRemainingLeaves } from "app/hooks/leaveTracker";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
+import { CoverFileUpload } from "components/form-control";
 
 const ApplyLeaveSheet = ({ userProfile, reload }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,8 +35,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
   const [selectedNoOfDays, setSelectedNoOfDays] = useState(0);
   const [leaveAfter, setLeaveAfter] = useState(null);
   const [maxDays, setMaxDays] = useState(0);
-  const [closeSheet, setCloseSheet] = useState(false)
-
+  const [closeSheet, setCloseSheet] = useState(false);
 
   const leaveRequest = {
     component_type: "",
@@ -56,7 +56,10 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await getLeaveComponents({
-        filterData: { employee_id_and_org: `${userProfile.id},${true}`, status:true },
+        filterData: {
+          employee_id_and_org: `${userProfile.id},${true}`,
+          status: true,
+        },
       });
       if (response) {
         const LeaveTypeOptions = response?.results?.map((item) => ({
@@ -115,19 +118,20 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
     }
 
     let attachmentId = null;
+    console.log(attachmentId, "ATTACHMENT ID")
     // Step 1: Check if there is an attachment and save it
-    if (newAttachment && newAttachment.file) {
-      const attachment = await saveAttachment({
-        attachment: newAttachment,
-      });
+    if (newAttachment) {
+      const formData = new FormData();
+      formData.append("attachment", newAttachment);
 
-      if (attachment) {
-        attachmentId = attachment.id; // Save the attachment ID to use in the leave request
-      } else {
-        toast.error("Error in uploading attachment");
-        return; // Exit if attachment failed to upload
+      const attachmentResponse = await saveAttachment(formData);
+
+      if (!attachmentResponse || !attachmentResponse.id) {
+        throw new Error("Failed to upload the attachment.");
       }
+      attachmentId = attachmentResponse.id; // Save attachment ID
     }
+
     // Step 2: Save leave request with the attachment (if exists)
     const leaveRequestPayload = {
       ...values,
@@ -160,46 +164,38 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
     }
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0]; // Get the selected file
-
-    if (file) {
-      const maxFileSize = 10 * 1024 * 1024; // Max file size in bytes (10MB)
-      if (file.size > maxFileSize) {
-        toast.error("File is too large, must be less than 10MB"); // Handle file size too large
+  const handleFileChange = (field, value) => {
+    console.log(value, "VALUE IS HERE")
+    if (value) {
+      const file = value.file; // Extract the file data
+      const maxFileSize = 10 * 1024 * 1024; // Max file size: 10MB
+      if (value.size > maxFileSize) {
+        toast.error("File is too large, must be less than 10MB");
         return;
       }
-      const reader = new FileReader();
-
-      reader.onload = (event) => {
-        const fileData = {
-          name: file.name, // File name
-          file: event.target.result, // Base64 data URL
-        };
-        setNewAttachment(fileData); // Update state with file data
-      };
-
-      reader.onerror = (error) => {
-        console.error("Error reading file:", error); // Handle errors
-      };
-
-      reader.readAsDataURL(file); // Read file as data URL
+  
+      setNewAttachment(value); // Update the state with the selected file
     }
   };
+  
 
-  const handleClose = ()=>{
-    setCloseSheet(true)
-   }
+  const handleClose = () => {
+    setCloseSheet(true);
+  };
 
   return (
     <div>
-    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen, setNewAttachment)}
+      {handleCloseWithConfirmation({
+        isOpen: closeSheet,
+        setCloseSheet,
+        setIsOpen,
+        setNewAttachment,
+      })}
       <SheetComponent
         {...formSheetData}
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        width="600px"
       >
         <Formik
           initialValues={leaveRequest}
@@ -242,7 +238,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                     label="Number of Days"
                     required="true"
                   />
-                  <div className="gap-4 flex items-center ">
+                  <div className="flex items-center gap-4 ">
                     <div className="flex-1 space-y-2">
                       <DateInput
                         name={"start_date"}
@@ -286,67 +282,20 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                     maxRows={3}
                     placeholder="Type your remarks here"
                   />
-
-                  <div className="h-[118px] flex-col justify-start  gap-2 inline-flex">
-                    <div className=" justify-center  gap-12">
-                      <div className=" flex-col justify-start  inline-flex text-neutral-800 text-sm font-medium ">
-                        Attachments
-                      </div>
-                      <div className="flex flex-col gap-3">
-                        <div className="grow flex-col justify-start  inline-flex p-4 pr-5 border border-solid border-zinc-200 rounded-md">
-                          <div className="flex items-center">
-                            <div>
-                              <div className="flex items-center text-[#8b8d98] text-sm  gap-2">
-                                <Paperclip size={16} />
-                                {newAttachment && newAttachment.name ? (
-                                  <span className="mr-2">
-                                    {newAttachment.name}
-                                  </span>
-                                ) : (
-                                  <>
-                                    <span className="text-[#ab4aba] text-sm font-semibold ">
-                                      Upload a file
-                                    </span>
-                                    <span>or drag and drop</span>
-                                  </>
-                                )}
-                              </div>
-                              {!(newAttachment && newAttachment.name) && (
-                                <div className="w-[263px] h-3 pl-8 pr-[26.62px] flex-col justify-start items-start inline-flex">
-                                  <div className="text-[#8b8d98] text-xs  ">
-                                    PDF, PNG, JPG, GIF up to 10MB
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                            <Button
-                              className="bg-white border border-[#e8e8ec] text-neutral-1200"
-                              type="button"
-                              onClick={() =>
-                                document.getElementById("fileInput").click()
-                              }
-                            >
-                              Upload
-                            </Button>
-                          </div>
-                        </div>
-                        {/* Hidden file input */}
-                        <input
-                          id="fileInput"
-                          type="file"
-                          accept="image/png, image/jpeg, image/gif, application/pdf"
-                          style={{ display: "none" }} // Hide the file input
-                          onChange={handleFileChange} // Call the file change handler
-                        />
-                        {/* <Button className="bg-white border border-[#e8e8ec] text-neutral-1200 text-sm font-medium w-fit">
-                          + Add another
-                        </Button> */}
-                      </div>
-                    </div>
-                  </div>
+                  <CoverFileUpload
+                    acceptType=".pdf,.jpg,.png" // Allow multiple file types
+                    name={`attachments`}
+                    value={props.values.attachments} // Bind to Formik value
+                    onChange={(field, value) => {
+                      handleFileChange(field, value);
+                      props.setFieldValue(field, value); // Update Formik value
+                    }}
+                    label={"Attachments"}
+                    touch={props.touched.attachments}
+                  />
                 </div>
               </div>
-              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
+              <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
                 <Button
                   variant="outline"
                   type="button"

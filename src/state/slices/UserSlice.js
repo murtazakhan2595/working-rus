@@ -2,10 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const URLS = [
   {
-    Frontend: "https://hrms.tecbrix.cloud",
-    Backend: "https://hrms-be.tecbrix.cloud/api",
-  },
-  {
     Frontend: "https://app.cohrus.com",
     Backend: "https://hrms-be.tecbrix.cloud/api",
   },
@@ -22,10 +18,8 @@ const URLS = [
     Backend: "https://hrms-be.tecbrix.cloud/api",
   },
   {
-    Frontend:
-      "https://hrms-production-frontend.mangomoss-a52772ee.uaenorth.azurecontainerapps.io/",
-    Backend:
-      "https://hrms-production-backend.mangomoss-a52772ee.uaenorth.azurecontainerapps.io/api",
+    Frontend: "https://hrmsblob-fsc9g0a0b5axcufm.z02.azurefd.net/",
+    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
   },
 ];
 
@@ -69,6 +63,7 @@ const userSlice = createSlice({
         is_filled: null,
         role: null,
       };
+      window.localStorage.setItem("token", '');
     },
     setToken(state, action) {
       state.token = action.payload;

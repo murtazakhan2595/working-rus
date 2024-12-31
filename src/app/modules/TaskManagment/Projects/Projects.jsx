@@ -1,16 +1,14 @@
 import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { getAllProjects, deleteProject } from "app/hooks/taskManagment";
-import { Header, PageLoader, ConfirmationModal } from "components";
-import { CiCirclePlus } from "react-icons/ci";
-import ProjectForm from "./ProjectForm";
+import { getAllProjects } from "app/hooks/taskManagment";
+import { Header, PageLoader } from "components";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import ViewBoardDetails from "./ViewBoardDetails";
-import { MembersList, CustomDropdown } from "../Sections";
+import { MembersList } from "../Sections";
 import { LuFolderX } from "react-icons/lu";
-import { EmployeeName } from "utils/getValuesFromTables";
+
 import { fetchProjects } from "state/slices/CommonSlice";
 import { useDispatch } from "react-redux";
 import CreateEditProject from "./CreateEditProject";
@@ -23,7 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "components/ui/card";
-import { Layout, ListTodo, Timer } from "lucide-react";
+import { LayoutGrid, ListTodo, TableOfContents, Timer } from "lucide-react";
 import TableCustom from "components/CustomTable";
 import { projectBoard } from "app/utils/Types/TableColumns";
 import { Button } from "components/ui/button";
@@ -60,7 +58,7 @@ const Projects = ({ userProfile }) => {
     try {
       const projectsData = await getAllProjects({ filterData }, userProfile);
       if (isMounted) {
-        setAllProjects(projectsData?.results);
+        setAllProjects(projectsData);
       }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
@@ -107,17 +105,16 @@ const Projects = ({ userProfile }) => {
     <div>
       <Header
         content={
-          <>
-            <button onClick={toggleViewMode} className="mb-4 p-2">
-              <Layout />
-            </button>
+          userProfile.role !== 4 ? (
             <CreateEditProject
               isEditMode={false}
               isOpen={isOpen}
               setIsOpen={setIsOpen}
               reload={fetchData}
             />
-          </>
+          ) : (
+            <></>
+          )
         }
       />
 
@@ -125,6 +122,12 @@ const Projects = ({ userProfile }) => {
         <PageLoader />
       ) : (
         <>
+          <div className="flex flex-row justify-end w-full gap-4">
+            <button onClick={toggleViewMode} className="mb-4 p-2 ">
+              {viewMode === "table" ? <LayoutGrid /> : <TableOfContents />}
+            </button>
+          </div>
+
           {viewMode === "table" && userProfile.role !== 4 && (
             <RenderProject
               toggleAddProject={toggleAddProject}
@@ -191,7 +194,7 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
       {project && (
         <>
           <CardHeader
-            className="m-2 cursor-pointer rounded-t-lg bg-gray-500"
+            className="m-2 cursor-pointer rounded-t-lg bg-gray-500 transition-all duration-300 hover:opacity-90 hover:shadow-md"
             style={project?.color ? { backgroundColor: project.color } : {}}
             onClick={viewDetails}
           >
@@ -200,14 +203,14 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
                 variant="dot"
                 className="text-sm bg-green-100 text-green-700"
               >
-                {project?.status || "Ongoing"}
+                {project?.status || "On Going"}
               </Badge>
             </CardTitle>
             <div className="flex justify-center">
               <img
-                src={project?.profile?.file || logo}
+                src={project?.profile || logo}
                 alt={project.name}
-                className="h-10 mb-3"
+                className="h-10 mb-3 transition-transform duration-300 hover:scale-105"
               />
             </div>
           </CardHeader>
@@ -231,8 +234,6 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
           <div className="border border-gray-400 m-2" />
           <CardFooter className="flex justify-between">
             <div className="text-neutral-1100 text-sm flex justify-center items-center gap-2">
-              {" "}
-              <Timer />
               {moment(project.start_date).format("MMM D, YYYY")}
             </div>
             <MembersList members={project?.project_members || []} />

@@ -36,6 +36,7 @@ const JobApplicationForm = () => {
     const getJobDetails = async () => {
       try {
         const data = await fetchJobById(id);
+        console.log(data, "DATA")
         setJobDetails(data);
       } catch (error) {
         console.error("Error fetching job details:", error);
@@ -46,15 +47,26 @@ const JobApplicationForm = () => {
 
   const handleSubmit = async (values) => {
     setIsLoading(true);
+  
     try {
-      let response;
-      response = await addApplication(values);
+      const formData = new FormData();
+  
+      Object.keys(values).forEach((key) => {
+        if (key === 'coverletter' || key === 'cv') {
+          if (values[key]) formData.append(key, values[key]);
+        } else {
+          formData.append(key, values[key]);
+        }
+      });
+  
+      // Make the API call with FormData
+      const response = await addApplication(formData);
+  
       if (response.status === 200 || response.status === 201) {
         toast.success(`Application submitted successfully!`, {
           autoClose: 1000,
         });
-        setShowSuccess(true)
-        // navigate("/jobs");
+        setShowSuccess(true);
       } else {
         toast.error(`Failed to submit application. Please try again.`);
       }
@@ -67,6 +79,8 @@ const JobApplicationForm = () => {
       setIsLoading(false);
     }
   };
+  
+  
 
   return (
     <>
@@ -217,10 +231,10 @@ const JobApplicationForm = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-4 mt-4">
                     <TextInput
-                      name="Year_of_Experience"
-                      error={props.errors.Year_of_Experience}
-                      touch={props.touched.Year_of_Experience}
-                      value={props.values.Year_of_Experience}
+                      name="experience"
+                      error={props.errors.experience}
+                      touch={props.touched.experience}
+                      value={props.values.experience}
                       label="Experience (in years)"
                       onChange={(field, value) => {
                         props.setFieldValue(field, value);
@@ -247,19 +261,19 @@ const JobApplicationForm = () => {
                   <div className="grid grid-cols-2 gap-4 mt-4">
                     <div>
                       <CoverFileUpload
-                        name="cover_letter"
+                        name="coverletter"
                         label="Attach Cover later"
                         acceptType=".png,.jpg,.pdf"
                         maxSize="10MB"
-                        error={props.errors?.cover_letter}
-                        touch={props.touched?.cover_letter}
-                        value={props.values?.cover_letter}
+                        error={props.errors?.coverletter}
+                        touch={props.touched?.coverletter}
+                        value={props.values?.coverletter}
                         required={true}
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
                           props.setFieldTouched(field, true);
                         }}
-                      />
+                      /> 
                     </div>
                     <div>
                       <CoverFileUpload
@@ -280,7 +294,9 @@ const JobApplicationForm = () => {
                   </div>
 
                   <div className="flex justify-end mt-6">
-                    <Button type="submit" className="px-8 text-white bg-black">
+                    <Button type="submit" className="px-8 text-white bg-black"
+                    disabled={new Date() > new Date(jobDetails?.Deadline)}
+                    >
                       Apply
                     </Button>
                   </div>

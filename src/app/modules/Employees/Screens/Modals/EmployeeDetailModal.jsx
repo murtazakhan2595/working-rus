@@ -32,13 +32,13 @@ function EmployeeDetailModal({
       <div>
         <SheetComponent
           {...{
-            triggerText: getTitle(currentClick),
+            triggerText: null,
             title: getTitle(currentClick),
             description: null,
             footer: null,
           }}
           // onSubmit={handleSubmit}
-          width="860px"
+          
           isOpen={openModal}
           setIsOpen={closeModal}
           contentClassName="custom-sheet-width"

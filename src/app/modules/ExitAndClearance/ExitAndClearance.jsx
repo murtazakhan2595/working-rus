@@ -31,6 +31,8 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   const [totalExit, setTotalExit] = useState(0);
   const [approvedResignation, setApprovedResignation] = useState(0);
   const [rejectedResignation, setRejectedResignation] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  
   const [filterData, setFilterData] = useState({
      exit_category: "resignation",
      status_resignation: StatusList(),
@@ -61,6 +63,9 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   };
 
   const handleFilterChange = (filterName, filterValue) => {
+    if (filterName === "status_resignation") setSelectedStatus(filterValue);
+    if (filterName === "status_termination") setSelectedStatus(filterValue);
+    if (filterName === "departments") setSelectedStatus(filterValue);
     if (
       filterName === "status_resignation" ||
       (filterName === "status_termination" && filterValue)
@@ -96,14 +101,14 @@ const ExitAndClearance = ({ userProfile, departments }) => {
         ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
 
         exit_category: "resignation",
-        status_resignation: ["exit interview"],
+        status_resignation: "exit interview",
       });
     } else if (tab === "Terminated") {
       setFilterData({
         ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
 
         exit_category: "termination",
-        status_termination: ["exit interview"],
+        status_termination: "exit interview",
       });
     }
     setActiveTab(tab);
@@ -136,10 +141,10 @@ const ExitAndClearance = ({ userProfile, departments }) => {
     Terminated: "departments",
   };
   return (
-    <div className="flex flex-col gap-4 profile-management">
+    <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}>
       <Header
         content={
-          <RequestTerminationCard closeModel={closeRequestTerminationCard} />
+          userProfile.role=== 1||userProfile.role=== 3 ? <RequestTerminationCard closeModel={closeRequestTerminationCard} />:null
         }
       />
       <Stats stats={statsData} />
@@ -149,15 +154,15 @@ const ExitAndClearance = ({ userProfile, departments }) => {
         onValueChange={handleTabChange}
         value={activeTab}
       >
-        <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
-          <TabsList className="flex justify-center mb-4">
+        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+          <TabsList className="flex items-center justify-center mb-4">
             {["Resignations", "Terminations", "Resigned", "Terminated"].map(
               (tab) => (
                 <TabsTrigger
                   key={tab}
                   value={tab}
                   className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-                >
+                  >
                   {tab}
                 </TabsTrigger>
               )
@@ -175,6 +180,8 @@ const ExitAndClearance = ({ userProfile, departments }) => {
                 option: getFilterInputOptions(),
                 name: filterNameMapping[activeTab],
                 placeholder: "Status",
+                values: selectedStatus,
+                value: selectedStatus
               },
             ]}
             onChange={handleFilterChange}

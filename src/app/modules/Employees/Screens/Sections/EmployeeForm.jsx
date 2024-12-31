@@ -41,12 +41,17 @@ import {
   SelectComponent,
   SelectMultiInputComponent,
   DateInput,
+  CheckBoxInput,
 } from "../../../../../components/form-control";
 
 import { getEmployeeid } from "utils/getValuesFromTables";
 import { saveEmployeePayroll } from "app/hooks/payroll";
 import { PageLoader } from "components";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
+import { getShift } from "app/hooks/attendance";
+import AddShiftForm from "app/modules/OfficeSetting/sections/Shift/AddShiftForm";
+import SheetComponent from "components/ui/CustomSheet";
+import moment from "moment";
 
 function getManagersStringSelected(managers) {
   if (managers) {
@@ -60,7 +65,7 @@ function getManagersStringSelected(managers) {
 
 const SheetOnBorading = ({
   isEditMode,
-  nextStep,
+  nextstep,
   setShowFormSubmittedModal,
   setEmail,
   id,
@@ -70,11 +75,10 @@ const SheetOnBorading = ({
   managers,
   isOpen,
   setIsOpen,
-}) => {
+  discard=false,
+}) => { 
   const formRef = React.createRef();
 
-  console.log("RECEIVED ID:", id);
-  console.log("EDIT MODE", isEditMode);
 
   let dispatch = useDispatch();
   const navigate = useNavigate();
@@ -83,9 +87,26 @@ const SheetOnBorading = ({
   const [isLoading, setIsLoading] = useState(true);
   const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
   const [usernameAlreadyExist, setUsernameAlreadyExist] = useState(false);
-
+  const [shiftList, setShiftList] = useState([]);
+ const[addShift, setAddShift] = useState(false)
   const [closeSheet, setCloseSheet] = useState(false)
+  const [shiftSelect, setShiftSelect] = useState(false)
 
+
+  const getShiftList = async () => {
+     const shiftData =await getShift()
+          if(shiftData){
+            const shiftList = shiftData.results.map((shift) => {
+              return {
+                value: shift.id,
+                label: `${shift.name} (${moment(shift.starttime).format(
+                  "h:mm a"
+                )} - ${moment(shift.endtime).format("h:mm a")})`,
+              };
+            });
+            setShiftList(shiftList)
+          }
+  }
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -95,13 +116,15 @@ const SheetOnBorading = ({
           const employeeData = await getEmployeeInformation(response);
           setFormData(employeeData);
           // setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
-          setEmpId(employeeData.id);
+          setEmpId(response.serial_number);
           validateEmail(employeeData.work_email);
           validateUsername(employeeData.username);
+           getShiftList();
         } else {
           const response = await getNewEmployeeCode();
           // setEmpId(`TXB-${response.toString().padStart(4, "0")}`);
           setEmpId(response);
+          getShiftList();
         }
       } catch (error) {
         console.log(error);
@@ -134,42 +157,51 @@ const SheetOnBorading = ({
     }
   };
   const handleSubmit = async (data) => {
-    console.log(data);
-    // return
     setIsLoading(true);
     let employeePayroll = {};
+  
+    // Determine the payroll data structure based on salary type
     if (data.salary_type === "hourly") {
       employeePayroll = {
         hourly_rate: data.salary,
         salary_type: data.salary_type,
-        employee: empId,
         is_new: true,
       };
     } else {
       employeePayroll = {
         basic_salary: data.salary,
         salary_type: data.salary_type,
-        employee: empId,
         is_new: true,
       };
     }
+  
     try {
-      // Check if an API call is already in progress
+      // Format indirect report if it exists
       data.indirect_report = data?.indirect_report
         ? getManagersStringSelected(data.indirect_report)
         : "";
+  
+      // Save employee work information
       const response = await saveEmployeeWorkInformationData(data.id, data);
+      // return 
       if (response) {
+        const employeeId = response.id; // Extract employee ID from the response
+  
+        // Dispatch fetch actions to update the state
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
         if (data.id) {
+          // Employee update flow
           toast.success("Employee Updated Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
-          if (isEditMode) nextStep();
+          if (isEditMode) {
+            nextstep()
+          }
           else navigate("/profile-management");
         } else {
-          await saveEmployeePayroll(employeePayroll);
+          // Employee creation flow
+          await saveEmployeePayroll({ ...employeePayroll, employee: employeeId });
           toast.success("Employee Added Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
@@ -178,6 +210,7 @@ const SheetOnBorading = ({
         }
       }
     } catch (error) {
+      // Handle errors and rollback form data
       setFormData(data);
       if (
         error.response &&
@@ -189,7 +222,7 @@ const SheetOnBorading = ({
         });
       } else {
         console.error("API Error:", error);
-        toast.error(error, {
+        toast.error(error.message || "An error occurred", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
@@ -197,9 +230,9 @@ const SheetOnBorading = ({
       setIsLoading(false);
     }
   };
+  
 
   const handleClose = ()=>{
-    // setIsOpen(false)
     setCloseSheet(true)
   }
 
@@ -207,9 +240,16 @@ const SheetOnBorading = ({
     return <PageLoader />;
   }
 
+  console.log("shiftlist", shiftList)
   return (
     <>
-    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
+      {handleCloseWithConfirmation({
+        isOpen: closeSheet,
+        setCloseSheet,
+        setIsOpen,
+        discard,
+        navigate,
+      })}
 
       <div
         side="right"
@@ -217,7 +257,9 @@ const SheetOnBorading = ({
         open={isOpen}
         onOpenChange={setIsOpen}
       >
-        <div className="flex flex-col ">
+        <div
+          className={`flex flex-col   ${window.location.pathname.substring(1)}`}
+        >
           <div className="flex-grow ">
             <div className="p-0">
               {/* <CardHeader className="prose">
@@ -254,12 +296,12 @@ const SheetOnBorading = ({
                       <h3 className="text-lg font-semibold">
                         Employee Details
                       </h3>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
                         <div className="space-y-2">
                           <TextInput
-                            name={"employeeId"}
-                            error={props.errors?.employeeId}
-                            touch={props.touched?.employeeId}
+                            name={"serial_number"}
+                            error={props.errors?.serial_number}
+                            touch={props.touched?.serial_number}
                             value={getEmployeeid(empId)}
                             label={"Employee ID"}
                             required={true}
@@ -327,7 +369,10 @@ const SheetOnBorading = ({
                         </div>
                         <div className="space-y-2">
                           <div className="flex flex-col gap-4">
-                            <Label htmlFor="password" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-baseGray">
+                            <Label
+                              htmlFor="password"
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-baseGray"
+                            >
                               <span className="text-red-600">* </span>Password
                             </Label>
                             <Input
@@ -336,7 +381,7 @@ const SheetOnBorading = ({
                               id="password"
                               name="password"
                               autoComplete="Off"
-                              placeholder={"Enter User Name"}
+                              placeholder={"Enter Password"}
                               onChange={(option) => {
                                 props.handleChange("password")(option);
                               }}
@@ -376,7 +421,7 @@ const SheetOnBorading = ({
                             countryOptions={countriesCallingCodes} // Pass the country options here
                           />
                         </div>
-                        <div className="col-span-3 space-y-2">
+                        <div className="col-span-1 space-y-2 xl:col-span-3 lg:col-span-2 md:col-span-2">
                           <TextAreaInput
                             name={"residential_address"}
                             error={props.errors?.residential_address}
@@ -393,13 +438,11 @@ const SheetOnBorading = ({
                       </div>
                     </div>
 
-
-                    
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold">
                         Official Information
                       </h3>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
                         <div className="space-y-2">
                           <SelectComponent
                             name={"department_name"}
@@ -553,52 +596,101 @@ const SheetOnBorading = ({
                         </div>
                       </div>
                     </div>
-                   {!id &&  <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">Salary Details</h3>
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                          <SelectComponent
-                            name={"salary_type"}
-                            options={salaryTypeOptions}
-                            error={props.errors?.salary_type}
-                            touch={props.touched.salary_type}
-                            value={props.values.salary_type}
-                            label={"Salary Type"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Shift Details</h3>
+                        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <CheckBoxInput
+                              label="Choose Shift"
+                              name="shift-select"
+                              value={shiftSelect}
+                              onChange={(name, value) => {
+                                console.log(value);
+                                setShiftSelect(value);
+                              }}
+                            />
+                          </div>
+                          {shiftSelect && (
+                            <div className="space-y-2">
+                              <SelectComponent
+                                name={"shift_assignment"}
+                                options={shiftList}
+                                error={props.errors?.shift_assignment}
+                                touch={props.touched.shift_assignment}
+                                value={props.values.shift_assignment}
+                                label={"Shift"}
+                                required={true}
+                                onChange={(field, value) => {
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            </div>
+                          )}
                         </div>
                         <div className="space-y-2">
-                          <TextInput
-                            name={"salary"}
-                            error={props.errors?.salary}
-                            touch={props.touched?.salary}
-                            value={props.values?.salary}
-                            label={
-                              props.values.salary_type === "hourly"
-                                ? "Employee Hourly Salary"
-                                : "Employee Monthly Salary"
-                            }
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
+                          <CheckBoxInput
+                            label="Custom Shift"
+                            name="custom-shift"
+                            value={addShift}
+                            onChange={(name, value) => {
+                              console.log(value);
+                              setAddShift(value);
                             }}
                           />
                         </div>
                       </div>
-                    </div>}
+                    {!id && (
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                          Salary Details
+                        </h3>
+                        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <SelectComponent
+                              name={"salary_type"}
+                              options={salaryTypeOptions}
+                              error={props.errors?.salary_type}
+                              touch={props.touched.salary_type}
+                              value={props.values.salary_type}
+                              label={"Salary Type"}
+                              required={true}
+                              onChange={(field, value) => {
+                                props.setFieldValue(field, value);
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <TextInput
+                              name={"salary"}
+                              error={props.errors?.salary}
+                              touch={props.touched?.salary}
+                              value={props.values?.salary}
+                              label={
+                                props.values.salary_type === "hourly"
+                                  ? "Employee Hourly Salary"
+                                  : "Employee Monthly Salary"
+                              }
+                              required={true}
+                              onChange={(field, value) => {
+                                props.handleChange(field)(value);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     <div className="p-6 border-t border-gray-200 bg-gray-50">
                       <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                        <Button
-                          variant="outline"
-                          size="lg"
-                          onClick={handleClose}
-                          type="button"
-                        >
-                          Cancel
-                        </Button>
+                        {!nextstep && (
+                          <Button
+                            variant="outline"
+                            size="lg"
+                            onClick={handleClose}
+                            type="button"
+                          >
+                            Cancel
+                          </Button>
+                        )}
                         <Button type="submit" size="lg" variant="default">
                           {id ? "Update" : "Add"}
                         </Button>
@@ -611,7 +703,39 @@ const SheetOnBorading = ({
           </div>
         </div>
       </div>
+      {addShift && (
+        <ShiftAction
+          isOpen={addShift}
+          setIsOpen={setAddShift}
+          reload={getShiftList}
+        />
+      )}
     </>
+  );
+};
+
+const ShiftAction = ({ isOpen, setIsOpen, reload }) => {
+  const formSheetData = {
+    triggerText: null,
+    title: "Update Shift Details",
+    description: null,
+    footer: null,
+  };
+  return (
+    <SheetComponent
+      {...formSheetData}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      width="568px"
+    >
+      <AddShiftForm
+        isOpen={isOpen}
+        setIsOpen={(value) => {
+          reload();
+          setIsOpen(value);
+        }}
+      />
+    </SheetComponent>
   );
 };
 const mapStateToProps = (state) => {

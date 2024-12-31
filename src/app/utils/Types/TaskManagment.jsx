@@ -5,10 +5,12 @@ const Project = {
   start_date: moment(new Date()).format("YYYY-MM-DD"),
   end_date: moment(new Date()).format("YYYY-MM-DD"),
   project_members: [],
+  color: "", // Add color field
+  profile: null,
 };
-const AddList ={
-  name:""
-}
+const AddList = {
+  name: "",
+};
 const CardTypes = {
   name: "",
   description: "",
@@ -18,5 +20,9 @@ const CardTypes = {
   assigned_by: "",
   assigned_to: [],
   attachment: [],
+  board_id: "",
+  project_id: "",
+  task_checklist: [],
+  relation: [],
 };
 export { Project, AddList, CardTypes };

@@ -1,49 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SheetComponent from "../../../../components/ui/SheetComponent";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../../../src/@/components/ui/select";
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "../../../../src/@/components/ui/radio-group";
 import { Button } from "../../../../components/ui/button";
-import { getEarnAndDeduction } from "app/hooks/payroll";
 import { Formik } from "formik";
 import { RadioGroupInput } from "components/form-control";
 import { TextInput } from "components/form-control";
-import { DateInput } from "components/form-control";
 import { Switch } from "../../../../src/@/components/ui/switch";
 import { Label } from "../../../../src/@/components/ui/label";
 
 import { saveEarnAndDeduction } from "app/hooks/payroll";
 import { toast } from "react-toastify";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-} from "../../../../components/ui/card";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "../../../../src/@/components/ui/alert-dialog";
 import { deleteEarnAndDeduction } from "app/hooks/payroll";
-import moment from "moment";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
+import AlertDialogue from "components/ui/AlertDialogue";
+import { DetailCard } from "components/SheetCardExtension";
+import { DetailBox } from "components/SheetCardExtension";
 
 const initialEarningAndDeduction = {
   name: "",
@@ -59,10 +30,11 @@ const AddComponentSheet = ({
   reload,
   isOpen,
   setIsOpen,
-  onClose
+  onClose,
 }) => {
   const [isEdit, setIsEdit] = useState(false);
-  const [closeSheet, setCloseSheet] = useState(false)
+  const [closeSheet, setCloseSheet] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
 
   const [earnAndDeduction, setEarnAndDeduction] = useState(
     component || initialEarningAndDeduction
@@ -75,7 +47,6 @@ const AddComponentSheet = ({
     footer: null,
   };
 
-
   const handleSubmit = async (values) => {
     const response = await saveEarnAndDeduction(values);
     if (response) {
@@ -85,7 +56,7 @@ const AddComponentSheet = ({
         toast.success("Component added successfully");
       }
       setIsOpen(false);
-      setIsEdit(false)
+      setIsEdit(false);
       reload();
     }
   };
@@ -99,37 +70,41 @@ const AddComponentSheet = ({
     }
   };
 
-  const handleOpenState= ()=>{
-    if(isOpen){
-        setIsOpen(false);
-        setIsEdit(false)
+  const handleOpenState = () => {
+    if (isOpen) {
+      setIsOpen(false);
+      setIsEdit(false);
+    } else {
+      setIsOpen(true);
     }
-    else{
-        setIsOpen(true);
-    }
-    }
+  };
 
-    const handleClose = ()=>{
-      setCloseSheet(true)
-    }
-
+  const handleClose = () => {
+    setCloseSheet(true);
+  };
 
   return (
     <>
       <div>
-    {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
+        {handleCloseWithConfirmation({
+          isOpen: closeSheet,
+          setCloseSheet,
+          setIsOpen,
+        })}
         <SheetComponent
           {...formSheetData}
           contentClassName="custom-sheet-width"
           isOpen={isOpen}
           setIsOpen={handleOpenState}
-          width="500px"
+          width="568px"
         >
           {component && !isEdit ? (
             <ViewComponent
               component={component}
               handleComponentDelete={handleComponentDelete}
               setIsEdit={setIsEdit}
+              isDelete={isDelete}
+              setIsDelete={setIsDelete}
             />
           ) : (
             <ComponentForm
@@ -153,7 +128,7 @@ const ComponentForm = ({
   handleSubmit,
   setIsOpen,
   setIsEdit,
-  onClose
+  onClose,
 }) => {
   return (
     <Formik
@@ -228,7 +203,7 @@ const ComponentForm = ({
                 <div className="pt-4">
                   <div>Amount </div>
                 </div>
-                <div className="flex space-x-4 items-center">
+                <div className="flex items-center space-x-4">
                   <div className="text-zinc-900">
                     {props.values.amounts_types === "fixed"
                       ? "Flat Amount"
@@ -237,8 +212,6 @@ const ComponentForm = ({
                   <TextInput
                     value={props.values.amounts}
                     onChange={(field, value) => {
-                      console.log("Amount:", value);
-                      console.log("Field:", field);
                       props.handleChange(field)(value);
                     }}
                     name={"amounts"}
@@ -262,13 +235,8 @@ const ComponentForm = ({
               <Label htmlFor="is_active">Activate</Label>
             </div>
           </>
-          <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
-            <Button
-              variant="outline"
-              size="lg"
-              type="button"
-              onClick={onClose}
-            >
+          <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
+            <Button variant="outline" size="lg" type="button" onClick={onClose}>
               Cancel
             </Button>
             <Button type="submit" size="lg" variant="default">
@@ -281,7 +249,13 @@ const ComponentForm = ({
   );
 };
 
-const ViewComponent = ({ component, handleComponentDelete, setIsEdit }) => {
+const ViewComponent = ({
+  isDelete,
+  setIsDelete,
+  component,
+  handleComponentDelete,
+  setIsEdit,
+}) => {
   const details = [
     { label: "Amount Type", value: component.amounts_types },
     { label: "Amount Rate", value: component.amounts },
@@ -301,7 +275,7 @@ const ViewComponent = ({ component, handleComponentDelete, setIsEdit }) => {
         </div>
         <div className="flex items-center gap-2">
           <Button
-            variant="default"
+            variant="outline"
             size="sm"
             onClick={() => {
               setIsEdit(true);
@@ -309,63 +283,38 @@ const ViewComponent = ({ component, handleComponentDelete, setIsEdit }) => {
           >
             Edit
           </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="" className="">
-                Delete
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  Are you sure you want to delete this component?
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. Once deleted, the component data
-                  will be permanently removed.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleComponentDelete}>
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setIsDelete(true);
+            }}
+          >
+            Delete
+          </Button>
+          {isDelete && (
+            <AlertDialogue
+              isOpen={isDelete}
+              setIsOpen={setIsDelete}
+              handleContinue={handleComponentDelete}
+              continueText="Delete"
+              title="Are you sure you want to delete this component?"
+              description="This action cannot be undone. Once deleted, the component data
+                  will be permanently removed."
+            />
+          )}
         </div>
       </div>
-      <section className="flex flex-col pt-14 ">
-        <Card className="mt-0">
-          <CardContent className="p-6">
-            <div className="w-full font-semibold   ">Component Details</div>
-            <div className="flex items-start mt-3 max-w-full w-[285px]">
-              <div className="flex flex-col pr-20 min-w-[240px] w-[285px]">
-                {details.map((detail, index) => (
-                  <div className="flex gap-4 items-start w-full h-5  mb-4">
-                    <div className=" text-sm">{detail.label}</div>
-                    <div className="flex flex-col items-start">
-                      <div className="text-gray-900 text-sm">
-                        {detail.value}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="flex items-center px-6 pt-3.5 pb-3 w-full text-xs font-medium  border-t  max-md:px-5 ">
-            <div>
-              <span className="text-[#8b8d98] text-xs font-medium  leading-tight">
-                Created on:
-              </span>
-              <span className="text-[#8b8d98] text-xs font-normal  leading-3">
-                {` ${moment(component?.created_at).format("MMMM DD, YYYY")}`}
-              </span>
-            </div>
-          </CardFooter>
-        </Card>
-      </section>
+      <DetailCard
+        detailCardTitle="Component Details"
+        date={component?.created_at}
+        dateTitle="Created On"
+      >
+        {details.map((detail, index) => (
+          <DetailBox label={detail?.label} value={detail?.value} />
+        ))}
+      </DetailCard>
     </>
   );
 };

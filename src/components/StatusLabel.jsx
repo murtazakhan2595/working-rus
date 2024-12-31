@@ -29,33 +29,60 @@ export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
   );
 };
 
+export const jobsLabel = (value) => {
+  if (!value) return "";
+
+  let newLabel = value;
+  if (value === "Schedule 1st Interview") {
+    newLabel = "1st Interview";
+  } else if (value === "Schedule 2nd Interview") {
+    newLabel = "2nd Interview";
+  }
+  return newLabel;
+};
+
 export const StatusLabel = ({ status, value }) => {
   if (!status) {
     return "";
   }
+
+  // Assign the appropriate class name based on the status
   let className = "";
-  if (status === "Onboard") {
-    className = "bg-amber-100 text-amber-500";
-  } else if (status === "Contacted" || status === "warning-orange") {
-    className = "label-warning-FF9900";
-  } else if (status === "warning") {
-    className = "label-warning";
-  } else if (status === "Offered") {
-    className = "label-warning-D5D912";
-  } else if (status === "Rejected" || status === "Declined" || status === "Denied" ) {
-    className = "bg-red-100 text-red-500";
-  } else if (status === "Selected" || status === "Approved") {
-    className = "label-success";
-  } else if (status === "Shortlisted") {
-    className = "bg-emerald-100 text-emerald-500";
-  } else if (status === "Pending") {
-    className = "bg-neutral-300 text-neutral-1100";
-  } else {
-    className = "bg-neutral-300 text-neutral-1100";
+  switch (status) {
+    case "Onboard":
+      className = "bg-amber-100 text-amber-500";
+      break;
+    case "Contacted":
+    case "warning-orange":
+      className = "label-warning-FF9900";
+      break;
+    case "warning":
+      className = "label-warning";
+      break;
+    case "Offer Made":
+      className = "label-warning-D5D912";
+      break;
+    case "Reject":
+    case "Declined":
+    case "Denied":
+      className = "bg-red-100 text-red-500";
+      break;
+    case "Selected":
+    case "Approved":
+      className = "label-success";
+      break;
+    case "Shortlisted":
+      className = "bg-emerald-100 text-emerald-500";
+      break;
+    case "Pending":
+    default:
+      className = "bg-neutral-300 text-neutral-1100";
   }
+
+  // Render the badge with the appropriate label and style
   return (
     <Badge className={className}>
-    {value ?? status}
+      {jobsLabel(value ?? status)}
     </Badge>
   );
 };
@@ -161,28 +188,58 @@ export const StatusIcon = ({ status }) => {
 };
 
 
-export const JobStatusLabel = ({ status, value }) => {
-  if (!status) {
-    return "";
-  }
+export const JobStatusLabel = ({ label, type }) => {
+  if (!label) return "";
 
-  let className = "";
-  
-  // Set the class based on the status prop
-  if (status === "live") {
-    className = " text-white";
-  } else if (status === "closed") {
-    className = "bg-red-200 text-red-800";
-  } else {
-    className = "bg-neutral-300 text-neutral-1100";
-  }
+  const getStylesByType = () => {
+    switch (type) {
+      case 'status':
+        return {
+          bgColor: label.toLowerCase() === "open" ? "bg-green-100/50" : "bg-red-100/50",
+          dotColor: label.toLowerCase() === "open" ? "before:bg-green-500" : "before:bg-red-500",
+          textColor: label.toLowerCase() === "open" ? "text-green-700" : "text-red-700"
+        };
+      case 'employeeType':
+        return {
+          bgColor: "bg-blue-100/50",
+          dotColor: "before:bg-blue-500",
+          textColor: "text-blue-700"
+        };
+      case 'workType':
+        return {
+          bgColor: "bg-purple-100/50",
+          dotColor: "before:bg-purple-500",
+          textColor: "text-purple-700"
+        };
+      case 'workLocation':
+        return {
+          bgColor: "bg-orange-100/50",
+          dotColor: "before:bg-orange-500",
+          textColor: "text-orange-700"
+        };
+      case 'jobType':
+        return {
+          bgColor: "bg-emerald-100/50",
+          dotColor: "before:bg-emerald-500",
+          textColor: "text-emerald-700"
+        };
+      default:
+        return {
+          bgColor: "bg-gray-100/50",
+          dotColor: "before:bg-gray-500",
+          textColor: "text-gray-700"
+        };
+    }
+  };
+
+  const { bgColor, dotColor, textColor } = getStylesByType();
 
   return (
     <Badge
-     variant="secondary"
-     className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full"
+      variant="secondary"
+      className={`relative pl-5 ${bgColor} ${textColor} before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full ${dotColor}`}
     >
-      {value ?? status}
+      {label}
     </Badge>
   );
 };

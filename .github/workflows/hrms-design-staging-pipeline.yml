@@ -1,28 +1,34 @@
 name: hrms-design-staging-pipeline
 
+# Trigger configuration
 # When this action will be executed
 on:
   # Automatically trigger it when detected changes in repo
   push:
-    branches: 
+    branches:
       [ design-staging ]
     paths:
     - '**'
     - '.github/workflows/hrms-design-staging-pipeline.yml'
-
-  # Allow manual trigger 
-  workflow_dispatch:      
+env:
+      NODE_OPTIONS: "--max-old-space-size=4096"
+      CI: false
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: "--max-old-space-size=4096"
+      CI: false
     permissions: 
       id-token: write #This is required for requesting the OIDC JWT Token
       contents: read #Required when GH token is used to authenticate with private repo
 
     steps:
-      - name: Checkout to the branch
+      - name: Checkout Repository
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
 
       - name: Azure Login
         uses: azure/login@v1
@@ -31,16 +37,21 @@ jobs:
           tenant-id: ${{ secrets.HRMSDESIGNSTAGINGFE_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.HRMSDESIGNSTAGINGFE_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and push container image to registry
-        uses: azure/container-apps-deploy-action@v2
-        with:
-          appSourcePath: ${{ github.workspace }} 
-          registryUrl: hrmsacr.azurecr.io
-          registryUsername: ${{ secrets.HRMSDESIGNSTAGINGFE_REGISTRY_USERNAME }}
-          registryPassword: ${{ secrets.HRMSDESIGNSTAGINGFE_REGISTRY_PASSWORD }}
-          containerAppName: hrms-design-staging-fe
-          resourceGroup: HRMS-AZURE
-          imageToBuild: hrmsacr.azurecr.io/hrms-design-staging-fe:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
+      - name: Build Static Files
+        run: |
+          npm ci --silent
+          npm install react-scripts@5.0.1
+          npm run build
 
+      - name: Upload to Blob Storage
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob delete-batch --account-name ${{ secrets.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} --source '$web'
+            az storage blob upload-batch --account-name ${{ secrets.STORAGE_ACCOUNT_NAME }} --auth-mode key --account-key ${{ secrets.STORAGE_ACCOUNT_KEY }} --source ./build --destination '$web'
+
+      - name: Purge CDN Cache
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az cdn endpoint purge --content-paths "/*" --profile-name ${{ secrets.CDN_PROFILE_NAME }} --name ${{ secrets.CDN_ENDPOINT_NAME }} --resource-group HRMS-AZURE

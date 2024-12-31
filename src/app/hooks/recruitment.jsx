@@ -10,18 +10,28 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-export const fetchJobPosts = async (filterData, sortData) => {
-  filterData = filterData ?? {};
-  sortData = sortData && sortData === "dsc" ? "-updated_at" : "updated_at";
+const formDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+});
+
+export const fetchJobPosts = async (filterData = {}, sortData = "asc", options = { page: 1, sizePerPage: 10 }) => {
   try {
-    const response = await axios.get(
-      `${baseUrl}/recruitment/?ordering=${sortData}&search=${encodeURIComponent(
-        JSON.stringify(filterData)
-      )}`,
-      {
-        headers: headers(),
-      }
-    );
+    // Determine the sorting order
+    const ordering = sortData === "dsc" ? "-updated_at" : "updated_at";
+
+    // Prepare query parameters
+    const queryParams = new URLSearchParams({
+      ordering,
+      page: options.page,
+      page_size: options.sizePerPage,
+      search: JSON.stringify(filterData),
+    });
+
+    // Make API request
+    const response = await axios.get(`${baseUrl}/recruitment/?${queryParams}`, {
+      headers: headers(),
+    });
+
     return response.data;
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -31,6 +41,7 @@ export const fetchJobPosts = async (filterData, sortData) => {
     throw error;
   }
 };
+
 
 export const fetchJobById = async (id) => {
   try {
@@ -97,8 +108,9 @@ export const updateApplicationStatus = async (selectedApplicant, option) => {
         last_name: selectedApplicant.last_name,
         phone_number: selectedApplicant.phone_number,
         email: selectedApplicant.email,
-        cv: selectedApplicant.cv,
+        // cv: selectedApplicant.cv,
         job_id: selectedApplicant.job_id,
+        reason: selectedApplicant?.reason
       },
       {
         headers: headers(),
@@ -182,8 +194,11 @@ const getNewJobCode = async () => {
 };
 
 export const addApplication = async (values) => {
+  console.log(values, "VALUES")
   try {
-    const response = await axios.post(`${baseUrl}/candidate/`, values);
+    const response = await axios.post(`${baseUrl}/candidate/`, values,         {
+      headers: formDataHeader(),
+    });
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {

@@ -21,7 +21,7 @@ const ApplicationDetail = {
   last_name: "",
   phone_number: "",
   email: "",
-  Year_of_Experience: null,
+  experience: null,
   location: "",
   cv: null,
   country_code: null,
@@ -32,6 +32,7 @@ const ApplicationDetail = {
   availability_for_interview: null,
   application_status: "pending",
   notice_period:null,
+  attachment: null,
 };
 
 export { JobDetail, ApplicationDetail };

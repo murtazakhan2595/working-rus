@@ -9,11 +9,12 @@ import {
   locationTypeOptions,
   countryOptions,
   UserRoles,
-  workplaceTypes
+  workplaceTypes,
 } from "data/Data";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { ClaimExpenseTypeOptions } from "data/Data";
+import { ReasonForLeaving } from "data/Data";
 
 function getCountryFullName(countryCode) {
   const country = countryOptions.find((option) => option.value === countryCode);
@@ -24,7 +25,6 @@ function getEmployeeType(employeeType) {
   const response = employeeTypeOptions.find(
     (option) => option.value === employeeType
   );
-  console.log(employeeType,employeeTypeOptions,response)
   return response ? response.label : employeeType;
 }
 function UserRole({ value }) {
@@ -36,7 +36,9 @@ function getWorkType(workType) {
   return response ? response.label : workType;
 }
 function getWorkPlaceType(workPlaceType) {
-  const response = workplaceTypes.find((option) => option.value === workPlaceType);
+  const response = workplaceTypes.find(
+    (option) => option.value === workPlaceType
+  );
   return response ? response.label : workPlaceType;
 }
 function getJobType(jobType, includeAllOption = false) {
@@ -86,14 +88,40 @@ function EmployeeName({ value, length }) {
 
   return <>{displayedName}</>;
 }
+function GetUser(id) {
+  const employees = useSelector((state) => state.emp.employees_detail);
+  const employee = employees.find((option) => option.value === parseInt(id));
+  return employee ?? null;
+}
+function EmployeeProfilePicture(id) {
+  const employees = useSelector((state) => state.emp.employees_detail);
+  const employee = employees.find((option) => option.value === parseInt(id));
+  if (employee) {
+    const employeeProfilePicture = employee.profile_picture ?? null;
+    return {
+      profile_picture: employeeProfilePicture,
+      name: `${employee?.first_name} ${employee?.last_name}`,
+    };
+  } else {
+    return {
+      profile_picture: null,
+      name: `N/A`,
+    };
+  }
+}
 
 function EmployeeID({ value }) {
-  const employee = value ? `TXB-${value.toString().padStart(4, "")}` : "N/A";
+  // Ensure value is a string and validate its format
+  const employee =
+    value && typeof value === "string" && value.startsWith("TBX-")
+      ? value
+      : `TBX-${String(value || "").padStart(4, "0")}`;
+
   return <>{employee}</>;
 }
 
 function getEmployeeid(value) {
-  const employee = value ? `TXB-${value.toString().padStart(4, "0")}` : "N/A";
+  const employee = value ? `${value.toString().padStart(4, "0")}` : "N/A";
   return employee;
 }
 
@@ -109,10 +137,10 @@ function ResignationStatus(status) {
   return response ? response.label : "N/A";
 }
 function ResignationReason(value) {
-  const response = ResignationReasons.find((option) => option.value === value);
+  const response = ReasonForLeaving.find((option) => option.value === value);
   return response ? response.label : "N/A";
 }
-function TerminationReason({ value }) {
+function TerminationReason(value) {
   const reason = terminationReasonsOptions.find(
     (option) => option.value === value
   );
@@ -168,6 +196,11 @@ function getManagerName(value, managers) {
   return manager ? manager.label : "N/A";
 }
 
+function getOrganizationCountryFullName(countryCode, countryOptions) {
+  const country = countryOptions.find((option) => option.value === countryCode);
+  return country ? country.label : countryCode;
+}
+
 export {
   getCountryFullName,
   ResignationReason,
@@ -182,9 +215,11 @@ export {
   EmployeeName,
   EmployeeID,
   getEmployeeid,
+  GetUser,
   UserRole,
   ProjectName,
   TerminationStatus,
+  EmployeeProfilePicture,
   ResignationStatus,
   TerminationReason,
   getExperience,
@@ -192,4 +227,5 @@ export {
   getDepartmentName,
   getDesignationName,
   getManagerName,
+  getOrganizationCountryFullName,
 };

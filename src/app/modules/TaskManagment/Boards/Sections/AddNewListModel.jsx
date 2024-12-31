@@ -72,8 +72,10 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode, setIsOpen })
 
   return (
     <>
-     {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
-      <SheetComponent {...formSheetData} width="500px" isOpen={true}>
+     {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
+      <SheetComponent {...formSheetData}  isOpen={true}
+       width="568px"
+      >
         {isLoading ? (
           <PageLoader />
         ) : (

@@ -26,18 +26,20 @@ function ExitRequestForm({
   const formRef = React.createRef();
 
   const handleSubmit = async (data, resetForm) => {
-    // setIsLoading(true);
-    const formData = {
-      exit_category: "resignation",
-      employee_id: userDetails.id,
-      status_resignation: "pending",
-      exit_date: data.exit_date,
-      resignation_letter: data.resignation_Letter,
-      notice_period: data.notice_period,
-      exit_type: data.reason_for_leaving,
-    };
-
+    // Create a new FormData object
+    const formData = new FormData();
+  
+    // Append key-value pairs to the FormData object
+    formData.append("exit_category", "resignation");
+    formData.append("employee_id", userDetails.id);
+    formData.append("status_resignation", "pending");
+    formData.append("exit_date", data.exit_date);
+    formData.append("resignation_letter", data.resignation_Letter);
+    formData.append("notice_period", data.notice_period);
+    formData.append("exit_type", data.reason_for_leaving);
+  
     try {
+      // Send the FormData object via the employeeExit function
       const response = await employeeExit(formData);
       if (response) {
         toast.success("Request has been successfully submitted");
@@ -45,8 +47,10 @@ function ExitRequestForm({
       }
     } catch (error) {
       setLoading(false);
+      console.error("Error submitting the form:", error);
     }
   };
+  
 
   return (
     <>

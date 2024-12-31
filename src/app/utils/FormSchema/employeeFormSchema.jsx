@@ -31,9 +31,7 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   if (!values.salary_type && !isEditMode)
     errors.salary_type = "Salary type is required";
   if (!values.salary && !isEditMode) errors.salary = "Salary is required";
-  console.log(errors);
-  console.log(values)
-     return errors;
+  return errors;
 };
 
 const validationEmployeeContactInfoFormSchema = (values) => {
@@ -44,14 +42,17 @@ const validationEmployeeContactInfoFormSchema = (values) => {
     errors.emergency_relation = "Contact Relation is required";
   if (!values.emergency_phone_no)
     errors.emergency_phone_no = "Phone number is required";
-  if (!values.emergency_permanent_address) errors.emergency_permanent_address = "Permanent Address is required";
-  if (!values.emergency_current_address)
-    errors.emergency_current_address = "Current Address is required";
+  if (!values.residential_address)
+    errors.residential_address = "Permanent Address is required";
+  if (!values.current_address)
+    errors.current_address = "Current Address is required";
   return errors;
 };
 
 const validateEmployeePersonalInfoForm = (values) => {
   const errors = {};
+  if (!values.profile_picture)
+    errors.profile_picture = "Profile image is required";
   if (!values.first_name) errors.first_name = "First Name is required";
   if (!values.last_name) errors.last_name = "Last Name is required";
   if (!values.mobile_no) {
@@ -75,7 +76,7 @@ const validationEmployeeExperienceFormSchema = (values) => {
   if (values.experiences) {
     values.experiences.forEach((value, index) => {
       const experienceErrors = {};
-      if (!value.disableEndDate && !value.exp_end_date)
+      if (!value.disableEndDate && !value.exp_end_date && index !== 0)
         experienceErrors.exp_end_date = "End Date is required";
       if (!value.exp_start_date)
         experienceErrors.exp_start_date = "Start Date is required";
@@ -130,13 +131,14 @@ const validateEmployeeEducationForm = (values) => {
 
 const validateEmployeeIdentificationForm = (values) => {
   const errors = {};
-  if (!values.living_country_id_no) errors.living_country_id_no = "Living Country ID is required";
-  if (!values.place_of_issuance) errors.place_of_issuance = "Place of Issuance is required";
-  if(!values.id_issuance_date) errors.id_issuance_date = "Issuance Date is Required"
-  console.log(values)
-  console.log(errors)
-   return errors; 
-}
+  if (!values.living_country_id_no)
+    errors.living_country_id_no = "Living Country ID is required";
+  if (!values.place_of_issuance)
+    errors.place_of_issuance = "Place of Issuance is required";
+  if (!values.id_issuance_date)
+    errors.id_issuance_date = "Issuance Date is Required";
+  return errors;
+};
 const validationPersonalInfoFormSchema = Joi.object({
   first_name: Joi.string().min(3).max(40).required().label("First Name"),
   last_name: Joi.string().min(3).max(40).required().label("Last Name"),
@@ -211,6 +213,15 @@ const validationAcademicRecordSchema = Joi.object({
     .required()
     .label("Education Body"),
 });
+
+const validateExitRequestForm = (values)=>{
+  const errors = {};
+  if(!values?.exit_date) errors.exit_date = "Exit Date is required";
+  if(!values?.notice_period) errors.notice_period = "Notice Period is required";
+  if(!values?.reason_for_leaving) errors.reason_for_leaving = "Reason for Leaving is required";
+  if(!values?.resignation_Letter) errors.resignation_Letter = "Resignation letter is required"
+  return errors
+}
 
 const validationDepartmentInfoFormSchema = Joi.object({
   department_name: Joi.string().required().label("Department Name").messages({
@@ -324,4 +335,7 @@ export {
   validateEmployeeBankInformationForm,
   validateEmployeeEducationForm,
   validateEmployeeIdentificationForm,
+  validateExitRequestForm
 };
+
+

@@ -41,214 +41,255 @@ import {
 } from "app/modules/payroll";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
 import Attendance from "app/modules/Attendance";
+import MyAttendance from "app/modules/Attendance/MyAttendance";
+import EmployeeAttendance from "app/modules/Attendance/EmployeeAttendance";
 import StyleGuide from "app/modules/StyleGuide";
+import { OfficeSetting } from "app/modules/OfficeSetting";
+import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
+import AttendanceReport from "app/modules/Attendance/Sections/AttendenceFile";
 
 const SidebarRoutes = [
-	{
-	  path: "/",
-	  component: <Dashboard />,
-	  name: "Dashboard",
-	},
-	{
-	  path: "/services",
-	  component: <Services />,
-	  name: "Services",
-	},
-	Config.TASK_MANAGMENT && {
-	  path: "/projects",
-	  component: <Projects />,
-	  name: "Projects",
-	},
-	Config.TASK_MANAGMENT && {
-	  path: "/project-board/:projectId",
-	  component: <Board />,
-	  name: "Project Board",
-	},
-	Config.SELF_SERVICE_HUB && Config.PROFIL_MANAGMENT && {
-	  path: "/my-profile",
-	  component: <ViewEmployee profileView />,
-	  name: "View Employee Profile",
-	},
-	Config.TALENT_SPHERE && {
-	  path: "/edit-post/:id",
-	  component: <CreateUpdateJob />,
-	  name: "Edit Post",
-	},
-	Config.LEAVE_MANAGMENT && {
-	  path: "/leave-tracker",
-	  component: <LeaveTracker />,
-	  name: "Leave Tracker",
-	},
-	Config.PAYROLL && Config.SELF_SERVICE_HUB && {
-	  path: "/my-payroll",
-	  component: <MyPayroll />,
-	  name: "My Payroll",
-	},
-	Config.PAYROLL && {
-	  path: "/payroll/:id",
-	  component: <EmployeeSalaryDetails />,
-	  name: "Payroll Details",
-	},
-	Config.PAYROLL && {
-	  path: "/payslip/:id",
-	  component: <Payslip />,
-	  name: "Payslip",
-	},
-	Config.PAYROLL && {
-	  path: "/payslip-eos/:id",
-	  component: <Payslip />,
-	  name: "Payslip EOS",
-	},
-	Config.SELF_SERVICE_HUB && Config.EMPLOYEE_OFFBOARDING && {
-	  path: "/exit-employee",
-	  component: <EmployeesExit />,
-	  name: "Exit Employee",
-	},
-	Config.PAYROLL && Config.SELF_SERVICE_HUB && {
-	  path: "/my-claims",
-	  component: <MyClaims />,
-	  name: "My Claims",
-	},
-	Config.SELF_SERVICE_HUB && Config.LEAVE_MANAGMENT && {
-	  path: "/my-leave-tracker",
-	  component: <MyLeaveTracker />,
-	  name: "My Leave Tracker",
-	},
-	Config.DAILY_TASK_REPORT && {
-	  path: "/create-task",
-	  component: <CreateTask />,
-	  name: "Create Task",
-	},
-	Config.DAILY_TASK_REPORT && {
-	  path: "/my-dtr",
-	  component: <MyDtr />,
-	  name: "My DTR",
-	},
-	Config.PROFIL_MANAGMENT && {
-	  path: "/profile-management",
-	  component: <Employee />,
-	  name: "Profile Management",
-	},
-	Config.PROFIL_MANAGMENT && {
-	  path: "/create-employee",
-	  component: <CreateUpdateEmployee />,
-	  name: "Create Employee",
-	},
-	Config.PROFIL_MANAGMENT && {
-	  path: "/edit-employee/:id",
-	  component: <CreateUpdateEmployee />,
-	  name: "Edit Employee",
-	},
-	Config.PROFIL_MANAGMENT && {
-	  path: "/profile/:id",
-	  component: <EditEmployeeProfile />,
-	  name: "Edit Employee Profile",
-	},
-	Config.PAYROLL && {
-	  path: "/payroll",
-	  component: <EmployeesPayroll />,
-	  name: "Payroll",
-	},
-	Config.PAYROLL && {
-	  path: "/payroll/salary-setup/:id",
-	  component: <SalarySetupDetail />,
-	  name: "Salary Setup Detail",
-	},
-	Config.PAYROLL && {
-	  path: "/payroll/salary-setup-eos/:id",
-	  component: <SalarySetupDetail />,
-	  name: "Salary Setup EOS",
-	},
-	Config.PAYROLL && {
-	  path: "/payroll/create-payrun",
-	  component: <CreatePayRun />,
-	  name: "Create Payrun",
-	},
-	Config.PAYROLL && {
-	  path: "/payroll/pay-slip-details/:id",
-	  component: <PayRunDetails />,
-	  name: "Pay Slip Details",
-	},
-	Config.PAYROLL && {
-	  path: "/salary-setup",
-	  component: <SalarySetup />,
-	  name: "Salary Setup",
-	},
-	Config.PAYROLL && {
-	  path: "/pay-run",
-	  component: <PayRun />,
-	  name: "Pay Run",
-	},
-	Config.ATTENDANCE && {
-	  path: "/attendance",
-	  component: <Attendance />,
-	  name: "Attendance",
-	},
-	
-	Config.PROFIL_MANAGMENT && {
-	  path: "/user/:id",
-	  component: <ViewEmployee profileView={false} />,
-	  name: "User Profile",
-	},
-	Config.TALENT_SPHERE && Config.TS_PERSONAL_REQUISITION && {
-	  path: "/personnel-requisition",
-	  component: <ComingSoon />,
-	  name: "Personnel Requisition",
-	},
-	Config.TALENT_SPHERE && {
-	  path: "/jobs",
-	  component: <Jobs />,
-	  name: "Jobs",
-	},
-	Config.TALENT_SPHERE && {
-	  path: "/job-post",
-	  component: <CreateUpdateJob />,
-	  name: "Job Post",
-	},
-	Config.TALENT_SPHERE && {
-	  path: "/applicants/:id",
-	  component: <Applications />,
-	  name: "Applicants",
-	},
-	Config.TALENT_SPHERE && {
-	  path: "/applicants",
-	  component: <Applications />,
-	  name: "Applicants List",
-	},
-	Config.TALENT_SPHERE && Config.TS_REFERRALS && {
-	  path: "/referals",
-	  component: <ComingSoon />,
-	  name: "Referrals",
-	},
-	
-	Config.TALENT_SPHERE && Config.TS_ON_BOARDING && {
-	  path: "/on-boarding",
-	  component: <ComingSoon />,
-	  name: "Onboarding",
-	},
-	
-	Config.LEAVE_MANAGMENT && {
-	  path: "/leave-request",
-	  component: <LeaveRequests />,
-	  name: "Leave Request",
-	},
-	Config.LEAVE_MANAGMENT &&{
-	  path: "/leave-records",
-	  component: <LeaveTracker />,
-	  name: "Leave Records",
-	},
-	Config.PAYROLL && {
-	  path: "/claim-request",
-	  component: <ClaimRequest />,
-	  name: "Claim Request",
-	},
-	Config.EMPLOYEE_OFFBOARDING && {
-	  path: "/exit-clearance",
-	  component: <ExitAndClearance />,
-	  name: "Exit Clearance",
-	},
-  ].filter(Boolean); // Filter out undefined routes
-  
+  {
+    path: "/",
+    component: <Dashboard />,
+    name: "Dashboard",
+  },
+  {
+    path: "/services",
+    component: <Services />,
+    name: "Services",
+  },
+  Config.TASK_MANAGMENT && {
+    path: "/projects",
+    component: <Projects />,
+    name: "Projects",
+  },
+  Config.TASK_MANAGMENT && {
+    path: "/project-board/:projectId",
+    component: <Board />,
+    name: "Project Board",
+  },
+  Config.SELF_SERVICE_HUB &&
+    Config.PROFIL_MANAGMENT && {
+      path: "/my-profile",
+      component: <ViewEmployee profileView />,
+      name: "View Employee Profile",
+    },
+  Config.TALENT_SPHERE && {
+    path: "/edit-post/:id",
+    component: <CreateUpdateJob />,
+    name: "Edit Post",
+  },
+  Config.LEAVE_MANAGMENT && {
+    path: "/leave-tracker",
+    component: <LeaveTracker />,
+    name: "Leave Tracker",
+  },
+  Config.PAYROLL &&
+    Config.SELF_SERVICE_HUB && {
+      path: "/my-payroll",
+      component: <MyPayroll />,
+      name: "My Payroll",
+    },
+  Config.PAYROLL && {
+    path: "/payroll/:id",
+    component: <EmployeeSalaryDetails />,
+    name: "Payroll Details",
+  },
+  Config.PAYROLL && {
+    path: "/payslip/:id",
+    component: <Payslip />,
+    name: "Payslip",
+  },
+  Config.PAYROLL && {
+    path: "/payslip-eos/:id",
+    component: <Payslip />,
+    name: "Payslip EOS",
+  },
+  Config.SELF_SERVICE_HUB &&
+    Config.EMPLOYEE_OFFBOARDING && {
+      path: "/exit-employee",
+      component: <EmployeesExit />,
+      name: "Exit Employee",
+    },
+  Config.PAYROLL &&
+    Config.SELF_SERVICE_HUB && {
+      path: "/my-claims",
+      component: <MyClaims />,
+      name: "My Claims",
+    },
+  Config.SELF_SERVICE_HUB &&
+    Config.LEAVE_MANAGMENT && {
+      path: "/my-leave-tracker",
+      component: <MyLeaveTracker />,
+      name: "My Leave Tracker",
+    },
+  Config.DAILY_TASK_REPORT && {
+    path: "/create-task",
+    component: <CreateTask />,
+    name: "Create Task",
+  },
+  Config.DAILY_TASK_REPORT && {
+    path: "/my-dtr",
+    component: <MyDtr />,
+    name: "My DTR",
+  },
+  Config.PROFIL_MANAGMENT && {
+    path: "/profile-management",
+    component: <Employee />,
+    name: "Profile Management",
+  },
+  Config.PROFIL_MANAGMENT && {
+    path: "/create-employee",
+    component: <CreateUpdateEmployee />,
+    name: "Create Employee",
+  },
+  Config.PROFIL_MANAGMENT && {
+    path: "/edit-employee/:id",
+    component: <CreateUpdateEmployee />,
+    name: "Edit Employee",
+  },
+  Config.PROFIL_MANAGMENT && {
+    path: "/profile/:id",
+    component: <EditEmployeeProfile />,
+    name: "Edit Employee Profile",
+  },
+  Config.PAYROLL && {
+    path: "/payroll",
+    component: <EmployeesPayroll />,
+    name: "Payroll",
+  },
+  Config.PAYROLL && {
+    path: "/payroll/salary-setup/:id",
+    component: <SalarySetupDetail />,
+    name: "Salary Setup Detail",
+  },
+  Config.PAYROLL && {
+    path: "/payroll/salary-setup-eos/:id",
+    component: <SalarySetupDetail />,
+    name: "Salary Setup EOS",
+  },
+  Config.PAYROLL && {
+    path: "/payroll/create-payrun",
+    component: <CreatePayRun />,
+    name: "Create Payrun",
+  },
+  Config.PAYROLL && {
+    path: "/payroll/pay-slip-details/:id",
+    component: <PayRunDetails />,
+    name: "Pay Slip Details",
+  },
+  Config.PAYROLL && {
+    path: "/salary-setup",
+    component: <SalarySetup />,
+    name: "Salary Setup",
+  },
+  Config.PAYROLL && {
+    path: "/pay-run",
+    component: <PayRun />,
+    name: "Pay Run",
+  },
+  Config.ATTENDANCE && {
+    path: "/attendance",
+    component: <Attendance />,
+    name: "Attendance",
+  },
+  Config.MY_ATTENDANCE && {
+    path: "/my-attendance",
+    component: <MyAttendance />,
+    name: "My Attendance",
+  },
+  Config.ATTENDANCE && {
+    path: "/shift-calendar",
+    component: <ShiftCalendar />,
+    name: "Shift Calendar",
+  },
+
+  Config.ATTENDANCE && {
+    path: "attendance-reports",
+    component: <AttendanceReport/>,
+    name: "Attendance Report"
+  },
+
+  Config.ATTENDANCE && {
+    path: "/attendance/:id",
+    component: <EmployeeAttendance />,
+    name: "Employee Attendance",
+  },
+
+  Config.OFFICE_SETTING && {
+    path: "/office-settings",
+    component: <OfficeSetting />,
+    name: "Office Setting",
+  },
+
+  Config.PROFIL_MANAGMENT && {
+    path: "/user/:id",
+    component: <ViewEmployee profileView={false} />,
+    name: "User Profile",
+  },
+  Config.TALENT_SPHERE &&
+    Config.TS_PERSONAL_REQUISITION && {
+      path: "/personnel-requisition",
+      component: <ComingSoon />,
+      name: "Personnel Requisition",
+    },
+  Config.TALENT_SPHERE && {
+    path: "/jobs",
+    component: <Jobs />,
+    name: "Jobs",
+  },
+  Config.TALENT_SPHERE && {
+    path: "/job-post",
+    component: <CreateUpdateJob />,
+    name: "Job Post",
+  },
+  Config.TALENT_SPHERE && {
+    path: "/applicants/:id",
+    component: <Applications />,
+    name: "Applicants",
+  },
+  Config.TALENT_SPHERE && {
+    path: "/applicants",
+    component: <Applications />,
+    name: "Applicants List",
+  },
+  Config.TALENT_SPHERE &&
+    Config.TS_REFERRALS && {
+      path: "/referals",
+      component: <ComingSoon />,
+      name: "Referrals",
+    },
+
+  Config.TALENT_SPHERE &&
+    Config.TS_ON_BOARDING && {
+      path: "/on-boarding",
+      component: <ComingSoon />,
+      name: "Onboarding",
+    },
+
+  Config.LEAVE_MANAGMENT && {
+    path: "/leave-request",
+    component: <LeaveRequests />,
+    name: "Leave Request",
+  },
+  Config.LEAVE_MANAGMENT && {
+    path: "/leave-records",
+    component: <LeaveTracker />,
+    name: "Leave Records",
+  },
+  Config.PAYROLL && {
+    path: "/claim-request",
+    component: <ClaimRequest />,
+    name: "Claim Request",
+  },
+  Config.EMPLOYEE_OFFBOARDING && {
+    path: "/exit-clearance",
+    component: <ExitAndClearance />,
+    name: "Exit Clearance",
+  },
+].filter(Boolean); // Filter out undefined routes
+
 const LoginRoutes = [
   {
     path: "/create-profile",
@@ -274,12 +315,12 @@ const GeneralRoutes = [
   },
   Config.TALENT_SPHERE && {
     path: "/apply/:id",
-    component: <JobApplicationForm /> ,
+    component: <JobApplicationForm />,
     name: "Job Application Form",
   },
   Config.TALENT_SPHERE && {
     path: "/job-description/:id",
-    component:  <JobDescription /> ,
+    component: <JobDescription />,
     name: "Job Description",
   },
   {

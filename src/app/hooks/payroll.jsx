@@ -9,6 +9,10 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
+const formDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+});
+
 const getEmployeePayroll = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -441,7 +445,7 @@ const saveReimbursement = async (payload) => {
         `${baseUrl}/payroll/reimbursement/${payload.id}`,
         payload,
         {
-          headers: headers(),
+          headers: formDataHeader(),
         }
       );
       if (response.status === 201 || response.status === 200) {
@@ -452,7 +456,7 @@ const saveReimbursement = async (payload) => {
         `${baseUrl}/payroll/reimbursement/`,
         payload,
         {
-          headers: headers(),
+          headers: formDataHeader(),
         }
       );
       if (response.status === 201 || response.status === 200) {
@@ -467,9 +471,9 @@ const saveReimbursement = async (payload) => {
     return false;
   }
 }
-const getReimbursement = async (payload) => {
-  const pageNo = payload?.options?.page ?? "";
-  const pageSize = payload?.options?.sizePerPage ?? "";
+const getReimbursement = async (payload, options) => {
+  const pageNo = options?.page ?? "";
+  const pageSize = options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   console.log("payload - ", payload)
   console.log("filterData - ", filterData)

@@ -25,6 +25,7 @@ import { DateInput } from "components/form-control.jsx";
 const ClaimRequest = ({userProfile}) => {
   const [filterData, setFilterData] = useState({});
   const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedExpenseType, setSelectedExpenseType] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedClaimRequest, setSelectedClaimRequest] = useState(null);
@@ -36,6 +37,7 @@ const ClaimRequest = ({userProfile}) => {
   const [claimRequests, setClaimRequests] = useState({});
   const [filterDate, setFilterDate] = useState(null);
   const pathname = location.pathname;
+
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -52,8 +54,8 @@ const ClaimRequest = ({userProfile}) => {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    console.log("filterName", filterName);
-    console.log("filterValue", filterValue);
+    if (filterName === "status") setSelectedStatus(filterValue);
+    if (filterName === "expense_type") setSelectedExpenseType(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -69,7 +71,6 @@ const ClaimRequest = ({userProfile}) => {
 
 
   const fetchMyClaims = async () => {
-    console.log("FETCHING MY CLAIMS")
      setLoading(true);
     const payroll = await getEmployeePayroll({
       filterData: { employee_id: userProfile.id },
@@ -79,10 +80,9 @@ const ClaimRequest = ({userProfile}) => {
     if (empData) {
       setEmployeeData(empData);
     }
-    console.log("FILTERDATA", { employee_payroll: payroll?.results[0]?.id, ...filterData })
     const response = await getReimbursement({
       filterData: { employee_payroll: payroll?.results[0]?.id, ...filterData },
-    });
+    }, options);
     if (response) {
       console.log(response);
       setMyClaims(response);
@@ -103,7 +103,7 @@ const ClaimRequest = ({userProfile}) => {
     console.log("filter", filter);
     const response = await getReimbursement({
       filterData: filter,
-    });
+    }, options);
     if (response) {
       setClaimRequests(response);
     }
@@ -116,11 +116,11 @@ const ClaimRequest = ({userProfile}) => {
     } else {
       fetchClaimRequests();
     }
-  }, [filterData]);
+  }, [filterData, options]);
   useEffect(() => {
     setFilterData({})
     setFilterDate(null)
-  },[isMyClaims])
+  },[isMyClaims, options])
 const handleDeleteClaims = async () => {
   if (selectedRows.length === 0) return; // Ensure there are selected rows
 
@@ -192,6 +192,7 @@ const handleDeleteClaims = async () => {
   }
 };
 
+
   return (
     <div className="flex flex-col gap-4 salary-startup">
       {selectedClaimRequest && (
@@ -211,25 +212,9 @@ const handleDeleteClaims = async () => {
           ) : null
         }
       />
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="h-[47px] flex-col justify-center items-start inline-flex">
-              <div className="flex flex-col items-start justify-start">
-                <div className="self-stretch text-[#ab4aba] text-2xl font-medium  leading-normal">
-                  {isMyClaims ? "Reimbursment Requests" : "Requests"}
-                </div>
-              </div>
-              <div className="pt-1.5 flex-col justify-start items-start flex">
-                <div className="flex flex-col items-start justify-start">
-                  <div className="self-stretch text-[#8b8d98] text-sm font-normal  leading-[16.80px]">
-                    {isMyClaims
-                      ? "Your reimburment request status is displyed"
-                      : " All employee reimbursements are displayed"}
-                  </div>
-                </div>
-              </div>
-            </div>
+     
+          <div className="flex items-center justify-end ">
+           
             <div className="flex items-center gap-3 ">
               {selectedRows.length > 0 && (
                 <Button onClick={handleDeleteClaims}>Delete</Button>
@@ -241,6 +226,8 @@ const handleDeleteClaims = async () => {
                     option: ClaimExpenseTypeOptions,
                     name: "expense_type",
                     placeholder: "Expense Type",
+                    values: selectedExpenseType,
+                    value: selectedExpenseType
                   },
                   {
                     type: "select-two",
@@ -251,6 +238,8 @@ const handleDeleteClaims = async () => {
                     ],
                     name: "status",
                     placeholder: "Status",
+                    values: selectedStatus,
+                    value: selectedStatus
                   },
                 ]}
                 onChange={handleFilterChange}
@@ -266,8 +255,8 @@ const handleDeleteClaims = async () => {
               />
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
+        <Card>
+          <CardContent>
           {loading ? (
             <PageLoader />
           ) : isMyClaims ? (

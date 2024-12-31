@@ -1,14 +1,16 @@
 import {
   EmployeeID,
   ManagerName,
-  LeaveType,
+  GetUser,
   LeaveTypeOfEmployee,
   UserRole,
 } from "utils/getValuesFromTables";
+import { Badge } from "components/ui/badge";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions, formatNumber } from "data/Data";
 import { EmployeeNameInfo, StatusLabel } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
+import { EmployeeAttendenceHistoryActions } from "app/modules/Attendance/EmployeeAttendance/Section";
 // import {
 //   Status,
 //   RenderStatus,
@@ -16,7 +18,7 @@ import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActio
 //   RenderLeaveAction,
 // } from "app/modules/LeaveManagment/Sections";
 import moment from "moment";
-import { IoIosArrowDown } from "react-icons/io";
+import { renderDate } from "utils/renderValues";
 import { downloadCV } from "app/hooks/recruitment";
 import { AiOutlineDownload } from "react-icons/ai";
 import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExitTableAction";
@@ -34,65 +36,8 @@ import { Switch } from "../../../src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
 import { Clock, Download } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
+import { CalculateHoursWorked,EmployeeAttendenceActions } from "app/modules/Attendance/Sections";
 import { MembersList } from "app/modules/TaskManagment/Sections";
-
-
-/**
- * LeaveHistoryColumns
- *
- * Returns an array of column definitions for the Leave History table.
- *
- * @param {function} updateLeaveType - A function to update the leave type.
- * @returns {array} An array of column definitions.
- */
-// export const LeaveHistoryColumns = (updateLeaveType) => [
-//   {
-//     dataField: "name",
-//     text: "Employees",
-//     formatter: (cell, row) => (
-//       <EmployeeNameInfo
-//         name={`${row.first_name} ${row.last_name}`}
-//         department={row.department_name}
-//         position={row.department_position}
-//       />
-//     ),
-//   },
-//   {
-//     dataField: "id",
-//     text: "ID",
-//     formatter: (cell, row) => <EmployeeID value={cell} />,
-//   },
-//   {
-//     dataField: "direct_report",
-//     text: "Report To",
-//     formatter: (cell, row) => <ManagerName value={cell} />,
-//   },
-//   {
-//     dataField: "leaveTypes",
-//     text: "Leaves Type",
-//     formatter: (cell, row) => (
-//       <RenderLeaveType row={row} updateLeaveType={updateLeaveType} />
-//     ),
-//   },
-//   {
-//     dataField: "allotedLeaves",
-//     text: "Leaves Alloted",
-//   },
-//   {
-//     dataField: "usedLeaves",
-//     text: "Leaves Used",
-//   },
-//   {
-//     dataField: "remainingLeaves",
-//     text: "Remaining Leaves",
-//   },
-//   {
-//     dataField: "",
-//     text: "",
-//     formatter: (cell) => <IoIosArrowDown className="cursor-pointer" />,
-//     roWExpandOnClick: true,
-//   },
-// ];
 /**
  * EmployeeColumns
  *
@@ -102,9 +47,9 @@ import { MembersList } from "app/modules/TaskManagment/Sections";
  */
 export const EmployeeColumns = [
   {
-    dataField: "id",
+    dataField: "serial_number",
     text: "ID",
-    formatter: (cell) => <EmployeeID value={cell} />,
+    formatter: (cell, row) => <EmployeeID value={cell || row?.id} />,
   },
   {
     dataField: "name",
@@ -241,15 +186,17 @@ export const ExitRequestColumns = (
       text: "Application",
       formatter: (cell, row) => (
         <>
-          {row?.resignation_letter ? (
-            <div className="justify-start items-center gap-2.5 inline-flex">
+          {row?.termination_letter ? (
+            <a
+              className="justify-start items-center gap-2.5 inline-flex"
+              href={row.termination_letter}
+              target="_blank"
+              download
+            >
               <div className="text-[#5c5e64] text-base font-normal">File</div>
-              <button
-                onClick={() => filebase64Download(row?.resignation_letter)}
-              >
-                <AiOutlineDownload />
-              </button>
-            </div>
+
+              <AiOutlineDownload />
+            </a>
           ) : (
             "N/A"
           )}
@@ -316,16 +263,16 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
       formatter: (cell, row) => (
         <>
           {row?.resignation_letter ? (
-            <div className="justify-start items-center gap-2.5 inline-flex">
+            <a
+              className="justify-start items-center gap-2.5 inline-flex"
+              href={row.resignation_letter}
+              target="_blank"
+              download
+            >
               <div className="text-[#5c5e64] text-base font-normal">File</div>
-              <button
-                onClick={() =>
-                  filebase64Download(row?.resignation_letter, row?.emp_name)
-                }
-              >
-                <AiOutlineDownload />
-              </button>
-            </div>
+
+              <AiOutlineDownload />
+            </a>
           ) : (
             "N/A"
           )}
@@ -361,41 +308,26 @@ export const AllJobApplicationColumns = (
     dataField: "first_name",
     text: "Candidate",
     formatter: (cell, row) => (
-        <EmployeeNameInfo
-          name={`${cell} ${row?.last_name}`}
-          date={row?.email}
-          department={false}
-        />
+      <EmployeeNameInfo
+        name={`${cell} ${row?.last_name}`}
+        date={row?.email}
+        department={false}
+      />
     ),
     onClick: (index, list) => {
       setViewApplicationDetails({ index, list });
-      setIsViewApplicationDetailOpen(true)
+      setIsViewApplicationDetailOpen(true);
     },
   },
-  // {
-  //   dataField: "phone_number",
-  //   text: "Phone",
-  //   formatter: (cell, row) => (
-  //     <>
-  //       <div className="text-base ">{cell || ""}</div>
-  //       {/* <div className="text-base ">{row.email || ""}</div> */}
-  //     </>
-  //   ),
-  // },
-  // {
-  //   dataField: "current_salary",
-  //   text: "Current Salary",
-  //   formatter: (cell) => <>{formatNumber(cell)}</>,
-  // },
   {
     dataField: "updated_at",
     text: "Applied On",
     formatter: (cell) => <>{moment(cell).format("MMM D, YYYY")}</>,
   },
   {
-    dataField:"Year_of_Experience",
-    text:"Experience",
-    formatter:(cell)=> <p>{cell} Years</p>
+    dataField: "Year_of_Experience",
+    text: "Experience",
+    formatter: (cell) => <p>{cell} Years</p>,
   },
   {
     dataField: "expected_salary",
@@ -412,9 +344,11 @@ export const AllJobApplicationColumns = (
           <span title={row?.cv} className="text-base text-baseGray">
             File
           </span>
-          <button onClick={() => downloadCV(row?.cv, row?.first_name)}>
-            <AiOutlineDownload />
-          </button>
+          <a href={row?.cv} target="_blank" rel="noopener noreferrer">
+            <button>
+              <AiOutlineDownload />
+            </button>
+          </a>
         </div>
       </>
     ),
@@ -438,83 +372,6 @@ export const AllJobApplicationColumns = (
     ),
   },
 ];
-
-// export const AllLeavesApplicationColumns = (reload, userRole) => {
-//   const columns = [
-//     {
-//       dataField: "employee_id",
-//       text: "Employees",
-//       // formatter: (cell, row) => (
-//       //   <EmployeeNameInfo
-//       //     name={`${row.name}`}
-//       //     department={row.department_name}
-//       //     position={row.position}
-//       //   />
-//       // ),
-//     },
-//     {
-//       dataField: "employee_id",
-//       text: "ID",
-//       formatter: (cell, row) => <EmployeeID value={cell} />,
-//     },
-//     {
-//       dataField: "report_to",
-//       text: "Report To",
-//       formatter: (cell, row) => <ManagerName value={cell} />,
-//     },
-//     {
-//       dataField: "leave_component_name",
-//       text: "Leave Type",
-//     },
-//     {
-//       dataField: "total_leave",
-//       text: "No. of Leaves",
-//     },
-//     {
-//       dataField: "start_date",
-//       text: "Start Date",
-//       formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
-//     },
-//     {
-//       dataField: "end_date",
-//       text: "End Date",
-//       formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
-//     },
-//     {
-//       dataField: "status_hr",
-//       text: "Status",
-//       formatter: (cell) => <StatusLabel status={Status(cell)} />,
-//     },
-//     {
-//       dataField: "",
-//       text: "",
-//       formatter: (cell, row) => <RenderStatus row={row} />,
-//     },
-//   ];
-//   if (userRole === 1 || userRole === 3) {
-//     columns.push({
-//       dataField: "action",
-//       text: "Action",
-//       formatter: (cell, row) => <RenderLeaveAction row={row} reload={reload} />,
-//     });
-//   }
-
-//   return columns;
-// };
-
-// export const LeaveAllotmentColumns = (reload) => [
-//   {
-//     dataField: "employee_id",
-//     text: "",
-//     formatter: (cell, row, list) => (
-//       <RenderEmployeesLeaveAllotement
-//         employee={row}
-//         employeeList={list}
-//         reload={reload}
-//       />
-//     ),
-//   },
-// ];
 
 export const ExitTerminatedColumns = [
   {
@@ -540,7 +397,7 @@ export const ExitResignedColumns = [
 
 export const EmployeePayrollColumns = [
   {
-    dataField: "employee",
+    dataField: "serial_number",
     text: "ID",
     formatter: (cell) => <EmployeeID value={cell} />,
   },
@@ -551,7 +408,7 @@ export const EmployeePayrollColumns = [
       <EmployeeDataInfo
         name={cell}
         email={row.work_email}
-        src={row?.profile_picture?.file}
+        src={row?.profile_picture}
       />
     ),
   },
@@ -676,7 +533,7 @@ export const SalaryComponentColumns = (onCheckedChange) => [
 
 export const SalarySetupColumns = [
   {
-    dataField: "id",
+    dataField: "serial_number",
     text: "ID",
     formatter: (cell) => <EmployeeID value={cell} />,
   },
@@ -732,7 +589,7 @@ export const SalarySetupColumns = [
 
 export const ClaimRequestColumns = [
   {
-    dataField: "employeeid",
+    dataField: "serial_number",
     text: "ID",
     formatter: (cell) => <EmployeeID value={cell} />,
   },
@@ -760,22 +617,17 @@ export const ClaimRequestColumns = [
   {
     dataField: "attachment",
     text: "Receipt",
-    formatter: (cell, row) =>
-      cell?.file ? (
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            filebase64Download(cell);
-          }}
-        >
-          <div className="items-center gap-2 inline-flex cursor-pointer">
-            <Download size={16} color="#ab4aba" />
-            <div className="text-[#ab4aba] text-sm font-medium">Receipt</div>
-          </div>
-        </div>
-      ) : (
-        "No Attachment"
-      ),
+    formatter: (cell) => (
+      <>
+        {cell ? (
+          <a href={cell} target="_blank" rel="noopener noreferrer">
+            View Receipt
+          </a>
+        ) : (
+          "No Attachment"
+        )}
+      </>
+    ),
   },
 
   {
@@ -872,22 +724,17 @@ export const MyClaimsRequestColumns = [
   {
     dataField: "attachment",
     text: "Receipt",
-    formatter: (cell, row) =>
-      cell?.file ? (
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-            filebase64Download(cell);
-          }}
-        >
-          <div className="items-center gap-2 inline-flex cursor-pointer">
-            <Download size={16} color="#ab4aba" />
-            <div className="text-[#ab4aba] text-sm font-medium">Receipt</div>
-          </div>
-        </div>
-      ) : (
-        "No Attachment"
-      ),
+    formatter: (cell) => (
+      <>
+        {cell ? (
+          <a href={cell} target="_blank" rel="noopener noreferrer">
+            View Receipt
+          </a>
+        ) : (
+          "No Attachment"
+        )}
+      </>
+    ),
   },
   {
     dataField: "status",
@@ -1031,10 +878,6 @@ export const LeaveRecordColumns = [
     formatter: (cell) => <DepartmentName value={cell} />,
   },
   {
-    dataField: "total_allotted",
-    text: "Total Alloted",
-  },
-  {
     dataField: "used_leaves",
     text: "Total Used",
   },
@@ -1101,7 +944,11 @@ export const LeaveAplicationColumns = [
     dataField: "",
     text: "Department",
     formatter: (cell, row) => (
-      <><DepartmentName value={row?.leave_request?.employee_info?.department_name}/></>
+      <>
+        <DepartmentName
+          value={row?.leave_request?.employee_info?.department_name}
+        />
+      </>
     ),
   },
   {
@@ -1145,5 +992,129 @@ export const LeaveAplicationColumns = [
           : "Pending"}
       </span>
     ),
+  },
+];
+
+/**
+ * Attendance History
+ *
+ * Returns an array of column definitions for the Employee table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const MyAttendanceHistoryColumns = [
+  {
+    dataField: "date",
+    text: "Data",
+    formatter: (cell) => <>{`${renderDate(cell)}`}</>,
+  },
+  {
+    dataField: "checkin",
+    text: "Check In",
+
+    formatter: (cell) => <>{`${moment(cell).format("hh:mm A")}`}</>,
+  },
+
+  {
+    dataField: "checkout",
+    text: "Check Out",
+    formatter: (cell) => (
+      <>{`${cell ? moment(cell).format("hh:mm A") : "Working"}`}</>
+    ),
+  },
+  {
+    dataField: "break_duration",
+    text: "Break",
+    formatter: (cell) => <>{`${cell} hrs`}</>,
+  },
+  {
+    dataField: "overtime_hours",
+    text: "Overtime",
+    formatter: (cell) => <>{`${cell} hrs`}</>,
+  },
+  {
+    dataField: "payable_hours",
+    text: "Productivity",
+    formatter: (cell, row) => (
+      <>{`${
+        parseFloat(row.total_hours) + parseFloat(row.overtime_hours)
+      } hrs`}</>
+    ),
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell) => <StatusLabel status={cell} />,
+  },
+  {
+    dataField: "",
+    text: "Actions",
+    formatter: (cell, row) => <EmployeeAttendenceHistoryActions row={row} />,
+  },
+];
+
+/**
+ * EmployeeColumns
+ *
+ * Returns an array of column definitions for the Employee table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const EmployeesAttendanceColumns = [
+  {
+    dataField: "employee_id",
+    text: "Employees",
+    formatter: (cell, row) => (
+      <EmployeeNameInfo id={cell} showId showPosition />
+    ),
+  },
+
+  {
+    dataField: "is_late",
+    text: "",
+    formatter: (cell, row) => cell === true && <Badge variant='error'>Late</Badge>,
+  },
+  {
+    dataField: "employee_id",
+    text: "Department",
+    formatter: (cell) => {
+      const user = GetUser(cell);
+      if (!user) return "";
+      return (
+        <>
+          <DepartmentName value={user?.department_name} />
+        </>
+      );
+    },
+  },
+  {
+    dataField: "checkin",
+    text: "Check In",
+    formatter: (cell, row) => (
+      <div>
+        <div>{`${moment(cell).format("hh:mm A")}`}</div>
+        <div>{`${
+          row.checkout ? moment(row.checkout).format("hh:mm A") : "Working"
+        }`}</div>
+      </div>
+    ),
+  },
+  {
+    dataField: "checkout",
+    text: "Hours",
+    formatter: (cell, row) => {
+      const hours = CalculateHoursWorked([row]);
+      return <>{`${hours.totalWorkedHours}hr`}</>;
+    },
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell) => <StatusLabel status={cell} />,
+  },
+  {
+    dataField: "",
+    text: "Actions",
+    formatter: (cell, row) => <EmployeeAttendenceActions row={row} />,
   },
 ];

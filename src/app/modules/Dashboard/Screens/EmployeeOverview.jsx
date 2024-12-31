@@ -38,6 +38,7 @@ export default function Component() {
   const fetchData = async () => {
     try {
       const response = await getEmployeeCustomList();
+      console.log(response, "HELLO KASHIF")
       setEmployeeData({
         total: response?.count || 0,
         active: response?.ActiveEmployee || 0,
@@ -47,6 +48,8 @@ export default function Component() {
       console.error(err);
     }
   };
+
+  console.log(employeeData?.active, "TOTAL EMPLOYEE")
 
   useEffect(() => {
     fetchData();
@@ -77,8 +80,8 @@ export default function Component() {
     },
   ];
 
-  const totalEmployees = chartData[0].active + chartData[0].offboarding;
-
+  const totalEmployees = Number(chartData[0].active + chartData[0].offboarding);
+console.log(userProfile);
   return (
     <Card className="flex flex-col min-h-[442px]">
       <CardHeader className="items-start pb-0">
@@ -86,9 +89,9 @@ export default function Component() {
           <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
             Total Employees
           </div>
-          <Button variant="outline" className="">
+          { (userProfile.role===1 || userProfile.role===3)&&<Button variant="outline" className="">
             <Link to="/profile-management">View Details</Link>
-          </Button>
+          </Button>}
         </CardTitle>
         <CardDescription className="text-slate-900">
           {/* January - June 2024 */}
@@ -109,18 +112,22 @@ export default function Component() {
               cursor={false} 
               content={({ payload }) => {
                 if (payload && payload.length > 0) {
-                  const dataKey = payload[0].dataKey;
-                  const value = payload[0].value;
-                  const label = chartConfig[dataKey]?.label || dataKey;
                   return (
                     <div className="p-2 bg-white border rounded shadow">
-                      <p className="flex items-center text-neutral-1100">
-                        <span 
-                          className="inline-block w-2 h-2 mr-2 rounded-full"
-                          style={{ backgroundColor: payload[0].fill }}
-                        />
-                        {label}: {value}
-                      </p>
+                      {payload.map((entry, index) => {
+                        const dataKey = entry.dataKey;
+                        const value = entry.value;
+                        const label = chartConfig[dataKey]?.label || dataKey;
+                        return (
+                          <p key={index} className="flex items-center text-neutral-1100">
+                            <span 
+                              className="inline-block w-2 h-2 mr-2 rounded-full"
+                              style={{ backgroundColor: entry.fill }}
+                            />
+                            {label}: {value}
+                          </p>
+                        );
+                      })}
                     </div>
                   );
                 }
@@ -138,7 +145,7 @@ export default function Component() {
                           y={(viewBox.cy || 0) - 16}
                           className="text-2xl font-bold fill-foreground"
                         >
-                          {totalEmployees.toLocaleString()}
+                          {employeeData?.total}
                         </tspan>
                         <tspan
                           x={viewBox.cx}

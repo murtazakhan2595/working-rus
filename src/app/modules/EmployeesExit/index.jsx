@@ -61,14 +61,14 @@ console.log("termination", termination);
             <TabsList className="flex justify-center mb-4">
               <TabsTrigger
                 value="exit-request"
-                className="data-[state=active]:bg-plum-500 w-fit data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
-              >
+                className="data-[state=active]:bg-primary-200 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                >
                 Exit Request
               </TabsTrigger>
               <TabsTrigger
                 value="termination-letter"
-                className="data-[state=active]:bg-plum-500 w-fit data-[state=active]:text-plum-900 rounded-full data-[state-active]:font-medium"
-              >
+                className="data-[state=active]:bg-primary-200 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                 >
                 Termination Letter
               </TabsTrigger>
             </TabsList>
@@ -104,7 +104,7 @@ console.log("termination", termination);
                     isTermination={true}
                   />
                 ) : (
-                  <div className="w-full h-96 bg-white flex items-center justify-center text-3xl ">
+                  <div className="flex items-center justify-center w-full text-3xl bg-white h-96 ">
                     <div>No Termination Letter</div>
                   </div>
                 )}

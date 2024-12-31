@@ -9,7 +9,7 @@ export const SheetCardExtension = ({ title, children, className }) => {
   return (
     <div className={`font-[inter] ${className} flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900`}>
       <div className="flex h-[7px] flex-shrink-0 items-end px-px">
-        <div className="text-zinc-950">{title}</div>
+        <div className="text-plum-900">{title}</div>
       </div>
       {children}
     </div>
@@ -31,7 +31,7 @@ export const DetailCard = ({
   detailCardTitle,
   children,
   date,
-  dateTitle="Sent on:",
+  dateTitle="Sent on",
   classNames=""
 }) => {
   return (
@@ -47,7 +47,7 @@ export const DetailCard = ({
           <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
             <div>
               <span className="text-[#8b8d98] text-xs font-medium  leading-tight">
-                {dateTitle}
+                {dateTitle}:
               </span>
               <span className="text-[#8b8d98] text-xs font-normal  leading-3">
               {` ${moment(date).format(
@@ -61,25 +61,35 @@ export const DetailCard = ({
     </div>
   );
 };
-
-export const DisplayFile = ({ firstName, lastName, file, onDownload })=>{
-  return(
+export const DisplayFile = ({ firstName, lastName, file, onDownload }) => {
+  return (
     <div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-2 max-w-64 px-4 border border-[#f0f0f3] flex justify-between items-center gap-4">
-    <div className="flex gap-x-3 items-center">
-      <Paperclip size={16} />
-      <div className="flex flex-col">
-      <p className="text-sm text-[#323333]">
-        {firstName} {lastName}
-      </p>
-      <p>{getFileSizeInKB(file)}KB</p>
+      <div className="flex gap-x-3 items-center">
+        <Paperclip size={16} />
+        <div className="flex flex-col">
+          <p className="text-sm text-[#323333] font-medium">
+            {firstName} {lastName}
+          </p>
+          {/* <p className="text-xs text-gray-500">
+            {getFileSizeInKB(file)} KB
+          </p> */}
+        </div>
+      </div>
+      <div className="flex gap-2">
+        {/* View CV Button */}
+        <a
+          href={file}
+          target="_blank"
+          rel="noopener noreferrer"
+          className=" text-sm"
+        >
+          Download
+        </a>
       </div>
     </div>
-    <Button variant="link" onClick={() => onDownload(file, `${firstName} ${lastName}`)}>
-      Download
-    </Button>
-  </div>
-  )
-}
+  );
+};
+
 
 export const DisplayButton = ({handlePrevious, handleNext})=>{
   return(
@@ -90,7 +100,7 @@ export const DisplayButton = ({handlePrevious, handleNext})=>{
   )
 }
 
-export const handleCloseWithConfirmation = (isOpen, setCloseSheet, setIsOpen, setNewAttachment) => {
+export const handleCloseWithConfirmation = ({isOpen, setCloseSheet, setIsOpen, setNewAttachment, ...props}) => {
   return (
     isOpen && (
       <AlertDialogue
@@ -105,6 +115,9 @@ export const handleCloseWithConfirmation = (isOpen, setCloseSheet, setIsOpen, se
           setIsOpen(false);
           if (setNewAttachment) {
             setNewAttachment(null);
+          }
+          if(props?.discard && props?.navigate){
+            props?.navigate('/profile-management')
           }
         }}
       />

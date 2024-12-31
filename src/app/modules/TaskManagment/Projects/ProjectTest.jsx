@@ -84,7 +84,7 @@ const Projects = ({ userProfile }) => {
 
   return (
     <div>
-      <Header content={<CreateEditProject />} />
+      {/* <Header content={<CreateEditProject />} /> */}
       {isLoading ? (
         <PageLoader />
       ) : (

@@ -3,24 +3,12 @@ import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
+ 
 } from "../../../../components/ui/card";
 import { FilterInput } from "components/form-control.jsx";
 import CustomTable from "components/CustomTable";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../../../src/@/components/ui/table";
-import ApplyLeaveSheet from "../Sections/ApplyLeaveSheet";
-import { getLeaves } from "app/hooks/leaveTracker";
 import { connect } from "react-redux";
-import moment from "moment";
+
 import ViewLeaveSheet from "../Sections/ViewLeaveSheet";
 import { PageLoader } from "components";
 import { getLeavestats } from "app/hooks/leaveTracker";
@@ -30,6 +18,9 @@ import {
 } from "app/hooks/leaveTracker";
 import { LeaveAplicationColumns } from "app/utils/Types/TableColumns";
 import { LeaveTrackerOptions } from "data/Data";
+import { Header } from "components";
+import Stats from "../../../../components/ui/Stats";
+import { UserRoundCheck, UsersRound } from "lucide-react";
 
 const LeaveRequests = ({ userProfile, departments }) => {
   const [selectedLeaveApplication, setSelectedLeaveApplication] =
@@ -41,6 +32,9 @@ const LeaveRequests = ({ userProfile, departments }) => {
   const [leaveTransaction, setLeaveTransaction] = useState();
   const [isLeaveTransactionLoading, setIsLeaveTransactionLoading] =
     useState(true);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedLeaveType, setSelectedLeaveType] = useState("");
 
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
 
@@ -58,27 +52,31 @@ const LeaveRequests = ({ userProfile, departments }) => {
   };
 
   const [LeaveTrackerStats, setLeaveTrackerStats] = useState([
-    { title: "Total Applications", value: 0 },
-    { title: "Pending Requests", value: 0 },
-    { title: "Accepted Requests", value: 0 },
+    { label: "Total Applications", value: 0, icon: UsersRound },
+    { label: "Pending Requests", value: 0, icon: UserRoundCheck },
+    { label: "Accepted Requests", value: 0, icon: UserRoundCheck },
   ]);
-  console.log("leavesTypedata", leaveTypesData);
+
+  
   const fetchData = async () => {
     setLoading(true);
     const statsData = await getLeavestats({});
     if (statsData) {
       setLeaveTrackerStats([
         {
-          title: "Total Applications",
+          label: "Total Applications",
           value: statsData?.total_applications,
+          icon: UsersRound
         },
         {
-          title: "Pending Requests",
+          label: "Pending Requests",
           value: statsData?.pending_applications,
+          icon: UserRoundCheck
         },
         {
-          title: "Accepted Requests",
+          label: "Accepted Requests",
           value: statsData?.accepted_applications,
+          icon: UserRoundCheck
         },
       ]);
     }
@@ -115,7 +113,11 @@ const LeaveRequests = ({ userProfile, departments }) => {
   }, [filterData, options]);
 
   const handleFilterChange = (filterName, filterValue) => {
+    
     onPageChange("page", 1);
+    if (filterName === "departmentt") setSelectedDepartment(filterValue);
+    if (filterName === "status") setSelectedStatus(filterValue);
+    if (filterName === "leave_component_id") setSelectedLeaveType(filterValue); 
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
 
@@ -148,37 +150,9 @@ const LeaveRequests = ({ userProfile, departments }) => {
         <PageLoader />
       ) : (
         <div className="flex flex-col gap-4">
-          <div className="flex flex-wrap gap-10 justify-between items-center h-9">
-            <div className="flex-col justify-start items-start inline-flex">
-              <div className="text-black text-3xl font-semibold">
-                Leave Requests
-              </div>
-            </div>
-          </div>
+          <Header />
           <div className="p-6">
-            <section className="flex flex-wrap gap-4 items-center">
-              {LeaveTrackerStats.map((item, index) => (
-                <React.Fragment key={item.title}>
-                  <div className="flex-1 shrink min-w-[240px]">
-                    <div className="pb-2">
-                      <h2 className="text-sm font-medium tracking-tight leading-none text-neutral-800">
-                        {item.title}
-                      </h2>
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold leading-tight text-fuchsia-700">
-                        {item.value}
-                      </p>
-                    </div>
-                  </div>
-                  {index < LeaveTrackerStats.length - 1 && (
-                    <div className="relative">
-                      <div className="w-[70px] h-[1px]  rotate-90 border border-[#deade2] absolute top-0 right-[55px]"></div>
-                    </div>
-                  )}
-                </React.Fragment>
-              ))}
-            </section>
+            <Stats stats={LeaveTrackerStats} />
           </div>
           <div className="self-end">
             <FilterInput
@@ -189,6 +163,8 @@ const LeaveRequests = ({ userProfile, departments }) => {
                   name: "departmentt",
                   width: "max-w-[130px]",
                   placeholder: "Department",
+                  values: selectedDepartment,
+                  value: selectedDepartment
                 },
                 {
                   type: "select-two",
@@ -196,6 +172,8 @@ const LeaveRequests = ({ userProfile, departments }) => {
                   name: "status",
                   width: "max-w-[130px]",
                   placeholder: "Status",
+                  values: selectedStatus,
+                  value: selectedStatus
                 },
                 {
                   type: "select-three",
@@ -206,6 +184,8 @@ const LeaveRequests = ({ userProfile, departments }) => {
                   })),
                   name: "leave_component_id",
                   placeholder: "Leave Type",
+                  values: selectedLeaveType,
+                  value: selectedLeaveType
                 },
               ]}
               onChange={handleFilterChange}

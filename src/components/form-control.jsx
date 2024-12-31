@@ -2,21 +2,24 @@ import React, { useState, useEffect, useRef } from "react";
 // import Select from "react-select";
 import { Label } from "../src/@/components/ui/label";
 import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
+import { getFileNameFromURL } from "utils/downUtils";
 import moment from "moment";
+import { Card } from "components/ui/card";
 import upload from "../assets/images/upload.png";
 import ReactQuill from "react-quill";
 import CheckboxMenu from "./SortingFilters";
 import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
-import {  Calendar as LucideCalendar } from "lucide-react";
-
+import { Button } from "components/ui/button";
+import { useSelector } from "react-redux";
+import { Calendar as LucideCalendar } from "lucide-react";
+import { AiOutlinePaperClip } from "react-icons/ai";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "../src/@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "../src/@/components/ui/radio-group";
+import AttachmentUI from "components/ui/AttachmentUI";
 
 import {
   ChevronsUpDown,
@@ -63,7 +66,6 @@ const SelectComponent = ({
     setOpen(false);
     onChange(name, newValue);
   };
-
   return (
     <div className={`${classes || "flex flex-col gap-4"}`}>
       <Label className={` ${value ? "" : ""}`} htmlFor={name}>
@@ -79,7 +81,7 @@ const SelectComponent = ({
             disabled={disabled}
           >
             {value ? (
-              options.find((option) => option.value === value)?.label
+              options.find((option) => option.value == value)?.label
             ) : (
               <span className="text-sm font-normal text-neutral-1000">
                 {placeholder || `Select`}
@@ -129,7 +131,7 @@ const SelectMultiInputComponent = ({
   label,
   onChange,
   required,
-  classes
+  classes,
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -191,7 +193,10 @@ const SelectMultiInputComponent = ({
         </PopoverTrigger>
         <PopoverContent className="w-[300px] p-0">
           <Command>
-            <CommandInput placeholder="Search options..." className="text-sm font-normal text-neutral-600"/>
+            <CommandInput
+              placeholder="Search options..."
+              className="text-sm font-normal text-neutral-900"
+            />
             <CommandList>
               <CommandEmpty>No options found.</CommandEmpty>
               <CommandGroup>
@@ -234,13 +239,13 @@ const DateInput = ({
   placeholder,
 }) => {
   const [date, setDate] = useState(
-    value && isValid(parse(value, "yyyy-MM-dd", new Date())) 
-      ? parse(value, "yyyy-MM-dd", new Date()) 
+    value && isValid(parse(value, "yyyy-MM-dd", new Date()))
+      ? parse(value, "yyyy-MM-dd", new Date())
       : null
   );
   const [inputValue, setInputValue] = useState(
-    value && isValid(parse(value, "yyyy-MM-dd", new Date())) 
-      ? format(parse(value, "yyyy-MM-dd", new Date()), "dd/MM/yyyy") 
+    value && isValid(parse(value, "yyyy-MM-dd", new Date()))
+      ? format(parse(value, "yyyy-MM-dd", new Date()), "dd/MM/yyyy")
       : ""
   );
   const [calendarDate, setCalendarDate] = useState(date || new Date());
@@ -314,7 +319,9 @@ const DateInput = ({
             ) : (
               <div className="flex items-center gap-2">
                 <LucideCalendar size={16} />
-                <div className="text-sm font-normal text-neutral-600">{placeholder ? placeholder : "Pick a date"}</div>
+                <div className="text-sm font-normal text-neutral-600">
+                  {placeholder ? placeholder : "Pick a date"}
+                </div>
               </div>
             )}
           </Button>
@@ -343,6 +350,130 @@ const DateInput = ({
           </div>
         </PopoverContent>
       </Popover>
+      {error && touch && <div className="text-red-600">{error}</div>}
+    </div>
+  );
+};
+
+const DateRangeInput = ({
+  name,
+  value,
+  error,
+  touch,
+  onChange,
+  label,
+  disabled,
+  required,
+  minDate,
+  className,
+  placeholder,
+}) => {
+  const [date, setDate] = useState(
+    value && isValid(parse(value, "yyyy-MM-dd", new Date()))
+      ? parse(value, "yyyy-MM-dd", new Date())
+      : null
+  );
+  const [inputValue, setInputValue] = useState(
+    value && isValid(parse(value, "yyyy-MM-dd", new Date()))
+      ? format(parse(value, "yyyy-MM-dd", new Date()), "dd/MM/yyyy")
+      : ""
+  );
+  const [calendarDate, setCalendarDate] = useState(date || new Date());
+
+  // Sync the input field and calendar when the value changes externally
+  useEffect(() => {
+    if (value) {
+      const parsedDate = parse(value, "yyyy-MM-dd", new Date());
+      if (isValid(parsedDate)) {
+        setDate(parsedDate);
+        setInputValue(format(parsedDate, "dd/MM/yyyy"));
+        setCalendarDate(parsedDate);
+      } else {
+        resetFields();
+      }
+    } else {
+      resetFields();
+    }
+  }, [value]);
+
+  const resetFields = () => {
+    setDate(null);
+    setInputValue("");
+    setCalendarDate(new Date());
+    onChange(name, ""); // Reset the form value
+  };
+
+  // Handle manual input changes and sync with calendar
+  const handleInputChange = (values) => {
+    const { formattedValue } = values;
+    setInputValue(formattedValue);
+
+    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+    if (dateRegex.test(formattedValue)) {
+      const parsedDate = parse(formattedValue, "dd/MM/yyyy", new Date());
+      if (isValid(parsedDate)) {
+        setDate(parsedDate);
+        setCalendarDate(parsedDate); // Sync with the calendar
+        onChange(name, format(parsedDate, "yyyy-MM-dd"));
+      }
+    }
+  };
+
+  // Handle date selection from the calendar and sync with input
+  const handleCalendarSelect = (selectedDate) => {
+    if (selectedDate) {
+      setDate(selectedDate);
+      setInputValue(format(selectedDate, "dd/MM/yyyy"));
+      setCalendarDate(selectedDate);
+      onChange(name, format(selectedDate, "yyyy-MM-dd"));
+    }
+  };
+
+  return (
+    <div className={`flex flex-col gap-4 ${className}`}>
+      {label && (
+        <Label htmlFor={name}>
+          {required && <span className="text-red-600">* </span>} {label}
+        </Label>
+      )}
+      <div className={cn("grid gap-2", className)}>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              id="date"
+              variant={"outline"}
+              className={cn(
+                "w-[300px] justify-start text-left font-normal",
+                !date && "text-muted-foreground"
+              )}
+            >
+              {/* <CalendarIcon /> */}
+              {date?.from ? (
+                date.to ? (
+                  <>
+                    {format(date.from, "LLL dd, y")} -{" "}
+                    {format(date.to, "LLL dd, y")}
+                  </>
+                ) : (
+                  format(date.from, "LLL dd, y")
+                )
+              ) : (
+                <span>Pick a date</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={date?.from}
+              selected={date}
+              onSelect={setDate}
+              numberOfMonths={2}
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
       {error && touch && <div className="text-red-600">{error}</div>}
     </div>
   );
@@ -399,43 +530,42 @@ const TextInput = ({
   regEx,
   maxLength,
   placeholder,
+  autoComplete = "off",
 }) => {
   return (
-    <>
-      <div className="flex flex-col gap-4">
-        {label && (
-          <Label className="" htmlFor={name}>
-            {label}
-            {required && <span className="text-red-600">* </span>}
-          </Label>
-        )}
-        <Input
-          type="text"
-          maxLength={maxLength ?? "100"}
-          id={name}
-          name={name}
-          autoComplete="Off"
-          placeholder={label ? "Enter " + label : placeholder}
-          value={value ?? ""}
-          disabled={disabled}
-          className={error && touch ? "is-invalid" : "text-neutral-1000"}
-          onChange={(option) => {
-            const value = option.target.value;
-            if (regEx) {
-              if (!value || regEx.test(value)) {
-                onChange(name, value);
-              }
-            } else {
-              onChange(name, value);
+    <div className="flex flex-col gap-4">
+      {label && (
+        <Label htmlFor={name}>
+          {label}
+          {required && <span className="text-red-600">* </span>}
+        </Label>
+      )}
+      <Input
+        type="text"
+        maxLength={maxLength ?? "100"}
+        id={name}
+        name={name}
+        autoComplete={autoComplete} // Use "off" for no autocomplete or specify a valid autocomplete token like "name", "email", etc.
+        placeholder={placeholder || (label ? `Enter ${label}` : "Enter value")}
+        value={value ?? ""}
+        disabled={disabled}
+        className={error && touch ? "is-invalid" : "text-neutral-1000"}
+        onChange={(event) => {
+          const inputValue = event.target.value;
+          if (regEx) {
+            if (!inputValue || regEx.test(inputValue)) {
+              onChange(name, inputValue);
             }
-          }}
-        />
-
-        {error && touch && <div className="text-red-600">{error}</div>}
-      </div>
-    </>
+          } else {
+            onChange(name, inputValue);
+          }
+        }}
+      />
+      {error && touch && <div className="text-red-600">{error}</div>}
+    </div>
   );
 };
+
 const NumberInput = ({
   name,
   value,
@@ -475,13 +605,18 @@ const NumberInput = ({
           onChange={(option) => {
             const value = option.target.value;
             // Only allow numeric input
-            if (/^\d*\.?\d*$/.test(value) || value === '') {
+            if (/^\d*\.?\d*$/.test(value) || value === "") {
               onChange(name, value);
             }
           }}
           // Prevent non-numeric input including 'e' and special characters
           onKeyDown={(e) => {
-            if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
+            if (
+              e.key === "e" ||
+              e.key === "E" ||
+              e.key === "+" ||
+              e.key === "-"
+            ) {
               e.preventDefault();
             }
           }}
@@ -548,6 +683,7 @@ const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
     </>
   );
 };
+
 const PhoneNumberInput = ({
   name,
   disabled,
@@ -558,20 +694,45 @@ const PhoneNumberInput = ({
   required,
   countryCode,
   value,
-  countryOptions, // Receive the country options here
+  countryOptions,
+  countryCodeName,
 }) => {
-  const [selectedCountryCode, setSelectedCountryCode] = useState(countryCode);
+  const [selectedCountryCode, setSelectedCountryCode] = useState(null);
   const [inputValue, setInputValue] = useState(value || "");
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Sync state with countryCode prop
+  useEffect(() => {
+    const selectedOption = countryOptions.find(
+      (option) => option.value === countryCode
+    );
+    if (selectedOption) {
+      setSelectedCountryCode(selectedOption);
+      setInputValue((prev) =>
+        prev.startsWith(`+${selectedOption.value}`)
+          ? prev
+          : `+${selectedOption.value}`
+      );
+    }
+  }, [countryCode, countryOptions]);
+
+  useEffect(() => {
+    if (value !== undefined && selectedCountryCode) {
+      const formattedValue = `+${selectedCountryCode.value}${value ?? ""}`;
+      setInputValue(formattedValue);
+    }
+  }, [value, selectedCountryCode]);
+
   // Handles the country code selection
   const handleSelectChange = (value) => {
-    const selectedOption = countryOptions.find((option) => option.value === value);
+    const selectedOption = countryOptions.find(
+      (option) => option.value === value
+    );
     if (selectedOption) {
-      setSelectedCountryCode(selectedOption.value);
-      setInputValue(`+${selectedOption.value}`); // Update the input with the selected country code
-      onChange("country_code", selectedOption.value); // Notify parent about country code change
+      setSelectedCountryCode(selectedOption);
+      // setInputValue(`+${selectedOption.value}`); // Update the input with the selected country code
+      onChange(countryCodeName, selectedOption.value); // Notify parent about country code change
       setOpen(false); // Close the popover
     }
   };
@@ -579,11 +740,14 @@ const PhoneNumberInput = ({
   // Handles the phone number input change
   const handleInputChange = (event) => {
     const regExTelephone = /^[0-9-]+$/;
-    let inputValue = event.target.value.replace(`+${selectedCountryCode}`, "");
-    
-    if (!inputValue || regExTelephone.test(inputValue)) {
-      setInputValue(`+${selectedCountryCode}${inputValue}`);
-      onChange(name, inputValue); // Send the stripped value (without country code) to the parent
+    const strippedValue = event.target.value.replace(
+      `+${selectedCountryCode?.value || ""}`,
+      ""
+    );
+
+    if (!strippedValue || regExTelephone.test(strippedValue)) {
+      setInputValue(`+${selectedCountryCode?.value || ""}${strippedValue}`);
+      onChange(name, strippedValue); // Send the stripped value (without country code) to the parent
     }
   };
 
@@ -594,7 +758,10 @@ const PhoneNumberInput = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <Label check>{label}{required && <span className="text-red-600">*</span>}</Label>
+      <Label check>
+        {label}
+        {required && <span className="text-red-600">*</span>}
+      </Label>
       <div className="flex items-center">
         <div className="flex-shrink-0 w-fit">
           <Popover open={open} onOpenChange={setOpen}>
@@ -605,7 +772,7 @@ const PhoneNumberInput = ({
                 aria-expanded={open}
                 className="justify-start w-full rounded-l-sm rounded-r-none text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
               >
-                {selectedCountryCode ?? "Select code"}
+                {selectedCountryCode?.alpha2 ?? "Select code"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0 w-[300px]">
@@ -642,7 +809,11 @@ const PhoneNumberInput = ({
             name={name}
             disabled={!selectedCountryCode || disabled}
             autoComplete="off"
-            placeholder={!selectedCountryCode ? "Select country code first" : `Enter ${label}`}
+            placeholder={
+              !selectedCountryCode
+                ? "Select country code first"
+                : `Enter ${label}`
+            }
             value={inputValue}
             className={`
               ${error && touch ? "is-invalid" : ""} 
@@ -735,22 +906,18 @@ const CustomLightOutlineButton = ({ label, onClick, disabled, style }) => {
   );
 };
 
-const ImageInput = ({
-  label,
-  value,
-  error,
-  setImageError,
-  onChange,
-  touch,
-  name,
-}) => {
+const ImageInput = ({ label, value, error, onChange, touch, name }) => {
   return (
     <>
       <div className="relative flex flex-row items-center justify-start w-full h-full border-solid rounded-3xl">
         <div className="relative overflow-hidden w-[110px]">
-          {value?.file ? (
+          {value ? (
             <img
-              src={value.file}
+              src={
+                typeof value === "string"
+                  ? value // If value is a URL, use it directly
+                  : URL.createObjectURL(value) // If value is a file object, create a temporary URL
+              }
               alt="Preview"
               className="h-[100px] object-cover border-2 border-gray-400 rounded-full"
               width={"100px"}
@@ -776,24 +943,20 @@ const ImageInput = ({
                 if (selectedFile) {
                   // Check file size
                   const maxSize = 1024 * 1024; // 1 MB in bytes
+                  let imageError = null;
                   if (selectedFile.size > maxSize) {
                     // File size exceeds 1 MB, handle error
-                    setImageError("Please upload a file smaller than 1 MB.");
-                    return;
+                    imageError = "Please upload a file smaller than 1 MB.";
                   }
-
-                  const reader = new FileReader();
-                  reader.onload = (e) => {
-                    onChange(name, {
-                      name: selectedFile.name,
-                      file: e.target.result,
-                    });
-                  };
-                  reader.readAsDataURL(selectedFile);
+                  // Pass the file object directly
+                  onChange(
+                    name,
+                    selectedFile, // Pass the file object instead of Base64
+                    imageError
+                  );
                 }
               }}
             />
-
             {error && touch && <div className="text-red-600">{error}</div>}
           </div>
           <span>JPEG or PNG. Max size of 100KB</span>
@@ -849,7 +1012,12 @@ const FileInput = ({
           }}
         />
         <div style={{ position: "absolute", bottom: ".61rem", left: "6rem" }}>
-          <div style={{minWidth:'7rem',whiteSpace:'pre'}} className="w-full px-1 text-sm bg-white">{value?.document?.name || value?.name}</div>
+          <div
+            style={{ minWidth: "7rem", whiteSpace: "pre" }}
+            className="w-full px-1 text-sm bg-white"
+          >
+            {value?.document?.name || value?.name}
+          </div>
         </div>
       </div>
       {error && touch && <div className="text-red-500 ">{error}</div>}
@@ -1018,13 +1186,12 @@ const FilterInput = ({
   const [openRole, setOpenRole] = useState(false);
   const [openDesignation, setOpenDesignation] = useState(false);
   const [openDepartment, setOpenDepartment] = useState(false);
-  const [selectedValue, setValue] = useState("");
   const [inputValues, setInputValues] = useState({});
 
   const handleInputChange = (filter, event) => {
-    setInputValues(prev => ({
+    setInputValues((prev) => ({
       ...prev,
-      [filter.name]: event.target.value
+      [filter.name]: event.target.value,
     }));
     onChange(filter.name, event.target.value);
   };
@@ -1044,7 +1211,7 @@ const FilterInput = ({
           } ${filter.height ?? height} rounded-sm text-neutral-1000`}
           name={filter.name}
           id={filter.name}
-          value={inputValues[filter.name] || ''}
+          value={inputValues[filter.name] || ""}
           onChange={(event) => handleInputChange(filter, event)}
         />
       </div>
@@ -1053,16 +1220,15 @@ const FilterInput = ({
 
   const renderPopoverSelect = (filter, index, open, setOpen) => {
     // Add "All" option to the options array if it exists
-    const allOptions = filter.option ? [
-      { value: '', label: 'All' },
-      ...filter.option
-    ] : [];
-    
+    const allOptions = filter.option
+      ? [{ value: "", label: "All" }, ...filter.option]
+      : [];
+
     // Only find selectedOption if there's a value
-    const selectedOption = filter.values ? 
-      allOptions.find(option => option.value === filter.values) : 
-      null;
-    
+    const selectedOption = filter.values
+      ? allOptions.find((option) => option.value === filter.values)
+      : null;
+
     return (
       <Popover key={index} open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -1074,9 +1240,15 @@ const FilterInput = ({
               filter.width ? filter.width : "w-[200px]"
             } justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200`}
           >
-            <span className={selectedOption ? "text-neutral-1000" : "text-muted-foreground"}>
+            <span
+              className={`${
+                selectedOption ? "text-neutral-1000" : "text-muted-foreground"
+              } truncate max-w-full`}
+              style={{ display: "block" }}
+            >
               {selectedOption ? selectedOption.label : filter.placeholder}
             </span>
+
             <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
           </Button>
         </PopoverTrigger>
@@ -1097,7 +1269,9 @@ const FilterInput = ({
                   >
                     <Check
                       className={`mr-2 h-4 w-4 ${
-                        filter.values === option.value ? "opacity-100" : "opacity-0"
+                        filter.values === option.value
+                          ? "opacity-100"
+                          : "opacity-0"
                       }`}
                     />
                     {option.label}
@@ -1138,8 +1312,71 @@ const FilterInput = ({
       </div>
     );
   };
+  const renderDateRangePicker = (filter, index) => {
+    const dateRange = filter.value ? filter.value?.split(",") : null;
+    const date = {
+      from:
+        dateRange &&
+        dateRange[0] &&
+        isValid(parse(dateRange[0], "yyyy-MM-dd", new Date()))
+          ? parse(dateRange[0], "yyyy-MM-dd", new Date())
+          : null,
+      to:
+        dateRange &&
+        dateRange[1] &&
+        isValid(parse(dateRange[1], "yyyy-MM-dd", new Date()))
+          ? parse(dateRange[1], "yyyy-MM-dd", new Date())
+          : null,
+    };
+    return (
+      <div key={index} style={{ width: "fit-content" }}>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              id="date"
+              variant={"ghost"}
+              className={cn(
+                "border-neutral-400 round justify-start border font-normal",
+                !date && "text-muted-foreground"
+              )}
+            >
+              {/* <CalendarIcon /> */}
+              {dateRange && date?.from ? (
+                date.to ? (
+                  <>
+                    {format(date.from, "LLL dd, y")} -{" "}
+                    {format(date.to, "LLL dd, y")}
+                  </>
+                ) : (
+                  format(date.from, "LLL dd, y")
+                )
+              ) : (
+                <span>{filter.placeholder}</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              initialFocus
+              mode="range"
+              defaultMonth={date?.from}
+              selected={date}
+              onSelect={(date) => {
+                if (date) {
+                  const startOfWeek = moment(date.from).format("YYYY-MM-DD");
+                  const endOfWeek = moment(date.to).format("YYYY-MM-DD");
+                  onChange(filter.name, `${startOfWeek},${endOfWeek}`);
+                }
+              }}
+              numberOfMonths={2}
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+    );
+  };
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
+    <div className="flex flex-wrap items-start gap-x-3 gap-y-3">
       {filters &&
         filters?.map((filter, index) => {
           switch (filter.type) {
@@ -1163,6 +1400,8 @@ const FilterInput = ({
               return renderPopoverSelect(filter, index, openRole, setOpenRole);
             case "date":
               return renderDatePicker(filter, index);
+            case "date-range":
+              return renderDateRangePicker(filter, index);
             case "sorting":
               return (
                 <CheckboxMenu
@@ -1194,17 +1433,21 @@ const CoverFileUpload = ({
   label,
   acceptType,
   required,
-  maxSize = 10
+  maxSize = 10,
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState([]); // Store multiple files
-  console.log(files, "FILES ARE HERE")
   const fileInputRef = useRef(null);
 
   // Initialize files from value
   useEffect(() => {
     if (value) {
-      setFiles(Array.isArray(value) ? value : [value]);
+      // If the value is a URL, set the file data with the URL
+      if (typeof value === "string" && value.startsWith("http")) {
+        setFiles([{ name: getFileNameFromURL(value), url: value }]);
+      } else {
+        setFiles(Array.isArray(value) ? value : [value]);
+      }
     }
   }, [value]);
 
@@ -1250,12 +1493,12 @@ const CoverFileUpload = ({
       reader.onload = () => {
         const fileData = {
           name: file.name,
-          file: reader.result
+          file: reader.result,
         };
-        
+
         // Replace existing files with new file
-        setFiles([fileData]);
-        onChange(name, [fileData]); // Send single file to parent
+        setFiles([file]);
+        onChange(name, file); // Send single file to parent
       };
       reader.readAsDataURL(file);
     }
@@ -1268,23 +1511,22 @@ const CoverFileUpload = ({
   };
 
   const formatFileSize = (bytes) => {
-    console.log(bytes, "BYES ARE HERE")
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + sizes[i];
   };
 
   const handleNewFileClick = () => {
     // Create a temporary file input
-    const tempFileInput = document.createElement('input');
-    tempFileInput.type = 'file';
+    const tempFileInput = document.createElement("input");
+    tempFileInput.type = "file";
     tempFileInput.accept = acceptType;
-    tempFileInput.style.display = 'none';
-    
+    tempFileInput.style.display = "none";
+
     // Add change event listener
-    tempFileInput.addEventListener('change', (e) => {
+    tempFileInput.addEventListener("change", (e) => {
       if (e.target.files && e.target.files[0]) {
         const file = e.target.files[0];
         handleFile(file);
@@ -1292,7 +1534,7 @@ const CoverFileUpload = ({
       // Remove the temporary input after use
       document.body.removeChild(tempFileInput);
     });
-    
+
     // Add to body and trigger click
     document.body.appendChild(tempFileInput);
     tempFileInput.click();
@@ -1300,16 +1542,53 @@ const CoverFileUpload = ({
 
   const renderUploadedFiles = () => {
     return files.map((fileData, index) => (
-      <div key={index} className="flex items-center justify-between p-4 bg-white border rounded-lg border-neutral-500">
-        <div className="flex items-center gap-3">
+      <div
+        key={index}
+        className="flex items-center justify-between p-4 bg-white border rounded-lg border-neutral-500"
+      >
+        <div
+          className="flex items-center gap-3"
+          style={{ maxWidth: "67%", overflow: "hidden" }}
+        >
           <div className="text-neutral-500">
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+              />
             </svg>
           </div>
           <div>
-            <p className="text-sm font-medium text-neutral-900">{fileData.name}</p>
-            <p className="text-sm text-neutral-500">{formatFileSize(getFileSizeInKB(fileData?.file)*1024)}</p>
+            <p className="text-sm font-medium text-neutral-900">
+              {fileData.name}
+            </p>
+            <a
+              href={
+                fileData.url
+                  ? fileData.url
+                  : fileData
+                  ? URL.createObjectURL(fileData)
+                  : "#"
+              }
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-neutral-700"
+            >
+              View Document
+            </a>
+            {/* ) : (
+              <p className="text-sm text-neutral-500">
+                {formatFileSize(fileData?.file?.length)}
+              </p>
+            )} */}
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -1338,15 +1617,15 @@ const CoverFileUpload = ({
         {required && <span className="text-red-600">* </span>}
         {label || "Attachments"}
       </Label>
-      
+
       {value ? (
-        <div className="space-y-3">
-          {renderUploadedFiles(value)}
-        </div>
+        <div className="space-y-3">{renderUploadedFiles(value)}</div>
       ) : (
         <div
           className={`relative border-2 border-dashed rounded-lg p-6 ${
-            dragActive ? 'border-primary-500 bg-primary-50' : 'border-neutral-300'
+            dragActive
+              ? "border-primary-500 bg-primary-50"
+              : "border-neutral-300"
           }`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -1362,9 +1641,11 @@ const CoverFileUpload = ({
               <span className="text-neutral-1000"> or drag and drop</span>
             </p>
             <p className="text-sm text-neutral-1000">
-              {acceptType === '.pdf' ? 'Please upload PNG, JPG or PDF up to 10MB' : 'PNG, JPG or PDF up to 10MB'}
+              {acceptType === ".pdf"
+                ? "Please upload PNG, JPG or PDF up to 10MB"
+                : "PNG, JPG or PDF up to 10MB"}
             </p>
-            
+
             <input
               ref={fileInputRef}
               type="file"
@@ -1376,18 +1657,174 @@ const CoverFileUpload = ({
           </div>
         </div>
       )}
-      
+
       {error && touch && <div className="text-red-600">{error}</div>}
     </div>
   );
 };
 
+const InputComments = ({ handleAddComment, users }) => {
+  const fileInputRef = useRef(null);
+  const commentRef = useRef(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [commentAttachments, setCommentAttachment] = useState([]);
 
+  const handleCommentChange = (e) => {
+    const value = e.target.value;
+    setNewComment(value);
+    const mentionStart = value.lastIndexOf("@");
+    if (mentionStart !== -1) {
+      const mentionQuery = value.substring(mentionStart + 1);
+      const matches = users.filter((user) =>
+        user.label.toLowerCase().includes(mentionQuery.toLowerCase())
+      );
+      setFilteredUsers(matches);
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(false);
+    }
+  };
+  const handleUserSelect = (user) => {
+    const mentionStart = newComment.lastIndexOf("@");
+    const comment = newComment.substring(0, mentionStart) + `@${user.label} `;
+    setNewComment(comment);
+    setShowDropdown(false);
+
+    // Move cursor to the end of the inserted mention
+    setTimeout(() => {
+      commentRef.current.selectionStart = comment.length;
+      commentRef.current.selectionEnd = comment.length;
+      commentRef.current.focus();
+    }, 0);
+  };
+  const handleFileChange = (event) => {
+    const file = event.target.files[0]; // Get the single file
+    if (file) {
+      const attachment = {
+        attachment: file,
+        name: file.name,
+      };
+      setCommentAttachment([...commentAttachments, ...[attachment]]);
+    }
+  };
+  const removeFile = (file) => {
+    const filteredFiles = commentAttachments.filter(
+      (f) => f.name !== file.name
+    );
+    setCommentAttachment(filteredFiles);
+  };
+
+  const handleSubmitComment = (newComment, commentAttachments) => {
+    handleAddComment(newComment, commentAttachments);
+    // Reinitialize state variables after successfully adding a comment
+    setNewComment("");
+    setCommentAttachment([]);
+    setFilteredUsers([]);
+    setShowDropdown(false);
+  };
+
+  return (
+    <>
+      <div className="pb-1">
+        <div className="flex items-center">
+          <div className="relative w-full">
+            <div className="flex w-full flex-col rounded-md border border-neutral-500 bg-white py-3  px-1 h-auto">
+              <Input
+                type="textarea"
+                maxLength={"5000"}
+                id={"comment"}
+                name={"comment"}
+                autoComplete="Off"
+                placeholder="Type your comment here"
+                value={newComment}
+                rows={5}
+                className={`h-auto rounded-none border-none focus:outline-none`}
+                onChange={handleCommentChange}
+                style={{ "--tw-ring-color": "transparent" }}
+              />
+              {commentAttachments.length > 0 && (
+                <div className="">
+                  {commentAttachments?.map((file, index) => (
+                    <div key={index}>
+                      <AttachmentUI
+                        attachment={file.attachment}
+                        name={file.name}
+                        removeFile={removeFile}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex flex-row justify-between mt-2">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onClick={(event) => event.stopPropagation()} // Prevent default behavior
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                <AiOutlinePaperClip
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    fileInputRef.current.click();
+                  }}
+                  className="w-5 h-5 mx-2 text-black cursor-pointer"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    handleSubmitComment(newComment, commentAttachments);
+                  }}
+                >
+                  {"Comment"}
+                </Button>
+              </div>
+            </div>
+            {showDropdown && (
+              <Popover>
+                <PopoverContent className="w-80 p-0" align="start">
+                  <Card className="border-0 shadow-none">
+                    <div className="p-4 space-y-4">
+                      <div className="space-y-3 max-h-[200px] overflow-y-auto scroll-smooth">
+                        {filteredUsers?.map((user) => (
+                          <div
+                            key={user?.value}
+                            className="flex items-center space-x-2"
+                            onClick={() => {
+                              handleUserSelect(user);
+                            }}
+                          >
+                            <span
+                              className={`px-3 py-1 rounded-full ${user?.color} inline-block`}
+                            >
+                              {user?.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </Card>
+                </PopoverContent>
+              </Popover>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export {
+  InputComments,
   SelectComponent,
   SelectMultiInputComponent,
   DateInput,
+  DateRangeInput,
   TextInput,
   PhoneNumberInput,
   EmailInput,

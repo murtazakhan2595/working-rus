@@ -7,7 +7,7 @@ import {
 } from "utils/getValuesFromTables";
 import { useState } from "react";
 import EditJobDetails from "./EditJobDetails";
-import { getJobById } from "app/hooks/recruitment";
+import { renderDate } from "utils/renderValues";
 import { PageLoader } from "components";
 import { formatNumber } from "data/Data";
 import moment from "moment";
@@ -27,7 +27,6 @@ const ViewJobDetails = ({ job, onClose, isOpen, setIsOpen ,fetchJobPosts, posts 
   const [viewJob, setViewJob] = useState(job)
   const [currentJob, setCurrentJob] = useState(posts?.results?.findIndex((p) => p.id === job?.id)); 
   const [isLoading, setIsLoading] = useState(false);
-
   const handleEditClick = () => {
     setShowEdit(true);
     // setIsOpen(false)
@@ -78,14 +77,11 @@ const ViewJobDetails = ({ job, onClose, isOpen, setIsOpen ,fetchJobPosts, posts 
           </div>
               <div className="flex justify-between w-full">
                 <EmployeeNameInfo
-                  jobId={<EmployeeID value={job?.serial_number} />}
+                  jobId={<EmployeeID value={viewJob?.serial_number} />}
                   name={viewJob?.Job_Title}
                   showPosition={false}
                   position={null}
-                  date={
-                    job?.created_at
-                      ? moment(viewJob?.created_at).format("MMM D, YYYY")
-                      : ""
+                  date={renderDate(viewJob?.created_at)
                   }
                 />
                 <JobsActions row={viewJob} fetchJobPosts={fetchJobPosts} isEdit={handleEditClick}/>
@@ -140,11 +136,11 @@ const ViewJobDetails = ({ job, onClose, isOpen, setIsOpen ,fetchJobPosts, posts 
               <p>{viewJob?.Job_Requirement}</p>
             </DetailCard>
 
-            {/* <div className="flex justify-between items-center">
+            {/* <div className="flex items-center justify-between">
               <Link
                 to="/applicants"
                 state={{ jobId: job.id }}
-                className="border px-3 py-2 rounded-md border-black flex items-center gap-x-2"
+                className="flex items-center px-3 py-2 border border-black rounded-md gap-x-2"
               >
                 Applications
                 <IoArrowForward className="text-xl" />

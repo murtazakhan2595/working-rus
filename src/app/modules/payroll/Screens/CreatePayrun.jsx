@@ -408,12 +408,10 @@ const CreatePayRun = () => {
                 </div>
                 {showWithholdButton && !showProvideButton && (
                   <Button
-                    className="px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex"
+                  variant="outline"
                     onClick={handleWithholdSalary}
                   >
-                    <div className="text-center text-neutral-1200 text-sm font-medium">
                       Withhold Salary
-                    </div>
                   </Button>
                 )}
                 {showProvideButton && !showWithholdButton && (

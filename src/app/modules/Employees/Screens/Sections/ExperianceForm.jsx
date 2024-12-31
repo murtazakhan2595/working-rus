@@ -3,17 +3,20 @@ import {
   TextAreaInput,
   TextInput,
   CheckBoxInput,
-  CoverFileUpload
+  CoverFileUpload,
 } from "components/form-control";
-import React, {  useState } from "react";
+import React, { useState } from "react";
 
-
-const Experience = ({ errors, touched, values, onChange }) => {
+const Experience = ({
+  errors,
+  touched,
+  values,
+  onChange,
+  isCurrentExperience,
+}) => {
   const [date, setDate] = useState(new Date());
-  const [selectedValue, setSelectedValue] = useState('');
   return (
     <>
-    
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -56,7 +59,7 @@ const Experience = ({ errors, touched, values, onChange }) => {
               }}
             />
           </div>
-          {!values.disableEndDate && (
+          {!values.disableEndDate && !isCurrentExperience && (
             <div className="space-y-2">
               <DateInput
                 name={"exp_end_date"}
@@ -74,13 +77,12 @@ const Experience = ({ errors, touched, values, onChange }) => {
           <div className="flex items-center space-y-2">
             <CheckBoxInput
               name={"disableEndDate"}
-              value={values.disableEndDate}
+              value={values.disableEndDate || isCurrentExperience}
               label={"Currently Working Here"}
+              disabled={isCurrentExperience}
               onChange={(field, value) => {
                 onChange(field, value);
-                // if (value) {
-                //   onChange("exp_end_date", null);
-                // }
+                onChange("exp_end_date", '');
               }}
             />
           </div>
@@ -103,7 +105,11 @@ const Experience = ({ errors, touched, values, onChange }) => {
           <div className="col-span-2 space-y-2">
             <CoverFileUpload
               name="exp_letter"
-              label="Experience Letter or drag it here"
+              label={`${
+                isCurrentExperience || values.disableEndDate
+                  ? "Upload Resume"
+                  : "Experience Letter"
+              } or drag it here`}
               acceptType=".pdf"
               error={errors?.exp_letter}
               touch={touched?.exp_letter}
@@ -111,12 +117,16 @@ const Experience = ({ errors, touched, values, onChange }) => {
               required={true}
               onChange={(field, value) => {
                 onChange(field, value);
+                if (isCurrentExperience) {
+                  onChange("resume", value);
+                } else {
+                  onChange("resume", null);
+                }
               }}
             />
           </div>
         </div>
-        </div>
-       
+      </div>
     </>
   );
 };

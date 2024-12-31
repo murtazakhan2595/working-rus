@@ -9,7 +9,7 @@ import {
   fetchOrganizations,
 } from "state/slices/CommonSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
-import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
+import { fetchEmployees, fetchReportingManagers,fetchEmployeesDetail,fetchUser } from "state/slices/EmpSlice";
 import { options } from "joi";
 import {
   ArrowDown,
@@ -37,7 +37,9 @@ export const countriesCallingCodes = countries.all
       "+",
       ""
     )})`,
+    alpha2: country.alpha2, 
   }));
+
 export const countriesList = countries.all.map((country) => {
   return {
     value: country.name,
@@ -61,6 +63,17 @@ export const statusOptions = [
   { value: "In Progress", label: "In Progress" },
   { value: "Done", label: "Done" },
 ];
+
+export const dateFormats = [
+  { label: "YYYY-MM-DD", value: "%Y-%m-%d" },
+  { label: "DD-MM-YYYY", value: "%d-%m-%Y" },
+  { label: "MM-DD-YYYY", value: "%m-%d-%Y" },
+];
+
+export const days = Array?.from({ length: 31 }, (_, index) => {
+  const day = index + 1;
+  return { label: day, value: `${day}` };
+});
 
 export const visaOptions = [
   { value: 1, label: "Visit Visa" },
@@ -127,17 +140,17 @@ export const locationTypeOptions = [
 
 export const dropdownOptions = [
   { label: "Pending", value: "pending" },
+  { label: "Review", value: "review application" },
   { label: "Shortlisted", value: "shortlisted" },
+  { label: "Schedule 1st Interview", value: "interview r1" },
+  { label: "Schedule 2nd Interview", value: "interview r2" },
   { label: "Offer Made", value: "offer_made" },
   { label: "Selected", value: "selected" },
-  // { label: "Rejected", value: "rejected" },
   { label: "Onboard", value: "on_board" },
   { label: "Reject", value: "rejected" },
   { label: "Reconsider", value: "reconsider" },
   { label: "Send Email", value: "send_email" },
-  { label: "Offer Declined", value: "declined" },
-  // { label: "Move to Selected", value: "selected" },
-  { label: "Schedule Interview", value: "scheduled" },
+  { label: "Declined by Candidate", value: "declined" },
   { label: "Offer Accepted", value: "offer_accepted" },
 ];
 
@@ -163,6 +176,15 @@ export const jobsStatusOptions = [
   { label: "Open", value: "live" },
   { label: "Closed", value: "expired" },
 ];
+
+export const shiftType = [
+  {
+    label: "Weekdays", value:"Weekdays"
+  },
+  {
+    label:"Weekend", value: "Weekend"
+  }
+]
 
 export const HeadOfDepartment = [
   { label: "Naveed Rahman - CEO", value: "Naveed" },
@@ -345,14 +367,14 @@ export const ProjectStatusList = [
     value: "upcoming",
     label: (
       <div className="flex justify-center gap-x-2 text-mauve-900 ">
-        Upcoming
+        Up Coming
       </div>
     ),
   },
   {
     value: "on_going",
     label: (
-      <div className="flex justify-center text-yellow-500 gap-x-2">Ongoing</div>
+      <div className="flex justify-center text-yellow-500 gap-x-2">On Going</div>
     ),
   },
   {
@@ -542,7 +564,7 @@ export const resignationStatus = [
 ];
 
 export const terminationStatus = [
-  { label: "Viewd By Manager", value: "viwed by manager" },
+  { label: "Viewed By Manager", value: "viewed by manager" },
   { label: "Accepted by Employee", value: "accepted by employee" },
   { label: "Rejected by Employee", value: "rejected by employee" },
 ];
@@ -574,7 +596,7 @@ export const ResignationReasons = [
   // { value: "career-advance", label: "Career growth" },
   //{ value: "better-opportunity", label: "Better opportunity" },
   { value: "family-reasons", label: "Personal Reasons" },
-  { value: "Rrelocation", label: "Relocation" },
+  { value: "Relocation", label: "Relocation" },
   { value: "health-reasons", label: "Health reasons" },
   // { value: "Job dissatisfaction", label: "Job dissatisfaction" },
   { value: "Others", label: "Others" },
@@ -647,7 +669,7 @@ export const NoticePeriod = [
   // },
 ];
 export const TerminationStatusOptions = [
-  { label: "Viewd By Manager", value: "pending" },
+  { label: "Viewd By Manager", value: "viewed by manager" },
   { label: "Accepted by Employee", value: "accepted by employee" },
   { label: "Rejected by Employee", value: "rejected by employee" },
   { label: "Clearance initiated", value: "initiated clearance" },
@@ -740,7 +762,6 @@ export const salarySummary = {
 };
 
 export const handleUpdateProfile = (dispatch, data) => {
-  console.log("data", data);
   const userprofile = {
     id: data.id,
     username: data.username,
@@ -749,6 +770,8 @@ export const handleUpdateProfile = (dispatch, data) => {
     organization: data.organization,
   };
   dispatch(setUserProfile(userprofile));
+  dispatch(fetchEmployeesDetail());
+  dispatch(fetchUser(userprofile.id));
   dispatch(fetchEmployees());
   dispatch(fetchDepartments());
   dispatch(fetchDesignations());

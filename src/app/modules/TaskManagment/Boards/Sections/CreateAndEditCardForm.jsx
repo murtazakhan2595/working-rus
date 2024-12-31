@@ -1,470 +1,443 @@
 import React, { useEffect, useRef, useState } from "react";
+import { connect } from "react-redux";
 import { Formik, Form } from "formik";
 import {
   TextInput,
   SelectComponent,
   DateInput,
 } from "components/form-control.jsx";
-import { RiAttachment2 } from "react-icons/ri";
-import { RxPlus } from "react-icons/rx";
-import members from "assets/images/members.svg";
-
-import plus from "assets/images/plus.svg";
 import { PriorityList } from "data/Data";
-import Members from "../../Sections/Member";
-
-import { AiOutlineDownload } from "react-icons/ai";
-
-import { FaRegImage } from "react-icons/fa";
-import { MdClose } from "react-icons/md";
+import SheetComponent from "components/ui/CustomSheet";
 import { useSelector } from "react-redux";
-
-import { getAllLabels } from "app/hooks/taskManagment";
-
+import {
+  addTask,
+  addAttachments,
+  addTaskCheckListItem,
+  getTaskById,
+} from "app/hooks/taskManagment";
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
-import Labels from "../../Sections/Labels";
-import CheckList from "../../Sections/CheckList";
-import { getDarkerTextColor } from "./getTaskStatus";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../../../../../src/@/components/ui/popover";
-import { Input } from "components/ui/input";
-import { relationList } from "data/Data";
+  Labels,
+  Assignee,
+  CheckList,
+  Attachments,
+  TaskRelation,
+} from "app/modules/TaskManagment/Sections";
+import { toast } from "react-toastify";
+import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
+import moment from "moment";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
+import { CardTypes } from "app/utils/Types/TaskManagment";
+import { PageLoader } from "components";
+import DialogBox from "components/DialogBox";
 
 const CreateAndEditCardForm = ({
-  initialValues,
+  taskId,
   employees,
-  handleSubmit,
   onClose,
   isEdit,
-  setIsOpen
+  setIsOpen,
+  isOpen,
+  projectId,
+  boardId,
 }) => {
   const formRef = useRef();
-
-  const fileInputRef = useRef(null);
-  const [membersOpen, setMembersOpen] = useState(false);
-  const [newfiles, setNewFiles] = useState([]);
-  const [files, setFiles] = useState([]);
-  const [deleteFiles, setDeleteFiles] = useState([]);
-  const [labels, setLabels] = useState([]);
-  const [labelsList, setLabelsList] = useState([]);
-  const [labelsAdded, setLabelsAdded] = useState([]);
-  const [foreignKeys, setForeignKeys] = useState([]);
-  const [items, setItems] = useState([]);
-  const [inputValue, setInputValue] = useState("");
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [closeSheet, setCloseSheet] = useState(false)
-
-  const handleClose = ()=>{
+  const [isLoading, setIsLoading] = useState(false);
+  const [closeSheet, setCloseSheet] = useState(false);
+  const [initialValues, setInitialValues] = useState(CardTypes);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const handleClose = () => {
     // setIsOpen(false)
-    setCloseSheet(true)
-  }
-
-  const handleAddItem = () => {
-    const newItem = {
-      id: Date.now(), // use unique ID
-      label: inputValue,
-      checked: false,
-    };
-    setItems((prevItems) => [...prevItems, newItem]);
-    setInputValue("");
-    setIsPopoverOpen(false); // Close the popover after adding the item
+    setCloseSheet(true);
   };
 
-  const handleCheckListChange = (itemIds) => {
-    setForeignKeys(itemIds);
-    console.log(itemIds, "ITEM IDS");
-  };
+  const fetchData = async (isMounted) => {
+    setIsLoading(true);
+    try {
+      // Fetch card details
+      const cardDetails = await getTaskById(taskId);
 
-  const handleRelationSelect = (task) => {
-    console.log("Selected task:", task);
-  };
-  const fetchLabels = async () => {
-    const labelList = await getAllLabels();
-    setLabelsList(labelList); // Update this to `labelList`
-  };
-
-  useEffect(() => {
-    fetchLabels();
-  }, []);
-
-  const handleSelectedLabelsChange = (selectedLabels) => {
-    setLabelsAdded(selectedLabels);
-    const selectedLabelObjects = selectedLabels?.map((selectedId) =>
-      labelsList?.results?.find((label) => label.id === selectedId)
-    );
-    setLabels(selectedLabelObjects);
-  };
-
-  useEffect(() => {
-    setFiles(initialValues.attachment);
-  }, [initialValues.attachment]);
-
-  const userProfile = useSelector((state) => state.user.userProfile);
-  const formInitialValues = isEdit
-    ? initialValues
-    : { ...initialValues, assigned_by: userProfile.id };
-
-  const handleAttachmentsChange = (event, props) => {
-    const selectedFiles = event.target.files;
-    const filesArray = Array.from(selectedFiles);
-
-    Promise.all(
-      filesArray.map((file) => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            const fileData = {
-              name: file.name,
-              file: event.target.result,
-            };
-            resolve(fileData);
-          };
-          reader.onerror = (error) => {
-            reject(error);
-          };
-          reader.readAsDataURL(file);
-        });
-      })
-    )
-      .then((fileDataArray) => {
-        setNewFiles(fileDataArray);
-      })
-      .catch((error) => {
-        console.error("Error reading files:", error);
-      });
-  };
-  const removeFile = (file) => {
-    if (file.id) {
-      setDeleteFiles([...deleteFiles, file.id]);
-      const filteredFiles = files.filter((f) => f.id !== file.id);
-      setFiles(filteredFiles);
-    } else {
-      const filteredFiles = newfiles.filter((f) => f.name !== file.name);
-      setNewFiles(filteredFiles);
+      if (!cardDetails) {
+        throw new Error("Card details not found.");
+      }
+      if (isMounted) {
+        setInitialValues(cardDetails);
+      }
+    } catch (error) {
+      console.error("Error fetching task data:", error);
+      toast.error("Failed to load task details. Please try again later.");
+    } finally {
+      if (isMounted) {
+        setIsLoading(false); // Stop loading spinner
+      }
     }
   };
 
-  const removeMember = (member) => {
-    const members = formRef.current.values.assigned_to || [];
-    const updatedMembers = members.filter((m) => m !== member);
-    formRef.current.setFieldValue("assigned_to", updatedMembers);
+  useEffect(() => {
+    let isMounted = true;
+    if (taskId) fetchData(isMounted);
+    else
+      setInitialValues({
+        ...initialValues,
+        assigned_by: userProfile.id,
+        project_id: projectId,
+        board_id: boardId,
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [taskId]);
+
+  const handleSubmit = async (formData) => {
+    const getAttachmentFileIds = async (attachmentfiles) => {
+      try {
+        const attachmentPromises = attachmentfiles.map(async (file) => {
+          if (file.attachments instanceof File) {
+            const payload = { attachments: file.attachments };
+            const response = await addAttachments(payload, file.id);
+            return response.id; // Return the attachment ID
+          } else {
+            return file.id;
+          }
+        });
+        return await Promise.all(attachmentPromises);
+      } catch (error) {
+        console.error("Error uploading attachments:", error);
+        toast.error(
+          "Failed to upload one or more attachments. Please try again.",
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+        throw error; // Propagate the error
+      }
+    };
+
+    const getCheckListIds = async (task_checklist) => {
+      try {
+        const checkListPromises = task_checklist.map(async (task_check) => {
+          const response = await addTaskCheckListItem(
+            task_check,
+            task_check.id
+          );
+          return response.id; // Return the checklist item ID
+        });
+        return await Promise.all(checkListPromises);
+      } catch (error) {
+        console.error("Error adding checklist items:", error);
+        toast.error(
+          "Failed to add one or more checklist items. Please try again.",
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+        throw error; // Propagate the error
+      }
+    };
+
+    setIsLoading(true);
+
+    try {
+      // Prepare final data
+      const finalData = {
+        ...formData,
+        start_date: moment(new Date()).format("YYYY-MM-DD"),
+        attachment: await getAttachmentFileIds(formData.attachment || []),
+        task_checklist: await getCheckListIds(formData.task_checklist || []),
+      };
+      // Submit the task
+      const response = await addTask(finalData);
+      if (response) {
+        //  setShowSuccessMessage(true);
+        toast.success(`Task ${isEdit ? "Updated" : "Added"} Successfully!`, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        onClose(); // Close the modal or perform any other action upon success
+      }
+    } catch (error) {
+      console.error("Error submitting task:", error);
+
+      // Display a detailed error message
+      const errorMessage =
+        error.response?.data?.detail ||
+        "An unexpected error occurred while submitting the task.";
+      toast.error(errorMessage, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } finally {
+      setIsLoading(false); // Stop the loading indicator
+    }
+  };
+
+  const userProfile = useSelector((state) => state.user.userProfile);
+
+  const formSheetEditData = {
+    triggerText: null,
+    title: isEdit ? "Edit Card" : "Add Card",
+    description: null,
+    footer: null,
   };
 
   return (
     <>
-     {handleCloseWithConfirmation(closeSheet, setCloseSheet, setIsOpen)}
-    <Formik
-      initialValues={formInitialValues}
-      enableReinitialize={true}
-      innerRef={formRef}
-      onSubmit={(values, { resetForm }) => {
-        console.log(values, "VALUES");
-        const formValues = {
-          ...values,
-          label: labelsAdded,
-        };
-        handleSubmit(formValues, newfiles, files, deleteFiles, resetForm);
-      }}
-      validate={(values) => {
-        // const errors = validationTaskFormSchema(values);
-        return {};
-      }}
-    >
-      {(props) => (
-        <form onSubmit={props.handleSubmit} className="">
-          <div className={`flex w-full gap-6 flex-col rounded-lg pt-2.5`}>
+      {" "}
+      <SheetComponent
+        {...formSheetEditData}
+        isOpen={isOpen}
+        setIsOpen={onClose}
+        width="568px"
+        contentClassName="custom-sheet-width"
+      >
+        <>
+          {handleCloseWithConfirmation({
+            isOpen: closeSheet,
+            setCloseSheet,
+            setIsOpen,
+          })}
+          {isLoading ? (
+            <PageLoader />
+          ) : (
+            <Formik
+              initialValues={initialValues}
+              innerRef={formRef}
+              enableReinitialize={true}
+              onSubmit={(values) => {
+                handleSubmit(values);
+              }}
+              validate={(values) => {
+                const errors = validationTaskFormSchema(values);
+                return errors;
+              }}
+            >
+              {(props) => (
+                <form onSubmit={props.handleSubmit} className="">
+                  <div
+                    className={`flex w-full gap-6 flex-col rounded-lg pt-2.5`}
+                  >
+                    <SheetCardExtension title="Card Details">
+                      <div className="space-y-2">
+                        <TextAreaInput
+                          name="name"
+                          error={props.errors.name}
+                          touch={props.touched.name}
+                          value={props.values.name}
+                          label="Title"
+                          required={true}
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <TextAreaInput
+                          name="description"
+                          error={props.errors.description}
+                          touch={props.touched.description}
+                          value={props.values.description}
+                          required
+                          maxRows={3}
+                          label="Description"
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
+                          }}
+                        />
+                      </div>
 
-              <SheetCardExtension title="Card Details">
-              <div className="space-y-2">
-                <TextAreaInput
-                  name="name"
-                  error={props.errors.name}
-                  touch={props.touched.name}
-                  value={props.values.name}
-                  label="Title"
-                  required={true}
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                />
-              </div>
-              <div className="space-y-2">
-                <TextAreaInput
-                  name="description"
-                  error={props.errors.description}
-                  touch={props.touched.description}
-                  value={props.values.description}
-                  required
-                  maxRows={3}
-                  label="Description"
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex gap-5">
-                  <div className="flex items-center gap-2.5 text-lg font-medium leading-4 text-zinc-600">
-                    <RiAttachment2 />
-                    <div>Attachments ({newfiles?.length + files.length})</div>
-                  </div>
-                </div>
-                <img
-                  src={plus}
-                  alt=""
-                  className="cursor-pointer"
-                  onClick={() => {
-                    fileInputRef.current.click();
-                  }}
-                />
-                <Input
-                  type="file"
-                  multiple
-                  style={{ display: "none" }}
-                  onChange={(event) => handleAttachmentsChange(event, props)}
-                  ref={fileInputRef}
-                />
-                {(files.length > 0 || newfiles?.length > 0) && (
-                  <div className="">
-                    {[...files, ...newfiles].map((file, index) => (
-                      <div className="flex items-center justify-between p-2 mb-2 bg-gray-100 rounded-lg shadow-md w-fit">
-                        <div className="flex items-center">
-                          <FaRegImage className="w-4 h-4 text-gray-500" />
-                          <span className="ml-4 text-sm text-baseGray">
-                            {file.name}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-x-2">
-                          <a
-                            href="/path/to/your/image.jpg"
-                            download
-                            className="text-gray-500 hover:text-gray-700"
-                          >
-                            <AiOutlineDownload className="w-5 h-5 " />
-                          </a>
-                          <MdClose
-                            className="w-5 h-5 text-gray-500 cursor-pointer"
-                            onClick={() => {
-                              removeFile(file);
+                      <TaskInputDetails
+                        title={"Attachments"}
+                        content={
+                          <Attachments
+                            attachmentSelected={props.values.attachment}
+                            onChange={(attachments) => {
+                              props.setFieldValue("attachment", attachments);
                             }}
                           />
+                        }
+                      />
+                      {props.errors.attachment && props.touched.attachment && (
+                        <div className="text-red-600">
+                          {props.errors.attachment}
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              </SheetCardExtension>
+                      )}
+                    </SheetCardExtension>
 
+                    <SheetCardExtension
+                      title={`${isEdit ? "Update To Card" : "Add To Card"}`}
+                    >
+                      <TaskInputDetails
+                        title={"Due Date"}
+                        content={
+                          <div className="space-y-2">
+                            <DateInput
+                              name="end_date"
+                              error={props.errors.end_date}
+                              touch={props.touched.end_date}
+                              value={props.values.end_date}
+                              onChange={(field, value) => {
+                                props.setFieldValue(field, value);
+                              }}
+                            />
+                          </div>
+                        }
+                      />
 
-                <SheetCardExtension title="Add To Card">
-                <div className="space-y-2">
-                  <DateInput
-                    name="end_date"
-                    error={props.errors.start_date}
-                    touch={props.touched.start_date}
-                    value={props.values.start_date}
-                    label="Due Date"
-                    required
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
+                      <TaskInputDetails
+                        title={"Estimated Time (in hours)"}
+                        content={
+                          <TextInput
+                            name="estimated_time"
+                            error={props.errors.estimated_time}
+                            touch={props.touched.estimated_time}
+                            value={props.values.estimated_time}
+                            // label=
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        }
+                      />
+                      <TaskInputDetails
+                        title={"Time Spent (in hours)"}
+                        content={
+                          <TextInput
+                            name="consumed_time"
+                            error={props.errors.consumed_time}
+                            touch={props.touched.consumed_time}
+                            value={props.values.consumed_time}
+                            // label="Time Spent (in hours)"
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        }
+                      />
+                      <TaskInputDetails
+                        title={"Priority"}
+                        content={
+                          <SelectComponent
+                            name="priority"
+                            options={PriorityList}
+                            error={props.errors.priority}
+                            touch={props.touched.priority}
+                            value={props.values.priority}
+                            // required
+                            // label="Priority"
+                            onChange={(field, value) => {
+                              debugger;
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        }
+                      />
 
-                <div className="space-y-2">
-                  <TextInput
-                    name="estimated_time"
-                    error={props.errors.estimated_time}
-                    touch={props.touched.estimated_time}
-                    value={props.values.estimated_time}
-                    label="Estimated Time (in hours)"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
+                      <TaskInputDetails
+                        title={"Label"}
+                        content={
+                          <Labels
+                            labelsSelected={props.values.label || []}
+                            onSelectedLabelsChange={(value) => {
+                              props.setFieldValue("label", value);
+                            }}
+                          />
+                        }
+                      />
+                      <TaskInputDetails
+                        title={"Assignee"}
+                        content={
+                          <Assignee
+                            assigneeSelected={props.values.assigned_to || []}
+                            employees={employees}
+                            onChange={(value) => {
+                              props.setFieldValue("assigned_to", value);
+                            }}
+                          />
+                        }
+                      />
+                      {props.errors.assigned_to &&
+                        props.touched.assigned_to && (
+                          <div className="text-red-600">
+                            {props.errors.assigned_to}
+                          </div>
+                        )}
 
-                <div className="space-y-2">
-                  <TextInput
-                    name="consumed_time"
-                    error={props.errors.consumed_time}
-                    touch={props.touched.consumed_time}
-                    value={props.values.consumed_time}
-                    label="Time Spent (in hours)"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
+                      <TaskInputDetails
+                        title={"CheckList"}
+                        content={
+                          <CheckList
+                            items={props.values.task_checklist || []}
+                            onChange={(items) => {
+                              props.setFieldValue("task_checklist", items);
+                            }}
+                          />
+                        }
+                      />
+                      <TaskInputDetails
+                        title={"Relation"}
+                        content={
+                          <TaskRelation
+                            relationsList={props.values.relation || []}
+                            onChange={(value) => {
+                              props.setFieldValue("relation", value);
+                            }}
+                            projectId={projectId}
+                            taskId={taskId}
+                          />
+                        }
+                      />
+                    </SheetCardExtension>
 
-                <div className="space-y-2">
-                  <SelectComponent
-                    name="priority"
-                    options={PriorityList}
-                    error={props.errors.priority}
-                    touch={props.touched.priority}
-                    value={props.values.priority}
-                    required
-                    label="Priority"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
-
-                <div className="flex items-center gap-2 space-y-2">
-                  <div>Label</div>
-
-                  <Labels
-                    onSelectedLabelsChange={handleSelectedLabelsChange}
-                    labelsList={labelsList?.results}
-                    reloadList={()=>{
-                      fetchLabels();
-                    }}
-                  />
-                </div>
-                <div>
-                  <ul className="flex flex-wrap gap-2">
-                    {labels?.map((label) => (
-                      <li
-                        key={label.id}
-                        className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                          label?.color
-                        } ${getDarkerTextColor(label?.color)}`}
-                      >
-                        {label.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="flex gap-5">
-                  <div className="flex items-center gap-2.5 text-lg font-medium leading-4 text-zinc-600">
-                    <img
-                      loading="lazy"
-                      src={members}
-                      className="shrink-0 aspect-[1.06] w-[17px]"
-                      alt=""
-                    />
-                    <div>Assignee</div>
-                  </div>
-                </div>
-                {props.errors.assigned_to &&
-                  props.values.assigned_to.length === 0 && (
-                    <div className="pt-1 text-xs text-red-500">
-                      {props.errors.assigned_to}
-                    </div>
-                  )}
-                <div className="flex items-center justify-start gap-2 h-100">
-                  {props.values.assigned_to &&
-                    props.values.assigned_to.length > 0 &&
-                    props.values.assigned_to.map((member, index) => (
-                      <div key={index}>
-                        <Members
-                          member={member}
-                          isEditMode={true}
-                          removeMember={removeMember}
-                        />
-                      </div>
-                    ))}
-                  <div
-                    onClick={() => {
-                      setMembersOpen(!membersOpen);
-                    }}
-                    className="w-9 h-9 rounded-full flex justify-center items-center cursor-pointer bg-[#eceaea] border-2"
-                  >
-                    <span className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
-                      <RxPlus />
-                    </span>
-                  </div>
-                </div>
-                {membersOpen && (
-                  <SelectComponent
-                    name="assigned_to"
-                    options={employees}
-                    error={props.errors.assigned_to}
-                    touch={props.touched.assigned_to}
-                    label="Assign to"
-                    required
-                    onChange={(field, value) => {
-                      setMembersOpen(false);
-                      const members = props.values.assigned_to || [];
-                      members.push(value);
-                      props.setFieldValue(field, members);
-                    }}
-                  />
-                )}
-
-              {isEdit &&  <div>
-                <div className="flex items-center gap-2 space-y-2">
-                  <div>CheckList</div>
-                  <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-                    <PopoverTrigger asChild>
+                    <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
                       <Button
+                        type="button"
                         variant="outline"
-                        onClick={() => setIsPopoverOpen(true)}
+                        size="lg"
+                        onClick={handleClose}
+                        // onClick={onClose()}
                       >
-                        +
+                        Cancel
                       </Button>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="Item name"
-                          value={inputValue}
-                          onChange={(e) => setInputValue(e.target.value)}
-                        />
-                        <Button onClick={handleAddItem}>Add</Button>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                  <div>{/* Pass the items and setItems to CheckList */}</div>
-                </div>
-                <CheckList items={items} setItems={setItems} />
-                </div>}
-
-                <div className="space-y-2">
-                  <SelectComponent
-                    name="relation"
-                    options={relationList}
-                    error={props.errors.relation}
-                    touch={props.touched.relation}
-                    value={props.values.relation}
-                    label="Relation"
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
-                </SheetCardExtension>
-
-            <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
-              <Button
-                type="button"
-                variant="outline"
-                size="lg"
-                onClick={handleClose}
-                // onClick={onClose()}
-              >
-                Cancel
-              </Button>
-              <Button type="submit">
-                {initialValues.id ? "Save" : "Add Card"}
-              </Button>
-            </div>
-          </div>
-        </form>
+                      <Button type="submit">
+                        {initialValues.id ? "Save" : "Add Card"}
+                      </Button>
+                    </div>
+                  </div>
+                </form>
+              )}
+            </Formik>
+          )}
+        </>
+      </SheetComponent>
+      {showSuccessMessage && (
+        <DialogBox
+          isOpen={showSuccessMessage}
+          setIsOpen={(value) => {
+            setShowSuccessMessage(value);
+            onClose(); // Close the modal or perform any other action upon success
+          }}
+          title={`Task ${isEdit ? "Updated" : "Added"} Successfully!`}
+          // description=""
+        />
       )}
-    </Formik>
     </>
   );
 };
 
-export default CreateAndEditCardForm;
+const TaskInputDetails = ({ title, content }) => {
+  return (
+    <>
+      <div className="flex items-center gap-2 space-y-2">
+        <div style={{ width: "20%", marginRight: "1rem" }}>{title}</div>
+        <div style={{ width: "100%" }}>{content}</div>
+      </div>
+    </>
+  );
+};
+const mapStateToProps = (state) => {
+  return {
+    employees: state.emp.employees,
+  };
+};
+
+export default connect(mapStateToProps)(CreateAndEditCardForm);

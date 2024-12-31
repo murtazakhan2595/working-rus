@@ -12,14 +12,6 @@ import { Button } from "components/ui/button";
 import { getLeaveTransaction } from "app/hooks/leaveTracker";
 import { PageLoader } from "components";
 import { connect } from "react-redux";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../../../../src/@/components/ui/table";
 import { LeaveAplicationColumns } from "app/utils/Types/TableColumns";
 import CustomTable from "components/CustomTable";
 import { FilterInput } from "components/form-control";
@@ -32,6 +24,8 @@ const LeaveTrackerOverview = ({ userProfile }) => {
   const [leaveTransaction, setLeaveTransaction] = useState([]);
   const [filterData, setFilterData] = useState({});
   const [leaveTypesData, setLeaveTypesData] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedLeaveType, setSelectedLeaveType] = useState("");
 
   const fetchLeaveTransaction = async () => {
     setIsLeaveTransactionLoading(true);
@@ -63,6 +57,8 @@ const LeaveTrackerOverview = ({ userProfile }) => {
   }, []);
 
   const handleFilterChange = (filterName, filterValue) => {
+    if (filterName === "status") setSelectedStatus(filterValue);
+    if (filterName === "leave_component_id") setSelectedLeaveType(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
 
@@ -107,6 +103,8 @@ const LeaveTrackerOverview = ({ userProfile }) => {
                     name: "status",
                     width: "max-w-[130px]",
                     placeholder: "Status",
+                    values: selectedStatus,
+                    value: selectedStatus
                   },
                   {
                     type: "select-two",
@@ -117,6 +115,8 @@ const LeaveTrackerOverview = ({ userProfile }) => {
                     })),
                     name: "leave_component_id",
                     placeholder: "Leave Type",
+                    values: selectedLeaveType,
+                    value: selectedLeaveType
                   },
                 ]}
                 onChange={handleFilterChange}

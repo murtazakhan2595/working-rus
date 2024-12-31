@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import SheetComponent from "components/ui/SheetComponent";
 import { Button } from "components/ui/button";
-import {  MembersList } from "../Sections";
+import { MembersList } from "../Sections";
 import { Badge } from "components/ui/badge";
 import CreateEditProject from "./CreateEditProject";
 import AlertDialogue from "components/ui/AlertDialogue";
@@ -40,7 +40,7 @@ const ViewBoardDetails = ({
       {...formSheetData}
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      width="500px"
+      width="568px"
     >
       {isEditMode && project && (
         <CreateEditProject
@@ -61,13 +61,17 @@ const ViewBoardDetails = ({
           description="Are you sure you want to delete this Project? This action is irreversible and will delete all tasks within."
         />
       )}
-      <div className="flex justify-between items-center gap-4">
+      <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <img
-            src={project?.profile?.file}
-            alt="Testing"
-            className="h-[50px] w-[50px] object-cover border-2 border-gray-400 rounded-full"
-          />
+          {project?.profile ? (
+            <img
+              src={project?.profile}
+              alt={project?.name}
+              className="h-[50px] w-[50px] object-cover border-2 border-gray-400 rounded-full"
+            />
+          ) : (
+            <div className="h-[50px] w-[50px] object-cover border-2 border-gray-400 rounded-full" style={{ background: project?.color }}></div>
+          )}
           <p>{project?.name}</p>
         </div>
         <div className="flex gap-4">
@@ -100,7 +104,9 @@ const ViewBoardDetails = ({
         />
         <DetailBox
           label="Members"
-          value={<MembersList members={project?.project_members} />}
+          value={
+            <MembersList members={project?.project_members} displayAll={true} />
+          }
         />
         <DetailBox
           label="Status"

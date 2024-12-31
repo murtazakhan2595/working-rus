@@ -10,12 +10,7 @@ import {
 } from "app/hooks/employee.jsx";
 import PageLoader from "components/PageLoader.jsx";
 import Experience from "../Sections/ExperianceForm.jsx";
-import {
-  CustomDarkButton,
-  CustomLightOutlineButton,
-} from "components/form-control";
 import { validationEmployeeExperienceFormSchema } from "app/utils/FormSchema/employeeFormSchema.jsx";
-import { FaTimes } from "react-icons/fa"; // Import the close icon from react-icons
 import { CircleX, X } from "lucide-react";
 import { Button } from "../../../../../components/ui/button.jsx";
 import { Card, CardContent } from "components/ui/card.jsx";
@@ -103,16 +98,16 @@ const ExperienceInformation = ({
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                               <h5 className="text-base mb-2">
-                                Add Experience {index + 1}
+                               {index===0?`Current Experience`:`Add Experience ${index + 1}`}
                               </h5>
                             </div>
                             <div className="flex justify-end space-y-2">
-                              <CircleX
+                              {index!==0&&<CircleX
                                 className="justify-end text-red-600 cursor-pointer "
                                 onClick={() =>
                                   handleDelete(experience.id, index, props)
                                 }
-                              />
+                              />}
                             </div>
                           </div>
                         </div>
@@ -124,6 +119,7 @@ const ExperienceInformation = ({
                               ? props.errors?.experiences[index]
                               : {}
                           }
+                          isCurrentExperience={index===0}
                           touched={
                             props.touched?.experiences
                               ? props.touched?.experiences[index]

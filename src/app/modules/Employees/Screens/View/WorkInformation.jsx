@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { CiEdit } from "react-icons/ci";
-import { FiPlus } from "react-icons/fi";
 import {
   DepartmentName,
   DesignationName,
@@ -11,7 +10,7 @@ import {
 } from "utils/getValuesFromTables";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 
-import moment from "moment";
+import { renderDate } from "utils/renderValues";
 
 const WorkInformation = ({
   userData,
@@ -42,11 +41,9 @@ const WorkInformation = ({
       title: "Direct Report To",
       data: <ManagerName value={userData?.direct_report} />,
     },
-
-    { title: "Department Head", data: userData?.department_manager },
     {
       title: "Joining Date",
-      data: moment(userData?.joining_date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+      data: renderDate(userData?.joining_date),
     },
   ];
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
@@ -55,9 +52,9 @@ const WorkInformation = ({
       <Card>
         <CardHeader>
           <div className="flex justify-between">
-            <CardTitle>Job Details</CardTitle>
+            <CardTitle className="text-primary">Job Details</CardTitle>
             {isEditable && (
-              <div className="flex gap-4 items-center">
+              <div className="flex items-center gap-4">
                 <div
                   onClick={() => {
                     setShowPersonalDetailCard(true);
@@ -70,14 +67,15 @@ const WorkInformation = ({
           </div>
         </CardHeader>
         <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3 w-full">
+          <div className="grid w-full lg:grid-cols-3 gap-4 md:grid-cols-2 grid-cols-1">
             {workInformation.map((info, index) => (
-              <div className="flex w-full gap-3" key={index}>
-                <div className="w-1/2 1100:w-[35%] text-base text-muted-foreground">
+              <div className="flex flex-row w-full gap-2" key={index}>
+                <div className="flex-1 text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000">
                   {info.title}
                 </div>
-                <div className="w-1/2 1100:w-[65%]text-base text-black"
-                  style={{ overflowWrap: "break-word" }}>{info.data || "N/A"}</div>
+                <div className="flex-1 text-sm text-black break-all xl:break-normal lg:break-all md:break-all xl:text-base lg:text-base md:text-sm">
+                  {info.data || "N/A"}
+                </div>
               </div>
             ))}
           </div>

@@ -1,25 +1,33 @@
-import { MoreVertical } from 'lucide-react';
-import { Button } from 'components/ui/button';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "../../../../src/@/components/ui/dropdown-menu";
+import { MoreVertical } from "lucide-react";
+import { Button } from "components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "src/@/components/ui/dropdown-menu";
+import { Item } from "@radix-ui/react-dropdown-menu";
+import { alignProperty } from "@mui/material/styles/cssUtils";
 
-const CustomDropdown = ({options }) => {
+const CustomDropdown = ({ options }) => {
   return (
     <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <Button aria-haspopup="true" size="icon" variant="ghost">
-        <MoreVertical className="w-4 h-4" />
-        <span className="sr-only">Toggle menu</span>
-      </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent align="end">
-      {options.map((option) => (
-        <DropdownMenuItem key={option.value} onSelect={option?.onClick}>
-          {option.label}
-        </DropdownMenuItem>
-      ))}
-    </DropdownMenuContent>
-  </DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button aria-haspopup="true" size="icon" variant="ghost" className="mt-1" style={{alignItems:'start'}}>
+          <MoreVertical className="w-4 h-4" />
+          <span className="sr-only">Toggle menu</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {options &&
+          options.map((option) => (
+            <DropdownMenuItem key={option.value} onSelect={option?.onClick}>
+              {option.label}
+            </DropdownMenuItem>
+          ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
-}; 
+};
 
 export default CustomDropdown;

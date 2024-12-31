@@ -124,7 +124,7 @@ const ViewLeaveSheet = ({
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
         setIsOpen={onClose}
-        width="500px"
+        
       >
         <EmployeeDataInfo
           name={leaveApplication?.leave_request?.employee_info?.first_name}
@@ -141,7 +141,7 @@ const ViewLeaveSheet = ({
               <DetailBox label={item?.label} value={item?.value} />
             ))}
             {attachment && (
-              <div className="flex gap-4 items-center mt-4 max-w-full">
+              <div className="flex items-center max-w-full gap-4 mt-4">
                 <div className="flex flex-col leading-none min-w-[88px] text-neutral-900 w-[132px]">
                   <div>Attachment</div>
                 </div>
@@ -149,7 +149,7 @@ const ViewLeaveSheet = ({
                   <div className="flex-1 shrink leading-5 basis-0 text-neutral-800 py-4 px-4 border border-[#f0f0f3] flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <Paperclip size={16} />
-                      <div className="text-neutral-1200 text-sm font-medium truncate max-w-14">
+                      <div className="text-sm font-medium truncate text-neutral-1200 max-w-14">
                         {attachment?.attachment?.name}
                       </div>
                       <div className="text-[#8b8d98] text-sm font-normal">
@@ -175,7 +175,7 @@ const ViewLeaveSheet = ({
             <section className="flex relative flex-col max-w-[382px] mt-3">
               <div className="flex absolute -bottom-0.5 z-0 justify-center items-start w-6 h-[150px] left-[5px] min-h-[150px]" />
               {approvalSteps.map((step, index) => (
-                <div className="flex z-0 gap-10 justify-between items-center w-full">
+                <div className="z-0 flex items-center justify-between w-full gap-10">
                   <div className="flex gap-4 self-stretch my-auto w-[194px]">
                     <div className="flex justify-center items-center px-1 bg-white h-[33px] w-[33px]">
                       <img
@@ -199,7 +199,7 @@ const ViewLeaveSheet = ({
             </section>
             </DetailCard>
         {!isMyLeave && showButtons && (
-          <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row pt-6">
+          <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
             <Button
               variant="outline"
               type="button"

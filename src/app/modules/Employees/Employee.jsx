@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "../../../components/ui/card";
 import { EmployeeColumns } from "app/utils/Types/TableColumns";
-import CustomTable from "components/CustomTable";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
 import Header from "../../../components/Header";
 import { FilterInput, SelectComponent } from "components/form-control";
@@ -14,6 +13,7 @@ import {
 import { PageLoader } from "components";
 import SheetOnBoarding from "components/ui/OnBoardingSheet";
 import Stats from "../../../components/ui/Stats";
+import TableCustom from "components/CustomTable";
 
 export default function EmployeeManagement() {
   const [isLoading, setIsLoading] = useState(true);
@@ -32,6 +32,7 @@ export default function EmployeeManagement() {
   const [selectedRole, setSelectedRole] = useState("");
 
   const onPageChange = (name, value) => {
+    console.log(name, value, "NAME")
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
@@ -50,7 +51,7 @@ export default function EmployeeManagement() {
         setActiveEmployee(data.ActiveEmployee || 0);
         setTotalEmployee(data.TotalEmployee || 0);
         setTotalManagers(data.TotalManager || 0);
-        setTotalOffboard(data?.count - data?.ActiveEmployee || 0)
+        setTotalOffboard(data?.TotalEmployee - data?.ActiveEmployee || 0)
       } catch (error) {
         console.error("Error fetching employees:", error);
       } finally {
@@ -58,7 +59,7 @@ export default function EmployeeManagement() {
       }
     };
     fetchData();
-  }, [options, filterData, selectedStatus]);
+  }, [options, filterData, selectedStatus]); 
 
   useEffect(() => {
     const fetchLists = async () => {
@@ -97,7 +98,9 @@ export default function EmployeeManagement() {
     { label: "Total Employees", value: totalEmployee, icon: UsersRound },
     { label: "Managers", value: totalManagers, icon: Contact },
     { label: "Active Employees", value: activeEmployee, icon: UserRoundCheck },
-    { label: "Offboarded Employees", value: totalOffboard, icon: UserRoundCheck },
+    ...(Object.keys(filterData).length === 0
+    ? [{ label: "Offboarded Employees", value: totalOffboard, icon: UserRoundCheck }]
+    : []),
   ];
 
   const onEmpStatusChange = (newStatus) => {
@@ -106,7 +109,7 @@ export default function EmployeeManagement() {
   };
 
   return (
-    <div className="flex flex-col gap-4 profile-management">
+    <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}>
       <Header content={<SheetOnBoarding />} />
       <Stats stats={statsData} />
       <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
@@ -154,7 +157,7 @@ export default function EmployeeManagement() {
       ) : (
         <Card>
           <CardContent>
-            <CustomTable
+            <TableCustom
               data={employeeData.results}
               columns={EmployeeColumns}
               pagination={true}

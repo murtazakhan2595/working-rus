@@ -18,6 +18,7 @@ import { getManagerName } from "utils/getValuesFromTables";
 import { Button } from "components/ui/button";
 import { ReasonForLeaving } from "data/Data";
 import { CoverFileUpload } from "components/form-control";
+import { validateExitRequestForm } from "app/utils/FormSchema/employeeFormSchema";
 
 const PersonalInformation = ({
   personalInfo,
@@ -26,23 +27,23 @@ const PersonalInformation = ({
   reload,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  console.log(personalInfo, "PERSONAL INFO")
 
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   const [visaDetails, setVisaDetails] = useState({});
   const formRef = React.createRef();
   const handleSubmit = async (data, resetForm) => {
-    // setIsLoading(true);
-    const formData = {
-      exit_category: "resignation",
-      employee_id: userData.id,
-      status_resignation: "pending",
-      exit_date: data.exit_date,
-      resignation_letter: data.resignation_Letter,
-      notice_period: data.notice_period,
-      exit_type: data?.reason_for_leaving
-    };
+    const formData = new FormData()
 
+    formData.append("exit_category", "resignation");
+    formData.append("employee_id", userData.id);
+    formData.append("status_resignation", "pending");
+    formData.append("exit_date", data.exit_date);
+    formData.append("notice_period", data.notice_period);
+    formData.append("exit_type", data.reason_for_leaving);
+
+    if (data.resignation_Letter) {
+      formData.append("resignation_letter", data.resignation_Letter);
+    }
     try {
       const response = await employeeExit(formData);
       if (response) {
@@ -175,9 +176,10 @@ const PersonalInformation = ({
                   required={true}
                   onChange={(field, value) => {
                     props.setFieldValue(field, value);
+                    props.setFieldTouched(field, true);
                   }}
                 />
-                <div className="flex flex-row gap-9 ">
+                <div className="flex flex-row gap-4">
                   <Button variant="outline" type="submit" size="lg">
                     Reset
                   </Button>

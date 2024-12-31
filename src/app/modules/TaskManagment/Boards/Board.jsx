@@ -16,24 +16,18 @@ import { FaPlus } from "react-icons/fa";
 import { RxPlus } from "react-icons/rx";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { CustomDropdown } from "../Sections";
-import {
-  AddNewListModel,
-  MembersDropdown,
-  TaskSortingFilters,
-  RenderProject,
-} from "./Sections";
+import { AddNewListModel, MembersDropdown, RenderProject } from "./Sections";
 import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
 import { getRandomColor } from "utils/renderValues";
-import { ArrowLeft, LayoutList } from "lucide-react";
+import { ArrowLeft, LayoutGrid, LayoutList } from "lucide-react";
 import { DateInput } from "components/form-control";
 import { ClaimExpenseTypeOptions } from "data/Data";
 import { Button } from "components/ui/button";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import SheetComponent from "components/ui/SheetComponent";
-import CreateAndEditCardForm from "./Sections/CreateAndEditCardForm";
-import TableCustom from "components/CustomTable";
+
 import AlertDialogue from "components/ui/AlertDialogue";
 
 const Board = ({ employees }) => {
@@ -44,10 +38,12 @@ const Board = ({ employees }) => {
   const [projectData, setProjectData] = useState(Project);
   const [filterData, setFilterData] = useState({});
   const [AllBoards, setAllBoards] = useState([]);
-  const [filterList, setFilterList] = useState([]);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
+  const [selectedExpenseType, setSelectedExpenseType] = useState("");
 
   const handleFilterChange = (filterName, filterValue) => {
+    if (filterName === "expense_type") setSelectedExpenseType(filterValue);
+    // onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -55,7 +51,6 @@ const Board = ({ employees }) => {
       } else {
         updatedFilters[filterName] = filterValue;
       }
-      console.log(updatedFilters, "UPDATED FILTERS")
       return updatedFilters;
     });
   };
@@ -135,24 +130,20 @@ const Board = ({ employees }) => {
     setshowAddNewListModel(!showAddNewListModel);
   };
 
-
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
-        <Button
-          variant="ghost"
-          onClick={() => navigate(-1)}
-          className="p-4 text-xl text-balance"
-        >
-          <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
-        </Button>
-          <RenderProject projectId={projectId} />
-          </div>
-        <div className="flex justify-center items-center gap-3">
-          <Button onClick={toggleAddBoardModal}>
-            Add New List
+          <Button
+            variant="ghost"
+            onClick={() => navigate(-1)}
+            className="p-4 text-xl text-balance"
+          >
+            <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
           </Button>
+          <RenderProject projectId={projectId} />
+        </div>
+        <div className="flex items-center justify-center gap-3">
           <FilterInput
             filters={[
               {
@@ -160,6 +151,8 @@ const Board = ({ employees }) => {
                 option: ClaimExpenseTypeOptions,
                 name: "expense_type",
                 placeholder: "Filters",
+                values: selectedExpenseType,
+                value: selectedExpenseType,
               },
             ]}
             onChange={handleFilterChange}
@@ -167,7 +160,7 @@ const Board = ({ employees }) => {
           <DateInput
             placeholder="Date"
             value={filterDate}
-            className="flex align-middle items-center"
+            className="flex items-center align-middle"
             name="start_date"
             onChange={(field, value) => {
               setFilterDate(value);
@@ -175,7 +168,6 @@ const Board = ({ employees }) => {
             }}
           />
           <MembersDropdown members={projectData?.project_members || []} />
-
           <LayoutList size={18} />
         </div>
       </div>
@@ -193,8 +185,8 @@ const Board = ({ employees }) => {
           {isLoading ? (
             <PageLoader />
           ) : (
-            <div className="flex gap-5 overflow-x-auto mt-5">
-              {AllBoards.count > 0 ? (
+            <div className="flex gap-8 mt-5 overflow-x-auto">
+              {AllBoards.count > 0 &&
                 AllBoards.results.map((board, index) => (
                   <TaskColumn
                     key={index}
@@ -208,18 +200,27 @@ const Board = ({ employees }) => {
                       board_id: [board.id],
                     }}
                   />
-                ))
-              ) : (
-                <div className="text-center w-100 mt-3 mb-5">
-                  Project Board is empty
+                ))}
+              <div className="flex flex-col min-w-[290px] max-w-[320px] mb-5">
+                <div className="flex flex-col ">
+                  <header className="">
+                    <Button
+                      variant="outline"
+                      type="button"
+                      size="lg"
+                      className="w-full text-start"
+                      onClick={toggleAddBoardModal}
+                    >
+                      <RxPlus className="text-xl " />
+                      <span className="ml-2">Add New List</span>
+                    </Button>
+                  </header>
                 </div>
-              )}
-          {/* <Button variant="outline" onClick={toggleAddBoardModal}>Add New List</Button> */}
+              </div>
 
+              {/* <Button variant="outline" onClick={toggleAddBoardModal}>Add New List</Button> */}
             </div>
-
           )}
-
         </CardContent>
       </Card>
 
@@ -236,6 +237,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const fetchData = async (isMounted) => {
     try {
       const TaskData = await getTaskByBoardId({ filterData });
@@ -260,10 +262,6 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
     e.dataTransfer.setData("sourceBoardId", board.id);
   };
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
   const handleDrop = async (e) => {
     e.preventDefault();
     const taskId = e.dataTransfer.getData("taskId");
@@ -278,127 +276,100 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
   const dropdownOptions = [
     {
       label: "Edit",
-      onClick: () => {
-        setshowAddNewListModel(true);
-      },
+      onClick: () => setshowAddNewListModel(true),
     },
     {
       label: "Delete",
-      onClick: () => {
-        setIsDeleteModalOpen(true);
-      },
+      onClick: () => setIsDeleteModalOpen(true),
     },
   ];
 
   const confirmDelete = async () => {
     await deleteBoard(board.id);
-    reloadData();
+    fetchData(true);
     setIsDeleteModalOpen(false);
-  };
-
-  const formSheetData = {
-    triggerText: null,
-    title: "Add Card",
-    description: null,
-    footer: null,
   };
 
   return (
     <div
-      className="flex flex-col min-w-[290px] max-w-[320px] mb-5"
-      onDragOver={handleDragOver}
+      className="flex flex-col min-w-[320px] max-w-[320px] mb-5"
+      onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
     >
-      <div className="flex flex-col ">
-        <header className="flex gap-5 justify-between items-center pl-5 w-full">
+      <div className="flex flex-col">
+        <header className="flex justify-between w-full gap-5 pl-5">
           <div className="flex gap-4">
             <h2 className="flex gap-2 text-base font-bold text-zinc-800">
-              <div
-                className={`shrink-0 my-auto w-2 h-2 ${getRandomColor(
-                  board.name?.charAt(0)
-                )} rounded-full`}
-              />
               <span>{board.name}</span>
             </h2>
-            <span className="justify-center flex text-sm bg-white text-zinc-600 w-[22px] h-[22px]">
-              {tasks?.count || 0}
-            </span>
           </div>
-
           <CustomDropdown
             isOpen={isDropdownOpen}
-            toggleDropdown={() => {
-              setIsDropdownOpen(!isDropdownOpen);
-            }}
+            toggleDropdown={() => setIsDropdownOpen(!isDropdownOpen)}
             options={dropdownOptions}
           />
         </header>
-        <button
-          className="flex gap-2 justify-center items-center px-5 py-2 mt-10 text-base font-medium bg-white rounded border border-solid border-zinc-300 text-zinc-600"
-          onClick={() => {
-            setOpenCreateCard(true);
-          }}
+
+        <Button
+          variant="outline"
+          type="button"
+          size="lg"
+          className="w-full"
+          onClick={() => setOpenCreateCard(true)}
         >
-          <RxPlus className=" text-xl" />
-          <span>Add Card</span>
-        </button>
+          <RxPlus className="text-xl" />
+          <span className="ml-2">Add Card</span>
+        </Button>
         {tasks &&
           tasks.count > 0 &&
           tasks.results.map((task, index) => (
-            <TaskCard
-              key={index}
-              task={task}
-              projectId={projectId}
-              boardId={board.id}
-              reloadData={() => {
-                fetchData(true);
-              }}
-              onDragStart={handleDragStart}
-            />
-          ))}
+          <TaskCard
+            key={index}
+            task={task}
+            projectId={projectId}
+            boardId={board.id}
+            reloadData={() => fetchData(true)}
+            onDragStart={handleDragStart}
+          />
+        ))}
       </div>
 
-      <SheetComponent
-      {...formSheetData}
-      isOpen={openCreateCard}
-      setIsOpen={setOpenCreateCard}
-      width="500px"
-      >
-          <CreateCard
-          onClose={() => {
-            setOpenCreateCard(false);
-            reloadData();
-          }}
-          boardId={board.id}
-          projectId={projectId}
-          setIsOpen={setOpenCreateCard}
-          />
-      </SheetComponent>
+      <CreateCard
+        onClose={() => {
+          setOpenCreateCard(false);
+          fetchData(true);
+        }}
+        boardId={board.id}
+        isOpen={openCreateCard}
+        projectId={projectId}
+        setIsOpen={setOpenCreateCard}
+      />
+
       {showAddNewListModel && (
-        
         <AddNewListModel
           boardId={board.id}
           onClose={() => {
             setshowAddNewListModel(false);
-            reloadData();
+            fetchData(true);
           }}
-          isEditMode={showAddNewListModel}
+          isEditMode
           setIsOpen={setshowAddNewListModel}
         />
       )}
+
       {isDeleteModalOpen && (
         <AlertDialogue
           isOpen={isDeleteModalOpen}
-          setIsOpen={()=> setIsDeleteModalOpen(false)}
+          setIsOpen={() => setIsDeleteModalOpen(false)}
           handleContinue={confirmDelete}
           title="Confirm Delete"
-          description="This action can't be undone. All information associated with this
-            will be lost."
+          description="This action can't be undone. All information associated with this will be lost."
         />
       )}
     </div>
   );
 };
+
 
 const mapStateToProps = (state) => {
   return {

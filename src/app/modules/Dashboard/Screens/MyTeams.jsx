@@ -56,9 +56,10 @@ const MyTeams = ({ userProfile, employees }) => {
             <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
               Team Members
             </div>
-            <Button variant="outline">
+            {/* Hiding button untill My Team page developed */}
+            {/* <Button variant="outline">
               <Link to="/my-team">View Detail</Link>
-            </Button>
+            </Button> */}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -79,19 +80,13 @@ const MyTeams = ({ userProfile, employees }) => {
   );
 };
 
-const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
+export const RenderTeamMembers = ({ teamMemeber, isOpen, toggle, showDetails=true }) => {
   return (
     <>
       <Accordion type="single" collapsible>
         <AccordionItem value="user-info-1">
           <AccordionTrigger className="flex items-center gap-4 p-4 hover:no-underline">
             <div className="flex flex-row items-center justify-start gap-4">
-              {/* <Avatar className=" h-14 w-14">
-                <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
-                <AvatarFallback className="flex items-center justify-center text-base font-normal rounded-full border-plum-500 bg-plum-300">
-                  {teamMemeber?.first_name?.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar> */}
               <Avatar
                src="/placeholder-user.jpg"
                fallbackText={teamMemeber?.first_name?.charAt(0)?.toUpperCase()}
@@ -112,7 +107,7 @@ const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
               </div>
             </div>
           </AccordionTrigger>
-          <AccordionContent className="p-4 pt-0">
+          {showDetails && <AccordionContent className="p-4 pt-0">
             <div className="space-y-4">
               <div className="bg-[#F9FAFB] p-6 rounded-md">
                 <div className="text-xs font-medium text-muted-foreground">
@@ -136,7 +131,7 @@ const RenderTeamMembers = ({ teamMemeber, isOpen, toggle }) => {
                 </div>
               </div>
             </div>
-          </AccordionContent>
+          </AccordionContent>}
         </AccordionItem>
       </Accordion>
     </>

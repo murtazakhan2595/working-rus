@@ -1,473 +1,249 @@
 import React, { useState, useEffect, useRef } from "react";
 import { CiEdit } from "react-icons/ci";
-import { PiHeadlightsBold, PiUsersLight } from "react-icons/pi";
-import { IoCalendarOutline } from "react-icons/io5";
-import { RxCross2, RxPerson } from "react-icons/rx";
-import {
-  AiOutlineDownload,
-  AiOutlineFile,
-  AiOutlinePaperClip,
-} from "react-icons/ai";
-import { FaRegImage } from "react-icons/fa";
-import { RiSendPlaneFill } from "react-icons/ri";
-import { LiaCommentAlt } from "react-icons/lia";
 import { PriorityList } from "data/Data";
-import { MembersList } from "../Sections";
 import moment from "moment";
-import {
-  postComment,
-  getBoardById,
-  getAttachmentById,
-} from "app/hooks/taskManagment";
-import { EmployeeName } from "utils/getValuesFromTables";
+import { postComment, getBoardById } from "app/hooks/taskManagment";
 import { connect, useSelector } from "react-redux";
 import EditCard from "./EditCard";
-import { getRandomColor } from "utils/renderValues";
 import { addCommentAttachment } from "app/hooks/taskManagment";
-import { getCommentsWithAttachments } from "app/hooks/taskManagment";
-import { filebase64Download } from "utils/fileUtils";
-
+import {
+  getCommentsWithAttachments,
+  getTaskById,
+} from "app/hooks/taskManagment";
+import { toast } from "react-toastify";
+import SheetComponent from "components/ui/CustomSheet";
+import {
+  Labels,
+  MembersList,
+  TaskComments,
+  CheckList,
+  Attachments,
+  TaskRelation,
+} from "app/modules/TaskManagment/Sections";
 import { Button } from "components/ui/button";
 import { Trash } from "lucide-react";
 
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
+import { PageLoader } from "components";
 
-
-const TaskDetail = ({ task, onClose, employees, handleDelete }) => {
-  const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState("");
+const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [taskData, setTaskData] = useState({});
   const [boardName, setBoardName] = useState("Loading...");
-  const [attachments, setAttachments] = useState([]);
-  const [newAttachment, setNewAttachment] = useState({});
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const fileInputRef = useRef(null);
-  const [isTaskDetailVisible, setIsTaskDetailVisible] = useState(true);
-  const commentRef = useRef(null);
-  const userId = useSelector((state) => state.user.userProfile.id);
 
-  const fetchData = async () => {
+  const fetchTaskData = async (isMounted) => {
+    setIsLoading(true);
     try {
-      const data = await getCommentsWithAttachments({ task_id: [task.id] });
-      setComments(data);
+      // Fetch card details
+      const cardDetails = await getTaskById(taskId);
+      if (!cardDetails) {
+        throw new Error("Card details not found.");
+      }
+      if (isMounted) {
+        setTaskData(cardDetails);
+        setIsLoading(false); // Stop loading spinner
+      }
     } catch (error) {
-      console.error("Error fetching comments:", error);
-      setComments([]);
+      console.error("Error fetching task data:", error);
+      toast.error("Failed to load task details. Please try again later.");
+    } finally {
+      if (isMounted) {
+        setIsLoading(false); // Stop loading spinner
+      }
     }
   };
   useEffect(() => {
+    let isMounted = true;
+    if (taskId) fetchTaskData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [taskId]);
+
+  useEffect(() => {
     const fetchBoardName = async () => {
       try {
-        const name = await getBoardById(task?.board_id);
+        const name = await getBoardById(taskData?.board_id);
         setBoardName(name?.name);
       } catch (error) {
         console.error("Error fetching board name:", error);
       }
     };
 
-    const fetchAttachments = async () => {
-      try {
-        if (task?.attachment?.length) {
-          const attachmentPromises = task.attachment.map((id) =>
-            getAttachmentById(id)
-          );
-          const attachmentData = await Promise.all(attachmentPromises);
-          setAttachments(attachmentData);
-        }
-      } catch (error) {
-        console.error("Error fetching attachments:", error);
-      }
-    };
-
     fetchBoardName();
-    fetchData();
-    fetchAttachments();
-  }, [task?.board_id, task?.id, task?.attachment]);
-
-  const handleAddComment = async () => {
-    if (newComment.trim() || newAttachment) {
-      try {
-        if (newAttachment) {
-          console.log("newAttachment", newAttachment);
-          try {
-            const response = await addCommentAttachment(newAttachment);
-            console.log("attachmed response", response);
-            if (response) {
-              const payload = {
-                task_id: task.id,
-                user_id: userId,
-                comment: newComment,
-                commentattach: [response.id],
-              };
-              const result = await postComment(payload);
-              if (result) {
-                setNewAttachment([]);
-                setNewComment("");
-              }
-            }
-          } catch (error) {
-            console.error("Error uploading file:", error);
-          }
-        } else if (newComment.trim()) {
-          const payload = {
-            task_id: task.id,
-            user_id: userId,
-            comment: newComment,
-          };
-          await postComment(payload);
-          setNewComment("");
-        }
-        console.log("newAttachment", newAttachment);
-        fetchData();
-      } catch (error) {
-        console.error("Error posting comment or uploading attachment:", error);
-      }
-    }
-  };
-
-  const handleFileClick = () => {
-    fileInputRef.current.click();
-  };
-
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0]; // Get the single file
-
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onload = (event) => {
-        const fileData = {
-          name: file.name, // File name
-          file: event.target.result, // Base64 data URL
-        };
-        setNewAttachment(fileData); // Update state with file data
-      };
-
-      reader.onerror = (error) => {
-        console.error("Error reading file:", error); // Handle errors
-      };
-
-      reader.readAsDataURL(file); // Read file as data URL
-    }
-  };
+  }, [taskData?.board_id]);
 
   const editDetails = () => {
     setIsEditCardOpen(true);
-    setIsTaskDetailVisible(false);
   };
-
-  const handleCommentChange = (e) => {
-    const value = e.target.value;
-    setNewComment(value);
-    const mentionStart = value.lastIndexOf("@");
-    if (mentionStart !== -1) {
-      const mentionQuery = value.substring(mentionStart + 1);
-      const matches = employees.filter((user) =>
-        user.label.toLowerCase().includes(mentionQuery.toLowerCase())
-      );
-      setFilteredUsers(matches);
-      setShowDropdown(true);
-    } else {
-      setShowDropdown(false);
-    }
-  };
-  const handleUserSelect = (user) => {
-    const mentionStart = newComment.lastIndexOf("@");
-    const comment = newComment.substring(0, mentionStart) + `@${user.label} `;
-    setNewComment(comment);
-    setShowDropdown(false);
-
-    // Move cursor to the end of the inserted mention
-    setTimeout(() => {
-      commentRef.current.selectionStart = comment.length;
-      commentRef.current.selectionEnd = comment.length;
-      commentRef.current.focus();
-    }, 0);
-  };
-
-  const UserInitials = ({ user }) => {
-    const employeeName = EmployeeName({ value: user.value, length: 2 });
-    const name = employeeName.props.children;
-    return (
-      <span
-        className={`${getRandomColor(
-          name?.charAt(0)
-        )}  flex justify-center items-center text-[10.5px] font-bold text-[#FAFBFC] w-8 h-8 rounded-full`}
-      >
-        {name}
-      </span>
-    );
-  };
-
-  function base64ToBlob(base64, mimeType) {
-    const byteCharacters = atob(base64);
-    const byteArrays = [];
-
-    for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-      const slice = byteCharacters.slice(offset, offset + 512);
-      const byteNumbers = new Array(slice.length);
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      byteArrays.push(byteArray);
-    }
-
-    return new Blob(byteArrays, { type: mimeType });
-  }
-
-
 
   function CardValues({ values }) {
     const items = [
-      {
-        label: "Due Date",
-        value: moment(values?.end_date).format("DD MMM"),
-      },
-      {
-        label: "Priority",
-        value: PriorityList.find((option) => option.value === values?.priority)
-          ?.label,
-      },
-      {
-        label: "Label",
-        value: values?.label || "Design",
-      },
-      {
-        label:"Assign",
-        value: <MembersList members={values?.assigned_to} />
-      },
-      {
-        label:"Relation",
-        value: "Relation"
-      },
-      {
-        label:"Checklist",
-        value: "CheckList"
-      }
+      ...(values?.end_date
+        ? [
+            {
+              label: "Due Date",
+              value: moment(values?.end_date).format("DD MMM"),
+            },
+          ]
+        : []),
+      ...(values?.priority
+        ? [
+            {
+              label: "Priority",
+              value: PriorityList.find(
+                (option) => option.value === values?.priority
+              )?.label,
+            },
+          ]
+        : []),
+      ...(values?.label?.length
+        ? [
+            {
+              label: "Label",
+              value: (
+                <Labels
+                  labelsSelected={values.label || []}
+                  onSelectedLabelsChange={() => {}}
+                  editMode={false}
+                />
+              ),
+            },
+          ]
+        : []),
+      ...(values?.assigned_to?.length
+        ? [
+            {
+              label: "Assign",
+              value: (
+                <MembersList members={values?.assigned_to} displayAll={true} />
+              ),
+            },
+          ]
+        : []),
+      ...(values?.relation?.length
+        ? [
+            {
+              label: "Relation",
+              value: (
+                <TaskRelation
+                  relationsList={values.relation || []}
+                  onChange={() => {}}
+                  projectId={taskData.project_id}
+                  editMode={false}
+                />
+              ),
+            },
+          ]
+        : []),
+      ...(values?.task_checklist?.length
+        ? [
+            {
+              label: "Checklist",
+              value: (
+                <CheckList
+                  items={values.task_checklist || []}
+                  onChange={() => {}}
+                  editMode={false}
+                />
+              ),
+            },
+          ]
+        : []),
     ];
+
     return (
-      <div className="flex flex-col sm:flex-row items-start justify-between flex-wrap w-[60%] gap-4">
+      <div className="flex flex-col items-start justify-between flex-wrap w-[100%] gap-4">
         {items.map(({ label, value }, idx) => (
-          <DetailBox
-            label={label}
-            value={value}
-            className="mt-2"
-          />
+          <DetailBox label={label} value={value} className="mt-2" />
         ))}
       </div>
     );
   }
-
+  const formSheetData = {
+    triggerText: null,
+    title: "View Details",
+    description: null,
+    footer: null,
+  };
   return (
     <>
-      {
-        isEditCardOpen && (
-          <EditCard
-          cardId={task?.id}
-          projectId={task?.project_id}
+      <SheetComponent
+        {...formSheetData}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        width="568px"
+      >
+        {isLoading ? (
+          <PageLoader />
+        ) : (
+          <>
+            <header className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold text-[#323333] ">
+                {taskData?.name}
+              </h1>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={editDetails}>
+                  <CiEdit className="mr-2" />
+                  Edit
+                </Button>
+
+                <Button variant="outline" onClick={handleDelete}>
+                  <Trash className="mr-2" size={16} />
+                  Delete
+                </Button>
+              </div>
+            </header>
+            <div className="p-2">
+              <div className="mb-4">
+                <span className="text-[14px]  text-baseGray">Is in list </span>
+                <span className="text-[14px]  text-baseGray">{boardName}</span>
+              </div>
+
+              <DetailCard detailCardTitle="Card Details">
+                <CardValues values={taskData} />
+              </DetailCard>
+
+              <DetailBox
+                label="Description"
+                value={
+                  <span
+                    dangerouslySetInnerHTML={{ __html: taskData?.description }}
+                  />
+                }
+              />
+              {taskData.attachment && taskData.attachment.length > 0 && (
+                <DetailBox
+                  label="Attachments"
+                  value={
+                    <Attachments
+                      attachmentSelected={taskData.attachment || []}
+                      onChange={() => {}}
+                      editMode={false}
+                    />
+                  }
+                />
+              )}
+              <DetailBox label="Comments" value={<></>} />
+              <TaskComments taskId={taskId} />
+            </div>
+          </>
+        )}
+      </SheetComponent>
+      {isEditCardOpen && (
+        <EditCard
+          cardId={taskData?.id}
+          projectId={taskData?.project_id}
           onClose={() => {
             setIsEditCardOpen(false);
-            onClose();
+            fetchTaskData(true);
           }}
-        /> 
-        )
-      }
-      {isTaskDetailVisible && (
-        <>
-          <header className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-[#323333] ">
-              {task?.name}
-            </h1>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={editDetails}>
-                <CiEdit className="mr-2" />
-                Edit
-              </Button>
-
-              <Button variant="outline" onClick={handleDelete}>
-                <Trash className="mr-2" size={16} />
-                Delete
-              </Button>
-            </div>
-          </header>
-
-          <div className="p-2">
-            <div className="mb-4">
-              <span className="text-[14px]  text-baseGray">
-                Is in list{" "}
-              </span>
-              <span className="text-[14px]  text-baseGray">
-                {boardName}
-              </span>
-            </div>
-
-            <DetailCard detailCardTitle="Card Details">
-                <CardValues values={task} />
-            </DetailCard>
-
-
-            <DetailBox
-             label="Description"
-             value={<span dangerouslySetInnerHTML={{ __html: task?.description }}/>}
-            />
-            <DetailBox
-             label="Sub Tasks"
-             value="Sub Task 1"
-            />
-
-
-
-            <div className="flex mb-3">
-              <h2 className="text-base  font-bold text-[#323333] flex gap-x-2 items-center">
-                Attachments
-              </h2>
-              {attachments?.map((attachment) => (
-                <div
-                  key={attachment.id}
-                  className="flex items-center justify-between w-full gap-2 p-4 my-1 border border-gray-400 rounded-lg"
-                  onClick={(e) => {
-                    if (!e.target.closest(".download-icon")) {
-                      const dataURL = attachment?.attachments?.file;
-                      console.log(dataURL, "DATA URL");
-                      const [metadata, base64Data] = dataURL?.split(",");
-                      const mimeType = metadata?.match(/:(.*?);/)[1];
-                      const blob = base64ToBlob(base64Data, mimeType);
-                      const blobUrl = URL.createObjectURL(blob);
-
-                      window.open(blobUrl, "_blank");
-                    }
-                  }}
-                >
-                  <div className="flex items-center">
-                    {/* <FaRegImage className="w-4 h-4 text-gray-500" /> */}
-                    <img src={attachment?.attachments?.file} alt={attachment?.attachments?.name} className="w-8 h-8"/>
-                    <span className="ml-4 text-sm text-baseGray">
-                      {attachment?.attachments?.name}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-x-2">
-                    <a
-                      href={attachment?.attachments?.file}
-                      download
-                      className="text-gray-500 hover:text-gray-700 download-icon"
-                    >
-                      <AiOutlineDownload className="w-5 h-5" />
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="pb-1">
-              <div className="flex items-center justify-between">
-                <h2 className="text-base  font-bold text-[#323333] flex gap-x-2 items-center">
-                  Comments ({comments.length})
-                </h2>
-              </div>
-              <div className="flex items-center border border-gray-300 rounded-lg p-1 bg-[#E8EAED]">
-                <div className="relative w-full">
-                  {newAttachment?.name && (
-                    <div className="flex items-center gap-2 pb-2">
-                      <AiOutlineFile className="w-5 h-5 text-black" />
-                      <span className="text-sm text-black">
-                        {newAttachment.name}
-                      </span>
-                    </div>
-                  )}
-                  <input
-                    type="text"
-                    placeholder="Type your comment here"
-                    className="flex-grow px-2 py-1 text-sm bg-transparent text-gray-700 focus:outline-none placeholder:text-[14px] placeholder: placeholder:text-baseGray w-full"
-                    value={newComment}
-                    onChange={handleCommentChange}
-                    ref={commentRef}
-                  />
-                  {showDropdown && (
-                    <div className="absolute top-0 left-0 z-10 mx-auto mt-8 overflow-y-auto bg-white rounded-lg shadow-lg max-h-32 ">
-                      {filteredUsers.map((user) => (
-                        <div
-                          key={user.value}
-                          className="flex items-center gap-2 p-2 mb-1 cursor-pointer hover:bg-gray-100"
-                          onClick={() => handleUserSelect(user)}
-                        >
-                          <UserInitials user={user} />
-                          <div className="flex-col gap-1">
-                            <p>{user.name}</p>
-                            <p className="text-sm">@{user.label}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-                <AiOutlinePaperClip
-                  onClick={handleFileClick}
-                  className="w-5 h-5 mx-2 text-black cursor-pointer"
-                />
-                <div
-                  className="flex items-center justify-center w-6 h-6 mr-1 bg-black rounded-full"
-                  onClick={handleAddComment}
-                >
-                  <RiSendPlaneFill className="w-3 h-3 text-white cursor-pointer" />
-                </div>
-              </div>
-            </div>
-            <div className="mt-3 space-y-4">
-              {comments?.map((comment, index) => (
-                <div key={index} className="flex items-start space-x-3">
-                  <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center font-semibold text-white bg-pink-500 rounded-full h-9 w-9">
-                      <EmployeeName value={comment.user_id} length={2} />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between w-full ">
-                    <div>
-                      {comment?.commentattach?.length > 0 &&
-                        comment?.attachments?.length > 0 &&
-                        comment?.attachments[0]?.attachment && (
-                          <button
-                            className="flex items-center gap-2 hover:bg-[#E8EAED] p-1"
-                            onClick={() => {
-                              console.log(
-                                comment?.attachments[0]?.attachment?.file
-                              );
-                              filebase64Download(
-                                comment?.attachments[0]?.attachment
-                              );
-                            }}
-                          >
-                            <AiOutlineFile className="w-5 h-5 text-black" />
-                            <span className="text-sm text-black">
-                              {comment?.attachments[0]?.attachment?.name}
-                            </span>
-                          </button>
-                        )}
-                      <p className="mt-1 text-[#323333]  text-base">
-                        {comment.comment}
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[12px]  text-baseGray">
-                        {moment(comment.created_at?.slice(0, 10)).format(
-                          "DD-MMM-YY"
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
+          setIsOpen={() => {
+            setIsEditCardOpen();
+          }}
+          isOpen={isEditCardOpen}
+        />
       )}
     </>
   );
