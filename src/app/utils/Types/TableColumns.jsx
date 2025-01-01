@@ -1179,17 +1179,10 @@ export const EmployeesAttendanceColumns = [
 
 
 export const myAttendanceColumn = [
-  {
-    text: "S. No",
-    formatter: (_,row, index, test) => {
-      const displayIndex = test + 1;
-      return displayIndex < 10 ? `0${displayIndex}` : displayIndex;
-    },
-  },
 {
   text:"Date",
   dataField:"date",
-  formatter:(cell)=> new Date(cell)?.toLocaleDateString("en-GB")
+  formatter:(cell)=> <>{`${renderDate(cell)}`} </>
 },
 {
   text:"Punch In",

@@ -21,6 +21,7 @@ import { ArrowLeft } from "lucide-react";
 import { getAttendance } from "app/hooks/attendance";
 import moment from "moment";
 import { format } from "date-fns";
+import { renderDate } from "utils/renderValues";
 
 ChartJS.register(
   CategoryScale,
@@ -109,7 +110,6 @@ const AttendanceReport = () => {
     setAttendanceHistoryLoading(false);
   };
 
-  console.log(cardsData, "CARDSA DATA");
 
   useEffect(() => {
     getAttendanceList();
@@ -129,7 +129,7 @@ const AttendanceReport = () => {
   };
 
   const columns = [
-    { text: "Date", dataField: "date" },
+    { text: "Date", dataField: "date",  formatter: (cell)=> <>{`${renderDate(cell)}`}</>},
     {
       text: "Check In",
       dataField: "checkin",
