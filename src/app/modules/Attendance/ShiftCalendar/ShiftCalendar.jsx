@@ -30,16 +30,14 @@ const ShiftCalender = () => {
       const filterData = {
         ...(userProfile.role === 2 ? { direct_report: userProfile.id } : {}),
       };
-      console.log("filterData", filterData);
       try {
-        const response = await getEmployeeCustomList({filterData});
-        console.log(response, "RESPONSE");
+        const response = await getEmployeeCustomList({ filterData });
         if (response) {
           setTeamMembers(response);
         }
 
         const shifts = await getShift();
-        if(shifts){
+        if (shifts) {
           console.log("Shifts", shifts);
           setShifts(shifts);
         }
@@ -51,10 +49,9 @@ const ShiftCalender = () => {
   }, []);
   return (
     <div>
-      {/* <Header
-        content={<AssignShift users={teamMembers.results} shifts={shifts.results} />}
-      /> */}
-      <Header/>
+      <Header
+      // content={<AssignShift users={teamMembers.results} shifts={shifts.results} />}
+      />
       <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="all">
         {/* <div className="flex justify-start">
           <TabsList className="flex justify-center mb-4">
