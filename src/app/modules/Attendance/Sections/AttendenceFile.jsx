@@ -32,6 +32,31 @@ ChartJS.register(
   Legend
 );
 
+const getWeekNumber = (date) => moment(date).isoWeek();
+
+const processData = (data) => {
+  const weekMetrics = {};
+
+  data.forEach((item) => {
+    const weekNumber = getWeekNumber(item.date);
+    if (!weekMetrics[weekNumber]) {
+      weekMetrics[weekNumber] = { present: 0, absent: 0, late: 0 };
+    }
+
+    if (item.is_absent) {
+      weekMetrics[weekNumber].absent++;
+    } else {
+      weekMetrics[weekNumber].present++;
+    }
+
+    if (item.is_late) {
+      weekMetrics[weekNumber].late++;
+    }
+  });
+
+  return weekMetrics;
+};
+
 const AttendanceReport = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -49,6 +74,13 @@ const AttendanceReport = () => {
     latePercentage: 0,
     checkinPercentage: 0,
   });
+
+  const [chartData, setChartData] = useState({
+    labels: [],
+    presentData: [],
+    absentData: [],
+    lateData: []
+  })
   const [filterData, setFilterData] = useState({
     employee_id: id,
     date_range:
@@ -72,6 +104,21 @@ const AttendanceReport = () => {
       filterData: filterData,
     });
     if (attendanceData) {
+      const weekMetrics = processData(attendanceData?.results);
+
+  const labels = Object.keys(weekMetrics).map((week) => `Week ${week}`);
+  const presentData = Object.values(weekMetrics).map((week) => week.present);
+  const absentData = Object.values(weekMetrics).map((week) => week.absent);
+  const lateData = Object.values(weekMetrics).map((week) => week.late);
+
+  setChartData({
+    labels: labels,
+    presentData: presentData,
+    absentData: absentData,
+    lateData: lateData
+  })
+  console.log(labels, presentData, "HELLo")
+
       const totalEntries = attendanceData?.results?.length;
       const totalAbsent = attendanceData?.results.filter(
         (entry) => entry.is_absent
@@ -110,6 +157,7 @@ const AttendanceReport = () => {
     setAttendanceHistoryLoading(false);
   };
 
+  
 
   useEffect(() => {
     getAttendanceList();
@@ -147,22 +195,22 @@ const AttendanceReport = () => {
     { text: "Status", dataField: "status" },
   ];
 
-  const chartData = {
-    labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+  const barChartData = {
+    labels: chartData?.labels,
     datasets: [
       {
         label: "Present Days",
-        data: [5, 4, 6, 3],
+        data: chartData?.presentData,
         backgroundColor: "#34D399",
       },
       {
         label: "Absent Days",
-        data: [1, 0, 1, 0],
+        data: chartData?.absentData,
         backgroundColor: "#F87171",
       },
       {
         label: "Late Arrivals",
-        data: [0, 1, 0, 0],
+        data: chartData?.lateData,
         backgroundColor: "#FBBF24",
       },
     ],
@@ -247,7 +295,7 @@ const AttendanceReport = () => {
         {/* Attendance Overview Chart */}
         <div className="bg-white p-6 rounded-md shadow">
           <h3 className="text-lg font-medium mb-4">Attendance Overview</h3>
-          <Bar data={chartData} />
+          <Bar data={barChartData} />
         </div>
 
         {/* Daily Attendance Log */}
