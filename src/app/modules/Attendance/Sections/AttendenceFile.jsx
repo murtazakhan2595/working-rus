@@ -1,5 +1,5 @@
 // Import necessary libraries and components
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,8 +16,11 @@ import Newlogo from "assets/images/NewLogo";
 import { Button } from "components/ui/button";
 import { usePDF } from "react-to-pdf";
 import TableCustom from "components/CustomTable";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { getAttendance } from "app/hooks/attendance";
+import moment from "moment";
+import { format } from "date-fns";
 
 ChartJS.register(
   CategoryScale,
@@ -29,7 +32,29 @@ ChartJS.register(
 );
 
 const AttendanceReport = () => {
-  const navigate = useNavigate()
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [attendanceData, setAttendanceData] = useState([]);
+  const currentMonth = format(new Date(), "MMMM yyyy");
+  const [attendanceHistoryLoading, setAttendanceHistoryLoading] =
+    useState(false);
+  const [cardsData, setCardsData] = useState({
+    totalAbsent: 0,
+    totalLate: 0,
+    totalCheckins: 0,
+    totalOvertimeHours: 0,
+    totalWorkingHours: 0,
+    absentPercentage: 0,
+    latePercentage: 0,
+    checkinPercentage: 0,
+  });
+  const [filterData, setFilterData] = useState({
+    employee_id: id,
+    date_range:
+      moment().startOf("month").format("YYYY-MM-DD") +
+      "," +
+      moment().endOf("month").format("YYYY-MM-DD"),
+  });
   const { toPDF, targetRef } = usePDF({
     filename: "my-attendance.pdf",
     page: {
@@ -39,6 +64,56 @@ const AttendanceReport = () => {
     },
     scale: 0.95,
   });
+
+  const getAttendanceList = async () => {
+    setAttendanceHistoryLoading(true);
+    const attendanceData = await getAttendance({
+      filterData: filterData,
+    });
+    if (attendanceData) {
+      const totalEntries = attendanceData?.results?.length;
+      const totalAbsent = attendanceData?.results.filter(
+        (entry) => entry.is_absent
+      ).length;
+      const totalLate = attendanceData?.results.filter(
+        (entry) => entry.is_late
+      ).length;
+      const totalCheckins = attendanceData?.results.filter(
+        (entry) => entry.checkin
+      ).length;
+      const totalOvertimeHours = attendanceData?.results
+        ?.reduce((sum, entry) => sum + parseFloat(entry.overtime_hours), 0)
+        .toFixed(2);
+      const totalWorkingHours = attendanceData?.results
+        ?.reduce((sum, entry) => sum + parseFloat(entry.payable_hours), 0)
+        .toFixed(2);
+
+      const absentPercentage = ((totalAbsent / totalEntries) * 100).toFixed(2);
+      const latePercentage = ((totalLate / totalEntries) * 100).toFixed(2);
+      const checkinPercentage = ((totalCheckins / totalEntries) * 100).toFixed(
+        2
+      );
+
+      setCardsData({
+        totalAbsent: totalAbsent,
+        totalLate: totalLate,
+        totalCheckins: totalCheckins,
+        totalOvertimeHours: totalOvertimeHours,
+        totalWorkingHours: totalWorkingHours,
+        absentPercentage: absentPercentage,
+        latePercentage,
+        checkinPercentage,
+      });
+      setAttendanceData(attendanceData.results);
+    }
+    setAttendanceHistoryLoading(false);
+  };
+
+  console.log(cardsData, "CARDSA DATA");
+
+  useEffect(() => {
+    getAttendanceList();
+  }, [id]);
 
   const downloadPDF = () => {
     const noPrintElements = document.querySelectorAll(".no-print");
@@ -55,11 +130,20 @@ const AttendanceReport = () => {
 
   const columns = [
     { text: "Date", dataField: "date" },
-    { text: "Check In", dataField: "checkIn" },
-    { text: "Check Out", dataField: "checkOut" },
-    { text: "Break", dataField: "break" },
-    { text: "Overtime", dataField: "overtime" },
-    { text: "Productivity", dataField: "productivity" },
+    {
+      text: "Check In",
+      dataField: "checkin",
+      formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+    },
+    {
+      text: "Check Out",
+      dataField: "checkout",
+      formatter: (cell) =>
+        cell ? <span>{moment(cell).format("h:mm A")}</span> : "Not Checked Out",
+    },
+    { text: "Break", dataField: "break_duration" },
+    { text: "Overtime", dataField: "overtime_hours" },
+    { text: "Productivity", dataField: "payable_hours" },
     { text: "Status", dataField: "status" },
   ];
 
@@ -84,48 +168,9 @@ const AttendanceReport = () => {
     ],
   };
 
-  const attendanceData = [
-    {
-      date: "Sep 4, 2024",
-      checkIn: "09:30 am",
-      checkOut: "Working",
-      break: "1.5 hrs",
-      overtime: "1 hr",
-      productivity: "9 hrs",
-      status: "Present",
-    },
-    {
-      date: "Sep 3, 2024",
-      checkIn: "09:05 am",
-      checkOut: "17:55 pm",
-      break: "1.5 hrs",
-      overtime: "0",
-      productivity: "8 hrs",
-      status: "Present",
-    },
-    {
-      date: "Sep 2, 2024",
-      checkIn: "09:01 am",
-      checkOut: "17:51 pm",
-      break: "1 hr",
-      overtime: "0",
-      productivity: "8 hrs",
-      status: "Present",
-    },
-    {
-      date: "Sep 1, 2024",
-      checkIn: "--",
-      checkOut: "--",
-      break: "--",
-      overtime: "--",
-      productivity: "--",
-      status: "Off Day",
-    },
-  ];
-
   return (
     <div>
-            <div className="mb-4">
+      <div className="mb-4">
         <Button
           variant="ghost"
           onClick={() => navigate(-1)}
@@ -135,90 +180,90 @@ const AttendanceReport = () => {
           Attendance Detail
         </Button>
       </div>
-      <div  className="p-6 space-y-6 bg-white" ref={targetRef}>
+      <div className="p-6 space-y-6 bg-white" ref={targetRef}>
+        <CardHeader className="py-2 text-white bg-plum-400">
+          <div className="flex items-center justify-between">
+            <Newlogo />
+          </div>
+        </CardHeader>
+        <header className="flex flex-col items-start space-y-2">
+          <h2 className="pb-2 text-xl font-semibold border-b text-slate-1200">
+            Attendance for the month of{" "}
+            <span className="text-plum-900">{currentMonth}</span>
+          </h2>
+        </header>
 
-      <CardHeader className="py-2 text-white bg-plum-400">
-        <div className="flex items-center justify-between">
-          <Newlogo />
+        {/* Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          {[
+            {
+              title: "Present Days",
+              value: cardsData?.totalCheckins || 0,
+              description: `${cardsData?.checkinPercentage}% attendance`,
+              color: "#34D399",
+            },
+            {
+              title: "Absent Days",
+              value: cardsData?.totalAbsent || 0,
+              description: `${cardsData?.absentPercentage}% absence`,
+              color: "#F87171",
+            },
+            {
+              title: "Late Arrivals",
+              value: cardsData?.totalLate || 0,
+              description: `${cardsData?.latePercentage}% late`,
+              color: "#FBBF24",
+            },
+            {
+              title: "Overtime Hours",
+              value: cardsData?.totalOvertimeHours || 0,
+              description: "This month",
+              color: "#A78BFA",
+            },
+            {
+              title: "Working Hours",
+              value: cardsData?.totalWorkingHours || 0,
+              description: "This month",
+              color: "#7C3AED",
+            },
+          ].map((card, index) => (
+            <Card key={index} className="p-4">
+              <CardHeader>
+                <h3
+                  className="text-lg font-medium"
+                  style={{ color: card.color }}
+                >
+                  {card.title}
+                </h3>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold">{card.value}</p>
+                <p className="text-gray-900">{card.description}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      </CardHeader>
-      <header className="flex flex-col items-start space-y-2">
-        {/* <h1 className="text-3xl font-bold">Cohurs</h1>
-        <p className="text-gray-500">Karachi, Pakistan</p> */}
-        <h2 className="pb-2 text-xl font-semibold border-b text-slate-1200">
-          Attendance for the month of{" "}
-          <span className="text-plum-900">December 2024</span>
-        </h2>
-      </header>
 
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        {[
-          {
-            title: "Present Days",
-            value: 17,
-            description: "85% attendance",
-            color: "#34D399",
-          },
-          {
-            title: "Absent Days",
-            value: 2,
-            description: "10% absence",
-            color: "#F87171",
-          },
-          {
-            title: "Late Arrivals",
-            value: 1,
-            description: "5% late",
-            color: "#FBBF24",
-          },
-          {
-            title: "Overtime Hours",
-            value: 3,
-            description: "This month",
-            color: "#A78BFA",
-          },
-          {
-            title: "Working Hours",
-            value: 136,
-            description: "This month",
-            color: "#7C3AED",
-          },
-        ].map((card, index) => (
-          <Card key={index} className="p-4">
-            <CardHeader>
-              <h3 className="text-lg font-medium" style={{ color: card.color }}>
-                {card.title}
-              </h3>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{card.value}</p>
-              <p className="text-gray-900">{card.description}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+        {/* Attendance Overview Chart */}
+        <div className="bg-white p-6 rounded-md shadow">
+          <h3 className="text-lg font-medium mb-4">Attendance Overview</h3>
+          <Bar data={chartData} />
+        </div>
 
-      {/* Attendance Overview Chart */}
-      <div className="bg-white p-6 rounded-md shadow">
-        <h3 className="text-lg font-medium mb-4">Attendance Overview</h3>
-        <Bar data={chartData} />
-      </div>
-
-      {/* Daily Attendance Log */}
-      <div className="bg-white p-6 rounded-md shadow">
-        <h3 className="text-lg font-medium mb-4">Daily Attendance Log</h3>
-        <TableCustom
-          data={attendanceData}
-          columns={columns}
-          pagination={false}
-        />
-      </div>
-      <CardFooter className="flex justify-end py-2 no-print">
-        <Button onClick={downloadPDF} className="px-3 py-1">
-          Download PDF
-        </Button>
-      </CardFooter>
+        {/* Daily Attendance Log */}
+        <div className="bg-white p-6 rounded-md shadow">
+          <h3 className="text-lg font-medium mb-4">Daily Attendance Log</h3>
+          <TableCustom
+            data={attendanceData}
+            columns={columns}
+            pagination={false}
+          />
+        </div>
+        <CardFooter className="flex justify-end py-2 no-print">
+          <Button onClick={downloadPDF} className="px-3 py-1">
+            Download PDF
+          </Button>
+        </CardFooter>
       </div>
     </div>
   );

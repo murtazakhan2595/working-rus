@@ -1,19 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "src/@/components/ui/table";
 import { Progress } from "src/@/components/ui/progress";
-import { CalendarIcon, FilterIcon, PlayCircle } from "lucide-react";
 import moment from "moment";
 import { EmployeeSelfTimesheet } from "app/modules/Attendance/MyAttendance/Section";
 import {
-  getShiftAssignment,
   getAttendance,
   saveAttendance,
   saveBreak,
@@ -25,7 +15,6 @@ import { toast } from "react-toastify";
 import { calculateBreak } from "app/hooks/attendance";
 import { getBreakStatus } from "app/hooks/attendance";
 import { endBreak, getShiftById } from "app/hooks/attendance";
-import { getLocalTime } from "app/hooks/attendance";
 import { getStats, employeeData } from "app/hooks/attendance";
 import TableCustom from "components/CustomTable";
 import { myAttendanceColumn } from "app/utils/Types/TableColumns";
@@ -63,7 +52,6 @@ const Attendance = () => {
     const attendanceData = await getAttendance({
       filterData: filterData,
     });
-    console.log(attendanceData?.results, "ATTENDEANCE DATA");
     if (attendanceData) {
       setAttendanceData(attendanceData.results);
     }
@@ -392,7 +380,7 @@ const Attendance = () => {
   };
 
   const downloadAttendance = ()=>{
-    navigate(`/attendance-reports`) 
+    navigate(`/attendance-reports/${userProfile?.id}`) 
   }
 
   return (
