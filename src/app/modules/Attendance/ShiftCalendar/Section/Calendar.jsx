@@ -8,45 +8,65 @@ import luxonPlugin from "@fullcalendar/luxon3";
 import rrulePlugin from "@fullcalendar/rrule";
 import { DateTime } from "luxon"; // Import Luxon's DateTime
 
-const Calendar = ({ shifts }) => {
-
-  console.log("Shifts", shifts);
+const Calendar = ({ shift }) => {
+  console.log("shift", shift);
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    if (shifts && shifts.length > 0) {
-      const eventsArray = shifts.map((shift) => {
-        const startDate = DateTime.fromISO(shift.shift_start_time);
-        const endDate = DateTime.fromISO(shift.shift_end_time);
+    if (shift) {
+      // const eventsArray = shifts.map((shift) => {
+      //   const startDate = DateTime.fromISO(shift.shift_start_time);
+      //   const endDate = DateTime.fromISO(shift.shift_end_time);
 
-        // Calculate the duration using Luxon's Duration
-        const duration = endDate.diff(startDate, ["hours", "minutes"]); // Duration in hours and minutes
+      //   // Calculate the duration using Luxon's Duration
+      //   const duration = endDate.diff(startDate, ["hours", "minutes"]); // Duration in hours and minutes
 
-        // Format the duration to "HH:mm" format
-        const formattedDuration = `${duration.hours
-          .toString()
-          .padStart(2, "0")}:${duration.minutes.toString().padStart(2, "0")}`;
+      //   // Format the duration to "HH:mm" format
+      //   const formattedDuration = `${duration.hours
+      //     .toString()
+      //     .padStart(2, "0")}:${duration.minutes.toString().padStart(2, "0")}`;
 
-        console.log("Formatted Duration for shift", formattedDuration);
+      //   console.log("Formatted Duration for shift", formattedDuration);
 
-        // Create recurring event using rrule
-        return {
-          title: `${shift.emp_name} Shift`,
-          rrule: {
-            freq: "daily", // Repeat daily
-            dtstart: shift.shift_start_time,
-            // until: "2025-12-31T17:00:00", // Optional: define an end date for the recurring event
-          },
-          duration: formattedDuration,
-        };
-      });
+      //   // Create recurring event using rrule
+      //   return {
+      //     title: `${shift.emp_name} Shift`,
+      //     rrule: {
+      //       freq: "daily", // Repeat daily
+      //       dtstart: shift.shift_start_time,
+      //       // until: "2025-12-31T17:00:00", // Optional: define an end date for the recurring event
+      //     },
+      //     duration: formattedDuration,
+      //   };
+      // });
 
-      console.log("Events Array", eventsArray);
-      setEvents(eventsArray);
-    }else{
+      // console.log("Events Array", eventsArray);
+      // setEvents(eventsArray);
+      const startDate = DateTime.fromISO(shift.starttime);
+      const endDate = DateTime.fromISO(shift.endtime);
+      const duration = endDate.diff(startDate, ["hours", "minutes"]);
+      const formattedDuration = `${duration.hours
+        .toString()
+        .padStart(2, "0")}:${duration.minutes.toString().padStart(2, "0")}`;
+
+      console.log("Formatted Duration for shift", formattedDuration);
+      // Single event object
+      const event = {
+        title: `${shift.name} Shift`,
+        rrule: {
+          freq: "daily", // Recurring daily
+          dtstart: shift.starttime,
+          // until: "2025-12-31T17:00:00", // Optional: end date for recurring events
+        },
+        duration: formattedDuration,
+      };
+
+      console.log("Event Object", event);
+      setEvents([event]); // Set the event inside an array
+    } else {
       setEvents([]);
     }
-  }, [shifts]); // Update when shifts prop changes
+  }, [shift]);
 
   console.log("Events", events);
 
