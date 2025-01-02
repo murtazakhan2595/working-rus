@@ -50,11 +50,14 @@ const getImageExtension = (contentType) => {
 };
 
 export function filebase64Download(file, fileName) {
-  const link = document.createElement("a");
-  link.href = file;
-  link.download = fileName || "downloaded-file";
-  link.click();
+  // Open the file in a new tab
+  const newTab = window.open(file, "_blank");
+
+  if (!newTab) {
+    console.error("Failed to open the file in a new tab. Please check browser settings.");
+  }
 }
+
 export function getFileSizeInKB(base64String) {
   if (!base64String) return "";
   const base64Data = base64String.split(",")[1];
