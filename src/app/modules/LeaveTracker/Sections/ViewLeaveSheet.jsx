@@ -123,8 +123,8 @@ const ViewLeaveSheet = ({
         {...formSheetData}
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
-        setIsOpen={onClose}
-        
+        setIsOpen={onClose} 
+        width="600px"
       >
         <EmployeeDataInfo
           name={leaveApplication?.leave_request?.employee_info?.first_name}

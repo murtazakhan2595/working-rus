@@ -59,6 +59,7 @@ const EmployeeLeavesDetailSheet = ({
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
         setIsOpen={handleClose}
+        width="568px"
        
       >
         {isEdit ? (
@@ -135,7 +136,7 @@ const ViewDetails = ({
           Consumed Leaves
         </h3>
         <div className="relative flex items-start gap-4">
-          <div className="flex flex-col justify-center text-sm leading-tight whitespace-nowrap text-neutral-400">
+          <div className="flex flex-col justify-center text-sm leading-tight whitespace-nowrap text-neutral-900">
             {componentsWithUsed.map((leave) => (
               <div
                 key={leave.name}
@@ -154,10 +155,10 @@ const ViewDetails = ({
               />
             ))}
           </div>
-          <div className="flex flex-col justify-center text-sm font-medium leading-tight text-neutral-400">
+          <div className="flex flex-col justify-center text-sm font-medium leading-tight text-neutral-900">
             {componentsWithUsed.map((leave) => (
               <div key={leave.name} className="mt-4 first:mt-0">
-                <span className="text-neutral-800">{leave.used}</span>/
+                <span className="text-neutral-900">{leave.used}</span>/
                 {leave.total}
               </div>
             ))}
@@ -176,7 +177,6 @@ const EditDetails = ({
 }) => {
   const [openSheet, setOpenSheet] = useState(false);
   const [selectedLeaveComponent, setSelectedLeaveComponent] = useState(null);
-  console.log("opensheetvalue in leave details", openSheet);
 
   return (
     <>
