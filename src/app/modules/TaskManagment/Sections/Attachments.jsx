@@ -49,7 +49,6 @@ export default function Attachments({
     // Merge new files with existing ones
     onChange([...formattedFiles, ...existingFiles]);
   };
-  console.log(attachmentSelected);
   return (
     <TaskDetailBox
       dataContent={
