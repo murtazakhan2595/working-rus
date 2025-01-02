@@ -42,9 +42,12 @@ import { GetUser } from "utils/getValuesFromTables";
 import { GetDateRange } from "utils/renderValues";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { isEqual } from "lodash"; // For deep comparison of objects
+import { Button } from "components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const EmployeeAttendance = () => {
   const { id } = useParams();
+  const navigate = useNavigate()
   const userProfile = GetUser(id);
   const [isLoading, setIsLoading] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
@@ -109,6 +112,16 @@ const EmployeeAttendance = () => {
 
   return (
     <div className="p-4 space-y-4">
+      <div>
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="p-2 text-lg text-balance"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2 bg-white rounded-lg shadow-sm" />
+          Back
+        </Button>
+      </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card>
           <CardContent className="mt-5">

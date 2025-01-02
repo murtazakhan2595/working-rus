@@ -28,14 +28,29 @@ export function StatsCards({ attendanceData }) {
           key={index}
           className="flex flex-col justify-center shadow-md border rounded-lg"
         >
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold text-neutral-900">
-              {stat.title}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-medium text-plum-900">{stat.value}</p>
-          </CardContent>
+          {loading ? (
+            <div className="animate-pulse">
+              <CardHeader className="pb-2">
+                <CardTitle className="h-4 bg-gray-300 rounded w-2/3"></CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 bg-gray-300 rounded w-1/2"></div>
+              </CardContent>
+            </div>
+          ) : (
+            <>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-bold text-neutral-900">
+                  {stat.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-medium text-plum-900">
+                  {stat.value}
+                </p>
+              </CardContent>
+            </>
+          )}
         </Card>
       ))}
     </div>

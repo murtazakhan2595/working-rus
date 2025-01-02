@@ -139,6 +139,47 @@ const getAttendance = async (payload)=>{
   }
 }
 
+const getAttendanceSummary = async (payload) => {
+  console.log(payload, "PAYLOAD OF ATTENDANCE");
+
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  // const filterData = payload?.filterData ?? {};
+  
+  let queryParams = [];
+  if (pageNo) queryParams.push(`page=${pageNo}`);
+  if (pageSize) queryParams.push(`page%20size=${pageSize}`);
+
+  // Add filterData to query params if it exists
+  // if (Object.keys(filterData).length > 0) {
+  //   Object.entries(filterData).forEach(([key, value]) => {
+  //     queryParams.push(`${key}=${encodeURIComponent(value)}`);
+  //   });
+  // }
+
+  const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
+  const URL = `/attendance/summary${queryString}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching attendance list:", error);
+
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+
+    return false;
+  }
+};
+
+
 const saveAttendance = async (payload) => {
   try {
     if (payload?.id) {
@@ -391,7 +432,24 @@ const getStats = async (id) => {
     }
   }
 
+  const getAttendanceStats = async () => {
+    try{
+    const response = await axios.get(`${baseUrl}/attendance/summary/overall/?page=1`, {
+      headers: headers(),
+    });
+    const attendanceSummary = response.data;
+    return attendanceSummary;
+    }catch(error){
+      console.error("Error fetching shift by id:", error);
+      if(error?.response?.status === 401){
+        handleLogout();
+      }
+      return false;
+    }
+  }
+
 export {
+  getAttendanceStats,
   saveShiftAssignment,
   getEmployeeList,
   getShift,
@@ -409,4 +467,5 @@ export {
   getStats,
   employeeData,
   getShiftById,
+  getAttendanceSummary
 };

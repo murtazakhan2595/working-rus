@@ -36,8 +36,12 @@ import { Switch } from "../../../src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
 import { Clock, Download } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
-import { CalculateHoursWorked,EmployeeAttendenceActions } from "app/modules/Attendance/Sections";
+import {
+  CalculateHoursWorked,
+  EmployeeAttendenceActions,
+} from "app/modules/Attendance/Sections";
 import { MembersList } from "app/modules/TaskManagment/Sections";
+import { calculatePercentage } from "utils/renderValues";
 /**
  * EmployeeColumns
  *
@@ -60,6 +64,7 @@ export const EmployeeColumns = [
         name={`${row.first_name} ${row.last_name}`}
         department={row.department_name}
         position={row.department_position}
+        showDepartment
       />
     ),
   },
@@ -1147,47 +1152,24 @@ export const EmployeesAttendanceColumns = [
   },
 
   {
-    dataField: "is_late",
-    text: "",
-    formatter: (cell, row) => cell === true && <Badge variant='error'>Late</Badge>,
+    dataField: "monthly_stats",
+    text: "Present Days",
+    formatter: (cell) => <span>{cell?.Present}</span>
   },
   {
-    dataField: "employee_id",
-    text: "Department",
-    formatter: (cell) => {
-      const user = GetUser(cell);
-      if (!user) return "";
-      return (
-        <>
-          <DepartmentName value={user?.department_name} />
-        </>
-      );
-    },
+    dataField: "monthly_stats",
+    text: "Absent Days",
+    formatter: (cell) => <span>{cell?.Absent}</span>,
   },
   {
-    dataField: "checkin",
-    text: "Check In",
-    formatter: (cell, row) => (
-      <div>
-        <div>{`${moment(cell).format("hh:mm A")}`}</div>
-        <div>{`${
-          row.checkout ? moment(row.checkout).format("hh:mm A") : "Working"
-        }`}</div>
-      </div>
-    ),
+    dataField: "monthly_stats",
+    text: "Late Days",
+    formatter: (cell)=> <span>{cell?.Late}</span>
   },
   {
-    dataField: "checkout",
-    text: "Hours",
-    formatter: (cell, row) => {
-      const hours = CalculateHoursWorked([row]);
-      return <>{`${hours.totalWorkedHours}hr`}</>;
-    },
-  },
-  {
-    dataField: "status",
-    text: "Status",
-    formatter: (cell) => <StatusLabel status={cell} />,
+    dataField: "monthly_stats",
+    text: "Attendance %",
+    formatter: (cell, row) => calculatePercentage(cell)
   },
   {
     dataField: "",
@@ -1195,3 +1177,34 @@ export const EmployeesAttendanceColumns = [
     formatter: (cell, row) => <EmployeeAttendenceActions row={row} />,
   },
 ];
+
+
+export const myAttendanceColumn = [
+{
+  text:"Date",
+  dataField:"date",
+  formatter:(cell)=> <>{`${renderDate(cell)}`} </>
+},
+{
+  text:"Punch In",
+  dataField:"checkin",
+  formatter: (cell)=>  <span>{moment(cell).format("h:mm A")}</span>
+},
+{
+  text:"Punch Out",
+  dataField:"checkout",
+  formatter:(cell) => cell ? <span>{moment(cell).format("h:mm A")}</span> : "Not Checked Out"
+},
+{
+  text:"Break",
+  dataField:"break_duration"
+},
+{
+  text:"Overtime",
+  dataField:"overtime_hours"
+},
+{
+  text:"Productivity",
+  dataField:"payable_hours"
+},
+]

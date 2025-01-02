@@ -196,6 +196,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
+        width="568px"
       >
         <Formik
           initialValues={leaveRequest}

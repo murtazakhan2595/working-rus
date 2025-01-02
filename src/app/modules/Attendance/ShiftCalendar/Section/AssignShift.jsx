@@ -108,8 +108,6 @@ const AssignShiftForm = ({
     fetchShifts();
   }, [selectedEmployee]);
 
-
-
   const handleClose = () => {
     // setIsOpen(false)
     setCloseSheet(true);

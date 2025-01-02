@@ -1,38 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../../src/@/components/ui/table";
-import { Progress } from "../../../src/@/components/ui/progress";
-import { CalendarIcon, FilterIcon, PlayCircle } from "lucide-react";
+import { Card, CardContent } from "components/ui/card";
 import moment from "moment";
 import {
-  getShiftAssignment,
   getAttendance,
-  saveAttendance,
-  saveBreak,
-  getBreak,
+  getAttendanceSummary
 } from "app/hooks/attendance";
-import { useSelector } from "react-redux";
-import { PageLoader, Header } from "components";
-import { toast } from "react-toastify";
+import { PageLoader } from "components";
 import { EmployeesAttendanceColumns } from "app/utils/Types/TableColumns";
-import { getBreakStatus } from "app/hooks/attendance";
-import { endBreak } from "app/hooks/attendance";
-import { getLocalTime } from "app/hooks/attendance";
-import { getStats } from "app/hooks/attendance";
-import { useNavigate } from "react-router-dom";
 import { LeaveStatusOverview } from "./Sections/LeaveStatusOverview";
 import { StatisticsChart } from "./Sections/StatisticsChart";
 import DepartmentOverview from "./Sections/DepartmentOverview";
 import { StatsCards } from "./Sections/StatsCards";
-import EmployeesAttendence from "./Sections/EmployeesAttendence";
-import Stats from "../../../components/ui/Stats";
 import TableCustom from "components/CustomTable";
 
 const Attendance = () => {
@@ -60,12 +38,10 @@ const Attendance = () => {
   const getAttendanceList = async (isMounted) => {
     setIsLoading(true);
     try {
-      const attendanceData = await getAttendance({
-        filterData: filterData,
-      });
+      const attendanceData = await getAttendance({ options, filterData });
       if (isMounted) {
         if (attendanceData) {
-          setAttendanceData(attendanceData);
+          // setAttendanceData(attendanceData);
         }
       }
     } catch (error) {
@@ -74,6 +50,25 @@ const Attendance = () => {
       setIsLoading(false);
     }
   };
+
+  const getAttendanceData = async ()=>{
+    setIsLoading(true);
+    try{
+      const empAttedance = await getAttendanceSummary({ options, filterData })
+      if(empAttedance){
+        setAttendanceData(empAttedance)
+      }
+    } catch(error){
+      console.log(error)
+    } finally{
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(()=>{
+    getAttendanceData()
+  },[options, filterData, ])
+
   useEffect(() => {
     let isMounted = true;
     getAttendanceList(isMounted);

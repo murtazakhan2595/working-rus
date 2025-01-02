@@ -207,9 +207,9 @@ const SidebarRoutes = [
   },
 
   Config.ATTENDANCE && {
-    path: "attendance-reports",
-    component: <AttendanceReport />,
-    name: "Attendance Report",
+    path: "attendance-reports/:id",
+    component: <AttendanceReport/>,
+    name: "Attendance Report"
   },
 
   Config.ATTENDANCE && {
