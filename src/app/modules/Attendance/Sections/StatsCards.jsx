@@ -1,18 +1,50 @@
-"use client"
-
-import * as React from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "components/ui/card"
-
-const statsData = [
-  { title: "Total Employees", value: 120 },
-  { title: "Present", value: 98 },
-  { title: "Late", value: 12 },
-  { title: "Absent", value: 7 },
-  { title: "Not Arrived", value: 3 },
-  { title: "Attendance Requests", value: 5 },
-]
+import React, { useEffect, useState } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "components/ui/card";
+import { getAttendanceStats } from "app/hooks/attendance";
+import { getEmployeeCustomList } from "app/hooks/general";
 
 export function StatsCards() {
+  const [loading, setLoading] = useState(false);
+  const [cardStats, setCardStats] = useState({
+    total: 0,
+    present: 0,
+    absent: 0,
+    late: 0,
+  });
+
+  const attendanceStats = async () => {
+    setLoading(true);
+    try {
+      const response = await getAttendanceStats();
+      const employeeCount = await getEmployeeCustomList();
+      if (response && employeeCount) {
+        setCardStats({
+          total: employeeCount?.count,
+          present: response?.daily_stats?.Present,
+          absent: response?.daily_stats?.Absent,
+          late: response?.daily_stats?.Late,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const statsData = [
+    { title: "Total Employees", value: cardStats?.total },
+    { title: "Present", value: cardStats?.present },
+    { title: "Late", value: cardStats?.late },
+    { title: "Absent", value: cardStats?.absent },
+    { title: "Not Arrived", value: 3 },
+    { title: "Attendance Requests", value: 5 },
+  ];
+
+  useEffect(() => {
+    attendanceStats();
+  }, []);
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
       {statsData.map((stat, index) => (
@@ -20,16 +52,31 @@ export function StatsCards() {
           key={index}
           className="flex flex-col justify-center shadow-md border rounded-lg"
         >
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-bold text-neutral-900">
-              {stat.title}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-medium text-plum-900">{stat.value}</p>
-          </CardContent>
+          {loading ? (
+            <div className="animate-pulse">
+              <CardHeader className="pb-2">
+                <CardTitle className="h-4 bg-gray-300 rounded w-2/3"></CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 bg-gray-300 rounded w-1/2"></div>
+              </CardContent>
+            </div>
+          ) : (
+            <>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-bold text-neutral-900">
+                  {stat.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-medium text-plum-900">
+                  {stat.value}
+                </p>
+              </CardContent>
+            </>
+          )}
         </Card>
       ))}
     </div>
-  )
+  );
 }

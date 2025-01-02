@@ -38,7 +38,6 @@ export default function Component() {
   const fetchData = async () => {
     try {
       const response = await getEmployeeCustomList();
-      console.log(response, "HELLO KASHIF")
       setEmployeeData({
         total: response?.count || 0,
         active: response?.ActiveEmployee || 0,
