@@ -14,6 +14,7 @@ const ViewBoardDetails = ({
   onClose,
   project,
   fetchData,
+  role
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -74,14 +75,14 @@ const ViewBoardDetails = ({
           )}
           <p>{project?.name}</p>
         </div>
-        <div className="flex gap-4">
+        {role !== 4 && (<div className="flex gap-4">
           <Button variant="outline" onClick={onEdit}>
             Edit
           </Button>
           <Button variant="outline" onClick={() => setIsDeleteModalOpen(true)}>
             Delete
           </Button>
-        </div>
+        </div>)}
       </div>
 
       <DetailCard
