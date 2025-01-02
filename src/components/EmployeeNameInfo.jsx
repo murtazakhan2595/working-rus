@@ -22,26 +22,25 @@ const EmployeeNameInfo = ({
 }) => {
   const userProfile = GetUser(id);
   return (
-    <div className={`flex items-start ${className??''}`}>
+    <div className={`flex items-start ${className ?? ""}`}>
       <Avatar
         className="h-10 w-10"
-        src={userProfile?.profile_picture}
-        fallbackText={`${userProfile?.first_name?.charAt(
-          0
-        )}${userProfile?.last_name?.charAt(0)}`}
-        text={`${userProfile?.name}`}
-        alt={userProfile?.first_name?.charAt(0).toUpperCase()}
+        src={userProfile?.profile_picture || ""}
+        fallbackText={
+          userProfile?.first_name?.charAt(0)?.toUpperCase() +
+            userProfile?.last_name?.charAt(0)?.toUpperCase() ||
+          name?.charAt(0)?.toUpperCase() ||
+          ""
+        }
+        text={userProfile?.name || name || "Unknown User"}
+        alt={`Avatar of ${userProfile?.first_name || name || "User"}`}
       />
 
       <div className="flex flex-col flex-wrap ml-2 whitespace-break-spaces">
         {id && showId && (
-          <div className="sm:inline">
-            ID: {userProfile.serial_number}
-          </div>
+          <div className="sm:inline">ID: {userProfile.serial_number}</div>
         )}
-        <div className="">{`${
-          name ?? userProfile?.name ?? "N/A"
-        }`}</div>
+        <div className="">{`${name ?? userProfile?.name ?? "N/A"}`}</div>
         {date && <p className="sm:inline text-sm">{date}</p>}
         <div className="hidden text-sm text-neutral-1200 md:inline">
           <div className="flex flex-col items-start gap-1">
