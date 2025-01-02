@@ -187,7 +187,7 @@ const LeaveTracker = ({ userProfile, departments }) => {
         content={
           activeTab === "types" && (
             <AddTypeSheet
-              triggerText="+ Add Component"
+              triggerText="Add Component"
               reload={fetchLeaveTypesData}
             />
           )
