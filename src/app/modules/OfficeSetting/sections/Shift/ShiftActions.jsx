@@ -13,7 +13,7 @@ import SheetComponent from "components/ui/SheetComponent";
 import ViewShift from "./ViewShift";
 import AddShiftForm from "./AddShiftForm";
 
-const ShiftActions = ({ data }) => {
+const ShiftActions = ({ data, reload }) => {
   const [view, setView] = useState(null);
   const [deleteShift, setDeleteShift] = useState(null);
   const [edit, setEdit] = useState(null);
@@ -48,10 +48,13 @@ const ShiftActions = ({ data }) => {
 
   const confirmDelete = async () => {
     try {
-      await deleteRecord(
+      const response = await deleteRecord(
         `/shift/${deleteShift?.data?.id}`,
         deleteShift?.data?.name
       );
+      if (response) {
+        reload();
+      }
     } catch (error) {
       console.log("ERROR", error);
     }
@@ -108,6 +111,7 @@ const ShiftActions = ({ data }) => {
             }
             edit={edit}
             setEdit={setEdit}
+            reload={reload}
           />
         </SheetComponent>
       )}
