@@ -64,6 +64,7 @@ export const EmployeeColumns = [
         name={`${row.first_name} ${row.last_name}`}
         department={row.department_name}
         position={row.department_position}
+        showDepartment
       />
     ),
   },
