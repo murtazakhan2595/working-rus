@@ -432,7 +432,24 @@ const getStats = async (id) => {
     }
   }
 
+  const getAttendanceStats = async () => {
+    try{
+    const response = await axios.get(`${baseUrl}/attendance/summary/overall/?page=1`, {
+      headers: headers(),
+    });
+    const attendanceSummary = response.data;
+    return attendanceSummary;
+    }catch(error){
+      console.error("Error fetching shift by id:", error);
+      if(error?.response?.status === 401){
+        handleLogout();
+      }
+      return false;
+    }
+  }
+
 export {
+  getAttendanceStats,
   saveShiftAssignment,
   getEmployeeList,
   getShift,
