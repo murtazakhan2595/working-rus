@@ -13,6 +13,7 @@ import {
   UserRoundSearch,
   UsersRound,
   BadgeDollarSign,
+  Settings,
 } from "lucide-react";
 import Config from "constants/config";
 
@@ -116,7 +117,7 @@ export function getMenuList(pathname, userRole) {
         // createMenu("/calendar", "Calendar"),
         Config.MY_ATTENDANCE &&
         createMenu("/my-dtr", "My DTR"),
-          createMenu("/my-attendance", "My Attendance"),
+        Config.MY_ATTENDANCE && createMenu("/my-attendance", "My Attendance"),
         createMenu("/my-leave-tracker", " My Leave Tracker"),
         // createMenu("/files-data", "Files & Data"),
         // createMenu("/my-travel-details", "My Travel Details"),
@@ -244,7 +245,7 @@ export function getMenuList(pathname, userRole) {
   ];
 
   const OfficeSettingMenu = [
-    createMenu("/office-settings", "Office Setting", House),
+    createMenu("/office-settings", "Office Setting", Settings),
     // createMenu("/services", "Services", SquareStack),
   ];
 

@@ -882,14 +882,14 @@ export const LeaveRecordColumns = [
     text: "Department",
     formatter: (cell) => <DepartmentName value={cell} />,
   },
-  {
-    dataField: "used_leaves",
-    text: "Total Used",
-  },
-  {
-    dataField: "total_balance_after",
-    text: "Total Remaining",
-  },
+  // {
+  //   dataField: "used_leaves",
+  //   text: "Total Used",
+  // },
+  // {
+  //   dataField: "total_balance_after",
+  //   text: "Total Remaining",
+  // },
 ];
 
 export const LeaveTypesColumns = (onCheckedChange) => [

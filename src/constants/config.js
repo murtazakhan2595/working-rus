@@ -11,12 +11,12 @@ export default {
     LEAVE_MANAGMENT:true,
     EMPLOYEE_OFFBOARDING:true,
     OFFICE_SETTING:false,
-    ATTENDANCE:true,
+    ATTENDANCE:false,
     REPORTS:false,
     PERFORMANCE_MANAGEMENT:false,
     PEOPLE_ENGAGEMENT:false,
     PERSONAL_DEVELOPMENT:false,
-    DAILY_TASK_REPORT:true,
+    DAILY_TASK_REPORT:false,
     OFFICE_SETTING: true,
 
 
@@ -27,6 +27,6 @@ export default {
     TS_APPLICANTS:true,
 
 
-    MY_ATTENDANCE:true,
+    MY_ATTENDANCE:false,
     
 };
