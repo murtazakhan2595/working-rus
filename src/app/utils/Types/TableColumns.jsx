@@ -1042,7 +1042,7 @@ export const MyAttendanceHistoryColumns = [
     text: "Productivity",
     formatter: (cell, row) => (
       <>{`${
-        parseFloat(row.total_hours) + parseFloat(row.overtime_hours)
+        parseFloat(row.payable_hours) + parseFloat(row.overtime_hours)
       } hrs`}</>
     ),
   },
@@ -1186,12 +1186,12 @@ export const myAttendanceColumn = [
   formatter:(cell)=> <>{`${renderDate(cell)}`} </>
 },
 {
-  text:"Punch In",
+  text:"Check In",
   dataField:"checkin",
   formatter: (cell)=>  <span>{moment(cell).format("h:mm A")}</span>
 },
 {
-  text:"Punch Out",
+  text:"Check Out",
   dataField:"checkout",
   formatter:(cell) => cell ? <span>{moment(cell).format("h:mm A")}</span> : "Not Checked Out"
 },
@@ -1206,5 +1206,10 @@ export const myAttendanceColumn = [
 {
   text:"Productivity",
   dataField:"payable_hours"
+},
+{
+  dataField: "status",
+  text: "Status",
+  formatter: (cell) => <StatusLabel status={cell} />,
 },
 ]
