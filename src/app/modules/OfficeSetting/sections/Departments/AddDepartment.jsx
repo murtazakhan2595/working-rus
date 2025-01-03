@@ -3,8 +3,8 @@ import SheetComponent from 'components/ui/SheetComponent'
 import React, { useState } from 'react'
 import AddDepartmentForm from './AddDepartmentForm';
 
-const AddDepartment = () => {
-  const [isOpen, setIsOpen] = useState(false)
+const AddDepartment = ({ reload }) => {
+  const [isOpen, setIsOpen] = useState(false);
 
   const formSheetData = {
     triggerText: "Add New Department",
@@ -15,14 +15,14 @@ const AddDepartment = () => {
 
   return (
     <SheetComponent
-    {...formSheetData}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        width="600px"
+      {...formSheetData}
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      width="600px"
     >
-        <AddDepartmentForm isOpen={isOpen} setIsOpen={setIsOpen}/>
+      <AddDepartmentForm isOpen={isOpen} setIsOpen={setIsOpen} reload={reload}/>
     </SheetComponent>
-  )
-}
+  );
+};
 
 export default AddDepartment

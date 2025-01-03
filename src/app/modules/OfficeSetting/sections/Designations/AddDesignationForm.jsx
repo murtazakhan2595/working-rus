@@ -12,10 +12,12 @@ import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
+const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
   const [closeSheet, setCloseSheet] = useState(false);
   const [formData, setFormData] = useState(edit?.data || DesignationInfo);
   const [organization, setOrganization] = useState([]);
+
+  console.log("reload designation in add design form", reload);
 
   useEffect(() => {
     const fetchLists = async () => {
@@ -35,26 +37,23 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
   };
 
   const handleSubmit = async (values) => {
-    console.log(values, "VALUES")
+    console.log(values, "VALUES");
     try {
       const response = await saveDesignation(values?.id, values);
       if (response) {
-        toast.success("Designation Added Successfully!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        toast.success(
+          `Designation ${edit?.data ? "Updated" : "Added"} Successfully!`,
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+        reload()
         setIsOpen(false);
-        setEdit({
-          open: false,
-          data: null
-        });
-        getDepartmentList()
       }
     } catch (error) {
       console.log("ERROR", error);
     }
   };
-
-
 
   return (
     <>
@@ -113,7 +112,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
                   Cancel
                 </Button>
                 <Button type="submit" size="lg" variant="default">
-                  Add
+                  {edit?.data ? "Update" : "Add"}
                 </Button>
               </div>
             </div>

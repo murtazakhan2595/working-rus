@@ -21,6 +21,8 @@ import AddDesignation from "../sections/Designations/AddDesignation";
 import WorkingHours from "./WorkingHours";
 import Shift from "../sections/Shift/Shift";
 import { PageLoader } from "components";
+import { getDepartmentList } from "app/hooks/general";
+import { getDesignationList } from "app/hooks/general";
 
 const OfficeSetting = () => {
   const [data, setData] = useState(null);
@@ -29,6 +31,15 @@ const OfficeSetting = () => {
   const [editData, setEditData] = useState(null);
   const [activeTab, setActiveTab] = useState("offices");
   const [loading, setLoading] = useState(true);
+  const [depLoading, setDepLoading] = useState(true);
+  const [department, setDepartments] = useState(null);
+  const [depOptions, setdepOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [desigOptions, setDesigOptions] = useState({
+    page: 1,
+    sizePerPage: 10,
+  });
+  const [designLoading, setDesignLoading] = useState(true);
+  const [designation, setDesignation] = useState(null);
 
   const getOrganization = async () => {
     try {
@@ -43,21 +54,42 @@ const OfficeSetting = () => {
     }
   };
   const fetchShifts = async () => {
-      try {
-        setLoading(true);
-        const response = await getWorkingHours();
-        if (response?.results) {
-          const formattedData = response.results.map((item) => ({
-            ...item,
-          }));
-          setDataShift(formattedData);
-        }
-        setLoading(false);
-      } catch (error) {
-        console.log(error, "ERROR");
+    try {
+      setLoading(true);
+      const response = await getWorkingHours();
+      if (response?.results) {
+        const formattedData = response.results.map((item) => ({
+          ...item,
+        }));
+        setDataShift(formattedData);
       }
-    };
-
+      setLoading(false);
+    } catch (error) {
+      console.log(error, "ERROR");
+    }
+  };
+  const getDepartments = async () => {
+    try {
+      setDepLoading(true);
+      const departmentResponse = await getDepartmentList(true, depOptions);
+      setDepartments(departmentResponse);
+    } catch (error) {
+      console.error("Error fetching lists:", error);
+    } finally {
+      setDepLoading(false);
+    }
+  };
+  const getDesignations = async () => {
+    setDesignLoading(true);
+    try {
+      const response = await getDesignationList(true, desigOptions);
+      setDesignation(response);
+    } catch (error) {
+      console.error("Error fetching lists:", error);
+    } finally {
+      setDesignLoading(false);
+    }
+  };
   const handleSubmit = (values) => {
     console.log(values, "FORM SUBMMTIED VALUES");
   };
@@ -65,9 +97,10 @@ const OfficeSetting = () => {
   useEffect(() => {
     const fetchData = async () => {
       getOrganization();
-      fetchShifts()
-    }
-    fetchData()
+      fetchShifts();
+      getDepartments();
+    };
+    fetchData();
   }, []);
 
   const columns = [
@@ -121,9 +154,9 @@ const OfficeSetting = () => {
               activeTab === "offices" ? (
                 <AddOrganization reload={getOrganization} />
               ) : activeTab === "department" ? (
-                <AddDepartment />
+                <AddDepartment reload={getDepartments} />
               ) : activeTab === "designation" ? (
-                <AddDesignation />
+                <AddDesignation reload={getDesignations}/>
               ) : (
                 <Shift reload={fetchShifts} />
               )
@@ -163,10 +196,23 @@ const OfficeSetting = () => {
               </Card>
             </TabsContent>
             <TabsContent value="department">
-              <Departments />
+              <Departments
+                loading={depLoading}
+                options={depOptions}
+                setOPtions={setdepOptions}
+                getDepartments={getDepartments}
+                department={department}
+              />
             </TabsContent>
             <TabsContent value="designation">
-              <Designations />
+              <Designations
+                loading={designLoading}
+                options={desigOptions}
+                setOptions={setDesigOptions}
+                designation={designation}
+                setDesignation={setDesignation}
+                getDesignations={getDesignations}
+              />
             </TabsContent>
             <TabsContent value="working-hours">
               <WorkingHours data={dataShift} reload={fetchShifts} />

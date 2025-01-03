@@ -13,7 +13,7 @@ import SheetComponent from "components/ui/SheetComponent";
 import AddDepartmentForm from "./AddDepartmentForm";
 import ViewDepartment from "./ViewDepartment";
 
-const DepartmentAction = ({ data }) => {
+const DepartmentAction = ({ data, reload }) => {
   const [view, setView] = useState(null);
   const [deleteDept, setDeleteDept] = useState(null);
   const [edit, setEdit] = useState(null);
@@ -52,6 +52,7 @@ const DepartmentAction = ({ data }) => {
         `/department/${deleteDept?.data?.id}`,
         deleteDept?.data?.name
       );
+      reload();
     } catch (error) {
       console.log("ERROR", error);
     }
@@ -108,6 +109,7 @@ const DepartmentAction = ({ data }) => {
             }
             edit={edit}
             setEdit={setEdit}
+            reload={reload}
           />
         </SheetComponent>
       )}
