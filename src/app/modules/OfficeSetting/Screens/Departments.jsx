@@ -1,14 +1,17 @@
-import { getDepartmentList } from "app/hooks/general";
 import React, { useEffect, useState } from "react";
 import TableCustom from "components/CustomTable";
 import { Card } from "components/ui/card";
 import DepartmentAction from "../sections/Departments/DepartmentAction";
 import { CardContent } from "components/ui/card";
+import PageLoader from './../../../../components/PageLoader';
 
-const Departments = () => {
-  const [department, setDepartments] = useState(null);
-  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-
+const Departments = ({
+  options,
+  setOptions,
+  loading,
+  getDepartments,
+  department,
+}) => {
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -46,6 +49,7 @@ const Departments = () => {
         <DepartmentAction
           // setEdit={setEdit}
           // setEditData={setEditData}
+          reload={getDepartments}
           data={row}
         />
       ),
@@ -53,31 +57,28 @@ const Departments = () => {
   ];
 
   useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        const departmentResponse = await getDepartmentList(true, options);
-        setDepartments(departmentResponse);
-      } catch (error) {
-        console.error("Error fetching lists:", error);
-      }
-    };
-    fetchLists();
+    getDepartments();
   }, [options]);
 
-
   return (
-    <Card>
-      <CardContent>
-      <TableCustom
-        columns={columns}
-        data={department?.results || []}
-        tableOptions={tableOptions}
-        dataTotalSize={department?.count || 0}
-        pagination={true}
-        className="organization-table"
-      />
-      </CardContent>
-    </Card>
+    <>
+      {loading ? (
+        <PageLoader />
+      ) : (
+        <Card>
+          <CardContent>
+            <TableCustom
+              columns={columns}
+              data={department?.results || []}
+              tableOptions={tableOptions}
+              dataTotalSize={department?.count || 0}
+              pagination={true}
+              className="organization-table"
+            />
+          </CardContent>
+        </Card>
+      )}
+    </>
   );
 };
 

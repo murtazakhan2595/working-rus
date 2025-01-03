@@ -132,6 +132,7 @@ const Projects = ({ userProfile }) => {
             <RenderProject
               toggleAddProject={toggleAddProject}
               fetchData={fetchData}
+              userProfile={userProfile}
             />
           )}
           {viewMode === "table" ? (
@@ -154,6 +155,7 @@ const Projects = ({ userProfile }) => {
                   project={project}
                   toggleAddProject={toggleAddProject}
                   fetchData={fetchData}
+                  userProfile={userProfile}
                 />
               ))}
             </div>
@@ -169,7 +171,8 @@ const Projects = ({ userProfile }) => {
   );
 };
 
-const RenderProject = ({ project, toggleAddProject, fetchData }) => {
+const RenderProject = ({ project, toggleAddProject, fetchData, userProfile }) => {
+  
   const navigate = useNavigate();
   const projectMembers = project?.project_members || [];
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -248,6 +251,7 @@ const RenderProject = ({ project, toggleAddProject, fetchData }) => {
           isOpen={isViewBoardDetails}
           setIsOpen={setIsViewBoardDetails}
           fetchData={fetchData}
+          role = {userProfile?.role}
         />
       )}
     </Card>

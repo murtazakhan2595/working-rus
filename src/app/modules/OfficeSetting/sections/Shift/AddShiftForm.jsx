@@ -15,7 +15,8 @@ import { saveShift } from "app/hooks/general";
 import { validateShiftFormSchema } from "app/utils/FormSchema/ShiftFormSchema";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
-const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
+const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
+  console.log("Reload in AddShiftForm:", reload);
   const [formData, setFormData] = useState(() => {
     if (edit?.data) {
       const localStartTime = moment(edit.data.starttime)
@@ -35,31 +36,36 @@ const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
   const handleSubmit = async (values) => {
     try {
       const localDate = moment().format("YYYY-MM-DD");
-  
+
       // Use default times if no value is selected
       const startTime = values.starttime || "09:00 AM"; // Default start time
       const endTime = values.endtime || "05:00 PM"; // Default end time
-  
-      const startTimeUTC = moment(`${localDate} ${startTime}`, "YYYY-MM-DD hh:mm A")
+
+      const startTimeUTC = moment(
+        `${localDate} ${startTime}`,
+        "YYYY-MM-DD hh:mm A"
+      )
         .utc()
         .format();
       const endTimeUTC = moment(`${localDate} ${endTime}`, "YYYY-MM-DD hh:mm A")
         .utc()
         .format();
-  
+
       const updatedValues = {
         ...values,
         starttime: startTimeUTC,
         endtime: endTimeUTC,
       };
-  
+
       console.log(updatedValues, "UPDATE VALUES");
-  
+
       const response = await saveShift(updatedValues?.id, updatedValues);
       if (response) {
-        toast.success("Shift Added Successfully!", {
+        toast.success(`Shift ${edit ? "Updated": "Added"} Successfully!`, {
           position: toast.POSITION.TOP_RIGHT,
         });
+        console.log("response", response)
+        reload();
         setIsOpen(false);
         setEdit({
           open: false,
@@ -70,7 +76,6 @@ const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
       console.error("Error during submission:", error);
     }
   };
-  
 
   const handleClose = () => {
     setCloseSheet(true);
@@ -86,7 +91,7 @@ const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
         isOpen: closeSheet,
         setCloseSheet,
         setIsOpen: setIsOpen,
-      })} 
+      })}
       <Formik
         initialValues={formData}
         onSubmit={handleSubmit}
@@ -103,7 +108,7 @@ const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
                 touch={props.touched.name}
                 value={props.values.name}
                 onChange={(field, value) => {
-                  console.log(field, value, "FIELD VALUE")
+                  console.log(field, value, "FIELD VALUE");
                   props.handleChange(field)(value);
                 }}
               />
@@ -144,7 +149,7 @@ const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
                   Cancel
                 </Button>
                 <Button type="submit" size="lg" variant="default">
-                  {edit ? "Update": "Add"}
+                  {edit ? "Update" : "Add"}
                 </Button>
               </div>
             </div>

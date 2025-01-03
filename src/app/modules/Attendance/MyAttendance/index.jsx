@@ -1,19 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "src/@/components/ui/table";
-import { Progress } from "src/@/components/ui/progress";
-import { CalendarIcon, FilterIcon, PlayCircle } from "lucide-react";
 import moment from "moment";
 import { EmployeeSelfTimesheet } from "app/modules/Attendance/MyAttendance/Section";
 import {
-  getShiftAssignment,
   getAttendance,
   saveAttendance,
   saveBreak,
@@ -25,12 +14,15 @@ import { toast } from "react-toastify";
 import { calculateBreak } from "app/hooks/attendance";
 import { getBreakStatus } from "app/hooks/attendance";
 import { endBreak, getShiftById } from "app/hooks/attendance";
-import { getLocalTime } from "app/hooks/attendance";
 import { getStats, employeeData } from "app/hooks/attendance";
-
-
+import TableCustom from "components/CustomTable";
+import { myAttendanceColumn } from "app/utils/Types/TableColumns";
+import { Button } from "components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { HourlyStatistics } from "../EmployeeAttendance/Section";
 
 const Attendance = () => {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false);
   const [employeeShift, setEmployeeShift] = useState({});
   const [attendance, setAttendance] = useState(null);
@@ -41,13 +33,7 @@ const Attendance = () => {
   const [attendanceHistoryLoading, setAttendanceHistoryLoading] =
     useState(false);
 
-  const [stats, setStats] = useState([
-    { label: "Today", value: "0", total: "8" },
-    { label: "This Week", value: "0", total: "40" },
-    { label: "This Month", value: "0", total: "160" },
-    { label: "Remaining", value: "0", total: "160" },
-    { label: "Overtime", value: "0", total: "160" },
-  ]);
+
   const userProfile = useSelector((state) => state.user.userProfile);
   const user_details = useSelector((state) => state.emp.user_details);
   const [filterData, setFilterData] = useState({
@@ -100,7 +86,7 @@ const Attendance = () => {
       setAttendanceWithLocalTime(attendance.results[0]);
     }
 
-    if (attendance && attendance.results.length > 0 ) {
+    if (attendance && attendance.results.length > 0) {
       const breakStatus = await getBreakStatus({
         filterData: {
           employee_id: userProfile.id,
@@ -113,49 +99,11 @@ const Attendance = () => {
       });
       setOnBreak(breakStatus);
     }
-    let stats = await getStats(userProfile.id);
-    stats = stats[0];
-    if (stats) {
-      // [
-      //   { label: "Today", value: "4.45", total: "8" },
-      //   { label: "This Week", value: "25", total: "40" },
-      //   { label: "This Month", value: "48.15", total: "160" },
-      //   { label: "Remaining", value: "111.85", total: "160" },
-      //   { label: "Overtime", value: "5", total: "160" },
-      // ];
-      setStats([
-        {
-          label: "Today",
-          value: stats.daily_hours.value,
-          total: stats.daily_hours.total,
-        },
-        {
-          label: "This Week",
-          value: stats.weekly_hours.value,
-          total: stats.weekly_hours.total,
-        },
-        {
-          label: "This Month",
-          value: stats.monthly_hours.value,
-          total: stats.monthly_hours.total,
-        },
-        {
-          label: "Remaining",
-          value: stats.remaining_hours["total value"],
-          total: stats.monthly_hours.total,
-        },
-        {
-          label: "Overtime",
-          value: stats.overtime_hours.overtimehours,
-          total: 160,
-        },
-      ]);
-    }
-    setDisable(false)
+    setDisable(false);
     setLoading(false);
   };
   const endShift = async () => {
-    setDisable(true)
+    setDisable(true);
     const checkout = moment().format("YYYY-MM-DDTHH:mm:ss");
     await updatePayableHours();
     await endBreak(
@@ -196,7 +144,7 @@ const Attendance = () => {
       setAttendanceWithLocalTime(response);
     }
     setOnBreak(false);
-    setDisable(false)
+    setDisable(false);
   };
 
   useEffect(() => {
@@ -275,7 +223,7 @@ const Attendance = () => {
   };
 
   const updatePayableHours = async () => {
-    if(!attendance && attendance.results.length >0){
+    if (!attendance && attendance.results.length > 0) {
       toast.error("No attendance found");
       return;
     }
@@ -312,7 +260,7 @@ const Attendance = () => {
     }
   };
   const startShift = async () => {
-    setDisable(true)
+    setDisable(true);
     if (attendance && attendance.checkout) {
       toast.success("Shift already ended");
       return;
@@ -344,11 +292,11 @@ const Attendance = () => {
       }
     }
     await getAttendanceList();
-    setDisable(false)
+    setDisable(false);
   };
 
   const pauseShift = async () => {
-    setDisable(true)
+    setDisable(true);
     const startTime = moment().format("YYYY-MM-DDTHH:mm:ss");
     await updatePayableHours();
     const payload = {
@@ -365,7 +313,7 @@ const Attendance = () => {
     }
     await updateAttendanceAttributes1();
     await getAttendanceList();
-    setDisable(false)
+    setDisable(false);
   };
 
   const handleFilterChange = (name, filterValue) => {
@@ -386,6 +334,10 @@ const Attendance = () => {
       employee_id: userProfile.id,
     });
   };
+
+  const downloadAttendance = ()=>{
+    navigate(`/attendance-reports/${userProfile?.id}`) 
+  }
 
   return (
     <>
@@ -408,26 +360,16 @@ const Attendance = () => {
                 <CardTitle className="text-plum-900">Statistics</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {stats.map((item) => (
-                    <div key={item.label}>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-slate-900">{item.label}</span>
-                        <span>
-                          <span className="text-slate-1200">{item.value}</span>/
-                          {item.total} hrs
-                        </span>
-                      </div>
-                      <Progress
-                        value={
-                          (parseFloat(item.value) / parseFloat(item.total)) *
-                          100
-                        }
-                        className="h-2"
-                      />
-                    </div>
-                  ))}
-                </div>
+                            <HourlyStatistics
+                              userId={userProfile?.id}
+                              shiftId={userProfile?.shift_assignment || 1}
+                              dateRange={
+                                filterData && filterData.date_range
+                                  ? filterData.date_range
+                                  : null
+                              }
+                              attendanceData={attendanceData}
+                            />
               </CardContent>
             </Card>
 
@@ -476,40 +418,24 @@ const Attendance = () => {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <div className="text-plum-900">Attendance History</div>
+                <div className="flex gap-2">
                 <div className="flex items-center gap-2 text-lg font-normal text-slate-900">
-                  <button
-                    className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${
-                      activeTab === "day" ? "bg-plum-400 text-plum-900" : ""
-                    }`}
-                    onClick={() => {
-                      setActiveTab("day");
-                      handleFilterChange("day");
-                    }}
-                  >
-                    Day
-                  </button>
-                  <button
-                    className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${
-                      activeTab === "week" ? "bg-plum-400 text-plum-900" : ""
-                    }`}
-                    onClick={() => {
-                      setActiveTab("week");
-                      handleFilterChange("week");
-                    }}
-                  >
-                    Week
-                  </button>
-                  <button
-                    className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${
-                      activeTab === "month" ? "bg-plum-400 text-plum-900" : ""
-                    }`}
-                    onClick={() => {
-                      setActiveTab("month");
-                      handleFilterChange("month");
-                    }}
-                  >
-                    Month
-                  </button>
+                  {["day", "week", "month"].map((tab) => (
+                    <button
+                      key={tab}
+                      className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${
+                        activeTab === tab ? "bg-plum-400 text-plum-900" : ""
+                      }`}
+                      onClick={() => {
+                        setActiveTab(tab);
+                        handleFilterChange(tab);
+                      }}
+                    >
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </button>
+                  ))}
+                </div>
+                <Button variant="outline" onClick={downloadAttendance}> Download </Button>
                 </div>
               </CardTitle>
             </CardHeader>
@@ -517,49 +443,13 @@ const Attendance = () => {
               <PageLoader />
             ) : (
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>S. No</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Punch In</TableHead>
-                      <TableHead>Punch Out</TableHead>
-                      <TableHead>Break</TableHead>
-                      <TableHead>Overtime</TableHead>
-                      <TableHead>Productivity</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {attendanceData.map((row, index) => (
-                      <TableRow
-                        key={index}
-                        className={index % 2 === 1 ? "bg-purple-50" : ""}
-                      >
-                        <TableCell>
-                          {(index + 1).toString().padStart(2, "0")}
-                        </TableCell>
-                        <TableCell>
-                          {row.date
-                            ? new Date(row.date).toLocaleDateString("en-GB") // or 'en-US' based on your preference
-                            : "No Date"}
-                        </TableCell>
-                        <TableCell>
-                          {moment(attendance?.checkin).format("h:mm A")}
-                        </TableCell>
-                        <TableCell>
-                          {row.checkout
-                            ? moment(row?.checkout?.replace("Z", "")).format(
-                                "h:mm A"
-                              )
-                            : "Not Checked Out"}
-                        </TableCell>
-                        <TableCell>{row.break_duration || 0.0} hrs</TableCell>
-                        <TableCell>{row.overtime_hours || 0.0} hrs</TableCell>
-                        <TableCell>{row.payable_hours || 0.0} hrs</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <TableCustom
+                  data={attendanceData}
+                  columns={myAttendanceColumn}
+                  pagination={true}
+                  dataTotalSize={attendanceData.count || 0}
+                  // tableOptions={tableOptions}
+                />
               </CardContent>
             )}
           </Card>

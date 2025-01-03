@@ -7,20 +7,26 @@ import Calender from "./Calendar";
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import Listview from "../../Sections/Listview";
-import { getShiftAssignment } from "app/hooks/attendance";
+import { getShiftById, employeeData } from "app/hooks/attendance";
+import { toast } from "react-toastify";
 
 const Emplist = ({ teamMembers }) => {
   const [activeMember, setActiveMember] = useState(null);
-  const [employeeShift, setEmployeeShift] = useState([]);
-  const handleSelect = async(memberId) => {
+  const [employeeShift, setEmployeeShift] = useState(null);
+  const handleSelect = async (memberId) => {
     setActiveMember(memberId);
-    const shiftData = await getShiftAssignment({ filterData: { employee_id: memberId } });
-    console.log("Shift Data", shiftData);
-    if(shiftData){
-      setEmployeeShift(shiftData.results);
+    const empData = await employeeData(memberId);
+    if (!empData?.shift_assignment) {
+      toast.error("Employee has no shift assigned");
+      return;
     }
-
-  }
+    const shiftData = await getShiftById(empData.shift_assignment);
+    if (shiftData) {
+      setEmployeeShift({
+        ...shiftData,
+      });
+    }
+  };
   return (
     <div className="flex gap-2">
       <Card className=" min-w-[25%]">
@@ -44,7 +50,7 @@ const Emplist = ({ teamMembers }) => {
             ))}
         </CardContent>
       </Card>
-      <Calender shifts={employeeShift} />
+      <Calender shift={employeeShift} />
     </div>
   );
 };

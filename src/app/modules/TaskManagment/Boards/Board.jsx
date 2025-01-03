@@ -62,6 +62,7 @@ const Board = ({ employees }) => {
         filterData: { project_id: [projectId] },
       });
       const projectDetails = await getProjectById(projectId);
+      console.log("TEAM MEMBERS", projectDetails)
       if (isMounted) {
         setAllBoards(boardsData);
         setProjectData(projectDetails);

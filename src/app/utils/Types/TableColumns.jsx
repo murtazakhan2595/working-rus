@@ -36,8 +36,12 @@ import { Switch } from "../../../src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
 import { Clock, Download } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
-import { CalculateHoursWorked,EmployeeAttendenceActions } from "app/modules/Attendance/Sections";
+import {
+  CalculateHoursWorked,
+  EmployeeAttendenceActions,
+} from "app/modules/Attendance/Sections";
 import { MembersList } from "app/modules/TaskManagment/Sections";
+import { calculatePercentage } from "utils/renderValues";
 /**
  * EmployeeColumns
  *
@@ -60,6 +64,7 @@ export const EmployeeColumns = [
         name={`${row.first_name} ${row.last_name}`}
         department={row.department_name}
         position={row.department_position}
+        showDepartment
       />
     ),
   },
@@ -877,14 +882,14 @@ export const LeaveRecordColumns = [
     text: "Department",
     formatter: (cell) => <DepartmentName value={cell} />,
   },
-  {
-    dataField: "used_leaves",
-    text: "Total Used",
-  },
-  {
-    dataField: "total_balance_after",
-    text: "Total Remaining",
-  },
+  // {
+  //   dataField: "used_leaves",
+  //   text: "Total Used",
+  // },
+  // {
+  //   dataField: "total_balance_after",
+  //   text: "Total Remaining",
+  // },
 ];
 
 export const LeaveTypesColumns = (onCheckedChange) => [
@@ -1037,7 +1042,7 @@ export const MyAttendanceHistoryColumns = [
     text: "Productivity",
     formatter: (cell, row) => (
       <>{`${
-        parseFloat(row.total_hours) + parseFloat(row.overtime_hours)
+        parseFloat(row.payable_hours) + parseFloat(row.overtime_hours)
       } hrs`}</>
     ),
   },
@@ -1050,6 +1055,83 @@ export const MyAttendanceHistoryColumns = [
     dataField: "",
     text: "Actions",
     formatter: (cell, row) => <EmployeeAttendenceHistoryActions row={row} />,
+  },
+];
+
+export const MyDtrTasksColumns = [
+  {
+    dataField: "",
+    text: "Task",
+    formatter: (cell, row) => (
+      <div>
+        <div>{row?.name}</div>
+        <div>{row?.id}</div>
+      </div>
+    ),
+  },
+  {
+    dataField: "dueDate",
+    text: "Due Date",
+  },
+  {
+    dataField: "priority",
+    text: "Priority",
+    formatter: (cell) => (
+      <span
+        className={`
+                      px-2 py-1 rounded-full text-sm
+                      ${
+                        cell === "High"
+                          ? "text-[#60646c] "
+                          : cell === "Medium"
+                          ? "text-[#825312]"
+                          : "text-[#911030]"
+                      }
+                    `}
+      >
+        {cell}
+      </span>
+    ),
+  },
+  {
+    dataField: "timeEst",
+    text: "Time Est",
+    formatter: (cell) => (
+      <div className="flex items-center gap-2">
+        {" "}
+        <Clock size={16} /> {cell}
+      </div>
+    ),
+  },
+  {
+    dataField: "timeSpent",
+    text: "Time Spent",
+    formatter: (cell) => (
+      <div className="flex items-center gap-2">
+        {" "}
+        <Clock size={16} /> {cell}
+      </div>
+    ),
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell) => (
+      <span
+        className={`
+                      px-2 py-1 rounded-full text-xs
+                      ${
+                        cell === "Completed"
+                          ? "bg-green-100 text-green-800"
+                          : cell === "In-Progress"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-gray-100 text-gray-800"
+                      }
+                    `}
+      >
+        {cell}
+      </span>
+    ),
   },
 ];
 
@@ -1070,47 +1152,24 @@ export const EmployeesAttendanceColumns = [
   },
 
   {
-    dataField: "is_late",
-    text: "",
-    formatter: (cell, row) => cell === true && <Badge variant='error'>Late</Badge>,
+    dataField: "monthly_stats",
+    text: "Present Days",
+    formatter: (cell) => <span>{cell?.Present}</span>
   },
   {
-    dataField: "employee_id",
-    text: "Department",
-    formatter: (cell) => {
-      const user = GetUser(cell);
-      if (!user) return "";
-      return (
-        <>
-          <DepartmentName value={user?.department_name} />
-        </>
-      );
-    },
+    dataField: "monthly_stats",
+    text: "Absent Days",
+    formatter: (cell) => <span>{cell?.Absent}</span>,
   },
   {
-    dataField: "checkin",
-    text: "Check In",
-    formatter: (cell, row) => (
-      <div>
-        <div>{`${moment(cell).format("hh:mm A")}`}</div>
-        <div>{`${
-          row.checkout ? moment(row.checkout).format("hh:mm A") : "Working"
-        }`}</div>
-      </div>
-    ),
+    dataField: "monthly_stats",
+    text: "Late Days",
+    formatter: (cell)=> <span>{cell?.Late}</span>
   },
   {
-    dataField: "checkout",
-    text: "Hours",
-    formatter: (cell, row) => {
-      const hours = CalculateHoursWorked([row]);
-      return <>{`${hours.totalWorkedHours}hr`}</>;
-    },
-  },
-  {
-    dataField: "status",
-    text: "Status",
-    formatter: (cell) => <StatusLabel status={cell} />,
+    dataField: "monthly_stats",
+    text: "Attendance %",
+    formatter: (cell, row) => calculatePercentage(cell)
   },
   {
     dataField: "",
@@ -1118,3 +1177,39 @@ export const EmployeesAttendanceColumns = [
     formatter: (cell, row) => <EmployeeAttendenceActions row={row} />,
   },
 ];
+
+
+export const myAttendanceColumn = [
+{
+  text:"Date",
+  dataField:"date",
+  formatter:(cell)=> <>{`${renderDate(cell)}`} </>
+},
+{
+  text:"Check In",
+  dataField:"checkin",
+  formatter: (cell)=>  <span>{moment(cell).format("h:mm A")}</span>
+},
+{
+  text:"Check Out",
+  dataField:"checkout",
+  formatter:(cell) => cell ? <span>{moment(cell).format("h:mm A")}</span> : "Not Checked Out"
+},
+{
+  text:"Break",
+  dataField:"break_duration"
+},
+{
+  text:"Overtime",
+  dataField:"overtime_hours"
+},
+{
+  text:"Productivity",
+  dataField:"payable_hours"
+},
+{
+  dataField: "status",
+  text: "Status",
+  formatter: (cell) => <StatusLabel status={cell} />,
+},
+]

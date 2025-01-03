@@ -15,11 +15,11 @@ import { getShift } from "app/hooks/attendance";
 const ShiftCalender = () => {
   const [activeTab, setActiveTab] = useState("all");
 
-  const tabsData = [
-    { value: "all", label: "All" },
-    { value: "my", label: "My" },
-    { value: "my-team", label: "My Team" },
-  ];
+  // const tabsData = [
+  //   { value: "all", label: "All" },
+  //   { value: "my", label: "My" },
+  //   { value: "my-team", label: "My Team" },
+  // ];
 
   const [teamMembers, setTeamMembers] = useState([]);
   const [shifts, setShifts] = useState([]);
@@ -30,16 +30,14 @@ const ShiftCalender = () => {
       const filterData = {
         ...(userProfile.role === 2 ? { direct_report: userProfile.id } : {}),
       };
-      console.log("filterData", filterData);
       try {
-        const response = await getEmployeeCustomList({filterData});
-        console.log(response, "RESPONSE");
+        const response = await getEmployeeCustomList({ filterData });
         if (response) {
           setTeamMembers(response);
         }
 
         const shifts = await getShift();
-        if(shifts){
+        if (shifts) {
           console.log("Shifts", shifts);
           setShifts(shifts);
         }
@@ -52,10 +50,10 @@ const ShiftCalender = () => {
   return (
     <div>
       <Header
-        content={<AssignShift users={teamMembers.results} shifts={shifts.results} />}
+      // content={<AssignShift users={teamMembers.results} shifts={shifts.results} />}
       />
       <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="all">
-        <div className="flex justify-start">
+        {/* <div className="flex justify-start">
           <TabsList className="flex justify-center mb-4">
             {tabsData?.map((tab) => (
               <TabsTrigger
@@ -67,16 +65,16 @@ const ShiftCalender = () => {
               </TabsTrigger>
             ))}
           </TabsList>
-        </div>
+        </div> */}
         <TabsContent value="all">
           <Emplist teamMembers={teamMembers} />
         </TabsContent>
-        <TabsContent value="my">
+        {/* <TabsContent value="my">
           <h1>My</h1>
         </TabsContent>
         <TabsContent value="my-team">
           <h1>My Team</h1>
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </div>
   );

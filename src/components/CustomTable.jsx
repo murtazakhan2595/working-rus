@@ -35,6 +35,7 @@ export default function TableCustom({
   setSelectedRows,
   disabledRows,
 }) {
+   console.log("data", data);
   const [expandedRow, setExpandedRow] = useState(null);
   const options = {
     page: tableOptions?.page ?? 1,
@@ -51,6 +52,7 @@ export default function TableCustom({
   const [designationFilter, setDesignationFilter] = useState("all");
 
   const employees = useMemo(() => {
+   
     return data
       ?.filter((employee) => {
         const searchValue = search.toLowerCase();
