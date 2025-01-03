@@ -14,7 +14,7 @@ import SheetComponent from "components/ui/SheetComponent";
 import ViewDepartment from "../Departments/ViewDepartment";
 import ViewDesignation from "./ViewDesignation";
 
-const DesignationAction = ({ data }) => {
+const DesignationAction = ({ data, reload }) => {
   const [view, setView] = useState(null);
   const [edit, setEdit] = useState(null);
   const [deleteDesignation, setDeleteDesignation] = useState(null);
@@ -53,6 +53,7 @@ const DesignationAction = ({ data }) => {
         `/designation/${deleteDesignation?.data?.id}`,
         deleteDesignation?.data?.name
       );
+      reload()
     } catch (error) {
       console.log("ERROR", error);
     }
@@ -107,6 +108,7 @@ const DesignationAction = ({ data }) => {
             }
             edit={edit}
             setEdit={setEdit}
+            reload={reload}
           />
         </SheetComponent>
       )}
