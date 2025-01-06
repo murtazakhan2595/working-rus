@@ -1,5 +1,13 @@
 import moment from "moment";
 
+export function getDropdownList(list, label="name", value="id") {
+  if (!list || list.length === 0) return [];
+  const dropdownList = list.map((obj) => {
+    return { label: obj[label], value: obj[value] };
+  });
+  return dropdownList
+}
+
 export function getEmployeeLeavesTypesList(LeaveTypes, employeeLeaveType) {
   if (
     employeeLeaveType &&

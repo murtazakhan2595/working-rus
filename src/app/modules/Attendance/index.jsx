@@ -83,13 +83,13 @@ const Attendance = () => {
           1
         )}`}
       >
-        <div className="p-2 flex  gap-4">
+        <div className="flex gap-4">
           <LeaveStatusOverview />
           <StatisticsChart />
           <DepartmentOverview />
         </div>
         {/* <Header /> */}
-        <StatsCards />
+        <StatsCards attendanceData={attendanceData.results || []} />
         {/* <Stats stats={statsData} /> */}
         <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
           {/* <FilterInput
@@ -130,7 +130,7 @@ const Attendance = () => {
           <Card>
             <CardContent>
               <TableCustom
-                data={attendanceData.results}
+                data={attendanceData.results || []}
                 columns={EmployeesAttendanceColumns}
                 pagination={true}
                 dataTotalSize={attendanceData.count || 0}
@@ -149,7 +149,7 @@ const Attendance = () => {
       <div>
         <EmployeesAttendence />
       </div> */}
-          </div>
+    </div>
   );
 };
 

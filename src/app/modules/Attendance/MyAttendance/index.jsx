@@ -104,7 +104,7 @@ const Attendance = () => {
   };
   const endShift = async () => {
     setDisable(true);
-    const checkout = moment().format("YYYY-MM-DDTHH:mm:ss");
+    const checkout = moment().utc().format("YYYY-MM-DDTHH:mm:ss[Z]");
     await updatePayableHours();
     await endBreak(
       {

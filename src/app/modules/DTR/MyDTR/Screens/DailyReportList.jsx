@@ -1,6 +1,14 @@
 import { Button } from "components/ui/button";
 import { Card, CardHeader, CardContent } from "components/ui/card";
-import { Check, ChevronDown, ChevronUp, ClipboardList, Clock, ClockArrowUp, Hourglass } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ClipboardList,
+  Clock,
+  ClockArrowUp,
+  Hourglass,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import CustomTable from "components/CustomTable";
 
@@ -10,6 +18,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "src/@/components/ui/dropdown-menu";
+import { toast } from "react-toastify";
+import moment from "moment";
 import {
   Table,
   TableBody,
@@ -18,62 +28,12 @@ import {
   TableHeader,
   TableRow,
 } from "src/@/components/ui/table";
-import { MyDtrTasksColumns } from "app/utils/Types/TableColumns";
-import { getDtr } from "app/hooks/dtr";
+import { MyDtrTasksColumns } from "app/modules/DTR/Sections/DTRTableColumns";
+import { getTaskDetailsFromLogtime, addUpdateDTR } from "app/hooks/dtr";
 
-// / Mock data
-const dailyReportData = [
-  {
-    date: "24 - 11 - 2024",
-    day: "Thursday",
-    stats: { tasks: 8, meetings: 0, reports: 1 },
-    status: "pending",
-    tasks: [
-      {
-        id: "T0031",
-        name: "Wireframing",
-        dueDate: "June 13",
-        priority: "Low",
-        timeEst: "5h",
-        timeSpent: "2h",
-        status: "In-Progress",
-      },
-      {
-        id: "T0033",
-        name: "Prototyping",
-        dueDate: "June 15",
-        priority: "Medium",
-        timeEst: "3h",
-        timeSpent: "3h",
-        status: "Completed",
-      },
-      {
-        id: "T0231",
-        name: "Design Review",
-        dueDate: "June 13",
-        priority: "High",
-        timeEst: "4h",
-        timeSpent: "2.5h",
-        status: "In-Progress",
-      },
-    ],
-  },
-  // More reports can be added here...
-];
-
-const DailyReportList = () => {
-  // const [dailyReportData, setDailyReportData] = useState([]);
-  // const fetchData = async () => {
-  //   const myDtr =await getDtr()
-  //   if (myDtr) {
-  //     setDailyReportData(myDtr?.results)
-  //   }
-  // }
-  // console.log(dailyReportData)
-  // useEffect(() => {
-  //   // Fetch daily reports here
-  //   fetchData()
-  // }, []);
+const DailyReportList = ({ dailyReportData, reload }) => {
+  console.log(dailyReportData);
+  if (!dailyReportData || dailyReportData.length === 0) return null;
 
   return (
     <Card>
@@ -81,7 +41,7 @@ const DailyReportList = () => {
       <CardContent>
         {dailyReportData.map((report, index) => (
           <div key={report.date} className={index > 0 ? "mt-4" : ""}>
-            <ReportCard {...report} />
+            <ReportCard {...report} reload={reload} />
           </div>
         ))}
       </CardContent>
@@ -89,23 +49,59 @@ const DailyReportList = () => {
   );
 };
 
-const ReportCard = ({ date, day, stats, status, tasks }) => {
+const ReportCard = ({
+  logtime_date,
+  id,
+  stats,
+  dtr_status,
+  logtimes,
+  reload,
+}) => {
   const [isDetailsVisible, setDetailsVisible] = useState(false);
-   const toggleDetails = () => {
-     setDetailsVisible((prev) => !prev);
-   };
+  const [tasks, setTasks] = useState([]);
+  const toggleDetails = () => {
+    setDetailsVisible((prev) => !prev);
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getTaskDetailsFromLogtime(logtimes);
+      if (response) {
+        setTasks(response);
+      }
+    };
+    fetchData();
+  }, [logtimes]);
+  const submitReportDTR = async () => {
+    const dtrResponse = await addUpdateDTR(
+      {
+        dtr_status: "Submitted",
+        id: id,
+      },
+      id
+    );
+
+    if (dtrResponse) {
+      toast.success("DTR submitted successfully");
+      reload(); // Reload the page or data
+    } else {
+      toast.error("Error in saving leave transaction");
+    }
+  };
+
   return (
     <div className="flex flex-col w-full rounded-lg border-[2px] border-[#e8e8ec]">
       <div className="flex flex-wrap justify-between gap-6 py-4 pr-9 pl-4 w-full bg-white rounded-lg">
         <div className="flex flex-col">
-          <div className="text-black text-base font-bold">{date}</div>
-          <div className="text-[#1c2024] text-base font-normal">{day}</div>
+          <div className="text-black text-base font-bold">{logtime_date}</div>
+          <div className="text-[#1c2024] text-base font-normal">
+            {moment(logtime_date).format("dddd")}
+          </div>
         </div>
         <div className="flex gap-4 items-center">
-          <StatItem icon={Hourglass} value={stats.tasks} />
-          <StatItem icon={ClockArrowUp} value={stats.meetings} />
-          <StatItem icon={ClipboardList} value={stats.reports} />
-          <StatusBadge status={status} />
+          <StatItem icon={Hourglass} value={stats?.tasks} />
+          <StatItem icon={ClockArrowUp} value={stats?.meetings} />
+          <StatItem icon={ClipboardList} value={stats?.reports} />
+          <StatusBadge status={dtr_status} />
           <div
             className="h-8 px-2 py-1 flex items-center gap-2 cursor-pointer"
             onClick={toggleDetails}
@@ -129,7 +125,6 @@ const ReportCard = ({ date, day, stats, status, tasks }) => {
             columns={MyDtrTasksColumns}
             dataTotalSize={tasks.length || 0}
             pagination={false}
-            // tableOptions={tableOptions}
           />
           <div className="flex justify-between mt-4">
             <div
@@ -146,8 +141,26 @@ const ReportCard = ({ date, day, stats, status, tasks }) => {
               )}
             </div>
             <div className="flex items-center justify-between gap-4">
-              <Button>Submit Report</Button>
-              <Button>Add New Task</Button>
+              {dtr_status === "Pending" && (
+                <Button
+                  onClick={() => {
+                    submitReportDTR();
+                  }}
+                >
+                  Submit Report
+                </Button>
+              )}
+
+              {dtr_status === "Change Request" && (
+                <Button
+                  onClick={() => {
+                    submitReportDTR();
+                  }}
+                >
+                  Resubmit Report
+                </Button>
+              )}
+              {dtr_status !== "Submitted" && <Button>Add New Task</Button>}
             </div>
           </div>
         </div>
