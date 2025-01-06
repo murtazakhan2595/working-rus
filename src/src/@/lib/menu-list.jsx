@@ -13,6 +13,7 @@ import {
   UserRoundSearch,
   UsersRound,
   BadgeDollarSign,
+  Settings,
 } from "lucide-react";
 import Config from "constants/config";
 
@@ -243,7 +244,7 @@ export function getMenuList(pathname, userRole) {
   ];
 
   const OfficeSettingMenu = [
-    createMenu("/office-settings", "Office Setting", House),
+    createMenu("/office-settings", "Office Setting", Settings),
     // createMenu("/services", "Services", SquareStack),
   ];
 

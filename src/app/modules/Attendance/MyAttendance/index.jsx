@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-import { Progress } from "src/@/components/ui/progress";
 import moment from "moment";
 import { EmployeeSelfTimesheet } from "app/modules/Attendance/MyAttendance/Section";
 import {
@@ -20,6 +19,7 @@ import TableCustom from "components/CustomTable";
 import { myAttendanceColumn } from "app/utils/Types/TableColumns";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { HourlyStatistics } from "../EmployeeAttendance/Section";
 
 const Attendance = () => {
   const navigate = useNavigate()
@@ -33,13 +33,7 @@ const Attendance = () => {
   const [attendanceHistoryLoading, setAttendanceHistoryLoading] =
     useState(false);
 
-  const [stats, setStats] = useState([
-    { label: "Today", value: "0", total: "8" },
-    { label: "This Week", value: "0", total: "40" },
-    { label: "This Month", value: "0", total: "160" },
-    { label: "Remaining", value: "0", total: "160" },
-    { label: "Overtime", value: "0", total: "160" },
-  ]);
+
   const userProfile = useSelector((state) => state.user.userProfile);
   const user_details = useSelector((state) => state.emp.user_details);
   const [filterData, setFilterData] = useState({
@@ -104,44 +98,6 @@ const Attendance = () => {
         },
       });
       setOnBreak(breakStatus);
-    }
-    let stats = await getStats(userProfile.id);
-    stats = stats[0];
-    if (stats) {
-      // [
-      //   { label: "Today", value: "4.45", total: "8" },
-      //   { label: "This Week", value: "25", total: "40" },
-      //   { label: "This Month", value: "48.15", total: "160" },
-      //   { label: "Remaining", value: "111.85", total: "160" },
-      //   { label: "Overtime", value: "5", total: "160" },
-      // ];
-      setStats([
-        {
-          label: "Today",
-          value: stats.daily_hours.value,
-          total: stats.daily_hours.total,
-        },
-        {
-          label: "This Week",
-          value: stats.weekly_hours.value,
-          total: stats.weekly_hours.total,
-        },
-        {
-          label: "This Month",
-          value: stats.monthly_hours.value,
-          total: stats.monthly_hours.total,
-        },
-        {
-          label: "Remaining",
-          value: stats.remaining_hours["total value"],
-          total: stats.monthly_hours.total,
-        },
-        {
-          label: "Overtime",
-          value: stats.overtime_hours.overtimehours,
-          total: 160,
-        },
-      ]);
     }
     setDisable(false);
     setLoading(false);
@@ -404,26 +360,16 @@ const Attendance = () => {
                 <CardTitle className="text-plum-900">Statistics</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {stats.map((item) => (
-                    <div key={item.label}>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-slate-900">{item.label}</span>
-                        <span>
-                          <span className="text-slate-1200">{item.value}</span>/
-                          {item.total} hrs
-                        </span>
-                      </div>
-                      <Progress
-                        value={
-                          (parseFloat(item.value) / parseFloat(item.total)) *
-                          100
-                        }
-                        className="h-2"
-                      />
-                    </div>
-                  ))}
-                </div>
+                            <HourlyStatistics
+                              userId={userProfile?.id}
+                              shiftId={userProfile?.shift_assignment || 1}
+                              dateRange={
+                                filterData && filterData.date_range
+                                  ? filterData.date_range
+                                  : null
+                              }
+                              attendanceData={attendanceData}
+                            />
               </CardContent>
             </Card>
 

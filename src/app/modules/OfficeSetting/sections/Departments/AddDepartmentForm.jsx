@@ -12,9 +12,11 @@ import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
+const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
   const [closeSheet, setCloseSheet] = useState(false);
-  const [formData, setFormData] = useState(edit?.data || DepartmentsInformation);
+  const [formData, setFormData] = useState(
+    edit?.data || DepartmentsInformation
+  );
   const [organization, setOrganization] = useState([]);
 
   useEffect(() => {
@@ -38,22 +40,20 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
     try {
       const response = await saveDepartment(values?.id, values);
       if (response) {
-        toast.success("Department Added Successfully!", {
+        toast.success(`Department ${edit?.data? "Updated":"Added"} Successfully!`, {
           position: toast.POSITION.TOP_RIGHT,
         });
         setIsOpen(false);
-        setEdit({
-          open: false,
-          data: null
-        });
-        getDepartmentList()
+        // setEdit({
+        //   open: false,
+        //   data: null,
+        // });
+        reload();
       }
     } catch (error) {
-      console.log("ERROR", error);
+      console.error("ERROR", error);
     }
   };
-
-
 
   return (
     <>
@@ -122,7 +122,7 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit }) => {
                   Cancel
                 </Button>
                 <Button type="submit" size="lg" variant="default">
-                  Add
+                  {edit ? "Update" : "Add"}
                 </Button>
               </div>
             </div>

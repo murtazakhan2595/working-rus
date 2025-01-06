@@ -1,21 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "src/@/components/ui/table";
-import { Progress } from "src/@/components/ui/progress";
-import Avatar from "components/ui/Avatar";
-import {
-  EmployeeID,
-  EmployeeName,
-  DepartmentName,
-  DesignationName,
-} from "utils/getValuesFromTables";
 import moment from "moment";
 import {
   TodayStatistics,
@@ -25,12 +9,7 @@ import {
   EmployeeAttendanceOverview,
 } from "app/modules/Attendance/EmployeeAttendance/Section";
 import {
-  getShiftAssignment,
-  saveShiftAssignment,
   getAttendance,
-  saveAttendance,
-  saveBreak,
-  getBreak,
 } from "app/hooks/attendance";
 import { PageLoader } from "components";
 import { toast } from "react-toastify";
@@ -151,7 +130,7 @@ const EmployeeAttendance = () => {
               attendanceData={attendanceData?.results}
             />
           </CardContent>
-        </Card>
+        </Card> 
 
         <Card>
           <CardHeader>
