@@ -87,6 +87,32 @@ export const StatusLabel = ({ status, value }) => {
   );
 };
 
+export const StatusLabelAttendance = ({ status, value }) => {
+  if (!status) {
+    return "";
+  }
+
+  // Assign the appropriate class name based on the status
+  let className = "";
+  switch (status) {
+    case "Present":
+      className = "bg-[#E5FFF9] text-[#1D735E";
+      break;
+    case "Absent":
+      className = "bg-[#F0F0F3] text-[#7F838D";
+      break;
+    case "Late":
+      className = "bg-[#FAEFE1] text-[#B8761A]";
+      break;
+    case "Weekend ":
+      className = "label-warning-D5D912";
+      break;
+  }
+
+  // Render the badge with the appropriate label and style
+  return <Badge className={className}>{status}</Badge>;
+};
+
 
 
 export const StatusCircleLabel = ({ label, status }) => {
