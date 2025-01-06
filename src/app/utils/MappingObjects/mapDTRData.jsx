@@ -1,5 +1,5 @@
 import { LogTime } from "app/utils/Types/DTR";
-function mapLogTimeData(data) {
+export function mapLogTimeData(data) {
   const logTime = LogTime;
   logTime.consumed_time = data.consumed_time ?? "";
   logTime.notes = data.notes ?? "";

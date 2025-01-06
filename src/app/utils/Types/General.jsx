@@ -5,6 +5,7 @@ const File = {
   id: null,
   name: null,
 };
+const Attachment = { attachments: "", id: null, name: null };
 const EmployeeListData = {
   count: 0,
   results: [],
@@ -12,4 +13,4 @@ const EmployeeListData = {
   TotalEmployee: 0,
   TotalManager: 0,
 };
-export { File, EmployeeListData };
+export { File, EmployeeListData, Attachment };

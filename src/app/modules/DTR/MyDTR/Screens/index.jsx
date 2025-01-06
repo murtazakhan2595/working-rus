@@ -1,2 +1,3 @@
 import SaveUpdateLogTime from "./SaveUpdateLogTime";
-export { SaveUpdateLogTime };
+import DailyReportList from "./DailyReportList";
+export { SaveUpdateLogTime, DailyReportList };

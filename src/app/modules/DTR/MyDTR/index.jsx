@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { Button } from "components/ui/button";
 import { cn } from "src/@/lib/utils";
 import { Header } from "components";
@@ -15,9 +16,12 @@ import {
   UserRoundCheck,
   UsersRound,
 } from "lucide-react";
-import React, { useState } from "react";
-import DailyReportList from "app/modules/DTR/Sections/DailyReportList";
-import { SaveUpdateLogTime } from "app/modules/DTR/MyDTR/Screens";
+import {
+  SaveUpdateLogTime,
+  DailyReportList,
+} from "app/modules/DTR/MyDTR/Screens";
+import { getDtr } from "app/hooks/dtr";
+import { useSelector } from "react-redux";
 
 const TIME_FILTERS = {
   DAY: "Day",
@@ -150,6 +154,7 @@ const TimeLog = () => {
 };
 
 const MyDtr = () => {
+  const userProfile = useSelector((state) => state.user.userProfile);
   const statsData = [
     { label: "Hours Logged", value: 10, icon: Hourglass },
     { label: "Tasks Completed", value: 2, icon: ClipboardCheck },
@@ -164,7 +169,36 @@ const MyDtr = () => {
       icon: CalendarClock,
     },
   ];
+  const [isLoading, setIsLoading] = useState(false);
+  const [dailyTaskReport, setDailyTaskReport] = useState(false);
   const [openLogTimeSheet, setOpenLogTimeSheet] = useState(false);
+  const fetchData = async (isMounted) => {
+    setIsLoading(true);
+    try {
+      if (isMounted) {
+        const response = await getDtr();
+        //   {
+        //   filterData: {
+        //     assigned_to: [userProfile.id],
+        //   },
+        // }
+        if (response) {
+          setDailyTaskReport(response.results);
+        }
+      }
+    } catch (error) {
+      console.error("Error frtching DTR", error);
+    } finally {
+      if (isMounted) setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div
@@ -183,8 +217,21 @@ const MyDtr = () => {
       />
       <Stats stats={statsData} />
       <TimeLog />
-      <DailyReportList />
-      {openLogTimeSheet && <SaveUpdateLogTime setIsOpen={setOpenLogTimeSheet} isOpen={openLogTimeSheet} />}
+      <DailyReportList
+        dailyReportData={dailyTaskReport}
+        reload={() => {
+          fetchData(true);
+        }}
+      />
+      {openLogTimeSheet && (
+        <SaveUpdateLogTime
+          setIsOpen={setOpenLogTimeSheet}
+          isOpen={openLogTimeSheet}
+          reload={() => {
+            fetchData(true);
+          }}
+        />
+      )}
     </div>
   );
 };

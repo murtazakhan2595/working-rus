@@ -182,7 +182,6 @@ const CreateAndEditCardForm = ({
 
   return (
     <>
-      {" "}
       <SheetComponent
         {...formSheetEditData}
         isOpen={isOpen}

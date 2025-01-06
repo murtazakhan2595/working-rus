@@ -1,26 +1,51 @@
-"use client";
-
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "components/ui/card";
 import { useSelector } from "react-redux";
+import { getAttendanceStats } from "app/hooks/attendance";
+import { getEmployeeCustomList } from "app/hooks/general";
 
 export function StatsCards({ attendanceData }) {
   const employees = useSelector((state) => state.emp.employees);
-  const lateCount = attendanceData.filter((record) => record.is_late).length;
-  const absenteCount = attendanceData.filter(
-    (record) => record.is_absent
-  ).length;
+  const [loading, setLoading] = useState(false);
+  const [cardStats, setCardStats] = useState({
+    total: 0,
+    present: 0,
+    absent: 0,
+    late: 0,
+  });
+
+  const attendanceStats = async () => {
+    setLoading(true);
+    try {
+      const response = await getAttendanceStats();
+      if (response ) {
+        setCardStats({
+          present: response?.daily_stats?.Present,
+          absent: response?.daily_stats?.Absent,
+          late: response?.daily_stats?.Late,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const statsData = [
-    { title: "Total Employees", value: employees?.length || 0 },
-    { title: "Present", value: attendanceData?.length || 0 },
-    { title: "Late", value: lateCount },
-    { title: "Absent", value: absenteCount || 0 },
+    { title: "Total Employees", value: employees?.length },
+    { title: "Present", value: cardStats?.present },
+    { title: "Late", value: cardStats?.late },
+    { title: "Absent", value: cardStats?.absent },
     {
       title: "Not Arrived",
       value: parseInt(employees?.length - attendanceData?.length),
     },
-    { title: "Attendance Requests", value: 5 },
   ];
+  useEffect(() => {
+    attendanceStats();
+  }, []);
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
       {statsData.map((stat, index) => (

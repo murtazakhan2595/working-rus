@@ -1,54 +1,31 @@
 import { useEffect, useState } from "react";
 import SheetComponent from "components/ui/SheetComponent";
-import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
-import moment from "moment";
 import { Button } from "components/ui/button";
 import { Formik } from "formik";
-import { Paperclip } from "lucide-react";
-
 import {
   NumberInput,
   SelectComponent,
   TextAreaInput,
 } from "components/form-control";
-import { DateInput } from "components/form-control";
-import { ClaimExpenseTypeOptions } from "data/Data";
-import { getEmployeePayroll } from "app/hooks/payroll";
+import { addLogTime, getDtr, addUpdateDTR } from "app/hooks/dtr";
 import { connect } from "react-redux";
-import { saveReimbursement } from "app/hooks/payroll";
 import { toast } from "react-toastify";
-import { validateClaimRequestForm } from "app/utils/FormSchema/payrollFormSchema";
 import { getAllTasks } from "app/hooks/taskManagment";
-import { saveLeave } from "app/hooks/leaveTracker";
-import { saveLeaveTransaction } from "app/hooks/leaveTracker";
 import { validateLogTimeFormSchema } from "app/utils/FormSchema/DTRFormSchema";
-import { saveAttachment } from "app/hooks/leaveTracker";
-import { getRemainingLeaves } from "app/hooks/leaveTracker";
 import {
   handleCloseWithConfirmation,
   SheetCardExtension,
 } from "components/SheetCardExtension";
 import { getDropdownList } from "utils/Lists";
-import {
-  Labels,
-  Assignee,
-  CheckList,
-  Attachments,
-  TaskRelation,
-} from "app/modules/TaskManagment/Sections";
+import { Attachments } from "app/modules/TaskManagment/Sections";
 import { LogTime } from "app/utils/Types/DTR";
+import moment from "moment";
 const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
-  const [newAttachment, setNewAttachment] = useState(null);
   const [taskOptions, setTaskOptions] = useState([]);
-  const [selectedLeaveType, setSelectedLeaveType] = useState("");
-  const [selectedNoOfDays, setSelectedNoOfDays] = useState(0);
-  const [leaveAfter, setLeaveAfter] = useState(null);
-  const [maxDays, setMaxDays] = useState(0);
   const [closeSheet, setCloseSheet] = useState(false);
   const formSheetData = {
     triggerText: "Save",
     title: "Log Time",
-
     description: null,
     footer: null,
   };
@@ -56,121 +33,64 @@ const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await getAllTasks({
-        // filterData: {
-        //   employee_id_and_org: `${userProfile.id},${true}`,
-        //   status: true,
-        // },
+        filterData: {
+          assigned_to: [userProfile.id],
+        },
       });
       if (response) {
-        setTaskOptions(getDropdownList(response.results, "name", "id"));
+        const taskDropdownOptions = getDropdownList(
+          response.results,
+          "name",
+          "id"
+        );
+        setTaskOptions(taskDropdownOptions);
       }
     };
     fetchData();
-  }, [userProfile]);
-
-  const getAvailableLeaves = async (leaveTypeId) => {
-    let leavesAfter = await getRemainingLeaves(leaveTypeId, userProfile.id);
-
-    const leaveType = taskOptions.find((item) => item.value === leaveTypeId);
-    if (leavesAfter === -1) {
-      setLeaveAfter(leaveType.max_days);
-      leavesAfter = leaveType.max_days;
-    } else {
-      setLeaveAfter(leavesAfter);
-    }
-    setMaxDays(leaveType.max_days);
-    if (leavesAfter !== null && selectedNoOfDays > 0) {
-      console.log(
-        "this is the thing",
-        leaveType.max_days,
-        leavesAfter,
-        selectedNoOfDays,
-        selectedNoOfDays > leavesAfter
-      );
-      if (selectedNoOfDays > leavesAfter) {
-        toast.error("You don't have enough leaves to apply for this request");
-      }
-    }
-  };
+  }, [userProfile.id]);
 
   useEffect(() => {
-    if (selectedLeaveType) {
-      console.log("selectedLeaveType", selectedLeaveType);
-      selectedLeaveType &&
-        selectedNoOfDays &&
-        getAvailableLeaves(selectedLeaveType);
-    }
-  }, [selectedLeaveType, selectedNoOfDays]);
+    const fetchData = async () => {
+      const response = await getDtr({
+        filterData: {
+          assigned_to: [userProfile.id],
+        },
+      });
+      if (response) {
+        //  setTaskOptions(getDropdownList(response.results, "name", "id"));
+      }
+    };
+    fetchData();
+  }, []);
 
   const handleFormSubmit = async (values) => {
-    if (leaveAfter !== null && selectedNoOfDays > 0) {
-      if (selectedNoOfDays > leaveAfter) {
-        toast.error("You don't have enough leaves to apply for this request");
-        return;
-      }
-    }
-
-    let attachmentId = null;
-    console.log(attachmentId, "ATTACHMENT ID");
-    // Step 1: Check if there is an attachment and save it
-    if (newAttachment) {
-      const formData = new FormData();
-      formData.append("attachment", newAttachment);
-
-      const attachmentResponse = await saveAttachment(formData);
-
-      if (!attachmentResponse || !attachmentResponse.id) {
-        throw new Error("Failed to upload the attachment.");
-      }
-      attachmentId = attachmentResponse.id; // Save attachment ID
-    }
-
-    // Step 2: Save leave request with the attachment (if exists)
-    const leaveRequestPayload = {
+    const payload = {
       ...values,
-      ...(attachmentId && { attachments: attachmentId }), // Only add attachments if present
+      ...{ attachment: values?.attachment?.attachments },
     };
-    const response = await saveLeave(leaveRequestPayload);
+    debugger;
+    const response = await addLogTime(payload, values.id);
     if (response) {
-      // Step 3: Prepare the leave transaction
-      const employeeLeaveTransaction = {
-        leave_days: values?.no_of_days,
-        action_manager: "Pending",
-        action_hr: "Pending",
-        employee_id: userProfile.id,
-        leave_request_id: response.id, // Link to the saved leave request
-        leave_component_id: values?.component_type,
-      };
+      //Link the saved logtime with DTR of current date
+      const dtrResponse = await addUpdateDTR(
+        {
+          dtr_status: "Pending",
+          logtimes: [response.id, 6,7],
+          logtime_date: moment().format("YYYY-MM-DD"),
+          id: 1,
+        },
+        1
+      );
 
-      // Step 4: Save the leave transaction
-      const tran = await saveLeaveTransaction(employeeLeaveTransaction);
-      if (tran) {
-        toast.success("Leave request sent successfully");
+      if (dtrResponse) {
+        toast.success("LogTime saved successfully");
         setIsOpen(false);
-        setNewAttachment(null); // Clear the attachment
         reload(); // Reload the page or data
-      } else {
-        toast.error("Error in saving leave transaction");
       }
     } else {
-      toast.error("Error in submitting leave request");
+      toast.error("Error in saving leave transaction");
     }
   };
-
-  const handleFileChange = (field, value) => {
-    console.log(value, "VALUE IS HERE");
-    if (value) {
-      const file = value.file; // Extract the file data
-      const maxFileSize = 10 * 1024 * 1024; // Max file size: 10MB
-      if (value.size > maxFileSize) {
-        toast.error("File is too large, must be less than 10MB");
-        return;
-      }
-
-      setNewAttachment(value); // Update the state with the selected file
-    }
-  };
-
   const handleClose = () => {
     setCloseSheet(true);
   };
@@ -181,12 +101,12 @@ const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
         isOpen: closeSheet,
         setCloseSheet,
         setIsOpen,
-        setNewAttachment,
       })}
       <SheetComponent
         {...formSheetData}
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
+        width="568px"
         setIsOpen={setIsOpen}
       >
         <Formik
@@ -197,7 +117,6 @@ const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
         >
           {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
-              {console.log(props.touched, props.errors)}
               <SheetCardExtension title="Task Details">
                 <SelectComponent
                   name={"task_id"}
@@ -263,8 +182,10 @@ const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
                     <Attachments
                       attachmentSelected={props.values?.attachment || []}
                       onChange={(attachments) => {
+                        debugger;
                         props.setFieldValue("attachment", attachments);
                       }}
+                      maxAttachments={1}
                     />
                   </div>
                 </div>

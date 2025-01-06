@@ -14,6 +14,7 @@ import {
 export default function Attachments({
   attachmentSelected,
   onChange,
+  maxAttachments,
   editMode = true,
 }) {
   const fileInputRef = useRef(null);
@@ -68,27 +69,30 @@ export default function Attachments({
         ) : null
       }
       inputDataContent={
-        <Popover>
-          <Button
-            variant="outline"
-            className="w-10 h-10 p-0 rounded-full"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              fileInputRef.current.click();
-            }}
-          >
-            <Plus className="w-4 h-4" />
-          </Button>
-          <Input
-            type="file"
-            multiple
-            style={{ display: "none" }}
-            onClick={(event) => event.stopPropagation()} // Prevent default behavior
-            onChange={(event) => handleAttachmentsChange(event)}
-            ref={fileInputRef}
-          />
-        </Popover>
+        ((attachmentSelected && attachmentSelected.length < maxAttachments) ||
+          !maxAttachments) && (
+          <Popover>
+            <Button
+              variant="outline"
+              className="w-10 h-10 p-0 rounded-full"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                fileInputRef.current.click();
+              }}
+            >
+              <Plus className="w-4 h-4" />
+            </Button>
+            <Input
+              type="file"
+              multiple
+              style={{ display: "none" }}
+              onClick={(event) => event.stopPropagation()} // Prevent default behavior
+              onChange={(event) => handleAttachmentsChange(event)}
+              ref={fileInputRef}
+            />
+          </Popover>
+        )
       }
       editMode={editMode}
     />
