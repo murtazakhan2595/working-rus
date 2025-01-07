@@ -336,7 +336,6 @@ const CreateAndEditCardForm = ({
                             // required
                             // label="Priority"
                             onChange={(field, value) => {
-                              debugger;
                               props.setFieldValue(field, value);
                             }}
                           />
@@ -363,6 +362,7 @@ const CreateAndEditCardForm = ({
                             onChange={(value) => {
                               props.setFieldValue("assigned_to", value);
                             }}
+                            projectMembers={projectDetail.project_members || []}
                           />
                         }
                       />
