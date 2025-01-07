@@ -25,13 +25,15 @@ export default function Assignee({
   assigneeSelected,
   employees,
   onChange,
+  projectMembers,
 }) {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [selectedAssignee, setSelectedLabels] = React.useState([]);
   // Filter labels based on search query
   const filteredEmployees = React.useMemo(() => {
-    return employees?.filter((employee) =>
-      employee.name.toLowerCase().includes(searchQuery.toLowerCase())
+    return employees?.filter(
+      (employee) =>
+        employee.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        projectMembers.includes(employee.value)
     );
   }, [searchQuery, employees]);
 

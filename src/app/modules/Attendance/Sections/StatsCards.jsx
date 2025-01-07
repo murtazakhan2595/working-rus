@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "components/ui/card";
+import { useSelector } from "react-redux";
 import { getAttendanceStats } from "app/hooks/attendance";
 import { getEmployeeCustomList } from "app/hooks/general";
 
-export function StatsCards() {
+export function StatsCards({ attendanceData }) {
+  const employees = useSelector((state) => state.emp.employees);
   const [loading, setLoading] = useState(false);
   const [cardStats, setCardStats] = useState({
     total: 0,
@@ -16,10 +18,8 @@ export function StatsCards() {
     setLoading(true);
     try {
       const response = await getAttendanceStats();
-      const employeeCount = await getEmployeeCustomList();
-      if (response && employeeCount) {
+      if (response ) {
         setCardStats({
-          total: employeeCount?.count,
           present: response?.daily_stats?.Present,
           absent: response?.daily_stats?.Absent,
           late: response?.daily_stats?.Late,
@@ -33,14 +33,15 @@ export function StatsCards() {
   };
 
   const statsData = [
-    { title: "Total Employees", value: cardStats?.total },
+    { title: "Total Employees", value: employees?.length },
     { title: "Present", value: cardStats?.present },
     { title: "Late", value: cardStats?.late },
     { title: "Absent", value: cardStats?.absent },
-    { title: "Not Arrived", value: 3 },
-    { title: "Attendance Requests", value: 5 },
+    {
+      title: "Not Arrived",
+      value: parseInt(employees?.length - attendanceData?.length),
+    },
   ];
-
   useEffect(() => {
     attendanceStats();
   }, []);

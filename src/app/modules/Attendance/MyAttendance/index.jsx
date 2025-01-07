@@ -20,6 +20,9 @@ import { myAttendanceColumn } from "app/utils/Types/TableColumns";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { HourlyStatistics } from "../EmployeeAttendance/Section";
+import { DateRangeInput } from "components/form-control";
+import DateRangePicker from "./Section/DateRangeInput";
+import { DateInput } from "components/form-control";
 
 const Attendance = () => {
   const navigate = useNavigate()
@@ -30,6 +33,7 @@ const Attendance = () => {
   const [onBreak, setOnBreak] = useState(false);
   const [activeTab, setActiveTab] = useState("day");
   const [disable, setDisable] = useState(false);
+  const [dateRange, setDateRange] = useState(null);
   const [attendanceHistoryLoading, setAttendanceHistoryLoading] =
     useState(false);
 
@@ -104,7 +108,7 @@ const Attendance = () => {
   };
   const endShift = async () => {
     setDisable(true);
-    const checkout = moment().format("YYYY-MM-DDTHH:mm:ss");
+    const checkout = moment().utc().format("YYYY-MM-DDTHH:mm:ss[Z]");
     await updatePayableHours();
     await endBreak(
       {
@@ -328,6 +332,15 @@ const Attendance = () => {
         moment().startOf("week").format("YYYY-MM-DD") +
         "," +
         moment().endOf("week").format("YYYY-MM-DD");
+    } else if(name === "month") {
+      filterName = "date_range";
+      filterValue =
+        moment().startOf("month").format("YYYY-MM-DD") +
+        "," +
+        moment().endOf("month").format("YYYY-MM-DD");
+    } else if(name === "date_range") {
+      filterName = "date_range";
+      filterValue = filterValue
     }
     setFilterData({
       [filterName]: filterValue,
@@ -360,16 +373,16 @@ const Attendance = () => {
                 <CardTitle className="text-plum-900">Statistics</CardTitle>
               </CardHeader>
               <CardContent>
-                            <HourlyStatistics
-                              userId={userProfile?.id}
-                              shiftId={userProfile?.shift_assignment || 1}
-                              dateRange={
-                                filterData && filterData.date_range
-                                  ? filterData.date_range
-                                  : null
-                              }
-                              attendanceData={attendanceData}
-                            />
+                <HourlyStatistics
+                  userId={userProfile?.id}
+                  shiftId={userProfile?.shift_assignment || 1}
+                  dateRange={
+                    filterData && filterData.date_range
+                      ? filterData.date_range
+                      : null
+                  }
+                  attendanceData={attendanceData}
+                />
               </CardContent>
             </Card>
 
@@ -414,31 +427,44 @@ const Attendance = () => {
             </Card>
           </div>
 
+          <div className="flex gap-2 justify-between items-center">
+            <h3 className="text-2xl font-semibold leading-none tracking-tight flex flex-col space-y-1.5 p-6">
+              {" "}
+              <div className="text-plum-900">Attendance History</div>
+            </h3>
+            <div className="flex gap-2">
+              <div className="flex items-center gap-2 text-lg font-normal text-slate-900">
+                {["day", "week", "month"].map((tab) => (
+                  <button
+                    key={tab}
+                    className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${
+                      activeTab === tab ? "bg-plum-400 text-plum-900" : ""
+                    }`}
+                    onClick={() => {
+                      setActiveTab(tab);
+                      handleFilterChange(tab);
+                    }}
+                  >
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </button>
+                ))}
+                <DateRangePicker
+                  value={dateRange}
+                  onChange={(value)=>{
+                    console.log("date range changed", value)
+                    setDateRange(value)
+                    handleFilterChange("date_range", value)
+                  }}
+                  placeholder="Select date range"
+                />
+              </div>
+              <Button variant="outline" onClick={downloadAttendance}>
+                {" "}
+                Download{" "}
+              </Button>
+            </div>
+          </div>
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="text-plum-900">Attendance History</div>
-                <div className="flex gap-2">
-                <div className="flex items-center gap-2 text-lg font-normal text-slate-900">
-                  {["day", "week", "month"].map((tab) => (
-                    <button
-                      key={tab}
-                      className={`p-2 rounded-sm hover:bg-plum-400 hover:text-plum-900 ${
-                        activeTab === tab ? "bg-plum-400 text-plum-900" : ""
-                      }`}
-                      onClick={() => {
-                        setActiveTab(tab);
-                        handleFilterChange(tab);
-                      }}
-                    >
-                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                    </button>
-                  ))}
-                </div>
-                <Button variant="outline" onClick={downloadAttendance}> Download </Button>
-                </div>
-              </CardTitle>
-            </CardHeader>
             {attendanceHistoryLoading ? (
               <PageLoader />
             ) : (

@@ -81,7 +81,7 @@ export default function EmployeeSelfTimesheet({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <span className="text-plum-900">Timesheet</span>
+          <span className="text-plum-900">Time Log</span>
           <span className="text-sm text-slate-1200">
             {moment().format("MMM/D/YYYY")}
           </span>
@@ -90,7 +90,7 @@ export default function EmployeeSelfTimesheet({
       <CardContent>
         <div className="space-y-2">
           <div className="flex justify-between">
-            <span className="text-slate-1200">Punch in at</span>
+            <span className="text-slate-1200">Checkin Time</span>
             {attendance?.checkin
               ? moment(attendance.checkin).format("h:mm A")
               : "Start working!"}

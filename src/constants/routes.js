@@ -19,7 +19,7 @@ import "react-toastify/dist/ReactToastify.css";
 import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
 import Employee from "app/modules/Employees/Employee.jsx";
 import { EditEmployeeProfile } from "app/modules/Employees/Screens/Profile";
-import MyDtr from "app/modules/DTR/MyDtr.jsx";
+import { MyDtr } from "app/modules/DTR";
 import CreateTask from "app/modules/DTR/CreateTask.jsx";
 import ForgotPassword from "app/modules/Login/ForgotPassword.jsx";
 import ResetPassword from "app/modules/Login/ResetPassword.jsx";
@@ -47,6 +47,7 @@ import StyleGuide from "app/modules/StyleGuide";
 import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import AttendanceReport from "app/modules/Attendance/Sections/AttendenceFile";
+import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 
 const SidebarRoutes = [
   {
@@ -129,11 +130,12 @@ const SidebarRoutes = [
     component: <CreateTask />,
     name: "Create Task",
   },
-  Config.DAILY_TASK_REPORT && {
-    path: "/my-dtr",
-    component: <MyDtr />,
-    name: "My DTR",
-  },
+  Config.DAILY_TASK_REPORT &&
+    Config.MY_DAILY_TASK_REPORT && {
+      path: "/my-dtr",
+      component: <MyDtr />,
+      name: "My DTR",
+    },
   Config.PROFIL_MANAGMENT && {
     path: "/profile-management",
     component: <Employee />,
@@ -199,6 +201,11 @@ const SidebarRoutes = [
     component: <MyAttendance />,
     name: "My Attendance",
   },
+  Config.MY_ATTENDANCE && {
+    path: "/employee-dtrs",
+    component: <EmployeeDTRs />,
+    name: "Employee DTRs",
+  },
   Config.ATTENDANCE && {
     path: "/shift-calendar",
     component: <ShiftCalendar />,
@@ -207,8 +214,8 @@ const SidebarRoutes = [
 
   Config.ATTENDANCE && {
     path: "attendance-reports/:id",
-    component: <AttendanceReport/>,
-    name: "Attendance Report"
+    component: <AttendanceReport />,
+    name: "Attendance Report",
   },
 
   Config.ATTENDANCE && {

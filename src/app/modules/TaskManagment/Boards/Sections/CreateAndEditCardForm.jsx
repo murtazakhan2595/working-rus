@@ -14,6 +14,7 @@ import {
   addAttachments,
   addTaskCheckListItem,
   getTaskById,
+  getProjectById
 } from "app/hooks/taskManagment";
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
@@ -48,6 +49,7 @@ const CreateAndEditCardForm = ({
   const [closeSheet, setCloseSheet] = useState(false);
   const [initialValues, setInitialValues] = useState(CardTypes);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [projectDetail, setProjectDetail] = useState(false);
   const handleClose = () => {
     // setIsOpen(false)
     setCloseSheet(true);
@@ -82,13 +84,26 @@ const CreateAndEditCardForm = ({
       setInitialValues({
         ...initialValues,
         assigned_by: userProfile.id,
-        project_id: projectId,
-        board_id: boardId,
+        project_id: projectId || null,
+        board_id: boardId || null,
       });
     return () => {
       isMounted = false;
     };
   }, [taskId]);
+  useEffect( () => {
+    let isMounted = true;
+    const fetchProject = async () => {
+        const projectDetails = await getProjectById(projectId);
+        setProjectDetail(projectDetails);
+    }
+    if (projectId) {
+      fetchProject();
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [projectId]);
 
   const handleSubmit = async (formData) => {
     const getAttachmentFileIds = async (attachmentfiles) => {
@@ -182,7 +197,6 @@ const CreateAndEditCardForm = ({
 
   return (
     <>
-      {" "}
       <SheetComponent
         {...formSheetEditData}
         isOpen={isOpen}
@@ -325,7 +339,6 @@ const CreateAndEditCardForm = ({
                             // required
                             // label="Priority"
                             onChange={(field, value) => {
-                              debugger;
                               props.setFieldValue(field, value);
                             }}
                           />
@@ -352,6 +365,7 @@ const CreateAndEditCardForm = ({
                             onChange={(value) => {
                               props.setFieldValue("assigned_to", value);
                             }}
+                            projectMembers={projectDetail.project_members || []}
                           />
                         }
                       />

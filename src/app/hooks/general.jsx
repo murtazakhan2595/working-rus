@@ -193,7 +193,8 @@ const getEmployeeList = async () => {
       const employeeResponse = response.data?.results?.employees ?? [];
       const employeeList = employeeResponse.map((employee) => ({
         value: employee.id,
-        label: `${employee.username}`,
+        label: `${employee.first_name} ${employee.last_name}`,
+        username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
         department_name: employee.department_name,
         department_position: employee.department_position,
@@ -217,7 +218,8 @@ const getEmployeeListWithDetail = async () => {
       const employeeList = employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
-        label: `${employee.username}`,
+        label: `${employee.first_name} ${employee.last_name}`,
+        username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
         first_name:employee.first_name,
         last_name: employee.last_name,

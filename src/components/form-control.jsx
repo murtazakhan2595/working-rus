@@ -400,7 +400,7 @@ const DateRangeInput = ({
     setDate(null);
     setInputValue("");
     setCalendarDate(new Date());
-    onChange(name, ""); // Reset the form value
+    // onChange(name, ""); // Reset the form value
   };
 
   // Handle manual input changes and sync with calendar
@@ -414,7 +414,7 @@ const DateRangeInput = ({
       if (isValid(parsedDate)) {
         setDate(parsedDate);
         setCalendarDate(parsedDate); // Sync with the calendar
-        onChange(name, format(parsedDate, "yyyy-MM-dd"));
+        // onChange(name, format(parsedDate, "yyyy-MM-dd"));
       }
     }
   };
@@ -425,7 +425,7 @@ const DateRangeInput = ({
       setDate(selectedDate);
       setInputValue(format(selectedDate, "dd/MM/yyyy"));
       setCalendarDate(selectedDate);
-      onChange(name, format(selectedDate, "yyyy-MM-dd"));
+      // onChange(name, format(selectedDate, "yyyy-MM-dd"));
     }
   };
 
