@@ -35,7 +35,7 @@ export default function TableCustom({
   setSelectedRows,
   disabledRows,
 }) {
-   console.log("data", data);
+  console.log("data", data);
   const [expandedRow, setExpandedRow] = useState(null);
   const options = {
     page: tableOptions?.page ?? 1,
@@ -52,7 +52,6 @@ export default function TableCustom({
   const [designationFilter, setDesignationFilter] = useState("all");
 
   const employees = useMemo(() => {
-   
     return data
       ?.filter((employee) => {
         const searchValue = search.toLowerCase();
@@ -150,8 +149,8 @@ export default function TableCustom({
                           type="checkbox"
                           onChange={handleSelectAllRows}
                           checked={
-                            paginatedData.length > 0 &&
-                            selectedRows.length === paginatedData.length
+                            paginatedData?.length > 0 &&
+                            selectedRows?.length === paginatedData?.length
                           }
                           className="w-4 h-4 accent-[#ab4aba] border-[#ab4aba] border-[2px] outline-none rounded focus:ring-0"
                         />
@@ -176,7 +175,7 @@ export default function TableCustom({
                 </TableHeader>
               )}
               <TableBody>
-                {paginatedData?.length > 0 ? (
+                {paginatedData && paginatedData?.length > 0 ? (
                   paginatedData.map((row, recordIndex) => (
                     <React.Fragment key={row.id}>
                       <TableRow
@@ -203,7 +202,7 @@ export default function TableCustom({
                               <input
                                 type="checkbox"
                                 onChange={() => handleSelectRow(row.id)}
-                                checked={selectedRows.includes(row.id)}
+                                checked={selectedRows&&selectedRows.includes(row.id)}
                                 className="w-4 h-4 accent-[#ab4aba] border-[#ab4aba] border-[2px] outline-none rounded focus:ring-0"
                               />
                             </div>

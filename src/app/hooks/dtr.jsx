@@ -35,6 +35,28 @@ const getDtr = async (payload) => {
     return false;
   }
 };
+const getLogTimeList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  let URL = `/logtime?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching dtr list:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+};
 const getTaskDetailsFromLogtime = async (logTimeList) => {
   if (!Array.isArray(logTimeList) || logTimeList.length === 0) {
     console.warn("Invalid or empty logTimeList provided.");
@@ -50,12 +72,18 @@ const getTaskDetailsFromLogtime = async (logTimeList) => {
 
       if (logTimeResponse?.status === 200 && logTimeResponse?.data?.task_id) {
         // Fetch task details using task_id from log time response
-        const taskResponse = await axios.get(`${baseUrl}/task/${logTimeResponse.data.task_id}`, {
-          headers: headers(),
-        });
+        const taskResponse = await axios.get(
+          `${baseUrl}/task/${logTimeResponse.data.task_id}`,
+          {
+            headers: headers(),
+          }
+        );
 
         if (taskResponse?.status === 200) {
-          return taskResponse.data; // Return task data
+          return {
+            ...taskResponse.data,
+            ...{ consumed_time: logTimeResponse?.data?.consumed_time },
+          }; // Return task data
         }
       }
     } catch (error) {
@@ -73,7 +101,6 @@ const getTaskDetailsFromLogtime = async (logTimeList) => {
   // Filter out null results
   return taskResults.filter((task) => task !== null);
 };
-
 
 const addLogTime = async (payload, id = null) => {
   try {
@@ -143,4 +170,10 @@ const addUpdateDTR = async (payload, id = null) => {
   }
 };
 
-export { getDtr, addLogTime, addUpdateDTR, getTaskDetailsFromLogtime };
+export {
+  getDtr,
+  addLogTime,
+  getLogTimeList,
+  addUpdateDTR,
+  getTaskDetailsFromLogtime,
+};

@@ -22,6 +22,7 @@ import { LogTime } from "app/utils/Types/DTR";
 import moment from "moment";
 const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
   const [taskOptions, setTaskOptions] = useState([]);
+  const [currentDTR, setCurrentDTR] = useState(null);
   const [closeSheet, setCloseSheet] = useState(false);
   const formSheetData = {
     triggerText: "Save",
@@ -53,11 +54,13 @@ const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
     const fetchData = async () => {
       const response = await getDtr({
         filterData: {
-          assigned_to: [userProfile.id],
+          employee_id: userProfile.id,
+          date: moment().format("YYYY-MM-DD"),
         },
       });
       if (response) {
-        //  setTaskOptions(getDropdownList(response.results, "name", "id"));
+        const dtr = response.results;
+        if (dtr && dtr.length > 0) setCurrentDTR(dtr[0]);
       }
     };
     fetchData();
@@ -75,11 +78,14 @@ const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
       const dtrResponse = await addUpdateDTR(
         {
           dtr_status: "Pending",
-          logtimes: [response.id, 6,7],
+          logtimes: currentDTR
+            ? [response.id, ...currentDTR.logtimes]
+            : [response.id],
           logtime_date: moment().format("YYYY-MM-DD"),
-          id: 1,
+          employee_id: userProfile?.id || null,
+          id: currentDTR?.id || null,
         },
-        1
+        currentDTR?.id || null
       );
 
       if (dtrResponse) {
