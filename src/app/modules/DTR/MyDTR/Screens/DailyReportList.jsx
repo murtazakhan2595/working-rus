@@ -11,7 +11,12 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import CustomTable from "components/CustomTable";
-
+import CreateCard from "app/modules/TaskManagment/Boards/CreateCardModal";
+import { Badge } from "components/ui/badge";
+import {
+  handleCloseWithConfirmation,
+  SheetCardExtension,
+} from "components/SheetCardExtension";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -66,31 +71,16 @@ const ReportCard = ({
     const fetchData = async () => {
       const response = await getTaskDetailsFromLogtime(logtimes);
       if (response) {
+        console.log(response)
         setTasks(response);
       }
     };
     fetchData();
   }, [logtimes]);
-  const submitReportDTR = async () => {
-    const dtrResponse = await addUpdateDTR(
-      {
-        dtr_status: "Submitted",
-        id: id,
-      },
-      id
-    );
-
-    if (dtrResponse) {
-      toast.success("DTR submitted successfully");
-      reload(); // Reload the page or data
-    } else {
-      toast.error("Error in saving leave transaction");
-    }
-  };
 
   return (
-    <div className="flex flex-col w-full rounded-lg border-[2px] border-[#e8e8ec]">
-      <div className="flex flex-wrap justify-between gap-6 py-4 pr-9 pl-4 w-full bg-white rounded-lg">
+    <SheetCardExtension>
+      <div className="flex flex-wrap justify-between gap-6 w-full bg-white rounded-lg">
         <div className="flex flex-col">
           <div className="text-black text-base font-bold">{logtime_date}</div>
           <div className="text-[#1c2024] text-base font-normal">
@@ -119,65 +109,140 @@ const ReportCard = ({
       </div>
 
       {isDetailsVisible && (
-        <div className=" p-4">
-          <CustomTable
-            data={tasks || []}
-            columns={MyDtrTasksColumns}
-            dataTotalSize={tasks.length || 0}
-            pagination={false}
-          />
-          <div className="flex justify-between mt-4">
-            <div
-              className="h-8 px-2 py-1 flex items-center gap-2 cursor-pointer"
-              onClick={toggleDetails}
-            >
-              <div className="text-[#7f838d] text-base font-semibold">
-                {isDetailsVisible ? "Hide Details" : "View Details"}
-              </div>
-              {isDetailsVisible ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              {dtr_status === "Pending" && (
-                <Button
-                  onClick={() => {
-                    submitReportDTR();
-                  }}
-                >
-                  Submit Report
-                </Button>
-              )}
-
-              {dtr_status === "Change Request" && (
-                <Button
-                  onClick={() => {
-                    submitReportDTR();
-                  }}
-                >
-                  Resubmit Report
-                </Button>
-              )}
-              {dtr_status !== "Submitted" && <Button>Add New Task</Button>}
-            </div>
-          </div>
-        </div>
+        <DTRDetailsBox
+          tasks={tasks}
+          toggleDetails={toggleDetails}
+          dtr_status={dtr_status}
+          id={id}
+          reload={reload}
+          isDetailsVisible={isDetailsVisible}
+        />
       )}
+    </SheetCardExtension>
+  );
+};
+
+const DTRDetailsBox = ({
+  tasks,
+  toggleDetails,
+  isDetailsVisible,
+  dtr_status,
+  id,
+  reload,
+}) => {
+  const [openCreateCard, setOpenCreateCard] = useState(false);
+  const submitReportDTR = async () => {
+    const dtrResponse = await addUpdateDTR(
+      {
+        dtr_status: "Submitted",
+        id: id,
+      },
+      id
+    );
+
+    if (dtrResponse) {
+      toast.success("DTR submitted successfully");
+      reload(); // Reload the page or data
+    } else {
+      toast.error("Error in saving leave transaction");
+    }
+  };
+  return (
+    <div className=" p-4">
+      <CustomTable
+        data={tasks || []}
+        columns={MyDtrTasksColumns}
+        dataTotalSize={tasks.length || 0}
+        pagination={false}
+        selectable={true}
+        selectedRows={[]}
+        setSelectedRows={() => {}}
+      />
+      <div className="flex justify-between mt-4">
+        <div
+          className="h-8 px-2 py-1 flex items-center gap-2 cursor-pointer"
+          onClick={toggleDetails}
+        >
+          <div className="text-[#7f838d] text-base font-semibold">
+            {isDetailsVisible ? "Hide Details" : "View Details"}
+          </div>
+          {isDetailsVisible ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          {dtr_status === "Pending" && (
+            <Button
+              onClick={() => {
+                submitReportDTR();
+              }}
+            >
+              Submit Report
+            </Button>
+          )}
+
+          {dtr_status === "Change Request" && (
+            <Button
+              onClick={() => {
+                submitReportDTR();
+              }}
+            >
+              Resubmit Report
+            </Button>
+          )}
+          {dtr_status !== "Submitted" && (
+            <Button
+              onClick={() => {
+                setOpenCreateCard(true);
+              }}
+            >
+              Add New Task
+            </Button>
+          )}
+        </div>
+      </div>
+      <CreateCard
+        onClose={() => {
+          setOpenCreateCard(false);
+          reload(true);
+        }}
+        boardId={null}
+        isOpen={openCreateCard}
+        projectId={null}
+        setIsOpen={setOpenCreateCard}
+      />
     </div>
   );
 };
 const StatusBadge = ({ status }) => {
-  const isSubmitted = status === "submitted";
-
+  const Status = status.toUpperCase();
+  const iconClassName = "w-3.5 h-[14.50px] relative mr-1";
+  let variant = "";
+  let icon = "";
+  switch (Status) {
+    case "PENDING":
+      variant = "neutral";
+      icon = <Clock className={iconClassName} />;
+      break;
+    case "SUBMITTED":
+      variant = "success";
+      icon = <Check className={iconClassName} />;
+      break;
+    case "CHANGE REQUEST":
+      variant = "warning";
+      icon = <Clock className={iconClassName} />;
+      break;
+    default:
+      icon = <Clock className={iconClassName} />;
+      variant = "plum";
+  }
   return (
-    <div className="h-7 px-3 py-1 bg-[#e5fff9] rounded-full justify-start items-center gap-1 inline-flex">
-      <div className="text-[#1d735e] text-sm font-normal font-['Inter'] leading-tight">
-        Submitted
-      </div>
-      <Check className="w-3.5 h-[14.50px] relative" />
-    </div>
+    <Badge className={"px-4 py-2"} variant={variant}>
+      {icon}
+      {status}
+    </Badge>
   );
 };
 

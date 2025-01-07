@@ -156,7 +156,6 @@ export const GetDateRange = (period) => {
   return moment().format("YYYY-MM-DD"); // Default case: single day
 };
 
-
 export const GetShiftTotalHours = (shiftStartTime, shiftEndTime, period) => {
   const calculateHoursForDays = (start, end) => {
     let totalHours = 0;
@@ -165,9 +164,14 @@ export const GetShiftTotalHours = (shiftStartTime, shiftEndTime, period) => {
 
     while (current.isBefore(endDate)) {
       const dayOfWeek = current.isoWeekday(); // ISO weekday (1 = Monday, 7 = Sunday)
-      if (dayOfWeek >= 1 && dayOfWeek <= 5) { // Monday to Friday
-        const shiftStart = moment(`${current.format("YYYY-MM-DD")}T${shiftStartTime}`);
-        const shiftEnd = moment(`${current.format("YYYY-MM-DD")}T${shiftEndTime}`);
+      if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+        // Monday to Friday
+        const shiftStart = moment(
+          `${current.format("YYYY-MM-DD")}T${shiftStartTime}`
+        );
+        const shiftEnd = moment(
+          `${current.format("YYYY-MM-DD")}T${shiftEndTime}`
+        );
         totalHours += moment.duration(shiftEnd.diff(shiftStart)).asHours();
       }
       current.add(1, "day");
@@ -194,6 +198,21 @@ export const GetShiftTotalHours = (shiftStartTime, shiftEndTime, period) => {
 };
 
 export const calculatePercentage = (stats) => {
-  const total = stats.Present + stats.Absent 
+  const total = stats.Present + stats.Absent;
   return total > 0 ? ((stats.Present / total) * 100).toFixed(2) : "0.00";
+};
+
+export const calculateTotal = (data, label) => {
+  if (!Array.isArray(data)) return 0;
+  return data.reduce((total, item) => {
+    const value = parseFloat(item[label]);
+    return total + (isNaN(value) ? 0 : value);
+  }, 0);
+};
+export const calculateTotalCount = (data, label, value) => {
+  if (!Array.isArray(data)) return 0;
+
+  return data.reduce((count, item) => {
+    return count + (item[label] === value ? 1 : 0);
+  }, 0);
 };

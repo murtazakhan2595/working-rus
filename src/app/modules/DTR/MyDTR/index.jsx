@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "components/ui/button";
 import { cn } from "src/@/lib/utils";
-import { Header } from "components";
+import { Header, DateRangeFilter } from "components";
 import Stats from "components/ui/Stats";
 import {
   CalendarClock,
@@ -20,8 +20,9 @@ import {
   SaveUpdateLogTime,
   DailyReportList,
 } from "app/modules/DTR/MyDTR/Screens";
-import { getDtr } from "app/hooks/dtr";
+import { getDtr, getLogTimeList } from "app/hooks/dtr";
 import { useSelector } from "react-redux";
+import { calculateTotal, calculateTotalCount } from "utils/renderValues";
 
 const TIME_FILTERS = {
   DAY: "Day",
@@ -155,35 +156,31 @@ const TimeLog = () => {
 
 const MyDtr = () => {
   const userProfile = useSelector((state) => state.user.userProfile);
-  const statsData = [
-    { label: "Hours Logged", value: 10, icon: Hourglass },
-    { label: "Tasks Completed", value: 2, icon: ClipboardCheck },
-    {
-      label: "Pending Tasks",
-      value: 5,
-      icon: ClipboardList,
-    },
-    {
-      label: "Pending DTR",
-      value: 5,
-      icon: CalendarClock,
-    },
-  ];
+  const [statsData, setStatsData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [dailyTaskReport, setDailyTaskReport] = useState(false);
   const [openLogTimeSheet, setOpenLogTimeSheet] = useState(false);
+  const [logTimeList, setLogTimeList] = useState(false);
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
       if (isMounted) {
-        const response = await getDtr();
-        //   {
-        //   filterData: {
-        //     assigned_to: [userProfile.id],
-        //   },
-        // }
+        const response = await getDtr({
+          filterData: {
+            employee_id: userProfile.id,
+          },
+        });
+
         if (response) {
           setDailyTaskReport(response.results);
+        }
+        const responseLogTime = await getLogTimeList({
+          filterData: {
+            employee_id: userProfile.id,
+          },
+        });
+        if (responseLogTime) {
+          setLogTimeList(responseLogTime.results);
         }
       }
     } catch (error) {
@@ -199,6 +196,26 @@ const MyDtr = () => {
       isMounted = false;
     };
   }, []);
+  useEffect(() => {
+    setStatsData([
+      {
+        label: "Hours Logged",
+        value: calculateTotal(logTimeList, "consumed_time"),
+        icon: Hourglass,
+      },
+      { label: "Tasks Completed", value: 2, icon: ClipboardCheck },
+      {
+        label: "Pending Tasks",
+        value: 5,
+        icon: ClipboardList,
+      },
+      {
+        label: "Pending DTR",
+        value: calculateTotalCount(dailyTaskReport, "dtr_status", "Pending"),
+        icon: CalendarClock,
+      },
+    ]);
+  }, [logTimeList]);
 
   return (
     <div
@@ -216,6 +233,7 @@ const MyDtr = () => {
         }
       />
       <Stats stats={statsData} />
+      {/* <DateRangeFilter /> */}
       <TimeLog />
       <DailyReportList
         dailyReportData={dailyTaskReport}

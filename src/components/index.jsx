@@ -6,6 +6,7 @@ import Table from "./CustomTable";
 import BarChart from "./BarChart";
 import ConfirmationModal from "./ConfirmationModal";
 import { StatusLabel } from "./StatusLabel";
+import DateRangeFilter from './DateRangeFilter';
 export {
   Header,
   PageLoader,
@@ -15,4 +16,5 @@ export {
   BarChart,
   ConfirmationModal,
   StatusLabel,
+  DateRangeFilter,
 };
