@@ -142,18 +142,19 @@ export function renderDate(date) {
 }
 
 export const GetDateRange = (period) => {
-  if (period === "week") {
+  if (period.toUpperCase() === "WEEK") {
     // Current week start and end
     const startOfWeek = moment().startOf("week").format("YYYY-MM-DD");
     const endOfWeek = moment().endOf("week").format("YYYY-MM-DD");
     return `${startOfWeek},${endOfWeek}`;
-  } else if (period === "month") {
+  } else if (period.toUpperCase() === "MONTH") {
     // Current month start and end
     const startOfMonth = moment().startOf("month").format("YYYY-MM-DD");
     const endOfMonth = moment().endOf("month").format("YYYY-MM-DD");
     return `${startOfMonth},${endOfMonth}`;
-  }
-  return moment().format("YYYY-MM-DD"); // Default case: single day
+  } else if (period.toUpperCase() === "DAY")
+    return moment().format("YYYY-MM-DD"); // Default case: single day
+  else return period;
 };
 
 export const GetShiftTotalHours = (shiftStartTime, shiftEndTime, period) => {

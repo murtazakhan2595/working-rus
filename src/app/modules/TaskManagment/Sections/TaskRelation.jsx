@@ -29,7 +29,6 @@ export default function TaskRelation({
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchTasks = async () => {
-    debugger
     const taskList = await getTaskByprojectId({
       filterData: { project_id: [projectId] },
     });

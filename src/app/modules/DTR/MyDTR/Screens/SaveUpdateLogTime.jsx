@@ -16,6 +16,7 @@ import {
   handleCloseWithConfirmation,
   SheetCardExtension,
 } from "components/SheetCardExtension";
+import {LogTimeStatusList} from "data/Data";
 import { getDropdownList } from "utils/Lists";
 import { Attachments } from "app/modules/TaskManagment/Sections";
 import { LogTime } from "app/utils/Types/DTR";
@@ -55,12 +56,25 @@ const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
       const response = await getDtr({
         filterData: {
           employee_id: userProfile.id,
-          date: moment().format("YYYY-MM-DD"),
+          logtime_date: moment().format("YYYY-MM-DD"),
         },
       });
       if (response) {
         const dtr = response.results;
         if (dtr && dtr.length > 0) setCurrentDTR(dtr[0]);
+        else {
+          const dtrResponse = await addUpdateDTR(
+            {
+              logtime_date: moment().format("YYYY-MM-DD"),
+              employee_id: userProfile?.id || null,
+              dtr_status: "Pending",
+            },
+            null
+          );
+          if (dtrResponse) {
+            setCurrentDTR(dtrResponse);
+          }
+        }
       }
     };
     fetchData();
@@ -71,7 +85,6 @@ const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
       ...values,
       ...{ attachment: values?.attachment?.attachments },
     };
-    debugger;
     const response = await addLogTime(payload, values.id);
     if (response) {
       //Link the saved logtime with DTR of current date
@@ -161,7 +174,7 @@ const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
                       value={props.values?.status}
                       label={"Status"}
                       required={true}
-                      options={taskOptions}
+                      options={LogTimeStatusList}
                       onChange={(field, value) => {
                         props.setFieldValue(field, value);
                       }}

@@ -17,29 +17,14 @@ import {
   handleCloseWithConfirmation,
   SheetCardExtension,
 } from "components/SheetCardExtension";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "src/@/components/ui/dropdown-menu";
 import { toast } from "react-toastify";
 import moment from "moment";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "src/@/components/ui/table";
 import { MyDtrTasksColumns } from "app/modules/DTR/Sections/DTRTableColumns";
 import { getTaskDetailsFromLogtime, addUpdateDTR } from "app/hooks/dtr";
 
 const DailyReportList = ({ dailyReportData, reload, isMyDtr= true }) => {
   console.log(dailyReportData);
   if (!dailyReportData || dailyReportData.length === 0) return null;
-
   return (
     <Card className={`${!isMyDtr ? "p-0 m-0" : ""}`}>
       <CardHeader
