@@ -54,6 +54,7 @@ const ReportCard = ({
   const [isDetailsVisible, setDetailsVisible] = useState(false);
   const [tasks, setTasks] = useState([]);
   const toggleDetails = () => {
+    console.log("toggleDetails");
     setDetailsVisible((prev) => !prev);
   };
   useEffect(() => {
