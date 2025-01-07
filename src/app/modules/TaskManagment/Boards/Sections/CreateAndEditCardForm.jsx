@@ -84,18 +84,21 @@ const CreateAndEditCardForm = ({
       setInitialValues({
         ...initialValues,
         assigned_by: userProfile.id,
-        project_id: projectId,
-        board_id: boardId,
+        project_id: projectId || null,
+        board_id: boardId || null,
       });
     return () => {
       isMounted = false;
     };
   }, [taskId]);
-  useEffect(async () => {
+  useEffect( () => {
     let isMounted = true;
+    const fetchProject = async () => {
+        const projectDetails = await getProjectById(projectId);
+        setProjectDetail(projectDetails);
+    }
     if (projectId) {
-      const projectDetails = await getProjectById(projectId);
-      setProjectDetail(projectDetails);
+      fetchProject();
     }
     return () => {
       isMounted = false;
