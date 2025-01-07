@@ -35,21 +35,22 @@ import {
 } from "src/@/components/ui/table";
 import { MyDtrTasksColumns } from "app/modules/DTR/Sections/DTRTableColumns";
 import { getTaskDetailsFromLogtime, addUpdateDTR } from "app/hooks/dtr";
+import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
+import { getDesignationName } from "utils/getValuesFromTables";
+import { useSelector } from "react-redux";
+import { DailyReportList } from "../../MyDTR/Screens";
 
-const DailyReportList = ({ dailyReportData, reload, isMyDtr= true }) => {
+const TeamDailyReportList = ({ dailyReportData, reload }) => {
   console.log(dailyReportData);
   if (!dailyReportData || dailyReportData.length === 0) return null;
 
   return (
-    <Card className={`${!isMyDtr ? "p-0 m-0" : ""}`}>
-      <CardHeader
-        title="Daily Reports"
-        className={`${!isMyDtr ? "p-0 m-0" : ""}`}
-      />
-      <CardContent className={`${!isMyDtr ? "p-0 m-0" : ""}`}>
+    <Card>
+      <CardHeader title="Daily Reports" />
+      <CardContent>
         {dailyReportData.map((report, index) => (
-          <div key={report.date} className={index > 0 ? "mt-4" : ""}>
-            <ReportCard {...report} reload={reload} isMyDtr={isMyDtr} />
+          <div key={index} className={index > 0 ? "mt-4" : ""}>
+            <ReportCard {...report} reload={reload} />
           </div>
         ))}
       </CardContent>
@@ -58,44 +59,55 @@ const DailyReportList = ({ dailyReportData, reload, isMyDtr= true }) => {
 };
 
 const ReportCard = ({
-  logtime_date,
-  id,
+  // logtime_date,
+  // id,
   stats,
-  dtr_status,
-  logtimes,
+  // dtr_status,
+  // logtimes,
   reload,
-  isMyDtr,
+  // full_name,
+  // designation,
+  designation,
+  full_name,
+  dtrsList,
 }) => {
+  const designations = useSelector((state) => state.common.designations);
   const [isDetailsVisible, setDetailsVisible] = useState(false);
   const [tasks, setTasks] = useState([]);
   const toggleDetails = () => {
     setDetailsVisible((prev) => !prev);
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await getTaskDetailsFromLogtime(logtimes);
-      if (response) {
-        console.log(response);
-        setTasks(response);
-      }
-    };
-    fetchData();
-  }, [logtimes]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const response = await getTaskDetailsFromLogtime(logtimes);
+  //     if (response) {
+  //       console.log(response);
+  //       setTasks(response);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [logtimes]);
 
   return (
     <SheetCardExtension>
       <div className="flex flex-wrap justify-between gap-6 w-full bg-white rounded-lg">
-        <div className="flex flex-col">
+        {/* <div className="flex flex-col">
           <div className="text-black text-base font-bold">{logtime_date}</div>
           <div className="text-[#1c2024] text-base font-normal">
             {moment(logtime_date).format("dddd")}
           </div>
-        </div>
+        </div> */}
+        <EmployeeDataInfo
+          name={full_name}
+          // email={"johnDoe@gmail.com"}
+          designation={getDesignationName(designation, designations)}
+          src={""}
+        />
         <div className="flex gap-4 items-center">
           <StatItem icon={Hourglass} value={stats?.tasks} />
           <StatItem icon={ClockArrowUp} value={stats?.meetings} />
           <StatItem icon={ClipboardList} value={stats?.reports} />
-          <StatusBadge status={dtr_status} />
+          {/* <StatusBadge status={dtr_status} /> */}
           <div
             className="h-8 px-2 py-1 flex items-center gap-2 cursor-pointer"
             onClick={toggleDetails}
@@ -113,113 +125,40 @@ const ReportCard = ({
       </div>
 
       {isDetailsVisible && (
-        <DTRDetailsBox
-          tasks={tasks}
-          toggleDetails={toggleDetails}
-          dtr_status={dtr_status}
-          id={id}
+        <DailyReportList
+          dailyReportData={dtrsList}
           reload={reload}
-          isDetailsVisible={isDetailsVisible}
-          isMyDtr={isMyDtr}
+          isMyDtr={false}
         />
       )}
-    </SheetCardExtension>
-  );
-};
 
-const DTRDetailsBox = ({
-  tasks,
-  toggleDetails,
-  isDetailsVisible,
-  dtr_status,
-  id,
-  reload,
-  isMyDtr,
-}) => {
-  const [openCreateCard, setOpenCreateCard] = useState(false);
-  const submitReportDTR = async () => {
-    const dtrResponse = await addUpdateDTR(
-      {
-        dtr_status: "Submitted",
-        id: id,
-      },
-      id
-    );
-
-    if (dtrResponse) {
-      toast.success("DTR submitted successfully");
-      reload(); // Reload the page or data
-    } else {
-      toast.error("Error in saving leave transaction");
-    }
-  };
-  return (
-    <div className=" p-4">
-      <CustomTable
-        data={tasks || []}
-        columns={MyDtrTasksColumns}
-        dataTotalSize={tasks.length || 0}
-        pagination={false}
-        selectable={isMyDtr}
-        selectedRows={[]}
-        setSelectedRows={() => {}}
-      />
-      {isMyDtr && <div className="flex justify-between mt-4">
-        <div
-          className="h-8 px-2 py-1 flex items-center gap-2 cursor-pointer"
-          onClick={toggleDetails}
-        >
-          <div className="text-[#7f838d] text-base font-semibold">
-            {isDetailsVisible ? "Hide Details" : "View Details"}
+      {isDetailsVisible &&
+        <div className="flex justify-between mt-4">
+          <div
+            className="h-8 px-2 py-1 flex items-center gap-2 cursor-pointer"
+            onClick={toggleDetails}
+          >
+            <div className="text-[#7f838d] text-base font-semibold">
+              {isDetailsVisible ? "Hide Details" : "View Details"}
+            </div>
+            {isDetailsVisible ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
           </div>
-          {isDetailsVisible ? (
-            <ChevronUp className="w-4 h-4" />
-          ) : (
-            <ChevronDown className="w-4 h-4" />
-          )}
+          <div className="flex items-center justify-between gap-4">
+            <Button
+              onClick={() => {
+                // submitReportDTR();
+              }}
+            >
+              Approve
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center justify-between gap-4">
-          {dtr_status === "Pending" && (
-            <Button
-              onClick={() => {
-                submitReportDTR();
-              }}
-            >
-              Submit Report
-            </Button>
-          )}
-
-          {dtr_status === "Change Request" && (
-            <Button
-              onClick={() => {
-                submitReportDTR();
-              }}
-            >
-              Resubmit Report
-            </Button>
-          )}
-          {dtr_status !== "Submitted" && (
-            <Button
-              onClick={() => {
-                setOpenCreateCard(true);
-              }}
-            >
-              Add New Task
-            </Button>
-          )}
-        </div>
-      </div>}
-      <CreateCard
-        onClose={() => {
-          setOpenCreateCard(false);
-          reload(true);
-        }}
-        boardId={null}
-        isOpen={openCreateCard}
-        projectId={null}
-        setIsOpen={setOpenCreateCard}
-      />
-    </div>
+      }
+    </SheetCardExtension>
   );
 };
 const StatusBadge = ({ status }) => {
@@ -261,4 +200,4 @@ const StatItem = ({ icon: Icon, value }) => {
   );
 };
 
-export default DailyReportList;
+export default TeamDailyReportList;
