@@ -20,9 +20,11 @@ const getAllProjects = async (payload, userProfile) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/project/?ordering=-created_at&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const URL = `/project/?ordering=-created_at&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -100,32 +102,24 @@ const getTaskByprojectId = async (payload) => {
         results: [],
       };
     }
-
-    // Fetch tasks for each board concurrently
-    const tasksList = await Promise.all(
+    const boardIdsList = await Promise.all(
       allBoards.results.map(async (board) => {
-        try {
-          const tasks = await getTaskByBoardId({
-            filterData: { board_id: [board.id] },
-          });
-          return tasks.results; // Extract results from task data
-        } catch (error) {
-          console.error(
-            `Error fetching tasks for board ID ${board.id}:`,
-            error
-          );
-          return []; // Return an empty array for this board if fetching fails
-        }
+        return board.id;
       })
     );
-
-    // Flatten the list of task arrays into a single array
-    const flattenedTasks = tasksList.flat();
-
-    return {
-      count: flattenedTasks.length,
-      results: flattenedTasks,
-    };
+    // Fetch tasks for each board concurrently
+    try {
+      const tasksList = await getTaskByBoardId({
+        filterData: { board_id: boardIdsList },
+      });
+      return tasksList.results; // Extract results from task data
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        handleLogout();
+      }
+      console.error(`Error fetching tasks for board IDs:`, error);
+      return []; // Return an empty array for this board if fetching fails
+    }
   } catch (error) {
     if (error?.response?.status === 401) {
       handleLogout();
@@ -224,10 +218,11 @@ const addBoard = async (payload) => {
   }
 };
 const addProject = async (payload) => {
+  const id = payload.get("id");
   try {
-    if (payload?.id) {
+    if (id) {
       const response = await axios.patch(
-        `${baseUrl}/project/${payload.id}/`,
+        `${baseUrl}/project/${id}/`,
         payload,
         {
           headers: formDataHeader(),
@@ -720,7 +715,7 @@ const postComment = async (payload) => {
 };
 const getAllTasks = async (payload) => {
   const filterData = payload?.filterData ?? {};
-  const URL = `/task/?order=-date&search=${encodeURIComponent(
+  const URL = `/task/?ordering=-date&search=${encodeURIComponent(
     JSON.stringify(filterData)
   )}`;
   try {

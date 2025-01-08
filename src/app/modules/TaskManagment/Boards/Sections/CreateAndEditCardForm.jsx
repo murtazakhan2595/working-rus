@@ -14,7 +14,7 @@ import {
   addAttachments,
   addTaskCheckListItem,
   getTaskById,
-  getProjectById
+  getProjectById,
 } from "app/hooks/taskManagment";
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";

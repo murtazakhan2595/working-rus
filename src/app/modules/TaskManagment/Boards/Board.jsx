@@ -62,7 +62,7 @@ const Board = ({ employees }) => {
         filterData: { project_id: [projectId] },
       });
       const projectDetails = await getProjectById(projectId);
-      console.log("TEAM MEMBERS", projectDetails)
+      console.log("TEAM MEMBERS", projectDetails);
       if (isMounted) {
         setAllBoards(boardsData);
         setProjectData(projectDetails);
@@ -324,27 +324,29 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
         {tasks &&
           tasks.count > 0 &&
           tasks.results.map((task, index) => (
-          <TaskCard
-            key={index}
-            task={task}
-            projectId={projectId}
-            boardId={board.id}
-            reloadData={() => fetchData(true)}
-            onDragStart={handleDragStart}
-          />
-        ))}
+            <TaskCard
+              key={index}
+              task={task}
+              projectId={projectId}
+              boardId={board.id}
+              reloadData={() => fetchData(true)}
+              onDragStart={handleDragStart}
+            />
+          ))}
       </div>
 
-      <CreateCard
-        onClose={() => {
-          setOpenCreateCard(false);
-          fetchData(true);
-        }}
-        boardId={board.id}
-        isOpen={openCreateCard}
-        projectId={projectId}
-        setIsOpen={setOpenCreateCard}
-      />
+      {openCreateCard && (
+        <CreateCard
+          onClose={() => {
+            setOpenCreateCard(false);
+            fetchData(true);
+          }}
+          boardId={board.id}
+          isOpen={openCreateCard}
+          projectId={projectId}
+          setIsOpen={setOpenCreateCard}
+        />
+      )}
 
       {showAddNewListModel && (
         <AddNewListModel
@@ -370,7 +372,6 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
     </div>
   );
 };
-
 
 const mapStateToProps = (state) => {
   return {
