@@ -22,15 +22,19 @@ import moment from "moment";
 import { MyDtrTasksColumns } from "app/modules/DTR/Sections/DTRTableColumns";
 import { getTaskDetailsFromLogtime, addUpdateDTR } from "app/hooks/dtr";
 
-const DailyReportList = ({ dailyReportData, reload }) => {
+const DailyReportList = ({ dailyReportData, reload, isMyDtr= true }) => {
+  console.log(dailyReportData);
   if (!dailyReportData || dailyReportData.length === 0) return null;
   return (
-    <Card>
-      <CardHeader title="Daily Reports" />
-      <CardContent>
+    <Card className={`${!isMyDtr ? "p-0 m-0" : ""}`}>
+      <CardHeader
+        title="Daily Reports"
+        className={`${!isMyDtr ? "p-0 m-0" : ""}`}
+      />
+      <CardContent className={`${!isMyDtr ? "p-0 m-0" : ""}`}>
         {dailyReportData.map((report, index) => (
           <div key={report.date} className={index > 0 ? "mt-4" : ""}>
-            <ReportCard {...report} reload={reload} />
+            <ReportCard {...report} reload={reload} isMyDtr={isMyDtr} />
           </div>
         ))}
       </CardContent>
@@ -45,11 +49,26 @@ const ReportCard = ({
   dtr_status,
   logtimes,
   reload,
+  isMyDtr,
 }) => {
   const [isDetailsVisible, setDetailsVisible] = useState(false);
   const toggleDetails = () => {
+    console.log("toggleDetails");
     setDetailsVisible((prev) => !prev);
   };
+<<<<<<< HEAD
+=======
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getTaskDetailsFromLogtime(logtimes);
+      if (response) {
+        console.log(response);
+        setTasks(response);
+      }
+    };
+    fetchData();
+  }, [logtimes]);
+>>>>>>> refs/remotes/origin/design-staging
 
   return (
     <SheetCardExtension>
@@ -89,6 +108,7 @@ const ReportCard = ({
           id={id}
           reload={reload}
           isDetailsVisible={isDetailsVisible}
+          isMyDtr={isMyDtr}
         />
       )}
     </SheetCardExtension>
@@ -102,6 +122,7 @@ const DTRDetailsBox = ({
   dtr_status,
   id,
   reload,
+  isMyDtr,
 }) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [tasks, setTasks] = useState([]);
@@ -138,11 +159,11 @@ const DTRDetailsBox = ({
         columns={MyDtrTasksColumns}
         dataTotalSize={tasks.length || 0}
         pagination={false}
-        selectable={true}
+        selectable={isMyDtr}
         selectedRows={[]}
         setSelectedRows={() => {}}
       />
-      <div className="flex justify-between mt-4">
+      {isMyDtr && <div className="flex justify-between mt-4">
         <div
           className="h-8 px-2 py-1 flex items-center gap-2 cursor-pointer"
           onClick={toggleDetails}
@@ -186,6 +207,7 @@ const DTRDetailsBox = ({
             </Button>
           )}
         </div>
+<<<<<<< HEAD
       </div>
       {openCreateCard && (
         <CreateCard
@@ -198,6 +220,19 @@ const DTRDetailsBox = ({
           setIsOpen={setOpenCreateCard}
         />
       )}
+=======
+      </div>}
+      <CreateCard
+        onClose={() => {
+          setOpenCreateCard(false);
+          reload(true);
+        }}
+        boardId={null}
+        isOpen={openCreateCard}
+        projectId={null}
+        setIsOpen={setOpenCreateCard}
+      />
+>>>>>>> refs/remotes/origin/design-staging
     </div>
   );
 };

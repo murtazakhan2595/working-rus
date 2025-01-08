@@ -150,6 +150,7 @@ const MyDtr = () => {
         reload={() => {
           fetchData(true);
         }}
+        isMyDtr={true}
       />
       {openLogTimeSheet && (
         <SaveUpdateLogTime

@@ -47,6 +47,7 @@ import StyleGuide from "app/modules/StyleGuide";
 import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import AttendanceReport from "app/modules/Attendance/Sections/AttendenceFile";
+import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 
 const SidebarRoutes = [
   {
@@ -200,6 +201,11 @@ const SidebarRoutes = [
     component: <MyAttendance />,
     name: "My Attendance",
   },
+  Config.MY_ATTENDANCE && {
+    path: "/employee-dtrs",
+    component: <EmployeeDTRs />,
+    name: "Employee DTRs",
+  },
   Config.ATTENDANCE && {
     path: "/shift-calendar",
     component: <ShiftCalendar />,
@@ -208,8 +214,8 @@ const SidebarRoutes = [
 
   Config.ATTENDANCE && {
     path: "attendance-reports/:id",
-    component: <AttendanceReport/>,
-    name: "Attendance Report"
+    component: <AttendanceReport />,
+    name: "Attendance Report",
   },
 
   Config.ATTENDANCE && {
