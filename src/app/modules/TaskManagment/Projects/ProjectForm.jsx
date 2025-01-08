@@ -52,6 +52,7 @@ const ProjectForm = ({
   const handleSubmit = async (payload) => {
     setIsLoading(true);
     const formData = new FormData();
+    if (isEditMode) formData.append("id", editProject.id);
     formData.append("name", payload.name || "");
     formData.append("description", payload.description || "");
     formData.append("start_date", payload.start_date || "");

@@ -218,10 +218,11 @@ const addBoard = async (payload) => {
   }
 };
 const addProject = async (payload) => {
+  const id = payload.get("id");
   try {
-    if (payload?.id) {
+    if (id) {
       const response = await axios.patch(
-        `${baseUrl}/project/${payload.id}/`,
+        `${baseUrl}/project/${id}/`,
         payload,
         {
           headers: formDataHeader(),
