@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "components/ui/button";
-import { cn } from "src/@/lib/utils";
+import moment from "moment";
 import { Header, DateRangeFilter } from "components";
 import Stats from "components/ui/Stats";
 import {
@@ -37,6 +37,7 @@ const MyDtr = () => {
   const [activeView, setActiveView] = useState("list");
   const [filterData, setFilterData] = useState({
     employee_id: userProfile.id,
+    date_range: GetDateRange("week"),
   });
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -122,7 +123,9 @@ const MyDtr = () => {
               setFilterData((prevFilters) => {
                 const updatedFilters = {
                   ...prevFilters,
-                  ...{ date_range: GetDateRange(dateRange) },
+                  ...(dateRange.toUpperCase() === "DAY"
+                    ? { logtime_date: moment().format("YYYY-MM-DD") }
+                    : { date_range: GetDateRange(dateRange) }),
                 };
                 setactiveFilter(dateRange);
                 return updatedFilters;

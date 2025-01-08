@@ -16,7 +16,7 @@ import {
   handleCloseWithConfirmation,
   SheetCardExtension,
 } from "components/SheetCardExtension";
-import {LogTimeStatusList} from "data/Data";
+import { LogTimeStatusList } from "data/Data";
 import { getDropdownList } from "utils/Lists";
 import { Attachments } from "app/modules/TaskManagment/Sections";
 import { LogTime } from "app/utils/Types/DTR";
@@ -33,52 +33,72 @@ const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await getAllTasks({
-        filterData: {
-          assigned_to: [userProfile.id],
-        },
-      });
-      if (response) {
-        const taskDropdownOptions = getDropdownList(
-          response.results,
-          "name",
-          "id"
-        );
-        setTaskOptions(taskDropdownOptions);
-      }
-    };
-    fetchData();
-  }, [userProfile.id]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await getDtr({
-        filterData: {
-          employee_id: userProfile.id,
-          logtime_date: moment().format("YYYY-MM-DD"),
-        },
-      });
-      if (response) {
-        const dtr = response.results;
-        if (dtr && dtr.length > 0) setCurrentDTR(dtr[0]);
-        else {
-          const dtrResponse = await addUpdateDTR(
-            {
-              logtime_date: moment().format("YYYY-MM-DD"),
-              employee_id: userProfile?.id || null,
-              dtr_status: "Pending",
+    const fetchData = async (isMounted) => {
+      try {
+        if (isMounted) {
+          const response = await getAllTasks({
+            filterData: {
+              assigned_to: [userProfile.id],
             },
-            null
-          );
-          if (dtrResponse) {
-            setCurrentDTR(dtrResponse);
+          });
+          if (response) {
+            const taskDropdownOptions = getDropdownList(
+              response.results,
+              "name",
+              "id"
+            );
+            setTaskOptions(taskDropdownOptions);
           }
         }
+      } catch (error) {
+        console.error(error);
       }
     };
-    fetchData();
-  }, []);
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [userProfile]);
+
+  useEffect(() => {
+    const fetchDTRData = async (isMounted) => {
+      try {
+        if (isMounted) {
+          const response = await getDtr({
+            filterData: {
+              employee_id: userProfile.id,
+              logtime_date: moment().format("YYYY-MM-DD"),
+            },
+          });
+          if (response) {
+            const dtr = response.results;
+            if (dtr && dtr.length > 0) setCurrentDTR(dtr[0]);
+            else {
+              const dtrResponse = await addUpdateDTR(
+                {
+                  logtime_date: moment().format("YYYY-MM-DD"),
+                  employee_id: userProfile?.id || null,
+                  dtr_status: "Pending",
+                },
+                null
+              );
+              if (dtrResponse) {
+                setCurrentDTR(dtrResponse);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    let isMounted = true;
+    fetchDTRData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [userProfile]);
 
   const handleFormSubmit = async (values) => {
     const payload = {

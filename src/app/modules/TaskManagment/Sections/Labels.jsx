@@ -11,11 +11,12 @@ import { Label } from "src/@/components/ui/label";
 import { Checkbox } from "src/@/components/ui/checkbox";
 import { Card } from "components/ui/card";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { getDarkerTextColor } from "../Boards/Sections/getTaskStatus";
 import { getAllLabels } from "app/hooks/taskManagment";
 import { TaskDetailBox } from "app/modules/TaskManagment/Sections";
+import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
 
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -28,11 +29,13 @@ export default function Labels({
   editMode = true,
 }) {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [labelsList, setLabelsList] = useState([]);
+  let dispatch = useDispatch();
+  // const [labelsList, setLabelsList] = useState([]);
   const [showNewLabel, setShowNewLabel] = React.useState(false);
   const [newLabelTitle, setNewLabelTitle] = React.useState("");
   const [selectedColor, setSelectedColor] = React.useState("");
   const baseUrl = useSelector((state) => state.user.baseUrl);
+  const labelsList = useSelector((state) => state.task_managment.task_labels);
 
   const colorOptions = [
     "bg-purple-300",
@@ -52,17 +55,17 @@ export default function Labels({
     "bg-brown-700",
   ];
 
-  const fetchLabels = async () => {
-    const labelList = await getAllLabels();
-    setLabelsList(labelList); // Update this to `labelList`
-  };
-  useEffect(() => {
-    let isMounted = true;
-    fetchLabels(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  // const fetchLabels = async () => {
+  //   const labelList = await getAllLabels();
+  //   setLabelsList(labelList); // Update this to `labelList`
+  // };
+  // useEffect(() => {
+  //   let isMounted = true;
+  //   fetchLabels(isMounted);
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, []);
 
   // Filter labels based on search query
   const filteredLabels = React.useMemo(() => {
@@ -96,7 +99,7 @@ export default function Labels({
       });
 
       if (response.status === 201) {
-        fetchLabels();
+        dispatch(fetchTaskLabels());
         toast.success("Label Added!", {
           position: toast.POSITION.TOP_RIGHT,
         });

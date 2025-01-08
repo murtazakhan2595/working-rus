@@ -1,16 +1,17 @@
-import { combineReducers } from 'redux';
-import userSlice from './UserSlice';
-import dropdownSlice from './DropdownSlice';
-import ModalSlice from './ModalSlice';
-import EmpSlice from './EmpSlice';
-import { postTasks } from './DtrPostSlice';
-import GetDtrSlice from './GetDtrSlice';
-import GetDtrAllSlice from './GetDtrAllSlice';
-import GetAssigneDtr from './GetAssigneDtr';
-import UpdateDtrSlice from './UpdateDtrSlice';
-import FilterSlice from './FilterSlice';
-import GetTeamDtrSlice from './GetTeamDtrSlice';
-import CommonSlice from './CommonSlice'
+import { combineReducers } from "redux";
+import userSlice from "./UserSlice";
+import dropdownSlice from "./DropdownSlice";
+import ModalSlice from "./ModalSlice";
+import EmpSlice from "./EmpSlice";
+import { postTasks } from "./DtrPostSlice";
+import GetDtrSlice from "./GetDtrSlice";
+import GetDtrAllSlice from "./GetDtrAllSlice";
+import GetAssigneDtr from "./GetAssigneDtr";
+import UpdateDtrSlice from "./UpdateDtrSlice";
+import FilterSlice from "./FilterSlice";
+import GetTeamDtrSlice from "./GetTeamDtrSlice";
+import CommonSlice from "./CommonSlice";
+import taskManagmentSlice from "./TaskManagmentSlice";
 
 const rootReducer = combineReducers({
   user: userSlice,
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   filters: FilterSlice,
   teamDtr: GetTeamDtrSlice,
   common: CommonSlice,
+  task_managment: taskManagmentSlice,
 });
 
 export default rootReducer;

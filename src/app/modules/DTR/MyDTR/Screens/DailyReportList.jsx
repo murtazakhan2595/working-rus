@@ -145,7 +145,7 @@ const ReportCard = ({
 
       {isDetailsVisible && (
         <DTRDetailsBox
-          tasks={tasks}
+          logtimes={logtimes}
           toggleDetails={toggleDetails}
           dtr_status={dtr_status}
           id={id}
@@ -160,7 +160,7 @@ const ReportCard = ({
 };
 
 const DTRDetailsBox = ({
-  tasks,
+  logtimes,
   toggleDetails,
   isDetailsVisible,
   dtr_status,
@@ -170,6 +170,17 @@ const DTRDetailsBox = ({
   approveDtr,
 }) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
+  const [tasks, setTasks] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getTaskDetailsFromLogtime(logtimes);
+      if (response) {
+        console.log(response);
+        setTasks(response);
+      }
+    };
+    fetchData();
+  }, [logtimes]);
   const submitReportDTR = async () => {
     const dtrResponse = await addUpdateDTR(
       {

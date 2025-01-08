@@ -43,6 +43,9 @@ const getLabelColor = (label="Design")=>{
 }
 
 const getDarkerTextColor = (bgColor) => {
+  if(!bgColor){
+    return "text-[#172b4d]"; // Dark text color
+  }
   // List of light background colors
   const lightColors = [
     "bg-purple-300",
@@ -60,7 +63,6 @@ const getDarkerTextColor = (bgColor) => {
   if (lightColors?.includes(bgColor)) {
     return "text-[#172b4d]"; // Dark text color
   }
-
   // If the background color is dark, return white text
   return "text-white";
 };

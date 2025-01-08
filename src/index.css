@@ -3,184 +3,181 @@
 @tailwind utilities;
 
 .lucide-dot {
-    display: none !important;
+  display: none !important;
 }
 
 .main-content {
-    padding: 30px 20px 20px 20px;
-    font-family: "Inter", ui-sans-serif,system-ui,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji" ;
-    width: 100%;
-    overflow-y: auto;
-    background-color: #f7f5f7;
-    /* height: 100vh; */
-  }
-  box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.25);
+  padding: 30px 20px 20px 20px;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  width: 100%;
+  overflow-y: auto;
+  background-color: #f7f5f7;
+  /* height: 100vh; */
+}
+/* box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.25); */
 @layer components {
-    .font-heading {
-        @apply text-4xl font-bold text-primary;
-    }
+  .font-heading {
+    @apply text-4xl font-bold text-primary;
+  }
 }
 
 @layer base {
-    :root {
-        --background: 0 0% 100%;
-        --foreground: 240 10% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 240 10% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 240 10% 3.9%;
-        --primary: 292 45% 44%;
-        /* --bs-primary: 292 45% 44%; */
-        --primary-foreground: 355.7 100% 99%;
-        --secondary: 240 4.8% 95.9%;
-        --secondary-foreground: 240 5.9% 10%;
-        --muted: 240 4.8% 95.9%;
-        --muted-foreground: 240 3.8% 45%;
-        --accent: 240 4.8% 95.9%;
-        --accent-foreground: 240 5.9% 10%;
-        --destructive: 0 72% 51%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 240 5.9% 90%;
-        --input: 240 5.9% 90%;
-        --ring: 292 45% 44%;
-        --chart-1: 292 45% 44%;
-        --chart-2: 294 49.1% 78.4%;
-        --chart-3: 158 11.1% 82.4%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 1rem;
+  :root {
+    overflow-x: hidden;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 292 45% 44%;
+    /* --bs-primary: 292 45% 44%; */
+    --primary-foreground: 355.7 100% 99%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 45%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 292 45% 44%;
+    --chart-1: 292 45% 44%;
+    --chart-2: 294 49.1% 78.4%;
+    --chart-3: 158 11.1% 82.4%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 1rem;
 
-        --slate-1: 240 20% 99%;
-        --slate-2: 240 20% 98%;
-        --slate-3: 240 11.1% 94.7%;
-        --slate-4: 240 9.5% 91.8%;
-        --slate-5: 230 10.7% 89%;
-        --slate-6: 240 10.1% 86.5%;
-        --slate-7: 233 9.9% 82.2%;
-        --slate-8: 231 10.2% 75.1%;
-        --slate-9: 231 5.9% 57.1%;
-        --slate-10: 226 5.4% 52.7%;
-        --slate-11: 220 5.9% 40%;
-        --slate-12: 210 12.5% 12.5%;
+    --slate-1: 240 20% 99%;
+    --slate-2: 240 20% 98%;
+    --slate-3: 240 11.1% 94.7%;
+    --slate-4: 240 9.5% 91.8%;
+    --slate-5: 230 10.7% 89%;
+    --slate-6: 240 10.1% 86.5%;
+    --slate-7: 233 9.9% 82.2%;
+    --slate-8: 231 10.2% 75.1%;
+    --slate-9: 231 5.9% 57.1%;
+    --slate-10: 226 5.4% 52.7%;
+    --slate-11: 220 5.9% 40%;
+    --slate-12: 210 12.5% 12.5%;
 
-        --plum-1: 280 100% 99.4%;
-        --plum-2: 300 60% 98%;
-        --plum-3: 300 66.7% 95.3%;
-        --plum-4: 298 65% 92.2%;
-        --plum-5: 298 58.6% 88.6%;
-        --plum-6: 296 52.5% 84.3%;
-        --plum-7: 294 49.1% 78.4%;
-        --plum-8: 292 47.7% 70.8%;
-        --plum-9: 292 44.8% 51%;
-        --plum-10: 292 44% 47.6%;
-        --plum-11: 292 44.9% 44.1%;
-        --plum-12: 291 57.6% 23.1%;
+    --plum-1: 280 100% 99.4%;
+    --plum-2: 300 60% 98%;
+    --plum-3: 300 66.7% 95.3%;
+    --plum-4: 298 65% 92.2%;
+    --plum-5: 298 58.6% 88.6%;
+    --plum-6: 296 52.5% 84.3%;
+    --plum-7: 294 49.1% 78.4%;
+    --plum-8: 292 47.7% 70.8%;
+    --plum-9: 292 44.8% 51%;
+    --plum-10: 292 44% 47.6%;
+    --plum-11: 292 44.9% 44.1%;
+    --plum-12: 291 57.6% 23.1%;
 
-        --mauve-1: 300 20% 99%;
-        --mauve-2: 270 20% 98%;
-        --mauve-3: 285 14.3% 94.5%;
-        --mauve-4: 276 11.6% 91.6%;
-        --mauve-5: 274 12.3% 88.8%;
-        --mauve-6: 262 11.4% 86.3%;
-        --mauve-7: 258 11.1% 82.4%;
-        --mauve-8: 249 10.4% 75.5%;
-        --mauve-9: 249 6% 57.5%;
-        --mauve-10: 250 5% 53.3%;
-        --mauve-11: 252 4.8% 40.8%;
-        --mauve-12: 257 10.1% 13.5%;
+    --mauve-1: 300 20% 99%;
+    --mauve-2: 270 20% 98%;
+    --mauve-3: 285 14.3% 94.5%;
+    --mauve-4: 276 11.6% 91.6%;
+    --mauve-5: 274 12.3% 88.8%;
+    --mauve-6: 262 11.4% 86.3%;
+    --mauve-7: 258 11.1% 82.4%;
+    --mauve-8: 249 10.4% 75.5%;
+    --mauve-9: 249 6% 57.5%;
+    --mauve-10: 250 5% 53.3%;
+    --mauve-11: 252 4.8% 40.8%;
+    --mauve-12: 257 10.1% 13.5%;
 
-        --gray-1: 0 0% 98.8%;
-        --gray-2: 0 0% 97.6%;
-        --gray-3: 0 0% 94.1%;
-        --gray-4: 0 0% 91%;
-        --gray-5: 0 0% 87.8%;
-        --gray-6: 0 0% 85.1%;
-        --gray-7: 0 0% 80.8%;
-        --gray-8: 0 0% 73.3%;
-        --gray-9: 0 0% 55.3%;
-        --gray-10: 0 0% 51.4%;
-        --gray-11: 0 0% 39.2%;
-        --gray-12: 0 0% 12.5%;
+    --gray-1: 0 0% 98.8%;
+    --gray-2: 0 0% 97.6%;
+    --gray-3: 0 0% 94.1%;
+    --gray-4: 0 0% 91%;
+    --gray-5: 0 0% 87.8%;
+    --gray-6: 0 0% 85.1%;
+    --gray-7: 0 0% 80.8%;
+    --gray-8: 0 0% 73.3%;
+    --gray-9: 0 0% 55.3%;
+    --gray-10: 0 0% 51.4%;
+    --gray-11: 0 0% 39.2%;
+    --gray-12: 0 0% 12.5%;
 
-        --neutral-1: 240 20% 99%;
-        --neutral-2: 240 20% 98%;
-        --neutral-3: 240 11.1% 94.7%;   
-        --neutral-4: 240 9.5% 91.8%;
-        --neutral-5: 230 10.7% 89%; 
-        --neutral-6: 240 10.1% 86.5%;
-        --neutral-7: 233 9.9% 82.2%;
-        --neutral-8: 231 10.2% 75.1%;
-        --neutral-9: 231 5.9% 57.1%;
-        --neutral-10: 226 5.4% 52.7%;
-        --neutral-11: 220 6% 40%;
-        --neutral-12: 210 13% 13%;     
-       
-        --warning-1: 35 85.2% 55.1%;
-        --warning-2: 35 84.6% 39.4%;
-        --warning-3: 35 79.6% 37.1%;
-        --warning-4: 35 74.6% 27.8%;
-        --warning-5: 35 70% 15.5%;
-        
-        --success-1: 157 42.1% 64.3%;
-        --success-2: 158 64.1% 51.6%;
-        --success-3: 159 61% 47.7%;
-        --success-4: 160 51.4% 40.4%;
-        --success-5: 161 75% 16.1%;
+    --neutral-1: 240 20% 99%;
+    --neutral-2: 240 20% 98%;
+    --neutral-3: 240 11.1% 94.7%;
+    --neutral-4: 240 9.5% 91.8%;
+    --neutral-5: 230 10.7% 89%;
+    --neutral-6: 240 10.1% 86.5%;
+    --neutral-7: 233 9.9% 82.2%;
+    --neutral-8: 231 10.2% 75.1%;
+    --neutral-9: 231 5.9% 57.1%;
+    --neutral-10: 226 5.4% 52.7%;
+    --neutral-11: 220 6% 40%;
+    --neutral-12: 210 13% 13%;
 
-        --base-black: 240 4% 5%;
-        --base-white: 0 0% 98%;        
-        --red-1: 355 86% 55.1%;
-        --red-2: 355 86% 39.4%;
-        --red-3: 355 86% 37.1%;
-        --red-4: 355 86% 27.8%;
-        --red-5: 355 86% 15.5%;
+    --warning-1: 35 85.2% 55.1%;
+    --warning-2: 35 84.6% 39.4%;
+    --warning-3: 35 79.6% 37.1%;
+    --warning-4: 35 74.6% 27.8%;
+    --warning-5: 35 70% 15.5%;
 
+    --success-1: 157 42.1% 64.3%;
+    --success-2: 158 64.1% 51.6%;
+    --success-3: 159 61% 47.7%;
+    --success-4: 160 51.4% 40.4%;
+    --success-5: 161 75% 16.1%;
 
+    --base-black: 240 4% 5%;
+    --base-white: 0 0% 98%;
+    --red-1: 355 86% 55.1%;
+    --red-2: 355 86% 39.4%;
+    --red-3: 355 86% 37.1%;
+    --red-4: 355 86% 27.8%;
+    --red-5: 355 86% 15.5%;
+  }
 }
-}
-        
 
 @layer base {
-    * {
-        @apply border-border;
-    }
+  * {
+    @apply border-border;
+  }
 
-    body {
-        @apply bg-background text-foreground;
-    }
+  body {
+    @apply bg-background text-foreground;
+  }
 
-    h1,
-    .h1 {
-        @apply text-[56px] font-semibold;
-    }
+  h1,
+  .h1 {
+    @apply text-[56px] font-semibold;
+  }
 
-    h2,
-    .h2 {
-        @apply text-[48px] font-semibold;
-    }
+  h2,
+  .h2 {
+    @apply text-[48px] font-semibold;
+  }
 
-    h3,
-    .h3 {
-        @apply text-[40px] font-semibold;
-    }
+  h3,
+  .h3 {
+    @apply text-[40px] font-semibold;
+  }
 
-    h4,
-    .h4 {
-        @apply text-[32px] font-semibold;
-    }
+  h4,
+  .h4 {
+    @apply text-[32px] font-semibold;
+  }
 
-    h5,
-    .h5 {
-        @apply text-[24px] font-semibold;
-    }
+  h5,
+  .h5 {
+    @apply text-[24px] font-semibold;
+  }
 
-    h6,
-    .h6 {
-        @apply text-[18px] font-semibold;
-    }
+  h6,
+  .h6 {
+    @apply text-[18px] font-semibold;
+  }
 }
-
-
 
 /* loding css */
 
@@ -191,12 +188,13 @@
  **************************************************/
 
 @keyframes fillAnimation {
-    0%, 100% {
-        fill: transparent;
-    }
-    50% {
-        fill: currentColor; /* This will use the color defined in the active class */
-    }
+  0%,
+  100% {
+    fill: transparent;
+  }
+  50% {
+    fill: currentColor; /* This will use the color defined in the active class */
+  }
 }
 
 svg .svg-elem-1,
@@ -208,12 +206,12 @@ svg .svg-elem-6,
 svg .svg-elem-7,
 svg .svg-elem-8,
 svg .svg-elem-9 {
-    fill: transparent;
-    animation: fillAnimation 2s infinite ease-in-out;
+  fill: transparent;
+  animation: fillAnimation 2s infinite ease-in-out;
 }
 
 svg.active .svg-elem-1 {
-    color: rgb(0, 0, 0);
+  color: rgb(0, 0, 0);
 }
 
 svg.active .svg-elem-2,
@@ -221,19 +219,19 @@ svg.active .svg-elem-3,
 svg.active .svg-elem-4,
 svg.active .svg-elem-5,
 svg.active .svg-elem-8 {
-    color: rgb(187, 102, 204);
+  color: rgb(187, 102, 204);
 }
 
 svg.active .svg-elem-6 {
-    color: url("#paint0_linear_3214_94519");
+  color: url("#paint0_linear_3214_94519");
 }
 
 svg.active .svg-elem-7 {
-    color: url("#paint1_linear_3214_94519");
+  color: url("#paint1_linear_3214_94519");
 }
 
 svg.active .svg-elem-9 {
-    color: url("#paint2_linear_3214_94519");
+  color: url("#paint2_linear_3214_94519");
 }
 
 @media print {
@@ -241,12 +239,12 @@ svg.active .svg-elem-9 {
     margin-top: 1rem;
     break-before: page;
   }
-  
+
   body {
     margin: 0;
     padding: 0;
   }
-  
+
   @page {
     size: A4;
     margin: 20mm;
