@@ -161,26 +161,30 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
         </div>
       </footer>
       {/* Render TaskDetail component if isTaskDetailOpen is true */}
-      <TaskDetail
-        taskId={task.id} // Pass task Id as props to TaskDetail
-        handleDelete={handleDelete}
-        isOpen={isTaskDetailOpen}
-        setIsOpen={(value) => {
-          setIsTaskDetailOpen(value);
-          reloadData();
-        }}
-      />
-      <EditCard
-        cardId={task.id}
-        projectId={projectId}
-        onClose={() => {
-          setIsEditCardOpen(false);
-          setIsTaskDetailOpen(false);
-          reloadData();
-        }}
-        setIsOpen={setIsEditCardOpen}
-        isOpen={isEditCardOpen}
-      />
+      {isTaskDetailOpen && (
+        <TaskDetail
+          taskId={task.id} // Pass task Id as props to TaskDetail
+          handleDelete={handleDelete}
+          isOpen={isTaskDetailOpen}
+          setIsOpen={(value) => {
+            setIsTaskDetailOpen(value);
+            reloadData();
+          }}
+        />
+      )}
+      {isEditCardOpen && (
+        <EditCard
+          cardId={task.id}
+          projectId={projectId}
+          onClose={() => {
+            setIsEditCardOpen(false);
+            setIsTaskDetailOpen(false);
+            reloadData();
+          }}
+          setIsOpen={setIsEditCardOpen}
+          isOpen={isEditCardOpen}
+        />
+      )}
     </Card>
   );
 };

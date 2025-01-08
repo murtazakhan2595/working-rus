@@ -14,7 +14,7 @@ import {
   addAttachments,
   addTaskCheckListItem,
   getTaskById,
-  getProjectById
+  getProjectById,
 } from "app/hooks/taskManagment";
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
@@ -93,7 +93,7 @@ const CreateAndEditCardForm = ({
   }, [taskId]);
   useEffect(async () => {
     let isMounted = true;
-    if (projectId) {
+    if (projectId && isMounted) {
       const projectDetails = await getProjectById(projectId);
       setProjectDetail(projectDetails);
     }

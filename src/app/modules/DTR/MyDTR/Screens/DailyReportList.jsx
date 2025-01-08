@@ -47,20 +47,9 @@ const ReportCard = ({
   reload,
 }) => {
   const [isDetailsVisible, setDetailsVisible] = useState(false);
-  const [tasks, setTasks] = useState([]);
   const toggleDetails = () => {
     setDetailsVisible((prev) => !prev);
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await getTaskDetailsFromLogtime(logtimes);
-      if (response) {
-        console.log(response)
-        setTasks(response);
-      }
-    };
-    fetchData();
-  }, [logtimes]);
 
   return (
     <SheetCardExtension>
@@ -94,7 +83,7 @@ const ReportCard = ({
 
       {isDetailsVisible && (
         <DTRDetailsBox
-          tasks={tasks}
+          logtimes={logtimes}
           toggleDetails={toggleDetails}
           dtr_status={dtr_status}
           id={id}
@@ -107,7 +96,7 @@ const ReportCard = ({
 };
 
 const DTRDetailsBox = ({
-  tasks,
+  logtimes,
   toggleDetails,
   isDetailsVisible,
   dtr_status,
@@ -115,6 +104,17 @@ const DTRDetailsBox = ({
   reload,
 }) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
+  const [tasks, setTasks] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getTaskDetailsFromLogtime(logtimes);
+      if (response) {
+        console.log(response);
+        setTasks(response);
+      }
+    };
+    fetchData();
+  }, [logtimes]);
   const submitReportDTR = async () => {
     const dtrResponse = await addUpdateDTR(
       {
@@ -187,16 +187,17 @@ const DTRDetailsBox = ({
           )}
         </div>
       </div>
-      <CreateCard
-        onClose={() => {
-          setOpenCreateCard(false);
-          reload(true);
-        }}
-        boardId={null}
-        isOpen={openCreateCard}
-        projectId={null}
-        setIsOpen={setOpenCreateCard}
-      />
+      {openCreateCard && (
+        <CreateCard
+          onClose={() => {
+            setOpenCreateCard(false);
+          }}
+          boardId={null}
+          isOpen={openCreateCard}
+          projectId={null}
+          setIsOpen={setOpenCreateCard}
+        />
+      )}
     </div>
   );
 };
