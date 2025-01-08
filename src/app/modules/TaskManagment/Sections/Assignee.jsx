@@ -35,7 +35,7 @@ export default function Assignee({
         employee.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
         projectMembers.includes(employee.value)
     );
-  }, [searchQuery, employees]);
+  }, [searchQuery, employees, projectMembers]);
 
   const handleLabelToggle = (assigneeId) => {
     if (assigneeSelected.includes(assigneeId)) {

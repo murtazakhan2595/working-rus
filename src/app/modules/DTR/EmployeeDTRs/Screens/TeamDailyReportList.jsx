@@ -41,7 +41,6 @@ import { useSelector } from "react-redux";
 import { DailyReportList } from "../../MyDTR/Screens";
 
 const TeamDailyReportList = ({ dailyReportData, reload }) => {
-  console.log(dailyReportData);
   if (!dailyReportData || dailyReportData.length === 0) return null;
 
   return (
@@ -50,7 +49,7 @@ const TeamDailyReportList = ({ dailyReportData, reload }) => {
       <CardContent>
         {dailyReportData.map((report, index) => (
           <div key={index} className={index > 0 ? "mt-4" : ""}>
-            <ReportCard {...report} reload={reload} />
+            <ReportCard {...report} reload={reload}/>
           </div>
         ))}
       </CardContent>
@@ -59,17 +58,12 @@ const TeamDailyReportList = ({ dailyReportData, reload }) => {
 };
 
 const ReportCard = ({
-  // logtime_date,
-  // id,
   stats,
-  // dtr_status,
-  // logtimes,
   reload,
-  // full_name,
-  // designation,
   designation,
   full_name,
   dtrsList,
+
 }) => {
   const designations = useSelector((state) => state.common.designations);
   const [isDetailsVisible, setDetailsVisible] = useState(false);
@@ -77,35 +71,66 @@ const ReportCard = ({
   const toggleDetails = () => {
     setDetailsVisible((prev) => !prev);
   };
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const response = await getTaskDetailsFromLogtime(logtimes);
-  //     if (response) {
-  //       console.log(response);
-  //       setTasks(response);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [logtimes]);
+  const hasNonApprovedDTRs = dtrsList.some(
+    (dtr) => dtr.dtr_status !== "Manager Approval"
+  );
+
+  const approveDtr = async (dtrId) => {
+    try {
+      if (dtrId) {
+        // Single DTR approval
+        const dtrResponse = await addUpdateDTR(
+          {
+            dtr_status: "Manager Approval",
+            id: dtrId,
+          },
+          dtrId
+        );
+
+        if (dtrResponse) {
+          toast.success("DTR approved successfully");
+          reload();
+        } else {
+          toast.error("Error in approving DTR");
+        }
+      } else {
+        // Bulk approval for all DTRs in the list
+        const updatePromises = dtrsList.map((dtr) =>
+          addUpdateDTR(
+            {
+              dtr_status: "Manager Approval",
+              id: dtr.id,
+            },
+            dtr.id
+          )
+        );
+
+        const results = await Promise.all(updatePromises);
+
+        if (results.every((result) => result)) {
+          toast.success("All DTRs approved successfully");
+          reload();
+        } else {
+          toast.error("Error in approving some DTRs");
+        }
+      }
+    } catch (error) {
+      console.error("Error in DTR approval:", error);
+      toast.error("Error in processing DTR approval");
+    }
+  };
 
   return (
     <SheetCardExtension>
       <div className="flex flex-wrap justify-between gap-6 w-full bg-white rounded-lg">
-        {/* <div className="flex flex-col">
-          <div className="text-black text-base font-bold">{logtime_date}</div>
-          <div className="text-[#1c2024] text-base font-normal">
-            {moment(logtime_date).format("dddd")}
-          </div>
-        </div> */}
         <EmployeeDataInfo
           name={full_name}
-          // email={"johnDoe@gmail.com"}
           designation={getDesignationName(designation, designations)}
           src={""}
         />
         <div className="flex gap-4 items-center">
-          <StatItem icon={Hourglass} value={stats?.tasks} />
-          <StatItem icon={ClockArrowUp} value={stats?.meetings} />
+          <StatItem icon={Hourglass} value={stats?.consumed_time} />
+          <StatItem icon={ClockArrowUp} value={stats?.over_time} />
           <StatItem icon={ClipboardList} value={stats?.reports} />
           {/* <StatusBadge status={dtr_status} /> */}
           <div
@@ -129,10 +154,11 @@ const ReportCard = ({
           dailyReportData={dtrsList}
           reload={reload}
           isMyDtr={false}
+          approveDtr={approveDtr}
         />
       )}
 
-      {isDetailsVisible &&
+      {isDetailsVisible && (
         <div className="flex justify-between mt-4">
           <div
             className="h-8 px-2 py-1 flex items-center gap-2 cursor-pointer"
@@ -148,48 +174,22 @@ const ReportCard = ({
             )}
           </div>
           <div className="flex items-center justify-between gap-4">
-            <Button
-              onClick={() => {
-                // submitReportDTR();
-              }}
-            >
-              Approve
-            </Button>
+            {hasNonApprovedDTRs && (
+              <Button
+                onClick={() => {
+                  approveDtr();
+                }}
+              >
+                Approve
+              </Button>
+            )}
           </div>
         </div>
-      }
+      )}
     </SheetCardExtension>
   );
 };
-const StatusBadge = ({ status }) => {
-  const Status = status.toUpperCase();
-  const iconClassName = "w-3.5 h-[14.50px] relative mr-1";
-  let variant = "";
-  let icon = "";
-  switch (Status) {
-    case "PENDING":
-      variant = "neutral";
-      icon = <Clock className={iconClassName} />;
-      break;
-    case "SUBMITTED":
-      variant = "success";
-      icon = <Check className={iconClassName} />;
-      break;
-    case "CHANGE REQUEST":
-      variant = "warning";
-      icon = <Clock className={iconClassName} />;
-      break;
-    default:
-      icon = <Clock className={iconClassName} />;
-      variant = "plum";
-  }
-  return (
-    <Badge className={"px-4 py-2"} variant={variant}>
-      {icon}
-      {status}
-    </Badge>
-  );
-};
+
 
 const StatItem = ({ icon: Icon, value }) => {
   return (

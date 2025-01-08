@@ -8,17 +8,23 @@ export default function AttachmentUI({ attachment, name, removeFile, id = null }
 
   // Extract file type for rendering
   const getFileType = (file) => {
+    let fileType;
+  
     if (file instanceof File) {
-      return file.name.split(".").pop()?.toLowerCase();
+      fileType = file.name.split(".").pop()?.toUpperCase();
+    } else {
+      fileType = file?.split(".").pop()?.toUpperCase();
     }
-    return file?.split(".").pop()?.toLowerCase();
+  
+    return fileType && fileType.length > 4 ? fileType.slice(0, 4) : fileType;
   };
+  
 
   const fileType = getFileType(attachment);
 
   return (
     <div className="flex items-center justify-between w-full gap-2 p-4 my-1 border border-gray-400 rounded-lg">
-      <div className="flex items-center">
+      <div className="flex items-center w-[85%]">
         <div
           className="flex items-center justify-center w-8 h-8"
           style={{ minWidth: "2rem" }}
@@ -46,7 +52,7 @@ export default function AttachmentUI({ attachment, name, removeFile, id = null }
             </span>
           )}
         </div>
-        <span className="ml-4 text-sm text-baseGray">
+        <span className="ml-4 text-sm text-baseGray overflow-hidden">
           <a
             href={
               attachment instanceof File
