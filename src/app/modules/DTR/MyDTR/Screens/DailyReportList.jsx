@@ -56,19 +56,6 @@ const ReportCard = ({
     console.log("toggleDetails");
     setDetailsVisible((prev) => !prev);
   };
-<<<<<<< HEAD
-=======
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await getTaskDetailsFromLogtime(logtimes);
-      if (response) {
-        console.log(response);
-        setTasks(response);
-      }
-    };
-    fetchData();
-  }, [logtimes]);
->>>>>>> refs/remotes/origin/design-staging
 
   return (
     <SheetCardExtension>
@@ -207,8 +194,7 @@ const DTRDetailsBox = ({
             </Button>
           )}
         </div>
-<<<<<<< HEAD
-      </div>
+      </div>}
       {openCreateCard && (
         <CreateCard
           onClose={() => {
@@ -220,19 +206,6 @@ const DTRDetailsBox = ({
           setIsOpen={setOpenCreateCard}
         />
       )}
-=======
-      </div>}
-      <CreateCard
-        onClose={() => {
-          setOpenCreateCard(false);
-          reload(true);
-        }}
-        boardId={null}
-        isOpen={openCreateCard}
-        projectId={null}
-        setIsOpen={setOpenCreateCard}
-      />
->>>>>>> refs/remotes/origin/design-staging
     </div>
   );
 };
