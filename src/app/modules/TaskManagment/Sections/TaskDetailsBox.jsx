@@ -7,7 +7,7 @@ export default function TaskDetailBox({
 }) {
   return (
     <div className="max-w-sm flex w-full">
-      <div className={`${dataContent && editMode ? "w-[88%]" : ""}`}> {dataContent}</div>
+      <div className={`${dataContent && editMode ? "w-[82%]" : ""}`}> {dataContent}</div>
       {editMode && (
         <div style={{ minWidth: "11.5%", marginLeft: "1rem" }}>
           {inputDataContent}

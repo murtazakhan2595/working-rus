@@ -33,12 +33,12 @@ export default function Labels({
   // const [labelsList, setLabelsList] = useState([]);
   const [showNewLabel, setShowNewLabel] = React.useState(false);
   const [newLabelTitle, setNewLabelTitle] = React.useState("");
-  const [selectedColor, setSelectedColor] = React.useState("");
+  const [selectedColor, setSelectedColor] = React.useState("bg-purple-300");
   const baseUrl = useSelector((state) => state.user.baseUrl);
   const labelsList = useSelector((state) => state.task_managment.task_labels);
 
   const colorOptions = [
-    "bg-purple-300",
+    "bg-purple-300", // default color
     "bg-purple-500",
     "bg-purple-700",
     "bg-emerald-300",
@@ -109,7 +109,7 @@ export default function Labels({
     } finally {
       setShowNewLabel(false);
       setNewLabelTitle("");
-      setSelectedColor("");
+      setSelectedColor("bg-purple-300");
     }
   };
 

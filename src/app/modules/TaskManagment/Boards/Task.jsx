@@ -4,23 +4,20 @@ import "react-toastify/dist/ReactToastify.css";
 import { deleteTask } from "app/hooks/taskManagment";
 import { PriorityList } from "data/Data";
 import { BiComment } from "react-icons/bi";
-import { getStatusClass, getStatusIconColor } from "./Sections";
+import { getStatusIconColor } from "./Sections";
 import { CustomDropdown, MembersList, Labels } from "../Sections";
 import { ImAttachment } from "react-icons/im";
 import TimeIcon from "assets/images/timeIcon";
 import EditCard from "./EditCard";
 import moment from "moment";
 import TaskDetail from "./TaskDetail";
-import { fetchComments } from "app/hooks/taskManagment";
 import { Card } from "components/ui/card";
-import SheetComponent from "components/ui/CustomSheet";
 import AlertDialogue from "components/ui/AlertDialogue";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [comments, setComments] = useState([]);
   const handleDelete = () => {
     setIsDeleteModalOpen(true);
   };
@@ -60,19 +57,6 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
 
   // State to manage TaskDetail visibility
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
-
-  const fetchData = async () => {
-    try {
-      const data = await fetchComments({ task_id: [task.id] });
-      setComments(data);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-      setComments([]);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, [task?.board_id, task?.id]);
 
   return (
     <Card
@@ -152,11 +136,11 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
           )}
           <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
             <BiComment />
-            <div>{comments?.length || 0}</div>
+            <div>{task?.comment_count || 0}</div>
           </div>
           <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
             <ImAttachment />
-            <div>{task?.attachment?.length || 0}</div>
+            <div>{task?.attachment_count || 0}</div>
           </div>
         </div>
       </footer>
