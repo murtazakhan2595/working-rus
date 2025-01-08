@@ -22,9 +22,27 @@ import moment from "moment";
 import { MyDtrTasksColumns } from "app/modules/DTR/Sections/DTRTableColumns";
 import { getTaskDetailsFromLogtime, addUpdateDTR } from "app/hooks/dtr";
 
-const DailyReportList = ({ dailyReportData, reload, isMyDtr= true }) => {
-  console.log(dailyReportData);
-  if (!dailyReportData || dailyReportData.length === 0) return null;
+const DailyReportList = ({
+  dailyReportData,
+  reload,
+  isMyDtr = true,
+  approveDtr,
+}) => {
+  if (!dailyReportData || dailyReportData.length === 0) {
+    return (
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center py-6 min-h-96">
+          <ClipboardList className="h-12 w-12 text-gray-400 mb-3" />
+          <p className="text-lg font-semibold text-gray-700">No DTR Found</p>
+          <p className="text-sm text-gray-500 mt-1">
+            {isMyDtr
+              ? "Please log your time to create a DTR"
+              : "No daily time records available"}
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
   return (
     <Card className={`${!isMyDtr ? "p-0 m-0" : ""}`}>
       <CardHeader
@@ -34,7 +52,12 @@ const DailyReportList = ({ dailyReportData, reload, isMyDtr= true }) => {
       <CardContent className={`${!isMyDtr ? "p-0 m-0" : ""}`}>
         {dailyReportData.map((report, index) => (
           <div key={report.date} className={index > 0 ? "mt-4" : ""}>
-            <ReportCard {...report} reload={reload} isMyDtr={isMyDtr} />
+            <ReportCard
+              {...report}
+              reload={reload}
+              isMyDtr={isMyDtr}
+              approveDtr={approveDtr}
+            />
           </div>
         ))}
       </CardContent>
@@ -45,24 +68,46 @@ const DailyReportList = ({ dailyReportData, reload, isMyDtr= true }) => {
 const ReportCard = ({
   logtime_date,
   id,
-  stats,
   dtr_status,
   logtimes,
   reload,
   isMyDtr,
+  approveDtr,
 }) => {
   const [isDetailsVisible, setDetailsVisible] = useState(false);
   const [tasks, setTasks] = useState([]);
+  const [stats, setStats] = useState({
+    consumed_time: 0,
+    estimated_time: 0,
+    over_time: 0,
+  });
   const toggleDetails = () => {
-    console.log("toggleDetails");
     setDetailsVisible((prev) => !prev);
   };
   useEffect(() => {
     const fetchData = async () => {
       const response = await getTaskDetailsFromLogtime(logtimes);
       if (response) {
-        console.log(response);
+
         setTasks(response);
+        // Calculate total consumed time
+        const totalConsumedTime = response.reduce((sum, task) => {
+          return sum + parseFloat(task.consumed_time || 0);
+        }, 0);
+
+        // Calculate total estimated time
+        const totalEstimatedTime = response.reduce((sum, task) => {
+          return sum + parseFloat(task.estimated_time || 0);
+        }, 0);
+
+        // Calculate overtime (consumed - estimated)
+        const overTime = totalConsumedTime - totalEstimatedTime;
+        // Set all values in stats state
+        setStats({
+          consumed_time: totalConsumedTime.toFixed(2),
+          estimated_time: totalEstimatedTime.toFixed(2),
+          over_time: overTime.toFixed(2),
+        });
       }
     };
     fetchData();
@@ -78,8 +123,8 @@ const ReportCard = ({
           </div>
         </div>
         <div className="flex gap-4 items-center">
-          <StatItem icon={Hourglass} value={stats?.tasks} />
-          <StatItem icon={ClockArrowUp} value={stats?.meetings} />
+          <StatItem icon={Hourglass} value={stats?.consumed_time} />
+          <StatItem icon={ClockArrowUp} value={stats?.over_time} />
           <StatItem icon={ClipboardList} value={stats?.reports} />
           <StatusBadge status={dtr_status} />
           <div
@@ -107,6 +152,7 @@ const ReportCard = ({
           reload={reload}
           isDetailsVisible={isDetailsVisible}
           isMyDtr={isMyDtr}
+          approveDtr={approveDtr}
         />
       )}
     </SheetCardExtension>
@@ -121,6 +167,7 @@ const DTRDetailsBox = ({
   id,
   reload,
   isMyDtr,
+  approveDtr,
 }) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const submitReportDTR = async () => {
@@ -150,7 +197,7 @@ const DTRDetailsBox = ({
         selectedRows={[]}
         setSelectedRows={() => {}}
       />
-      {isMyDtr && <div className="flex justify-between mt-4">
+      <div className="flex justify-between mt-4">
         <div
           className="h-8 px-2 py-1 flex items-center gap-2 cursor-pointer"
           onClick={toggleDetails}
@@ -164,47 +211,64 @@ const DTRDetailsBox = ({
             <ChevronDown className="w-4 h-4" />
           )}
         </div>
-        <div className="flex items-center justify-between gap-4">
-          {dtr_status === "Pending" && (
-            <Button
-              onClick={() => {
-                submitReportDTR();
-              }}
-            >
-              Submit Report
-            </Button>
-          )}
+        {isMyDtr ? (
+          <div className="flex items-center justify-between gap-4">
+            {dtr_status === "Pending" && (
+              <Button
+                onClick={() => {
+                  submitReportDTR();
+                }}
+              >
+                Submit Report
+              </Button>
+            )}
 
-          {dtr_status === "Change Request" && (
-            <Button
-              onClick={() => {
-                submitReportDTR();
-              }}
-            >
-              Resubmit Report
-            </Button>
-          )}
-          {dtr_status !== "Submitted" && (
-            <Button
-              onClick={() => {
-                setOpenCreateCard(true);
-              }}
-            >
-              Add New Task
-            </Button>
-          )}
-        </div>
-      </div>}
-      <CreateCard
-        onClose={() => {
-          setOpenCreateCard(false);
-          reload(true);
-        }}
-        boardId={null}
-        isOpen={openCreateCard}
-        projectId={null}
-        setIsOpen={setOpenCreateCard}
-      />
+            {dtr_status === "Change Request" && (
+              <Button
+                onClick={() => {
+                  submitReportDTR();
+                }}
+              >
+                Resubmit Report
+              </Button>
+            )}
+            {dtr_status !== "Submitted" && (
+              <Button
+                onClick={() => {
+                  setOpenCreateCard(true);
+                }}
+              >
+                Add New Task
+              </Button>
+            )}
+          </div>
+        ) : (
+          <>
+            {dtr_status !== "Manager Approval" && (
+              <div className="flex items-center justify-between gap-4">
+                <Button
+                  onClick={() => {
+                    approveDtr(id);
+                  }}
+                >
+                  Approve
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+      {openCreateCard && (
+        <CreateCard
+          onClose={() => {
+            setOpenCreateCard(false);
+          }}
+          boardId={null}
+          isOpen={openCreateCard}
+          projectId={null}
+          setIsOpen={setOpenCreateCard}
+        />
+      )}
     </div>
   );
 };
