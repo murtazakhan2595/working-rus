@@ -173,7 +173,7 @@ const Board = ({ employees }) => {
         </div>
       </div>
 
-      <Card className="p-0 bg-white" style={{ background: "#FAFBFC" }}>
+      <Card className="p-0 relative overflow-scroll h-[76vh]" style={{ background: "#FAFBFC" }}>
         <CardContent className="py-3">
           {showAddNewListModel && (
             <AddNewListModel
@@ -186,7 +186,7 @@ const Board = ({ employees }) => {
           {isLoading ? (
             <PageLoader />
           ) : (
-            <div className="flex gap-8 mt-5 overflow-x-auto">
+            <div className="flex gap-8 mt-5">
               {AllBoards.count > 0 &&
                 AllBoards.results.map((board) => (
                   <TaskColumn
