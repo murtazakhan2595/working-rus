@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Pie, PieChart, Cell, Legend } from "recharts"
+import * as React from "react";
+import { Pie, PieChart, Cell, Legend } from "recharts";
 
 import {
   Card,
@@ -9,16 +9,27 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "components/ui/card"
+} from "components/ui/card";
 
-const chartData = [
-  { name: "Annual Leave", value: 12, color: "#A020F0" },
-  { name: "Sick Leave", value: 8, color: "#DDA0DD" },
-  { name: "Personal Leave", value: 4, color: "#E6E6FA" },
-]
+// Define color mapping for different leave types
+const colorMap = {
+  "Sick Leaves": "#DDA0DD",
+  "Annual Leaves": "#A020F0",
+  "Personal Leaves": "#E6E6FA",
+};
 
-export function LeaveStatusOverview() {
-  const totalLeaves = chartData.reduce((acc, curr) => acc + curr.value, 0)
+export function LeaveStatusOverview({ leaveStatus }) {
+  // Transform API data into chart format
+  const chartData =
+    leaveStatus?.leave_details?.map((item) => ({
+      name: item.leave_name,
+      value: item.count,
+      color: colorMap[item.leave_name] || "#E6E6FA", // Fallback color if type not in mapping
+    })) || [];
+
+  const totalLeaves = leaveStatus?.total_employees_on_leave || 0;
+
+  console.log("chartData", chartData);
 
   return (
     <Card className="flex flex-col shadow-lg border rounded-xl bg-white p-6 min-w-[33%]">
@@ -83,5 +94,5 @@ export function LeaveStatusOverview() {
         </ul>
       </CardDescription>
     </Card>
-  )
+  );
 }

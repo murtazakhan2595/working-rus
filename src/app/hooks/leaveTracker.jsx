@@ -499,6 +499,23 @@ const getLeavestatesCustomApi = async (payload) => {
   }
 }
 
+const getLeaveStatusDaily = async() =>{
+  try{
+    const response = await axios.get(`${baseUrl}/leavestatusdaily`, {
+      headers: headers(),
+    });
+    if(response.status === 200){
+      return response.data;
+    }
+  } catch(error){
+    console.error("Error fetching daily leave status:", error);
+    if(error?.response?.status === 401){
+      handleLogout();
+    }
+    return [];
+  }
+} 
+
 export {
   saveLeaveComponents,
   getLeaveComponents,
@@ -514,4 +531,5 @@ export {
   getLeaveStatsEmployee,
   getRemainingLeaves,
   getLeavestatesCustomApi,
+  getLeaveStatusDaily,
 };

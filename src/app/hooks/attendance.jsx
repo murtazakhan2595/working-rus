@@ -448,6 +448,42 @@ const getStats = async (id) => {
     }
   }
 
+  const getDepartmentPercentage = async () => {
+    try{
+    const response = await axios.get(
+      `${baseUrl}/attendance/department-percentage`,
+      {
+        headers: headers(),
+      }
+    );
+    return response.data;
+    }catch(error){
+      console.error("Error fetching shift by id:", error);
+      if(error?.response?.status === 401){
+        handleLogout();
+      }
+      return false;
+    }
+  }
+
+  const getWeeklySummary = async () => {
+    try{
+    const response = await axios.get(
+      `${baseUrl}/attendance/weeklysummary`,
+      {
+        headers: headers(),
+      }
+    );
+    return response.data;
+    }catch(error){
+      console.error("Error fetching shift by id:", error);
+      if(error?.response?.status === 401){
+        handleLogout();
+      }
+      return false;
+    }
+  }
+
 export {
   getAttendanceStats,
   saveShiftAssignment,
@@ -467,5 +503,7 @@ export {
   getStats,
   employeeData,
   getShiftById,
-  getAttendanceSummary
+  getAttendanceSummary,
+  getDepartmentPercentage,
+  getWeeklySummary
 };
