@@ -112,7 +112,7 @@ const getTaskByprojectId = async (payload) => {
       const tasksList = await getTaskByBoardId({
         filterData: { board_id: boardIdsList },
       });
-      return tasksList.results; // Extract results from task data
+      return tasksList; // Extract results from task data
     } catch (error) {
       if (error?.response?.status === 401) {
         handleLogout();
