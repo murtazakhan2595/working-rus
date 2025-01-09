@@ -251,7 +251,7 @@ const CreateAndEditCardForm = ({
                           touch={props.touched.description}
                           value={props.values.description}
                           required
-                          maxRows={3}
+                          maxRows={6}
                           label="Description"
                           onChange={(field, value) => {
                             props.handleChange(field)(value);

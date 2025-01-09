@@ -188,9 +188,9 @@ const Board = ({ employees }) => {
           ) : (
             <div className="flex gap-8 mt-5 overflow-x-auto">
               {AllBoards.count > 0 &&
-                AllBoards.results.map((board, index) => (
+                AllBoards.results.map((board) => (
                   <TaskColumn
-                    key={index}
+                    key={board.id}
                     board={board}
                     projectId={projectId}
                     reloadData={() => {
@@ -232,7 +232,7 @@ const Board = ({ employees }) => {
   );
 };
 
-const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
+const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -296,6 +296,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
       className="flex flex-col min-w-[320px] max-w-[320px] mb-5"
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
+      key={key}
     >
       <div className="flex flex-col">
         <header className="flex justify-between w-full gap-5 pl-5">
@@ -323,15 +324,16 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
         </Button>
         {tasks &&
           tasks.count > 0 &&
-          tasks.results.map((task, index) => (
-            <TaskCard
-              key={index}
-              task={task}
-              projectId={projectId}
-              boardId={board.id}
-              reloadData={() => fetchData(true)}
-              onDragStart={handleDragStart}
-            />
+          tasks.results.map((task) => (
+            <div key={task.id}>
+              <TaskCard
+                task={task}
+                projectId={projectId}
+                boardId={board.id}
+                reloadData={() => fetchData(true)}
+                onDragStart={handleDragStart}
+              />
+            </div>
           ))}
       </div>
 

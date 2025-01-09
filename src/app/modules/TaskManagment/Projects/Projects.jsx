@@ -29,7 +29,11 @@ import { Button } from "components/ui/button";
 const Projects = ({ userProfile }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState(
+    userProfile.role === 2 || userProfile.role === 4
+      ? { project_members: [userProfile.id] }
+      : {}
+  );
   const [AllProjects, setAllProjects] = useState([]);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -171,8 +175,12 @@ const Projects = ({ userProfile }) => {
   );
 };
 
-const RenderProject = ({ project, toggleAddProject, fetchData, userProfile }) => {
-  
+const RenderProject = ({
+  project,
+  toggleAddProject,
+  fetchData,
+  userProfile,
+}) => {
   const navigate = useNavigate();
   const projectMembers = project?.project_members || [];
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -251,7 +259,7 @@ const RenderProject = ({ project, toggleAddProject, fetchData, userProfile }) =>
           isOpen={isViewBoardDetails}
           setIsOpen={setIsViewBoardDetails}
           fetchData={fetchData}
-          role = {userProfile?.role}
+          role={userProfile?.role}
         />
       )}
     </Card>
