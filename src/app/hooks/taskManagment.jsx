@@ -62,6 +62,7 @@ const getAllProjects = async (payload, userProfile) => {
   return [];
 };
 const getTaskByBoardId = async (payload) => {
+  console.log("gettaskbyboardid payload", payload);
   const filterData = payload?.filterData ?? {};
   delete filterData.end_date;
   delete filterData.priority;

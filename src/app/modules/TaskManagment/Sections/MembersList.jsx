@@ -1,14 +1,31 @@
 import Avatar from "components/ui/Avatar";
-import {
-  EmployeeName,
-  EmployeeProfilePicture,
-} from "utils/getValuesFromTables"; // Check if this uses hooks
+import { useSelector } from "react-redux";
 import { getRandomColor } from "utils/renderValues";
 
 const MembersList = ({ members, displayAll = false }) => {
+  // Get all employees data once at the component level
+  const employees = useSelector((state) => state.emp.employees_detail);
+
   if (!members || members?.length <= 0) return null;
+
   const displayedMembers = displayAll ? members : members?.slice(0, 3);
   const remainingCount = members.length - displayedMembers.length;
+
+  // Helper function to get employee profile
+  const getEmployeeProfile = (id) => {
+    const employee = employees.find((option) => option.value === parseInt(id));
+    if (employee) {
+      const employeeProfilePicture = employee.profile_picture ?? null;
+      return {
+        profile_picture: employeeProfilePicture,
+        name: `${employee?.first_name} ${employee?.last_name}`,
+      };
+    }
+    return {
+      profile_picture: null,
+      name: "N/A",
+    };
+  };
 
   return (
     <div className="flex items-center justify-center">
@@ -18,14 +35,14 @@ const MembersList = ({ members, displayAll = false }) => {
         } h-10 items-center`}
       >
         {displayedMembers?.map((member, index) => {
-          const { profile_picture, name } = EmployeeProfilePicture(member);
+          const { profile_picture, name } = getEmployeeProfile(member);
           return (
             <Avatar
+              key={index}
               src={profile_picture}
               alt="Avatar"
               fallbackText={name.slice(0, 2)}
               className={`${getRandomColor(name?.charAt(0))} h-8 w-8`}
-              key={index}
               text={name}
             />
           );

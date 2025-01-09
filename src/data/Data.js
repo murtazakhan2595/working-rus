@@ -309,7 +309,7 @@ export const PriorityList = [
   {
     value: 2,
     label: (
-      <div className="flex justify-center text-yellow-500 gap-x-2">
+      <div className="flex justify-center text-yellow-500 gap-x-2 items-center">
         <ArrowRight className="text-xl" /> Medium
       </div>
     ),
@@ -335,7 +335,7 @@ export const PriorityListIcons = [
   {
     value: 2,
     label: (
-      <div className="flex justify-center text-yellow-500 gap-x-2">
+      <div className="flex justify-center text-yellow-500 gap-x-2 items-center">
         <ArrowRight className="text-xl" />
         Medium
       </div>
@@ -375,7 +375,7 @@ export const ProjectStatusList = [
   {
     value: "on_going",
     label: (
-      <div className="flex justify-center text-yellow-500 gap-x-2">On Going</div>
+      <div className="flex justify-center text-yellow-500 gap-x-2 items-center">On Going</div>
     ),
   },
   {

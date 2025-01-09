@@ -154,9 +154,9 @@ const SelectMultiInputComponent = ({
 
   return (
     <div className={`${classes || "flex flex-col gap-4"}`}>
-      <Label className={` ${value ? "" : ""}`} htmlFor={name}>
+      {label &&<Label className={` ${value ? "" : ""}`} htmlFor={name}>
         {required && <span className="text-red-600">* </span>} {label}
-      </Label>
+      </Label>}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -165,7 +165,7 @@ const SelectMultiInputComponent = ({
             aria-expanded={open}
             className="flex-wrap justify-between w-full rounded-sm h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
           >
-            <div className="flex flex-wrap justify-start w-full gap-2">
+            <div className="flex flex-wrap justify-start w-full gap-2 items-center">
               {value.length > 0 ? (
                 value?.map((val) => (
                   <span
