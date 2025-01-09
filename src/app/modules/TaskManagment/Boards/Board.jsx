@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { Project } from "app/utils/Types/TaskManagment";
 import { Header, PageLoader } from "components";
@@ -29,6 +29,10 @@ import { CardContent } from "components/ui/card";
 import SheetComponent from "components/ui/SheetComponent";
 
 import AlertDialogue from "components/ui/AlertDialogue";
+import { useSelector } from "react-redux";
+import { SelectMultiInputComponent } from "components/form-control";
+import { PriorityList } from "data/Data";
+import { getAllTasks } from "app/hooks/taskManagment";
 
 const Board = ({ employees }) => {
   const navigate = useNavigate();
@@ -40,20 +44,46 @@ const Board = ({ employees }) => {
   const [AllBoards, setAllBoards] = useState([]);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const [selectedExpenseType, setSelectedExpenseType] = useState("");
+  const [multiInput, setMultiInput] = useState([]);
+  
+  const labelsList = useSelector((state) => state.task_managment.task_labels);
+  const options = [...labelsList.map((label) => ({
+    value: label.id,
+    label: label.name,
+  })), ...PriorityList];
 
-  const handleFilterChange = (filterName, filterValue) => {
-    if (filterName === "expense_type") setSelectedExpenseType(filterValue);
-    // onPageChange("page", 1);
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
+const handleFilterChange = (filterName, filterValue) => {
+  const updatedFilters = { ...filterData };
+
+  if (Array.isArray(filterValue)) {
+    const priority = filterValue.filter((value) => value >= 1 && value <= 3);
+    const label = filterValue.filter((value) => value > 3);
+
+    // Handle priority array
+    if (priority.length === 0) {
+      delete updatedFilters["priority"];
+    } else {
+      updatedFilters["priority"] = priority[0];
+    }
+
+    // Handle label array
+    if (label.length === 0) {
+      delete updatedFilters["label"];
+    } else {
+      updatedFilters["label"] = label;
+    }
+  } else {
+    // Handle non-array value
+    if (filterValue === "") {
+      delete updatedFilters[filterName];
+    } else {
+      updatedFilters[filterName] = filterValue;
+    }
+  }
+
+  setFilterData(updatedFilters);
+};
+  console.log("filterData", filterData);
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -84,46 +114,6 @@ const Board = ({ employees }) => {
     };
   }, [projectId]);
 
-  // useEffect(() => {
-  //   if (employees && employees.length > 0) {
-  //     setFilterList(TaskSortingFilters(employees));
-  //   }
-  // }, [employees]);
-
-  // const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
-  //   setFilterData((prevFilters) => {
-  //     debugger;
-  //     const updatedFilters = { ...prevFilters };
-  //     if (!filterValue || filterCheckStatus === false) {
-  //       delete updatedFilters[filterName];
-  //     } else {
-  //       if (
-  //         filterName !== "assigned_to" &&
-  //         filterName !== "label" &&
-  //         filterName !== "end_datefilterValue" &&
-  //         filterName !== "priority"
-  //       ) {
-  //         if (updatedFilters.optionsValues) {
-  //           if (updatedFilters.optionsValues.includes(filterValue)) {
-  //             updatedFilters.optionsValues =
-  //               updatedFilters.optionsValues.filter(
-  //                 (item) => item !== filterValue
-  //               );
-  //           } else updatedFilters.optionsValues.push(filterValue);
-  //         } else updatedFilters.optionsValues = [filterValue];
-  //       }
-  //       else if (filterName === "assigned_to" && filterValue === "noMemberSelected") {
-  //         updatedFilters[filterName] =
-  //           filterCheckStatus === false ? "" : filterValue;
-  //         updatedFilters.optionsValues = null;
-  //       } else
-  //         updatedFilters[filterName] =
-  //           filterCheckStatus === false ? "" : filterValue;
-  //     }
-  //     return updatedFilters;
-  //   });
-  // };
-
   const toggleAddBoardModal = () => {
     if (showAddNewListModel) {
       fetchData(true);
@@ -145,11 +135,14 @@ const Board = ({ employees }) => {
           <RenderProject projectId={projectId} />
         </div>
         <div className="flex items-center justify-center gap-3">
-          <FilterInput
+          {/* <FilterInput
             filters={[
               {
-                type: "select-one",
-                option: ClaimExpenseTypeOptions,
+                type: "select-two",
+                option: labelsList.map((label) => ({
+                  value: label.id,
+                  label: label.name,
+                })),
                 name: "expense_type",
                 placeholder: "Filters",
                 values: selectedExpenseType,
@@ -157,17 +150,37 @@ const Board = ({ employees }) => {
               },
             ]}
             onChange={handleFilterChange}
+          /> */}
+          <SelectMultiInputComponent
+            name="label"
+            options={options}
+            placeholder="Filter"
+            value={multiInput}
+            onChange={(field, value) => {
+              handleFilterChange(field, value);
+              setMultiInput([...value]);
+            }}
+            classes="max-w-96"
           />
           <DateInput
-            placeholder="Date"
+            placeholder="Due Date"
             value={filterDate}
-            className="flex items-center align-middle"
-            name="start_date"
+            className="flex items-center align-middle "
+            name="end_date"
             onChange={(field, value) => {
               setFilterDate(value);
               handleFilterChange(field, value);
             }}
           />
+          <Button
+            variant="outline"
+            onClick={() => {
+              setFilterDate(null);
+              setMultiInput([]);
+              setFilterData({});
+            }
+            }
+          > Reset Filters</Button>
           <MembersDropdown members={projectData?.project_members || []} />
           <LayoutList size={18} />
         </div>
@@ -239,11 +252,12 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const fetchData = async (isMounted) => {
+  const fetchData = async () => {
     try {
-      const TaskData = await getTaskByBoardId({ filterData });
-      if (isMounted) {
-        setTasks(TaskData);
+      console.log("finalFilterData in fetchData", filterData);
+      const taskData = await getAllTasks({ filterData });
+      if(taskData){
+        setTasks(taskData);
       }
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -251,11 +265,7 @@ const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
   };
 
   useEffect(() => {
-    let isMounted = true;
-    fetchData(isMounted);
-    return () => {
-      isMounted = false;
-    };
+    fetchData();
   }, [filterData]);
 
   const handleDragStart = (e, taskId) => {
