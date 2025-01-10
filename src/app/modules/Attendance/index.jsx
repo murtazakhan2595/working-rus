@@ -3,7 +3,9 @@ import { Card, CardContent } from "components/ui/card";
 import moment from "moment";
 import {
   getAttendance,
-  getAttendanceSummary
+  getAttendanceSummary,
+  getDepartmentPercentage,
+  getWeeklySummary,
 } from "app/hooks/attendance";
 import { PageLoader } from "components";
 import { EmployeesAttendanceColumns } from "app/utils/Types/TableColumns";
@@ -12,14 +14,18 @@ import { StatisticsChart } from "./Sections/StatisticsChart";
 import DepartmentOverview from "./Sections/DepartmentOverview";
 import { StatsCards } from "./Sections/StatsCards";
 import TableCustom from "components/CustomTable";
+import { getLeaveStatusDaily } from "app/hooks/leaveTracker";
 
 const Attendance = () => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [departmentPercentage, setDepartmentPercentage] = useState([]);
+  const [weeklySummary, setWeeklySummary] = useState([]);
   const [filterData, setFilterDataState] = useState({
     date: moment().format("YYYY-MM-DD"),
   });
+  const [leaveStatus, setLeaveStatus] = useState({});
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -76,6 +82,28 @@ const Attendance = () => {
       isMounted = false;
     };
   }, [filterData]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const departmentPercentage = await getDepartmentPercentage()
+      if(departmentPercentage){
+        console.log("departmentPercentage", departmentPercentage);
+        setDepartmentPercentage(departmentPercentage)
+      }
+      const weeklySummary = await getWeeklySummary()
+      if(weeklySummary){
+        console.log("weeklySummary", weeklySummary);
+        setWeeklySummary(weeklySummary)
+      }
+
+      const leaveStatus = await getLeaveStatusDaily()
+      if(leaveStatus){
+        console.log("leaveStatus", leaveStatus);
+        setLeaveStatus(leaveStatus)
+      }
+    }
+    fetchData()
+  }, []);
   return (
     <div>
       <div
@@ -84,9 +112,9 @@ const Attendance = () => {
         )}`}
       >
         <div className="flex gap-4">
-          <LeaveStatusOverview />
-          <StatisticsChart />
-          <DepartmentOverview />
+          <LeaveStatusOverview leaveStatus={leaveStatus}/>
+          <StatisticsChart weeklySummary={weeklySummary} />
+          <DepartmentOverview departmentPercentage={departmentPercentage} />
         </div>
         {/* <Header /> */}
         <StatsCards attendanceData={attendanceData.results || []} />
