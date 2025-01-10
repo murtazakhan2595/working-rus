@@ -33,6 +33,7 @@ import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { CardTypes } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
 import DialogBox from "components/DialogBox";
+import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
 
 const CreateAndEditCardForm = ({
   taskId,
@@ -91,12 +92,12 @@ const CreateAndEditCardForm = ({
       isMounted = false;
     };
   }, [taskId]);
-  useEffect( () => {
+  useEffect(() => {
     let isMounted = true;
     const fetchProject = async () => {
-        const projectDetails = await getProjectById(projectId);
-        setProjectDetail(projectDetails);
-    }
+      const projectDetails = await getProjectById(projectId);
+      setProjectDetail(projectDetails);
+    };
     if (projectId) {
       fetchProject();
     }
@@ -156,12 +157,12 @@ const CreateAndEditCardForm = ({
 
     try {
       // Prepare final data
-      const finalData = {
+      const finalData = mapTaskPayloadData({
         ...formData,
         start_date: moment(new Date()).format("YYYY-MM-DD"),
         attachment: await getAttachmentFileIds(formData.attachment || []),
         task_checklist: await getCheckListIds(formData.task_checklist || []),
-      };
+      });
       // Submit the task
       const response = await addTask(finalData);
       if (response) {
