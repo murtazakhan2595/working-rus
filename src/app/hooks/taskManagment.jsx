@@ -62,7 +62,6 @@ const getAllProjects = async (payload, userProfile) => {
   return [];
 };
 const getTaskByBoardId = async (payload) => {
-  console.log("gettaskbyboardid payload", payload);
   const filterData = payload?.filterData ?? {};
   delete filterData.end_date;
   delete filterData.priority;
@@ -716,7 +715,7 @@ const postComment = async (payload) => {
 };
 const getAllTasks = async (payload) => {
   const filterData = payload?.filterData ?? {};
-  const URL = `/task/?ordering=-date&search=${encodeURIComponent(
+  const URL = `/task/?ordering=-start_date&search=${encodeURIComponent(
     JSON.stringify(filterData)
   )}`;
   try {

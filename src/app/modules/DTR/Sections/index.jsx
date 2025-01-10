@@ -1,2 +1,2 @@
-import ViewOptions from './ViewOtions';
+import ViewOptions from 'components/ViewOtions';
 export {ViewOptions}

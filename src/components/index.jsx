@@ -6,7 +6,9 @@ import Table from "./CustomTable";
 import BarChart from "./BarChart";
 import ConfirmationModal from "./ConfirmationModal";
 import { StatusLabel } from "./StatusLabel";
+import ViewOptions from 'components/ViewOtions';
 import DateRangeFilter from './DateRangeFilter';
+import TableCustom from './CustomTable'
 export {
   Header,
   PageLoader,
@@ -17,4 +19,6 @@ export {
   ConfirmationModal,
   StatusLabel,
   DateRangeFilter,
+  ViewOptions,
+  TableCustom
 };

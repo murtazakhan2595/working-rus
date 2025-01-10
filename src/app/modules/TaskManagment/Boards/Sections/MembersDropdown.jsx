@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { EmployeeNameInfo } from "components";
 import { MembersList } from "../../Sections";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../../../../src/@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "src/@/components/ui/dropdown-menu";
 
 const MembersDropdown = ({ members }) => {
   const employees = useSelector((state) => state.emp.employees);

@@ -24,8 +24,8 @@ const headers = () => ({
 });
 
 export default function Labels({
-  onSelectedLabelsChange,
   labelsSelected,
+  onSelectedLabelsChange = () => {},
   editMode = true,
 }) {
   const [searchQuery, setSearchQuery] = React.useState("");
