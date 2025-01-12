@@ -63,21 +63,16 @@ const getAllProjects = async (payload, userProfile) => {
 };
 const getTaskByBoardId = async (payload) => {
   const filterData = payload?.filterData ?? {};
-  delete filterData.end_date;
-  delete filterData.priority;
-  filterData.assigned_to = filterData.optionsValues;
-  delete filterData.optionsValues;
   const URL = `/task/?search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
-      const data = response.data?.results;
-      const taskList = getTaskFilteredData(data, payload?.filterData ?? {});
+      const data = response.data;
       const TasksData = {
-        count: taskList.length,
-        results: taskList,
+        count: data.count,
+        results: data.results,
       };
       return TasksData;
     } else {
@@ -91,10 +86,12 @@ const getTaskByBoardId = async (payload) => {
   }
   return [];
 };
-const getTaskByprojectId = async (payload) => {
+const getTaskByprojectId = async (projectId, payload) => {
   try {
     // Fetch all boards
-    const allBoards = await getAllBoards(payload);
+    const allBoards = await getAllBoards({
+      filterData: { project_id: [projectId] },
+    });
 
     if (!allBoards || !allBoards.results || allBoards.results.length === 0) {
       return {
@@ -109,8 +106,9 @@ const getTaskByprojectId = async (payload) => {
     );
     // Fetch tasks for each board concurrently
     try {
+      const filterData = payload?.filterData ?? {};
       const tasksList = await getTaskByBoardId({
-        filterData: { board_id: boardIdsList },
+        filterData: { ...filterData, board_id: boardIdsList },
       });
       return tasksList; // Extract results from task data
     } catch (error) {
@@ -135,7 +133,7 @@ const getAllBoards = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/board/?order=-date&${pageNo ? `page=${pageNo}&` : ""}${
+  const URL = `/board/?order=-id&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
@@ -221,13 +219,9 @@ const addProject = async (payload) => {
   const id = payload.get("id");
   try {
     if (id) {
-      const response = await axios.patch(
-        `${baseUrl}/project/${id}/`,
-        payload,
-        {
-          headers: formDataHeader(),
-        }
-      );
+      const response = await axios.patch(`${baseUrl}/project/${id}/`, payload, {
+        headers: formDataHeader(),
+      });
       if (response.status === 200) {
         toast.success("Project Updated!", {
           position: toast.POSITION.TOP_RIGHT,

@@ -160,7 +160,12 @@ export default function TableCustom({
                       <TableHead
                         key={index}
                         className="cursor-pointer"
-                        style={column.width ? { width: column.width } : {}}
+                        style={{
+                          ...(column.width ? { width: column.width } : {}),
+                          ...(column.headerAlign
+                            ? { textAlign: column.headerAlign }
+                            : {}),
+                        }}
                         onClick={() => handleSort(column.dataField)}
                       >
                         {column.text}
@@ -202,7 +207,9 @@ export default function TableCustom({
                               <input
                                 type="checkbox"
                                 onChange={() => handleSelectRow(row.id)}
-                                checked={selectedRows&&selectedRows.includes(row.id)}
+                                checked={
+                                  selectedRows && selectedRows.includes(row.id)
+                                }
                                 className="w-4 h-4 accent-[#ab4aba] border-[#ab4aba] border-[2px] outline-none rounded focus:ring-0"
                               />
                             </div>
@@ -217,7 +224,10 @@ export default function TableCustom({
                               key={index}
                               style={{
                                 ...(column.width
-                                  ? { width: `${column.width}` }
+                                  ? { width: column.width }
+                                  : {}),
+                                ...(column.dataAlign
+                                  ? { textAlign: column.dataAlign }
                                   : {}),
                                 ...dataStyle,
                               }}

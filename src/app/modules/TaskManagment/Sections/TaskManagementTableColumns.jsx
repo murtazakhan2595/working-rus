@@ -1,13 +1,13 @@
 import { PriorityList } from "data/Data";
 import moment from "moment";
-import { Clock, } from "lucide-react";
+import { Clock } from "lucide-react";
 import { MembersList, Labels } from "app/modules/TaskManagment/Sections";
 
 export const ProjectBoardColumn = [
   {
     text: "Tasks",
     dataField: "name",
-    width:'25%',
+    width: "25%",
     formatter: (cell, row) => {
       return (
         <div className="flex flex-col pb-4 mt-3">
@@ -32,20 +32,20 @@ export const ProjectBoardColumn = [
   },
   {
     text: "List",
-    dataField: "",
+    dataField: "board_name",
   },
   {
     text: "Priority",
     dataField: "priority",
     formatter: (cell) => {
-      return PriorityList.find((option) => option.value === cell)
-        ?.label;
+      return PriorityList.find((option) => option.value === cell)?.label;
     },
+    headerAlign: "center",
   },
   {
     text: "Labels",
     dataField: "label",
-    width:'25%',
+    width: "25%",
     formatter: (cell) => (
       <Labels labelsSelected={cell || []} editMode={false} />
     ),
@@ -54,13 +54,14 @@ export const ProjectBoardColumn = [
     text: "Members",
     dataField: "assigned_to",
     formatter: (cell) => <MembersList members={cell} />,
+    headerAlign: "center",
   },
   {
     text: "Due Date",
     dataField: "end_date",
-    formatter: (cell, row) => {
+    formatter: (cell) => {
       // Check if the cell has a value
-
+      if (!cell) return <></>;
       // Try parsing the date using both formats
       let formattedDate;
       if (moment(cell, "MM-DD-YYYY", true).isValid()) {
@@ -80,4 +81,3 @@ export const ProjectBoardColumn = [
     },
   },
 ];
-

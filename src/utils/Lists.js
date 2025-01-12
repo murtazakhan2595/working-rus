@@ -1,11 +1,32 @@
 import moment from "moment";
+import { getDarkerTextColor } from "app/modules/TaskManagment/Boards/Sections/getTaskStatus";
 
-export function getDropdownList(list, label="name", value="id") {
+export function getDropdownList(list, label = "name", value = "id") {
   if (!list || list.length === 0) return [];
   const dropdownList = list.map((obj) => {
     return { label: obj[label], value: obj[value] };
   });
-  return dropdownList
+  return dropdownList;
+}
+
+export function getLabelDropdownList(list, label = "name", value = "id") {
+  if (!list || list.length === 0) return [];
+  const dropdownList = list.map((obj) => {
+    return {
+      label: (
+        <div
+          key={obj[value]}
+          className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+            obj?.color
+          } ${getDarkerTextColor(obj?.color)}`}
+        >
+          {obj[label]}
+        </div>
+      ),
+      value: obj[value],
+    };
+  });
+  return dropdownList;
 }
 
 export function getEmployeeLeavesTypesList(LeaveTypes, employeeLeaveType) {

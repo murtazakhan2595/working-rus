@@ -29,9 +29,7 @@ export default function TaskRelation({
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchTasks = async () => {
-    const taskList = await getTaskByprojectId({
-      filterData: { project_id: [projectId] },
-    });
+    const taskList = await getTaskByprojectId(projectId);
     const tasks = taskList.results || [];
      const finalTaskList = taskId
       ? tasks.filter((obj) => obj.id !== taskId)

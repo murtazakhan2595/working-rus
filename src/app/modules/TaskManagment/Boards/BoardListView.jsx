@@ -5,10 +5,14 @@ import { PageLoader, TableCustom } from "components";
 import { getTaskByprojectId } from "app/hooks/taskManagment";
 import { ProjectBoardColumn } from "app/modules/TaskManagment/Sections";
 import { Card, CardContent } from "components/ui/card";
+import { Button } from "components/ui/button";
+import { RxPlus } from "react-icons/rx";
+import CreateCard from "app/modules/TaskManagment/Boards/CreateCardModal";
 
 const BoardListView = ({ filterData, projectId }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [AllBoardTasks, setAllBoardTasks] = useState([]);
+  const [openCreateCard, setOpenCreateCard] = useState(false);
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -31,9 +35,7 @@ const BoardListView = ({ filterData, projectId }) => {
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
-      const boardsData = await getTaskByprojectId({
-        filterData: { ...filterData, project_id: [projectId] },
-      });
+      const boardsData = await getTaskByprojectId(projectId, { filterData });
       if (isMounted) {
         setAllBoardTasks(boardsData);
       }
@@ -56,18 +58,41 @@ const BoardListView = ({ filterData, projectId }) => {
   return isLoading ? (
     <PageLoader />
   ) : (
-    <Card>
-      <CardContent>
-        <TableCustom
-          columns={ProjectBoardColumn}
-          data={AllBoardTasks.results || []}
-          pagination={false}
-          dataTotalSize={AllBoardTasks?.count || 0}
-          tableOptions={tableOptions}
-          dataStyle={{ backgroundColor: "white" }}
+    <>
+      <Card>
+        <CardContent>
+          <TableCustom
+            columns={ProjectBoardColumn}
+            data={AllBoardTasks.results || []}
+            pagination={false}
+            dataTotalSize={AllBoardTasks?.count || 0}
+            tableOptions={tableOptions}
+            dataStyle={{ backgroundColor: "white" }}
+          />
+        </CardContent>
+      </Card>
+      <Button
+        variant="outline"
+        type="button"
+        size="lg"
+        className="mt-3"
+        onClick={() => setOpenCreateCard(true)}
+      >
+        <RxPlus className="text-xl" />
+        <span className="ml-2">Add Task</span>
+      </Button>
+      {openCreateCard && (
+        <CreateCard
+          onClose={() => {
+            setOpenCreateCard(false);
+            fetchData(true);
+          }}
+          isOpen={openCreateCard}
+          projectId={projectId}
+          setIsOpen={setOpenCreateCard}
         />
-      </CardContent>
-    </Card>
+      )}
+    </>
   );
 };
 

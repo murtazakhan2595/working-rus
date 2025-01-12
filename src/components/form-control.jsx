@@ -7,7 +7,6 @@ import moment from "moment";
 import { Card } from "components/ui/card";
 import upload from "../assets/images/upload.png";
 import ReactQuill from "react-quill";
-import CheckboxMenu from "./SortingFilters";
 import { Input } from "../components/ui/input";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
@@ -1402,20 +1401,6 @@ const FilterInput = ({
               return renderDatePicker(filter, index);
             case "date-range":
               return renderDateRangePicker(filter, index);
-            case "sorting":
-              return (
-                <CheckboxMenu
-                  key={index}
-                  items={filter.option}
-                  onChange={(name, value, filterCheckStatus) => {
-                    onChange(name, value, filterCheckStatus);
-                  }}
-                  values={filter.values}
-                  mainHeading={filter.mainHeading}
-                  label={filter.placeholder}
-                  className={filter.className ?? null}
-                />
-              );
             default:
               return <div key={index}></div>;
           }

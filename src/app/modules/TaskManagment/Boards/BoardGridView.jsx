@@ -37,10 +37,11 @@ const BoardGridView = ({ employees, projectId, filterData }) => {
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
 
   const fetchData = async (isMounted) => {
+    debugger
     setIsLoading(true);
     try {
       const boardsData = await getAllBoards({
-        filterData: { ...filterData, project_id: [projectId] },
+        filterData: { project_id: [projectId] },
       });
       if (isMounted) {
         setAllBoards(boardsData);

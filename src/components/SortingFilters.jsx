@@ -1,130 +1,51 @@
-import React, { useState } from "react";
-import {
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+import React from "react";
 import { CheckBoxInput } from "./form-control";
-
-const CheckboxDropdown = ({
-  items,
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "src/@/components/ui/popover";
+import { Card } from "components/ui/card";
+const SortingFilters = ({
+  lists,
   onChange,
-  values,
-  mainHeading,
-  label,
-  className,
+  filterButton,
 }) => {
-  const [openDropdownRow, setOpenDropdownRow] = useState(false);
-
-  const toggleDropdown = () => {
-    setOpenDropdownRow(!openDropdownRow);
-  };
-
   return (
-    <div>
-      <ButtonDropdown
-        isOpen={openDropdownRow}
-        toggle={() => {}}
-        className="float-end"
-      >
-        <DropdownToggle
-          className={`${
-            className ?? "custom-dropdown-toggle"
-          } placeholder-[#5C5E64] rounded-md`}
-        >
-          <span onClick={() => toggleDropdown()}>{label}</span>
-        </DropdownToggle>
-        <DropdownMenu
-          end
-          className="custom-dropdown-menu h-[70vh] overflow-y-auto"
-        >
-          {mainHeading && (
-            <h5 className="mb-2">
-              <b>{mainHeading}</b>
-            </h5>
-          )}
-          {items.map((item) => {
-            return (
-              <>
-                <DropdownItem className="custom-dropdown-item" key={item.name}>
-                  <SortingCategory
-                    item={item}
-                    onChange={onChange}
-                    values={values}
-                  />
-                </DropdownItem>
-              </>
-            );
-          })}
-        </DropdownMenu>
-      </ButtonDropdown>
-    </div>
-  );
-};
-
-export const SortingCategory = ({ item, onChange, values }) => {
-  return (
-    <div>
-      <div>
-        <b>{item.label}</b>
-      </div>
-      {item.options &&
-        item.options.length > 0 &&
-        item.options.map((checkbox) => {
-          const checkboxValue =
-            values && values[item.name]
-              ? values[item.name].includes(checkbox.value)
-              : false;
-          return (
-            <div className="pl-3" key={checkbox.value}>
-              <CheckBoxInput
-                name={item.name}
-                label={checkbox.label}
-                value={checkboxValue}
-                onChange={(field, option) => {
-                  onChange(field, checkbox.value, option);
-                }}
-              />
-              {checkbox.options &&
-                checkbox.options.length > 0 &&
-                checkboxValue && (
-                  <div className="pl-3">
-                    <SortingSubCategory
-                      options={checkbox.options}
-                      onChange={onChange}
-                      values={values.optionsValues}
-                    />
-                  </div>
-                )}
+    <Popover>
+      <PopoverTrigger asChild>
+        {filterButton}
+      </PopoverTrigger>
+      <PopoverContent className="w-80 p-0" align="start">
+        <Card className="border-0 shadow-none">
+          <div className="p-4 space-y-4">
+            <div className="space-y-3 max-h-[400px] overflow-y-auto scroll-smooth">
+              {lists?.map((list, index) => (
+                <div key={index} className="border-b pb-2 ">
+                  <div className="font-medium text-zinc-800">{list.title}</div>
+                  {list.options?.map((option, optionIndex) => (
+                    <div
+                      key={optionIndex}
+                      className="flex items-center space-x-2"
+                    >
+                      <CheckBoxInput
+                        name={list.label}
+                        label={option.label}
+                        value={list.values.includes(option.value)}
+                        onChange={(field, value) => {
+                           onChange(field, option.value, value);
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ))}
             </div>
-          );
-        })}
-    </div>
+          </div>
+        </Card>
+      </PopoverContent>
+    </Popover>
   );
 };
 
-export const SortingSubCategory = ({ options, onChange, values }) => {
-  return (
-    <div className="max-h-[16rem] overflow-y-auto hideScroll">
-      {options &&
-        options.length > 0 &&
-        options.map((checkbox) => {
-          return (
-            <div className="pl-3" key={checkbox.value}>
-              <CheckBoxInput
-                name={checkbox.label}
-                label={checkbox.name}
-                value={values && values.includes(checkbox.value)}
-                onChange={(field, option) => {
-                  onChange(field, checkbox.value, option);
-                }}
-              />
-            </div>
-          );
-        })}
-    </div>
-  );
-};
-
-export default CheckboxDropdown;
+export default SortingFilters;
