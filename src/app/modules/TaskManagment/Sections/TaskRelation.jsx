@@ -29,11 +29,9 @@ export default function TaskRelation({
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchTasks = async () => {
-    const taskList = await getTaskByprojectId({
-      filterData: { project_id: [projectId] },
-    });
+    const taskList = await getTaskByprojectId(projectId);
     const tasks = taskList.results || [];
-    const finalTaskList = taskId
+     const finalTaskList = taskId
       ? tasks.filter((obj) => obj.id !== taskId)
       : tasks;
     setTaskList(finalTaskList || []); // Update this to `tasklList`
@@ -42,7 +40,7 @@ export default function TaskRelation({
   useEffect(() => {
     fetchTasks();
   }, []);
-  
+
   // Filter labels based on search query
   const filteredTasks = React.useMemo(() => {
     return taskList?.filter((task) =>

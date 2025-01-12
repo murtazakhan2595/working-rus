@@ -1,78 +1,36 @@
 import { connect } from "react-redux";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { Project } from "app/utils/Types/TaskManagment";
-import { Header, PageLoader } from "components";
-import { FilterInput } from "components/form-control";
-// import { Card, CardBody, Row, Col, Button } from "reactstrap";
-import {
-  getAllBoards,
-  getProjectById,
-  getTaskByBoardId,
-  deleteBoard,
-  moveTask,
-} from "app/hooks/taskManagment";
-import { FaPlus } from "react-icons/fa";
-import { RxPlus } from "react-icons/rx";
+import { ViewOptions, SortingFilters } from "components";
+import { getLabelDropdownList } from "utils/Lists";
+import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
+import BoardGridView from "app/modules/TaskManagment/Boards/BoardGridView";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { CustomDropdown } from "../Sections";
-import { AddNewListModel, MembersDropdown, RenderProject } from "./Sections";
-import CreateCard from "./CreateCardModal";
-import TaskCard from "./Task";
-import { getRandomColor } from "utils/renderValues";
-import { ArrowLeft, LayoutGrid, LayoutList } from "lucide-react";
+import { MembersDropdown, RenderProject } from "./Sections";
+import { ArrowLeft } from "lucide-react";
 import { DateInput } from "components/form-control";
-import { ClaimExpenseTypeOptions } from "data/Data";
 import { Button } from "components/ui/button";
-import { Card } from "components/ui/card";
-import { CardContent } from "components/ui/card";
-import SheetComponent from "components/ui/SheetComponent";
+import { useSelector } from "react-redux";
+import { SelectMultiInputComponent } from "components/form-control";
+import { PriorityList, TaskSortingFilters } from "data/Data";
+import { getProjectById } from "app/hooks/taskManagment";
+import { AlignRight } from "lucide-react";
 
-import AlertDialogue from "components/ui/AlertDialogue";
-
-const Board = ({ employees }) => {
+const Board = ({ TaskLabelList }) => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
-  const [filterDate, setFilterDate] = useState(null);
   const projectId = useParams()?.projectId || null;
-  const [projectData, setProjectData] = useState(Project);
   const [filterData, setFilterData] = useState({});
-  const [AllBoards, setAllBoards] = useState([]);
-  const [showAddNewListModel, setshowAddNewListModel] = useState(false);
-  const [selectedExpenseType, setSelectedExpenseType] = useState("");
-
-  const handleFilterChange = (filterName, filterValue) => {
-    if (filterName === "expense_type") setSelectedExpenseType(filterValue);
-    // onPageChange("page", 1);
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
+  const [projectData, setProjectData] = useState(null);
+  const [activeView, setActiveView] = useState("grid");
 
   const fetchData = async (isMounted) => {
-    setIsLoading(true);
     try {
-      const boardsData = await getAllBoards({
-        filterData: { project_id: [projectId] },
-      });
       const projectDetails = await getProjectById(projectId);
-      console.log("TEAM MEMBERS", projectDetails);
       if (isMounted) {
-        setAllBoards(boardsData);
         setProjectData(projectDetails);
       }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
-    } finally {
-      if (isMounted) {
-        setIsLoading(false);
-      }
     }
   };
 
@@ -84,298 +42,119 @@ const Board = ({ employees }) => {
     };
   }, [projectId]);
 
-  // useEffect(() => {
-  //   if (employees && employees.length > 0) {
-  //     setFilterList(TaskSortingFilters(employees));
-  //   }
-  // }, [employees]);
+  const handleFilterChange = (
+    filterName,
+    filterValue,
+    filterValueStatus = true
+  ) => {
+    const updatedFilters = { ...filterData };
 
-  // const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
-  //   setFilterData((prevFilters) => {
-  //     debugger;
-  //     const updatedFilters = { ...prevFilters };
-  //     if (!filterValue || filterCheckStatus === false) {
-  //       delete updatedFilters[filterName];
-  //     } else {
-  //       if (
-  //         filterName !== "assigned_to" &&
-  //         filterName !== "label" &&
-  //         filterName !== "end_datefilterValue" &&
-  //         filterName !== "priority"
-  //       ) {
-  //         if (updatedFilters.optionsValues) {
-  //           if (updatedFilters.optionsValues.includes(filterValue)) {
-  //             updatedFilters.optionsValues =
-  //               updatedFilters.optionsValues.filter(
-  //                 (item) => item !== filterValue
-  //               );
-  //           } else updatedFilters.optionsValues.push(filterValue);
-  //         } else updatedFilters.optionsValues = [filterValue];
-  //       }
-  //       else if (filterName === "assigned_to" && filterValue === "noMemberSelected") {
-  //         updatedFilters[filterName] =
-  //           filterCheckStatus === false ? "" : filterValue;
-  //         updatedFilters.optionsValues = null;
-  //       } else
-  //         updatedFilters[filterName] =
-  //           filterCheckStatus === false ? "" : filterValue;
-  //     }
-  //     return updatedFilters;
-  //   });
-  // };
-
-  const toggleAddBoardModal = () => {
-    if (showAddNewListModel) {
-      fetchData(true);
+    if (filterName === "end_date") {
+      if (filterValue) {
+        // Update end_date with the provided value
+        updatedFilters[filterName] = filterValue;
+      } else {
+        // Remove end_date if the filterValue is null
+        delete updatedFilters[filterName];
+      }
+      console.log(updatedFilters);
+      // Update the filter data
+      setFilterData(updatedFilters);
+      return;
     }
-    setshowAddNewListModel(!showAddNewListModel);
+
+    // Check if the filterName exists in updatedFilters, if not, initialize it as an array
+    if (!updatedFilters[filterName]) {
+      updatedFilters[filterName] = [];
+    }
+    if (filterValueStatus) {
+      // Add the filterValue if it does not already exist
+      if (!updatedFilters[filterName].includes(filterValue)) {
+        updatedFilters[filterName].push(filterValue);
+      }
+    } else {
+      // Remove the filterValue if it exists
+      updatedFilters[filterName] = updatedFilters[filterName].filter(
+        (value) => value !== filterValue
+      );
+      // Remove the filterName from updatedFilters if the array is empty
+      if (updatedFilters[filterName].length === 0) {
+        delete updatedFilters[filterName];
+      }
+    }
+    console.log(updatedFilters);
+    // Update the filter data
+    setFilterData(updatedFilters);
+    return;
   };
 
   return (
     <>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
-          <Button
-            variant="ghost"
+          <ArrowLeft
+            className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm cursor-pointer"
             onClick={() => navigate(-1)}
-            className="p-4 text-xl text-balance"
-          >
-            <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
-          </Button>
+          />
           <RenderProject projectId={projectId} />
         </div>
-        <div className="flex items-center justify-center gap-3">
-          <FilterInput
-            filters={[
+        <div className="flex items-center justify-end gap-3 flex-wrap">
+          <SortingFilters
+            items={TaskSortingFilters}
+            lists={[
               {
-                type: "select-one",
-                option: ClaimExpenseTypeOptions,
-                name: "expense_type",
-                placeholder: "Filters",
-                values: selectedExpenseType,
-                value: selectedExpenseType,
+                title: "Priority",
+                label: "priority",
+                options: PriorityList,
+                values: filterData["priority"] || [],
+              },
+              {
+                title: "Label",
+                label: "label",
+                options: getLabelDropdownList(TaskLabelList, "name", "id"),
+                values: filterData["label"] || [],
               },
             ]}
-            onChange={handleFilterChange}
+            onChange={(name, value, filterCheckStatus) => {
+              handleFilterChange(name, value, filterCheckStatus);
+            }}
+            values={filterData}
+            filterButton={
+              <Button variant="outline" className="">
+                <AlignRight className="w-4 h-4 mr-1" />
+                Filters
+              </Button>
+            }
+            label={"Task Sort"}
+            className={null}
           />
+
           <DateInput
-            placeholder="Date"
-            value={filterDate}
-            className="flex items-center align-middle"
-            name="start_date"
+            placeholder="Due Date"
+            value={filterData['']}
+            className="flex items-center align-middle "
+            name="end_date"
             onChange={(field, value) => {
-              setFilterDate(value);
               handleFilterChange(field, value);
             }}
           />
           <MembersDropdown members={projectData?.project_members || []} />
-          <LayoutList size={18} />
+          <ViewOptions activeView={activeView} setActiveView={setActiveView} />
         </div>
       </div>
-
-      <Card className="p-0 bg-white" style={{ background: "#FAFBFC" }}>
-        <CardContent className="py-3">
-          {showAddNewListModel && (
-            <AddNewListModel
-              projectId={projectId}
-              onClose={toggleAddBoardModal}
-              setIsOpen={setshowAddNewListModel}
-            />
-          )}
-
-          {isLoading ? (
-            <PageLoader />
-          ) : (
-            <div className="flex gap-8 mt-5 overflow-x-auto">
-              {AllBoards.count > 0 &&
-                AllBoards.results.map((board, index) => (
-                  <TaskColumn
-                    key={index}
-                    board={board}
-                    projectId={projectId}
-                    reloadData={() => {
-                      fetchData(true);
-                    }}
-                    filterData={{
-                      ...filterData,
-                      board_id: [board.id],
-                    }}
-                  />
-                ))}
-              <div className="flex flex-col min-w-[290px] max-w-[320px] mb-5">
-                <div className="flex flex-col ">
-                  <header className="">
-                    <Button
-                      variant="outline"
-                      type="button"
-                      size="lg"
-                      className="w-full text-start"
-                      onClick={toggleAddBoardModal}
-                    >
-                      <RxPlus className="text-xl " />
-                      <span className="ml-2">Add New List</span>
-                    </Button>
-                  </header>
-                </div>
-              </div>
-
-              {/* <Button variant="outline" onClick={toggleAddBoardModal}>Add New List</Button> */}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* <TableCustom
-
-      /> */}
+      {activeView === "grid" ? (
+        <BoardGridView filterData={filterData} projectId={projectId} />
+      ) : (
+        <BoardListView filterData={filterData} projectId={projectId} />
+      )}
     </>
-  );
-};
-
-const TaskColumn = ({ reloadData, board, projectId, filterData }) => {
-  const [openCreateCard, setOpenCreateCard] = useState(false);
-  const [tasks, setTasks] = useState([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showAddNewListModel, setshowAddNewListModel] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-  const fetchData = async (isMounted) => {
-    try {
-      const TaskData = await getTaskByBoardId({ filterData });
-      if (isMounted) {
-        setTasks(TaskData);
-      }
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    fetchData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [filterData]);
-
-  const handleDragStart = (e, taskId) => {
-    e.dataTransfer.setData("taskId", taskId);
-    e.dataTransfer.setData("sourceBoardId", board.id);
-  };
-
-  const handleDrop = async (e) => {
-    e.preventDefault();
-    const taskId = e.dataTransfer.getData("taskId");
-    const sourceBoardId = e.dataTransfer.getData("sourceBoardId");
-
-    if (sourceBoardId !== board.id) {
-      await moveTask({ id: taskId, board_id: board.id });
-      reloadData();
-    }
-  };
-
-  const dropdownOptions = [
-    {
-      label: "Edit",
-      onClick: () => setshowAddNewListModel(true),
-    },
-    {
-      label: "Delete",
-      onClick: () => setIsDeleteModalOpen(true),
-    },
-  ];
-
-  const confirmDelete = async () => {
-    await deleteBoard(board.id);
-    fetchData(true);
-    setIsDeleteModalOpen(false);
-  };
-
-  return (
-    <div
-      className="flex flex-col min-w-[320px] max-w-[320px] mb-5"
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={handleDrop}
-    >
-      <div className="flex flex-col">
-        <header className="flex justify-between w-full gap-5 pl-5">
-          <div className="flex gap-4">
-            <h2 className="flex gap-2 text-base font-bold text-zinc-800">
-              <span>{board.name}</span>
-            </h2>
-          </div>
-          <CustomDropdown
-            isOpen={isDropdownOpen}
-            toggleDropdown={() => setIsDropdownOpen(!isDropdownOpen)}
-            options={dropdownOptions}
-          />
-        </header>
-
-        <Button
-          variant="outline"
-          type="button"
-          size="lg"
-          className="w-full"
-          onClick={() => setOpenCreateCard(true)}
-        >
-          <RxPlus className="text-xl" />
-          <span className="ml-2">Add Card</span>
-        </Button>
-        {tasks &&
-          tasks.count > 0 &&
-          tasks.results.map((task, index) => (
-            <TaskCard
-              key={index}
-              task={task}
-              projectId={projectId}
-              boardId={board.id}
-              reloadData={() => fetchData(true)}
-              onDragStart={handleDragStart}
-            />
-          ))}
-      </div>
-
-      {openCreateCard && (
-        <CreateCard
-          onClose={() => {
-            setOpenCreateCard(false);
-            fetchData(true);
-          }}
-          boardId={board.id}
-          isOpen={openCreateCard}
-          projectId={projectId}
-          setIsOpen={setOpenCreateCard}
-        />
-      )}
-
-      {showAddNewListModel && (
-        <AddNewListModel
-          boardId={board.id}
-          onClose={() => {
-            setshowAddNewListModel(false);
-            fetchData(true);
-          }}
-          isEditMode
-          setIsOpen={setshowAddNewListModel}
-        />
-      )}
-
-      {isDeleteModalOpen && (
-        <AlertDialogue
-          isOpen={isDeleteModalOpen}
-          setIsOpen={() => setIsDeleteModalOpen(false)}
-          handleContinue={confirmDelete}
-          title="Confirm Delete"
-          description="This action can't be undone. All information associated with this will be lost."
-        />
-      )}
-    </div>
   );
 };
 
 const mapStateToProps = (state) => {
   return {
     employees: state.emp.employees,
+    TaskLabelList: state.task_managment.task_labels,
   };
 };
 

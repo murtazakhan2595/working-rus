@@ -8,6 +8,24 @@ const Project = {
   color: "", // Add color field
   profile: null,
 };
+const Task = {
+  assigned_by: null,
+  assigned_to: [],
+  attachment: [],
+  board_id: null,
+  color: null,
+  description: null,
+  end_date: null,
+  estimated_time: null,
+  id: null,
+  label: [],
+  name: null,
+  priority: null,
+  project_id: null,
+  relation: [],
+  start_date: null,
+  task_checklist: [],
+};
 const AddList = {
   name: "",
 };
@@ -25,4 +43,4 @@ const CardTypes = {
   task_checklist: [],
   relation: [],
 };
-export { Project, AddList, CardTypes };
+export { Project, AddList, CardTypes, Task };

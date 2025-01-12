@@ -8,6 +8,7 @@ import Attachments from './Attachments';
 import TaskRelation from './TaskRelation';
 import TaskComments from './TaskComments';
 import TaskDetailBox from './TaskDetailsBox';
+import {ProjectBoardColumn} from './TaskManagementTableColumns';
 export {
   Members,
   MembersList,
@@ -19,4 +20,5 @@ export {
   TaskRelation,
   TaskComments,
   TaskDetailBox,
+  ProjectBoardColumn,
 };

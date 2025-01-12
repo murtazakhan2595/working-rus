@@ -13,7 +13,7 @@ import { Card } from "components/ui/card";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { getDarkerTextColor } from "../Boards/Sections/getTaskStatus";
+import { getDarkerTextColor } from "app/modules/TaskManagment/Boards/Sections/getTaskStatus";
 import { getAllLabels } from "app/hooks/taskManagment";
 import { TaskDetailBox } from "app/modules/TaskManagment/Sections";
 import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
@@ -24,8 +24,8 @@ const headers = () => ({
 });
 
 export default function Labels({
-  onSelectedLabelsChange,
   labelsSelected,
+  onSelectedLabelsChange = () => {},
   editMode = true,
 }) {
   const [searchQuery, setSearchQuery] = React.useState("");
