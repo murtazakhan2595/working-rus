@@ -221,7 +221,7 @@ const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
                     <Attachments
                       attachmentSelected={props.values?.attachment || []}
                       onChange={(attachments) => {
-                        debugger;
+                        // debugger;
                         props.setFieldValue("attachment", attachments);
                       }}
                       maxAttachments={1}

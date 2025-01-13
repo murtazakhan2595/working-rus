@@ -54,6 +54,7 @@ const SelectComponent = ({
   onChange,
   classes,
   placeholder,
+  showLabel = true,
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -67,9 +68,9 @@ const SelectComponent = ({
   };
   return (
     <div className={`${classes || "flex flex-col gap-4"}`}>
-      <Label className={` ${value ? "" : ""}`} htmlFor={name}>
+      {showLabel &&<Label className={` ${value ? "" : ""}`} htmlFor={name}>
         {required && <span className="text-red-600">* </span>} {label}
-      </Label>
+      </Label>}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button

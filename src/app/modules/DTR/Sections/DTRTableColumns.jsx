@@ -45,21 +45,21 @@ export const MyDtrTasksColumns = [
   {
     dataField: "status",
     text: "Status",
-    formatter: (cell) => (
-      <span
-        className={`
-                        px-2 py-1 rounded-full text-xs
-                        ${
-                          cell === "Completed"
-                            ? "bg-green-100 text-green-800"
-                            : cell === "In-Progress"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-gray-100 text-gray-800"
-                        }
-                      `}
-      >
-        {cell}
-      </span>
-    ),
+    formatter: (cell) => {
+      const status = cell?.toLowerCase();
+      let displayText = "In Progress";
+      let className = "bg-blue-100 text-blue-800";
+
+      if (status === "completed") {
+        displayText = "Completed";
+        className = "bg-green-100 text-green-800";
+      }
+
+      return (
+        <span className={`px-2 py-1 rounded-full text-xs ${className}`}>
+          {displayText}
+        </span>
+      );
+    },
   },
 ];

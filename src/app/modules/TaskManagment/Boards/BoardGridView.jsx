@@ -37,7 +37,7 @@ const BoardGridView = ({ employees, projectId, filterData }) => {
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
 
   const fetchData = async (isMounted) => {
-    debugger
+    // debugger
     setIsLoading(true);
     try {
       const boardsData = await getAllBoards({

@@ -25,6 +25,7 @@ const Task = {
   relation: [],
   start_date: null,
   task_checklist: [],
+  status: "TODO",
 };
 const AddList = {
   name: "",
@@ -40,6 +41,7 @@ const CardTypes = {
   attachment: [],
   board_id: "",
   project_id: "",
+  status: "TODO",
   task_checklist: [],
   relation: [],
 };
