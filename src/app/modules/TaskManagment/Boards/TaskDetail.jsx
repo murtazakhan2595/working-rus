@@ -25,6 +25,7 @@ import { Trash } from "lucide-react";
 
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { PageLoader } from "components";
+import { TaskStatus } from "data/Data";
 
 const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -94,6 +95,16 @@ const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
               label: "Priority",
               value: PriorityList.find(
                 (option) => option.value === values?.priority
+              )?.label,
+            },
+          ]
+        : []),
+      ...(values?.status
+        ? [
+            {
+              label: "Status",
+              value: TaskStatus.find(
+                (option) => option.value === values?.status
               )?.label,
             },
           ]

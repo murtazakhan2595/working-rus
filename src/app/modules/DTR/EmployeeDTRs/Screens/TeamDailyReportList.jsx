@@ -41,6 +41,8 @@ import { useSelector } from "react-redux";
 import { DailyReportList } from "../../MyDTR/Screens";
 
 const TeamDailyReportList = ({ dailyReportData, reload }) => {
+
+  console.log("DAILYTASKSREPORTS--->", dailyReportData);
   if (!dailyReportData || dailyReportData.length === 0) return null;
 
   return (
@@ -131,7 +133,7 @@ const ReportCard = ({
         <div className="flex gap-4 items-center">
           <StatItem icon={Hourglass} value={stats?.consumed_time} />
           <StatItem icon={ClockArrowUp} value={stats?.over_time} />
-          <StatItem icon={ClipboardList} value={stats?.reports} />
+          <StatItem icon={ClipboardList} value={stats?.pendingTasks} />
           {/* <StatusBadge status={dtr_status} /> */}
           <div
             className="h-8 px-2 py-1 flex items-center gap-2 cursor-pointer"
