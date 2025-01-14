@@ -71,7 +71,7 @@ const OfficeSetting = () => {
   const getDepartments = async () => {
     try {
       setDepLoading(true);
-      const departmentResponse = await getDepartmentList(true, depOptions);
+      const departmentResponse = await getDepartmentList({options:depOptions});
       setDepartments(departmentResponse);
     } catch (error) {
       console.error("Error fetching lists:", error);
@@ -82,7 +82,9 @@ const OfficeSetting = () => {
   const getDesignations = async () => {
     setDesignLoading(true);
     try {
-      const response = await getDesignationList(true, desigOptions);
+      const response = await getDesignationList({
+        options: desigOptions,
+      });
       setDesignation(response);
     } catch (error) {
       console.error("Error fetching lists:", error);
@@ -156,7 +158,7 @@ const OfficeSetting = () => {
               ) : activeTab === "department" ? (
                 <AddDepartment reload={getDepartments} />
               ) : activeTab === "designation" ? (
-                <AddDesignation reload={getDesignations}/>
+                <AddDesignation reload={getDesignations} />
               ) : (
                 <Shift reload={fetchShifts} />
               )

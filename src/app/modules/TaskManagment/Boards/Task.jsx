@@ -101,18 +101,20 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
       </div>
       <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
         <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
-        <p
-          className="text-sm leading-5 truncate-text text-neutral-1000"
-          style={{ maxHeight: "100px" }}
-        >
-          <span
-            dangerouslySetInnerHTML={{
-              __html: `${task?.description.slice(0, 170)}${
-                task?.description.length > 170 ? "..." : ""
-              }`,
-            }}
-          />
-        </p>
+        {task?.description && (
+          <p
+            className="text-sm leading-5 truncate-text text-neutral-1000"
+            style={{ maxHeight: "100px" }}
+          >
+            <span
+              dangerouslySetInnerHTML={{
+                __html: `${task?.description.slice(0, 170)}${
+                  task?.description.length > 170 ? "..." : ""
+                }`,
+              }}
+            />
+          </p>
+        )}
       </div>
       <footer className="flex justify-between py-2">
         <div className="flex items-center gap-1">
