@@ -5,6 +5,7 @@ import {
   TextInput,
   SelectComponent,
   DateInput,
+  errorClassName,
 } from "components/form-control.jsx";
 import { PriorityList, TaskStatus } from "data/Data";
 import SheetComponent from "components/ui/CustomSheet";
@@ -15,6 +16,7 @@ import {
   addTaskCheckListItem,
   getTaskById,
   getProjectById,
+  getAllBoards,
 } from "app/hooks/taskManagment";
 import { TextAreaInput } from "components/form-control";
 import { Button } from "components/ui/button";
@@ -25,6 +27,7 @@ import {
   Attachments,
   TaskRelation,
 } from "app/modules/TaskManagment/Sections";
+import { getDropdownList } from "utils/Lists";
 import { toast } from "react-toastify";
 import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
 import moment from "moment";
@@ -45,14 +48,15 @@ const CreateAndEditCardForm = ({
   isOpen,
   projectId,
   boardId,
+  Projects = [],
 }) => {
-  console.log("starting init values", CardTypes);
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
   const [initialValues, setInitialValues] = useState(CardTypes);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [projectDetail, setProjectDetail] = useState(false);
+  const [BoardList, setBoardList] = useState([]);
   const handleClose = () => {
     // setIsOpen(false)
     setCloseSheet(true);
@@ -79,6 +83,34 @@ const CreateAndEditCardForm = ({
       }
     }
   };
+  const fetchBoardListByProjectId = async (isMounted, projectID) => {
+    if (projectID) {
+      try {
+        // Fetch card details
+        const board_list = await getAllBoards({
+          filterData: { project_id: [projectID] },
+        });
+
+        if (!board_list) {
+          throw new Error("Card details not found.");
+        }
+        if (isMounted) {
+          setBoardList(getDropdownList(board_list.results));
+        }
+      } catch (error) {
+        console.error("Error fetching board list:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (initialValues.project_id)
+      fetchBoardListByProjectId(isMounted, initialValues.project_id);
+    return () => {
+      isMounted = false;
+    };
+  }, [initialValues.project_id]);
 
   useEffect(() => {
     let isMounted = true;
@@ -94,6 +126,7 @@ const CreateAndEditCardForm = ({
       isMounted = false;
     };
   }, [taskId]);
+
   useEffect(() => {
     let isMounted = true;
     const fetchProject = async () => {
@@ -198,14 +231,13 @@ const CreateAndEditCardForm = ({
     footer: null,
   };
 
-  console.log("initialValues", initialValues);
   return (
     <>
       <SheetComponent
         {...formSheetEditData}
         isOpen={isOpen}
         setIsOpen={onClose}
-        width="568px"
+        width="668px"
         contentClassName="custom-sheet-width"
       >
         <>
@@ -234,6 +266,34 @@ const CreateAndEditCardForm = ({
                   <div
                     className={`flex w-full gap-6 flex-col rounded-lg pt-2.5`}
                   >
+                    <div className="flex justify-between">
+                      <SelectComponent
+                        name="project_id"
+                        options={Projects}
+                        error={props.errors.project_id}
+                        touch={props.touched.project_id}
+                        value={props.values.project_id}
+                        showLabel={false}
+                        placeholder="Select Project"
+                        onChange={(field, value) => {
+                          props.setFieldValue(field, value);
+                          props.setFieldValue('board_id', null);
+                          fetchBoardListByProjectId(true, value);
+                        }}
+                      />
+                      <SelectComponent
+                        name="board_id"
+                        options={BoardList}
+                        showLabel={false}
+                        error={props.errors.board_id}
+                        touch={props.touched.board_id}
+                        value={props.values.board_id}
+                        placeholder="Select Project List"
+                        onChange={(field, value) => {
+                          props.setFieldValue(field, value);
+                        }}
+                      />
+                    </div>
                     <SheetCardExtension title="Card Details">
                       <div className="space-y-2">
                         <TextAreaInput
@@ -309,7 +369,6 @@ const CreateAndEditCardForm = ({
                             error={props.errors.estimated_time}
                             touch={props.touched.estimated_time}
                             value={props.values.estimated_time}
-                            // label=
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
                             }}
@@ -337,7 +396,8 @@ const CreateAndEditCardForm = ({
                           <SelectComponent
                             name="priority"
                             options={PriorityList}
-                            error={props.errors.priority}
+                        showLabel={false}
+                        error={props.errors.priority}
                             touch={props.touched.priority}
                             value={props.values.priority}
                             // required
@@ -352,7 +412,11 @@ const CreateAndEditCardForm = ({
                         title={"Status"}
                         content={
                           <CheckBoxInput
-                            label={props.values.status==="COMPLETED"?"Completed": "In Progress"}
+                            label={
+                              props.values.status === "COMPLETED"
+                                ? "Completed"
+                                : "In Progress"
+                            }
                             name="status"
                             value={props.values.status === "COMPLETED"}
                             onChange={(name, value) => {
@@ -391,7 +455,7 @@ const CreateAndEditCardForm = ({
                       />
                       {props.errors.assigned_to &&
                         props.touched.assigned_to && (
-                          <div className="text-red-600">
+                          <div className={errorClassName}>
                             {props.errors.assigned_to}
                           </div>
                         )}
@@ -469,8 +533,10 @@ const TaskInputDetails = ({ title, content }) => {
   );
 };
 const mapStateToProps = (state) => {
+  console.log(state);
   return {
     employees: state.emp.employees,
+    Projects: state.common.projects,
   };
 };
 

@@ -6,6 +6,8 @@ const validationTaskFormSchema = (values) => {
 
   // Validate required fields
   if (!values.name) errors.name = "Name is required";
+  if (!values.board_id) errors.board_id = "Board name is required";
+  if (!values.project_id) errors.project_id = "Project name is required";
   // if (!values.description) errors.description = "Description is required";
   // if (!values.priority) errors.priority = "Priority is required";
   // if (!values.end_date) errors.end_date = "Due date is required";

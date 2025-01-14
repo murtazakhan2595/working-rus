@@ -42,6 +42,8 @@ import { Calendar } from "../src/@/components/ui/calendar";
 import { PatternFormat } from "react-number-format";
 import { getFileSizeInKB } from "utils/fileUtils";
 
+const errorClassName = "text-red-100 text-sm font-[inter] font-normal ml-1";
+
 const SelectComponent = ({
   name,
   value,
@@ -67,10 +69,12 @@ const SelectComponent = ({
     onChange(name, newValue);
   };
   return (
-    <div className={`${classes || "flex flex-col gap-4"}`}>
-      {showLabel &&<Label className={` ${value ? "" : ""}`} htmlFor={name}>
-        {required && <span className="text-red-600">* </span>} {label}
-      </Label>}
+    <div className={`${classes} flex flex-col`}>
+      {showLabel && (
+        <Label className={`mb-4`} htmlFor={name}>
+          {required && <span className="text-red-600">* </span>} {label}
+        </Label>
+      )}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -92,7 +96,7 @@ const SelectComponent = ({
         </PopoverTrigger>
         <PopoverContent className="w-[300px] p-0">
           <Command>
-            <CommandInput placeholder={`Enter ${label}`} />
+            <CommandInput placeholder={`Enter ${label || ""}`} />
             <CommandList>
               <CommandEmpty>No {label} found.</CommandEmpty>
               <CommandGroup>
@@ -116,8 +120,7 @@ const SelectComponent = ({
           </Command>
         </PopoverContent>
       </Popover>
-
-      {error && touch && <div className="text-red-600">{error}</div>}
+      {error && touch && <div className={errorClassName}>{error}</div>}
     </div>
   );
 };
@@ -154,9 +157,11 @@ const SelectMultiInputComponent = ({
 
   return (
     <div className={`${classes || "flex flex-col gap-4"}`}>
-      {label &&<Label className={` ${value ? "" : ""}`} htmlFor={name}>
-        {required && <span className="text-red-600">* </span>} {label}
-      </Label>}
+      {label && (
+        <Label className={` ${value ? "" : ""}`} htmlFor={name}>
+          {required && <span className="text-red-600">* </span>} {label}
+        </Label>
+      )}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -220,7 +225,7 @@ const SelectMultiInputComponent = ({
           </Command>
         </PopoverContent>
       </Popover>
-      {error && touch && <div className="text-red-600">{error}</div>}
+      {error && touch && <div className={errorClassName}>{error}</div>}
     </div>
   );
 };
@@ -350,7 +355,7 @@ const DateInput = ({
           </div>
         </PopoverContent>
       </Popover>
-      {error && touch && <div className="text-red-600">{error}</div>}
+      {error && touch && <div className={errorClassName}>{error}</div>}
     </div>
   );
 };
@@ -474,7 +479,7 @@ const DateRangeInput = ({
           </PopoverContent>
         </Popover>
       </div>
-      {error && touch && <div className="text-red-600">{error}</div>}
+      {error && touch && <div className={errorClassName}>{error}</div>}
     </div>
   );
 };
@@ -561,7 +566,7 @@ const TextInput = ({
           }
         }}
       />
-      {error && touch && <div className="text-red-600">{error}</div>}
+      {error && touch && <div className={errorClassName}>{error}</div>}
     </div>
   );
 };
@@ -622,7 +627,7 @@ const NumberInput = ({
           }}
         />
 
-        {error && touch && <div className="text-red-600">{error}</div>}
+        {error && touch && <div className={errorClassName}>{error}</div>}
       </div>
     </>
   );
@@ -658,7 +663,7 @@ const PasswordInput = ({
         className={error && touch ? "is-invalid" : ""}
         onChange={onChange}
       />
-      {error && touch && <div className="text-red-600">{error}</div>}
+      {error && touch && <div className={errorClassName}>{error}</div>}
     </div>
   );
 };
@@ -824,7 +829,7 @@ const PhoneNumberInput = ({
           />
         </div>
       </div>
-      {error && touch && <div className="text-red-600">{error}</div>}
+      {error && touch && <div className={errorClassName}>{error}</div>}
     </div>
   );
 };
@@ -861,7 +866,7 @@ const EmailInput = ({
         }}
       />
 
-      {error && touch && <div className="text-red-600">{error}</div>}
+      {error && touch && <div className={errorClassName}>{error}</div>}
     </div>
   );
 };
@@ -957,7 +962,7 @@ const ImageInput = ({ label, value, error, onChange, touch, name }) => {
                 }
               }}
             />
-            {error && touch && <div className="text-red-600">{error}</div>}
+            {error && touch && <div className={errorClassName}>{error}</div>}
           </div>
           <span>JPEG or PNG. Max size of 100KB</span>
         </div>
@@ -1041,10 +1046,10 @@ const TextAreaInput = ({
 }) => {
   return (
     <>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col">
         {label && (
           <Label
-            className={`text-baseGray ${value ? "active" : ""}`}
+            className={`text-baseGray mb-4 ${value ? "active" : ""}`}
             htmlFor={name}
           >
             {required && <span className="text-red-600">* </span>}
@@ -1072,7 +1077,7 @@ const TextAreaInput = ({
             }
           }}
         />
-        {error && touch && <div className="text-red-600">{error}</div>}
+        {error && touch && <div className={errorClassName}>{error}</div>}
       </div>
     </>
   );
@@ -1097,7 +1102,7 @@ const TextAreaEditorInput = ({
           {label}
         </Label>
 
-        {error && touch && <div className="text-red-600">{error}</div>}
+        {error && touch && <div className={errorClassName}>{error}</div>}
         <ReactQuill
           type="textarea"
           id={name}
@@ -1644,7 +1649,7 @@ const CoverFileUpload = ({
         </div>
       )}
 
-      {error && touch && <div className="text-red-600">{error}</div>}
+      {error && touch && <div className={errorClassName}>{error}</div>}
     </div>
   );
 };
@@ -1827,4 +1832,5 @@ export {
   RadioGroupInput,
   NumberInput,
   CoverFileUpload,
+  errorClassName,
 };
