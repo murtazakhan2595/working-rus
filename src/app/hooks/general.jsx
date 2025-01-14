@@ -10,18 +10,17 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-const getDepartmentList = async (
-  allData = false,
-  options = { page: 1, sizePerPage: 10 }
-) => {
-  const queryParams = new URLSearchParams({
-    page: options.page,
-    page_size: options.sizePerPage,
-    // search: JSON.stringify(filterData),
-  });
-
+const getDepartmentList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
   try {
-    const response = await axios.get(`${baseUrl}/department/?${queryParams}`, {
+    const URL = `/department/?ordering=-created_at&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
@@ -30,9 +29,16 @@ const getDepartmentList = async (
         (department) => ({
           value: department.id,
           label: department.name,
+          created_at: department.created_at,
+          description: department.description,
+          id: department.id,
+          name: department.name,
+          organization: department.organization,
+          updated_at: department.updated_at,
+          parent_department: department.parent_department,
         })
       );
-      return allData ? departmentResponse : departmentList;
+      return departmentList;
     } else return [];
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -100,18 +106,18 @@ const saveDesignation = async (designationId, payload) => {
   }
 };
 
-const getDesignationList = async (
-  allData = false,
-  options = { page: 1, sizePerPage: 10 }
-) => {
-  const queryParams = new URLSearchParams({
-    page: options.page,
-    page_size: options.sizePerPage,
-    // search: JSON.stringify(filterData),
-  });
+const getDesignationList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
 
   try {
-    const response = await axios.get(`${baseUrl}/designation/?${queryParams}`, {
+    const URL = `/designation/?ordering=-created_at&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
@@ -120,9 +126,15 @@ const getDesignationList = async (
         (designation) => ({
           value: designation.id,
           label: designation.name,
+          name: designation.name,
+          created_at: designation.created_at,
+          description: designation.description,
+          id: designation.id,
+          organization: designation.organization,
+          updated_at: designation.updated_at,
         })
       );
-      return allData ? designationResponse : designationList;
+      return designationList;
     } else return [];
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -221,7 +233,7 @@ const getEmployeeListWithDetail = async () => {
         label: `${employee.first_name} ${employee.last_name}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
-        first_name:employee.first_name,
+        first_name: employee.first_name,
         last_name: employee.last_name,
         department_name: employee.department_name,
         department_position: employee.department_position,

@@ -80,6 +80,7 @@ const ReportCard = ({
     consumed_time: 0,
     estimated_time: 0,
     over_time: 0,
+    pendingTasks: 0,
   });
   const toggleDetails = () => {
     setDetailsVisible((prev) => !prev);
@@ -88,7 +89,6 @@ const ReportCard = ({
     const fetchData = async () => {
       const response = await getTaskDetailsFromLogtime(logtimes);
       if (response) {
-
         setTasks(response);
         // Calculate total consumed time
         const totalConsumedTime = response.reduce((sum, task) => {
@@ -102,11 +102,18 @@ const ReportCard = ({
 
         // Calculate overtime (consumed - estimated)
         const overTime = totalConsumedTime - totalEstimatedTime;
+
+        // Calculate pending tasks
+        const pendingTasks = response.filter(
+          (task) => task.status === "todo" || task.status === "inprogress"
+        ).length;
+
         // Set all values in stats state
         setStats({
           consumed_time: totalConsumedTime.toFixed(2),
           estimated_time: totalEstimatedTime.toFixed(2),
           over_time: overTime.toFixed(2),
+          pendingTasks,
         });
       }
     };
@@ -125,7 +132,7 @@ const ReportCard = ({
         <div className="flex gap-4 items-center">
           <StatItem icon={Hourglass} value={stats?.consumed_time} />
           <StatItem icon={ClockArrowUp} value={stats?.over_time} />
-          <StatItem icon={ClipboardList} value={stats?.reports} />
+          <StatItem icon={ClipboardList} value={stats?.pendingTasks} />
           <StatusBadge status={dtr_status} />
           <div
             className="h-8 px-2 py-1 flex items-center gap-2 cursor-pointer"
@@ -175,7 +182,6 @@ const DTRDetailsBox = ({
     const fetchData = async () => {
       const response = await getTaskDetailsFromLogtime(logtimes);
       if (response) {
-        console.log(response);
         setTasks(response);
       }
     };

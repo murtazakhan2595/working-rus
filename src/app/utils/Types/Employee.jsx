@@ -98,6 +98,7 @@ const EmployeeBankDetails = {
   swift_code: null,
 };
 const EmployeeInformation = {
+  serial_number:null,
     username: null,
     first_name: null,
     last_name: null,
@@ -112,7 +113,7 @@ const EmployeeInformation = {
     department_position: null,
     direct_report: null,
     indirect_report: null,
-    department_manager: null,
+    // department_manager: null,
     employee_type: null,
     employee_work_type: null,
     employee_location: null,

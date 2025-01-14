@@ -8,19 +8,19 @@ import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { Formik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
-import { EmployeeInformation } from "../../../../../app/utils/Types/Employee";
-import { getEmployeeInformation } from "../../../../../app/utils/MappingObjects/mapEmployeeData";
+import { EmployeeInformation } from "app/utils/Types/Employee";
+import {
+  getEmployeeInformation,
+  mapEmployeePayloadData,
+} from "app/utils/MappingObjects/mapEmployeeData";
 import {
   getEmployeeData,
   getNewEmployeeCode,
   saveEmployeeWorkInformationData,
-} from "../../../../../app/hooks/employee";
+} from "app/hooks/employee";
 
-import {
-  fetchEmployees,
-  fetchReportingManagers,
-} from "../../../../../state/slices/EmpSlice";
-import { validationEmployeeInfoFormSchema } from "../../../../../app/utils/FormSchema/employeeFormSchema";
+import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
+import { validationEmployeeInfoFormSchema } from "app/utils/FormSchema/employeeFormSchema";
 
 import {
   // HeadOfDepartmentOptions,
@@ -31,7 +31,7 @@ import {
   countriesCallingCodes,
   countriesList,
   salaryTypeOptions,
-} from "../../../../../data/Data";
+} from "data/Data";
 
 import {
   EmailInput,
@@ -42,7 +42,7 @@ import {
   SelectMultiInputComponent,
   DateInput,
   CheckBoxInput,
-} from "../../../../../components/form-control";
+} from "components/form-control";
 
 import { getEmployeeid } from "utils/getValuesFromTables";
 import { saveEmployeePayroll } from "app/hooks/payroll";
@@ -53,14 +53,16 @@ import AddShiftForm from "app/modules/OfficeSetting/sections/Shift/AddShiftForm"
 import SheetComponent from "components/ui/CustomSheet";
 import moment from "moment";
 
-function getManagersStringSelected(managers) {
+async function getManagersStringSelected(managers) {
   if (managers) {
-    const matchingObjects = managers.map((obj) => {
-      return obj.value;
-    });
+    const matchingObjects = await Promise.all(
+      managers.map((obj) => {
+        return obj;
+      })
+    );
     return matchingObjects.join(", ");
   }
-  return [];
+  return "";
 }
 
 const SheetOnBorading = ({
@@ -75,10 +77,9 @@ const SheetOnBorading = ({
   managers,
   isOpen,
   setIsOpen,
-  discard=false,
-}) => { 
+  discard = false,
+}) => {
   const formRef = React.createRef();
-
 
   let dispatch = useDispatch();
   const navigate = useNavigate();
@@ -88,25 +89,24 @@ const SheetOnBorading = ({
   const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
   const [usernameAlreadyExist, setUsernameAlreadyExist] = useState(false);
   const [shiftList, setShiftList] = useState([]);
- const[addShift, setAddShift] = useState(false)
-  const [closeSheet, setCloseSheet] = useState(false)
-  const [shiftSelect, setShiftSelect] = useState(false)
-
+  const [addShift, setAddShift] = useState(false);
+  const [closeSheet, setCloseSheet] = useState(false);
+  const [shiftSelect, setShiftSelect] = useState(false);
 
   const getShiftList = async () => {
-     const shiftData =await getShift()
-          if(shiftData){
-            const shiftList = shiftData.results.map((shift) => {
-              return {
-                value: shift.id,
-                label: `${shift.name} (${moment(shift.starttime).format(
-                  "h:mm a"
-                )} - ${moment(shift.endtime).format("h:mm a")})`,
-              };
-            });
-            setShiftList(shiftList)
-          }
-  }
+    const shiftData = await getShift();
+    if (shiftData) {
+      const shiftList = shiftData.results.map((shift) => {
+        return {
+          value: shift.id,
+          label: `${shift.name} (${moment(shift.starttime).format(
+            "h:mm a"
+          )} - ${moment(shift.endtime).format("h:mm a")})`,
+        };
+      });
+      setShiftList(shiftList);
+    }
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -119,7 +119,10 @@ const SheetOnBorading = ({
           setEmpId(response.serial_number);
           validateEmail(employeeData.work_email);
           validateUsername(employeeData.username);
-           getShiftList();
+          getShiftList();
+          if (employeeData.shift_assignment) {
+            setShiftSelect(true);
+          }
         } else {
           const response = await getNewEmployeeCode();
           // setEmpId(`TXB-${response.toString().padStart(4, "0")}`);
@@ -127,7 +130,7 @@ const SheetOnBorading = ({
           getShiftList();
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       } finally {
         setIsLoading(false);
       }
@@ -158,35 +161,21 @@ const SheetOnBorading = ({
   };
   const handleSubmit = async (data) => {
     setIsLoading(true);
-    let employeePayroll = {};
-  
-    // Determine the payroll data structure based on salary type
-    if (data.salary_type === "hourly") {
-      employeePayroll = {
-        hourly_rate: data.salary,
-        salary_type: data.salary_type,
-        is_new: true,
-      };
-    } else {
-      employeePayroll = {
-        basic_salary: data.salary,
-        salary_type: data.salary_type,
-        is_new: true,
-      };
-    }
-  
+    const employeePayload = mapEmployeePayloadData(data);
     try {
       // Format indirect report if it exists
-      data.indirect_report = data?.indirect_report
-        ? getManagersStringSelected(data.indirect_report)
-        : "";
-  
+      if (data?.indirect_report)
+        employeePayload.indirect_report = await getManagersStringSelected(
+          data.indirect_report
+        );
       // Save employee work information
-      const response = await saveEmployeeWorkInformationData(data.id, data);
-      // return 
+      const response = await saveEmployeeWorkInformationData(
+        data.id,
+        employeePayload
+      );
+      // return
       if (response) {
         const employeeId = response.id; // Extract employee ID from the response
-  
         // Dispatch fetch actions to update the state
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
@@ -196,12 +185,29 @@ const SheetOnBorading = ({
             position: toast.POSITION.TOP_RIGHT,
           });
           if (isEditMode) {
-            nextstep()
-          }
-          else navigate("/profile-management");
+            nextstep();
+          } else navigate("/profile-management");
         } else {
+          let employeePayroll = {};
+          // Determine the payroll data structure based on salary type
+          if (data.salary_type === "hourly") {
+            employeePayroll = {
+              hourly_rate: data.salary,
+              salary_type: data.salary_type,
+              is_new: true,
+            };
+          } else {
+            employeePayroll = {
+              basic_salary: data.salary,
+              salary_type: data.salary_type,
+              is_new: true,
+            };
+          }
           // Employee creation flow
-          await saveEmployeePayroll({ ...employeePayroll, employee: employeeId });
+          await saveEmployeePayroll({
+            ...employeePayroll,
+            employee: employeeId,
+          });
           toast.success("Employee Added Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
@@ -230,17 +236,15 @@ const SheetOnBorading = ({
       setIsLoading(false);
     }
   };
-  
 
-  const handleClose = ()=>{
-    setCloseSheet(true)
-  }
+  const handleClose = () => {
+    setCloseSheet(true);
+  };
 
   if (isLoading) {
     return <PageLoader />;
   }
 
-  console.log("shiftlist", shiftList)
   return (
     <>
       {handleCloseWithConfirmation({
@@ -269,11 +273,9 @@ const SheetOnBorading = ({
                 initialValues={formData}
                 innerRef={formRef}
                 onSubmit={(values, { resetForm }) => {
-                  console.log("Form Data:", values); // Log form data to console
                   handleSubmit(values, resetForm);
                 }}
                 validate={(values) => {
-                  console.log(values);
                   const errors = validationEmployeeInfoFormSchema(
                     values,
                     id ? true : false
@@ -596,49 +598,47 @@ const SheetOnBorading = ({
                         </div>
                       </div>
                     </div>
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">Shift Details</h3>
-                        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
-                          <div className="space-y-2">
-                            <CheckBoxInput
-                              label="Choose Shift"
-                              name="shift-select"
-                              value={shiftSelect}
-                              onChange={(name, value) => {
-                                console.log(value);
-                                setShiftSelect(value);
-                              }}
-                            />
-                          </div>
-                          {shiftSelect && (
-                            <div className="space-y-2">
-                              <SelectComponent
-                                name={"shift_assignment"}
-                                options={shiftList}
-                                error={props.errors?.shift_assignment}
-                                touch={props.touched.shift_assignment}
-                                value={props.values.shift_assignment}
-                                label={"Shift"}
-                                required={true}
-                                onChange={(field, value) => {
-                                  props.setFieldValue(field, value);
-                                }}
-                              />
-                            </div>
-                          )}
-                        </div>
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold">Shift Details</h3>
+                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
                         <div className="space-y-2">
                           <CheckBoxInput
-                            label="Custom Shift"
-                            name="custom-shift"
-                            value={addShift}
+                            label="Choose Shift"
+                            name="shift-select"
+                            value={shiftSelect}
                             onChange={(name, value) => {
-                              console.log(value);
-                              setAddShift(value);
+                              setShiftSelect(value);
                             }}
                           />
                         </div>
+                        {shiftSelect && (
+                          <div className="space-y-2">
+                            <SelectComponent
+                              name={"shift_assignment"}
+                              options={shiftList}
+                              error={props.errors?.shift_assignment}
+                              touch={props.touched.shift_assignment}
+                              value={props.values.shift_assignment}
+                              label={"Shift"}
+                              required={true}
+                              onChange={(field, value) => {
+                                props.setFieldValue(field, value);
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
+                      <div className="space-y-2">
+                        <CheckBoxInput
+                          label="Custom Shift"
+                          name="custom-shift"
+                          value={addShift}
+                          onChange={(name, value) => {
+                            setAddShift(value);
+                          }}
+                        />
+                      </div>
+                    </div>
                     {!id && (
                       <div className="space-y-4">
                         <h3 className="text-lg font-semibold">

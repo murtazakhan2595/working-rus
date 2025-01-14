@@ -73,7 +73,6 @@ const fetchData = async (isMounted) => {
       );
 
       if (response) {
-        console.log("results in dtr employee", response.results);
         let dtrs = groupData(response.results);
 
         // Process each employee's data
@@ -107,10 +106,15 @@ const fetchData = async (isMounted) => {
               // Calculate overtime
               const overTime = totalConsumedTime - totalEstimatedTime;
 
+               const pendingTasks = taskDetails.filter(
+                  task => task.status.toLowerCase() !== "completed"
+                ).length;
+
               stats = {
                 consumed_time: totalConsumedTime.toFixed(2),
                 estimated_time: totalEstimatedTime.toFixed(2),
                 over_time: overTime.toFixed(2),
+                pendingTasks,
               };
             }
 
@@ -118,13 +122,23 @@ const fetchData = async (isMounted) => {
             return {
               ...employeeData,
               stats,
+              taskDetails, // Include taskDetails in the return object
             };
           })
         );
 
-        // Calculate team-wide totals
+        // Calculate team-wide totals and task counts
         const teamTotals = processedDtrs.reduce(
           (totals, employee) => {
+            // Count completed and pending tasks for this employee
+            const employeeTasks = employee.taskDetails || [];
+            const completedTasks = employeeTasks.filter(
+              (task) => task.status.toLowerCase() === "completed"
+            ).length;
+            const pendingTasks = employeeTasks.filter(
+              (task) => task.status.toLowerCase() !== "completed"
+            ).length;
+
             return {
               consumed_time:
                 parseFloat(totals.consumed_time) +
@@ -132,9 +146,11 @@ const fetchData = async (isMounted) => {
               over_time:
                 parseFloat(totals.over_time) +
                 parseFloat(employee.stats.over_time),
+              completedTasks: totals.completedTasks + completedTasks,
+              pendingTasks: totals.pendingTasks + pendingTasks,
             };
           },
-          { consumed_time: 0, over_time: 0 }
+          { consumed_time: 0, over_time: 0, completedTasks: 0, pendingTasks: 0 }
         );
 
         // Calculate pending DTR count
@@ -160,12 +176,12 @@ const fetchData = async (isMounted) => {
           },
           {
             label: "Tasks Submitted",
-            value: 5, // Static value as requested
+            value: teamTotals.completedTasks,
             icon: ClipboardCheck,
           },
           {
             label: "Pending Tasks",
-            value: 5, // Static value as requested
+            value: teamTotals.pendingTasks,
             icon: ClipboardList,
           },
           {
@@ -175,7 +191,6 @@ const fetchData = async (isMounted) => {
           },
         ]);
 
-        console.log("groupData with stats", processedDtrs);
         setDailyTaskReport(processedDtrs);
       }
     }

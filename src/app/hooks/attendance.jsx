@@ -7,8 +7,7 @@ const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
 });
- const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
+const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const saveShiftAssignment = async (payload) => {
   try {
@@ -42,124 +41,113 @@ const saveShiftAssignment = async (payload) => {
     }
     return false;
   }
-}
+};
 
-const getEmployeeList = async(payload) =>{
-   const pageNo = payload?.options?.page ?? "";
-   const pageSize = payload?.options?.sizePerPage ?? "";
-   const filterData = payload?.filterData ?? {};
+const getEmployeeList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
 
-   let URL = `/customemp?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
-     pageSize ? `page_size=${pageSize}&` : ""
-   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  let URL = `/customemp?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
 
-   try{
-      const response = await axios.get(`${baseUrl}${URL}`, {
-        headers: headers(),
-      });
-      if(response.status === 200){
-        return response.data;
-      }
-   }catch(error){
-      console.error("Error fetching employee list:", error);
-      if(error?.response?.status === 401){
-        handleLogout();
-      }
-      return false;
-   }
-}
-
-const getShift = async(payload) =>{
-     const pageNo = payload?.options?.page ?? "";
-     const pageSize = payload?.options?.sizePerPage ?? "";
-     const filterData = payload?.filterData ?? {};
-     let URL = `/shift?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
-       pageSize ? `page_size=${pageSize}&` : ""
-     }search=${encodeURIComponent(JSON.stringify(filterData))}`;
-  try{
-     const response = await axios.get(`${baseUrl}${URL}`, {
-       headers: headers(),
-     });
-     if (response.status === 200) {
-       return response.data;
-     }
-  }catch(error){
-    console.error("Error fetching shift list:", error);
-    if(error?.response?.status === 401){
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching employee list:", error);
+    if (error?.response?.status === 401) {
       handleLogout();
     }
     return false;
   }
-}
+};
 
-const getShiftAssignment = async(payload) =>{
+const getShift = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  let URL = `/shift?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching shift list:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    return false;
+  }
+};
+
+const getShiftAssignment = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   let URL = `/shiftassignment?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
-  try{
+  try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       return response.data;
     }
-  }catch(error){
+  } catch (error) {
     console.error("Error fetching shift assignment list:", error);
-    if(error?.response?.status === 401){
+    if (error?.response?.status === 401) {
       handleLogout();
     }
     return false;
   }
-}
+};
 
-
-const getAttendance = async (payload)=>{
+const getAttendance = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   let URL = `/attendance?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
-  try{
+  try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       return response.data;
     }
-  }catch(error){
+  } catch (error) {
     console.error("Error fetching attendance list:", error);
-    if(error?.response?.status === 401){
+    if (error?.response?.status === 401) {
       handleLogout();
     }
     return false;
   }
-}
+};
 
 const getAttendanceSummary = async (payload) => {
   console.log(payload, "PAYLOAD OF ATTENDANCE");
 
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
-  // const filterData = payload?.filterData ?? {};
-  
-  let queryParams = [];
-  if (pageNo) queryParams.push(`page=${pageNo}`);
-  if (pageSize) queryParams.push(`page%20size=${pageSize}`);
-
-  // Add filterData to query params if it exists
-  // if (Object.keys(filterData).length > 0) {
-  //   Object.entries(filterData).forEach(([key, value]) => {
-  //     queryParams.push(`${key}=${encodeURIComponent(value)}`);
-  //   });
-  // }
-
-  const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
-  const URL = `/attendance/summary${queryString}`;
-
+  const filterData = payload?.filterData ?? {};
+  let URL = `/attendance/summary/?${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -179,7 +167,6 @@ const getAttendanceSummary = async (payload) => {
   }
 };
 
-
 const saveAttendance = async (payload) => {
   try {
     if (payload?.id) {
@@ -194,13 +181,9 @@ const saveAttendance = async (payload) => {
         return response.data;
       }
     } else {
-      const response = await axios.post(
-        `${baseUrl}/attendance/`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
+      const response = await axios.post(`${baseUrl}/attendance/`, payload, {
+        headers: headers(),
+      });
       if (response.status === 201 || response.status === 200) {
         return response.data;
       }
@@ -212,7 +195,7 @@ const saveAttendance = async (payload) => {
     }
     return false;
   }
-}
+};
 
 const saveBreak = async (payload) => {
   try {
@@ -228,13 +211,9 @@ const saveBreak = async (payload) => {
         return response.data;
       }
     } else {
-      const response = await axios.post(
-        `${baseUrl}/breaks/`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
+      const response = await axios.post(`${baseUrl}/breaks/`, payload, {
+        headers: headers(),
+      });
       if (response.status === 201 || response.status === 200) {
         return response.data;
       }
@@ -246,7 +225,7 @@ const saveBreak = async (payload) => {
     }
     return false;
   }
-}
+};
 
 const getBreak = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
@@ -269,7 +248,7 @@ const getBreak = async (payload) => {
     }
     return false;
   }
-}
+};
 
 const calculateBreak = async (payload) => {
   const breaks = await getBreak(payload);
@@ -295,16 +274,15 @@ const calculateBreak = async (payload) => {
 
 const getBreakStatus = async (payload) => {
   const lastBreak = await getBreak(payload);
-  if(lastBreak.results.length === 0){
-    return false
-  }
-  else{
+  if (lastBreak.results.length === 0) {
+    return false;
+  } else {
     const lastBreakEnd = lastBreak.results[0].endtime;
     if (!lastBreakEnd) {
       return true;
     }
   }
-  return false
+  return false;
 };
 
 const endBreak = async (payload, endtime) => {
@@ -322,7 +300,7 @@ const endBreak = async (payload, endtime) => {
     return await saveBreak(breakPayload);
   }
   return false;
-}
+};
 
 const getLocalTime = () => {
   // Step 1: Get the user's time zone
@@ -377,79 +355,79 @@ function formatTimeWithAMPM(timeString) {
   const minute = date.getMinutes();
 
   // Determine AM or PM
-  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const ampm = hour >= 12 ? "PM" : "AM";
 
   // Convert hour from 24-hour format to 12-hour format
   hour = hour % 12;
   hour = hour ? hour : 12; // the hour '0' should be '12'
 
   // Format the minute to always have two digits
-  const formattedMinute = minute < 10 ? '0' + minute : minute;
+  const formattedMinute = minute < 10 ? "0" + minute : minute;
 
   // Return the formatted time in the desired format
   return `${hour}:${formattedMinute} ${ampm}`;
 }
 
 const getStats = async (id) => {
- try{
-   const response = await axios.get(`${baseUrl}/api/employee-hours${id}/`, {
-     headers: headers(),
-   });
-   return response.data;
- }catch(error){
+  try {
+    const response = await axios.get(`${baseUrl}/api/employee-hours${id}/`, {
+      headers: headers(),
+    });
+    return response.data;
+  } catch (error) {
     console.error("Error fetching stats:", error);
-    if(error?.response?.status === 401){
+    if (error?.response?.status === 401) {
       handleLogout();
     }
     return false;
- }
-}
+  }
+};
 
-  const employeeData = async (id) => {
-    const employeeResponse = await axios.get(
-      `${baseUrl}/emp/${id}`,
-      {
-        headers: headers()
-      }
-    );
-    const employeeData = employeeResponse.data;
-    return employeeData;
-  };
+const employeeData = async (id) => {
+  const employeeResponse = await axios.get(`${baseUrl}/emp/${id}`, {
+    headers: headers(),
+  });
+  const employeeData = employeeResponse.data;
+  return employeeData;
+};
 
-  const getShiftById = async (id) => {
-    try{
+const getShiftById = async (id) => {
+  try {
     const shiftResponse = await axios.get(`${baseUrl}/shift/${id}`, {
       headers: headers(),
     });
     const shiftData = shiftResponse.data;
     return shiftData;
-    }catch(error){
-      console.error("Error fetching shift by id:", error);
-      if(error?.response?.status === 401){
-        handleLogout();
-      }
-      return false;
+  } catch (error) {
+    console.error("Error fetching shift by id:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
     }
+    return false;
   }
+};
 
-  const getAttendanceStats = async () => {
-    try{
-    const response = await axios.get(`${baseUrl}/attendance/summary/overall/?page=1`, {
-      headers: headers(),
-    });
+const getAttendanceStats = async () => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/attendance/summary/overall/?page=1`,
+      {
+        headers: headers(),
+      }
+    );
     const attendanceSummary = response.data;
     return attendanceSummary;
-    }catch(error){
-      console.error("Error fetching shift by id:", error);
-      if(error?.response?.status === 401){
-        handleLogout();
-      }
-      return false;
+  } catch (error) {
+    console.error("Error fetching shift by id:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
     }
+    return false;
   }
+};
 
-  const getDepartmentPercentage = async () => {
-    try{
+const getDepartmentPercentage = async () => {
+  try {
     const response = await axios.get(
       `${baseUrl}/attendance/department-percentage`,
       {
@@ -457,32 +435,29 @@ const getStats = async (id) => {
       }
     );
     return response.data;
-    }catch(error){
-      console.error("Error fetching shift by id:", error);
-      if(error?.response?.status === 401){
-        handleLogout();
-      }
-      return false;
+  } catch (error) {
+    console.error("Error fetching shift by id:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
     }
+    return false;
   }
+};
 
-  const getWeeklySummary = async () => {
-    try{
-    const response = await axios.get(
-      `${baseUrl}/attendance/weeklysummary`,
-      {
-        headers: headers(),
-      }
-    );
+const getWeeklySummary = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/attendance/weeklysummary`, {
+      headers: headers(),
+    });
     return response.data;
-    }catch(error){
-      console.error("Error fetching shift by id:", error);
-      if(error?.response?.status === 401){
-        handleLogout();
-      }
-      return false;
+  } catch (error) {
+    console.error("Error fetching shift by id:", error);
+    if (error?.response?.status === 401) {
+      handleLogout();
     }
+    return false;
   }
+};
 
 export {
   getAttendanceStats,
@@ -505,5 +480,5 @@ export {
   getShiftById,
   getAttendanceSummary,
   getDepartmentPercentage,
-  getWeeklySummary
+  getWeeklySummary,
 };

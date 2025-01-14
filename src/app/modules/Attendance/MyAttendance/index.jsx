@@ -459,8 +459,7 @@ const Attendance = () => {
                 />
               </div>
               <Button variant="outline" onClick={downloadAttendance}>
-                {" "}
-                Download{" "}
+                Download
               </Button>
             </div>
           </div>
