@@ -7,14 +7,16 @@ import {
   getDepartmentPercentage,
   getWeeklySummary,
 } from "app/hooks/attendance";
-import { PageLoader } from "components";
+import { PageLoader, DateRangeFilter, TableCustom } from "components";
 import { EmployeesAttendanceColumns } from "app/utils/Types/TableColumns";
 import { LeaveStatusOverview } from "./Sections/LeaveStatusOverview";
 import { StatisticsChart } from "./Sections/StatisticsChart";
 import DepartmentOverview from "./Sections/DepartmentOverview";
 import { StatsCards } from "./Sections/StatsCards";
-import TableCustom from "components/CustomTable";
 import { getLeaveStatusDaily } from "app/hooks/leaveTracker";
+import { FilterInput, SelectComponent } from "components/form-control";
+import { useSelector } from "react-redux";
+import { GetDateRange } from "utils/renderValues";
 
 const Attendance = () => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -22,8 +24,11 @@ const Attendance = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [departmentPercentage, setDepartmentPercentage] = useState([]);
   const [weeklySummary, setWeeklySummary] = useState([]);
-  const [filterData, setFilterDataState] = useState({
-    date: moment().format("YYYY-MM-DD"),
+  const departments = useSelector((state) => state.common.departments);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [activeTab, setActiveTab] = useState("week");
+  const [filterData, setFilterData] = useState({
+    // date_range: GetDateRange("week"),
   });
   const [leaveStatus, setLeaveStatus] = useState({});
   const onPageChange = (name, value) => {
@@ -37,17 +42,23 @@ const Attendance = () => {
   };
 
   const handleFilterChange = (filterName, filterValue) => {
-    // onPageChange("page", 1);
+    onPageChange("page", 1);
+    if (filterName === "department_name") {
+      setSelectedDepartment(filterValue);
+    }
     // if (filterName === "date_range") setSelectedDateRange(filterValue);
     // setActiveTab({ employee_id: userId, date_range: filterValue });
   };
   const getAttendanceList = async (isMounted) => {
     setIsLoading(true);
     try {
-      const attendanceData = await getAttendance({ options, filterData });
+      const attendanceData = await getAttendanceSummary({
+        options,
+        filterData,
+      });
       if (isMounted) {
         if (attendanceData) {
-          // setAttendanceData(attendanceData);
+          setAttendanceData(attendanceData);
         }
       }
     } catch (error) {
@@ -57,52 +68,34 @@ const Attendance = () => {
     }
   };
 
-  const getAttendanceData = async ()=>{
-    setIsLoading(true);
-    try{
-      const empAttedance = await getAttendanceSummary({ options, filterData })
-      if(empAttedance){
-        setAttendanceData(empAttedance)
-      }
-    } catch(error){
-      console.log(error)
-    } finally{
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(()=>{
-    getAttendanceData()
-  },[options, filterData, ])
-
   useEffect(() => {
     let isMounted = true;
     getAttendanceList(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [filterData]);
+  }, [options, filterData]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const departmentPercentage = await getDepartmentPercentage()
-      if(departmentPercentage){
+      const departmentPercentage = await getDepartmentPercentage();
+      if (departmentPercentage) {
         console.log("departmentPercentage", departmentPercentage);
-        setDepartmentPercentage(departmentPercentage)
+        setDepartmentPercentage(departmentPercentage);
       }
-      const weeklySummary = await getWeeklySummary()
-      if(weeklySummary){
+      const weeklySummary = await getWeeklySummary();
+      if (weeklySummary) {
         console.log("weeklySummary", weeklySummary);
-        setWeeklySummary(weeklySummary)
+        setWeeklySummary(weeklySummary);
       }
 
-      const leaveStatus = await getLeaveStatusDaily()
-      if(leaveStatus){
+      const leaveStatus = await getLeaveStatusDaily();
+      if (leaveStatus) {
         console.log("leaveStatus", leaveStatus);
-        setLeaveStatus(leaveStatus)
+        setLeaveStatus(leaveStatus);
       }
-    }
-    fetchData()
+    };
+    fetchData();
   }, []);
   return (
     <div>
@@ -112,15 +105,15 @@ const Attendance = () => {
         )}`}
       >
         <div className="flex gap-4">
-          <LeaveStatusOverview leaveStatus={leaveStatus}/>
+          <LeaveStatusOverview leaveStatus={leaveStatus} />
           <StatisticsChart weeklySummary={weeklySummary} />
           <DepartmentOverview departmentPercentage={departmentPercentage} />
         </div>
         {/* <Header /> */}
         <StatsCards attendanceData={attendanceData.results || []} />
         {/* <Stats stats={statsData} /> */}
-        <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
-          {/* <FilterInput
+        <div className="flex flex-col justify-start gap-3 lg:flex-row md:flex-row xl:flex-row">
+          <FilterInput
             filters={[
               {
                 type: "search",
@@ -134,23 +127,23 @@ const Attendance = () => {
                 placeholder: "Department",
                 values: selectedDepartment,
               },
-              {
-                type: "select-two",
-                option: designations,
-                name: "department_position",
-                placeholder: "Designation",
-                values: selectedDesignation,
-              },
-              {
-                type: "select-three",
-                option: UserRoles,
-                name: "user_role",
-                placeholder: "Role",
-                values: selectedRole,
-              },
             ]}
             onChange={handleFilterChange}
-          /> */}
+          />
+          <DateRangeFilter
+            activeDateRange={activeTab}
+            setDateRange={(dateRange) => {
+              setFilterData(() => {
+                const updatedFilters = {
+                  ...(dateRange.toUpperCase() === "DAY"
+                    ? { date: moment().format("YYYY-MM-DD") }
+                    : { date_range: GetDateRange(dateRange) }),
+                };
+                setActiveTab(dateRange);
+                return updatedFilters;
+              });
+            }}
+          />
         </div>
         {isLoading ? (
           <PageLoader />

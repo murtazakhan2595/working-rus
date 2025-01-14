@@ -31,7 +31,6 @@ const EmployeeAttendance = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
   const [activeTab, setActiveTab] = useState("week");
-   const [selectedDateRange, setSelectedDateRange] = useState(null);
   const [filterData, setFilterDataState] = useState({
     date_range: GetDateRange("week"),
     employee_id: id,
@@ -60,26 +59,6 @@ const EmployeeAttendance = () => {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    if (activeTab === "day") {
-      setFilterData({
-        employee_id: id,
-        date: moment().format("YYYY-MM-DD"),
-      });
-    } else if (activeTab === "week") {
-      setFilterData({
-        employee_id: id,
-        date_range: GetDateRange("week"),
-      });
-    } else if (activeTab === "month") {
-      setFilterData({
-        employee_id: id,
-        date_range: GetDateRange("month"),
-      });
-    }else{
-      setFilterData(activeTab);
-    }
-  }, [activeTab]);
 
   useEffect(() => {
     let isMounted = true;
@@ -152,8 +131,6 @@ const EmployeeAttendance = () => {
         attendanceData={attendanceData}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        setSelectedDateRange={setSelectedDateRange}
-        selectedDateRange={selectedDateRange}
         isLoading={isLoading}
       />
     </div>

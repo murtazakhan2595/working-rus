@@ -7,10 +7,27 @@ import {
   EmployeeProfessionalExperiance,
   EmployeeBankDetails,
   EmployeeCertifiation,
+  EmployeeInformation,
 } from "../Types/Employee";
 import moment from "moment";
 import { getManagersList } from "app/hooks/general";
 import { getManagerSelected } from "data/Data";
+
+export function mapEmployeePayloadData(data) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in EmployeeInformation) {
+    // Check if the key exists in the data object
+    if (data.hasOwnProperty(key) && data[key]) {
+      // Add the key and its value to the payload
+      payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
 
 function mapEmployeeData(data) {
   const employee = Employee;
@@ -23,7 +40,6 @@ function mapEmployeeData(data) {
   employee.academicRecord = getAcademicRecord(data);
   employee.professionalExperiance = getProfessionalExperiance(data);
 
-  console.log(employee);
   return employee;
 }
 
@@ -177,7 +193,7 @@ function getCertifications(data) {
 
 function getWorkInformation(data) {
   const department = EmployeeDepartmentInfo;
-  department.employeeName= data.first_name + " " + data.last_name;
+  department.employeeName = data.first_name + " " + data.last_name;
   department.department_name = data?.department_name ?? "";
   department.department_position = data?.department_position ?? "";
   department.direct_report = data?.direct_report ?? "";
@@ -209,9 +225,8 @@ function getBankDetails(data) {
 }
 
 async function getEmployeeInformation(data) {
-  const Managers = await getManagersList();
   const employeeInformation = {
-    id: data?.id ?? 0,
+    id: data?.id ?? null,
     username: data.username,
     first_name: data.first_name,
     last_name: data.last_name,
@@ -227,16 +242,17 @@ async function getEmployeeInformation(data) {
       : "",
     direct_report: data?.direct_report ? parseInt(data?.direct_report) : "",
     indirect_report: data?.indirect_report
-      ? getManagerSelected(data.indirect_report, Managers)
+      ? getManagerSelected(data.indirect_report)
       : "",
     department_manager: data?.department_manager ?? "",
     employee_type: data?.employee_type ?? "",
     employee_status: data?.employee_status ?? "",
     employee_work_type: data?.employee_work_type ?? "",
     employee_location: data?.employee_location ?? "",
-    joining_date: data?.joining_date ?? '',
+    joining_date: data?.joining_date ?? "",
     is_indirect_report_applicable: data.indirect_report ? true : false,
     password: data?.password ?? "",
+    shift_assignment: data?.shift_assignment ?? null,
   };
   return employeeInformation;
 }

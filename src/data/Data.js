@@ -10,7 +10,12 @@ import {
 } from "state/slices/CommonSlice";
 import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
-import { fetchEmployees, fetchReportingManagers,fetchEmployeesDetail,fetchUser } from "state/slices/EmpSlice";
+import {
+  fetchEmployees,
+  fetchReportingManagers,
+  fetchEmployeesDetail,
+  fetchUser,
+} from "state/slices/EmpSlice";
 import { options } from "joi";
 import {
   ArrowDown,
@@ -38,7 +43,7 @@ export const countriesCallingCodes = countries.all
       "+",
       ""
     )})`,
-    alpha2: country.alpha2, 
+    alpha2: country.alpha2,
   }));
 
 export const countriesList = countries.all.map((country) => {
@@ -105,7 +110,6 @@ export const jobTypeOptions = [
   { value: "Hybrid", label: "Hybrid" },
 ];
 
-
 export const workTypeOptions = [
   { value: "Internees", label: "Internees" },
   { value: "Junior_Level", label: "Junior Level" },
@@ -155,7 +159,6 @@ export const dropdownOptions = [
   { label: "Offer Accepted", value: "offer_accepted" },
 ];
 
-
 export const filterDropdownOptions = [
   { label: "Pending", value: "pending" },
   { label: "Selected", value: "selected" },
@@ -180,12 +183,14 @@ export const jobsStatusOptions = [
 
 export const shiftType = [
   {
-    label: "Weekdays", value:"Weekdays"
+    label: "Weekdays",
+    value: "Weekdays",
   },
   {
-    label:"Weekend", value: "Weekend"
-  }
-]
+    label: "Weekend",
+    value: "Weekend",
+  },
+];
 
 export const HeadOfDepartment = [
   { label: "Naveed Rahman - CEO", value: "Naveed" },
@@ -355,13 +360,13 @@ export const PriorityListIcons = [
 export const relationList = [
   {
     value: "WireFrame",
-    label: "WireFrame"
+    label: "WireFrame",
   },
   {
-    value:"Design",
-    label:"Design"
-  }
-]
+    value: "Design",
+    label: "Design",
+  },
+];
 
 export const ProjectStatusList = [
   {
@@ -375,7 +380,9 @@ export const ProjectStatusList = [
   {
     value: "on_going",
     label: (
-      <div className="flex justify-center text-yellow-500 gap-x-2 items-center">On Going</div>
+      <div className="flex justify-center text-yellow-500 gap-x-2 items-center">
+        On Going
+      </div>
     ),
   },
   {
@@ -585,13 +592,11 @@ export const terminationStatus = [
   { label: "Rejected by Employee", value: "rejected by employee" },
 ];
 
-export function getManagerSelected(managers, managersList) {
-  if (managers && managersList && managersList.length > 0) {
+export function getManagerSelected(managers, managersList = []) {
+  if (managers) {
     managers = managers.split(", ") || [];
-    const matchingObjects = managersList.filter((obj) => {
-      return managers.find(
-        (element) => parseInt(obj.value) === parseInt(element)
-      );
+    const matchingObjects = managers.map((obj) => {
+      return parseInt(obj);
     });
     return matchingObjects;
   }
@@ -617,7 +622,7 @@ export const ResignationReasons = [
   // { value: "Job dissatisfaction", label: "Job dissatisfaction" },
   { value: "Others", label: "Others" },
 ];
-export const ReasonForLeaving=[
+export const ReasonForLeaving = [
   { value: "voluntary", label: "Voluntary" },
   { value: "involuntary", label: "Involuntary" },
   {
@@ -645,7 +650,7 @@ export const ReasonForLeaving=[
     value: "others",
     label: "Other",
   },
-]
+];
 
 export const terminationReasonsOptions = [
   {
