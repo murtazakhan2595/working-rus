@@ -1195,7 +1195,7 @@ export const myAttendanceColumn = [
     text: "Check Out",
     dataField: "checkout",
     formatter: (cell) =>
-      cell ? <span>{moment(cell).format("h:mm A")}</span> : "Not Checked Out",
+      cell ? <span>{moment(cell?.replace("Z","")).format("h:mm A")}</span> : "Not Checked Out",
   },
   {
     text: "Break",

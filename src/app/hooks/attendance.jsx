@@ -253,7 +253,7 @@ const getBreak = async (payload) => {
 const calculateBreak = async (payload) => {
   const breaks = await getBreak(payload);
   let breakDuration = 0; // total duration in minutes
-
+  console.log("BREAAKS IN ")
   if (breaks && breaks.results) {
     breaks.results.forEach((element) => {
       const start = moment(element.starttime).utc(); // parse start time as UTC
@@ -459,8 +459,67 @@ const getWeeklySummary = async () => {
   }
 };
 
+const getRecentActivities = async (payload, attendance, userProfile) => {
+  console.log("RECENT ACTIVITIES", payload, attendance);
+  let recentActivities = [];
+  recentActivities.push({
+    time: moment(attendance.checkin).format("hh:mm a"),
+    activity: "Check in",
+    description: "Checked in for the day",
+    timestamp: moment(attendance.checkin),
+  });
+
+  const getBreaks = await getBreak({
+    filterData: {
+      employee_id: userProfile.id,
+      attendance: attendance.id,
+    },
+  });
+  // Process breaks
+  if (getBreaks.results && getBreaks.results.length > 0) {
+    getBreaks.results.forEach((breakItem) => {
+      // Add break start
+      recentActivities.push({
+        time: moment(breakItem.starttime.replace("Z", "")).format("hh:mm a"),
+        activity: `Break Start`,
+        description: `Away`,
+        timestamp: moment(breakItem.starttime.replace("Z", "")),
+      });
+
+      // Add break end
+      if (breakItem.endtime) {
+        recentActivities.push({
+          time: moment(breakItem.endtime.replace("Z", "")).format("hh:mm a"),
+          activity: `Break End`,
+          description: `Back`,
+          timestamp: moment(breakItem.endtime.replace("Z", "")),
+        });
+      }
+    });
+  }
+  console.log("GETBREAKS", getBreaks);
+  if (attendance.checkout) {
+    recentActivities.push({
+      time: moment(attendance.checkout?.replace("Z","")).format("hh:mm a"),
+      activity: "Check out",
+      description: "Checked out for the day",
+      timestamp: moment(attendance.checkout),
+    });
+  }
+  // Sort in reverse chronological order
+  recentActivities.sort(
+    (a, b) => b.timestamp.valueOf() - a.timestamp.valueOf()
+  );
+
+  // Remove timestamp field
+  recentActivities = recentActivities.map(({ timestamp, ...rest }) => rest);
+  console.log("RECENTACTIVITIES ACTIVITIES", recentActivities);
+  return recentActivities;
+};
+
 export {
   getAttendanceStats,
+  getRecentActivities,
   saveShiftAssignment,
   getEmployeeList,
   getShift,
