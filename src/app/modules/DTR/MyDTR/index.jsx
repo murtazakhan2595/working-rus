@@ -25,6 +25,8 @@ import { getDtr, getLogTimeList } from "app/hooks/dtr";
 import { useSelector } from "react-redux";
 import { calculateTotal, calculateTotalCount } from "utils/renderValues";
 import { GetDateRange } from "utils/renderValues";
+import { calculateTaskCount } from "utils/renderValues";
+import { PageLoader } from "components";
 
 const MyDtr = () => {
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -46,7 +48,6 @@ const MyDtr = () => {
         const response = await getDtr({
           filterData: filterData,
         });
-
         if (response) {
           setDailyTaskReport(response.results);
         }
@@ -79,10 +80,10 @@ const MyDtr = () => {
         value: calculateTotal(logTimeList, "consumed_time"),
         icon: Hourglass,
       },
-      { label: "Tasks Completed", value: 2, icon: ClipboardCheck },
+      { label: "Tasks Completed",   value: calculateTaskCount(logTimeList, "completed"), icon: ClipboardCheck },
       {
         label: "Pending Tasks",
-        value: 5,
+        value: calculateTaskCount(logTimeList, "pending"),
         icon: ClipboardList,
       },
       {
@@ -93,6 +94,7 @@ const MyDtr = () => {
     ]);
   }, [logTimeList]);
 
+  if(isLoading) return <PageLoader />;
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}

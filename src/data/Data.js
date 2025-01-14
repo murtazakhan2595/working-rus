@@ -328,6 +328,12 @@ export const PriorityList = [
     ),
   },
 ];
+
+export const TaskStatus = [
+  { value: "TODO", label: "Todo" },
+  { value: "INPROGRESS", label: "In Progress" },
+  { value: "COMPLETED", label: "Completed" },
+];
 export const PriorityListIcons = [
   {
     value: 3,

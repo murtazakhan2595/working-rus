@@ -6,7 +6,7 @@ import {
   SelectComponent,
   DateInput,
 } from "components/form-control.jsx";
-import { PriorityList } from "data/Data";
+import { PriorityList, TaskStatus } from "data/Data";
 import SheetComponent from "components/ui/CustomSheet";
 import { useSelector } from "react-redux";
 import {
@@ -34,6 +34,7 @@ import { CardTypes } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
 import DialogBox from "components/DialogBox";
 import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
+import { CheckBoxInput } from "components/form-control";
 
 const CreateAndEditCardForm = ({
   taskId,
@@ -45,6 +46,7 @@ const CreateAndEditCardForm = ({
   projectId,
   boardId,
 }) => {
+  console.log("starting init values", CardTypes);
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
@@ -196,6 +198,7 @@ const CreateAndEditCardForm = ({
     footer: null,
   };
 
+  console.log("initialValues", initialValues);
   return (
     <>
       <SheetComponent
@@ -341,6 +344,22 @@ const CreateAndEditCardForm = ({
                             // label="Priority"
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
+                            }}
+                          />
+                        }
+                      />
+                      <TaskInputDetails
+                        title={"Status"}
+                        content={
+                          <CheckBoxInput
+                            label={props.values.status==="COMPLETED"?"Completed": "In Progress"}
+                            name="status"
+                            value={props.values.status === "COMPLETED"}
+                            onChange={(name, value) => {
+                              props.setFieldValue(
+                                name,
+                                value ? "COMPLETED" : "INPROGRESS"
+                              );
                             }}
                           />
                         }
