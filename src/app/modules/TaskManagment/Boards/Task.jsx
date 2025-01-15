@@ -132,16 +132,6 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             </div>
           </div>
           <div className="flex items-center gap-2 text-neutral-1000">
-            {/* {task?.end_date && (
-              <div
-                className={`flex gap-0.5 justify-center items-center text-sm p-2 rounded`}
-              >
-                  <TimeIcon color={getStatusIconColor(task?.end_date)} />
-                <div className="my-auto">
-                    {moment(task?.end_date).format("MMMM DD")}
-                </div>
-              </div>
-          )} */}
           {task?.end_date && (
             <TimeStatusIcon
               task={task}
@@ -213,11 +203,16 @@ const TimeStatusIcon = ({ task, getStatusIconColor, onUpdate }) => {
     }
   };
 
+  const handleContainerClick = (e) => {
+    e.stopPropagation(); // Stop event from bubbling up to card
+  };
+
   return (
     <div
       className="flex items-center text-sm"
       onMouseEnter={() => setShowCheckbox(true)}
       onMouseLeave={() => setShowCheckbox(false)}
+      onClick={handleContainerClick}
     >
       <div className="relative w-5 h-5">
         <div
@@ -240,7 +235,7 @@ const TimeStatusIcon = ({ task, getStatusIconColor, onUpdate }) => {
           <TimeIcon color={getStatusIconColor(task?.end_date)} />
         </div>
       </div>
-      <div className="ml-2">{moment(task?.end_date).format("MMMM DD")}</div>
+      <div className="">{moment(task?.end_date).format("MMMM DD")}</div>
     </div>
   );
 };
