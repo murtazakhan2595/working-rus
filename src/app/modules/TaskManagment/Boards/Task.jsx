@@ -18,34 +18,36 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  // State to manage TaskDetail visibility
+  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
   const handleDelete = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const dropdownOptions = [
-    {
-      label: "Edit Details",
-      onClick: () => {
-        setIsDropdownOpen(false);
-        setIsEditCardOpen(true);
-      },
-    },
-    {
-      label: "View Details",
-      onClick: () => {
-        setIsDropdownOpen(false);
-        setIsTaskDetailOpen(true);
-      },
-    },
-    {
-      label: "Delete",
-      onClick: () => handleDelete(),
-    },
-  ];
+  // const dropdownOptions = [
+  //   {
+  //     label: "Edit Details",
+  //     onClick: () => {
+  //       setIsDropdownOpen(false);
+  //       setIsEditCardOpen(true);
+  //     },
+  //   },
+  //   {
+  //     label: "View Details",
+  //     onClick: () => {
+  //       setIsDropdownOpen(false);
+  //       setIsTaskDetailOpen(true);
+  //     },
+  //   },
+  //   {
+  //     label: "Delete",
+  //     onClick: () => handleDelete(),
+  //   },
+  // ];
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+  // const toggleDropdown = () => {
+  //   setIsDropdownOpen(!isDropdownOpen);
+  // };
 
   const confirmDelete = async () => {
     const response = await deleteTask(task.id);
@@ -55,12 +57,9 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
     setIsDeleteModalOpen(false);
   };
 
-  // State to manage TaskDetail visibility
-  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
-
   return (
     <Card
-      className="flex flex-col w-full p-3 mt-6 bg-white rounded-lg shadow cursor-pointer"
+      className="w-full p-3 mt-6 bg-white rounded-lg shadow cursor-pointer"
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
     >
@@ -77,75 +76,82 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
             will be lost."
         />
       )}
-      <div className="flex justify-between items-start py-0.5">
-        <div className="flex justify-between">
-          {task?.label && (
-            <Labels
-              labelsSelected={task.label || []}
-              onSelectedLabelsChange={() => {}}
-              editMode={false}
-            />
-          )}
-          <span>
-            {
-              PriorityList.find((option) => option.value === task?.priority)
-                ?.label
-            }
-          </span>
-        </div>
-        <CustomDropdown
+      <div
+        className="flex flex-col"
+        onClick={() => {
+          setIsTaskDetailOpen(true);
+        }}
+      >
+        <div className="flex justify-between items-start py-0.5">
+          <div className="flex justify-between">
+            {task?.label && (
+              <Labels
+                labelsSelected={task.label || []}
+                onSelectedLabelsChange={() => {}}
+                editMode={false}
+              />
+            )}
+            <span>
+              {
+                PriorityList.find((option) => option.value === task?.priority)
+                  ?.label
+              }
+            </span>
+          </div>
+          {/* <CustomDropdown
           isOpen={isDropdownOpen}
           toggleDropdown={toggleDropdown}
           options={dropdownOptions}
-        />
-      </div>
-      <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
-        <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
-        {task?.description && (
-          <p
-            className="text-sm leading-5 truncate-text text-neutral-1000"
-            style={{ maxHeight: "100px" }}
-          >
-            <span
-              dangerouslySetInnerHTML={{
-                __html: `${task?.description.slice(0, 170)}${
-                  task?.description.length > 170 ? "..." : ""
-                }`,
-              }}
-            />
-          </p>
-        )}
-      </div>
-      <footer className="flex justify-between py-2">
-        <div className="flex items-center gap-1">
-          <div className="flex -space-x-2.5">
-            {/* Render MembersList component */}
-            <MembersList members={task?.assigned_to} />
-          </div>
+        /> */}
         </div>
-        <div className="flex items-center gap-2 text-neutral-1000">
-          {task?.end_date && (
-            <div
-              className={`flex gap-0.5 justify-center items-center text-sm p-2 rounded`}
+        <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
+          <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
+          {task?.description && (
+            <p
+              className="text-sm leading-5 truncate-text text-neutral-1000"
+              style={{ maxHeight: "100px" }}
             >
-              {/* Render TimeIcon component */}
-              <TimeIcon color={getStatusIconColor(task?.end_date)} />
-              <div className="my-auto">
-                {/* Display formatted date */}
-                {moment(task?.end_date).format("MMMM DD")}
-              </div>
-            </div>
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: `${task?.description.slice(0, 170)}${
+                    task?.description.length > 170 ? "..." : ""
+                  }`,
+                }}
+              />
+            </p>
           )}
-          <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
-            <BiComment />
-            <div>{task?.comment_count || 0}</div>
-          </div>
-          <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
-            <ImAttachment />
-            <div>{task?.attachment_count || 0}</div>
-          </div>
         </div>
-      </footer>
+        <footer className="flex justify-between py-2">
+          <div className="flex items-center gap-1">
+            <div className="flex -space-x-2.5">
+              {/* Render MembersList component */}
+              <MembersList members={task?.assigned_to} />
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-neutral-1000">
+            {task?.end_date && (
+              <div
+                className={`flex gap-0.5 justify-center items-center text-sm p-2 rounded`}
+              >
+                {/* Render TimeIcon component */}
+                <TimeIcon color={getStatusIconColor(task?.end_date)} />
+                <div className="my-auto">
+                  {/* Display formatted date */}
+                  {moment(task?.end_date).format("MMMM DD")}
+                </div>
+              </div>
+            )}
+            <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
+              <BiComment />
+              <div>{task?.comment_count || 0}</div>
+            </div>
+            <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
+              <ImAttachment />
+              <div>{task?.attachment_count || 0}</div>
+            </div>
+          </div>
+        </footer>
+      </div>
       {/* Render TaskDetail component if isTaskDetailOpen is true */}
       {isTaskDetailOpen && (
         <TaskDetail
@@ -153,7 +159,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
           handleDelete={handleDelete}
           isOpen={isTaskDetailOpen}
           setIsOpen={(value) => {
-            setIsTaskDetailOpen(value);
+            setIsTaskDetailOpen(false);
             reloadData();
           }}
         />

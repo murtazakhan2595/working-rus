@@ -271,7 +271,7 @@ export default function MyTasks() {
           
         </CardHeader>
         <CardContent>
-          {tasks.length > 0 ? (
+          {tasks?.length > 0 ? (
             <RenderTask tasks={tasks} />
           ) : (
             <div>No tasks available.</div>
