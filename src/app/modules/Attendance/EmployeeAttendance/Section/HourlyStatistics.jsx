@@ -5,6 +5,7 @@ import { CalculateHoursWorked } from "app/modules/Attendance/Sections/CalculateW
 import { Progress } from "src/@/components/ui/progress";
 import { PageLoader } from "components";
 import { GetDateRange, GetShiftTotalHours } from "utils/renderValues";
+import { formatDuration } from "utils/renderValues";
 
 const HourlyStatistics = ({
   userId,
@@ -175,7 +176,8 @@ const Statistics = ({ value, total, label }) => (
     <div className="flex justify-between mb-1">
       <span className="text-slate-900">{label}</span>
       <span>
-        <span className="text-slate-1200">{value}</span>/{total}hrs
+        <span className="text-slate-1200">{formatDuration(value)}</span>/{total}
+        hrs
       </span>
     </div>
     <Progress

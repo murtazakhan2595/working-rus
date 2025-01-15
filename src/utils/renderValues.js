@@ -141,6 +141,23 @@ export function renderDate(date) {
   return date ? moment(date).format("MMM DD, YYYY") : "N/A";
 }
 
+export const formatDuration = (duration) => {
+  if (!duration || duration <= 0) return "0min";
+
+  const totalMinutes = Math.floor(duration * 60); // Convert hours to minutes
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours === 0) {
+    return `${minutes}min`;
+  }
+  if (minutes === 0) {
+    return `${hours}h`;
+  }
+  return `${hours}h ${minutes}min`;
+};
+
+
 export const GetDateRange = (period) => {
   if (period.toUpperCase() === "WEEK") {
     // Current week start and end
