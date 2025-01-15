@@ -6,10 +6,19 @@ export default function TaskDetailBox({
   editMode = true,
 }) {
   return (
-    <div className="max-w-sm flex w-full">
-      <div className={`${dataContent && editMode ? "w-[82%]" : ""}`}> {dataContent}</div>
+    <div className="flex w-full">
+      {dataContent && (
+        <div className={`${editMode ? "w-[calc(100%_-_56px)]" : ""}`}>
+          {dataContent}
+        </div>
+      )}
       {editMode && (
-        <div style={{ minWidth: "11.5%", marginLeft: "1rem" }}>
+        <div
+          style={{
+            minWidth: "40px",
+            ...(dataContent && { marginLeft: "1rem" }),
+          }}
+        >
           {inputDataContent}
         </div>
       )}
