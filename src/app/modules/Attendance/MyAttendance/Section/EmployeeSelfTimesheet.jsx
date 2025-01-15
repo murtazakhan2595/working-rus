@@ -11,6 +11,12 @@ import { convertUTCToLocal } from "app/hooks/attendance";
 import { formatTimeWithAMPM } from "app/hooks/attendance";
 import {formatDuration} from "utils/renderValues";
 import { renderDate } from "utils/renderValues";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "src/@/components/ui/tooltip";
 
 export default function EmployeeSelfTimesheet({
   employeeShift,
@@ -23,62 +29,109 @@ export default function EmployeeSelfTimesheet({
 }) {
   console.log("BREAK STAUS", OnBreak);
   // Determine which icons to show
-  const renderShiftControlIcons = (disable) => {
-    if (attendance && attendance.checkout) {
-      return null;
-    }
-    if (!attendance?.checkin) {
-      // If no attendance, show only Play
-      return (
-        <PlayCircle
-          className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-          onClick={() => {
-            if (!disable) {
-              startShift();
-            }
-          }}
-        />
-      );
-    }
+const renderShiftControlIcons = (disable) => {
+  if (attendance && attendance.checkout) {
+    return null;
+  }
 
-    if (OnBreak) {
-      // If on break, show Play and Stop
-      return (
-        <>
-          <PlayCircle
-            className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-            onClick={()=>{
-              if (!disable) {
-                startShift();
-              }
-            }}
-          />
-          <StopCircle
-            className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-            onClick={()=>{
-              if (!disable) {
-                endShift();
-              }
-            }}
-          />
-        </>
-      );
-    }
+  if (!attendance?.checkin) {
+    // If no attendance, show only Play
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PlayCircle
+              className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
+              onClick={() => {
+                if (!disable) {
+                  startShift();
+                }
+              }}
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Start Shift</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
 
-    // If attendance exists and not on break, show Pause and Stop
+  if (OnBreak) {
+    // If on break, show Play and Stop
     return (
       <>
-        <PauseCircle
-          className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-          onClick={pauseShift}
-        />
-        <StopCircle
-          className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-          onClick={endShift}
-        />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PlayCircle
+                className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
+                onClick={() => {
+                  if (!disable) {
+                    startShift();
+                  }
+                }}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Resume Shift</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <StopCircle
+                className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
+                onClick={() => {
+                  if (!disable) {
+                    endShift();
+                  }
+                }}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>End Shift</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </>
     );
-  };
+  }
+
+  // If attendance exists and not on break, show Pause and Stop
+  return (
+    <>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PauseCircle
+              className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
+              onClick={pauseShift}
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Pause Shift</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <StopCircle
+              className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
+              onClick={endShift}
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>End Shift</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </>
+  );
+};
+
   return (
     <Card>
       <CardHeader>
