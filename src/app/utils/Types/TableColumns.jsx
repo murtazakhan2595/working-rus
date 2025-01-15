@@ -1137,49 +1137,6 @@ export const MyDtrTasksColumns = [
   },
 ];
 
-/**
- * EmployeeColumns
- *
- * Returns an array of column definitions for the Employee table.
- *
- * @returns {array} An array of column definitions.
- */
-export const EmployeesAttendanceColumns = [
-  {
-    dataField: "employee_id",
-    text: "Employees",
-    formatter: (cell, row) => (
-      <EmployeeNameInfo id={cell} showId showPosition />
-    ),
-  },
-
-  {
-    dataField: "monthly_stats",
-    text: "Present Days",
-    formatter: (cell) => <span>{cell?.Present}</span>
-  },
-  {
-    dataField: "monthly_stats",
-    text: "Absent Days",
-    formatter: (cell) => <span>{cell?.Absent}</span>,
-  },
-  {
-    dataField: "monthly_stats",
-    text: "Late Days",
-    formatter: (cell)=> <span>{cell?.Late}</span>
-  },
-  {
-    dataField: "monthly_stats",
-    text: "Attendance %",
-    formatter: (cell, row) => calculatePercentage(cell)
-  },
-  {
-    dataField: "",
-    text: "Actions",
-    formatter: (cell, row) => <EmployeeAttendenceActions row={row} />,
-  },
-];
-
 
 export const myAttendanceColumn = [
   {
