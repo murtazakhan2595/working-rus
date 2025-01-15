@@ -93,7 +93,7 @@ export function UserNav() {
               {`${employee?.first_name} ${employee?.last_name}`}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
-              {employee?.email}
+              {employee?.work_email}
             </p>
           </div>
         </DropdownMenuLabel>

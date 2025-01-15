@@ -32,13 +32,12 @@ import { PriorityList } from "data/Data";
 import { getAllTasks } from "app/hooks/taskManagment";
 
 const BoardGridView = ({ employees, projectId, filterData }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [AllBoards, setAllBoards] = useState([]);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
 
   const fetchData = async (isMounted) => {
     // debugger
-    setIsLoading(true);
     try {
       const boardsData = await getAllBoards({
         filterData: { project_id: [projectId] },
@@ -49,9 +48,9 @@ const BoardGridView = ({ employees, projectId, filterData }) => {
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
     } finally {
-      if (isMounted) {
-        setIsLoading(false);
-      }
+      // if (isMounted) {
+      //   setIsLoading(false);
+      // }
     }
   };
 
@@ -142,10 +141,10 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
     }));
   };
 
-  const fetchData = async () => {
+  const fetchData = async (isMounted) => {
     try {
       const taskData = await getAllTasks({ filterData });
-      if (taskData) {
+      if (taskData && isMounted) {
         setTasks(taskData);
       }
     } catch (error) {
@@ -154,7 +153,11 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
   };
 
   useEffect(() => {
-    fetchData();
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
   }, [filterData]);
 
   const handleDragStart = async (e, taskId) => {
@@ -166,10 +169,9 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
     e.preventDefault();
     const taskId = e.dataTransfer.getData("taskId");
     const sourceBoardId = e.dataTransfer.getData("sourceBoardId");
-
     if (sourceBoardId !== board.id) {
       await moveTask({ id: taskId, board_id: board.id });
-      fetchData();
+      reloadData();
     }
   };
 

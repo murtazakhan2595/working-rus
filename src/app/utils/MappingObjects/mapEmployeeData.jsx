@@ -266,7 +266,7 @@ async function getEmployeeInformation(data) {
     employee_location: data?.employee_location ?? "",
     joining_date: data?.joining_date ?? "",
     is_indirect_report_applicable: data.indirect_report ? true : false,
-    password: data?.password ?? "",
+    // password: data?.password ?? "",
     shift_assignment: data?.shift_assignment ?? null,
   };
   return employeeInformation;
