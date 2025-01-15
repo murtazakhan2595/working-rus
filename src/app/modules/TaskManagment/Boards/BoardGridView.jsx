@@ -61,7 +61,7 @@ const BoardGridView = ({ employees, projectId, filterData }) => {
     return () => {
       isMounted = false;
     };
-  }, [projectId,filterData]);
+  }, [projectId, filterData]);
 
   const toggleAddBoardModal = () => {
     if (showAddNewListModel) {
@@ -148,7 +148,7 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
     fetchData();
   }, [filterData]);
 
-  const handleDragStart = (e, taskId) => {
+  const handleDragStart = async (e, taskId) => {
     e.dataTransfer.setData("taskId", taskId);
     e.dataTransfer.setData("sourceBoardId", board.id);
   };
@@ -160,7 +160,7 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
 
     if (sourceBoardId !== board.id) {
       await moveTask({ id: taskId, board_id: board.id });
-      reloadData();
+      fetchData();
     }
   };
 

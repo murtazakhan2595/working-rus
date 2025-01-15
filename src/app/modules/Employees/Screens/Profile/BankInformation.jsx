@@ -5,10 +5,10 @@ import { connect } from "react-redux";
 import {
   getEmployeeBankDetailsData,
   saveEmployeeBankDetailsData,
-} from "../../../../hooks/employee.jsx";
-import { getBankDetails } from "../../../../utils/MappingObjects/mapEmployeeData.jsx";
-import { TextInput } from "../../../../../components/form-control.jsx";
-import PageLoader from "../../../../../components/PageLoader.jsx";
+} from "app/hooks/employee.jsx";
+import { mapEmployeeBankDetailPayloadData } from "app/utils/MappingObjects/mapEmployeeData.jsx";
+import { TextInput } from "components/form-control.jsx";
+import PageLoader from "components/PageLoader.jsx";
 import { Button } from "components/ui/button.jsx";
 import { validateEmployeeBankInformationForm } from "app/utils/FormSchema/employeeFormSchema.jsx";
 import { Card, CardContent } from "components/ui/card.jsx";
@@ -37,7 +37,7 @@ const BankInformation = ({
   }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
 
   const handleSubmit = (data) => {
-    const bandetails = getBankDetails(data);
+    const bandetails = mapEmployeeBankDetailPayloadData(data);
     const response = saveEmployeeBankDetailsData(
       baseUrl,
       employeeId,

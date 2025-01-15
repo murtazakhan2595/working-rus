@@ -16,8 +16,8 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "../src/@/components/ui/popover";
-import { RadioGroup, RadioGroupItem } from "../src/@/components/ui/radio-group";
+} from "src/@/components/ui/popover";
+import { RadioGroup, RadioGroupItem } from "src/@/components/ui/radio-group";
 import AttachmentUI from "components/ui/AttachmentUI";
 
 import {
@@ -34,14 +34,11 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "../src/@/components/ui/command";
-import { cn } from "./../src/@/lib/utils";
+} from "src/@/components/ui/command";
+import { cn } from "src/@/lib/utils";
 import { format, parse, isValid } from "date-fns";
-import { Calendar } from "../src/@/components/ui/calendar";
-
+import { Calendar } from "src/@/components/ui/calendar";
 import { PatternFormat } from "react-number-format";
-import { getFileSizeInKB } from "utils/fileUtils";
-
 const errorClassName = "text-red-100 text-sm font-[inter] font-normal ml-1";
 
 const SelectComponent = ({
@@ -69,7 +66,7 @@ const SelectComponent = ({
     onChange(name, newValue);
   };
   return (
-    <div className={`${classes} flex flex-col`}>
+    <div className={`${classes || ''} flex flex-col`}>
       {showLabel && (
         <Label className={`mb-4`} htmlFor={name}>
           {required && <span className="text-red-600">* </span>} {label}
