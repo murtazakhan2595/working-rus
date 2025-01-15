@@ -26,6 +26,8 @@ import { Trash } from "lucide-react";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { PageLoader } from "components";
 import { TaskStatus } from "data/Data";
+import { CheckBoxInput } from "components/form-control";
+import { addTask } from "app/hooks/taskManagment";
 
 const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -79,13 +81,44 @@ const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
     setIsEditCardOpen(true);
   };
 
+  const handleStatusChange = async (name, value, values) => {
+    try {
+      const newStatus = value ? "COMPLETED" : "INPROGRESS";
+      const response = await addTask({
+        ...taskData,
+        status: newStatus,
+      })
+      setTaskData(response)
+      toast.success("Task status updated successfully");
+    } catch (error) {
+      console.error("Error updating task status:", error);
+    }
+  };
+
   function CardValues({ values }) {
+    
     const items = [
       ...(values?.end_date
         ? [
             {
               label: "Due Date",
-              value: moment(values?.end_date).format("DD MMM"),
+              value: (
+                <div className="flex items-center justify-between w-full gap-4">
+                  <div>{moment(values?.end_date).format("DD MMM")}</div>
+                  <div className="flex items-center space-x-2">
+                    <CheckBoxInput
+                      label={
+                        values.status === "COMPLETED"
+                          ? "Completed"
+                          : "In Progress"
+                      }
+                      name="status"
+                      value={values.status === "COMPLETED"}
+                      onChange={(name,value) => handleStatusChange(name, value, values)}
+                    />
+                  </div>
+                </div>
+              ),
             },
           ]
         : []),
@@ -95,16 +128,6 @@ const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
               label: "Priority",
               value: PriorityList.find(
                 (option) => option.value === values?.priority
-              )?.label,
-            },
-          ]
-        : []),
-      ...(values?.status
-        ? [
-            {
-              label: "Status",
-              value: TaskStatus.find(
-                (option) => option.value === values?.status
               )?.label,
             },
           ]

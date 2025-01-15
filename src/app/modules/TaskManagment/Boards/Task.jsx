@@ -13,8 +13,11 @@ import moment from "moment";
 import TaskDetail from "./TaskDetail";
 import { Card } from "components/ui/card";
 import AlertDialogue from "components/ui/AlertDialogue";
+import { CheckBoxInput } from "components/form-control";
+import { toast } from "react-toastify";
+import { addTask } from "app/hooks/taskManagment";
 
-const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
+const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -124,17 +127,22 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
           </div>
         </div>
         <div className="flex items-center gap-2 text-neutral-1000">
-          {task?.end_date && (
+          {/* {task?.end_date && (
             <div
               className={`flex gap-0.5 justify-center items-center text-sm p-2 rounded`}
             >
-              {/* Render TimeIcon component */}
               <TimeIcon color={getStatusIconColor(task?.end_date)} />
               <div className="my-auto">
-                {/* Display formatted date */}
                 {moment(task?.end_date).format("MMMM DD")}
               </div>
             </div>
+          )} */}
+          {task?.end_date && (
+            <TimeStatusIcon
+              task={task}
+              getStatusIconColor={getStatusIconColor}
+              onUpdate={onUpdate}
+            />
           )}
           <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
             <BiComment />
@@ -174,6 +182,63 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart }) => {
     </Card>
   );
 };
+
+const TimeStatusIcon = ({ task, getStatusIconColor, onUpdate }) => {
+  const [showCheckbox, setShowCheckbox] = useState(false);
+  const [isChecked, setIsChecked] = useState(task.status === "COMPLETED");
+
+  const handleStatusChange = async (name, value) => {
+    try {
+      console.log("Checkbox clicked:", name, value);
+      const newStatus = value ? "COMPLETED" : "INPROGRESS";
+      const response = await addTask({
+        ...task,
+        status: newStatus,
+      });
+      setIsChecked(value);
+      onUpdate(task.id, { status: newStatus });
+      toast.success("Task status updated successfully");
+
+      if (response) {
+      }
+    } catch (error) {
+      console.error("Error updating task status:", error);
+      toast.error("Failed to update task status");
+    }
+  };
+
+  return (
+    <div
+      className="flex items-center text-sm"
+      onMouseEnter={() => setShowCheckbox(true)}
+      onMouseLeave={() => setShowCheckbox(false)}
+    >
+      <div className="relative w-5 h-5">
+        <div
+          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
+            showCheckbox ? "opacity-100 z-10" : "opacity-0 z-0"
+          }`}
+        >
+          <CheckBoxInput
+            label=""
+            name="status"
+            value={isChecked}
+            onChange={handleStatusChange}
+          />
+        </div>
+        <div
+          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
+            showCheckbox ? "opacity-0 z-0" : "opacity-100 z-10"
+          }`}
+        >
+          <TimeIcon color={getStatusIconColor(task?.end_date)} />
+        </div>
+      </div>
+      <div className="ml-2">{moment(task?.end_date).format("MMMM DD")}</div>
+    </div>
+  );
+};
+
 
 const mapStateToProps = (state) => {
   return {

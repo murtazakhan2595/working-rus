@@ -26,7 +26,7 @@ const getStatusIconColor = (date) => {
   if (status === "Due Today") {
     return "#FF9A1F";
   } else if (status === "Overdue") {
-    return "#fff";
+     return "#FF4C4C"; 
   } else {
     return "#5C5E64";
   }
