@@ -677,6 +677,7 @@ const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
           className="w-4"
           disabled={disabled}
           onChange={() => {
+            console.log("value onchange", value);
             onChange(name, !value);
           }}
         />

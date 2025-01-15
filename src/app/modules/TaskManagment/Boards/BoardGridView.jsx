@@ -132,6 +132,15 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  const updateTaskLocally = (taskId, updatedData) => {
+    setTasks((prevTasks) => ({
+      ...prevTasks,
+      results: prevTasks.results.map((task) =>
+        task.id === taskId ? { ...task, ...updatedData } : task
+      ),
+    }));
+  };
+
   const fetchData = async (isMounted) => {
     try {
       const taskData = await getAllTasks({ filterData });
@@ -224,6 +233,7 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
                 boardId={board.id}
                 reloadData={() => fetchData(true)}
                 onDragStart={handleDragStart}
+                onUpdate={updateTaskLocally}
               />
             </div>
           ))}
