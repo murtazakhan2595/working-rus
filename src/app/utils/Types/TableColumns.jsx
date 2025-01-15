@@ -43,6 +43,7 @@ import {
 import { MembersList } from "app/modules/TaskManagment/Sections";
 import { calculatePercentage } from "utils/renderValues";
 import { StatusLabelAttendance } from "components/StatusLabel";
+import { formatDuration } from "utils/renderValues";
 /**
  * EmployeeColumns
  *
@@ -1195,22 +1196,26 @@ export const myAttendanceColumn = [
     text: "Check Out",
     dataField: "checkout",
     formatter: (cell) =>
-      cell ? <span>{moment(cell?.replace("Z","")).format("h:mm A")}</span> : "Not Checked Out",
+      cell ? (
+        <span>{moment(cell?.replace("Z", "")).format("h:mm A")}</span>
+      ) : (
+        "Not Checked Out"
+      ),
   },
   {
     text: "Break",
     dataField: "break_duration",
-    formatter: (cell) => <>{`${cell} hrs`}</>,
+    formatter: (cell) => <>{formatDuration(cell)}</>,
   },
   {
     text: "Overtime",
     dataField: "overtime_hours",
-    formatter: (cell) => <>{`${cell} hrs`}</>,
+    formatter: (cell) => <>{formatDuration(cell)}</>,
   },
   {
     text: "Productivity",
     dataField: "payable_hours",
-    formatter: (cell) => <>{`${cell} hrs`}</>,
+    formatter: (cell) => <>{formatDuration(cell)}</>,
   },
   {
     dataField: "status",
