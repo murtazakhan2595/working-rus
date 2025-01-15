@@ -41,6 +41,9 @@ const MyDtr = () => {
     employee_id: userProfile.id,
     date_range: GetDateRange("week"),
   });
+
+  console.log("FILTERDATA", filterData);
+  console.log("ACIVE FILTER", activeFilter);
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {

@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { convertUTCToLocal } from "app/hooks/attendance";
 import { formatTimeWithAMPM } from "app/hooks/attendance";
+import {formatDuration} from "utils/renderValues";
+import { renderDate } from "utils/renderValues";
 
 export default function EmployeeSelfTimesheet({
   employeeShift,
@@ -102,7 +104,7 @@ export default function EmployeeSelfTimesheet({
               <span>
                 {moment(employeeShift.shift_start_time).format("hh:mm A") +
                   " - " +
-                 moment( employeeShift.shift_end_time).format("hh:mm A")}
+                  moment(employeeShift.shift_end_time).format("hh:mm A")}
               </span>
             ) : (
               "No shift assigned"
@@ -138,8 +140,8 @@ export default function EmployeeSelfTimesheet({
                   cy="64"
                 />
               </svg>
-              <div className="absolute text-2xl font-bold transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2">
-                {attendance?.payable_hours ?? "0"} hrs
+              <div className="absolute text-2xl font-bold transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2 align-middle text-center">
+                {formatDuration(attendance?.payable_hours)}
               </div>
             </div>
             {employeeShift?.shift_start_time &&
@@ -149,11 +151,11 @@ export default function EmployeeSelfTimesheet({
           <div className="flex justify-between mt-4">
             <div>
               <div className="text-slate-1200">Break</div>
-              <div>{attendance?.break_duration ?? "0"} hrs</div>
+              <div>{formatDuration(attendance?.break_duration)} </div>
             </div>
             <div>
               <div className="text-slate-1200">Overtime</div>
-              <div>{attendance?.overtime_hours ?? "0"} hrs</div>
+              <div>{formatDuration(attendance?.overtime_hours) ?? "0"}</div>
             </div>
           </div>
         </div>
