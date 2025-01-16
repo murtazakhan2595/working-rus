@@ -43,6 +43,7 @@ import {
 import { MembersList } from "app/modules/TaskManagment/Sections";
 import { calculatePercentage } from "utils/renderValues";
 import { StatusLabelAttendance } from "components/StatusLabel";
+import { formatDuration } from "utils/renderValues";
 /**
  * EmployeeColumns
  *
@@ -1136,49 +1137,6 @@ export const MyDtrTasksColumns = [
   },
 ];
 
-/**
- * EmployeeColumns
- *
- * Returns an array of column definitions for the Employee table.
- *
- * @returns {array} An array of column definitions.
- */
-export const EmployeesAttendanceColumns = [
-  {
-    dataField: "employee_id",
-    text: "Employees",
-    formatter: (cell, row) => (
-      <EmployeeNameInfo id={cell} showId showPosition />
-    ),
-  },
-
-  {
-    dataField: "monthly_stats",
-    text: "Present Days",
-    formatter: (cell) => <span>{cell?.Present}</span>
-  },
-  {
-    dataField: "monthly_stats",
-    text: "Absent Days",
-    formatter: (cell) => <span>{cell?.Absent}</span>,
-  },
-  {
-    dataField: "monthly_stats",
-    text: "Late Days",
-    formatter: (cell)=> <span>{cell?.Late}</span>
-  },
-  {
-    dataField: "monthly_stats",
-    text: "Attendance %",
-    formatter: (cell, row) => calculatePercentage(cell)
-  },
-  {
-    dataField: "",
-    text: "Actions",
-    formatter: (cell, row) => <EmployeeAttendenceActions row={row} />,
-  },
-];
-
 
 export const myAttendanceColumn = [
   {
@@ -1195,22 +1153,26 @@ export const myAttendanceColumn = [
     text: "Check Out",
     dataField: "checkout",
     formatter: (cell) =>
-      cell ? <span>{moment(cell).format("h:mm A")}</span> : "Not Checked Out",
+      cell ? (
+        <span>{moment(cell?.replace("Z", "")).format("h:mm A")}</span>
+      ) : (
+        "Not Checked Out"
+      ),
   },
   {
     text: "Break",
     dataField: "break_duration",
-    formatter: (cell) => <>{`${cell} hrs`}</>,
+    formatter: (cell) => <>{formatDuration(cell)}</>,
   },
   {
     text: "Overtime",
     dataField: "overtime_hours",
-    formatter: (cell) => <>{`${cell} hrs`}</>,
+    formatter: (cell) => <>{formatDuration(cell)}</>,
   },
   {
     text: "Productivity",
     dataField: "payable_hours",
-    formatter: (cell) => <>{`${cell} hrs`}</>,
+    formatter: (cell) => <>{formatDuration(cell)}</>,
   },
   {
     dataField: "status",

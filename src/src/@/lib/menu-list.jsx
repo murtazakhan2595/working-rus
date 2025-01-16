@@ -86,7 +86,7 @@ export function getMenuList(pathname, userRole) {
   const peopleTeamMenus = [
     createMenu(
       "",
-      "Team Management",
+      "People Team",
       Users,
       [
         Config.PROFIL_MANAGMENT &&

@@ -9,6 +9,14 @@ import {
 } from "lucide-react";
 import { convertUTCToLocal } from "app/hooks/attendance";
 import { formatTimeWithAMPM } from "app/hooks/attendance";
+import {formatDuration} from "utils/renderValues";
+import { renderDate } from "utils/renderValues";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "src/@/components/ui/tooltip";
 
 export default function EmployeeSelfTimesheet({
   employeeShift,
@@ -21,62 +29,109 @@ export default function EmployeeSelfTimesheet({
 }) {
   console.log("BREAK STAUS", OnBreak);
   // Determine which icons to show
-  const renderShiftControlIcons = (disable) => {
-    if (attendance && attendance.checkout) {
-      return null;
-    }
-    if (!attendance?.checkin) {
-      // If no attendance, show only Play
-      return (
-        <PlayCircle
-          className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-          onClick={() => {
-            if (!disable) {
-              startShift();
-            }
-          }}
-        />
-      );
-    }
+const renderShiftControlIcons = (disable) => {
+  if (attendance && attendance.checkout) {
+    return null;
+  }
 
-    if (OnBreak) {
-      // If on break, show Play and Stop
-      return (
-        <>
-          <PlayCircle
-            className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-            onClick={()=>{
-              if (!disable) {
-                startShift();
-              }
-            }}
-          />
-          <StopCircle
-            className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-            onClick={()=>{
-              if (!disable) {
-                endShift();
-              }
-            }}
-          />
-        </>
-      );
-    }
+  if (!attendance?.checkin) {
+    // If no attendance, show only Play
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PlayCircle
+              className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
+              onClick={() => {
+                if (!disable) {
+                  startShift();
+                }
+              }}
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Start Shift</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
 
-    // If attendance exists and not on break, show Pause and Stop
+  if (OnBreak) {
+    // If on break, show Play and Stop
     return (
       <>
-        <PauseCircle
-          className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-          onClick={pauseShift}
-        />
-        <StopCircle
-          className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-          onClick={endShift}
-        />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PlayCircle
+                className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
+                onClick={() => {
+                  if (!disable) {
+                    startShift();
+                  }
+                }}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Resume Shift</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <StopCircle
+                className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
+                onClick={() => {
+                  if (!disable) {
+                    endShift();
+                  }
+                }}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>End Shift</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </>
     );
-  };
+  }
+
+  // If attendance exists and not on break, show Pause and Stop
+  return (
+    <>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PauseCircle
+              className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
+              onClick={pauseShift}
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Pause Shift</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <StopCircle
+              className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
+              onClick={endShift}
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>End Shift</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </>
+  );
+};
+
   return (
     <Card>
       <CardHeader>
@@ -102,7 +157,7 @@ export default function EmployeeSelfTimesheet({
               <span>
                 {moment(employeeShift.shift_start_time).format("hh:mm A") +
                   " - " +
-                 moment( employeeShift.shift_end_time).format("hh:mm A")}
+                  moment(employeeShift.shift_end_time).format("hh:mm A")}
               </span>
             ) : (
               "No shift assigned"
@@ -138,8 +193,8 @@ export default function EmployeeSelfTimesheet({
                   cy="64"
                 />
               </svg>
-              <div className="absolute text-2xl font-bold transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2">
-                {attendance?.payable_hours ?? "0"} hrs
+              <div className="absolute text-2xl font-bold transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2 align-middle text-center">
+                {formatDuration(attendance?.payable_hours)}
               </div>
             </div>
             {employeeShift?.shift_start_time &&
@@ -149,11 +204,11 @@ export default function EmployeeSelfTimesheet({
           <div className="flex justify-between mt-4">
             <div>
               <div className="text-slate-1200">Break</div>
-              <div>{attendance?.break_duration ?? "0"} hrs</div>
+              <div>{formatDuration(attendance?.break_duration)} </div>
             </div>
             <div>
               <div className="text-slate-1200">Overtime</div>
-              <div>{attendance?.overtime_hours ?? "0"} hrs</div>
+              <div>{formatDuration(attendance?.overtime_hours) ?? "0"}</div>
             </div>
           </div>
         </div>

@@ -45,7 +45,6 @@ export const ProjectBoardColumn = [
   {
     text: "Labels",
     dataField: "label",
-    width: "25%",
     formatter: (cell) => (
       <Labels labelsSelected={cell || []} editMode={false} />
     ),

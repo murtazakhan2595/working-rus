@@ -7,7 +7,7 @@ import { ProjectBoardColumn } from "app/modules/TaskManagment/Sections";
 import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { RxPlus } from "react-icons/rx";
-import CreateCard from "app/modules/TaskManagment/Boards/CreateCardModal";
+import CreateAndEditCardForm from "app/modules/TaskManagment/Boards/Sections/CreateAndEditCardForm";
 
 const BoardListView = ({ filterData, projectId }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -82,7 +82,7 @@ const BoardListView = ({ filterData, projectId }) => {
         <span className="ml-2">Add Task</span>
       </Button>
       {openCreateCard && (
-        <CreateCard
+        <CreateAndEditCardForm
           onClose={() => {
             setOpenCreateCard(false);
             fetchData(true);

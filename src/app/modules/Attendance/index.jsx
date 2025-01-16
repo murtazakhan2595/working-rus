@@ -8,7 +8,7 @@ import {
   getWeeklySummary,
 } from "app/hooks/attendance";
 import { PageLoader, DateRangeFilter, TableCustom } from "components";
-import { EmployeesAttendanceColumns } from "app/utils/Types/TableColumns";
+import { EmployeesAttendanceColumns } from "app/modules/Attendance/Sections/AttendanceTableColumns";
 import { LeaveStatusOverview } from "./Sections/LeaveStatusOverview";
 import { StatisticsChart } from "./Sections/StatisticsChart";
 import DepartmentOverview from "./Sections/DepartmentOverview";
@@ -46,6 +46,15 @@ const Attendance = () => {
     if (filterName === "department_name") {
       setSelectedDepartment(filterValue);
     }
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
     // if (filterName === "date_range") setSelectedDateRange(filterValue);
     // setActiveTab({ employee_id: userId, date_range: filterValue });
   };

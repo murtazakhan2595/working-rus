@@ -28,6 +28,21 @@ export function mapEmployeePayloadData(data) {
   // Return the constructed payload
   return payload;
 }
+export function mapEmployeeBankDetailPayloadData(data) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the object
+  for (const key in EmployeeBankDetails) {
+    // Check if the key exists in the data object
+    if (data.hasOwnProperty(key) && data[key]) {
+      // Add the key and its value to the payload
+      payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
 
 function mapEmployeeData(data) {
   const employee = Employee;
@@ -251,7 +266,7 @@ async function getEmployeeInformation(data) {
     employee_location: data?.employee_location ?? "",
     joining_date: data?.joining_date ?? "",
     is_indirect_report_applicable: data.indirect_report ? true : false,
-    password: data?.password ?? "",
+    // password: data?.password ?? "",
     shift_assignment: data?.shift_assignment ?? null,
   };
   return employeeInformation;
