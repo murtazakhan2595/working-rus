@@ -74,9 +74,8 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             setIsDeleteModalOpen(false);
           }}
           handleContinue={confirmDelete}
-          title="Confirm Delete?"
-          description="This action can't be undone. All information associated with this
-            will be lost."
+          title="Are you sure?"
+          description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
         />
       )}
       <div
@@ -132,12 +131,12 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             </div>
           </div>
           <div className="flex items-center gap-2 text-neutral-1000">
-          {task?.end_date && (
-            <TimeStatusIcon
-              task={task}
-              getStatusIconColor={getStatusIconColor}
-              onUpdate={onUpdate}
-            />
+            {task?.end_date && (
+              <TimeStatusIcon
+                task={task}
+                getStatusIconColor={getStatusIconColor}
+                onUpdate={onUpdate}
+              />
             )}
             <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
               <BiComment />

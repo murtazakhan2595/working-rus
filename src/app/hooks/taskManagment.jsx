@@ -257,13 +257,13 @@ const addTask = async (payload) => {
           headers: headers(),
         }
       );
-      if (response.status === 200) return true;
+      if (response.status === 200) return response;
       else return false;
     } else {
       const response = await axios.post(`${baseUrl}/task/`, payload, {
         headers: headers(),
       });
-      if (response.status === 201) return true;
+      if (response.status === 201) return response;
       else return false;
     }
   } catch (error) {
@@ -789,7 +789,36 @@ const getCommentsWithAttachments = async (filter) => {
     console.error("Error fetching comments:", error);
   }
 };
+
+const addSubtask = async (payload) => {
+  try {
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/subtask/${payload.id}/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) return true;
+      else return false;
+    } else {
+      const response = await axios.post(`${baseUrl}/subtask/`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201) return true;
+      else return false;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding task:", error);
+    return false;
+  }
+}
 export {
+  addSubtask,
   getAllProjects,
   getAllTasks,
   addProject,
