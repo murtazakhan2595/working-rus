@@ -16,7 +16,7 @@ import {
   fetchEmployeesDetail,
   fetchUser,
 } from "state/slices/EmpSlice";
-import { options } from "joi";
+import { fetchLeaveComponents } from "state/slices/LeaveManagementSlice";
 import {
   ArrowDown,
   ArrowRight,
@@ -805,5 +805,6 @@ export const handleUpdateProfile = (dispatch, data) => {
   dispatch(fetchOrganizations());
   dispatch(fetchTaskLabels());
   dispatch(fetchReportingManagers());
+  dispatch(fetchLeaveComponents());
   dispatch(fetchProjects(userprofile));
 };

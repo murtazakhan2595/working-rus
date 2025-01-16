@@ -38,7 +38,9 @@ const EmployeeNameInfo = ({
 
       <div className="flex flex-col flex-wrap ml-2 whitespace-break-spaces">
         {id && showId && (
-          <div className="sm:inline">ID: {userProfile.serial_number}</div>
+          <div className="sm:inline">
+            ID: {userProfile?.serial_number || ""}
+          </div>
         )}
         <div className="">{`${name ?? userProfile?.name ?? "N/A"}`}</div>
         {date && <p className="sm:inline text-sm">{date}</p>}

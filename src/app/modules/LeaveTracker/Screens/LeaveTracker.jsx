@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { PageLoader, Header } from "components";
 import { MyLeavesColumns } from "app/utils/Types/TableColumns";
+import { fetchLeaveComponents } from "state/slices/LeaveManagementSlice";
 
 import { FaPlus } from "react-icons/fa";
 import { LeaveStatus } from "data/Data";
@@ -34,10 +35,9 @@ import EmployeeLeavesDetailSheet from "../Sections/EmployeeLeavesDetailSheet.jsx
 import { getLeaveStatsEmployee } from "app/hooks/leaveTracker.jsx";
 import { getLeavestatesCustomApi } from "app/hooks/leaveTracker.jsx";
 
-
 const LeaveTracker = ({ userProfile, departments }) => {
   const [Leave, setLeave] = useState([]);
-  const [leaveTypesOfEmployee, setLeaveTypesOfEmployee] = useState([]);
+  let dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("records");
   const [recordsFilterData, setRecordsFilterData] = useState({});
   const [typesFilterData, setTypesFilterData] = useState({});
@@ -74,7 +74,7 @@ const LeaveTracker = ({ userProfile, departments }) => {
   };
 
   const fetchData = async () => {
-  setIsRecordsLoading(true);
+    setIsRecordsLoading(true);
     const filterData = {
       ...recordsFilterData,
       ...(userProfile.role === 2 ? { direct_report: userProfile.id } : {}),
@@ -169,7 +169,6 @@ const LeaveTracker = ({ userProfile, departments }) => {
           },
         ];
   const onCheckedChange = async (value, type) => {
-    console.log("INFO", value, type);
     const updatedComponent = { ...type, status: value };
     const response = await saveLeaveComponents(updatedComponent);
     if (response) {
@@ -178,6 +177,7 @@ const LeaveTracker = ({ userProfile, departments }) => {
           item.id === updatedComponent.id ? updatedComponent : item
         )
       );
+      dispatch(fetchLeaveComponents());
     }
   };
 
@@ -207,7 +207,7 @@ const LeaveTracker = ({ userProfile, departments }) => {
                   key={tab.value}
                   value={tab.value}
                   className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-                  >
+                >
                   {tab.label}
                 </TabsTrigger>
               ))}

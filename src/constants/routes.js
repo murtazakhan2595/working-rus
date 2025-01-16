@@ -20,7 +20,6 @@ import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
 import Employee from "app/modules/Employees/Employee.jsx";
 import { EditEmployeeProfile } from "app/modules/Employees/Screens/Profile";
 import { MyDtr } from "app/modules/DTR";
-import CreateTask from "app/modules/DTR/CreateTask.jsx";
 import ForgotPassword from "app/modules/Login/ForgotPassword.jsx";
 import ResetPassword from "app/modules/Login/ResetPassword.jsx";
 import ComingSoon from "app/modules/comingSoon/ComingSoon.jsx";
@@ -125,11 +124,6 @@ const SidebarRoutes = [
       component: <MyLeaveTracker />,
       name: "My Leave Tracker",
     },
-  Config.DAILY_TASK_REPORT && {
-    path: "/create-task",
-    component: <CreateTask />,
-    name: "Create Task",
-  },
   Config.DAILY_TASK_REPORT &&
     Config.MY_DAILY_TASK_REPORT && {
       path: "/my-dtr",

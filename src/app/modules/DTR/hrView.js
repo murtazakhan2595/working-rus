@@ -12,7 +12,7 @@ import { TbCircleDashed } from "react-icons/tb";
 import { department, priority2Options, status2Options, statusOptions, typeOptions } from "../../../data/Data";
 import Select from "react-select";
 import { fetchEmployees } from "../../../state/slices/EmpSlice";
-import { postTasks } from "../../../state/slices/DtrPostSlice";
+import { postTasks } from "../../../state/slices/LeaveManagementSlice";
 import { CiViewBoard } from "react-icons/ci";
 import { CiCircleMore } from "react-icons/ci";
 import { IoMdArrowDropdownCircle, IoMdArrowDropupCircle } from "react-icons/io";

@@ -14,14 +14,14 @@ export function StatsCards({ attendanceData }) {
     late: 0,
   });
 
-  const attendanceStats = async () => {
+  const attendanceStats = async (isMounted) => {
     setLoading(true);
     try {
       const response = await getAttendanceStats();
-      if (response ) {
+      if (response && isMounted) {
         setCardStats({
-          present: response?.daily_stats?.Present,
-          absent: response?.daily_stats?.Absent,
+          present: response?.attendance_stats?.Present,
+          absent: response?.attendance_stats?.Absent,
           late: response?.daily_stats?.Late,
         });
       }
@@ -39,11 +39,17 @@ export function StatsCards({ attendanceData }) {
     { title: "Absent", value: cardStats?.absent },
     {
       title: "Not Arrived",
-      value: parseInt(employees?.length - attendanceData?.length),
+      value:
+        (parseInt(employees?.length) || 0) -
+        (parseInt(cardStats?.present) || 0 + parseInt(cardStats?.late) || 0),
     },
   ];
   useEffect(() => {
-    attendanceStats();
+    let isMounted = true;
+    attendanceStats(isMounted);
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (

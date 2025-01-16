@@ -1,6 +1,3 @@
-"use client";
-// done
-
 import { Link, useNavigate } from "react-router-dom";
 import { LayoutGrid, LogOut, User } from "lucide-react";
 
@@ -9,13 +6,13 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "../../src/@/components/ui/avatar";
+} from "src/@/components/ui/avatar";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
   TooltipProvider,
-} from "../../src/@/components/ui/tooltip";
+} from "src/@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,12 +21,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../src/@/components/ui/dropdown-menu";
-import { setUserLogout } from "../../state/actions/UserAction";
+} from "src/@/components/ui/dropdown-menu";
+import { setUserLogout } from "state/actions/UserAction";
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import axios from "axios";
-// import getNavigation from 'app/utils/Types/Navigation';
 
 export function UserNav() {
   const employee = useSelector((state) => state.emp.user_details);
