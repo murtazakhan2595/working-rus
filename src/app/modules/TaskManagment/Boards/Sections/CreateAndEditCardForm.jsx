@@ -38,6 +38,8 @@ import { PageLoader } from "components";
 import DialogBox from "components/DialogBox";
 import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
 import { CheckBoxInput } from "components/form-control";
+import Subtasks from "../../Sections/SubTask";
+import { addSubtask } from "app/hooks/taskManagment";
 
 const CreateAndEditCardForm = ({
   taskId,
@@ -201,6 +203,15 @@ const CreateAndEditCardForm = ({
       // Submit the task
       const response = await addTask(finalData);
       if (response) {
+         const subtaskPromises = (formData.subtasks || []).map((subtask) =>
+           addSubtask({
+             name: subtask.name,
+             is_completed: subtask.is_completed,
+             assigned_to: subtask.assigned_to,
+             tasks: response.id,
+           })
+         );
+         await Promise.all(subtaskPromises);
         //  setShowSuccessMessage(true);
         toast.success(`Task ${isEdit ? "Updated" : "Added"} Successfully!`, {
           position: toast.POSITION.TOP_RIGHT,
@@ -277,7 +288,7 @@ const CreateAndEditCardForm = ({
                         placeholder="Select Project"
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
-                          props.setFieldValue('board_id', null);
+                          props.setFieldValue("board_id", null);
                           fetchBoardListByProjectId(true, value);
                         }}
                       />
@@ -396,8 +407,8 @@ const CreateAndEditCardForm = ({
                           <SelectComponent
                             name="priority"
                             options={PriorityList}
-                        showLabel={false}
-                        error={props.errors.priority}
+                            showLabel={false}
+                            error={props.errors.priority}
                             touch={props.touched.priority}
                             value={props.values.priority}
                             // required
@@ -480,6 +491,21 @@ const CreateAndEditCardForm = ({
                               props.setFieldValue("relation", value);
                             }}
                             projectId={projectId}
+                            taskId={taskId}
+                          />
+                        }
+                      />
+                      <TaskInputDetails
+                        title={"Subtasks"}
+                        content={
+                          <Subtasks
+                            items={props.values.subtasks || []}
+                            onChange={(items) => {
+                              props.setFieldValue("subtasks", items);
+                            }}
+                            editMode={true}
+                            employees={employees}
+                            projectMembers={projectDetail.project_members || []}
                             taskId={taskId}
                           />
                         }
