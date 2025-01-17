@@ -60,7 +60,7 @@ const BoardGridView = ({ employees, projectId, filterData }) => {
     return () => {
       isMounted = false;
     };
-  }, [projectId, filterData]);
+  }, [projectId]);
 
   const toggleAddBoardModal = () => {
     if (showAddNewListModel) {

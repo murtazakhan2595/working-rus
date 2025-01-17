@@ -12,7 +12,7 @@ import { ArrowLeft } from "lucide-react";
 import { DateInput } from "components/form-control";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
-import { SelectMultiInputComponent } from "components/form-control";
+import { FilterInput } from "components/form-control";
 import { PriorityList, TaskSortingFilters } from "data/Data";
 import { getProjectById, addProject } from "app/hooks/taskManagment";
 import { AlignRight } from "lucide-react";
@@ -63,7 +63,7 @@ const Board = ({ TaskLabelList }) => {
   ) => {
     const updatedFilters = { ...filterData };
 
-    if (filterName === "end_date") {
+    if (filterName === "end_date" ||filterName === "name") {
       if (filterValue) {
         // Update end_date with the provided value
         updatedFilters[filterName] = filterValue;
@@ -110,9 +110,22 @@ const Board = ({ TaskLabelList }) => {
             className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm cursor-pointer"
             onClick={() => navigate(-1)}
           />
-          <RenderProject projectId={projectId} projectName={projectData.name} />
+          <RenderProject
+            projectId={projectId}
+            projectName={projectData?.name}
+          />
         </div>
         <div className="flex items-center justify-end gap-3 flex-wrap">
+          <FilterInput
+            filters={[
+              {
+                type: "search",
+                placeholder: "Search by Task Name",
+                name: "name",
+              },
+            ]}
+            onChange={handleFilterChange}
+          />
           <SortingFilters
             items={TaskSortingFilters}
             lists={[
