@@ -19,7 +19,7 @@ const EmployeeNameInfo = ({
   showBadge = false,
   showDepartment = false,
 }) => {
-  const userProfile = GetUser(id);
+  const userProfile = id ? GetUser(id) : {};
   return (
     <div className={`flex items-start ${className ?? ""}`}>
       <Avatar
