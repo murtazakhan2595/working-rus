@@ -110,7 +110,10 @@ const Board = ({ TaskLabelList }) => {
             className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm cursor-pointer"
             onClick={() => navigate(-1)}
           />
-          <RenderProject projectId={projectId} projectName={projectData.name} />
+          <RenderProject
+            projectId={projectId}
+            projectName={projectData?.name}
+          />
         </div>
         <div className="flex items-center justify-end gap-3 flex-wrap">
           <SortingFilters
@@ -151,6 +154,7 @@ const Board = ({ TaskLabelList }) => {
             onChange={(field, value) => {
               handleFilterChange(field, value);
             }}
+            showReset={true}
           />
           <MembersList
             members={projectData?.project_members || []}
