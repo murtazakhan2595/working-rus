@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { deleteTask } from "app/hooks/taskManagment";
 import { PriorityList } from "data/Data";
@@ -18,7 +18,7 @@ import { toast } from "react-toastify";
 import { addTask } from "app/hooks/taskManagment";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  //const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   // State to manage TaskDetail visibility
@@ -74,9 +74,8 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             setIsDeleteModalOpen(false);
           }}
           handleContinue={confirmDelete}
-          title="Confirm Delete?"
-          description="This action can't be undone. All information associated with this
-            will be lost."
+          title="Are you sure?"
+          description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
         />
       )}
       <div
@@ -132,12 +131,12 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             </div>
           </div>
           <div className="flex items-center gap-2 text-neutral-1000">
-          {task?.end_date && (
-            <TimeStatusIcon
-              task={task}
-              getStatusIconColor={getStatusIconColor}
-              onUpdate={onUpdate}
-            />
+            {task?.end_date && (
+              <TimeStatusIcon
+                task={task}
+                getStatusIconColor={getStatusIconColor}
+                onUpdate={onUpdate}
+              />
             )}
             <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
               <BiComment />
@@ -154,9 +153,8 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
       {isTaskDetailOpen && (
         <TaskDetail
           taskId={task.id} // Pass task Id as props to TaskDetail
-          handleDelete={handleDelete}
           isOpen={isTaskDetailOpen}
-          setIsOpen={(value) => {
+          setIsOpen={() => {
             setIsTaskDetailOpen(false);
             reloadData();
           }}
@@ -239,7 +237,6 @@ const TimeStatusIcon = ({ task, getStatusIconColor, onUpdate }) => {
     </div>
   );
 };
-
 
 const mapStateToProps = (state) => {
   return {

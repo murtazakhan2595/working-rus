@@ -3,9 +3,15 @@ import { ProjectName } from "utils/getValuesFromTables";
 import { IoIosArrowDown } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownTrigger } from "src/@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownTrigger,
+} from "src/@/components/ui/dropdown-menu";
 
-const RenderProject = ({ projectId }) => {
+const RenderProject = ({ projectId, projectName }) => {
   const navigate = useNavigate();
   const projects = useSelector((state) => state.common.projects);
   const [openDropdownRow, setOpenDropdownRow] = useState(false);
@@ -28,7 +34,7 @@ const RenderProject = ({ projectId }) => {
                 className="border-0 shadow-none bg-transparent flex py-2 font-bold leading-7 whitespace-nowrap border-b border-solid border-zinc-300 text-zinc-800"
                 onClick={toggleDropdown}
               >
-                <ProjectName value={projectId} />
+                {projectName ? projectName : <ProjectName value={projectId} />}
                 <IoIosArrowDown style={{ margin: "auto 0px 2px 5px" }} />
               </button>
             </DropdownMenuTrigger>

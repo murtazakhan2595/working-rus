@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { RxPlus } from "react-icons/rx";
 import { Members } from "../Sections";
 import { Formik } from "formik";
-import { addProject, getProjectById } from "app/hooks/taskManagment";
+import { addProject } from "app/hooks/taskManagment";
 import { TextInput, SelectComponent } from "components/form-control.jsx";
 import { Project } from "app/utils/Types/TaskManagment";
 import { useDispatch } from "react-redux";
@@ -51,26 +51,21 @@ const ProjectForm = ({
 
   const handleSubmit = async (payload) => {
     setIsLoading(true);
-    const formData = new FormData();
-    if (isEditMode) formData.append("id", editProject.id);
-    formData.append("name", payload.name || "");
-    formData.append("description", payload.description || "");
-    formData.append("start_date", payload.start_date || "");
-    // Append each member to formData
-    if (Array.isArray(payload.project_members)) {
-      payload.project_members.forEach((member) =>
-        formData.append("project_members", member)
-      );
-    }
-    formData.append("end_date", payload.end_date || "");
-    formData.append("color", payload.color || "");
-    formData.append("status", payload.status || "");
-    if (payload.profile instanceof File)
-      // Handle file fields
-      formData.append("profile", payload.profile);
     try {
-      const response = await addProject(formData);
+      const response = await addProject(
+        payload,
+        isEditMode ? editProject.id : null
+      );
       if (response) {
+        if (response.status === 201) {
+          toast.success("Project Added!", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        } else if (response.status === 200 && isEditMode) {
+          toast.success("Project Updated!", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        }
         dispatch(fetchProjects(userProfile));
         reload(true);
         setIsOpen(false);

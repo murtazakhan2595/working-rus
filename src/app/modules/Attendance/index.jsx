@@ -26,10 +26,11 @@ const Attendance = () => {
   const [weeklySummary, setWeeklySummary] = useState([]);
   const departments = useSelector((state) => state.common.departments);
   const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [activeTab, setActiveTab] = useState("week");
-  const [filterData, setFilterData] = useState({
-    // date_range: GetDateRange("week"),
-  });
+  const [activeTab, setActiveTab] = useState("day");
+  const [filterData, setFilterData] = useState({});
+  const [dateRange, setDateRange] = useState(
+    `${moment().format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`
+  );
   const [leaveStatus, setLeaveStatus] = useState({});
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -64,6 +65,7 @@ const Attendance = () => {
       const attendanceData = await getAttendanceSummary({
         options,
         filterData,
+        dateRange,
       });
       if (isMounted) {
         if (attendanceData) {
@@ -83,7 +85,7 @@ const Attendance = () => {
     return () => {
       isMounted = false;
     };
-  }, [options, filterData]);
+  }, [options, filterData,dateRange]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,13 +96,11 @@ const Attendance = () => {
       }
       const weeklySummary = await getWeeklySummary();
       if (weeklySummary) {
-        console.log("weeklySummary", weeklySummary);
         setWeeklySummary(weeklySummary);
       }
 
       const leaveStatus = await getLeaveStatusDaily();
       if (leaveStatus) {
-        console.log("leaveStatus", leaveStatus);
         setLeaveStatus(leaveStatus);
       }
     };
@@ -127,7 +127,7 @@ const Attendance = () => {
               {
                 type: "search",
                 placeholder: "Search by ID and Name",
-                name: "id_and_first_name",
+                name: "emp_id",
               },
               {
                 type: "select-one",
@@ -142,15 +142,17 @@ const Attendance = () => {
           <DateRangeFilter
             activeDateRange={activeTab}
             setDateRange={(dateRange) => {
-              setFilterData(() => {
-                const updatedFilters = {
-                  ...(dateRange.toUpperCase() === "DAY"
-                    ? { date: moment().format("YYYY-MM-DD") }
-                    : { date_range: GetDateRange(dateRange) }),
-                };
-                setActiveTab(dateRange);
-                return updatedFilters;
-              });
+              if (dateRange.toUpperCase() === "DAY") {
+                setDateRange(
+                  `${moment().format("YYYY-MM-DD")},${moment().format(
+                    "YYYY-MM-DD"
+                  )}`
+                );
+              } else {
+                setDateRange(GetDateRange(dateRange));
+              }
+              setActiveTab(dateRange);
+              return;
             }}
           />
         </div>
@@ -170,15 +172,6 @@ const Attendance = () => {
           </Card>
         )}
       </div>
-      {/* 
-
-      <div>
-        <StatsCards />
-      </div>
-
-      <div>
-        <EmployeesAttendence />
-      </div> */}
     </div>
   );
 };

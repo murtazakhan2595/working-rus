@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import SheetComponent from "../../../../components/ui/SheetComponent";
+import SheetComponent from "components/ui/SheetComponent";
 import { toast } from "react-toastify";
 import { Formik } from "formik";
-import { Switch } from "../../../../src/@/components/ui/switch";
-import { Label } from "../../../../src/@/components/ui/label";
-import { Button } from "../../../../components/ui/button";
+import { Switch } from "src/@/components/ui/switch";
+import { Label } from "src/@/components/ui/label";
+import { Button } from "components/ui/button";
 import { TextInput } from "components/form-control";
 import { saveLeaveComponents } from "app/hooks/leaveTracker";
 import { deleteLeaveComponent } from "app/hooks/leaveTracker";
@@ -12,6 +12,8 @@ import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { DetailCard } from "components/SheetCardExtension";
 import { DetailBox } from "components/SheetCardExtension";
+import { useDispatch } from "react-redux";
+import { fetchLeaveComponents } from "state/slices/LeaveManagementSlice";
 
 const AddTypeSheet = ({
   type,
@@ -38,6 +40,7 @@ const AddTypeSheet = ({
     employee_id: employeeId,
   };
 
+  let dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(openSheet || false);
   const [isEdit, setIsEdit] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
@@ -71,6 +74,7 @@ const AddTypeSheet = ({
       } else {
         toast.success("Leave Type added successfully");
       }
+      dispatch(fetchLeaveComponents());
       setIsOpen(false);
       reload();
     }

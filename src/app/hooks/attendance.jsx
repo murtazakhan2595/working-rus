@@ -139,15 +139,19 @@ const getAttendance = async (payload) => {
 
 const getAttendanceSummary = async (payload) => {
   console.log(payload, "PAYLOAD OF ATTENDANCE");
-
+  // debugger
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  let URL = `/attendance/summary/?${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  const dateRange = payload?.dateRange ? payload?.dateRange?.split(",") : [];
+  const end_date = dateRange[1] && dateRange[1] !== "null" ? dateRange[1] : "";
+  const start_date =
+    dateRange[0] && dateRange[0] !== "null" ? dateRange[0] : "";
+  let URL = `/attendance/summary/?${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}${
+    end_date ? `&end_date=${end_date}` : ""
+  }${start_date ? `&start_date=${start_date}` : ""}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -253,7 +257,7 @@ const getBreak = async (payload) => {
 const calculateBreak = async (payload) => {
   const breaks = await getBreak(payload);
   let breakDuration = 0; // total duration in minutes
-  console.log("BREAAKS IN ")
+  console.log("BREAAKS IN ");
   if (breaks && breaks.results) {
     breaks.results.forEach((element) => {
       const start = moment(element.starttime).utc(); // parse start time as UTC
@@ -409,12 +413,9 @@ const getShiftById = async (id) => {
 
 const getAttendanceStats = async () => {
   try {
-    const response = await axios.get(
-      `${baseUrl}/attendance/summary/overall/?page=1`,
-      {
-        headers: headers(),
-      }
-    );
+    const response = await axios.get(`${baseUrl}/attendance/summary/overall/`, {
+      headers: headers(),
+    });
     const attendanceSummary = response.data;
     return attendanceSummary;
   } catch (error) {
@@ -500,7 +501,7 @@ const getRecentActivities = async (payload, attendance, userProfile) => {
   console.log("GETBREAKS", getBreaks);
   if (attendance.checkout) {
     recentActivities.push({
-      time: moment(attendance.checkout?.replace("Z","")).format("hh:mm a"),
+      time: moment(attendance.checkout?.replace("Z", "")).format("hh:mm a"),
       activity: "Check out",
       description: "Checked out for the day",
       timestamp: moment(attendance.checkout),

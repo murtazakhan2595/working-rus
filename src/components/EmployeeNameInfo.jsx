@@ -1,5 +1,4 @@
 import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
-import { getRandomColor } from "utils/renderValues";
 import Avatar from "./ui/Avatar";
 import { Badge } from "./ui/badge";
 import { GetUser } from "utils/getValuesFromTables";
@@ -20,7 +19,7 @@ const EmployeeNameInfo = ({
   showBadge = false,
   showDepartment = false,
 }) => {
-  const userProfile = GetUser(id);
+  const userProfile = id ? GetUser(id) : {};
   return (
     <div className={`flex items-start ${className ?? ""}`}>
       <Avatar
@@ -38,7 +37,9 @@ const EmployeeNameInfo = ({
 
       <div className="flex flex-col flex-wrap ml-2 whitespace-break-spaces">
         {id && showId && (
-          <div className="sm:inline">ID: {userProfile.serial_number}</div>
+          <div className="sm:inline">
+            ID: {userProfile?.serial_number || ""}
+          </div>
         )}
         <div className="">{`${name ?? userProfile?.name ?? "N/A"}`}</div>
         {date && <p className="sm:inline text-sm">{date}</p>}

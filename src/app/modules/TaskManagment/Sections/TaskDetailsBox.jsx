@@ -6,7 +6,7 @@ export default function TaskDetailBox({
   editMode = true,
 }) {
   return (
-    <div className="flex w-full">
+    <div className="flex w-full items-center">
       {dataContent && (
         <div className={`${editMode ? "w-[calc(100%_-_56px)]" : ""}`}>
           {dataContent}

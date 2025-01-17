@@ -4,7 +4,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../../../src/@/components/ui/popover";
+} from "src/@/components/ui/popover";
 import {
   TextInput,
   SelectComponent,

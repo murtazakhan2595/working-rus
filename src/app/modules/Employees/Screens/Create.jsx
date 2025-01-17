@@ -13,7 +13,7 @@ import {
   DialogFooter,
   // DialogCancel,
   // DialogAction,
-} from "../../../../src/@/components/ui/dialog.jsx";
+} from "src/@/components/ui/dialog.jsx";
 import { Button } from "../../../../components/ui/button.jsx";
 import {
   Card,

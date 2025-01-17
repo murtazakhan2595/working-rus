@@ -44,5 +44,6 @@ const CardTypes = {
   status: "TODO",
   task_checklist: [],
   relation: [],
+  subtasks: [],
 };
 export { Project, AddList, CardTypes, Task };

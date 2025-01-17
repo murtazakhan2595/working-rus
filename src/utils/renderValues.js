@@ -157,7 +157,6 @@ export const formatDuration = (duration) => {
   return `${hours}h ${minutes}min`;
 };
 
-
 export const GetDateRange = (period) => {
   if (period.toUpperCase() === "WEEK") {
     // Current week start and end
@@ -216,8 +215,9 @@ export const GetShiftTotalHours = (shiftStartTime, shiftEndTime, period) => {
 };
 
 export const calculatePercentage = (stats) => {
-  const total = stats.Present + stats.Absent;
-  return total > 0 ? ((stats.Present / total) * 100).toFixed(2) : "0.00";
+  if (!stats) return 0;
+  const total = parseInt(stats.Present) || 0 + parseInt(stats.Absent) || 0;
+  return total > 0 ? (parseInt(stats.Present || 0) / total) * 100 : 0;
 };
 
 export const calculateTotal = (data, label) => {
@@ -234,7 +234,6 @@ export const calculateTotalCount = (data, label, value) => {
     return count + (item[label] === value ? 1 : 0);
   }, 0);
 };
-
 
 export const calculateTaskCount = (data, statusType) => {
   console.log(data);

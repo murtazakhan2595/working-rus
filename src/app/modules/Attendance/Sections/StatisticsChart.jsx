@@ -12,12 +12,6 @@ import {
 } from "recharts";
 import { Card, CardHeader, CardTitle, CardContent } from "components/ui/card"; // Adjust import path if needed
 
-// const chartData = [
-//   { week: "W1", Present: 150, Absent: 10, Late: 5 },
-//   { week: "W2", Present: 150, Absent: 12, Late: 6 },
-//   { week: "W3", Present: 150, Absent: 9, Late: 4 },
-//   { week: "W4", Present: 150, Absent: 15, Late: 7 },
-// ];
 
 const barColors = {
   Present: "#7BE0AD", // Light green
@@ -26,12 +20,39 @@ const barColors = {
 };
 
 export function StatisticsChart({ weeklySummary }) {
-  const chartData = weeklySummary.map((item, index) => ({
-    week: `W${index + 1}`,
-    Present: item.Present,
-    Absent: item.Absent,
-    Late: item.Late,
-  }));
+  const chartData = React.useMemo(() => {
+    return [
+      {
+        week: `W1`,
+        Present:
+          weeklySummary && weeklySummary[0] ? weeklySummary[0].Present : 0,
+        Absent: weeklySummary && weeklySummary[0] ? weeklySummary[0].Absent : 0,
+        Late: weeklySummary && weeklySummary[0] ? weeklySummary[0].Late : 0,
+      },
+      {
+        week: `W2`,
+        Present:
+          weeklySummary && weeklySummary[1] ? weeklySummary[1].Present : 0,
+        Absent: weeklySummary && weeklySummary[1] ? weeklySummary[1].Absent : 0,
+        Late: weeklySummary && weeklySummary[1] ? weeklySummary[1].Late : 0,
+      },
+      {
+        week: `W3`,
+        Present:
+          weeklySummary && weeklySummary[2] ? weeklySummary[2].Present : 0,
+        Absent: weeklySummary && weeklySummary[2] ? weeklySummary[2].Absent : 0,
+        Late: weeklySummary && weeklySummary[2] ? weeklySummary[2].Late : 0,
+      },
+      {
+        week: `W4`,
+        Present:
+          weeklySummary && weeklySummary[3] ? weeklySummary[3].Present : 0,
+        Absent: weeklySummary && weeklySummary[3] ? weeklySummary[3].Absent : 0,
+        Late: weeklySummary && weeklySummary[3] ? weeklySummary[3].Late : 0,
+      },
+    ];
+  }, [weeklySummary]);
+
   return (
     <Card className="flex flex-col shadow-lg border rounded-xl bg-white  min-w-[33%]">
       <CardHeader className="pb-4">

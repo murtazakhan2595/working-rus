@@ -5,22 +5,28 @@ import { ViewOptions, SortingFilters } from "components";
 import { getLabelDropdownList } from "utils/Lists";
 import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
 import BoardGridView from "app/modules/TaskManagment/Boards/BoardGridView";
+import { MembersList } from "app/modules/TaskManagment/Sections";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MembersDropdown, RenderProject } from "./Sections";
+import { RenderProject } from "./Sections";
 import { ArrowLeft } from "lucide-react";
 import { DateInput } from "components/form-control";
 import { Button } from "components/ui/button";
-import { useSelector } from "react-redux";
-import { SelectMultiInputComponent } from "components/form-control";
+import { FilterInput } from "components/form-control";
 import { PriorityList, TaskSortingFilters } from "data/Data";
-import { getProjectById } from "app/hooks/taskManagment";
+import { getProjectById, addProject } from "app/hooks/taskManagment";
 import { AlignRight } from "lucide-react";
+import TaskDetail from "./TaskDetail";
 
 const Board = ({ TaskLabelList }) => {
   const navigate = useNavigate();
   const projectId = useParams()?.projectId || null;
+  const viewTaskId = useParams()?.taskId || null;
+  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(
+    viewTaskId ? true : false
+  );
   const [filterData, setFilterData] = useState({});
   const [projectData, setProjectData] = useState(null);
+  const [searchTaskQuery, setSearchTaskQuery] = useState("");
   const [activeView, setActiveView] = useState("grid");
 
   const fetchData = async (isMounted) => {
@@ -41,12 +47,29 @@ const Board = ({ TaskLabelList }) => {
       isMounted = false;
     };
   }, [projectId]);
+  const removeMember = async (members) => {
+    try {
+      const response = await addProject(
+        { project_members: members },
+        projectId
+      );
+      if (response) {
+        fetchData(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleFilterChange = (
     filterName,
     filterValue,
     filterValueStatus = true
   ) => {
+    if (filterName === "name") {
+      setSearchTaskQuery(filterValue);
+      return;
+    }
     const updatedFilters = { ...filterData };
 
     if (filterName === "end_date") {
@@ -96,9 +119,22 @@ const Board = ({ TaskLabelList }) => {
             className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm cursor-pointer"
             onClick={() => navigate(-1)}
           />
-          <RenderProject projectId={projectId} />
+          <RenderProject
+            projectId={projectId}
+            projectName={projectData?.name}
+          />
         </div>
         <div className="flex items-center justify-end gap-3 flex-wrap">
+          <FilterInput
+            filters={[
+              {
+                type: "search",
+                placeholder: "Search by Task Name",
+                name: "name",
+              },
+            ]}
+            onChange={handleFilterChange}
+          />
           <SortingFilters
             items={TaskSortingFilters}
             lists={[
@@ -131,21 +167,35 @@ const Board = ({ TaskLabelList }) => {
 
           <DateInput
             placeholder="Due Date"
-            value={filterData['']}
+            value={filterData[""]}
             className="flex items-center align-middle "
             name="end_date"
             onChange={(field, value) => {
               handleFilterChange(field, value);
             }}
           />
-          <MembersDropdown members={projectData?.project_members || []} />
+          <MembersList
+            members={projectData?.project_members || []}
+            removeMember={removeMember}
+          />
           <ViewOptions activeView={activeView} setActiveView={setActiveView} />
         </div>
       </div>
       {activeView === "grid" ? (
-        <BoardGridView filterData={filterData} projectId={projectId} />
+        <BoardGridView filterData={filterData} projectId={projectId} searchTaskQuery ={searchTaskQuery}/>
       ) : (
         <BoardListView filterData={filterData} projectId={projectId} />
+      )}
+      {/* Render TaskDetail component if isTaskDetailOpen is true */}
+      {isTaskDetailOpen && (
+        <TaskDetail
+          taskId={viewTaskId} // Pass task Id as props to TaskDetail
+          isOpen={isTaskDetailOpen}
+          setIsOpen={(value) => {
+            setIsTaskDetailOpen(false);
+            fetchData(true);
+          }}
+        />
       )}
     </>
   );
