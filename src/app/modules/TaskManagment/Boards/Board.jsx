@@ -11,16 +11,19 @@ import { RenderProject } from "./Sections";
 import { ArrowLeft } from "lucide-react";
 import { DateInput } from "components/form-control";
 import { Button } from "components/ui/button";
-import { useSelector } from "react-redux";
 import { FilterInput } from "components/form-control";
 import { PriorityList, TaskSortingFilters } from "data/Data";
 import { getProjectById, addProject } from "app/hooks/taskManagment";
 import { AlignRight } from "lucide-react";
+import TaskDetail from "./TaskDetail";
 
 const Board = ({ TaskLabelList }) => {
   const navigate = useNavigate();
   const projectId = useParams()?.projectId || null;
-  const [filterData, setFilterData] = useState({});
+  const viewTaskId = useParams()?.taskId || null;
+  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(
+    viewTaskId ? true : false
+    );const [filterData, setFilterData] = useState({});
   const [projectData, setProjectData] = useState(null);
   const [activeView, setActiveView] = useState("grid");
 
@@ -177,6 +180,17 @@ const Board = ({ TaskLabelList }) => {
       ) : (
         <BoardListView filterData={filterData} projectId={projectId} />
       )}
+      {/* Render TaskDetail component if isTaskDetailOpen is true */}
+            {isTaskDetailOpen && (
+              <TaskDetail
+                taskId={viewTaskId } // Pass task Id as props to TaskDetail
+                isOpen={isTaskDetailOpen}
+                setIsOpen={(value) => {
+                  setIsTaskDetailOpen(false);
+                  fetchData(true);
+                }}
+              />
+            )}
     </>
   );
 };

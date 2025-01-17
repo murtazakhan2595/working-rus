@@ -69,6 +69,16 @@ const SidebarRoutes = [
     component: <Board />,
     name: "Project Board",
   },
+  Config.TASK_MANAGMENT && {
+    path: "/project-board/:projectId/:taskId",
+    component: <Board />,
+    name: "Project Board",
+  },
+  Config.TASK_MANAGMENT && {
+    path: "/project-board/:projectId",
+    component: <Board />,
+    name: "Project Board",
+  },
   Config.SELF_SERVICE_HUB &&
     Config.PROFIL_MANAGMENT && {
       path: "/my-profile",

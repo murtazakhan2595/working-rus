@@ -1,16 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { CiEdit } from "react-icons/ci";
 import { PriorityList } from "data/Data";
 import moment from "moment";
-import { postComment, getBoardById } from "app/hooks/taskManagment";
-import { connect, useSelector } from "react-redux";
+import { connect } from "react-redux";
 import EditCard from "./EditCard";
-import { addCommentAttachment } from "app/hooks/taskManagment";
 import {
-  getCommentsWithAttachments,
   getTaskById,
 } from "app/hooks/taskManagment";
 import { toast } from "react-toastify";
+import { deleteTask } from "app/hooks/taskManagment";
 import SheetComponent from "components/ui/CustomSheet";
 import {
   Labels,
@@ -22,18 +20,17 @@ import {
 } from "app/modules/TaskManagment/Sections";
 import { Button } from "components/ui/button";
 import { Trash } from "lucide-react";
-
+import AlertDialogue from "components/ui/AlertDialogue";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { PageLoader } from "components";
-import { TaskStatus } from "data/Data";
 import { CheckBoxInput } from "components/form-control";
 import { addTask } from "app/hooks/taskManagment";
 
-const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
+const TaskDetail = ({ taskId, setIsOpen, isOpen }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [taskData, setTaskData] = useState({});
-  const [boardName, setBoardName] = useState("Loading...");
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const fetchTaskData = async (isMounted) => {
     setIsLoading(true);
@@ -64,21 +61,19 @@ const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
     };
   }, [taskId]);
 
-  useEffect(() => {
-    const fetchBoardName = async () => {
-      try {
-        const name = await getBoardById(taskData?.board_id);
-        setBoardName(name?.name);
-      } catch (error) {
-        console.error("Error fetching board name:", error);
-      }
-    };
-
-    fetchBoardName();
-  }, [taskData?.board_id]);
+  const handleDelete = () => {
+    setIsDeleteModalOpen(true);
+  };
 
   const editDetails = () => {
     setIsEditCardOpen(true);
+  };
+  const confirmDelete = async () => {
+    const response = await deleteTask(taskId);
+    if (response && response.status === 200) {
+      setIsOpen(false);
+    }
+    setIsDeleteModalOpen(false);
   };
 
   const handleStatusChange = async (name, value, values) => {
@@ -87,8 +82,8 @@ const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
       const response = await addTask({
         ...taskData,
         status: newStatus,
-      })
-      setTaskData(response)
+      });
+      setTaskData(response);
       toast.success("Task status updated successfully");
     } catch (error) {
       console.error("Error updating task status:", error);
@@ -96,7 +91,6 @@ const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
   };
 
   function CardValues({ values }) {
-    
     const items = [
       ...(values?.end_date
         ? [
@@ -114,7 +108,9 @@ const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
                       }
                       name="status"
                       value={values.status === "COMPLETED"}
-                      onChange={(name,value) => handleStatusChange(name, value, values)}
+                      onChange={(name, value) =>
+                        handleStatusChange(name, value, values)
+                      }
                     />
                   </div>
                 </div>
@@ -232,7 +228,9 @@ const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
             <div className="p-2">
               <div className="mb-4">
                 <span className="text-[14px]  text-baseGray">Is in list </span>
-                <span className="text-[14px]  text-baseGray">{boardName}</span>
+                <span className="text-[14px]  text-baseGray">
+                  {taskData.board_name}
+                </span>
               </div>
 
               <DetailCard detailCardTitle="Card Details">
@@ -277,6 +275,18 @@ const TaskDetail = ({ taskId, handleDelete, setIsOpen, isOpen }) => {
             setIsEditCardOpen();
           }}
           isOpen={isEditCardOpen}
+        />
+      )}
+      {/* Render ConfirmationModal component when isDeleteModalOpen is true */}
+      {isDeleteModalOpen && (
+        <AlertDialogue
+          isOpen={isDeleteModalOpen}
+          setIsOpen={() => {
+            setIsDeleteModalOpen(false);
+          }}
+          handleContinue={confirmDelete}
+          title="Are you sure?"
+          description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
         />
       )}
     </>
