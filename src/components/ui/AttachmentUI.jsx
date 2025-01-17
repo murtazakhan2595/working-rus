@@ -4,16 +4,11 @@ import { AiOutlineDownload } from "react-icons/ai";
 import { MdClose } from "react-icons/md";
 import {
   Dialog,
-  // DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  // DialogDescription,
-  DialogFooter,
-  // DialogCancel,
-  // DialogAction,
 } from "src/@/components/ui/dialog.jsx";
-const imageFileType=["JPG", "JPEG", "PNG", "GIF","WEBP"];
+const imageFileType = ["JPG", "JPEG", "PNG", "GIF", "WEBP"];
 export default function AttachmentUI({
   attachment,
   name,
@@ -39,7 +34,9 @@ export default function AttachmentUI({
   };
 
   const fileType = getFileType(attachment);
-console.log(fileType)
+  const fileURL =
+    attachment instanceof File ? URL.createObjectURL(attachment) : attachment;
+  console.log(fileType);
   return (
     <div key={key || ""}>
       <div className="flex items-center justify-between w-full gap-2 p-4 my-1 border border-gray-400 rounded-lg">
@@ -51,11 +48,7 @@ console.log(fileType)
             {/* File preview based on type */}
             {imageFileType.includes(fileType) ? (
               <img
-                src={
-                  attachment instanceof File
-                    ? URL.createObjectURL(attachment)
-                    : attachment
-                }
+                src={fileURL}
                 alt={name || "Attachment"}
                 className="w-9 h-9"
                 onLoad={(e) => {
@@ -75,11 +68,6 @@ console.log(fileType)
             <span
               onClick={() => setViewAttachment(true)} // Wrap in an arrow function
               className="hover:text-gray-700"
-              // onLoad={(e) => {
-              //   if (attachment instanceof File) {
-              //     URL.revokeObjectURL(e.target.src);
-              //   }
-              // }}
             >
               {name || "Attachment"}
             </span>
@@ -104,16 +92,12 @@ console.log(fileType)
         <Dialog open={viewAttachment} onOpenChange={setViewAttachment}>
           <DialogContent>
             <DialogHeader>
-               <DialogTitle className={'text-sm'}>{name}</DialogTitle>
-             </DialogHeader>
+              <DialogTitle className={"text-sm"}>{name}</DialogTitle>
+            </DialogHeader>
             <div style={{ marginBottom: "10px" }}>
               {imageFileType.includes(fileType) ? (
                 <img
-                  src={
-                    attachment instanceof File
-                      ? URL.createObjectURL(attachment)
-                      : attachment
-                  }
+                  src={fileURL}
                   alt={name || "Attachment"}
                   style={{
                     width: "100%",
@@ -123,16 +107,19 @@ console.log(fileType)
               ) : (
                 <iframe
                   src={
-                    attachment instanceof File
-                      ? URL.createObjectURL(attachment)
-                      : attachment
+                    fileType === "pdf"
+                      ? fileURL
+                      : `https://docs.google.com/gview?url=${encodeURIComponent(
+                          fileURL
+                        )}&embedded=true`
                   }
                   style={{
                     width: "100%",
-                    height: "200px",
+                    height: "auto",
+                    maxHeight:"80vh",
                     border: "none",
                   }}
-                  title="PDF Preview"
+                  title={name}
                   onLoad={(e) => {
                     if (attachment instanceof File) {
                       URL.revokeObjectURL(e.target.src); // Clean up object URL
