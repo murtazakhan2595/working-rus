@@ -23,8 +23,10 @@ const Board = ({ TaskLabelList }) => {
   const viewTaskId = useParams()?.taskId || null;
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(
     viewTaskId ? true : false
-    );const [filterData, setFilterData] = useState({});
+  );
+  const [filterData, setFilterData] = useState({});
   const [projectData, setProjectData] = useState(null);
+  const [searchTaskQuery, setSearchTaskQuery] = useState("");
   const [activeView, setActiveView] = useState("grid");
 
   const fetchData = async (isMounted) => {
@@ -64,9 +66,13 @@ const Board = ({ TaskLabelList }) => {
     filterValue,
     filterValueStatus = true
   ) => {
+    if (filterName === "name") {
+      setSearchTaskQuery(filterValue);
+      return;
+    }
     const updatedFilters = { ...filterData };
 
-    if (filterName === "end_date" ||filterName === "name") {
+    if (filterName === "end_date") {
       if (filterValue) {
         // Update end_date with the provided value
         updatedFilters[filterName] = filterValue;
@@ -176,21 +182,21 @@ const Board = ({ TaskLabelList }) => {
         </div>
       </div>
       {activeView === "grid" ? (
-        <BoardGridView filterData={filterData} projectId={projectId} />
+        <BoardGridView filterData={filterData} projectId={projectId} searchTaskQuery ={searchTaskQuery}/>
       ) : (
         <BoardListView filterData={filterData} projectId={projectId} />
       )}
       {/* Render TaskDetail component if isTaskDetailOpen is true */}
-            {isTaskDetailOpen && (
-              <TaskDetail
-                taskId={viewTaskId } // Pass task Id as props to TaskDetail
-                isOpen={isTaskDetailOpen}
-                setIsOpen={(value) => {
-                  setIsTaskDetailOpen(false);
-                  fetchData(true);
-                }}
-              />
-            )}
+      {isTaskDetailOpen && (
+        <TaskDetail
+          taskId={viewTaskId} // Pass task Id as props to TaskDetail
+          isOpen={isTaskDetailOpen}
+          setIsOpen={(value) => {
+            setIsTaskDetailOpen(false);
+            fetchData(true);
+          }}
+        />
+      )}
     </>
   );
 };

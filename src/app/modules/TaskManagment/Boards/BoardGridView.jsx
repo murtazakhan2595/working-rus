@@ -31,7 +31,7 @@ import { SelectMultiInputComponent } from "components/form-control";
 import { PriorityList } from "data/Data";
 import { getAllTasks } from "app/hooks/taskManagment";
 
-const BoardGridView = ({ employees, projectId, filterData }) => {
+const BoardGridView = ({ searchTaskQuery, projectId, filterData }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [AllBoards, setAllBoards] = useState([]);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
@@ -97,6 +97,7 @@ const BoardGridView = ({ employees, projectId, filterData }) => {
                       ...filterData,
                       board_id: [board.id],
                     }}
+                    searchTaskQuery={searchTaskQuery}
                   />
                 ))}
               <div className="flex flex-col min-w-[290px] max-w-[320px] mb-5">
@@ -125,12 +126,27 @@ const BoardGridView = ({ employees, projectId, filterData }) => {
   );
 };
 
-const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
+const TaskColumn = ({
+  key,
+  reloadData,
+  board,
+  projectId,
+  filterData,
+  searchTaskQuery,
+}) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  // Filter tasks based on search query
+  const filteredTasks = React.useMemo(() => {
+    return tasks && tasks.count > 0
+      ? tasks?.results?.filter((task) =>
+          task.name.toLowerCase().includes(searchTaskQuery.toLowerCase())
+        )
+      : [];
+  }, [searchTaskQuery, tasks]);
 
   const updateTaskLocally = (taskId, updatedData) => {
     setTasks((prevTasks) => ({
@@ -145,6 +161,7 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
     try {
       const taskData = await getAllTasks({ filterData });
       if (taskData && isMounted) {
+        console.log(taskData)
         setTasks(taskData);
       }
     } catch (error) {
@@ -223,9 +240,9 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
           <RxPlus className="text-xl" />
           <span className="ml-2">Add Card</span>
         </Button>
-        {tasks &&
-          tasks.count > 0 &&
-          tasks.results.map((task) => (
+        {filteredTasks &&
+          filteredTasks.length > 0 &&
+          filteredTasks.map((task) => (
             <div key={task.id}>
               <TaskCard
                 task={task}
