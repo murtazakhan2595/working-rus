@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { handleLogout } from "./general";
 import { Project } from "app/utils/Types/TaskManagment";
-import { getTaskFilteredData } from "utils/Lists";
+//import { getTaskFilteredData } from "utils/Lists";
 import { getFileNameFromURL } from "utils/downUtils";
 
 const baseUrl = initialState.baseUrl;
@@ -215,28 +215,42 @@ const addBoard = async (payload) => {
     return false;
   }
 };
-const addProject = async (payload) => {
-  const id = payload.get("id");
+const addProject = async (payload, projectID) => {
+  const formData = new FormData();
+  if (projectID) formData.append("id", projectID);
+  if (payload.name) formData.append("name", payload.name || "");
+  if (payload.description)
+    formData.append("description", payload.description || "");
+  if (payload.start_date)
+    formData.append("start_date", payload.start_date || "");
+  // Append each member to formData
+  if (Array.isArray(payload.project_members)) {
+    payload.project_members.forEach((member) =>
+      formData.append("project_members", member)
+    );
+  }
+  if (payload.end_date) formData.append("end_date", payload.end_date || "");
+  if (payload.color) formData.append("color", payload.color || "");
+  if (payload.status) formData.append("status", payload.status || "");
+  if (payload.profile && payload.profile instanceof File)
+    // Handle file fields
+    formData.append("profile", payload.profile);
   try {
-    if (id) {
-      const response = await axios.patch(`${baseUrl}/project/${id}/`, payload, {
-        headers: formDataHeader(),
-      });
-      if (response.status === 200) {
-        toast.success("Project Updated!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
+    if (projectID) {
+      const response = await axios.patch(
+        `${baseUrl}/project/${projectID}/`,
+        formData,
+        {
+          headers: formDataHeader(),
+        }
+      );
+      
       return response;
     } else {
-      const response = await axios.post(`${baseUrl}/project/`, payload, {
+      const response = await axios.post(`${baseUrl}/project/`, formData, {
         headers: formDataHeader(),
       });
-      if (response.status === 201) {
-        toast.success("Project Added!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
+      
       return response;
     }
   } catch (error) {
@@ -816,7 +830,7 @@ const addSubtask = async (payload) => {
     console.error("Error adding task:", error);
     return false;
   }
-}
+};
 export {
   addSubtask,
   getAllProjects,

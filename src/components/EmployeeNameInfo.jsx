@@ -1,5 +1,4 @@
 import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
-import { getRandomColor } from "utils/renderValues";
 import Avatar from "./ui/Avatar";
 import { Badge } from "./ui/badge";
 import { GetUser } from "utils/getValuesFromTables";

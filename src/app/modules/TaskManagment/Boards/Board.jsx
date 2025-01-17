@@ -5,15 +5,16 @@ import { ViewOptions, SortingFilters } from "components";
 import { getLabelDropdownList } from "utils/Lists";
 import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
 import BoardGridView from "app/modules/TaskManagment/Boards/BoardGridView";
+import { MembersList } from "app/modules/TaskManagment/Sections";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { MembersDropdown, RenderProject } from "./Sections";
+import { RenderProject } from "./Sections";
 import { ArrowLeft } from "lucide-react";
 import { DateInput } from "components/form-control";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
 import { SelectMultiInputComponent } from "components/form-control";
 import { PriorityList, TaskSortingFilters } from "data/Data";
-import { getProjectById } from "app/hooks/taskManagment";
+import { getProjectById, addProject } from "app/hooks/taskManagment";
 import { AlignRight } from "lucide-react";
 
 const Board = ({ TaskLabelList }) => {
@@ -41,6 +42,19 @@ const Board = ({ TaskLabelList }) => {
       isMounted = false;
     };
   }, [projectId]);
+  const removeMember = async (members) => {
+    try {
+      const response = await addProject(
+        { project_members: members },
+        projectId
+      );
+      if (response) {
+        fetchData(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleFilterChange = (
     filterName,
@@ -96,7 +110,7 @@ const Board = ({ TaskLabelList }) => {
             className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm cursor-pointer"
             onClick={() => navigate(-1)}
           />
-          <RenderProject projectId={projectId} />
+          <RenderProject projectId={projectId} projectName={projectData.name} />
         </div>
         <div className="flex items-center justify-end gap-3 flex-wrap">
           <SortingFilters
@@ -131,14 +145,17 @@ const Board = ({ TaskLabelList }) => {
 
           <DateInput
             placeholder="Due Date"
-            value={filterData['']}
+            value={filterData[""]}
             className="flex items-center align-middle "
             name="end_date"
             onChange={(field, value) => {
               handleFilterChange(field, value);
             }}
           />
-          <MembersDropdown members={projectData?.project_members || []} />
+          <MembersList
+            members={projectData?.project_members || []}
+            removeMember={removeMember}
+          />
           <ViewOptions activeView={activeView} setActiveView={setActiveView} />
         </div>
       </div>
