@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { deleteTask } from "app/hooks/taskManagment";
 import { PriorityList } from "data/Data";
@@ -18,7 +18,7 @@ import { toast } from "react-toastify";
 import { addTask } from "app/hooks/taskManagment";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  //const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   // State to manage TaskDetail visibility
@@ -153,9 +153,8 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
       {isTaskDetailOpen && (
         <TaskDetail
           taskId={task.id} // Pass task Id as props to TaskDetail
-          handleDelete={handleDelete}
           isOpen={isTaskDetailOpen}
-          setIsOpen={(value) => {
+          setIsOpen={() => {
             setIsTaskDetailOpen(false);
             reloadData();
           }}
@@ -238,7 +237,6 @@ const TimeStatusIcon = ({ task, getStatusIconColor, onUpdate }) => {
     </div>
   );
 };
-
 
 const mapStateToProps = (state) => {
   return {

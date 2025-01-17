@@ -11,17 +11,22 @@ import { RenderProject } from "./Sections";
 import { ArrowLeft } from "lucide-react";
 import { DateInput } from "components/form-control";
 import { Button } from "components/ui/button";
-import { useSelector } from "react-redux";
-import { SelectMultiInputComponent } from "components/form-control";
+import { FilterInput } from "components/form-control";
 import { PriorityList, TaskSortingFilters } from "data/Data";
 import { getProjectById, addProject } from "app/hooks/taskManagment";
 import { AlignRight } from "lucide-react";
+import TaskDetail from "./TaskDetail";
 
 const Board = ({ TaskLabelList }) => {
   const navigate = useNavigate();
   const projectId = useParams()?.projectId || null;
+  const viewTaskId = useParams()?.taskId || null;
+  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(
+    viewTaskId ? true : false
+  );
   const [filterData, setFilterData] = useState({});
   const [projectData, setProjectData] = useState(null);
+  const [searchTaskQuery, setSearchTaskQuery] = useState("");
   const [activeView, setActiveView] = useState("grid");
 
   const fetchData = async (isMounted) => {
@@ -61,6 +66,10 @@ const Board = ({ TaskLabelList }) => {
     filterValue,
     filterValueStatus = true
   ) => {
+    if (filterName === "name") {
+      setSearchTaskQuery(filterValue);
+      return;
+    }
     const updatedFilters = { ...filterData };
 
     if (filterName === "end_date") {
@@ -116,6 +125,16 @@ const Board = ({ TaskLabelList }) => {
           />
         </div>
         <div className="flex items-center justify-end gap-3 flex-wrap">
+          <FilterInput
+            filters={[
+              {
+                type: "search",
+                placeholder: "Search by Task Name",
+                name: "name",
+              },
+            ]}
+            onChange={handleFilterChange}
+          />
           <SortingFilters
             items={TaskSortingFilters}
             lists={[
@@ -164,9 +183,20 @@ const Board = ({ TaskLabelList }) => {
         </div>
       </div>
       {activeView === "grid" ? (
-        <BoardGridView filterData={filterData} projectId={projectId} />
+        <BoardGridView filterData={filterData} projectId={projectId} searchTaskQuery ={searchTaskQuery}/>
       ) : (
         <BoardListView filterData={filterData} projectId={projectId} />
+      )}
+      {/* Render TaskDetail component if isTaskDetailOpen is true */}
+      {isTaskDetailOpen && (
+        <TaskDetail
+          taskId={viewTaskId} // Pass task Id as props to TaskDetail
+          isOpen={isTaskDetailOpen}
+          setIsOpen={(value) => {
+            setIsTaskDetailOpen(false);
+            fetchData(true);
+          }}
+        />
       )}
     </>
   );
