@@ -831,6 +831,28 @@ const addSubtask = async (payload) => {
     return false;
   }
 };
+
+const getAttachmentDetails = async (attachmentIds) => {
+  if (!attachmentIds || attachmentIds.length === 0) return [];
+  try {
+    const attachmentDetails = await Promise.all(
+      attachmentIds.map(async (id) => {
+        const response = await getAttachmentById(id);
+        return {
+          attachments: response.attachments,
+          id: response.id,
+          name: getFileNameFromURL(response.attachments),
+        };
+      })
+    );
+    return attachmentDetails;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching attachments:", error);
+  }
+};
 export {
   addSubtask,
   getAllProjects,
@@ -859,4 +881,5 @@ export {
   getAllLabels,
   getCommentsWithAttachments,
   getTaskByprojectId,
+  getAttachmentDetails,
 };

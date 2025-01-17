@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { deleteTask } from "app/hooks/taskManagment";
 import { PriorityList } from "data/Data";
@@ -16,6 +16,7 @@ import AlertDialogue from "components/ui/AlertDialogue";
 import { CheckBoxInput } from "components/form-control";
 import { toast } from "react-toastify";
 import { addTask } from "app/hooks/taskManagment";
+import { getAttachmentDetails } from "app/hooks/taskManagment";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   //const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -23,6 +24,8 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   // State to manage TaskDetail visibility
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
+  const [coverImage, setCoverImage] = useState(null);
+  console.log("individual task", task);
   const handleDelete = () => {
     setIsDeleteModalOpen(true);
   };
@@ -51,6 +54,20 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   // const toggleDropdown = () => {
   //   setIsDropdownOpen(!isDropdownOpen);
   // };
+console.log("CONVERIMAGE ACTIUAL", coverImage)
+
+  useEffect(()=>{
+    const fetchData = async () => {
+      const attachment = await getAttachmentDetails([task.attachment[0]]);
+      if(attachment){
+        console.log("COVER IMAGE",attachment)
+        setCoverImage(attachment[0]?.attachments);
+      }
+    }
+   if(task?.attachment?.length>0){
+      fetchData()
+   }
+  },[task])
 
   const confirmDelete = async () => {
     const response = await deleteTask(task.id);
@@ -65,7 +82,19 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
       className="w-full p-3 mt-6 bg-white rounded-lg shadow cursor-pointer"
       draggable
       onDragStart={(e) => onDragStart(e, task.id)}
+      onClick={() => {
+        setIsTaskDetailOpen(true);
+      }}
     >
+      <div className="my-2">
+        {coverImage && (
+          <img
+            src={coverImage}
+            alt="cover image"
+            className="w-full h-auto max-h-[200px]  object-contain rounded-lg"
+          />
+        )}
+      </div>
       {/* Render ConfirmationModal component when isDeleteModalOpen is true */}
       {isDeleteModalOpen && (
         <AlertDialogue
@@ -78,12 +107,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
         />
       )}
-      <div
-        className="flex flex-col"
-        onClick={() => {
-          setIsTaskDetailOpen(true);
-        }}
-      >
+      <div className="flex flex-col">
         <div className="flex justify-between items-start py-0.5">
           <div className="flex justify-between">
             {task?.label && (
