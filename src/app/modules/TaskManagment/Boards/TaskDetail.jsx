@@ -25,8 +25,9 @@ import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { PageLoader } from "components";
 import { CheckBoxInput } from "components/form-control";
 import { addTask } from "app/hooks/taskManagment";
+import TaskShare from "../Sections/TaskShare";
 
-const TaskDetail = ({ taskId, setIsOpen, isOpen }) => {
+const TaskDetail = ({ taskId, setIsOpen, isOpen, reloadData }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [taskData, setTaskData] = useState({});
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
@@ -181,6 +182,10 @@ const TaskDetail = ({ taskId, setIsOpen, isOpen }) => {
             },
           ]
         : []),
+      {
+        label: "Share Link",
+        value: <TaskShare projectId={taskData.project_id} taskId={taskId} />,
+      },
     ];
 
     return (
@@ -275,6 +280,7 @@ const TaskDetail = ({ taskId, setIsOpen, isOpen }) => {
             setIsEditCardOpen();
           }}
           isOpen={isEditCardOpen}
+          reloadData={reloadData}
         />
       )}
       {/* Render ConfirmationModal component when isDeleteModalOpen is true */}

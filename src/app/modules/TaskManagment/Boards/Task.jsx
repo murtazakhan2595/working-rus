@@ -25,7 +25,6 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   // State to manage TaskDetail visibility
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
   const [coverImage, setCoverImage] = useState(null);
-  console.log("individual task", task);
   const handleDelete = () => {
     setIsDeleteModalOpen(true);
   };
@@ -34,7 +33,6 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
     const fetchData = async () => {
       const attachment = await getAttachmentDetails([task.attachment[0]]);
       if (attachment) {
-        console.log("COVER IMAGE", attachment);
         setCoverImage(attachment[0]?.attachments);
       }
     };
@@ -85,20 +83,19 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           )}
         </div>
         <div className="flex justify-between items-start py-0.5">
-            {task?.label && (
-              <Labels
-                labelsSelected={task.label || []}
-                onSelectedLabelsChange={() => {}}
-                editMode={false}
-              />
-            )}
-            <span>
-              {
-                PriorityList.find((option) => option.value === task?.priority)
-                  ?.label
-              }
-            </span>
-         
+          {task?.label && (
+            <Labels
+              labelsSelected={task.label || []}
+              onSelectedLabelsChange={() => {}}
+              editMode={false}
+            />
+          )}
+          <span>
+            {
+              PriorityList.find((option) => option.value === task?.priority)
+                ?.label
+            }
+          </span>
         </div>
         <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
           <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
@@ -152,6 +149,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             setIsTaskDetailOpen(false);
             reloadData();
           }}
+          reloadData={reloadData}
         />
       )}
       {isEditCardOpen && (

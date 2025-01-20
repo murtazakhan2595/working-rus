@@ -8,6 +8,7 @@ const EditCard = ({
   projectId,
   setIsOpen,
   isOpen,
+  reloadData
 }) => {
  
   return (
@@ -18,6 +19,7 @@ const EditCard = ({
       isOpen={isOpen}
       setIsOpen={setIsOpen}
       projectId={projectId}
+      reloadData={reloadData}
     />
   );
 };
