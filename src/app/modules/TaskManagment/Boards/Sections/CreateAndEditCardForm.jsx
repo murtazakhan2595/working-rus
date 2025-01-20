@@ -43,6 +43,12 @@ import { addSubtask } from "app/hooks/taskManagment";
 import { Unlink2 } from "lucide-react";
 import { URLS } from "constants/config";
 import TaskShare from "../../Sections/TaskShare";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "src/@/components/ui/dialog.jsx";
 
 const CreateAndEditCardForm = ({
   taskId,
@@ -249,19 +255,11 @@ const CreateAndEditCardForm = ({
 
   return (
     <>
-      <SheetComponent
-        {...formSheetEditData}
-        isOpen={isOpen}
-        setIsOpen={onClose}
-        width="668px"
-        contentClassName="custom-sheet-width"
-      >
-        <>
-          {handleCloseWithConfirmation({
-            isOpen: closeSheet,
-            setCloseSheet,
-            setIsOpen,
-          })}
+      <Dialog open={isOpen} onOpenChange={handleClose}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{isEdit ? "Edit Card" : "Add Card"}</DialogTitle>
+          </DialogHeader>
           {isLoading ? (
             <PageLoader />
           ) : (
@@ -399,7 +397,7 @@ const CreateAndEditCardForm = ({
                             error={props.errors.consumed_time}
                             touch={props.touched.consumed_time}
                             value={props.values.consumed_time}
-                            // label="Time Spent (in hours)"
+                            label="Time Spent (in hours)"
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
                             }}
@@ -416,8 +414,8 @@ const CreateAndEditCardForm = ({
                             error={props.errors.priority}
                             touch={props.touched.priority}
                             value={props.values.priority}
-                            // required
-                            // label="Priority"
+                            required
+                            label="Priority"
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
                             }}
@@ -544,19 +542,13 @@ const CreateAndEditCardForm = ({
               )}
             </Formik>
           )}
-        </>
-      </SheetComponent>
-      {showSuccessMessage && (
-        <DialogBox
-          isOpen={showSuccessMessage}
-          setIsOpen={(value) => {
-            setShowSuccessMessage(value);
-            onClose(); // Close the modal or perform any other action upon success
-          }}
-          title={`Task ${isEdit ? "Updated" : "Added"} Successfully!`}
-          // description=""
-        />
-      )}
+        </DialogContent>
+      </Dialog>
+      {handleCloseWithConfirmation({
+        isOpen: closeSheet,
+        setCloseSheet,
+        setIsOpen,
+      })}
     </>
   );
 };

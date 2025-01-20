@@ -4,12 +4,15 @@ import { PriorityList } from "data/Data";
 import moment from "moment";
 import { connect } from "react-redux";
 import EditCard from "./EditCard";
-import {
-  getTaskById,
-} from "app/hooks/taskManagment";
+import { getTaskById } from "app/hooks/taskManagment";
 import { toast } from "react-toastify";
 import { deleteTask } from "app/hooks/taskManagment";
-import SheetComponent from "components/ui/CustomSheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "src/@/components/ui/dialog.jsx";
 import {
   Labels,
   MembersList,
@@ -36,24 +39,24 @@ const TaskDetail = ({ taskId, setIsOpen, isOpen, reloadData }) => {
   const fetchTaskData = async (isMounted) => {
     setIsLoading(true);
     try {
-      // Fetch card details
       const cardDetails = await getTaskById(taskId);
       if (!cardDetails) {
         throw new Error("Card details not found.");
       }
       if (isMounted) {
         setTaskData(cardDetails);
-        setIsLoading(false); // Stop loading spinner
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error fetching task data:", error);
       toast.error("Failed to load task details. Please try again later.");
     } finally {
       if (isMounted) {
-        setIsLoading(false); // Stop loading spinner
+        setIsLoading(false);
       }
     }
   };
+
   useEffect(() => {
     let isMounted = true;
     if (taskId) fetchTaskData(isMounted);
@@ -69,6 +72,7 @@ const TaskDetail = ({ taskId, setIsOpen, isOpen, reloadData }) => {
   const editDetails = () => {
     setIsEditCardOpen(true);
   };
+
   const confirmDelete = async () => {
     const response = await deleteTask(taskId);
     if (response && response.status === 200) {
@@ -191,83 +195,81 @@ const TaskDetail = ({ taskId, setIsOpen, isOpen, reloadData }) => {
     return (
       <div className="flex flex-col items-start justify-between flex-wrap w-[100%] gap-4">
         {items.map(({ label, value }, idx) => (
-          <DetailBox label={label} value={value} className="mt-2" />
+          <DetailBox key={idx} label={label} value={value} className="mt-2" />
         ))}
       </div>
     );
   }
-  const formSheetData = {
-    triggerText: null,
-    title: "View Details",
-    description: null,
-    footer: null,
-  };
+
   return (
     <>
-      <SheetComponent
-        {...formSheetData}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        width="568px"
-      >
-        {isLoading ? (
-          <PageLoader />
-        ) : (
-          <>
-            <header className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-[#323333] ">
-                {taskData?.name}
-              </h1>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={editDetails}>
-                  <CiEdit className="mr-2" />
-                  Edit
-                </Button>
+      <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>View Details</DialogTitle>
+          </DialogHeader>
 
-                <Button variant="outline" onClick={handleDelete}>
-                  <Trash className="mr-2" size={16} />
-                  Delete
-                </Button>
-              </div>
-            </header>
-            <div className="p-2">
-              <div className="mb-4">
-                <span className="text-[14px]  text-baseGray">Is in list </span>
-                <span className="text-[14px]  text-baseGray">
-                  {taskData.board_name}
-                </span>
-              </div>
+          {isLoading ? (
+            <PageLoader />
+          ) : (
+            <div className="space-y-6">
+              <header className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold text-[#323333]">
+                  {taskData?.name}
+                </h1>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={editDetails}>
+                    <CiEdit className="mr-2" />
+                    Edit
+                  </Button>
+                  <Button variant="outline" onClick={handleDelete}>
+                    <Trash className="mr-2" size={16} />
+                    Delete
+                  </Button>
+                </div>
+              </header>
 
-              <DetailCard detailCardTitle="Card Details">
-                <CardValues values={taskData} />
-              </DetailCard>
+              <div className="space-y-6">
+                <div className="text-[14px] text-baseGray">
+                  Is in list {taskData.board_name}
+                </div>
 
-              <DetailBox
-                label="Description"
-                value={
-                  <span
-                    dangerouslySetInnerHTML={{ __html: taskData?.description }}
-                  />
-                }
-              />
-              {taskData.attachment && taskData.attachment.length > 0 && (
+                <DetailCard detailCardTitle="Card Details">
+                  <CardValues values={taskData} />
+                </DetailCard>
+
                 <DetailBox
-                  label="Attachments"
+                  label="Description"
                   value={
-                    <Attachments
-                      attachmentSelected={taskData.attachment || []}
-                      onChange={() => {}}
-                      editMode={false}
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: taskData?.description,
+                      }}
                     />
                   }
                 />
-              )}
-              <DetailBox label="Comments" value={<></>} />
-              <TaskComments taskId={taskId} />
+
+                {taskData.attachment && taskData.attachment.length > 0 && (
+                  <DetailBox
+                    label="Attachments"
+                    value={
+                      <Attachments
+                        attachmentSelected={taskData.attachment || []}
+                        onChange={() => {}}
+                        editMode={false}
+                      />
+                    }
+                  />
+                )}
+
+                <DetailBox label="Comments" value={<></>} />
+                <TaskComments taskId={taskId} />
+              </div>
             </div>
-          </>
-        )}
-      </SheetComponent>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {isEditCardOpen && (
         <EditCard
           cardId={taskData?.id}
@@ -276,32 +278,25 @@ const TaskDetail = ({ taskId, setIsOpen, isOpen, reloadData }) => {
             setIsEditCardOpen(false);
             fetchTaskData(true);
           }}
-          setIsOpen={() => {
-            setIsEditCardOpen();
-          }}
+          setIsOpen={setIsEditCardOpen}
           isOpen={isEditCardOpen}
           reloadData={reloadData}
         />
       )}
-      {/* Render ConfirmationModal component when isDeleteModalOpen is true */}
-      {isDeleteModalOpen && (
-        <AlertDialogue
-          isOpen={isDeleteModalOpen}
-          setIsOpen={() => {
-            setIsDeleteModalOpen(false);
-          }}
-          handleContinue={confirmDelete}
-          title="Are you sure?"
-          description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
-        />
-      )}
+
+      <AlertDialogue
+        isOpen={isDeleteModalOpen}
+        setIsOpen={setIsDeleteModalOpen}
+        handleContinue={confirmDelete}
+        title="Are you sure?"
+        description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
+      />
     </>
   );
 };
-const mapStateToProps = (state) => {
-  return {
-    employees: state.emp.employees,
-  };
-};
+
+const mapStateToProps = (state) => ({
+  employees: state.emp.employees,
+});
 
 export default connect(mapStateToProps)(TaskDetail);
