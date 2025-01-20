@@ -1,35 +1,37 @@
 import { connect } from "react-redux";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { Project } from "app/utils/Types/TaskManagment";
-import { Header, PageLoader, ViewOptions, TableCustom } from "components";
-import { FilterInput } from "components/form-control";
-import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
+import {  PageLoader } from "components";
 import {
   getAllBoards,
-  getProjectById,
   deleteBoard,
   moveTask,
 } from "app/hooks/taskManagment";
 import { RxPlus } from "react-icons/rx";
-import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   CustomDropdown,
-  ProjectBoardColumn,
 } from "app/modules/TaskManagment/Sections";
-import { AddNewListModel, MembersDropdown, RenderProject } from "./Sections";
-import CreateCard from "./CreateCardModal";
+import { AddNewListModel} from "./Sections";
+import CreateCardModal from "./CreateCardModal";
 import TaskCard from "./Task";
-import { ArrowLeft, LayoutGrid, LayoutList } from "lucide-react";
+import { ArrowLeft, LayoutGrid, LayoutList, MoreVertical } from "lucide-react";
 import { DateInput } from "components/form-control";
 import { Button } from "components/ui/button";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { useSelector } from "react-redux";
-import { SelectMultiInputComponent } from "components/form-control";
-import { PriorityList } from "data/Data";
 import { getAllTasks } from "app/hooks/taskManagment";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+} from "src/@/components/ui/dropdown-menu";
+
 
 const BoardGridView = ({ searchTaskQuery, projectId, filterData }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -48,9 +50,9 @@ const BoardGridView = ({ searchTaskQuery, projectId, filterData }) => {
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
     } finally {
-      // if (isMounted) {
-      //   setIsLoading(false);
-      // }
+      if (isMounted) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -136,7 +138,6 @@ const TaskColumn = ({
 }) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [tasks, setTasks] = useState([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   // Filter tasks based on search query
@@ -192,21 +193,34 @@ const TaskColumn = ({
     }
   };
 
-  const dropdownOptions = [
-    {
-      label: "Edit",
-      onClick: () => setshowAddNewListModel(true),
-    },
-    {
-      label: "Delete",
-      onClick: () => setIsDeleteModalOpen(true),
-    },
-  ];
-
   const confirmDelete = async () => {
     await deleteBoard(board.id);
     fetchData(true);
     setIsDeleteModalOpen(false);
+  };
+
+  const sortTasks = (sortType) => {
+    setTasks((prevTasks) => {
+      const sortedResults = [...prevTasks.results].sort((a, b) => {
+        switch (sortType) {
+          case "newest":
+            return new Date(b.start_date) - new Date(a.start_date);
+          case "oldest":
+            return new Date(a.start_date) - new Date(b.start_date);
+          case "alphabetical":
+            return a.name.localeCompare(b.name);
+          case "dueDate":
+            return new Date(a.end_date) - new Date(b.end_date);
+          default:
+            return 0;
+        }
+      });
+
+      return {
+        ...prevTasks,
+        results: sortedResults,
+      };
+    });
   };
 
   return (
@@ -217,17 +231,44 @@ const TaskColumn = ({
       key={key}
     >
       <div className="flex flex-col">
-        <header className="flex justify-between w-full gap-5 pl-5">
+        <header className="flex justify-between w-full gap-5 pl-5 mb-2">
           <div className="flex gap-4">
             <h2 className="flex gap-2 text-base font-bold text-zinc-800">
               <span>{board.name}</span>
             </h2>
           </div>
-          <CustomDropdown
-            isOpen={isDropdownOpen}
-            toggleDropdown={() => setIsDropdownOpen(!isDropdownOpen)}
-            options={dropdownOptions}
-          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setshowAddNewListModel(true)}>
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)}>
+                Delete
+              </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Sort by...</DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem onClick={() => sortTasks("newest")}>
+                    Date created (newest first)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => sortTasks("oldest")}>
+                    Date created (oldest first)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => sortTasks("alphabetical")}>
+                    Card name (alphabetically)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => sortTasks("dueDate")}>
+                    Due date
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </header>
 
         <Button
@@ -257,7 +298,7 @@ const TaskColumn = ({
       </div>
 
       {openCreateCard && (
-        <CreateCard
+        <CreateCardModal
           onClose={() => {
             setOpenCreateCard(false);
             fetchData(true);
@@ -266,6 +307,7 @@ const TaskColumn = ({
           isOpen={openCreateCard}
           projectId={projectId}
           setIsOpen={setOpenCreateCard}
+          reloadData={() => fetchData(true)}
         />
       )}
 
@@ -293,6 +335,7 @@ const TaskColumn = ({
     </div>
   );
 };
+
 
 const mapStateToProps = (state) => {
   return {

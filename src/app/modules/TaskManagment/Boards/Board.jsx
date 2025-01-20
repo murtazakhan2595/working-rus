@@ -173,6 +173,7 @@ const Board = ({ TaskLabelList }) => {
             onChange={(field, value) => {
               handleFilterChange(field, value);
             }}
+            showReset={true}
           />
           <MembersList
             members={projectData?.project_members || []}

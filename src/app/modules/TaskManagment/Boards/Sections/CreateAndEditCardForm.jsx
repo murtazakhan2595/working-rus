@@ -40,6 +40,9 @@ import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementDa
 import { CheckBoxInput } from "components/form-control";
 import Subtasks from "../../Sections/SubTask";
 import { addSubtask } from "app/hooks/taskManagment";
+import { Unlink2 } from "lucide-react";
+import { URLS } from "constants/config";
+import TaskShare from "../../Sections/TaskShare";
 
 const CreateAndEditCardForm = ({
   taskId,
@@ -51,6 +54,7 @@ const CreateAndEditCardForm = ({
   projectId,
   boardId,
   Projects = [],
+  reloadData,
 }) => {
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
@@ -203,19 +207,20 @@ const CreateAndEditCardForm = ({
       // Submit the task
       const response = await addTask(finalData);
       if (response) {
-         const subtaskPromises = (formData.subtasks || []).map((subtask) =>
-           addSubtask({
-             name: subtask.name,
-             is_completed: subtask.is_completed,
-             assigned_to: subtask.assigned_to,
-             tasks: response.id,
-           })
-         );
-         await Promise.all(subtaskPromises);
+        const subtaskPromises = (formData.subtasks || []).map((subtask) =>
+          addSubtask({
+            name: subtask.name,
+            is_completed: subtask.is_completed,
+            assigned_to: subtask.assigned_to,
+            tasks: response.id,
+          })
+        );
+        await Promise.all(subtaskPromises);
         //  setShowSuccessMessage(true);
         toast.success(`Task ${isEdit ? "Updated" : "Added"} Successfully!`, {
           position: toast.POSITION.TOP_RIGHT,
         });
+        reloadData();
         onClose(); // Close the modal or perform any other action upon success
       }
     } catch (error) {
@@ -495,6 +500,14 @@ const CreateAndEditCardForm = ({
                           />
                         }
                       />
+                      {taskId && (
+                        <TaskInputDetails
+                          title={"Share Link"}
+                          content={
+                            <TaskShare projectId={projectId} taskId={taskId} />
+                          }
+                        />
+                      )}
                       <TaskInputDetails
                         title={"Subtasks"}
                         content={

@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { deleteTask } from "app/hooks/taskManagment";
 import { PriorityList } from "data/Data";
@@ -16,6 +16,7 @@ import AlertDialogue from "components/ui/AlertDialogue";
 import { CheckBoxInput } from "components/form-control";
 import { toast } from "react-toastify";
 import { addTask } from "app/hooks/taskManagment";
+import { getAttachmentDetails } from "app/hooks/taskManagment";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   //const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -23,34 +24,22 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   // State to manage TaskDetail visibility
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
+  const [coverImage, setCoverImage] = useState(null);
   const handleDelete = () => {
     setIsDeleteModalOpen(true);
   };
 
-  // const dropdownOptions = [
-  //   {
-  //     label: "Edit Details",
-  //     onClick: () => {
-  //       setIsDropdownOpen(false);
-  //       setIsEditCardOpen(true);
-  //     },
-  //   },
-  //   {
-  //     label: "View Details",
-  //     onClick: () => {
-  //       setIsDropdownOpen(false);
-  //       setIsTaskDetailOpen(true);
-  //     },
-  //   },
-  //   {
-  //     label: "Delete",
-  //     onClick: () => handleDelete(),
-  //   },
-  // ];
-
-  // const toggleDropdown = () => {
-  //   setIsDropdownOpen(!isDropdownOpen);
-  // };
+  useEffect(() => {
+    const fetchData = async () => {
+      const attachment = await getAttachmentDetails([task.attachment[0]]);
+      if (attachment) {
+        setCoverImage(attachment[0]?.attachments);
+      }
+    };
+    if (task?.attachment?.length > 0) {
+      fetchData();
+    }
+  }, [task]);
 
   const confirmDelete = async () => {
     const response = await deleteTask(task.id);
@@ -84,27 +73,29 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           setIsTaskDetailOpen(true);
         }}
       >
+        <div className="my-2">
+          {coverImage && (
+            <img
+              src={coverImage}
+              alt="cover image"
+              className="w-full h-auto max-h-[200px]  object-contain rounded-lg"
+            />
+          )}
+        </div>
         <div className="flex justify-between items-start py-0.5">
-          <div className="flex justify-between">
-            {task?.label && (
-              <Labels
-                labelsSelected={task.label || []}
-                onSelectedLabelsChange={() => {}}
-                editMode={false}
-              />
-            )}
-            <span>
-              {
-                PriorityList.find((option) => option.value === task?.priority)
-                  ?.label
-              }
-            </span>
-          </div>
-          {/* <CustomDropdown
-          isOpen={isDropdownOpen}
-          toggleDropdown={toggleDropdown}
-          options={dropdownOptions}
-        /> */}
+          {task?.label && (
+            <Labels
+              labelsSelected={task.label || []}
+              onSelectedLabelsChange={() => {}}
+              editMode={false}
+            />
+          )}
+          <span>
+            {
+              PriorityList.find((option) => option.value === task?.priority)
+                ?.label
+            }
+          </span>
         </div>
         <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
           <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
@@ -158,6 +149,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             setIsTaskDetailOpen(false);
             reloadData();
           }}
+          reloadData={reloadData}
         />
       )}
       {isEditCardOpen && (
