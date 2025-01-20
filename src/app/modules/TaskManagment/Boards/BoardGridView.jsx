@@ -1,34 +1,23 @@
 import { connect } from "react-redux";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { Project } from "app/utils/Types/TaskManagment";
-import { Header, PageLoader, ViewOptions, TableCustom } from "components";
-import { FilterInput } from "components/form-control";
-import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
+import {  PageLoader } from "components";
 import {
   getAllBoards,
-  getProjectById,
   deleteBoard,
   moveTask,
 } from "app/hooks/taskManagment";
 import { RxPlus } from "react-icons/rx";
-import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   CustomDropdown,
-  ProjectBoardColumn,
 } from "app/modules/TaskManagment/Sections";
-import { AddNewListModel, MembersDropdown, RenderProject } from "./Sections";
+import { AddNewListModel} from "./Sections";
 import CreateCard from "./CreateCardModal";
 import TaskCard from "./Task";
-import { ArrowLeft, LayoutGrid, LayoutList } from "lucide-react";
-import { DateInput } from "components/form-control";
 import { Button } from "components/ui/button";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { useSelector } from "react-redux";
-import { SelectMultiInputComponent } from "components/form-control";
-import { PriorityList } from "data/Data";
 import { getAllTasks } from "app/hooks/taskManagment";
 
 const BoardGridView = ({ searchTaskQuery, projectId, filterData }) => {
@@ -48,9 +37,9 @@ const BoardGridView = ({ searchTaskQuery, projectId, filterData }) => {
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
     } finally {
-      // if (isMounted) {
-      //   setIsLoading(false);
-      // }
+      if (isMounted) {
+        setIsLoading(false);
+      }
     }
   };
 
