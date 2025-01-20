@@ -239,6 +239,7 @@ const DateInput = ({
   minDate,
   className,
   placeholder,
+  showReset,
 }) => {
   const [date, setDate] = useState(
     value && isValid(parse(value, "yyyy-MM-dd", new Date()))
@@ -251,6 +252,12 @@ const DateInput = ({
       : ""
   );
   const [calendarDate, setCalendarDate] = useState(date || new Date());
+  const [showResetText, setShowResetText] = useState(false);
+
+  const handleReset = (e) => {
+    e.stopPropagation(); // Prevent the popover from opening
+    resetFields();
+  };
 
   // Sync the input field and calendar when the value changes externally
   useEffect(() => {
@@ -315,9 +322,23 @@ const DateInput = ({
             className={`w-full justify-start text-left font-normal rounded-sm h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200 ${
               !date ? "text-muted-foreground" : ""
             }`}
+            onMouseEnter={() => showReset && date && setShowResetText(true)}
+            onMouseLeave={() => setShowResetText(false)}
           >
             {date ? (
-              format(date, "d MMMM yyyy")
+              // [MODIFIED] Wrapped content in div with flex layout
+              <div className="flex justify-between items-center w-full">
+                <span>{format(date, "d MMMM yyyy")}</span>
+                {/* [NEW] Added reset button that shows on hover */}
+                {showReset && showResetText && (
+                  <span
+                    className="text-sm text-neutral-900 hover:text-red-500 cursor-pointer ml-2 px-2 py-0.5 border border-neutral-200 rounded-md  hover:bg-white transition-colors"
+                    onClick={handleReset}
+                  >
+                    Reset
+                  </span>
+                )}
+              </div>
             ) : (
               <div className="flex items-center gap-2">
                 <LucideCalendar size={16} />
