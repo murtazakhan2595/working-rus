@@ -40,6 +40,9 @@ import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementDa
 import { CheckBoxInput } from "components/form-control";
 import Subtasks from "../../Sections/SubTask";
 import { addSubtask } from "app/hooks/taskManagment";
+import { Unlink2 } from "lucide-react";
+import { URLS } from "constants/config";
+import TaskShare from "../../Sections/TaskShare";
 
 const CreateAndEditCardForm = ({
   taskId,
@@ -51,6 +54,7 @@ const CreateAndEditCardForm = ({
   projectId,
   boardId,
   Projects = [],
+  reloadData,
 }) => {
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
@@ -216,6 +220,7 @@ const CreateAndEditCardForm = ({
         toast.success(`Task ${isEdit ? "Updated" : "Added"} Successfully!`, {
           position: toast.POSITION.TOP_RIGHT,
         });
+        reloadData();
         onClose(); // Close the modal or perform any other action upon success
       }
     } catch (error) {
@@ -489,6 +494,14 @@ const CreateAndEditCardForm = ({
                           />
                         }
                       />
+                      {taskId && (
+                        <TaskInputDetails
+                          title={"Share Link"}
+                          content={
+                            <TaskShare projectId={projectId} taskId={taskId} />
+                          }
+                        />
+                      )}
                       <TaskInputDetails
                         title={"Subtasks"}
                         content={

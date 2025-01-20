@@ -10,6 +10,7 @@ const CreateAndUpdateCard = ({
   projectId,
   setIsOpen,
   isOpen,
+  reloadData
 }) => {
 
   return (
@@ -20,6 +21,7 @@ const CreateAndUpdateCard = ({
         projectId={projectId}
         boardId={boardId}
         isOpen={isOpen}
+        reloadData={reloadData}
       />
       <ToastContainer />
     </>
