@@ -261,11 +261,12 @@ const addProject = async (payload, projectID) => {
     return false;
   }
 };
-const addTask = async (payload) => {
+const addTask = async (payload , id) => {
+  const taskId = payload.id || id;
   try {
-    if (payload?.id) {
+    if (taskId ) {
       const response = await axios.patch(
-        `${baseUrl}/task/${payload.id}/`,
+        `${baseUrl}/task/${taskId}/`,
         payload,
         {
           headers: headers(),

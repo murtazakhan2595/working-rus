@@ -98,6 +98,7 @@ const BoardGridView = ({ searchTaskQuery, projectId, filterData }) => {
                     filterData={{
                       ...filterData,
                       board_id: [board.id],
+                       status:"TODO,INPROGRESS,COMPLETED"
                     }}
                     searchTaskQuery={searchTaskQuery}
                   />

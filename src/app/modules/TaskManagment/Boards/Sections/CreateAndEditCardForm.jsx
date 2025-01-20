@@ -131,12 +131,12 @@ const CreateAndEditCardForm = ({
 
   useEffect(() => {
     let isMounted = true;
-    const fetchProject = async () => {
+    const fetchProject = async (isMounted) => {
       const projectDetails = await getProjectById(projectId);
-      setProjectDetail(projectDetails);
+      if (isMounted && projectDetails) setProjectDetail(projectDetails);
     };
     if (projectId) {
-      fetchProject();
+      fetchProject(isMounted);
     }
     return () => {
       isMounted = false;
@@ -203,15 +203,15 @@ const CreateAndEditCardForm = ({
       // Submit the task
       const response = await addTask(finalData);
       if (response) {
-         const subtaskPromises = (formData.subtasks || []).map((subtask) =>
-           addSubtask({
-             name: subtask.name,
-             is_completed: subtask.is_completed,
-             assigned_to: subtask.assigned_to,
-             tasks: response.id,
-           })
-         );
-         await Promise.all(subtaskPromises);
+        const subtaskPromises = (formData.subtasks || []).map((subtask) =>
+          addSubtask({
+            name: subtask.name,
+            is_completed: subtask.is_completed,
+            assigned_to: subtask.assigned_to,
+            tasks: response.id,
+          })
+        );
+        await Promise.all(subtaskPromises);
         //  setShowSuccessMessage(true);
         toast.success(`Task ${isEdit ? "Updated" : "Added"} Successfully!`, {
           position: toast.POSITION.TOP_RIGHT,
@@ -411,8 +411,6 @@ const CreateAndEditCardForm = ({
                             error={props.errors.priority}
                             touch={props.touched.priority}
                             value={props.values.priority}
-                            // required
-                            // label="Priority"
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
                             }}
@@ -422,19 +420,15 @@ const CreateAndEditCardForm = ({
                       <TaskInputDetails
                         title={"Status"}
                         content={
-                          <CheckBoxInput
-                            label={
-                              props.values.status === "COMPLETED"
-                                ? "Completed"
-                                : "In Progress"
-                            }
+                          <SelectComponent
                             name="status"
-                            value={props.values.status === "COMPLETED"}
-                            onChange={(name, value) => {
-                              props.setFieldValue(
-                                name,
-                                value ? "COMPLETED" : "INPROGRESS"
-                              );
+                            options={TaskStatus}
+                            showLabel={false}
+                            error={props.errors.status}
+                            touch={props.touched.status}
+                            value={props.values.status}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
                             }}
                           />
                         }
