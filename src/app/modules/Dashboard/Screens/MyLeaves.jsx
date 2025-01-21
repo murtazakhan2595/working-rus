@@ -26,7 +26,7 @@ import {
 import { getLeaveTransaction } from "app/hooks/leaveTracker";
 import { connect } from "react-redux";
 import { PageLoader } from "components";
-import { FilterInput } from "components/form-control";
+import { FilterInput } from "components/FormControl";
 import { LeaveTrackerOptions } from "data/Data";
 import { getLeaveComponents } from "app/hooks/leaveTracker";
 import ApplyLeaveSheet from "app/modules/LeaveTracker/Sections/ApplyLeaveSheet";

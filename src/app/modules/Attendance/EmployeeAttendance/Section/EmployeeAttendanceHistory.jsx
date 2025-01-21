@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { GetDateRange } from "utils/renderValues";
 import moment from "moment";
-import { PageLoader, Header, DateRangeFilter, TableCustom } from "components";
+import { PageLoader, Header, TableCustom } from "components";
+import {DateRangeFilter } from "components/FormControl";
 import { MyAttendanceHistoryColumns } from "app/utils/Types/TableColumns";
-import { FilterInput } from "components/form-control";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 

@@ -28,7 +28,7 @@ import {
   ViewAttachmentDetail,
 } from "./Sections/DetailViewPanel";
 import { Button } from "../../../components/ui/button";
-import { CoverFileUpload } from "components/form-control";
+import { CoverFileUpload } from "components/FormControl";
 const ExitDetailsCard = ({
   onClose,
   resignationId,

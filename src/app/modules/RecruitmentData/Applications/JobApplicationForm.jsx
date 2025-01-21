@@ -9,7 +9,7 @@ import {
   PhoneNumberInput,
   EmailInput,
   CoverFileUpload,
-} from "../../../../components/form-control.jsx";
+} from "../../../../components/FormControl/index.jsx";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

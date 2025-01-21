@@ -12,7 +12,7 @@ import { LeaveStatus } from "data/Data";
 //   getEmployeeLeaveTypes,
 //   deleteLeaveRequest,
 // } from "app/hooks/leaveManagment";
-import { FilterInput } from "components/form-control";
+import { FilterInput } from "components/FormControl";
 import { getEmployeeLeavesTypesList } from "utils/Lists";
 import CustomTable from "components/CustomTable";
 import {

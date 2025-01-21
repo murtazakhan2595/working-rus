@@ -3,7 +3,7 @@ import { Card, CardContent } from "../../../../components/ui/card.jsx";
 import { SalaryComponentColumns } from "app/utils/Types/TableColumns";
 import CustomTable from "components/CustomTable";
 import Header from "../../../../components/Header.jsx";
-import { FilterInput } from "components/form-control.jsx";
+import { FilterInput } from "components/FormControl";
 import { useNavigate } from "react-router-dom";
 import { PageLoader } from "components";
 import { connect } from "react-redux";

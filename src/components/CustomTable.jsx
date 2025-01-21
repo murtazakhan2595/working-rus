@@ -16,7 +16,7 @@ import {
   PaginationLink,
   PaginationNext,
 } from "../src/@/components/ui/pagination";
-import { SelectComponent } from "./form-control";
+import { SelectComponent } from "./FormControl";
 
 export default function TableCustom({
   columns,

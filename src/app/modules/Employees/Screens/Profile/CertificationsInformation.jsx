@@ -14,7 +14,7 @@ import {
   DateInput,
   TextInput,
   CoverFileUpload
-} from "components/form-control";
+} from "components/FormControl";
 import { Link } from "react-router-dom";
 
 

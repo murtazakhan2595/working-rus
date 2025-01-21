@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { InputComments } from "components/form-control.jsx";
+import { CommentsInputField } from "components/FormControl";
 import { EmployeeName } from "utils/getValuesFromTables";
 import moment from "moment";
 import AttachmentUI from "components/ui/AttachmentUI";
@@ -81,7 +81,7 @@ export default function TaskComments({ taskId }) {
 
   return (
     <div className="mt-3">
-      <InputComments handleAddComment={handleAddComment} users={employees} />
+      <CommentsInputField handleAddComment={handleAddComment} users={employees} />
       <div className="mt-3 space-y-4 flex flex-col gap-6">
         {comments?.map((comment, index) => (
           <div key={index} className="flex items-start space-x-3">

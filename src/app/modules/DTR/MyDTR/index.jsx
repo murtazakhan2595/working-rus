@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "components/ui/button";
 import moment from "moment";
-import { Header, DateRangeFilter } from "components";
+import { Header } from "components";
 import Stats from "components/ui/Stats";
 import {
   CalendarClock,
@@ -27,6 +27,7 @@ import { calculateTotal, calculateTotalCount } from "utils/renderValues";
 import { GetDateRange } from "utils/renderValues";
 import { calculateTaskCount } from "utils/renderValues";
 import { PageLoader } from "components";
+import { DateRangeFilter } from "components/FormControl";
 
 const MyDtr = () => {
   const userProfile = useSelector((state) => state.user.userProfile);

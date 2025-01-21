@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { BriefcaseIcon, CalendarIcon, UsersIcon } from "lucide-react";
 import Header from "../../../../components/Header";
-import { FilterInput } from "components/form-control";
+import { FilterInput } from "components/FormControl";
 import { fetchJobPosts } from "app/hooks/recruitment";
 import { PageLoader } from "components";
 import {

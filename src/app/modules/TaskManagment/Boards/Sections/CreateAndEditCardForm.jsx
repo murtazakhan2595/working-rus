@@ -6,7 +6,7 @@ import {
   SelectComponent,
   DateInput,
   errorClassName,
-} from "components/form-control.jsx";
+} from "components/FormControl";
 import { PriorityList, TaskStatus } from "data/Data";
 import SheetComponent from "components/ui/CustomSheet";
 import { useSelector } from "react-redux";
@@ -18,7 +18,7 @@ import {
   getProjectById,
   getAllBoards,
 } from "app/hooks/taskManagment";
-import { TextAreaInput } from "components/form-control";
+import { TextAreaInput } from "components/FormControl";
 import { Button } from "components/ui/button";
 import {
   Labels,
@@ -37,7 +37,7 @@ import { CardTypes } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
 import DialogBox from "components/DialogBox";
 import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
-import { CheckBoxInput } from "components/form-control";
+import { CheckBoxInput } from "components/FormControl";
 import Subtasks from "../../Sections/SubTask";
 import { addSubtask } from "app/hooks/taskManagment";
 import { Unlink2 } from "lucide-react";
@@ -141,12 +141,12 @@ const CreateAndEditCardForm = ({
 
   useEffect(() => {
     let isMounted = true;
-    const fetchProject = async () => {
+    const fetchProject = async (isMounted) => {
       const projectDetails = await getProjectById(projectId);
-      setProjectDetail(projectDetails);
+      if (isMounted && projectDetails) setProjectDetail(projectDetails);
     };
     if (projectId) {
-      fetchProject();
+      fetchProject(isMounted);
     }
     return () => {
       isMounted = false;
@@ -414,8 +414,6 @@ const CreateAndEditCardForm = ({
                             error={props.errors.priority}
                             touch={props.touched.priority}
                             value={props.values.priority}
-                            required
-                            label="Priority"
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
                             }}
@@ -425,19 +423,15 @@ const CreateAndEditCardForm = ({
                       <TaskInputDetails
                         title={"Status"}
                         content={
-                          <CheckBoxInput
-                            label={
-                              props.values.status === "COMPLETED"
-                                ? "Completed"
-                                : "In Progress"
-                            }
+                          <SelectComponent
                             name="status"
-                            value={props.values.status === "COMPLETED"}
-                            onChange={(name, value) => {
-                              props.setFieldValue(
-                                name,
-                                value ? "COMPLETED" : "INPROGRESS"
-                              );
+                            options={TaskStatus}
+                            showLabel={false}
+                            error={props.errors.status}
+                            touch={props.touched.status}
+                            value={props.values.status}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
                             }}
                           />
                         }

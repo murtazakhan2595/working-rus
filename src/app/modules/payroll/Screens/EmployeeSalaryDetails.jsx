@@ -71,7 +71,7 @@ import {
 import {
   FilterInput,
   SelectComponent,
-} from "../../../../components/form-control";
+} from "../../../../components/FormControl";
 import {
   getEarnAndDeduction,
   getPayslip,

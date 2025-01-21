@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { Table, PageLoader } from "components";
-import { FilterInput } from "components/form-control";
+import { FilterInput } from "components/FormControl";
 import { Row, Col } from "reactstrap";
 import { ExitResignedColumns } from "app/utils/Types/TableColumns";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";

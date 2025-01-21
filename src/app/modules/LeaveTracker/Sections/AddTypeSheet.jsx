@@ -5,7 +5,7 @@ import { Formik } from "formik";
 import { Switch } from "src/@/components/ui/switch";
 import { Label } from "src/@/components/ui/label";
 import { Button } from "components/ui/button";
-import { TextInput } from "components/form-control";
+import { TextInput } from "components/FormControl";
 import { saveLeaveComponents } from "app/hooks/leaveTracker";
 import { deleteLeaveComponent } from "app/hooks/leaveTracker";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";

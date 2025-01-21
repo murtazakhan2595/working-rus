@@ -9,7 +9,7 @@ import {
   TextInput,
   SelectComponent,
   DateInput,
-} from "components/form-control.jsx";
+} from "components/FormControl";
 import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
 import { TaskDetailBox } from "app/modules/TaskManagment/Sections";

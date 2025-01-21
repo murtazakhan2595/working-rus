@@ -42,7 +42,7 @@ import {
   SelectMultiInputComponent,
   DateInput,
   CheckBoxInput,
-} from "components/form-control";
+} from "components/FormControl";
 
 import { getEmployeeid } from "utils/getValuesFromTables";
 import { saveEmployeePayroll } from "app/hooks/payroll";

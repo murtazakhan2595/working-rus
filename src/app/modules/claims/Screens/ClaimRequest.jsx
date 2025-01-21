@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import Header from "../../../../components/Header.jsx";
-import { FilterInput } from "components/form-control.jsx";
+import { FilterInput } from "components/FormControl";
 import { Card, CardContent, CardHeader } from "../../../../components/ui/card.jsx";
 import CustomTable from "components/CustomTable";
 import { ClaimRequestColumns } from "app/utils/Types/TableColumns.jsx";
@@ -18,7 +18,7 @@ import { Button } from "components/ui/button";
 import { deleteReimbursement } from "app/hooks/payroll.jsx";
 import { toast } from "react-toastify";
 import { ClaimExpenseTypeOptions } from "data/Data.js";
-import { DateInput } from "components/form-control.jsx";
+import { DateInput } from "components/FormControl";
 
 
 

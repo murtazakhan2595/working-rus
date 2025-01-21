@@ -3,7 +3,7 @@ import { Card, CardContent } from "../../../components/ui/card";
 import { EmployeeColumns } from "app/utils/Types/TableColumns";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
 import Header from "../../../components/Header";
-import { FilterInput, SelectComponent } from "components/form-control";
+import { FilterInput, SelectComponent } from "components/FormControl";
 import { UserRoles, employeeStatus } from "data/Data";
 import {
   getDepartmentList,

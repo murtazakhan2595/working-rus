@@ -10,8 +10,8 @@ import {
   TextInput,
   SelectComponent,
   TextAreaInput,
-} from "components/form-control";
-import { DateInput } from "components/form-control";
+} from "components/FormControl";
+import { DateInput } from "components/FormControl";
 import { ClaimExpenseTypeOptions } from "data/Data";
 import { getEmployeePayroll } from "app/hooks/payroll";
 import { connect } from "react-redux";
@@ -25,7 +25,7 @@ import { validateLeaveRequestFormSchema } from "app/utils/FormSchema/leaveTracke
 import { saveAttachment } from "app/hooks/leaveTracker";
 import { getRemainingLeaves } from "app/hooks/leaveTracker";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
-import { CoverFileUpload } from "components/form-control";
+import { CoverFileUpload } from "components/FormControl";
 
 const ApplyLeaveSheet = ({ userProfile, reload }) => {
   const [isOpen, setIsOpen] = useState(false);
