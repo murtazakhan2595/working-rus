@@ -8,7 +8,7 @@ import {
   SelectComponent,
   TextInput,
   CheckBoxInput,
-} from "components/form-control";
+} from "components/FormControl";
 import PageLoader from "components/PageLoader.jsx";
 import {
   getEmployeeVisaDetailData,

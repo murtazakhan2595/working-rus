@@ -11,13 +11,13 @@ import { DesignationName } from "utils/getValuesFromTables";
 import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
 import { NoticePeriod } from "data/Data";
-import { TextInput } from "components/form-control";
+import { TextInput } from "components/FormControl";
 import { getDepartmentName } from "utils/getValuesFromTables";
 import { getDesignationName } from "utils/getValuesFromTables";
 import { getManagerName } from "utils/getValuesFromTables";
 import { Button } from "components/ui/button";
 import { ReasonForLeaving } from "data/Data";
-import { CoverFileUpload } from "components/form-control";
+import { CoverFileUpload } from "components/FormControl";
 import { validateExitRequestForm } from "app/utils/FormSchema/employeeFormSchema";
 
 const PersonalInformation = ({

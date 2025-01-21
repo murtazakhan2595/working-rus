@@ -7,14 +7,14 @@ import {
   getDepartmentPercentage,
   getWeeklySummary,
 } from "app/hooks/attendance";
-import { PageLoader, DateRangeFilter, TableCustom } from "components";
+import { PageLoader, TableCustom } from "components";
 import { EmployeesAttendanceColumns } from "app/modules/Attendance/Sections/AttendanceTableColumns";
 import { LeaveStatusOverview } from "./Sections/LeaveStatusOverview";
 import { StatisticsChart } from "./Sections/StatisticsChart";
 import DepartmentOverview from "./Sections/DepartmentOverview";
 import { StatsCards } from "./Sections/StatsCards";
 import { getLeaveStatusDaily } from "app/hooks/leaveTracker";
-import { FilterInput, SelectComponent } from "components/FormControl";
+import { FilterInput, DateRangeFilter } from "components/FormControl";
 import { useSelector } from "react-redux";
 import { GetDateRange } from "utils/renderValues";
 

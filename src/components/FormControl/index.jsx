@@ -43,6 +43,7 @@ import TextEditorInputField from './TextEditorInputField';
 import CommentsInputField from './CommentsInputField'
 import DateRangeFilter from './DateRangeFilter';
 import SortingFilters from './SortingFilters';
+import TimePicker from './TimePicker';
 
 
 const errorClassName = "text-red-100 text-sm font-[inter] font-normal ml-1";
@@ -1683,6 +1684,7 @@ const CoverFileUpload = ({
 
 export {
   CommentsInputField,
+  TimePicker,
   SelectComponent,
   SelectMultiInputComponent,
   DateInput,

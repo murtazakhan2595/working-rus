@@ -14,7 +14,7 @@ import {
   SelectComponent,
   TextInput,
   CoverFileUpload,
-} from "components/form-control";
+} from "components/FormControl";
 import { educationTypeOptions } from "data/Data.js";
 import { Link } from "react-router-dom";
 

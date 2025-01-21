@@ -8,7 +8,7 @@ import {
   PhoneNumberInput,
   SelectComponent,
   TextInput,
-} from "components/form-control";
+} from "components/FormControl";
 import { PageLoader } from "components";
 import {
   countriesCallingCodes,

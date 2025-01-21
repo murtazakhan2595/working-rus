@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import React, { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { ViewOptions, SortingFilters } from "components";
+import { ViewOptions } from "components";
 import { getLabelDropdownList } from "utils/Lists";
 import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
 import BoardGridView from "app/modules/TaskManagment/Boards/BoardGridView";
@@ -11,7 +11,7 @@ import { RenderProject } from "./Sections";
 import { ArrowLeft } from "lucide-react";
 import { DateInput } from "components/FormControl";
 import { Button } from "components/ui/button";
-import { FilterInput } from "components/FormControl";
+import { FilterInput,SortingFilters } from "components/FormControl";
 import { PriorityList, TaskSortingFilters } from "data/Data";
 import { getProjectById, addProject } from "app/hooks/taskManagment";
 import { AlignRight } from "lucide-react";

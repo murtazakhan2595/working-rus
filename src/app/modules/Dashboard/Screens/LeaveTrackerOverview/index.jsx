@@ -14,7 +14,7 @@ import { PageLoader } from "components";
 import { connect } from "react-redux";
 import { LeaveAplicationColumns } from "app/utils/Types/TableColumns";
 import CustomTable from "components/CustomTable";
-import { FilterInput } from "components/form-control";
+import { FilterInput } from "components/FormControl";
 import { LeaveTrackerOptions } from "data/Data";
 import { getLeaveComponents } from "app/hooks/leaveTracker";
 

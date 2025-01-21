@@ -18,7 +18,7 @@ import { Button } from "components/ui/button";
 import { deleteReimbursement } from "app/hooks/payroll.jsx";
 import { toast } from "react-toastify";
 import { ClaimExpenseTypeOptions } from "data/Data.js";
-import { DateInput } from "components/form-control.jsx";
+import { DateInput } from "components/FormControl";
 
 
 

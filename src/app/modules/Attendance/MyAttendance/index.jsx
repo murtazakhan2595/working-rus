@@ -21,7 +21,7 @@ import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { HourlyStatistics } from "../EmployeeAttendance/Section";
 import { getRecentActivities } from "app/hooks/attendance";
-import { DateRangeFilter } from "components";
+import { DateRangeFilter } from "components/FormControl";
 import { GetDateRange } from "utils/renderValues";
 
 const Attendance = () => {
