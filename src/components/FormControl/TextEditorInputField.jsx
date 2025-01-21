@@ -1,5 +1,30 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import {
+  Italic,
+  Bold,
+  Underline,
+  List,
+  ListOrdered,
+  Link,
+  Image,
+} from "lucide-react";
+import { Button } from "components/ui/button";
+import { AiOutlinePaperClip } from "react-icons/ai";
 
+const TextEditorStyle = [
+  "BOLD",
+  "ITALIC",
+  "UNDERLINE",
+  "UNORDEREDLIST",
+  "ORDEREDLIST",
+];
+
+const TextEditorIconClassName = "w-4 h-4";
+const TextEditorButtonClassName = (active) => {
+  return `hover:bg-white hover:text-primary ${
+    TextEditorStyle.includes(active) ? "active:text-primary" : ""
+  } p-1`;
+};
 function useUpload() {
   const [loading, setLoading] = React.useState(false);
   const upload = React.useCallback(async (input) => {
@@ -62,7 +87,9 @@ function useUpload() {
   return [upload, { loading }];
 }
 function TextEditorInputField() {
+  const fileInputRef = useRef(null);
   const [content, setContent] = useState("");
+  const [activeStyle, setActiveStyle] = useState([]);
   const [upload, { loading }] = useUpload();
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
@@ -72,7 +99,10 @@ function TextEditorInputField() {
     document.execCommand(command, false, value);
   }, []);
 
-  const handleBold = () => execCommand("bold");
+  const handleBold = () => {
+    execCommand("bold");
+    setActiveStyle([...activeStyle,"bold".toUpperCase()]);
+  };
   const handleItalic = () => execCommand("italic");
   const handleUnderline = () => execCommand("underline");
   const handleUnorderedList = () => execCommand("insertUnorderedList");
@@ -105,56 +135,92 @@ function TextEditorInputField() {
     },
     [upload, execCommand]
   );
-
+  const handleFileChange = (event) => {
+    // const file = event.target.files[0]; // Get the single file
+    // if (file) {
+    //   const attachment = {
+    //     attachment: file,
+    //     name: file.name,
+    //   };
+    //   setCommentAttachment([...commentAttachments, ...[attachment]]);
+    // }
+  };
   return (
-    <div className="w-full max-w-4xl mx-auto p-4">
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-        <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 p-2">
-          <button
+    <div className="w-full max-w-4xl mx-auto">
+      <div className="rounded-lg border border-neutral-500 bg-white">
+        <div className="flex flex-wrap items-center gap-2 border-b border-neutral-500 p-2">
+          <Button
+            variant="ghost"
             onClick={handleBold}
-            className="p-2 hover:bg-gray-100 rounded-md"
+            className={TextEditorButtonClassName("BOLD")}
           >
-            <i className="fas fa-bold"></i>
-          </button>
-          <button
+            <Bold strokeWidth={2.5} className={TextEditorIconClassName} />
+          </Button>
+          <Button
+            variant="ghost"
             onClick={handleItalic}
-            className="p-2 hover:bg-gray-100 rounded-md"
+            className={TextEditorButtonClassName("ITALIC")}
           >
-            <i className="fas fa-italic"></i>
-          </button>
-          <button
+            {/* <Italic strokeWidth={2.5} /> */}
+            <Italic strokeWidth={2.5} className={TextEditorIconClassName} />
+          </Button>
+          <Button
+            variant="ghost"
             onClick={handleUnderline}
-            className="p-2 hover:bg-gray-100 rounded-md"
+            className={TextEditorButtonClassName("UNDERLINE")}
           >
-            <i className="fas fa-underline"></i>
-          </button>
-          <div className="h-4 w-[1px] bg-gray-200 mx-2"></div>
-          <button
+            <Underline strokeWidth={2.5} className={TextEditorIconClassName} />{" "}
+          </Button>
+          <div className="h-4 w-[1px] bg-neutral-500 mx-2"></div>
+          <Button
+            variant="ghost"
             onClick={handleUnorderedList}
-            className="p-2 hover:bg-gray-100 rounded-md"
+            className={TextEditorButtonClassName}
           >
-            <i className="fas fa-list-ul"></i>
-          </button>
-          <button
+            <List strokeWidth={2.5} className={TextEditorIconClassName} />
+          </Button>
+          <Button
+            variant="ghost"
             onClick={handleOrderedList}
-            className="p-2 hover:bg-gray-100 rounded-md"
+            className={TextEditorButtonClassName("ORDEREDLIST")}
           >
-            <i className="fas fa-list-ol"></i>
-          </button>
-          <div className="h-4 w-[1px] bg-gray-200 mx-2"></div>
-          <button
+            <ListOrdered
+              strokeWidth={2.5}
+              className={TextEditorIconClassName}
+            />
+          </Button>
+          <div className="h-4 w-[1px] bg-neutral-500 mx-2"></div>
+          <Button
+            variant="ghost"
             onClick={handleLink}
-            className="p-2 hover:bg-gray-100 rounded-md"
+            className={TextEditorButtonClassName("UNORDEREDLIST")}
           >
-            <i className="fas fa-link"></i>
-          </button>
-          <label className="p-2 hover:bg-gray-100 rounded-md cursor-pointer">
-            <i className="fas fa-image"></i>
+            <Link strokeWidth={2.5} className={TextEditorIconClassName} />
+          </Button>
+          <label className={TextEditorButtonClassName}>
+            <Image strokeWidth={2.5} className={TextEditorIconClassName} />
             <input
               type="file"
               className="hidden"
               accept="image/*"
               onChange={handleImageUpload}
+            />
+          </label>
+          <label className={TextEditorButtonClassName}>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onClick={(event) => event.stopPropagation()} // Prevent default behavior
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <AiOutlinePaperClip
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                fileInputRef.current.click();
+              }}
+              className="w-5 h-5 mx-2 text-black cursor-pointer"
             />
           </label>
           {showLinkInput && (
@@ -166,24 +232,38 @@ function TextEditorInputField() {
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
               />
-              <button
+              <Button
+                variant="ghost"
                 onClick={handleLink}
                 className="px-2 py-1 bg-blue-500 text-white rounded"
               >
                 Add
-              </button>
+              </Button>
             </div>
           )}
         </div>
         <div
           ref={editorRef}
-          className="w-full min-h-[200px] p-4 focus:outline-none rounded-b-lg font-inter text-gray-800"
+          className="w-full min-h-[200px] p-4 focus:outline-none rounded-b-lg "
           contentEditable
           onInput={(e) => setContent(e.target.innerHTML)}
           dangerouslySetInnerHTML={{ __html: content }}
         ></div>
+        <div className="p-4 flex justify-end">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              // handleSubmitComment(newComment, commentAttachments);
+            }}
+          >
+            {"Comment"}
+          </Button>
+        </div>
       </div>
-      <div className="mt-2 text-sm text-gray-500 font-inter">
+
+      <div className="mt-2 text-sm text-gray-900 font-inter">
         {content.replace(/<[^>]*>/g, "").length} characters
       </div>
     </div>

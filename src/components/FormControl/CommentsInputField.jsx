@@ -7,7 +7,7 @@ import { Card } from "components/ui/card";
 import ReactQuill from "react-quill";
 import { Input } from "components/ui/input";
 import { Button } from "components/ui/button";
-import { useSelector } from "react-redux";
+import { TextEditorInputField } from "components/FormControl";
 import { Calendar as LucideCalendar } from "lucide-react";
 import { AiOutlinePaperClip } from "react-icons/ai";
 import {
@@ -190,6 +190,8 @@ const CommentsInputField = ({ handleAddComment, users }) => {
             </div>
           </div>
         </div>
+        <TextEditorInputField/>
+
       </>
     );
   };
