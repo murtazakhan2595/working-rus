@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Formik } from "formik";
 import { Col, Form, Row } from "reactstrap";
-import { DateInput } from "components/form-control";
-import { SelectComponent } from "components/form-control";
+import { DateInput } from "components/FormControl";
+import { SelectComponent } from "components/FormControl";
 import { connect } from "react-redux";
 import { getEmployeeData } from "app/hooks/employee";
 import { DesignationName } from "utils/getValuesFromTables";
@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 import { terminationReasonsOptions } from "data/Data";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 import { NoticePeriod } from "data/Data";
-import { CoverFileUpload } from "components/form-control";
+import { CoverFileUpload } from "components/FormControl";
 
 const { RxCross2 } = require("react-icons/rx");
 

@@ -21,7 +21,7 @@ import { Trash } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { PageLoader } from "components";
-import { CheckBoxInput } from "components/form-control";
+import { CheckBoxInput } from "components/FormControl";
 import { addTask } from "app/hooks/taskManagment";
 import TaskShare from "../Sections/TaskShare";
 

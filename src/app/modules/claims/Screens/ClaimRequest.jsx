@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import Header from "../../../../components/Header.jsx";
-import { FilterInput } from "components/form-control.jsx";
+import { FilterInput } from "components/FormControl";
 import { Card, CardContent, CardHeader } from "../../../../components/ui/card.jsx";
 import CustomTable from "components/CustomTable";
 import { ClaimRequestColumns } from "app/utils/Types/TableColumns.jsx";

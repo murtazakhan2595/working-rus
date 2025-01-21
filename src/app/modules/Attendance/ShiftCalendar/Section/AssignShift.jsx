@@ -3,7 +3,7 @@ import SheetComponent from "components/ui/SheetComponent";
 import React, { useEffect, useState } from "react";
 import { Formik } from "formik";
 import { Button } from "components/ui/button";
-import { SelectComponent } from "components/form-control";
+import { SelectComponent } from "components/FormControl";
 import { saveShiftAssignment } from "app/hooks/attendance";
 import { toast } from "react-toastify";
 import { connect } from "react-redux";

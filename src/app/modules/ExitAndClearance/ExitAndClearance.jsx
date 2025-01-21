@@ -21,7 +21,7 @@ import {
 } from "../../../src/@/components/ui/tabs";
 import { Header } from "components";
 import { StatusList } from "./Sections";
-import { FilterInput } from "components/form-control";
+import { FilterInput } from "components/FormControl";
 import { ResignationStatusOptions } from "data/Data";
 import Stats from "components/ui/Stats";
 import { TerminationStatusOptions } from "data/Data";

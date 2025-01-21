@@ -17,7 +17,7 @@ import {
   SelectComponent,
   TextAreaEditorInput,
   TextAreaInput,
-} from "components/form-control.jsx";
+} from "components/FormControl";
 import { Project } from "app/utils/Types/TaskManagment";
 
 const ProjectModal = ({ employees, onClose, isEditMode }) => {

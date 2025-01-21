@@ -18,7 +18,7 @@ import {
 import { File } from "app/utils/Types/General.jsx";
 import { Button } from "../../../../../components/ui/button";
 import { validateEmployeeIdentificationForm } from "app/utils/FormSchema/employeeFormSchema.jsx";
-import { CoverFileUpload } from "components/form-control.jsx";
+import { CoverFileUpload } from "components/FormControl";
 import { Card, CardContent } from "components/ui/card.jsx";
 
 const IdentificationInformation = ({

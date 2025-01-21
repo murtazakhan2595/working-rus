@@ -9,21 +9,21 @@ import {
   getJobApplications,
   updateApplicationStatus,
 } from "../../../hooks/recruitment";
-import { FilterInput } from "components/form-control";
+import { FilterInput } from "components/FormControl";
 import { AllJobApplicationColumns } from "app/utils/Types/TableColumns";
 import TableCustom from "components/CustomTable";
 import { Card, CardContent } from "components/ui/card";
 import { Header } from "components";
 import Stats from "components/ui/Stats";
 import { File, List, Scissors } from "lucide-react";
-import { DateInput } from "components/form-control";
+import { DateInput } from "components/FormControl";
 import SheetComponent from "components/ui/SheetComponent";
 import { JobDetails } from "./Sections/Tabs";
 import { jobIcon } from "assets/images";
 import DialogBox from "components/DialogBox";
 import { Button } from "components/ui/button";
 import { Formik } from "formik";
-import { TextAreaInput } from "components/form-control";
+import { TextAreaInput } from "components/FormControl";
 
 const Applications = () => {
   const location = useLocation();

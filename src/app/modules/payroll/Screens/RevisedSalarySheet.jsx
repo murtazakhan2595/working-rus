@@ -6,8 +6,8 @@ import {
   TextInput,
   CheckBoxInput,
   TextAreaInput,
-} from "components/form-control";
-import { DateInput } from "components/form-control";
+} from "components/FormControl";
+import { DateInput } from "components/FormControl";
 import { Button } from "components/ui/button";
 import { Link } from "react-router-dom";
 import {

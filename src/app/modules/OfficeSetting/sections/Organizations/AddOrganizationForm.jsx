@@ -1,6 +1,6 @@
-import { TextAreaInput } from "components/form-control";
-import { TextInput } from "components/form-control";
-import { ImageInput } from "components/form-control";
+import { TextAreaInput } from "components/FormControl";
+import { TextInput } from "components/FormControl";
+import { ImageInput } from "components/FormControl";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { Button } from "components/ui/button";
 import React, { useState, createRef, useEffect } from "react";
@@ -9,7 +9,7 @@ import { OrganizationInformation } from "app/utils/Types/Organization";
 import { validateOrganizationSchema } from "app/utils/FormSchema/organizationFormSchema";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { currencies } from "country-data";
-import { SelectComponent } from "components/form-control";
+import { SelectComponent } from "components/FormControl";
 import { getCurrenciesList } from "app/hooks/general";
 import { dateFormats } from "data/Data";
 import { days } from "data/Data";

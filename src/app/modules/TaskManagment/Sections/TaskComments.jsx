@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { InputComments } from "components/form-control.jsx";
+import { InputComments } from "components/FormControl";
 import { EmployeeName } from "utils/getValuesFromTables";
 import moment from "moment";
 import AttachmentUI from "components/ui/AttachmentUI";

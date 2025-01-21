@@ -10,7 +10,7 @@ import {
   TextInput,
   PhoneNumberInput,
   TextAreaInput,
-} from "../../../../../components/form-control.jsx";
+} from "../../../../../components/FormControl/index.jsx";
 import { PageLoader } from "components";
 import { getContactInfo } from "../../../../../app/utils/MappingObjects/mapEmployeeData.jsx";
 import { validationEmployeeContactInfoFormSchema } from "../../../../../app/utils/FormSchema/employeeFormSchema";

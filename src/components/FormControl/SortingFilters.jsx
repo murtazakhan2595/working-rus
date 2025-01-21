@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckBoxInput } from "./form-control";
+import { CheckBoxInput } from ".";
 import {
   Popover,
   PopoverContent,

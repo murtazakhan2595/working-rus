@@ -6,7 +6,7 @@ import {
   SelectComponent,
   DateInput,
   errorClassName,
-} from "components/form-control.jsx";
+} from "components/FormControl";
 import { PriorityList, TaskStatus } from "data/Data";
 import SheetComponent from "components/ui/CustomSheet";
 import { useSelector } from "react-redux";
@@ -18,7 +18,7 @@ import {
   getProjectById,
   getAllBoards,
 } from "app/hooks/taskManagment";
-import { TextAreaInput } from "components/form-control";
+import { TextAreaInput } from "components/FormControl";
 import { Button } from "components/ui/button";
 import {
   Labels,
@@ -37,7 +37,7 @@ import { CardTypes } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
 import DialogBox from "components/DialogBox";
 import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
-import { CheckBoxInput } from "components/form-control";
+import { CheckBoxInput } from "components/FormControl";
 import Subtasks from "../../Sections/SubTask";
 import { addSubtask } from "app/hooks/taskManagment";
 import { Unlink2 } from "lucide-react";

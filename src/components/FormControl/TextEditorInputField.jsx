@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 function useUpload() {
   const [loading, setLoading] = React.useState(false);
@@ -61,7 +61,7 @@ function useUpload() {
 
   return [upload, { loading }];
 }
-function MainComponent() {
+function TextEditorInputField() {
   const [content, setContent] = useState("");
   const [upload, { loading }] = useUpload();
   const [showLinkInput, setShowLinkInput] = useState(false);
@@ -190,4 +190,4 @@ function MainComponent() {
   );
 }
 
-export default MainComponent;
+export default TextEditorInputField;

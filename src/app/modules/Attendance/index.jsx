@@ -14,7 +14,7 @@ import { StatisticsChart } from "./Sections/StatisticsChart";
 import DepartmentOverview from "./Sections/DepartmentOverview";
 import { StatsCards } from "./Sections/StatsCards";
 import { getLeaveStatusDaily } from "app/hooks/leaveTracker";
-import { FilterInput, SelectComponent } from "components/form-control";
+import { FilterInput, SelectComponent } from "components/FormControl";
 import { useSelector } from "react-redux";
 import { GetDateRange } from "utils/renderValues";
 

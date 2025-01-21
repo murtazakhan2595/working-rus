@@ -4,7 +4,6 @@ import { GetDateRange } from "utils/renderValues";
 import moment from "moment";
 import { PageLoader, Header, DateRangeFilter, TableCustom } from "components";
 import { MyAttendanceHistoryColumns } from "app/utils/Types/TableColumns";
-import { FilterInput } from "components/form-control";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 

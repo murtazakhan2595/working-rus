@@ -5,7 +5,7 @@ import {
   CardContent,
  
 } from "../../../../components/ui/card";
-import { FilterInput } from "components/form-control.jsx";
+import { FilterInput } from "components/FormControl";
 import CustomTable from "components/CustomTable";
 import { connect } from "react-redux";
 

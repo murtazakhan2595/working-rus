@@ -2,8 +2,8 @@ import { useState } from "react";
 import SheetComponent from "../../../../components/ui/SheetComponent";
 import { Button } from "../../../../components/ui/button";
 import { Formik } from "formik";
-import { RadioGroupInput } from "components/form-control";
-import { TextInput } from "components/form-control";
+import { RadioGroupInput } from "components/FormControl";
+import { TextInput } from "components/FormControl";
 import { Switch } from "../../../../src/@/components/ui/switch";
 import { Label } from "../../../../src/@/components/ui/label";
 

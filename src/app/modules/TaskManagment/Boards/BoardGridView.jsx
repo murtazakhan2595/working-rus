@@ -15,7 +15,7 @@ import { AddNewListModel} from "./Sections";
 import CreateCardModal from "./CreateCardModal";
 import TaskCard from "./Task";
 import { ArrowLeft, LayoutGrid, LayoutList, MoreVertical } from "lucide-react";
-import { DateInput } from "components/form-control";
+import { DateInput } from "components/FormControl";
 import { Button } from "components/ui/button";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
@@ -98,7 +98,7 @@ const BoardGridView = ({ searchTaskQuery, projectId, filterData }) => {
                     filterData={{
                       ...filterData,
                       board_id: [board.id],
-                       status:"TODO,INPROGRESS,COMPLETED"
+                      // status:"TODO,INPROGRESS,COMPLETED"
                     }}
                     searchTaskQuery={searchTaskQuery}
                   />

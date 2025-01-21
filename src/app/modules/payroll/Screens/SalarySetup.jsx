@@ -7,7 +7,7 @@ import {
 import { SalarySetupColumns } from "app/utils/Types/TableColumns";
 import CustomTable from "components/CustomTable";
 import Header from "../../../../components/Header.jsx";
-import { FilterInput } from "components/form-control.jsx";
+import { FilterInput } from "components/FormControl";
 import { useNavigate } from "react-router-dom";
 import { PageLoader } from "components";
 import { getEmployeePayroll } from "app/hooks/payroll.jsx";

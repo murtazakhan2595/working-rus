@@ -5,14 +5,14 @@ import {
   DateInput,
   TextInput,
   PhoneNumberInput,
-} from "components/form-control";
+} from "components/FormControl";
 import React, { useState } from "react";
 import { Row, Col, Form } from "reactstrap";
 import { Formik } from "formik";
 import { employeeExit } from "app/hooks/employee";
 import { toast } from "react-toastify";
 import { countriesList, NoticePeriod, ResignationReasons } from "data/Data";
-import { CoverFileUpload } from "components/form-control";
+import { CoverFileUpload } from "components/FormControl";
 
 function ExitRequestForm({
   reload,
