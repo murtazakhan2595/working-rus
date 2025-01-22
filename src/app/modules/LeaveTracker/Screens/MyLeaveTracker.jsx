@@ -20,7 +20,7 @@ import { getLeaves } from "app/hooks/leaveTracker";
 import { connect } from "react-redux";
 import moment from "moment";
 import ViewLeaveSheet from "../Sections/ViewLeaveSheet";
-import { FilterInput } from "components/form-control";
+import { FilterInput } from "components/FormControl";
 import { getLeavestats } from "app/hooks/leaveTracker";
 import { getLeaveTransaction } from "app/hooks/leaveTracker";
 import { getLeaveComponents } from "app/hooks/leaveTracker";

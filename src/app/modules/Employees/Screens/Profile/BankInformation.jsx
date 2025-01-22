@@ -7,7 +7,7 @@ import {
   saveEmployeeBankDetailsData,
 } from "app/hooks/employee.jsx";
 import { mapEmployeeBankDetailPayloadData } from "app/utils/MappingObjects/mapEmployeeData.jsx";
-import { TextInput } from "components/form-control.jsx";
+import { TextInput } from "components/FormControl";
 import PageLoader from "components/PageLoader.jsx";
 import { Button } from "components/ui/button.jsx";
 import { validateEmployeeBankInformationForm } from "app/utils/FormSchema/employeeFormSchema.jsx";

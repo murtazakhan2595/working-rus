@@ -6,7 +6,7 @@ import {
   SelectComponent,
   DateInput,
   TextAreaInput,
-} from "components/form-control.jsx";
+} from "components/FormControl";
 import { toast } from "react-toastify";
 import { AmountPattern } from "app/utils/Types/ValidationPattern";
 import "react-toastify/dist/ReactToastify.css";

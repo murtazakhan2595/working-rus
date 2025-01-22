@@ -8,6 +8,7 @@ import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { RxPlus } from "react-icons/rx";
 import CreateAndEditCardForm from "app/modules/TaskManagment/Boards/Sections/CreateAndEditCardForm";
+import TaskDetail from "./TaskDetail";
 
 const BoardListView = ({ filterData, projectId }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,8 +18,11 @@ const BoardListView = ({ filterData, projectId }) => {
     page: 1,
     sizePerPage: 10,
   });
+  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
+  const [viewTaskID, setViewTaskID] = useState(null);
 
   const onPageChange = (name, value) => {
+    debugger;
     const pageOptions = options;
     if (pageOptions[name] !== value) {
       pageOptions[name] = value;
@@ -30,12 +34,19 @@ const BoardListView = ({ filterData, projectId }) => {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
+    onRowClick: (row) => {
+      setIsTaskDetailOpen(true);
+      setViewTaskID(row.id);
+    },
   };
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
-      const boardsData = await getTaskByprojectId(projectId, { filterData });
+      const boardsData = await getTaskByprojectId(projectId, {
+        filterData,
+        options,
+      });
       if (isMounted) {
         setAllBoardTasks(boardsData);
       }
@@ -54,7 +65,7 @@ const BoardListView = ({ filterData, projectId }) => {
     return () => {
       isMounted = false;
     };
-  }, [projectId, filterData]);
+  }, [projectId, filterData, options]);
   return isLoading ? (
     <PageLoader />
   ) : (
@@ -64,7 +75,7 @@ const BoardListView = ({ filterData, projectId }) => {
           <TableCustom
             columns={ProjectBoardColumn}
             data={AllBoardTasks.results || []}
-            pagination={false}
+            pagination={true}
             dataTotalSize={AllBoardTasks?.count || 0}
             tableOptions={tableOptions}
             dataStyle={{ backgroundColor: "white" }}
@@ -90,6 +101,18 @@ const BoardListView = ({ filterData, projectId }) => {
           isOpen={openCreateCard}
           projectId={projectId}
           setIsOpen={setOpenCreateCard}
+        />
+      )}
+      {isTaskDetailOpen && (
+        <TaskDetail
+          taskId={viewTaskID} // Pass task Id as props to TaskDetail
+          isOpen={isTaskDetailOpen}
+          setIsOpen={() => {
+            setIsTaskDetailOpen(false);
+            setViewTaskID(null);
+            fetchData(true);
+          }}
+          reloadData={fetchData}
         />
       )}
     </>

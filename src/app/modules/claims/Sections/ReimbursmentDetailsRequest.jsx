@@ -8,8 +8,8 @@ import {
   TextInput,
   SelectComponent,
   TextAreaInput,
-} from "components/form-control";
-import { DateInput } from "components/form-control";
+} from "components/FormControl";
+import { DateInput } from "components/FormControl";
 import { ClaimExpenseTypeOptions } from "data/Data";
 import { getEmployeePayroll } from "app/hooks/payroll";
 import { connect } from "react-redux";
@@ -18,7 +18,7 @@ import { toast } from "react-toastify";
 import { validateClaimRequestForm } from "app/utils/FormSchema/payrollFormSchema";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
-import { CoverFileUpload } from "components/form-control";
+import { CoverFileUpload } from "components/FormControl";
 
 const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
   const [isOpen, setIsOpen] = useState(false);

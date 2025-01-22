@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import { Formik } from "formik";
-import { TextInput } from "components/form-control.jsx";
+import { TextInput } from "components/FormControl";
 import { addBoard, getBoardById } from "app/hooks/taskManagment";
 import { AddList } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";

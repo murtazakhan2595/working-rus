@@ -6,7 +6,7 @@ import {
   NumberInput,
   SelectComponent,
   TextAreaInput,
-} from "components/form-control";
+} from "components/FormControl";
 import { addLogTime, getDtr, addUpdateDTR } from "app/hooks/dtr";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";

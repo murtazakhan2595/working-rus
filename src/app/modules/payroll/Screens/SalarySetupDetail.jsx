@@ -46,7 +46,7 @@ import {
   FilterInput,
   SelectComponent,
   TextInput,
-} from "../../../../components/form-control";
+} from "../../../../components/FormControl";
 import {
   getEarnAndDeduction,
   getEmployeePayroll,

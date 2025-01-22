@@ -4,7 +4,7 @@ import {
   TextInput,
   CheckBoxInput,
   CoverFileUpload,
-} from "components/form-control";
+} from "components/FormControl";
 import React, { useState } from "react";
 
 const Experience = ({

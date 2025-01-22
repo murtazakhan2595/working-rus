@@ -13,7 +13,7 @@ import moment from "moment";
 import TaskDetail from "./TaskDetail";
 import { Card } from "components/ui/card";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { CheckBoxInput } from "components/form-control";
+import { CheckBoxInput } from "components/FormControl";
 import { toast } from "react-toastify";
 import { addTask } from "app/hooks/taskManagment";
 import { getAttachmentDetails } from "app/hooks/taskManagment";

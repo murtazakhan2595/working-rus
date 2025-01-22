@@ -36,7 +36,6 @@ export default function AttachmentUI({
   const fileType = getFileType(attachment);
   const fileURL =
     attachment instanceof File ? URL.createObjectURL(attachment) : attachment;
-  console.log(fileType);
   return (
     <div key={key || ""}>
       <div className="flex items-center justify-between w-full gap-2 p-4 my-1 border border-gray-400 rounded-lg">

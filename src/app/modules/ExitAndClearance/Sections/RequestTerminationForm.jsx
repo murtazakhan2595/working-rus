@@ -3,10 +3,10 @@ import { Formik } from "formik";
 import React, { useEffect } from "react";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 import { Button } from "components/ui/button";
-import { TextInput } from "components/form-control";
+import { TextInput } from "components/FormControl";
 
-import { DateInput } from "components/form-control";
-import { SelectComponent } from "components/form-control";
+import { DateInput } from "components/FormControl";
+import { SelectComponent } from "components/FormControl";
 import { terminationReasonsOptions } from "data/Data";
 import { getEmployeeData } from "app/hooks/employee";
 
@@ -14,7 +14,7 @@ import moment from "moment";
 import { connect } from "react-redux";
 import { NoticePeriod } from "data/Data";
 import { validateTerminationForm } from "app/utils/FormSchema/exitAndClearanceFormSchema";
-import { CoverFileUpload } from "components/form-control";
+import { CoverFileUpload } from "components/FormControl";
 
 const RequestTerminationForm = ({
   employees,

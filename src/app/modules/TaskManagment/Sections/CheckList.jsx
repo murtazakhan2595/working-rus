@@ -127,9 +127,20 @@ export default function CheckList({ items, onChange, editMode = true }) {
       inputDataContent={
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-10 h-10 p-0 rounded-full">
-              <Plus className="w-4 h-4" />
-            </Button>
+            {items.length > 0 ? (
+              <Button variant="outline" className="w-10 h-10 p-0 rounded-full">
+                <Plus className="w-4 h-4" />
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  className=" h-10 p-0 rounded-full gap-2 px-2"
+                >
+                  <Plus className="w-4 h-4" /> <span>Add a list item</span>
+                </Button>
+              </>
+            )}
           </PopoverTrigger>
           <PopoverContent className="w-80 p-0" align="start">
             <div className="flex gap-2">

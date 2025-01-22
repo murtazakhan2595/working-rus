@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../../components/ui/card";
-import { DateInput } from "components/form-control";
+import { DateInput } from "components/FormControl";
 import CustomTable from "components/CustomTable";
 import { createPayrunColumns } from "app/utils/Types/TableColumns";
 import { getEmployeePayroll } from "app/hooks/payroll";

@@ -1,0 +1,13 @@
+.textEditorText ol {
+  list-style: disc;
+  margin: 0 12%;
+}
+
+.textEditorText ul {
+  list-style: decimal;
+  margin: 0 12%;
+}
+
+.textEditorText img{
+  margin: 1rem 0;
+}
