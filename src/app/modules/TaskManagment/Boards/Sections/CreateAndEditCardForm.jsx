@@ -148,6 +148,7 @@ const CreateAndEditCardForm = ({
   }, [projectId]);
 
   const handleSubmit = async (formData) => {
+    conssole.log("formData", formData);
     const getAttachmentFileIds = async (attachmentfiles) => {
       try {
         const attachmentPromises = attachmentfiles.map(async (file) => {

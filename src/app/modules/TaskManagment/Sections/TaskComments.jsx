@@ -12,7 +12,7 @@ import {
 } from "app/hooks/taskManagment";
 import { MembersList } from "app/modules/TaskManagment/Sections";
 
-export default function TaskComments({ taskId }) {
+export default function TaskComments({ taskId, refreshComments }) {
   const employees = useSelector((state) => state.emp.employees);
   const userId = useSelector((state) => state.user.userProfile.id);
   const [comments, setComments] = useState([]);
@@ -33,7 +33,7 @@ export default function TaskComments({ taskId }) {
     return () => {
       isMounted = false;
     };
-  }, [taskId]);
+  }, [taskId, refreshComments]);
 
   const handleAddComment = async (comment, attachments) => {
     const getAttachmentFileIds = async (attachmentfiles) => {
@@ -81,22 +81,21 @@ export default function TaskComments({ taskId }) {
 
   return (
     <div className="mt-3">
-      <CommentsInputField handleAddComment={handleAddComment} users={employees} />
       <div className="mt-3 space-y-4 flex flex-col gap-6">
         {comments?.map((comment, index) => (
           <div key={index} className="flex items-start space-x-3">
             <MembersList members={[comment.user_id]} display={true} />
-            <div className="flex items-start flex-col w-full ">
+            <div className="flex items-start flex-col w-full">
               <div className="flex items-start justify-between w-full">
-               <div className="font-semibold"> <EmployeeName value={comment.user_id} /></div>
-                <div className="text-[12px]  text-baseGray">
+                <div className="font-semibold">
+                  <EmployeeName value={comment.user_id} />
+                </div>
+                <div className="text-[12px] text-baseGray">
                   {moment(comment.created_at).format("DD-MMM-YY")}
                 </div>
               </div>
               <div className="w-full">
-                <p className="mt-1 text-neutral-1000 ">
-                  {comment.comment}
-                </p>
+                <p className="mt-1 text-neutral-1000">{comment.comment}</p>
                 {comment?.commentattach?.length > 0 &&
                   comment?.commentattach.map((file, index) => (
                     <div key={index}>
