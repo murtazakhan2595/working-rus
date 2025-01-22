@@ -13,4 +13,6 @@ const EmployeeListData = {
   TotalEmployee: 0,
   TotalManager: 0,
 };
-export { File, EmployeeListData, Attachment };
+const imageFileType = ["JPG", "JPEG", "PNG", "GIF", "WEBP"];
+
+export { File, EmployeeListData, Attachment,imageFileType };

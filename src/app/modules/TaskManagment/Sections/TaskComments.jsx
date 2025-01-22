@@ -11,8 +11,9 @@ import {
   getCommentsWithAttachments,
 } from "app/hooks/taskManagment";
 import { MembersList } from "app/modules/TaskManagment/Sections";
+import {imageFileType} from 'app/utils/Types/General';
 
-export default function TaskComments({ taskId, refreshComments }) {
+export default function TaskComments({ taskId, refreshComments,setRefreshComments }) {
   const employees = useSelector((state) => state.emp.employees);
   const userId = useSelector((state) => state.user.userProfile.id);
   const [comments, setComments] = useState([]);
@@ -21,6 +22,7 @@ export default function TaskComments({ taskId, refreshComments }) {
     try {
       const data = await getCommentsWithAttachments({ task_id: [taskId] });
       setComments(data);
+      setRefreshComments(false)
     } catch (error) {
       console.error("Error fetching comments:", error);
       setComments([]);
@@ -34,51 +36,6 @@ export default function TaskComments({ taskId, refreshComments }) {
       isMounted = false;
     };
   }, [taskId, refreshComments]);
-
-  const handleAddComment = async (comment, attachments) => {
-    const getAttachmentFileIds = async (attachmentfiles) => {
-      if (attachmentfiles && attachmentfiles.length > 0) {
-        try {
-          const attachmentPromises = attachmentfiles.map(async (file) => {
-            if (file.attachment instanceof File) {
-              const payload = { attachment: file.attachment };
-              const response = await addCommentAttachment(payload, file.id);
-              return response.id; // Return the attachment ID
-            } else {
-              return file.id;
-            }
-          });
-          return await Promise.all(attachmentPromises);
-        } catch (error) {
-          console.error("Error uploading attachments:", error);
-          toast.error(
-            "Failed to upload one or more attachments. Please try again.",
-            {
-              position: toast.POSITION.TOP_RIGHT,
-            }
-          );
-          throw error; // Propagate the error
-        }
-      } else return [];
-    };
-    if (comment.trim() || attachments) {
-      try {
-        const payload = {
-          task_id: taskId,
-          comment: comment,
-          user_id: userId,
-          commentattach: await getAttachmentFileIds(attachments),
-        };
-        const response = await postComment(payload);
-        if (response.status === 201 || response.status === 200) {
-          fetchComments();
-        }
-      } catch (error) {
-        console.error("Error Adding Comment:", error);
-      }
-    }
-  };
-
   return (
     <div className="mt-3">
       <div className="mt-3 space-y-4 flex flex-col gap-6">
@@ -95,13 +52,14 @@ export default function TaskComments({ taskId, refreshComments }) {
                 </div>
               </div>
               <div className="w-full">
-                <p className="mt-1 text-neutral-1000">{comment.comment}</p>
+                <p className="mt-1 text-neutral-1000 textEditorText" dangerouslySetInnerHTML={{ __html: comment.comment }}></p>
                 {comment?.commentattach?.length > 0 &&
                   comment?.commentattach.map((file, index) => (
                     <div key={index}>
                       <AttachmentUI
                         attachment={file.attachment}
                         name={file.name}
+                        displayImageAttachment={false}
                       />
                     </div>
                   ))}
