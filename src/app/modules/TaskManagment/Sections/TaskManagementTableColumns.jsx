@@ -48,6 +48,7 @@ export const ProjectBoardColumn = [
     formatter: (cell) => (
       <Labels labelsSelected={cell || []} editMode={false} />
     ),
+    width: "20%",
   },
   {
     text: "Members",

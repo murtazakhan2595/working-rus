@@ -63,7 +63,11 @@ const getAllProjects = async (payload, userProfile) => {
 };
 const getTaskByBoardId = async (payload) => {
   const filterData = payload?.filterData ?? {};
-  const URL = `/task/?search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const URL = `/task/?${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -107,8 +111,10 @@ const getTaskByprojectId = async (projectId, payload) => {
     // Fetch tasks for each board concurrently
     try {
       const filterData = payload?.filterData ?? {};
+      const options = payload?.options ?? {};
       const tasksList = await getTaskByBoardId({
         filterData: { ...filterData, board_id: boardIdsList },
+        options: options,
       });
       return tasksList; // Extract results from task data
     } catch (error) {
@@ -244,13 +250,13 @@ const addProject = async (payload, projectID) => {
           headers: formDataHeader(),
         }
       );
-      
+
       return response;
     } else {
       const response = await axios.post(`${baseUrl}/project/`, formData, {
         headers: formDataHeader(),
       });
-      
+
       return response;
     }
   } catch (error) {
@@ -261,10 +267,10 @@ const addProject = async (payload, projectID) => {
     return false;
   }
 };
-const addTask = async (payload , id) => {
+const addTask = async (payload, id) => {
   const taskId = payload.id || id;
   try {
-    if (taskId ) {
+    if (taskId) {
       const response = await axios.patch(
         `${baseUrl}/task/${taskId}/`,
         payload,
