@@ -16,7 +16,7 @@ export function getLabelDropdownList(list, label = "name", value = "id") {
       label: (
         <div
           key={obj[value]}
-          className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+          className={`flex items-center px-3 py-1 rounded-full text-sm ${
             obj?.color
           } ${getDarkerTextColor(obj?.color)}`}
         >

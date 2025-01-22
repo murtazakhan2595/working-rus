@@ -8,7 +8,7 @@ import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { RxPlus } from "react-icons/rx";
 import CreateAndEditCardForm from "app/modules/TaskManagment/Boards/Sections/CreateAndEditCardForm";
-import TaskDetail from "./TaskDetail";
+import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 
 const BoardListView = ({ filterData, projectId }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +19,7 @@ const BoardListView = ({ filterData, projectId }) => {
     sizePerPage: 10,
   });
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
-  const [viewTaskID, setViewTaskID] = useState(null);
+  const [viewTask, setViewTask] = useState(null);
 
   const onPageChange = (name, value) => {
     debugger;
@@ -36,7 +36,7 @@ const BoardListView = ({ filterData, projectId }) => {
     onPageChange: onPageChange,
     onRowClick: (row) => {
       setIsTaskDetailOpen(true);
-      setViewTaskID(row.id);
+      setViewTask(row);
     },
   };
 
@@ -104,12 +104,14 @@ const BoardListView = ({ filterData, projectId }) => {
         />
       )}
       {isTaskDetailOpen && (
-        <TaskDetail
-          taskId={viewTaskID} // Pass task Id as props to TaskDetail
+        <TaskEditAddViewDetails
+          taskId={viewTask.id} // Pass task Id as props to TaskDetail
           isOpen={isTaskDetailOpen}
+          projectId={projectId}
+          boardId={viewTask.board_id}
           setIsOpen={() => {
             setIsTaskDetailOpen(false);
-            setViewTaskID(null);
+            setViewTask(null);
             fetchData(true);
           }}
           reloadData={fetchData}
