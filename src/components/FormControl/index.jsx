@@ -556,6 +556,7 @@ const TextInput = ({
   onChange,
   label,
   disabled,
+  onBlur,
   required,
   regEx,
   maxLength,
@@ -590,6 +591,11 @@ const TextInput = ({
             onChange(name, inputValue);
           }
         }}
+        onBlur={(event) => {
+          if (onBlur) {
+            onBlur(event);
+          }
+        }}
       />
       {error && touch && <div className={errorClassName}>{error}</div>}
     </div>
@@ -600,6 +606,7 @@ const NumberInput = ({
   name,
   value,
   error,
+  onBlur,
   touch,
   onChange,
   label,
@@ -648,6 +655,11 @@ const NumberInput = ({
               e.key === "-"
             ) {
               e.preventDefault();
+            }
+          }}
+          onBlur={(event) => {
+            if (onBlur) {
+              onBlur(event);
             }
           }}
         />
@@ -1068,6 +1080,7 @@ const TextAreaInput = ({
   regEx,
   maxLength,
   maxRows,
+  onBlur,
   placeholder,
 }) => {
   return (
@@ -1100,6 +1113,11 @@ const TextAreaInput = ({
               if (!value || regEx.test(value)) onChange(name, value);
             } else {
               onChange(name, value);
+            }
+          }}
+          onBlur={(event) => {
+            if (onBlur) {
+              onBlur(event);
             }
           }}
         />

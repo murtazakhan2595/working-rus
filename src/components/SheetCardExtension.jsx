@@ -16,14 +16,28 @@ export const SheetCardExtension = ({ title, children, className }) => {
   );
 };
 
-export const DetailBox = ({ label, value, className="mt-3" }) => {
-  return (
-      <div className={`flex gap-4 items-center max-w-full ${className}`}>
-        <div className="flex flex-col leading-none min-w-[88px] text-neutral-900 w-[132px]">
-          <div>{label}</div>
-        </div>
-        <div className="flex-1 shrink leading-5 basis-0">{value ?? "N/A"}</div>
+export const DetailBox = ({
+  label,
+  value,
+  className = "mt-3",
+  orientation = "vertical",
+}) => {
+  if (orientation === "horizontal") {
+    return (
+      <div className={`flex flex-col w-full ${className}`}>
+        <div className="text-sm font-medium text-neutral-900 mb-2">{label}</div>
+        <div className="leading-5">{value ?? "N/A"}</div>
       </div>
+    );
+  }
+
+  return (
+    <div className={`flex gap-4 items-center max-w-full ${className}`}>
+      <div className="flex flex-col leading-none min-w-[88px] text-neutral-900 w-[132px]">
+        <div>{label}</div>
+      </div>
+      <div className="flex-1 shrink leading-5 basis-0">{value ?? "N/A"}</div>
+    </div>
   );
 };
 
@@ -31,11 +45,11 @@ export const DetailCard = ({
   detailCardTitle,
   children,
   date,
-  dateTitle="Sent on",
-  classNames=""
+  dateTitle = "Sent on",
+  classNames = "mt-8",
 }) => {
   return (
-    <div className={`${classNames} flex flex-col rounded-lg shadow border  mt-8`}>
+    <div className={`${classNames} flex flex-col rounded-lg shadow border  `}>
       <section className="flex flex-col justify-center p-6 text-sm  max-w-[479px]">
         <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
           {detailCardTitle}
@@ -50,9 +64,7 @@ export const DetailCard = ({
                 {dateTitle}:
               </span>
               <span className="text-[#8b8d98] text-xs font-normal  leading-3">
-              {` ${moment(date).format(
-                    "MMMM DD, YYYY"
-                  )}`}
+                {` ${moment(date).format("MMMM DD, YYYY")}`}
               </span>
             </div>
           </div>
