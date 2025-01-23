@@ -6,10 +6,19 @@ import { toast } from "react-toastify";
 import TaskEditAddViewDetails from "../Boards/TaskEditAddViewDetails";
 import { addSubtask } from "app/hooks/taskManagment";
 import { getSubtaskById } from "app/hooks/taskManagment";
+import { useNavigate } from "react-router-dom";
+import { URLS } from "constants/config";
 
-export default function Subtasks({ taskId, projectId, boardId, employees, projectDetail }) {
+export default function Subtasks({
+  taskId,
+  projectId,
+  boardId,
+  employees,
+  projectDetail,
+}) {
   const [isAddSubtaskOpen, setIsAddSubtaskOpen] = useState(false);
   const [subtasks, setSubtasks] = useState([]);
+  const navigate = useNavigate();
 
   console.log("Opening subtask dialog", { projectId, boardId, projectDetail });
 
@@ -41,35 +50,32 @@ export default function Subtasks({ taskId, projectId, boardId, employees, projec
   const handleSubtaskCreated = async (newTask) => {
     try {
       const subTask = await addSubtask({ tasks: [newTask.id] });
-      if(subTask){
+      if (subTask) {
         console.log("Subtask created:", subTask);
         // Get current parent task
         const parentTask = await getTaskById(taskId);
         // Update parent task's sub_task array
-        const updatedSubTasks = [
-          ...(parentTask.sub_task || []),
-          subTask.id,
-        ];
+        const updatedSubTasks = [...(parentTask.sub_task || []), subTask.id];
         console.log("Updated subtasks:", updatedSubTasks);
         console.log("Parent task newTask.id:", newTask.id);
         // Update the parent task
         await addTask(
-        {
-          sub_task: updatedSubTasks,
-        },
-        taskId
-      );
-      // Refresh the subtasks list
-      await fetchSubtasks();
-      // Close the dialog and clean up
-      setIsAddSubtaskOpen(false);
-    }
+          {
+            sub_task: updatedSubTasks,
+          },
+          taskId
+        );
+        // Refresh the subtasks list
+        await fetchSubtasks();
+        // Close the dialog and clean up
+        setIsAddSubtaskOpen(false);
+      }
     } catch (error) {
       console.error("Error updating parent task:", error);
       toast.error("Failed to update subtask relationship");
     }
   };
-
+  console.log("Subtasks", subtasks);
   return (
     <div className="space-y-4">
       {/* List existing subtasks */}
@@ -77,7 +83,15 @@ export default function Subtasks({ taskId, projectId, boardId, employees, projec
         {subtasks.map((subtask) => (
           <div
             key={subtask.id}
-            className="flex items-center justify-between p-2 rounded-lg border border-gray-200"
+            className="flex items-center justify-between p-2 rounded-lg border border-gray-200 cursor-pointer"
+            onClick={() => {
+              console.log(
+                "Navigating to subtask:",
+                subtask.id,
+                `/project-board/${projectId}/${subtask.id}`
+              );
+              navigate(`/project-board/${projectId}/${subtask.id}`);
+            }}
           >
             <span>{subtask.name}</span>
           </div>

@@ -269,7 +269,6 @@ useEffect(() => {
    };
 
   const handleSubmit = async (values) => {
-    debugger
     console.log("Form values:", values);
     setIsLoading(true);
     try {
@@ -342,97 +341,7 @@ useEffect(() => {
     }
   };
 
-  function CardValues({ values, props, editingField, setEditingField }) {
-    const items = [
-      // Modify the due date part in CardValues
 
-      ...(values?.status
-        ? [
-            {
-              label: "Status",
-              value: TaskStatus.find(
-                (option) => option.value === values?.status
-              )?.label,
-            },
-          ]
-        : []),
-
-      //   ...(values?.label?.length || true
-      //     ? [
-      //         {
-      //           label: "Label",
-      //           value: (
-      //             <Labels
-      //               labelsSelected={props.values.label || []}
-      //               onSelectedLabelsChange={(value) => {
-      //                 props.setFieldValue("label", value);
-      //                 // Auto-submit when labels change
-      //                 props.submitForm();
-      //               }}
-      //               editMode={true} // Always in edit mode
-      //             />
-      //           ),
-      //         },
-      //       ]
-      //     : []),
-
-      ...(values?.assigned_to?.length || true // Changed to always show
-        ? [
-            {
-              label: "Assign",
-              value: (
-                <>
-                  <Assignee
-                    assigneeSelected={props.values.assigned_to || []}
-                    employees={employees}
-                    onChange={(value) =>
-                      handleFieldChange("assigned_to", value, props)
-                    }
-                    projectMembers={projectDetail?.project_members || []}
-                  />
-                  {/* Error handling */}
-                  {props.errors.assigned_to && props.touched.assigned_to && (
-                    <div className={errorClassName}>
-                      {props.errors.assigned_to}
-                    </div>
-                  )}
-                </>
-              ),
-            },
-          ]
-        : []),
-      ...(values?.relation?.length || true
-        ? [
-            {
-              label: "Relation",
-              value: (
-                <TaskRelation
-                  relationsList={props.values.relation || []}
-                  onChange={(value) =>
-                    handleFieldChange("relation", value, props)
-                  }
-                  projectId={taskData.project_id}
-                  taskId={taskId}
-                  editMode={true}
-                />
-              ),
-            },
-          ]
-        : []),
-      {
-        label: "Share Link",
-        value: <TaskShare projectId={taskData.project_id} taskId={taskId} />,
-      },
-    ];
-
-    return (
-      <div className="flex flex-col items-start justify-between flex-wrap w-[100%] gap-4">
-        {items.map(({ label, value }, idx) => (
-          <DetailBox key={idx} label={label} value={value} className="mt-2" />
-        ))}
-      </div>
-    );
-  }
 
   return (
     <>
@@ -617,15 +526,25 @@ useEffect(() => {
                             </Button>
                           }
                         />
-                        <DetailBox
-                          label="Sub Task"
-                          orientation="horizontal"
-                          value={
-                            <Button variant="outline" className="w-full">
-                              Add
-                            </Button>
-                          }
-                        />
+                        {!isSubtask && (
+                          <DetailBox
+                            label={"Subtasks"}
+                            orientation="horizontal"
+                            value={
+                              <Subtasks
+                                items={props.values.subtasks || []}
+                                onChange={(items) => {
+                                  props.setFieldValue("subtasks", items);
+                                }}
+                                projectId={projectId}
+                                taskId={taskId}
+                                boardId={boardId}
+                                employees={employees}
+                                projectDetail={projectDetail}
+                              />
+                            }
+                          />
+                        )}
                       </div>
                     </div>
                     <div className="flex flex-col w-[45%] gap-3">
@@ -634,26 +553,12 @@ useEffect(() => {
                           {"Checklist"}
                         </div>
                         <CheckList
-                            items={props.values.task_checklist || []}
-                            onChange={(items) => {
-                              debugger
-                              props.setFieldValue("task_checklist", items);
-                              setIsEditMode(true);
-                            }}
-                          />
-                        <DetailBox
-                          label="Label"
-                          orientation="horizontal"
-                          value={
-                            <Labels
-                              labelsSelected={props.values.label || []}
-                              onSelectedLabelsChange={(value) => {
-                                props.setFieldValue("label", value);
-                                setIsEditMode(true);
-                              }}
-                              editMode={true} // Always in edit mode
-                            />
-                          }
+                          items={props.values.task_checklist || []}
+                          onChange={(items) => {
+                            debugger;
+                            props.setFieldValue("task_checklist", items);
+                            setIsEditMode(true);
+                          }}
                         />
                       </div>
                       <DetailBox
@@ -686,13 +591,12 @@ useEffect(() => {
                   </div>
 
                   {/* Render form or view based on isEditMode */}
-                  <div className="grid grid-cols-2 w-full gap-4">
+                  {/* <div className="grid grid-cols-2 w-full gap-4">
                     <LeftColumn
                       taskData={taskData}
                       taskId={taskId}
                       userId={userId}
                       employees={employees}
-                      CardValues={CardValues}
                       props={props}
                       editingField={editingField}
                       setEditingField={setEditingField}
@@ -703,7 +607,7 @@ useEffect(() => {
                       projectDetail={projectDetail}
                       isSubtask={isSubtask}
                     />
-                  </div>
+                  </div> */}
 
                   <div className="flex justify-between">
                     <div className="flex justify-start gap-2 mt-4 border-t border-gray-200">
@@ -721,7 +625,7 @@ useEffect(() => {
                         <Button
                           type="button"
                           variant="outline"
-                        //  onClick={toggleEditMode}
+                          //  onClick={toggleEditMode}
                         >
                           Cancel
                         </Button>
@@ -750,7 +654,6 @@ useEffect(() => {
 const LeftColumn = ({
   taskData,
   employees,
-  CardValues,
   props,
   editingField,
   setEditingField,
@@ -766,16 +669,8 @@ const LeftColumn = ({
   
   return (
     <div>
-      <DetailCard detailCardTitle="Card Details" className="">
-        <CardValues
-          values={taskData}
-          props={props}
-          editingField={editingField}
-          setEditingField={setEditingField}
-        />
-      </DetailCard>
       {/* Replace the existing DetailBox for description with this */}
-      <DetailBox
+      {/* <DetailBox
         label="Description"
         value={
           editingField === "description" ? (
@@ -812,8 +707,8 @@ const LeftColumn = ({
           )
         }
         orientation="horizontal"
-      />
-      <DetailBox
+      /> */}
+      {/* <DetailBox
         label="Attachments"
         value={
           <Attachments
@@ -823,7 +718,7 @@ const LeftColumn = ({
             }
           />
         }
-      />
+      /> */}
       {!isSubtask && (
         <DetailBox
           label={"Subtasks"}
@@ -846,15 +741,6 @@ const LeftColumn = ({
   );
 };
 
-// Right Column Component
-const RightColumn = ({
-  taskData,
-  taskId,
-  props,
-  editingField,
-  setRefreshComments,
-  refreshComments,
-}) => <div className="space-y-6"></div>;
 
 const mapStateToProps = (state) => ({
   employees: state.emp.employees,

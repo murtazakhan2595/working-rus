@@ -28,7 +28,7 @@ export default function TaskComments({
       // Fetch both comments and activities
       const [commentsData, activitiesData] = await Promise.all([
         getCommentsWithAttachments({ task_id: [taskId] }),
-        getActivities({filterData:{ task_id: taskId }}),
+        getActivities({ filterData: { task_id: [taskId] } }),
       ]);
       console.log("commentsData", commentsData);
       console.log("activitiesData", activitiesData);

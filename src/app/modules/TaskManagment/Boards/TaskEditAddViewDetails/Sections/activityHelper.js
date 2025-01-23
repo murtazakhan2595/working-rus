@@ -1,5 +1,7 @@
 // utils/activityHelper.js
 
+import moment from "moment";
+
 export const ActivityTypes = {
   TASK_CREATED: "TASK_CREATED",
   TASK_TITLE_UPDATED: "TASK_TITLE_UPDATED",
@@ -22,6 +24,7 @@ export const ActivityTypes = {
   SUBTASK_COMPLETED: "SUBTASK_COMPLETED",
   RELATION_ADDED: "RELATION_ADDED",
   RELATION_REMOVED: "RELATION_REMOVED",
+   ESTIMATED_TIME_CHANGED: "ESTIMATED_TIME_CHANGED",
 };
 
 const generateActivityContent = (
@@ -47,7 +50,9 @@ const generateActivityContent = (
       return `Changed priority from "${oldValue}" to "${newValue}"`;
 
     case ActivityTypes.DUE_DATE_CHANGED:
-      return `Updated due date to ${newValue}`;
+      return oldValue
+        ? `Updated due date from ${oldValue} to ${newValue}`
+        : `Set due date to ${newValue}`;
 
     case ActivityTypes.MEMBERS_ADDED:
       const addedMembers = Array.isArray(newValue)
@@ -116,6 +121,7 @@ export const trackTaskActivities = async (
   userId,
   createActivityFn
 ) => {
+  console.log("task id in tracktraskactivities", taskId)
   const activities = [];
 
   // If no oldValues, it's a new task
@@ -206,6 +212,108 @@ export const trackTaskActivities = async (
           content: generateActivityContent(
             ActivityTypes.MEMBERS_REMOVED,
             removed
+          ),
+          user_id: userId,
+        });
+      }
+    }
+    // Track due date changes
+    if (newValues.end_date !== oldValues.end_date) {
+      const formattedNewDate = newValues.end_date
+        ? moment(newValues.end_date).format("DD MMM YYYY")
+        : "";
+      const formattedOldDate = oldValues.end_date
+        ? moment(oldValues.end_date).format("DD MMM YYYY")
+        : "";
+
+      activities.push({
+        task_id: taskId,
+        action_type: ActivityTypes.DUE_DATE_CHANGED,
+        content: oldValues.end_date
+          ? `Updated due date from ${formattedOldDate} to ${formattedNewDate}`
+          : `Set due date to ${formattedNewDate}`,
+        user_id: userId,
+      });
+    }
+    // Track member changes
+    // Track member changes
+    if (
+      JSON.stringify(newValues.assigned_to || []) !==
+      JSON.stringify(oldValues.assigned_to || [])
+    ) {
+      // Add null checks and default to empty array if null/undefined
+      const oldMembers = oldValues.assigned_to || [];
+      const newMembers = newValues.assigned_to || [];
+
+      // Find added members
+      const added = newMembers.filter((x) => !oldMembers.includes(x));
+      // Find removed members
+      const removed = oldMembers.filter((x) => !newMembers.includes(x));
+
+      // Track additions
+      if (added.length > 0) {
+        activities.push({
+          task_id: taskId,
+          action_type: ActivityTypes.MEMBERS_ADDED,
+          content: generateActivityContent(
+            ActivityTypes.MEMBERS_ADDED,
+            added // Just pass the IDs array
+          ),
+          user_id: userId,
+        });
+      }
+
+      // Track removals
+      if (removed.length > 0) {
+        activities.push({
+          task_id: taskId,
+          action_type: ActivityTypes.MEMBERS_REMOVED,
+          content: generateActivityContent(
+            ActivityTypes.MEMBERS_REMOVED,
+            removed // Just pass the IDs array
+          ),
+          user_id: userId,
+        });
+      }
+    }
+    // Compare label arrays (track added and removed labels)
+    console.log(
+      JSON.stringify(newValues.labels || []) !==
+        JSON.stringify(oldValues.labels || [])
+    );
+    if (
+      JSON.stringify(newValues.labels || []) !==
+      JSON.stringify(oldValues.labels || [])
+    ) {
+      const oldLabels = oldValues.labels || [];
+      const newLabels = newValues.labels || [];
+
+      // Find added labels
+      const addedLabels = newLabels.filter((x) => !oldLabels.includes(x));
+      // Find removed labels
+      const removedLabels = oldLabels.filter((x) => !newLabels.includes(x));
+
+      // Track label additions
+      if (addedLabels.length > 0) {
+        activities.push({
+          task_id: taskId,
+          action_type: ActivityTypes.LABELS_ADDED,
+          content: generateActivityContent(
+            ActivityTypes.LABELS_ADDED,
+            addedLabels // Just pass the IDs/names array
+          ),
+          user_id: userId,
+        });
+      }
+
+      // Track label removals
+      if (removedLabels.length > 0) {
+        activities.push({
+          task_id: taskId,
+          action_type: ActivityTypes.LABELS_REMOVED,
+          content: generateActivityContent(
+            ActivityTypes.LABELS_REMOVED,
+            removedLabels // Just pass the IDs/names array
           ),
           user_id: userId,
         });
