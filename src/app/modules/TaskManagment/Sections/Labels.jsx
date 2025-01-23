@@ -17,6 +17,9 @@ import { getDarkerTextColor } from "app/modules/TaskManagment/Boards/Sections/ge
 import { getAllLabels } from "app/hooks/taskManagment";
 import { TaskDetailBox } from "app/modules/TaskManagment/Sections";
 import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
+import { getDropdownList, getLabelDropdownList } from "utils/Lists";
+import { SelectMultiInputComponent } from "components/FormControl";
+import { Calendar, Flag } from "lucide-react";
 
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -36,7 +39,8 @@ export default function Labels({
   const [selectedColor, setSelectedColor] = React.useState("bg-purple-300");
   const baseUrl = useSelector((state) => state.user.baseUrl);
   const labelsList = useSelector((state) => state.task_managment.task_labels);
-
+  const [editingMode, setEditingMode] = useState(false);
+  const TaskLabelListOptions = getLabelDropdownList(labelsList);
   const colorOptions = [
     "bg-purple-300", // default color
     "bg-purple-500",
@@ -117,7 +121,19 @@ export default function Labels({
     setSearchQuery(e.target.value);
   };
 
-  return (
+  return editMode ? (
+    <SelectMultiInputComponent
+      name="label"
+      options={TaskLabelListOptions}
+      label={"Label"}
+      value={labelsSelected || []}
+      valueIdentifier={false}
+      onChange={(field, value) => {
+        onSelectedLabelsChange(value);
+      }}
+      icon={<Flag size={15} strokeWidth={2} />}
+    />
+  ) : (
     <TaskDetailBox
       dataContent={
         labelsSelected &&

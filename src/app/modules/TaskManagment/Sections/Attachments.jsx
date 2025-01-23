@@ -10,11 +10,14 @@ import {
   TaskFieldDataContent,
   TaskFieldInputContent,
 } from "app/modules/TaskManagment/Sections";
+import { CoverFileUpload } from "components/FormControl";
 
 export default function Attachments({
   attachmentSelected,
   onChange,
   maxAttachments,
+  error,
+  touch,
   editMode = true,
 }) {
   const fileInputRef = useRef(null);
@@ -51,49 +54,34 @@ export default function Attachments({
     onChange([...formattedFiles, ...existingFiles]);
   };
   return (
-    <TaskDetailBox
-      dataContent={
-        attachmentSelected && attachmentSelected.length > 0 ? (
-          <div className="flex flex-col w-full">
-            {attachmentSelected?.map((file, index) => (
-                <AttachmentUI
-                  attachment={file.attachments}
-                  name={file.name}
-                  removeFile={editMode ? removeFile : null}
-                  id={file.id}
-                  key={index}
-                />
-            ))}
-          </div>
-        ) : null
-      }
-      inputDataContent={
-        ((attachmentSelected && attachmentSelected.length < maxAttachments) ||
-          !maxAttachments) && (
-          <Popover>
-            <Button
-              variant="outline"
-              className="w-10 h-10 p-0 rounded-full"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                fileInputRef.current.click();
-              }}
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
-            <Input
-              type="file"
-              multiple
-              style={{ display: "none" }}
-              onClick={(event) => event.stopPropagation()} // Prevent default behavior
-              onChange={(event) => handleAttachmentsChange(event)}
-              ref={fileInputRef}
+    <div className=" flex flex-col w-full">
+      {((attachmentSelected && attachmentSelected.length < maxAttachments) ||
+        !maxAttachments) && (
+        <CoverFileUpload
+          acceptType=".pdf"
+          name={`attachment`}
+          //value={props.values.attachment}
+          onChange={(field, value) => {
+            onChange(value);
+          }}
+          label={"Attachments"}
+          error={error}
+          touch={touch}
+        />
+      )}
+      {attachmentSelected && attachmentSelected.length > 0 ? (
+        <div className="flex flex-col w-full">
+          {attachmentSelected?.map((file, index) => (
+            <AttachmentUI
+              attachment={file.attachments}
+              name={file.name}
+              removeFile={editMode ? removeFile : null}
+              id={file.id}
+              key={index}
             />
-          </Popover>
-        )
-      }
-      editMode={editMode}
-    />
+          ))}
+        </div>
+      ) : null}
+    </div>
   );
 }

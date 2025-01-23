@@ -31,8 +31,10 @@ const TextEditorButtonClassName = (active) => {
 function TextEditorInputField({
   handleSubmitContent,
   content = "",
+  upload,
   setContent = () => {},
   setAttachments = () => {},
+  removeAttachment = () => {},
   attachments = [],
 }) {
   const fileInputRef = useRef(null);
@@ -63,12 +65,22 @@ function TextEditorInputField({
   const handleImageUpload = useCallback(
     async (e) => {
       const file = e.target.files[0];
-      execCommand("insertImage", URL.createObjectURL(file));
+      if (upload) {
+        const uploadedImage = await upload(file);
+        if (uploadedImage?.attachment) {
+          execCommand("insertImage", uploadedImage.attachment);
+        } else {
+          console.error("Image upload failed");
+        }
+      } else {
+        execCommand("insertImage", URL.createObjectURL(file));
+      }
+
+      handleFileChange(e);
     },
     [execCommand]
   );
   const handleFileChange = (event) => {
-    debugger;
     const file = event.target.files[0]; // Get the single file
     if (file) {
       const attachment = {
@@ -77,6 +89,14 @@ function TextEditorInputField({
       };
       setAttachments([...attachments, ...[attachment]]);
     }
+  };
+  const removeAttachmentFile = (file) => {
+    if (removeAttachment) {
+      removeAttachment(file);
+      return;
+    }
+    const filteredFiles = attachments.filter((f) => f.name !== file.name);
+    setAttachments(filteredFiles);
   };
 
   const handleKeyDown = (e) => {
@@ -194,7 +214,7 @@ function TextEditorInputField({
                 <AttachmentUI
                   attachment={file.attachment}
                   name={file.name}
-                 // removeFile={removeFile}
+                  removeFile={removeAttachmentFile}
                 />
               </div>
             ))}
@@ -202,33 +222,32 @@ function TextEditorInputField({
         )}
         <div
           ref={editorRef}
-          className="w-full min-h-[200px] p-4 focus:outline-none rounded-b-lg textEditorText"
+          className="w-full min-h-[150px] p-4 focus:outline-none rounded-b-lg textEditorText"
           contentEditable
           onInput={(e) => {
-            console.log("Typed Content:", e.target.innerHTML);
             setContent(e.target.innerHTML);
           }}
           onKeyDown={handleKeyDown}
-          // dangerouslySetInnerHTML={{ __html: content }}
         ></div>
-        {handleSubmitContent && (
-          <div className="p-4 flex justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                handleSubmitContent(content,attachments);
-              }}
-            >
-              {"Comment"}
-            </Button>
+        <div className="flex flex-row justify-between border-t border-neutral-500 p-2 ">
+          <div className="flex items-center text-sm text-gray-900 font-inter">
+            {content.replace(/<[^>]*>/g, "").length} characters
           </div>
-        )}
-      </div>
-
-      <div className="mt-2 text-sm text-gray-900 font-inter">
-        {content.replace(/<[^>]*>/g, "").length} characters
+          {handleSubmitContent && (
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  handleSubmitContent(content, attachments);
+                }}
+              >
+                {"Comment"}
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

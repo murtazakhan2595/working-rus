@@ -39,12 +39,11 @@ import { cn } from "src/@/lib/utils";
 import { format, parse, isValid } from "date-fns";
 import { Calendar } from "src/@/components/ui/calendar";
 import { PatternFormat } from "react-number-format";
-import TextEditorInputField from './TextEditorInputField';
-import CommentsInputField from './CommentsInputField'
-import DateRangeFilter from './DateRangeFilter';
-import SortingFilters from './SortingFilters';
-import TimePicker from './TimePicker';
-
+import TextEditorInputField from "./TextEditorInputField";
+import CommentsInputField from "./CommentsInputField";
+import DateRangeFilter from "./DateRangeFilter";
+import SortingFilters from "./SortingFilters";
+import TimePicker from "./TimePicker";
 
 const errorClassName = "text-red-100 text-sm font-[inter] font-normal ml-1";
 
@@ -60,6 +59,7 @@ const SelectComponent = ({
   onChange,
   classes,
   placeholder,
+  icon,
   showLabel = true,
 }) => {
   const [open, setOpen] = React.useState(false);
@@ -73,7 +73,7 @@ const SelectComponent = ({
     onChange(name, newValue);
   };
   return (
-    <div className={`${classes || ''} flex flex-col`}>
+    <div className={`${classes || ""} flex flex-col`}>
       {showLabel && (
         <Label className={`mb-4`} htmlFor={name}>
           {required && <span className="text-red-600">* </span>} {label}
@@ -88,6 +88,7 @@ const SelectComponent = ({
             className="justify-between w-full rounded-sm text-neutral-1100 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
             disabled={disabled}
           >
+            {icon}{" "}
             {value ? (
               options.find((option) => option.value == value)?.label
             ) : (
@@ -139,6 +140,8 @@ const SelectMultiInputComponent = ({
   onChange,
   required,
   classes,
+  icon,
+  valueIdentifier = true,
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -174,28 +177,35 @@ const SelectMultiInputComponent = ({
             aria-expanded={open}
             className="flex-wrap justify-between w-full rounded-sm h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
           >
-            <div className="flex flex-wrap justify-start w-full gap-2 items-center">
-              {value.length > 0 ? (
-                value?.map((val) => (
-                  <span
-                    key={val}
-                    className="bg-plum-300 text-plum-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-lg flex items-center"
-                  >
-                    {options.find((opt) => opt.value === val)?.label}
-                    <CircleX
-                      className="ml-1 text-sm text-red-600 cursor-pointer"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemove(val);
-                      }}
-                    />
+            <div className="flex justify-start w-full gap-2">
+              {icon && <div className="w-4"> {icon}</div>}
+              <div className="flex flex-wrap justify-start gap-2 items-center max-w-[calc(100vh_-_40px)]">
+                {value.length > 0 ? (
+                  value?.map((val) => {
+                    return valueIdentifier ? (
+                      <span
+                        key={val}
+                        className="bg-plum-300 text-plum-800 text-xs font-semibold px-2.5 py-0.5 rounded-lg flex items-center"
+                      >
+                        {options.find((opt) => opt.value === val)?.label}
+                        {/* <CircleX
+                          className="ml-1 text-sm text-red-600 cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemove(val);
+                          }}
+                        /> */}
+                      </span>
+                    ) : (
+                      options.find((opt) => opt.value === val)?.label
+                    );
+                  })
+                ) : (
+                  <span className="text-sm font-normal text-neutral-1000">
+                    {`Select`}
                   </span>
-                ))
-              ) : (
-                <span className="text-sm font-normal text-neutral-1000">
-                  {`Select`}
-                </span>
-              )}
+                )}
+              </div>
               <ChevronsUpDown className="w-4 h-4 ml-2 ml-auto opacity-50 shrink-0" />
             </div>
           </Button>
@@ -1697,8 +1707,6 @@ const CoverFileUpload = ({
     </div>
   );
 };
-
-
 
 export {
   CommentsInputField,

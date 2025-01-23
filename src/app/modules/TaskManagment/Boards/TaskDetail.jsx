@@ -33,8 +33,6 @@ import TaskShare from "../Sections/TaskShare";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { CommentsInputField } from "components/FormControl";
 import { useSelector } from "react-redux";
-import { addCommentAttachment } from "app/hooks/taskManagment";
-import { postComment } from "app/hooks/taskManagment";
 import { Formik, Form } from "formik";
 import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
 import { CardTypes } from "app/utils/Types/TaskManagment";
@@ -47,6 +45,7 @@ import { addAttachments } from "app/hooks/taskManagment";
 import { addTaskCheckListItem } from "app/hooks/taskManagment";
 import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
 import { addSubtask } from "app/hooks/taskManagment";
+import { Calendar , Flag} from "lucide-react";
 
 const TaskDetail = ({ taskId, setIsOpen, isOpen, reloadData }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -59,9 +58,10 @@ const TaskDetail = ({ taskId, setIsOpen, isOpen, reloadData }) => {
   const [initialValues, setInitialValues] = useState(CardTypes);
   const [isEditMode, setIsEditMode] = useState(false);
   const [projectDetail, setProjectDetail] = useState(null);
-  const [ refreshComments,setRefreshComments] = useState(false);
+  const [refreshComments, setRefreshComments] = useState(false);
   const employees = useSelector((state) => state.emp.employees);
   const userId = useSelector((state) => state.user.userProfile.id);
+  
 
   const fetchTaskData = async (isMounted) => {
     setIsLoading(true);
@@ -147,50 +147,6 @@ const TaskDetail = ({ taskId, setIsOpen, isOpen, reloadData }) => {
       }
     } catch (error) {
       console.error("Error updating task status:", error);
-    }
-  };
-
-  const handleAddComment = async (comment, attachments) => {
-    const getAttachmentFileIds = async (attachmentfiles) => {
-      if (attachmentfiles && attachmentfiles.length > 0) {
-        try {
-          const attachmentPromises = attachmentfiles.map(async (file) => {
-            if (file.attachment instanceof File) {
-              const payload = { attachment: file.attachment };
-              const response = await addCommentAttachment(payload, file.id);
-              return response.id;
-            } else {
-              return file.id;
-            }
-          });
-          return await Promise.all(attachmentPromises);
-        } catch (error) {
-          console.error("Error uploading attachments:", error);
-          toast.error(
-            "Failed to upload one or more attachments. Please try again.",
-            {
-              position: toast.POSITION.TOP_RIGHT,
-            }
-          );
-          throw error;
-        }
-      } else return [];
-    };
-    if (comment.trim() || attachments) {
-      try {
-        const payload = {
-          task_id: taskId,
-          comment: comment,
-          user_id: userId,
-          commentattach: await getAttachmentFileIds(attachments),
-        };
-        const response = await postComment(payload);
-        if (response.status === 201 || response.status === 200) {
-          setRefreshComments(true);
-        }
-      } catch (error) {
-        console.error("Error Adding Comment:", error);
-      }
     }
   };
 
@@ -307,6 +263,7 @@ const TaskDetail = ({ taskId, setIsOpen, isOpen, reloadData }) => {
                     // Auto-submit when priority changes
                     formikProps.submitForm();
                   }}
+                  icon={<Flag size={15} strokeWidth={2}/>}
                 />
               ),
             },
@@ -462,12 +419,15 @@ const TaskDetail = ({ taskId, setIsOpen, isOpen, reloadData }) => {
                   <div className="grid grid-cols-2 w-full gap-4">
                     <LeftColumn
                       taskData={taskData}
-                      handleAddComment={handleAddComment}
+                      taskId={taskId}
+                      userId={userId}
                       employees={employees}
                       CardValues={CardValues}
                       formikProps={formikProps}
                       editingField={editingField}
                       setEditingField={setEditingField}
+                      setRefreshComments={setRefreshComments}
+                      refreshComments={refreshComments}
                     />
                     <RightColumn
                       taskData={taskData}
@@ -476,6 +436,7 @@ const TaskDetail = ({ taskId, setIsOpen, isOpen, reloadData }) => {
                       editingField={editingField}
                       setEditingField={setEditingField}
                       refreshComments={refreshComments}
+                      setRefreshComments={setRefreshComments}
                     />
                   </div>
 
@@ -525,84 +486,93 @@ const TaskDetail = ({ taskId, setIsOpen, isOpen, reloadData }) => {
 
 const LeftColumn = ({
   taskData,
-  handleAddComment,
   employees,
   CardValues,
   formikProps,
   editingField,
   setEditingField,
-}) => (
-  <div>
-    <DetailCard detailCardTitle="Card Details" className="">
-      <CardValues
-        values={taskData}
-        formikProps={formikProps}
-        editingField={editingField}
-        setEditingField={setEditingField}
+  taskId,
+  userId,
+  setRefreshComments,
+  refreshComments,
+}) => {
+  return (
+    <div>
+      <DetailCard detailCardTitle="Card Details" className="">
+        <CardValues
+          values={taskData}
+          formikProps={formikProps}
+          editingField={editingField}
+          setEditingField={setEditingField}
+        />
+      </DetailCard>
+      {/* Replace the existing DetailBox for description with this */}
+      <DetailBox
+        label="Description"
+        value={
+          editingField === "description" ? (
+            <TextAreaInput
+              name="description"
+              error={formikProps.errors.description}
+              touch={formikProps.touched.description}
+              value={formikProps.values.description}
+              required
+              maxRows={6}
+              onChange={(field, value) => {
+                formikProps.setFieldValue(field, value);
+              }}
+              onBlur={async (e) => {
+                await formikProps.setFieldTouched("description", true);
+                setEditingField(null);
+                if (formikProps.values.description !== taskData.description) {
+                  await formikProps.submitForm();
+                }
+              }}
+              autoFocus
+            />
+          ) : (
+            <span
+              className="cursor-pointer hover:bg-gray-50 px-2 py-1 rounded block"
+              onDoubleClick={() => setEditingField("description")}
+              dangerouslySetInnerHTML={{
+                __html: taskData?.description,
+              }}
+            />
+          )
+        }
+        orientation="horizontal"
       />
-    </DetailCard>
-    {/* Replace the existing DetailBox for description with this */}
-    <DetailBox
-      label="Description"
-      value={
-        editingField === "description" ? (
-          <TextAreaInput
-            name="description"
-            error={formikProps.errors.description}
-            touch={formikProps.touched.description}
-            value={formikProps.values.description}
-            required
-            maxRows={6}
-            onChange={(field, value) => {
-              formikProps.setFieldValue(field, value);
-            }}
-            onBlur={async (e) => {
-              await formikProps.setFieldTouched("description", true);
-              setEditingField(null);
-              if (formikProps.values.description !== taskData.description) {
-                await formikProps.submitForm();
-              }
-            }}
-            autoFocus
-          />
-        ) : (
-          <span
-            className="cursor-pointer hover:bg-gray-50 px-2 py-1 rounded block"
-            onDoubleClick={() => setEditingField("description")}
-            dangerouslySetInnerHTML={{
-              __html: taskData?.description,
-            }}
-          />
-        )
-      }
-      orientation="horizontal"
-    />
       <DetailBox
         label="Attachments"
         value={
-            <Attachments
-              attachmentSelected={formikProps.values.attachment}
-              onChange={async(attachment) => {
-                console.log("Attachments updated:", attachment);
-                await formikProps.setFieldValue("attachment", attachment);
-                // Auto-submit when attachments change
-                await formikProps.submitForm();
-              }}
-            />
+          <Attachments
+            attachmentSelected={formikProps.values.attachment}
+            onChange={async (attachment) => {
+              console.log("Attachments updated:", attachment);
+              await formikProps.setFieldValue("attachment", attachment);
+              // Auto-submit when attachments change
+              await formikProps.submitForm();
+            }}
+          />
         }
       />
-    <DetailBox
-      label="Comments"
-      orientation="horizontal"
-      value={
-        <CommentsInputField
-          handleAddComment={handleAddComment}
-          users={employees}
-        />
-      }
-    />
-  </div>
-);
+      <DetailBox
+        label="Comments"
+        orientation="horizontal"
+        value={
+          !refreshComments && (
+            <CommentsInputField
+              fetchData={setRefreshComments}
+              users={employees}
+              taskId={taskId}
+              userId={userId}
+            />
+          )
+        }
+      />
+    </div>
+  );
+};
 
 // Right Column Component
 const RightColumn = ({
@@ -610,7 +580,7 @@ const RightColumn = ({
   taskId,
   formikProps,
   editingField,
-  setEditingField,
+  setRefreshComments,
   refreshComments,
 }) => (
   <div className="space-y-6">
@@ -637,7 +607,13 @@ const RightColumn = ({
       label="Activity"
       orientation="horizontal"
       className=""
-      value={<TaskComments taskId={taskId} refreshComments={refreshComments} />}
+      value={
+        <TaskComments
+          taskId={taskId}
+          refreshComments={refreshComments}
+          setRefreshComments={setRefreshComments}
+        />
+      }
     />
   </div>
 );

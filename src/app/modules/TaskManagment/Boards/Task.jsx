@@ -10,7 +10,7 @@ import { ImAttachment } from "react-icons/im";
 import TimeIcon from "assets/images/timeIcon";
 import EditCard from "./EditCard";
 import moment from "moment";
-import TaskDetail from "./TaskDetail";
+import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import { Card } from "components/ui/card";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { CheckBoxInput } from "components/FormControl";
@@ -142,7 +142,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
       </div>
       {/* Render TaskDetail component if isTaskDetailOpen is true */}
       {isTaskDetailOpen && (
-        <TaskDetail
+        <TaskEditAddViewDetails
           taskId={task.id} // Pass task Id as props to TaskDetail
           isOpen={isTaskDetailOpen}
           setIsOpen={() => {
@@ -150,6 +150,8 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             reloadData();
           }}
           reloadData={reloadData}
+          projectId={projectId}
+          boardId={task.board_id}
         />
       )}
       {isEditCardOpen && (

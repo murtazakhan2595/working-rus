@@ -8,13 +8,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "src/@/components/ui/dialog.jsx";
-const imageFileType = ["JPG", "JPEG", "PNG", "GIF", "WEBP"];
+import { imageFileType } from "app/utils/Types/General";
 export default function AttachmentUI({
   attachment,
   name,
   removeFile,
   key,
   id = null,
+  displayImageAttachment = true,
 }) {
   const [viewAttachment, setViewAttachment] = React.useState(false);
 
@@ -36,6 +37,8 @@ export default function AttachmentUI({
   const fileType = getFileType(attachment);
   const fileURL =
     attachment instanceof File ? URL.createObjectURL(attachment) : attachment;
+
+  if (!displayImageAttachment && imageFileType.includes(fileType)) return null;
   return (
     <div key={key || ""}>
       <div className="flex items-center justify-between w-full gap-2 p-4 my-1 border border-gray-400 rounded-lg">
@@ -115,7 +118,7 @@ export default function AttachmentUI({
                   style={{
                     width: "100%",
                     height: "auto",
-                    maxHeight:"80vh",
+                    maxHeight: "80vh",
                     border: "none",
                   }}
                   title={name}
