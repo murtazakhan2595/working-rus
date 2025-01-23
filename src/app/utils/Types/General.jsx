@@ -14,5 +14,6 @@ const EmployeeListData = {
   TotalManager: 0,
 };
 const imageFileType = ["JPG", "JPEG", "PNG", "GIF", "WEBP"];
+const errorClassName = "text-red-100 text-sm font-[inter] font-normal ml-1";
 
-export { File, EmployeeListData, Attachment,imageFileType };
+export { File, EmployeeListData, Attachment,imageFileType ,errorClassName};

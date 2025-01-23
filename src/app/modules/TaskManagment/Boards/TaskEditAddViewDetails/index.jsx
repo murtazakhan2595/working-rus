@@ -269,6 +269,7 @@ useEffect(() => {
    };
 
   const handleSubmit = async (values) => {
+    debugger;
     console.log("Form values:", values);
     setIsLoading(true);
     try {
@@ -611,7 +612,13 @@ useEffect(() => {
 
                   <div className="flex justify-between">
                     <div className="flex justify-start gap-2 mt-4 border-t border-gray-200">
-                      <Button variant="outline" onClick={archeiveTask}>
+                      <Button
+                        variant="outline"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          archeiveTask();
+                        }}
+                      >
                         <CiEdit className="mr-2" />
                         Archive
                       </Button>
