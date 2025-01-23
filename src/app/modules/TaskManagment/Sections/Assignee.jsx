@@ -5,20 +5,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "src/@/components/ui/popover";
-import {
-  TextInput,
-  SelectComponent,
-  DateInput,
-} from "components/FormControl";
+import { TextInput, SelectComponent, DateInput } from "components/FormControl";
 import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
 import { TaskDetailBox } from "app/modules/TaskManagment/Sections";
 import { Checkbox } from "../../../../src/@/components/ui/checkbox";
 import { Card } from "components/ui/card";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { Users } from "lucide-react";
 import { toast } from "react-toastify";
-import { getDarkerTextColor } from "../Boards/Sections/getTaskStatus";
+import { SelectMultiInputComponent } from "components/FormControl";
 import { Members } from "app/modules/TaskManagment/Sections";
 
 export default function Assignee({
@@ -26,6 +22,9 @@ export default function Assignee({
   employees,
   onChange,
   projectMembers,
+  error,
+  touch,
+  editMode = true,
 }) {
 
   // console.log("assigneeSelected", assigneeSelected);
@@ -67,7 +66,20 @@ export default function Assignee({
     onChange(updatedMembers);
   };
 
-  return (
+  return editMode ? (
+    <SelectMultiInputComponent
+      name="assigned_to"
+      options={filteredEmployees}
+      label={"Assignee"}
+      value={assigneeSelected || []}
+      onChange={(field, value) => {
+        onChange(value);
+      }}
+      error={error}
+      touch={touch}
+      icon={<Users size={15} strokeWidth={2} />}
+    />
+  ) : (
     <TaskDetailBox
       dataContent={
         assigneeSelected &&

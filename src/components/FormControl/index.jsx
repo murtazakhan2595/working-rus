@@ -178,23 +178,23 @@ const SelectMultiInputComponent = ({
             className="flex-wrap justify-between w-full rounded-sm h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
           >
             <div className="flex justify-start w-full gap-2">
-             <div className="w-4"> {icon}</div>
-              <div className="flex flex-wrap justify-start gap-2 items-center">
+              {icon && <div className="w-4"> {icon}</div>}
+              <div className="flex flex-wrap justify-start gap-2 items-center max-w-[calc(100vh_-_40px)]">
                 {value.length > 0 ? (
                   value?.map((val) => {
                     return valueIdentifier ? (
                       <span
                         key={val}
-                        className="bg-plum-300 text-plum-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-lg flex items-center"
+                        className="bg-plum-300 text-plum-800 text-xs font-semibold px-2.5 py-0.5 rounded-lg flex items-center"
                       >
                         {options.find((opt) => opt.value === val)?.label}
-                        <CircleX
+                        {/* <CircleX
                           className="ml-1 text-sm text-red-600 cursor-pointer"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleRemove(val);
                           }}
-                        />
+                        /> */}
                       </span>
                     ) : (
                       options.find((opt) => opt.value === val)?.label

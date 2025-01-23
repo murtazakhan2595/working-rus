@@ -41,10 +41,7 @@ import { Formik, Form } from "formik";
 import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
 import { CardTypes } from "app/utils/Types/TaskManagment";
 import { DateInput } from "components/FormControl";
-import {
-  SelectComponent,
-  SelectMultiInputComponent,
-} from "components/FormControl";
+import { SelectComponent, CoverFileUpload } from "components/FormControl";
 import { Assignee } from "app/modules/TaskManagment/Sections";
 import { getProjectById } from "app/hooks/taskManagment";
 import { errorClassName } from "components/FormControl";
@@ -272,6 +269,7 @@ useEffect(() => {
    };
 
   const handleSubmit = async (values) => {
+    debugger
     console.log("Form values:", values);
     setIsLoading(true);
     try {
@@ -439,7 +437,7 @@ useEffect(() => {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[70%] max-h-[95vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle></DialogTitle>
           </DialogHeader>
@@ -456,8 +454,8 @@ useEffect(() => {
             >
               {(props) => (
                 <Form>
-                  <div className="flex justify-between mb-5">
-                    <div className="text-lg font-semibold dark:text-slate-50">
+                  <div className="flex justify-between mb-6">
+                    <div className="text-md font-semibold dark:text-slate-50">
                       Add/Edit Details
                     </div>
                     <div className="flex justify-end gap-2">
@@ -495,8 +493,8 @@ useEffect(() => {
                       )}
                     </div>
                   </div>
-                  <div className="flex justify-between gap-4">
-                    <div className="flex flex-col w-[50%] gap-3">
+                  <div className="flex justify-between gap-5">
+                    <div className="flex flex-col w-[55%] gap-3">
                       <InputTaskTitle
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
@@ -516,7 +514,7 @@ useEffect(() => {
                         value={props.values.description}
                         name={"description"}
                       />
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 gap-4 my-8">
                         <DateInput
                           name="end_date"
                           label="Due Date"
@@ -539,10 +537,110 @@ useEffect(() => {
                             props.setFieldValue(field, value);
                             setIsEditMode(true);
                           }}
-                          icon={
-                            <Flag className="w-4 h-4 mr-2 mr-auto  shrink-0" />
+                          icon={<Flag size={15} strokeWidth={2} />}
+                        />
+                        <Labels
+                          labelsSelected={props.values.label || []}
+                          onSelectedLabelsChange={(value) => {
+                            props.setFieldValue("label", value);
+                            setIsEditMode(true);
+                          }}
+                          editMode={true} // Always in edit mode
+                        />
+                        <Assignee
+                          assigneeSelected={props.values.assigned_to || []}
+                          employees={employees}
+                          onChange={(value) => {
+                            props.setFieldValue("assigned_to", value);
+                            setIsEditMode(true);
+                          }}
+                          editMode={true} // Always in edit mode
+                          projectMembers={projectDetail?.project_members || []}
+                          error={props.errors.assigned_to}
+                          touch={props.touched.assigned_to}
+                          value={props.values.assigned_to}
+                        />
+                        <div className="grid grid-cols-2 gap-2">
+                          <TextInput
+                            name="estimated_time"
+                            error={props.errors.estimated_time}
+                            label={"Estimated Time"}
+                            touch={props.touched.estimated_time}
+                            value={props.values.estimated_time}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                              setIsEditMode(true);
+                            }}
+                          />
+                          <TextInput
+                            label={"Time Spent"}
+                            name="consumed_time"
+                            error={props.errors.consumed_time}
+                            touch={props.touched.consumed_time}
+                            value={props.values.consumed_time}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                              setIsEditMode(true);
+                            }}
+                          />
+                        </div>
+                        <TaskRelation
+                          relationsList={props.values.relation || []}
+                          onChange={(value) => {
+                            props.setFieldValue("relation", value);
+                            setIsEditMode(true);
+                          }}
+                          projectId={taskData.project_id}
+                          taskId={taskId}
+                          editMode={true}
+                          error={props.errors.relation}
+                          touch={props.touched.relation}
+                        />
+                      </div>
+                      <Attachments
+                        attachmentSelected={props.values.attachment || []}
+                        onChange={async (attachment) => {
+                          console.log("Attachments updated:", attachment);
+                          await props.setFieldValue("attachment", attachment);
+                          setIsEditMode(true);
+                        }}
+                        error={props.errors.relation}
+                        touch={props.touched.relation}
+                      />
+                      <div className="grid grid-cols-2 gap-4">
+                        <DetailBox
+                          label="Custom Fields"
+                          orientation="horizontal"
+                          value={
+                            <Button variant="outline" className="w-full">
+                              Add
+                            </Button>
                           }
                         />
+                        <DetailBox
+                          label="Sub Task"
+                          orientation="horizontal"
+                          value={
+                            <Button variant="outline" className="w-full">
+                              Add
+                            </Button>
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col w-[45%] gap-3">
+                      <div>
+                        <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
+                          {"Checklist"}
+                        </div>
+                        <CheckList
+                            items={props.values.task_checklist || []}
+                            onChange={(items) => {
+                              debugger
+                              props.setFieldValue("task_checklist", items);
+                              setIsEditMode(true);
+                            }}
+                          />
                         <DetailBox
                           label="Label"
                           orientation="horizontal"
@@ -572,21 +670,6 @@ useEffect(() => {
                           )
                         }
                       />
-                    </div>
-                    <div className="flex flex-col w-[50%] gap-3">
-                      <div>
-                        <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
-                          {"Checklist"}
-                        </div>
-                        <DetailCard detailCardTitle="" classNames="mt-0">
-                          <CheckList
-                            items={props.values.task_checklist || []}
-                            onChange={(items) =>
-                              handleFieldChange("task_checklist", items, props)
-                            }
-                          />
-                        </DetailCard>
-                      </div>
                       <div>
                         <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
                           {"Activity"}
@@ -638,7 +721,7 @@ useEffect(() => {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={toggleEditMode}
+                        //  onClick={toggleEditMode}
                         >
                           Cancel
                         </Button>
@@ -652,20 +735,6 @@ useEffect(() => {
           )}
         </DialogContent>
       </Dialog>
-
-      {/* {isEditCardOpen && (
-        <EditCard
-          cardId={taskData?.id}
-          projectId={taskData?.project_id}
-          onClose={() => {
-            setIsEditCardOpen(false);
-            fetchTaskData(true);
-          }}
-          setIsOpen={setIsEditCardOpen}
-          isOpen={isEditCardOpen}
-          reloadData={reloadData}
-        />
-      )} */}
 
       <AlertDialogue
         isOpen={isDeleteModalOpen}

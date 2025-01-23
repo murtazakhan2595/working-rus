@@ -4,13 +4,11 @@ import { Plus, Search } from "lucide-react";
 import { TaskDetailBox } from "app/modules/TaskManagment/Sections";
 import { Checkbox } from "src/@/components/ui/checkbox";
 import { Button } from "components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "src/@/components/ui/popover";
+import { calculateTotalCount } from "utils/renderValues";
 import { Input } from "components/ui/input";
 import { deleteTaskCheckListItem } from "app/hooks/taskManagment";
+import { DetailBox, DetailCard } from "components/SheetCardExtension";
+import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
 
 export default function CheckList({ items, onChange, editMode = true }) {
   const [newItem, setNewItem] = useState("");
@@ -50,17 +48,46 @@ export default function CheckList({ items, onChange, editMode = true }) {
       )
     );
   };
-
+  const checkCompleted = calculateTotalCount(items || [], "is_completed", true);
   return (
-    <TaskDetailBox
-      dataContent={
-        items &&
-        items.length > 0 && (
+    <DetailCard detailCardTitle="" classNames="mt-0">
+      <div className="flex justify-between gap-4 flex-col">
+        <div className="flex justify-between gap-3 flex-4 items-center">
+          <Progress value={checkCompleted} className="mt-1 h-2 bg-gray-400" />
+          <span>{`${checkCompleted}%`}</span>
+        </div>
+        <div className="flex gap-2">
+          <Input
+            placeholder="Item name"
+            value={newItem}
+            onChange={(e) => {
+              setNewItem(e.target.value);
+            }}
+            className="rounded"
+          />
+          <Button
+            className="rounded"
+            onClick={(e) => {
+              e.preventDefault();
+              const prevItems = items || [];
+              const newItemObj = {
+                description: newItem,
+                is_completed: false,
+              };
+              const checkList = [...prevItems, newItemObj];
+              onChange(checkList);
+              setNewItem(""); // Clear input after adding
+            }}
+          >
+            Add
+          </Button>
+        </div>
+        {items && items.length > 0 && (
           <div className="flex flex-col w-full">
             {items.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between gap-2 p-2 rounded-lg"
+                className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-gray-100"
               >
                 <div className="flex items-center gap-2">
                   <Checkbox
@@ -100,7 +127,7 @@ export default function CheckList({ items, onChange, editMode = true }) {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-primary hover:text-primary"
+                        className="text-primary hover:text-primary p-0"
                         onClick={() => handleEdit(index)}
                       >
                         <Pencil className="h-4 w-4" />
@@ -111,7 +138,7 @@ export default function CheckList({ items, onChange, editMode = true }) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-destructive hover:text-destructive"
+                      className="text-destructive hover:text-destructive p-0"
                       onClick={() => handleRemove(index)}
                     >
                       <X className="h-4 w-4" />
@@ -122,54 +149,8 @@ export default function CheckList({ items, onChange, editMode = true }) {
               </div>
             ))}
           </div>
-        )
-      }
-      inputDataContent={
-        <Popover>
-          <PopoverTrigger asChild>
-            {items.length > 0 ? (
-              <Button variant="outline" className="w-10 h-10 p-0 rounded-full">
-                <Plus className="w-4 h-4" />
-              </Button>
-            ) : (
-              <>
-                <Button
-                  variant="outline"
-                  className=" h-10 p-0 rounded-full gap-2 px-2"
-                >
-                  <Plus className="w-4 h-4" /> <span>Add a list item</span>
-                </Button>
-              </>
-            )}
-          </PopoverTrigger>
-          <PopoverContent className="w-80 p-0" align="start">
-            <div className="flex gap-2">
-              <Input
-                placeholder="Item name"
-                value={newItem}
-                onChange={(e) => {
-                  setNewItem(e.target.value);
-                }}
-              />
-              <Button
-                onClick={() => {
-                  const prevItems = items || [];
-                  const newItemObj = {
-                    description: newItem,
-                    is_completed: false,
-                  };
-                  const checkList = [...prevItems, newItemObj];
-                  onChange(checkList);
-                  setNewItem(""); // Clear input after adding
-                }}
-              >
-                Add
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
-      }
-      editMode={editMode}
-    />
+        )}
+      </div>
+    </DetailCard>
   );
 }
