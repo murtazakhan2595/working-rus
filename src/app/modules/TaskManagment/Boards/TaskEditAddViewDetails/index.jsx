@@ -54,6 +54,9 @@ import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementDa
 import { addSubtask } from "app/hooks/taskManagment";
 import { Calendar, Flag } from "lucide-react";
 import { getDropdownList, getLabelDropdownList } from "utils/Lists";
+import Subtasks from "../../Sections/SubTask";
+import { createActivity } from "app/hooks/taskManagment";
+import { trackTaskActivities } from "./Sections/activityHelper";
 
 const TaskEditAddViewDetails = ({
   taskId,
@@ -63,7 +66,11 @@ const TaskEditAddViewDetails = ({
   projectId,
   boardId,
   Projects = [],
+  isSubtask = false, // New prop to indicate if this is a subtask
+  onTaskCreated, // New callback for when task/subtask is created
+  projDetailsBySubtask,
 }) => {
+   const userId = useSelector((state) => state.user.userProfile.id);
   const [isLoading, setIsLoading] = useState(false);
   const [taskData, setTaskData] = useState({});
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
@@ -72,15 +79,57 @@ const TaskEditAddViewDetails = ({
   const [editingField, setEditingField] = useState(null);
   const [comments, setComments] = useState([]);
   const formRef = useRef();
-  const [initialValues, setInitialValues] = useState(CardTypes);
+  const [initialValues, setInitialValues] = useState({
+    ...CardTypes,
+    project_id: projectId,
+    board_id: boardId,
+    assigned_by: userId,
+  });
   const [isEditMode, setIsEditMode] = useState(false);
-  const [projectDetail, setProjectDetail] = useState(null);
+  const [projectDetail, setProjectDetail] = useState(
+    isSubtask ? projDetailsBySubtask : null
+  );
   const [refreshComments, setRefreshComments] = useState(false);
   const employees = useSelector((state) => state.emp.employees);
-  const userId = useSelector((state) => state.user.userProfile.id);
+ 
+
   const TaskLabelList = getLabelDropdownList(
     useSelector((state) => state.task_managment.task_labels)
   );
+useEffect(() => {
+  console.group("TaskEditAddViewDetails State Values");
+  console.log({
+    isLoading,
+    taskData,
+    isEditCardOpen,
+    BoardList,
+    isDeleteModalOpen,
+    editingField,
+    comments,
+    formRef: formRef.current,
+    initialValues,
+    isEditMode,
+    projectDetail,
+    refreshComments,
+    employees,
+    userId,
+  });
+  console.groupEnd();
+}, [
+  isLoading,
+  taskData,
+  isEditCardOpen,
+  BoardList,
+  isDeleteModalOpen,
+  editingField,
+  comments,
+  initialValues,
+  isEditMode,
+  projectDetail,
+  refreshComments,
+  employees,
+  userId,
+]);
 
   const fetchBoardListByProjectId = async (isMounted, projectID) => {
     if (projectID) {
@@ -112,6 +161,7 @@ const TaskEditAddViewDetails = ({
   }, [initialValues.project_id]);
 
   const fetchTaskData = async (isMounted) => {
+    console.log("fetchTaskData", taskId);
     setIsLoading(true);
     try {
       const cardDetails = await getTaskById(taskId);
@@ -142,9 +192,10 @@ const TaskEditAddViewDetails = ({
     };
   }, [taskId]);
   useEffect(() => {
+    console.log("taskData", taskData);
     let isMounted = true;
     const fetchProject = async (isMounted) => {
-      if (taskData?.project_id) {
+      if (taskData?.project_id && !isSubtask) {
         try {
           const projectDetails = await getProjectById(taskData.project_id);
           if (isMounted && projectDetails) {
@@ -201,6 +252,25 @@ const TaskEditAddViewDetails = ({
   const toggleEditMode = () => {
     setIsEditMode(!isEditMode);
   };
+
+   const handleFieldChange = async (fieldName, value, props) => {
+     try {
+       // Update field value
+       await props.setFieldValue(fieldName, value);
+
+       // Auto-submit only if not a subtask
+       if (!isSubtask) {
+         await props.submitForm();
+       }
+
+       // Always set edit mode to true when field changes
+       setIsEditMode(true);
+     } catch (error) {
+       console.error(`Error updating ${fieldName}:`, error);
+       toast.error(`Failed to update ${fieldName}`);
+     }
+   };
+
   const handleSubmit = async (values) => {
     console.log("Form values:", values);
     setIsLoading(true);
@@ -238,17 +308,30 @@ const TaskEditAddViewDetails = ({
 
       const response = await addTask(finalData, taskId);
       if (response) {
-        await Promise.all(
-          (values.subtasks || []).map((subtask) =>
-            addSubtask({
-              ...subtask,
-              tasks: response.id,
-            })
-          )
+        // Notify parent component of the new task
+        if (onTaskCreated && isSubtask) {
+          console.log("onTaskCreated", response);
+          onTaskCreated(response.data);
+        }
+        //  setShowSuccessMessage(true);
+        // Track activities
+        await trackTaskActivities(
+          values,
+          taskId ? initialValues : null,
+          taskId || response.id,
+          userId,
+          createActivity
         );
-        toast.success("Task Updated Successfully!");
-        fetchTaskData(true);
-        reloadData();
+        toast.success(
+          isSubtask
+            ? "Subtask Created Successfully!"
+            : `Task ${!taskId ? "Updated" : "Added"} Successfully!`,
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+        taskId && fetchTaskData(true);
+        !isSubtask && reloadData();
       }
     } catch (error) {
       console.error("Error updating task:", error);
@@ -294,6 +377,7 @@ const TaskEditAddViewDetails = ({
       //         },
       //       ]
       //     : []),
+
       ...(values?.assigned_to?.length || true // Changed to always show
         ? [
             {
@@ -303,11 +387,9 @@ const TaskEditAddViewDetails = ({
                   <Assignee
                     assigneeSelected={props.values.assigned_to || []}
                     employees={employees}
-                    onChange={(value) => {
-                      props.setFieldValue("assigned_to", value);
-                      // Auto-submit when assignees change
-                      props.submitForm();
-                    }}
+                    onChange={(value) =>
+                      handleFieldChange("assigned_to", value, props)
+                    }
                     projectMembers={projectDetail?.project_members || []}
                   />
                   {/* Error handling */}
@@ -328,10 +410,9 @@ const TaskEditAddViewDetails = ({
               value: (
                 <TaskRelation
                   relationsList={props.values.relation || []}
-                  onChange={(value) => {
-                    props.setFieldValue("relation", value);
-                    props.submitForm();
-                  }}
+                  onChange={(value) =>
+                    handleFieldChange("relation", value, props)
+                  }
                   projectId={taskData.project_id}
                   taskId={taskId}
                   editMode={true}
@@ -463,20 +544,19 @@ const TaskEditAddViewDetails = ({
                           }
                         />
                         <DetailBox
-                        label="Label"
-                        orientation="horizontal"
-                        value={
-                         <Labels
-                          labelsSelected={props.values.label || []}
-                          onSelectedLabelsChange={(value) => {
-                            props.setFieldValue("label", value);
-                            setIsEditMode(true);
-                          }}
-                          editMode={true} // Always in edit mode
+                          label="Label"
+                          orientation="horizontal"
+                          value={
+                            <Labels
+                              labelsSelected={props.values.label || []}
+                              onSelectedLabelsChange={(value) => {
+                                props.setFieldValue("label", value);
+                                setIsEditMode(true);
+                              }}
+                              editMode={true} // Always in edit mode
+                            />
+                          }
                         />
-                        }
-                      />
-                        
                       </div>
                       <DetailBox
                         label="Comments"
@@ -501,11 +581,9 @@ const TaskEditAddViewDetails = ({
                         <DetailCard detailCardTitle="" classNames="mt-0">
                           <CheckList
                             items={props.values.task_checklist || []}
-                            onChange={(items) => {
-                              console.log("Checklist updated:dsfsdf", items);
-                              props.setFieldValue("task_checklist", items);
-                              props.submitForm();
-                            }}
+                            onChange={(items) =>
+                              handleFieldChange("task_checklist", items, props)
+                            }
                           />
                         </DetailCard>
                       </div>
@@ -537,6 +615,10 @@ const TaskEditAddViewDetails = ({
                       setEditingField={setEditingField}
                       setRefreshComments={setRefreshComments}
                       refreshComments={refreshComments}
+                      projectId={projectId}
+                      boardId={boardId}
+                      projectDetail={projectDetail}
+                      isSubtask={isSubtask}
                     />
                   </div>
 
@@ -607,7 +689,12 @@ const LeftColumn = ({
   userId,
   setRefreshComments,
   refreshComments,
+  projectId,
+  boardId,
+  projectDetail,
+  isSubtask
 }) => {
+  
   return (
     <div>
       <DetailCard detailCardTitle="Card Details" className="">
@@ -636,7 +723,10 @@ const LeftColumn = ({
               onBlur={async (e) => {
                 await props.setFieldTouched("description", true);
                 setEditingField(null);
-                if (props.values.description !== taskData.description) {
+                if (
+                  !isSubtask &&
+                  props.values.description !== taskData.description
+                ) {
                   await props.submitForm();
                 }
               }}
@@ -659,15 +749,30 @@ const LeftColumn = ({
         value={
           <Attachments
             attachmentSelected={props.values.attachment}
-            onChange={async (attachment) => {
-              console.log("Attachments updated:", attachment);
-              await props.setFieldValue("attachment", attachment);
-              // Auto-submit when attachments change
-              await props.submitForm();
-            }}
+            onChange={(attachment) =>
+              handleFieldChange("attachment", attachment, props)
+            }
           />
         }
       />
+      {!isSubtask && (
+        <DetailBox
+          label={"Subtasks"}
+          value={
+            <Subtasks
+              items={props.values.subtasks || []}
+              onChange={(items) => {
+                props.setFieldValue("subtasks", items);
+              }}
+              projectId={projectId}
+              taskId={taskId}
+              boardId={boardId}
+              employees={employees}
+              projectDetail={projectDetail}
+            />
+          }
+        />
+      )}
     </div>
   );
 };
