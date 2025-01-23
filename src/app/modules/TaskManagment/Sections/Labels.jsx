@@ -18,9 +18,7 @@ import { getAllLabels } from "app/hooks/taskManagment";
 import { TaskDetailBox } from "app/modules/TaskManagment/Sections";
 import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
 import { getDropdownList, getLabelDropdownList } from "utils/Lists";
-import {
-  SelectMultiInputComponent,
-} from "components/FormControl";
+import { SelectMultiInputComponent } from "components/FormControl";
 import { Calendar, Flag } from "lucide-react";
 
 const headers = () => ({
@@ -127,11 +125,11 @@ export default function Labels({
     <SelectMultiInputComponent
       name="label"
       options={TaskLabelListOptions}
-      showLabel={false}
+      label={"Label"}
       value={labelsSelected || []}
       valueIdentifier={false}
       onChange={(field, value) => {
-        onSelectedLabelsChange(value)
+        onSelectedLabelsChange(value);
       }}
       icon={<Flag size={15} strokeWidth={2} />}
     />

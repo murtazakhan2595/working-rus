@@ -41,10 +41,7 @@ import { Formik, Form } from "formik";
 import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
 import { CardTypes } from "app/utils/Types/TaskManagment";
 import { DateInput } from "components/FormControl";
-import {
-  SelectComponent,
-  SelectMultiInputComponent,
-} from "components/FormControl";
+import { SelectComponent, CoverFileUpload } from "components/FormControl";
 import { Assignee } from "app/modules/TaskManagment/Sections";
 import { getProjectById } from "app/hooks/taskManagment";
 import { errorClassName } from "components/FormControl";
@@ -261,104 +258,10 @@ const TaskEditAddViewDetails = ({
     }
   };
 
-  function CardValues({ values, props, editingField, setEditingField }) {
-    const items = [
-      // Modify the due date part in CardValues
-
-      ...(values?.status
-        ? [
-            {
-              label: "Status",
-              value: TaskStatus.find(
-                (option) => option.value === values?.status
-              )?.label,
-            },
-          ]
-        : []),
-
-      //   ...(values?.label?.length || true
-      //     ? [
-      //         {
-      //           label: "Label",
-      //           value: (
-      //             <Labels
-      //               labelsSelected={props.values.label || []}
-      //               onSelectedLabelsChange={(value) => {
-      //                 props.setFieldValue("label", value);
-      //                 // Auto-submit when labels change
-      //                 props.submitForm();
-      //               }}
-      //               editMode={true} // Always in edit mode
-      //             />
-      //           ),
-      //         },
-      //       ]
-      //     : []),
-      ...(values?.assigned_to?.length || true // Changed to always show
-        ? [
-            {
-              label: "Assign",
-              value: (
-                <>
-                  <Assignee
-                    assigneeSelected={props.values.assigned_to || []}
-                    employees={employees}
-                    onChange={(value) => {
-                      props.setFieldValue("assigned_to", value);
-                      // Auto-submit when assignees change
-                      props.submitForm();
-                    }}
-                    projectMembers={projectDetail?.project_members || []}
-                  />
-                  {/* Error handling */}
-                  {props.errors.assigned_to && props.touched.assigned_to && (
-                    <div className={errorClassName}>
-                      {props.errors.assigned_to}
-                    </div>
-                  )}
-                </>
-              ),
-            },
-          ]
-        : []),
-      ...(values?.relation?.length || true
-        ? [
-            {
-              label: "Relation",
-              value: (
-                <TaskRelation
-                  relationsList={props.values.relation || []}
-                  onChange={(value) => {
-                    props.setFieldValue("relation", value);
-                    props.submitForm();
-                  }}
-                  projectId={taskData.project_id}
-                  taskId={taskId}
-                  editMode={true}
-                />
-              ),
-            },
-          ]
-        : []),
-      {
-        label: "Share Link",
-        value: <TaskShare projectId={taskData.project_id} taskId={taskId} />,
-      },
-    ];
-
-    return (
-      <div className="flex flex-col items-start justify-between flex-wrap w-[100%] gap-4">
-        {items.map(({ label, value }, idx) => (
-          <DetailBox key={idx} label={label} value={value} className="mt-2" />
-        ))}
-      </div>
-    );
-  }
-
   return (
     <>
       <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[80%] max-h-[95vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle></DialogTitle>
           </DialogHeader>
@@ -375,8 +278,8 @@ const TaskEditAddViewDetails = ({
             >
               {(props) => (
                 <Form>
-                  <div className="flex justify-between mb-5">
-                    <div className="text-lg font-semibold dark:text-slate-50">
+                  <div className="flex justify-between mb-6">
+                    <div className="text-md font-semibold dark:text-slate-50">
                       Add/Edit Details
                     </div>
                     <div className="flex justify-end gap-2">
@@ -414,8 +317,8 @@ const TaskEditAddViewDetails = ({
                       )}
                     </div>
                   </div>
-                  <div className="flex justify-between gap-4">
-                    <div className="flex flex-col w-[50%] gap-3">
+                  <div className="flex justify-between gap-5">
+                    <div className="flex flex-col w-[55%] gap-3">
                       <InputTaskTitle
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
@@ -435,7 +338,7 @@ const TaskEditAddViewDetails = ({
                         value={props.values.description}
                         name={"description"}
                       />
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 gap-4 my-8">
                         <DateInput
                           name="end_date"
                           label="Due Date"
@@ -458,15 +361,9 @@ const TaskEditAddViewDetails = ({
                             props.setFieldValue(field, value);
                             setIsEditMode(true);
                           }}
-                          icon={
-                            <Flag className="w-4 h-4 mr-2 mr-auto  shrink-0" />
-                          }
+                          icon={<Flag size={15} strokeWidth={2} />}
                         />
-                        <DetailBox
-                        label="Label"
-                        orientation="horizontal"
-                        value={
-                         <Labels
+                        <Labels
                           labelsSelected={props.values.label || []}
                           onSelectedLabelsChange={(value) => {
                             props.setFieldValue("label", value);
@@ -474,9 +371,101 @@ const TaskEditAddViewDetails = ({
                           }}
                           editMode={true} // Always in edit mode
                         />
-                        }
+                        <Assignee
+                          assigneeSelected={props.values.assigned_to || []}
+                          employees={employees}
+                          onChange={(value) => {
+                            props.setFieldValue("assigned_to", value);
+                            setIsEditMode(true);
+                          }}
+                          editMode={true} // Always in edit mode
+                          projectMembers={projectDetail?.project_members || []}
+                          error={props.errors.assigned_to}
+                          touch={props.touched.assigned_to}
+                          value={props.values.assigned_to}
+                        />
+                        <div className="grid grid-cols-2 gap-2">
+                          <TextInput
+                            name="estimated_time"
+                            error={props.errors.estimated_time}
+                            label={"Estimated Time"}
+                            touch={props.touched.estimated_time}
+                            value={props.values.estimated_time}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                              setIsEditMode(true);
+                            }}
+                          />
+                          <TextInput
+                            label={"Time Spent"}
+                            name="consumed_time"
+                            error={props.errors.consumed_time}
+                            touch={props.touched.consumed_time}
+                            value={props.values.consumed_time}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                              setIsEditMode(true);
+                            }}
+                          />
+                        </div>
+                        <TaskRelation
+                          relationsList={props.values.relation || []}
+                          onChange={(value) => {
+                            props.setFieldValue("relation", value);
+                            setIsEditMode(true);
+                          }}
+                          projectId={taskData.project_id}
+                          taskId={taskId}
+                          editMode={true}
+                          error={props.errors.relation}
+                          touch={props.touched.relation}
+                        />
+                      </div>
+                      <Attachments
+                        attachmentSelected={props.values.attachment || []}
+                        onChange={async (attachment) => {
+                          console.log("Attachments updated:", attachment);
+                          await props.setFieldValue("attachment", attachment);
+                          setIsEditMode(true);
+                        }}
+                        error={props.errors.relation}
+                        touch={props.touched.relation}
                       />
-                        
+                      <div className="grid grid-cols-2 gap-4">
+                        <DetailBox
+                          label="Custom Fields"
+                          orientation="horizontal"
+                          value={
+                            <Button variant="outline" className="w-full">
+                              Add
+                            </Button>
+                          }
+                        />
+                        <DetailBox
+                          label="Sub Task"
+                          orientation="horizontal"
+                          value={
+                            <Button variant="outline" className="w-full">
+                              Add
+                            </Button>
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col w-[45%] gap-3">
+                      <div>
+                        <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
+                          {"Checklist"}
+                        </div>
+                        <DetailCard detailCardTitle="" classNames="mt-0">
+                          <CheckList
+                            items={props.values.task_checklist || []}
+                            onChange={(items) => {
+                              props.setFieldValue("task_checklist", items);
+                              setIsEditMode(true);
+                            }}
+                          />
+                        </DetailCard>
                       </div>
                       <DetailBox
                         label="Comments"
@@ -492,23 +481,6 @@ const TaskEditAddViewDetails = ({
                           )
                         }
                       />
-                    </div>
-                    <div className="flex flex-col w-[50%] gap-3">
-                      <div>
-                        <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
-                          {"Checklist"}
-                        </div>
-                        <DetailCard detailCardTitle="" classNames="mt-0">
-                          <CheckList
-                            items={props.values.task_checklist || []}
-                            onChange={(items) => {
-                              console.log("Checklist updated:dsfsdf", items);
-                              props.setFieldValue("task_checklist", items);
-                              props.submitForm();
-                            }}
-                          />
-                        </DetailCard>
-                      </div>
                       <div>
                         <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
                           {"Activity"}
@@ -524,23 +496,7 @@ const TaskEditAddViewDetails = ({
                     </div>
                   </div>
 
-                  {/* Render form or view based on isEditMode */}
-                  <div className="grid grid-cols-2 w-full gap-4">
-                    <LeftColumn
-                      taskData={taskData}
-                      taskId={taskId}
-                      userId={userId}
-                      employees={employees}
-                      CardValues={CardValues}
-                      props={props}
-                      editingField={editingField}
-                      setEditingField={setEditingField}
-                      setRefreshComments={setRefreshComments}
-                      refreshComments={refreshComments}
-                    />
-                  </div>
-
-                  <div className="flex justify-between">
+                  <div className="flex justify-between mt-8">
                     <div className="flex justify-start gap-2 mt-4 border-t border-gray-200">
                       <Button variant="outline" onClick={archeiveTask}>
                         <CiEdit className="mr-2" />
@@ -571,20 +527,6 @@ const TaskEditAddViewDetails = ({
         </DialogContent>
       </Dialog>
 
-      {/* {isEditCardOpen && (
-        <EditCard
-          cardId={taskData?.id}
-          projectId={taskData?.project_id}
-          onClose={() => {
-            setIsEditCardOpen(false);
-            fetchTaskData(true);
-          }}
-          setIsOpen={setIsEditCardOpen}
-          isOpen={isEditCardOpen}
-          reloadData={reloadData}
-        />
-      )} */}
-
       <AlertDialogue
         isOpen={isDeleteModalOpen}
         setIsOpen={setIsDeleteModalOpen}
@@ -595,92 +537,6 @@ const TaskEditAddViewDetails = ({
     </>
   );
 };
-
-const LeftColumn = ({
-  taskData,
-  employees,
-  CardValues,
-  props,
-  editingField,
-  setEditingField,
-  taskId,
-  userId,
-  setRefreshComments,
-  refreshComments,
-}) => {
-  return (
-    <div>
-      <DetailCard detailCardTitle="Card Details" className="">
-        <CardValues
-          values={taskData}
-          props={props}
-          editingField={editingField}
-          setEditingField={setEditingField}
-        />
-      </DetailCard>
-      {/* Replace the existing DetailBox for description with this */}
-      <DetailBox
-        label="Description"
-        value={
-          editingField === "description" ? (
-            <TextAreaInput
-              name="description"
-              error={props.errors.description}
-              touch={props.touched.description}
-              value={props.values.description}
-              required
-              maxRows={6}
-              onChange={(field, value) => {
-                props.setFieldValue(field, value);
-              }}
-              onBlur={async (e) => {
-                await props.setFieldTouched("description", true);
-                setEditingField(null);
-                if (props.values.description !== taskData.description) {
-                  await props.submitForm();
-                }
-              }}
-              autoFocus
-            />
-          ) : (
-            <span
-              className="cursor-pointer hover:bg-gray-50 px-2 py-1 rounded block"
-              onDoubleClick={() => setEditingField("description")}
-              dangerouslySetInnerHTML={{
-                __html: taskData?.description,
-              }}
-            />
-          )
-        }
-        orientation="horizontal"
-      />
-      <DetailBox
-        label="Attachments"
-        value={
-          <Attachments
-            attachmentSelected={props.values.attachment}
-            onChange={async (attachment) => {
-              console.log("Attachments updated:", attachment);
-              await props.setFieldValue("attachment", attachment);
-              // Auto-submit when attachments change
-              await props.submitForm();
-            }}
-          />
-        }
-      />
-    </div>
-  );
-};
-
-// Right Column Component
-const RightColumn = ({
-  taskData,
-  taskId,
-  props,
-  editingField,
-  setRefreshComments,
-  refreshComments,
-}) => <div className="space-y-6"></div>;
 
 const mapStateToProps = (state) => ({
   employees: state.emp.employees,

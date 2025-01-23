@@ -229,24 +229,25 @@ function TextEditorInputField({
           }}
           onKeyDown={handleKeyDown}
         ></div>
-        {handleSubmitContent && (
-          <div className="p-4 flex justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                handleSubmitContent(content, attachments);
-              }}
-            >
-              {"Comment"}
-            </Button>
+        <div className="flex flex-row justify-between border-t border-neutral-500 p-2 ">
+          <div className="flex items-center text-sm text-gray-900 font-inter">
+            {content.replace(/<[^>]*>/g, "").length} characters
           </div>
-        )}
-      </div>
-
-      <div className="mt-2 text-sm text-gray-900 font-inter">
-        {content.replace(/<[^>]*>/g, "").length} characters
+          {handleSubmitContent && (
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  handleSubmitContent(content, attachments);
+                }}
+              >
+                {"Comment"}
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
