@@ -185,7 +185,7 @@ const SelectMultiInputComponent = ({
                     return valueIdentifier ? (
                       <span
                         key={val}
-                        className="bg-plum-300 text-plum-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-lg flex items-center"
+                        className="bg-plum-300 text-plum-800 text-xs font-semibold px-2.5 py-0.5 rounded-lg flex items-center"
                       >
                         {options.find((opt) => opt.value === val)?.label}
                         {/* <CircleX

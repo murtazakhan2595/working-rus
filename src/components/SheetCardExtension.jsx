@@ -50,7 +50,7 @@ export const DetailCard = ({
 }) => {
   return (
     <div className={`${classNames} flex flex-col rounded-lg shadow border  `}>
-      <section className="flex flex-col justify-center p-6 text-sm  max-w-[479px]">
+      <section className="flex flex-col justify-center p-6 text-sm">
         <div className="text-[#111827] text-sm font-semibold whitespace-nowrap">
           {detailCardTitle}
         </div>

@@ -195,10 +195,8 @@ const TaskEditAddViewDetails = ({
     }
   };
 
-  const toggleEditMode = () => {
-    setIsEditMode(!isEditMode);
-  };
   const handleSubmit = async (values) => {
+    debugger
     console.log("Form values:", values);
     setIsLoading(true);
     try {
@@ -261,7 +259,7 @@ const TaskEditAddViewDetails = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
-        <DialogContent className="max-w-[80%] max-h-[95vh] overflow-y-auto">
+        <DialogContent className="max-w-[70%] max-h-[95vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle></DialogTitle>
           </DialogHeader>
@@ -457,15 +455,14 @@ const TaskEditAddViewDetails = ({
                         <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
                           {"Checklist"}
                         </div>
-                        <DetailCard detailCardTitle="" classNames="mt-0">
-                          <CheckList
+                        <CheckList
                             items={props.values.task_checklist || []}
                             onChange={(items) => {
+                              debugger
                               props.setFieldValue("task_checklist", items);
                               setIsEditMode(true);
                             }}
                           />
-                        </DetailCard>
                       </div>
                       <DetailBox
                         label="Comments"
@@ -512,7 +509,7 @@ const TaskEditAddViewDetails = ({
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={toggleEditMode}
+                        //  onClick={toggleEditMode}
                         >
                           Cancel
                         </Button>
