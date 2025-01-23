@@ -462,7 +462,11 @@ const TaskEditAddViewDetails = ({
                             <Flag className="w-4 h-4 mr-2 mr-auto  shrink-0" />
                           }
                         />
-                        <Labels
+                        <DetailBox
+                        label="Label"
+                        orientation="horizontal"
+                        value={
+                         <Labels
                           labelsSelected={props.values.label || []}
                           onSelectedLabelsChange={(value) => {
                             props.setFieldValue("label", value);
@@ -470,6 +474,9 @@ const TaskEditAddViewDetails = ({
                           }}
                           editMode={true} // Always in edit mode
                         />
+                        }
+                      />
+                        
                       </div>
                       <DetailBox
                         label="Comments"

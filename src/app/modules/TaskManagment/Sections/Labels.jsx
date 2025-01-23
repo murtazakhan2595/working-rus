@@ -127,7 +127,7 @@ export default function Labels({
     <SelectMultiInputComponent
       name="label"
       options={TaskLabelListOptions}
-      label={"Label"}
+      showLabel={false}
       value={labelsSelected || []}
       valueIdentifier={false}
       onChange={(field, value) => {
