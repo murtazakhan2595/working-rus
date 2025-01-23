@@ -196,7 +196,7 @@ const TaskEditAddViewDetails = ({
   };
 
   const handleSubmit = async (values) => {
-    debugger
+    debugger;
     console.log("Form values:", values);
     setIsLoading(true);
     try {
@@ -456,13 +456,13 @@ const TaskEditAddViewDetails = ({
                           {"Checklist"}
                         </div>
                         <CheckList
-                            items={props.values.task_checklist || []}
-                            onChange={(items) => {
-                              debugger
-                              props.setFieldValue("task_checklist", items);
-                              setIsEditMode(true);
-                            }}
-                          />
+                          items={props.values.task_checklist || []}
+                          onChange={(items) => {
+                            debugger;
+                            props.setFieldValue("task_checklist", items);
+                            setIsEditMode(true);
+                          }}
+                        />
                       </div>
                       <DetailBox
                         label="Comments"
@@ -495,7 +495,13 @@ const TaskEditAddViewDetails = ({
 
                   <div className="flex justify-between mt-8">
                     <div className="flex justify-start gap-2 mt-4 border-t border-gray-200">
-                      <Button variant="outline" onClick={archeiveTask}>
+                      <Button
+                        variant="outline"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          archeiveTask();
+                        }}
+                      >
                         <CiEdit className="mr-2" />
                         Archive
                       </Button>
@@ -509,7 +515,7 @@ const TaskEditAddViewDetails = ({
                         <Button
                           type="button"
                           variant="outline"
-                        //  onClick={toggleEditMode}
+                          //  onClick={toggleEditMode}
                         >
                           Cancel
                         </Button>
