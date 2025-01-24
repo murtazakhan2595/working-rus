@@ -71,7 +71,10 @@ export default function TaskRelation({
       {editMode ? (
         <SelectMultiInputComponent
           name="relation"
-          options={filteredTasks}
+          options={filteredTasks.map((task) => ({
+            label: task.name,
+            value: task.id,
+          }))}
           label={"Relation"}
           error={error}
           touch={touch}
@@ -158,7 +161,7 @@ export default function TaskRelation({
                           <span
                             className={`px-3 py-1 rounded-full inline-block`}
                           >
-                            {task?.name}
+                            {task?.name} sdfsd
                           </span>
                         </div>
                       ))}
