@@ -281,9 +281,11 @@ const addTask = async (payload, id) => {
       if (response.status === 200) return response;
       else return false;
     } else {
+      console.log("SUBTASK ADDTASK", payload);
       const response = await axios.post(`${baseUrl}/task/`, payload, {
         headers: headers(),
       });
+      console.log("SUBTASK ADDTASK", response, response.status);
       if (response.status === 201) return response;
       else return false;
     }
@@ -824,10 +826,10 @@ const addSubtask = async (payload) => {
       if (response.status === 200) return true;
       else return false;
     } else {
-      const response = await axios.post(`${baseUrl}/subtask/`, payload, {
+      const response = await axios.post(`${baseUrl}/subtask`, payload, {
         headers: headers(),
       });
-      if (response.status === 201) return true;
+      if (response.status === 201) return response.data;
       else return false;
     }
   } catch (error) {
@@ -860,8 +862,71 @@ const getAttachmentDetails = async (attachmentIds) => {
     console.error("Error fetching attachments:", error);
   }
 };
+const getSubtaskById = async (subtaskId) => {
+  try {
+    if (subtaskId) {
+      const response = await axios.get(`${baseUrl}/subtask/${subtaskId}`, {
+        headers: headers(),
+      });
+      if (response.status === 200) {
+        return getTaskById(response?.data?.tasks[0])
+      } else {
+        return {};
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error getting subtask:", error);
+    return {};
+  }
+}
+
+ const createActivity = async (payload) =>{
+  try {
+    const response = await axios.post(`${baseUrl}/activities/`, payload, {
+      headers: headers(),
+    });
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error adding activity:", error);
+    return false;
+  }
+ }
+
+ const getActivities = async (payload) => {
+  const filterData = payload?.filterData ?? {};
+  const URL = `/activities/?ordering=-created_at&search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const data = response.data;
+      return data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      handleLogout();
+    }
+    console.error("Error fetching task data :", error);
+  }
+  return [];
+ }
+
 export {
+  createActivity,
+  getActivities,
   addSubtask,
+  getSubtaskById,
   getAllProjects,
   getAllTasks,
   addProject,
