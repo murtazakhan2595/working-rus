@@ -78,6 +78,41 @@ const TaskEditAddViewDetails = ({
   const [projectDetail, setProjectDetail] = useState(null);
   const [refreshComments, setRefreshComments] = useState(false);
   const employees = useSelector((state) => state.emp.employees);
+ 
+// useEffect(() => {
+//   console.group("TaskEditAddViewDetails State Values");
+//   console.log({
+//     isLoading,
+//     taskData,
+//     isEditCardOpen,
+//     BoardList,
+//     isDeleteModalOpen,
+//     editingField,
+//     comments,
+//     formRef: formRef.current,
+//     initialValues,
+//     isEditMode,
+//     projectDetail,
+//     refreshComments,
+//     employees,
+//     userId,
+//   });
+//   console.groupEnd();
+// }, [
+//   isLoading,
+//   taskData,
+//   isEditCardOpen,
+//   BoardList,
+//   isDeleteModalOpen,
+//   editingField,
+//   comments,
+//   initialValues,
+//   isEditMode,
+//   projectDetail,
+//   refreshComments,
+//   employees,
+//   userId,
+// ]);
 
   const fetchBoardListByProjectId = async (isMounted, projectID) => {
     if (projectID) {

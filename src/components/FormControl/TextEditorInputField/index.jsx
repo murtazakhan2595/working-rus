@@ -252,7 +252,7 @@ function TextEditorInputField({
         ></div>
         <div className="flex flex-row justify-between border-t border-neutral-500 p-2 ">
           <div className="flex items-center text-sm text-gray-900 font-inter">
-            {content ? content.replace(/<[^>]*>/g, "").length : 0} characters
+            {content?.replace(/<[^>]*>/g, "")?.length} characters
           </div>
           {handleSubmitContent && (
             <div className="flex justify-end">
