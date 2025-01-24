@@ -222,6 +222,7 @@ const addBoard = async (payload) => {
   }
 };
 const addProject = async (payload, projectID) => {
+  debugger
   const formData = new FormData();
   if (projectID) formData.append("id", projectID);
   if (payload.name) formData.append("name", payload.name || "");
@@ -229,6 +230,8 @@ const addProject = async (payload, projectID) => {
     formData.append("description", payload.description || "");
   if (payload.start_date)
     formData.append("start_date", payload.start_date || "");
+  if (payload.custom_fields && payload.custom_fields.length > 0)
+    formData.append("custom_fields", payload.custom_fields);
   // Append each member to formData
   if (Array.isArray(payload.project_members)) {
     payload.project_members.forEach((member) =>
@@ -869,7 +872,7 @@ const getSubtaskById = async (subtaskId) => {
         headers: headers(),
       });
       if (response.status === 200) {
-        return getTaskById(response?.data?.tasks[0])
+        return getTaskById(response?.data?.tasks[0]);
       } else {
         return {};
       }
@@ -881,9 +884,9 @@ const getSubtaskById = async (subtaskId) => {
     console.error("Error getting subtask:", error);
     return {};
   }
-}
+};
 
- const createActivity = async (payload) =>{
+const createActivity = async (payload) => {
   try {
     const response = await axios.post(`${baseUrl}/activities/`, payload, {
       headers: headers(),
@@ -896,9 +899,9 @@ const getSubtaskById = async (subtaskId) => {
     console.error("Error adding activity:", error);
     return false;
   }
- }
+};
 
- const getActivities = async (payload) => {
+const getActivities = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const URL = `/activities/?ordering=-created_at&search=${encodeURIComponent(
     JSON.stringify(filterData)
@@ -920,7 +923,7 @@ const getSubtaskById = async (subtaskId) => {
     console.error("Error fetching task data :", error);
   }
   return [];
- }
+};
 
 export {
   createActivity,

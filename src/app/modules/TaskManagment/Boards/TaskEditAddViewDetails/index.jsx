@@ -34,12 +34,13 @@ import TaskShare from "app/modules/TaskManagment/Sections/TaskShare";
 import {
   InputTaskTitle,
   InputTaskDescription,
+  ProjectCustomFields,
 } from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails/Sections";
 import { CommentsInputField } from "components/FormControl";
 import { useSelector } from "react-redux";
 import { Formik, Form } from "formik";
 import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
-import { CardTypes } from "app/utils/Types/TaskManagment";
+import { Task } from "app/utils/Types/TaskManagment";
 import { DateInput } from "components/FormControl";
 import { SelectComponent, CoverFileUpload } from "components/FormControl";
 import { Assignee } from "app/modules/TaskManagment/Sections";
@@ -65,64 +66,18 @@ const TaskEditAddViewDetails = ({
   Projects = [],
   isSubtask = false, // New prop to indicate if this is a subtask
   onTaskCreated, // New callback for when task/subtask is created
-  projDetailsBySubtask,
 }) => {
-   const userId = useSelector((state) => state.user.userProfile.id);
+  const userId = useSelector((state) => state.user.userProfile.id);
   const [isLoading, setIsLoading] = useState(false);
-  const [taskData, setTaskData] = useState({});
-  const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const [BoardList, setBoardList] = useState([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [editingField, setEditingField] = useState(null);
-  const [comments, setComments] = useState([]);
+  const [openProjectCustomFields, setOpenProjectCustomFields] = useState(false);
   const formRef = useRef();
-  const [initialValues, setInitialValues] = useState({
-    ...CardTypes,
-    project_id: projectId,
-    board_id: boardId,
-    assigned_by: userId,
-  });
+  const [initialValues, setInitialValues] = useState({ Task });
   const [isEditMode, setIsEditMode] = useState(false);
-  const [projectDetail, setProjectDetail] = useState(
-    isSubtask ? projDetailsBySubtask : null
-  );
+  const [projectDetail, setProjectDetail] = useState(null);
   const [refreshComments, setRefreshComments] = useState(false);
   const employees = useSelector((state) => state.emp.employees);
- 
-useEffect(() => {
-  console.group("TaskEditAddViewDetails State Values");
-  console.log({
-    isLoading,
-    taskData,
-    isEditCardOpen,
-    BoardList,
-    isDeleteModalOpen,
-    editingField,
-    comments,
-    formRef: formRef.current,
-    initialValues,
-    isEditMode,
-    projectDetail,
-    refreshComments,
-    employees,
-    userId,
-  });
-  console.groupEnd();
-}, [
-  isLoading,
-  taskData,
-  isEditCardOpen,
-  BoardList,
-  isDeleteModalOpen,
-  editingField,
-  comments,
-  initialValues,
-  isEditMode,
-  projectDetail,
-  refreshComments,
-  employees,
-  userId,
-]);
 
   const fetchBoardListByProjectId = async (isMounted, projectID) => {
     if (projectID) {
@@ -154,16 +109,13 @@ useEffect(() => {
   }, [initialValues.project_id]);
 
   const fetchTaskData = async (isMounted) => {
-    console.log("fetchTaskData", taskId);
     setIsLoading(true);
     try {
       const cardDetails = await getTaskById(taskId);
       if (!cardDetails) {
         throw new Error("Card details not found.");
       }
-
       if (isMounted) {
-        setTaskData(cardDetails);
         setInitialValues(cardDetails);
         setIsLoading(false);
       }
@@ -192,12 +144,11 @@ useEffect(() => {
     };
   }, [taskId]);
   useEffect(() => {
-    console.log("taskData", taskData);
     let isMounted = true;
     const fetchProject = async (isMounted) => {
-      if (taskData?.project_id && !isSubtask) {
+      if (initialValues?.project_id) {
         try {
-          const projectDetails = await getProjectById(taskData.project_id);
+          const projectDetails = await getProjectById(initialValues.project_id);
           if (isMounted && projectDetails) {
             setProjectDetail(projectDetails);
           }
@@ -207,20 +158,16 @@ useEffect(() => {
       }
     };
 
-    if (taskData?.project_id) {
+    if (initialValues?.project_id) {
       fetchProject(isMounted);
     }
     return () => {
       isMounted = false;
     };
-  }, [taskData?.project_id]);
+  }, [initialValues?.project_id]);
 
   const handleDelete = () => {
     setIsDeleteModalOpen(true);
-  };
-
-  const editDetails = () => {
-    setIsEditCardOpen(true);
   };
 
   const confirmDelete = async () => {
@@ -248,28 +195,6 @@ useEffect(() => {
       console.error("Error updating task status:", error);
     }
   };
-
-  const toggleEditMode = () => {
-    setIsEditMode(!isEditMode);
-  };
-
-   const handleFieldChange = async (fieldName, value, props) => {
-     try {
-       // Update field value
-       await props.setFieldValue(fieldName, value);
-
-       // Auto-submit only if not a subtask
-       if (!isSubtask) {
-         await props.submitForm();
-       }
-
-       // Always set edit mode to true when field changes
-       setIsEditMode(true);
-     } catch (error) {
-       console.error(`Error updating ${fieldName}:`, error);
-       toast.error(`Failed to update ${fieldName}`);
-     }
-   };
 
   const handleSubmit = async (values) => {
     debugger;
@@ -344,8 +269,6 @@ useEffect(() => {
       setIsLoading(false);
     }
   };
-
-
 
   return (
     <>
@@ -425,7 +348,7 @@ useEffect(() => {
                         value={props.values.description}
                         name={"description"}
                       />
-                      <div className="grid grid-cols-2 gap-4 my-8">
+                      <div className="grid grid-cols-2 gap-5 my-8">
                         <DateInput
                           name="end_date"
                           label="Due Date"
@@ -501,7 +424,7 @@ useEffect(() => {
                             props.setFieldValue("relation", value);
                             setIsEditMode(true);
                           }}
-                          projectId={taskData.project_id}
+                          projectId={props.values.project_id}
                           taskId={taskId}
                           editMode={true}
                           error={props.errors.relation}
@@ -523,7 +446,15 @@ useEffect(() => {
                           label="Custom Fields"
                           orientation="horizontal"
                           value={
-                            <Button variant="outline" className="w-full">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-full"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setOpenProjectCustomFields(true);
+                              }}
+                            >
                               Add
                             </Button>
                           }
@@ -541,8 +472,6 @@ useEffect(() => {
                                 projectId={projectId}
                                 taskId={taskId}
                                 boardId={boardId}
-                                employees={employees}
-                                projectDetail={projectDetail}
                               />
                             }
                           />
@@ -592,25 +521,29 @@ useEffect(() => {
                   </div>
                   <div className="flex justify-between">
                     <div className="flex justify-start gap-2 mt-4 border-t border-gray-200">
-                      <Button
-                        variant="outline"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          archeiveTask();
-                        }}
-                      >
-                        <CiEdit className="mr-2" />
-                        Archive
-                      </Button>
-                      <Button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleDelete();
-                        }}
-                      >
-                        <Trash className="mr-2" size={16} />
-                        Delete
-                      </Button>
+                      {taskId && (
+                        <>
+                          <Button
+                            variant="outline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              archeiveTask();
+                            }}
+                          >
+                            <CiEdit className="mr-2" />
+                            Archive
+                          </Button>
+                          <Button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDelete();
+                            }}
+                          >
+                            <Trash className="mr-2" size={16} />
+                            Delete
+                          </Button>
+                        </>
+                      )}
                     </div>
                     {isEditMode && (
                       <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
@@ -621,7 +554,9 @@ useEffect(() => {
                         >
                           Cancel
                         </Button>
-                        <Button type="submit">Save Changes</Button>
+                        <Button type="submit">{`${
+                          taskId ? "Save Changes" : "Add Task"
+                        }`}</Button>
                       </div>
                     )}
                   </div>
@@ -638,10 +573,17 @@ useEffect(() => {
         title="Are you sure?"
         description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
       />
+      {openProjectCustomFields && projectDetail && (
+        <ProjectCustomFields
+          projectId={projectId}
+          projectData={projectDetail}
+          isOpen={openProjectCustomFields}
+          setIsOpen={setOpenProjectCustomFields}
+        />
+      )}
     </>
   );
 };
-
 
 const mapStateToProps = (state) => ({
   employees: state.emp.employees,

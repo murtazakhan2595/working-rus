@@ -131,7 +131,10 @@ export default function CheckList({ items = [], onChange, editMode = true }) {
                         variant="ghost"
                         size="sm"
                         className="text-primary hover:text-primary p-0"
-                        onClick={() => handleEdit(index)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleEdit(index);
+                        }}
                       >
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
@@ -142,7 +145,10 @@ export default function CheckList({ items = [], onChange, editMode = true }) {
                       variant="ghost"
                       size="sm"
                       className="text-destructive hover:text-destructive p-0"
-                      onClick={() => handleRemove(index)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleRemove(index);
+                      }}
                     >
                       <X className="h-4 w-4" />
                       <span className="sr-only">Remove</span>

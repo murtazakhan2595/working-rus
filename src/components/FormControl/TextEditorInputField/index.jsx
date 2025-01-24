@@ -30,7 +30,7 @@ const TextEditorButtonClassName = (active) => {
 
 function TextEditorInputField({
   handleSubmitContent,
-  content = "",
+  content = " ",
   upload,
   setContent = () => {},
   setAttachments = () => {},
@@ -43,19 +43,21 @@ function TextEditorInputField({
   const editorRef = useRef(null);
 
   useEffect(() => {
-    const editor = document.getElementById("editor");
+    if (content) {
+      const editor = document.getElementById("editor");
 
-    if (editor) {
-      // Set the desired content
-      editor.innerHTML = content ?? "Enter Description Here";
+      if (editor) {
+        // Set the desired content
+        editor.innerHTML = content;
 
-      // Create and dispatch an input event to simulate user input
-      const inputEvent = new Event("input", {
-        bubbles: true,
-        cancelable: true,
-      });
+        // Create and dispatch an input event to simulate user input
+        const inputEvent = new Event("input", {
+          bubbles: true,
+          cancelable: true,
+        });
 
-      editor.dispatchEvent(inputEvent);
+        editor.dispatchEvent(inputEvent);
+      }
     }
   }, []);
 
@@ -250,7 +252,7 @@ function TextEditorInputField({
         ></div>
         <div className="flex flex-row justify-between border-t border-neutral-500 p-2 ">
           <div className="flex items-center text-sm text-gray-900 font-inter">
-            {content.replace(/<[^>]*>/g, "").length} characters
+            {content ? content.replace(/<[^>]*>/g, "").length : 0} characters
           </div>
           {handleSubmitContent && (
             <div className="flex justify-end">

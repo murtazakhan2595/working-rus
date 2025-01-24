@@ -18,6 +18,7 @@ export default function Subtasks({
 }) {
   const [isAddSubtaskOpen, setIsAddSubtaskOpen] = useState(false);
   const [subtasks, setSubtasks] = useState([]);
+  const [viewSubtasks, setViewSubtasks] = useState(null);
   const navigate = useNavigate();
 
   console.log("Opening subtask dialog", { projectId, boardId, projectDetail });
@@ -77,7 +78,7 @@ export default function Subtasks({
   };
   console.log("Subtasks", subtasks);
   return (
-    <div className="space-y-4">
+    <div>
       {/* List existing subtasks */}
       <div className="space-y-2">
         {subtasks.map((subtask) => (
@@ -90,7 +91,9 @@ export default function Subtasks({
                 subtask.id,
                 `/project-board/${projectId}/${subtask.id}`
               );
-              navigate(`/project-board/${projectId}/${subtask.id}`);
+              //navigate(`/project-board/${projectId}/${subtask.id}`);
+              setViewSubtasks(subtask.id);
+              setIsAddSubtaskOpen(true);
             }}
           >
             <span>{subtask.name}</span>
@@ -104,25 +107,28 @@ export default function Subtasks({
         variant="outline"
         size="sm"
         className="w-full"
-        onClick={handleAddSubtask}
+        onClick={(e) => {
+          e.preventDefault();
+          handleAddSubtask();
+        }}
       >
         <Plus className="w-4 h-4 mr-2" />
         Add Subtask
       </Button>
 
       {/* Subtask Creation Dialog */}
-      {isAddSubtaskOpen && projectDetail && (
+      {isAddSubtaskOpen && (
         <TaskEditAddViewDetails
-          isOpen={isAddSubtaskOpen}
+        taskId={viewSubtasks}
+        isOpen={isAddSubtaskOpen}
           setIsOpen={(value) => {
+            setViewSubtasks(null);
             setIsAddSubtaskOpen(value);
           }}
           projectId={projectId}
           boardId={boardId}
-          employees={employees}
           onTaskCreated={handleSubtaskCreated}
           isSubtask={true}
-          projDetailsBySubtask={projectDetail}
         />
       )}
     </div>
