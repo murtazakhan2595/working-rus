@@ -89,10 +89,6 @@ const TaskEditAddViewDetails = ({
   const [refreshComments, setRefreshComments] = useState(false);
   const employees = useSelector((state) => state.emp.employees);
  
-
-  const TaskLabelList = getLabelDropdownList(
-    useSelector((state) => state.task_managment.task_labels)
-  );
 useEffect(() => {
   console.group("TaskEditAddViewDetails State Values");
   console.log({
@@ -594,26 +590,6 @@ useEffect(() => {
                       </div>
                     </div>
                   </div>
-
-                  {/* Render form or view based on isEditMode */}
-                  {/* <div className="grid grid-cols-2 w-full gap-4">
-                    <LeftColumn
-                      taskData={taskData}
-                      taskId={taskId}
-                      userId={userId}
-                      employees={employees}
-                      props={props}
-                      editingField={editingField}
-                      setEditingField={setEditingField}
-                      setRefreshComments={setRefreshComments}
-                      refreshComments={refreshComments}
-                      projectId={projectId}
-                      boardId={boardId}
-                      projectDetail={projectDetail}
-                      isSubtask={isSubtask}
-                    />
-                  </div> */}
-
                   <div className="flex justify-between">
                     <div className="flex justify-start gap-2 mt-4 border-t border-gray-200">
                       <Button
@@ -663,96 +639,6 @@ useEffect(() => {
         description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
       />
     </>
-  );
-};
-
-const LeftColumn = ({
-  taskData,
-  employees,
-  props,
-  editingField,
-  setEditingField,
-  taskId,
-  userId,
-  setRefreshComments,
-  refreshComments,
-  projectId,
-  boardId,
-  projectDetail,
-  isSubtask
-}) => {
-  
-  return (
-    <div>
-      {/* Replace the existing DetailBox for description with this */}
-      {/* <DetailBox
-        label="Description"
-        value={
-          editingField === "description" ? (
-            <TextAreaInput
-              name="description"
-              error={props.errors.description}
-              touch={props.touched.description}
-              value={props.values.description}
-              required
-              maxRows={6}
-              onChange={(field, value) => {
-                props.setFieldValue(field, value);
-              }}
-              onBlur={async (e) => {
-                await props.setFieldTouched("description", true);
-                setEditingField(null);
-                if (
-                  !isSubtask &&
-                  props.values.description !== taskData.description
-                ) {
-                  await props.submitForm();
-                }
-              }}
-              autoFocus
-            />
-          ) : (
-            <span
-              className="cursor-pointer hover:bg-gray-50 px-2 py-1 rounded block"
-              onDoubleClick={() => setEditingField("description")}
-              dangerouslySetInnerHTML={{
-                __html: taskData?.description,
-              }}
-            />
-          )
-        }
-        orientation="horizontal"
-      /> */}
-      {/* <DetailBox
-        label="Attachments"
-        value={
-          <Attachments
-            attachmentSelected={props.values.attachment}
-            onChange={(attachment) =>
-              handleFieldChange("attachment", attachment, props)
-            }
-          />
-        }
-      /> */}
-      {!isSubtask && (
-        <DetailBox
-          label={"Subtasks"}
-          value={
-            <Subtasks
-              items={props.values.subtasks || []}
-              onChange={(items) => {
-                props.setFieldValue("subtasks", items);
-              }}
-              projectId={projectId}
-              taskId={taskId}
-              boardId={boardId}
-              employees={employees}
-              projectDetail={projectDetail}
-            />
-          }
-        />
-      )}
-    </div>
   );
 };
 
