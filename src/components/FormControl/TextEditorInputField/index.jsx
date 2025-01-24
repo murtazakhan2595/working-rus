@@ -30,7 +30,7 @@ const TextEditorButtonClassName = (active) => {
 
 function TextEditorInputField({
   handleSubmitContent,
-  content = "",
+  content = " ",
   upload,
   setContent = () => {},
   setAttachments = () => {},
@@ -41,6 +41,26 @@ function TextEditorInputField({
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const editorRef = useRef(null);
+
+  useEffect(() => {
+    if (content) {
+      const editor = document.getElementById("editor");
+
+      if (editor) {
+        // Set the desired content
+        editor.innerHTML = content;
+
+        // Create and dispatch an input event to simulate user input
+        const inputEvent = new Event("input", {
+          bubbles: true,
+          cancelable: true,
+        });
+
+        editor.dispatchEvent(inputEvent);
+      }
+    }
+  }, []);
+
   const execCommand = useCallback((command, value = null) => {
     editorRef.current.focus(); // Ensure the editor is focused before executing commands
     document.execCommand(command, false, value);
@@ -222,6 +242,7 @@ function TextEditorInputField({
         )}
         <div
           ref={editorRef}
+          id="editor"
           className="w-full min-h-[150px] p-4 focus:outline-none rounded-b-lg textEditorText"
           contentEditable
           onInput={(e) => {
@@ -231,7 +252,7 @@ function TextEditorInputField({
         ></div>
         <div className="flex flex-row justify-between border-t border-neutral-500 p-2 ">
           <div className="flex items-center text-sm text-gray-900 font-inter">
-            {content.replace(/<[^>]*>/g, "").length} characters
+            {content?.replace(/<[^>]*>/g, "")?.length} characters
           </div>
           {handleSubmitContent && (
             <div className="flex justify-end">

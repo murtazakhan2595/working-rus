@@ -70,6 +70,13 @@ export const statusOptions = [
   { value: "Done", label: "Done" },
 ];
 
+export const CustomeFieldTypeOption = [
+  { value: "INPUT_TEXT", label: "Text" },
+  { value: "INPUT_NUMBER", label: "Number" },
+  { value: "SELECT_DROPDOWN", label: "Dropdown" },
+  { value: "CHECKBOX", label: "Checkbox" },
+];
+
 export const dateFormats = [
   { label: "YYYY-MM-DD", value: "%Y-%m-%d" },
   { label: "DD-MM-YYYY", value: "%d-%m-%Y" },

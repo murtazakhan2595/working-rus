@@ -4,13 +4,13 @@ import { Plus, Search } from "lucide-react";
 import { TaskDetailBox } from "app/modules/TaskManagment/Sections";
 import { Checkbox } from "src/@/components/ui/checkbox";
 import { Button } from "components/ui/button";
-import { calculateTotalCount } from "utils/renderValues";
+import { calculateTotalCount, calculatePercentage } from "utils/renderValues";
 import { Input } from "components/ui/input";
 import { deleteTaskCheckListItem } from "app/hooks/taskManagment";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
 
-export default function CheckList({ items, onChange, editMode = true }) {
+export default function CheckList({ items = [], onChange, editMode = true }) {
   const [newItem, setNewItem] = useState("");
 
   const handleEdit = (index) => {
@@ -48,7 +48,10 @@ export default function CheckList({ items, onChange, editMode = true }) {
       )
     );
   };
-  const checkCompleted = calculateTotalCount(items || [], "is_completed", true);
+  const checkCompleted = calculatePercentage(
+    calculateTotalCount(items || [], "is_completed", true),
+    items.length
+  );
   return (
     <DetailCard detailCardTitle="" classNames="mt-0">
       <div className="flex justify-between gap-4 flex-col">
@@ -128,7 +131,10 @@ export default function CheckList({ items, onChange, editMode = true }) {
                         variant="ghost"
                         size="sm"
                         className="text-primary hover:text-primary p-0"
-                        onClick={() => handleEdit(index)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleEdit(index);
+                        }}
                       >
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
@@ -139,7 +145,10 @@ export default function CheckList({ items, onChange, editMode = true }) {
                       variant="ghost"
                       size="sm"
                       className="text-destructive hover:text-destructive p-0"
-                      onClick={() => handleRemove(index)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleRemove(index);
+                      }}
                     >
                       <X className="h-4 w-4" />
                       <span className="sr-only">Remove</span>

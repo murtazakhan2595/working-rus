@@ -214,10 +214,17 @@ export const GetShiftTotalHours = (shiftStartTime, shiftEndTime, period) => {
   }
 };
 
-export const calculatePercentage = (stats) => {
+export const calculatePercentage1 = (stats) => {
   if (!stats) return 0;
   const total = parseInt(stats.Present) || 0 + parseInt(stats.Absent) || 0;
   return total > 0 ? (parseInt(stats.Present || 0) / total) * 100 : 0;
+};
+
+export const calculatePercentage = (count = 0, total = 0) => {
+  count = parseFloat(count) || 0;
+  total = parseFloat(total) || 0;
+  if (count > total || total === 0) return 0;
+  return (count / total) * 100;
 };
 
 export const calculateTotal = (data, label) => {

@@ -34,12 +34,13 @@ import TaskShare from "app/modules/TaskManagment/Sections/TaskShare";
 import {
   InputTaskTitle,
   InputTaskDescription,
+  ProjectCustomFields,
 } from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails/Sections";
 import { CommentsInputField } from "components/FormControl";
 import { useSelector } from "react-redux";
 import { Formik, Form } from "formik";
 import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
-import { CardTypes } from "app/utils/Types/TaskManagment";
+import { Task } from "app/utils/Types/TaskManagment";
 import { DateInput } from "components/FormControl";
 import { SelectComponent, CoverFileUpload } from "components/FormControl";
 import { Assignee } from "app/modules/TaskManagment/Sections";
@@ -51,6 +52,9 @@ import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementDa
 import { addSubtask } from "app/hooks/taskManagment";
 import { Calendar, Flag } from "lucide-react";
 import { getDropdownList, getLabelDropdownList } from "utils/Lists";
+import Subtasks from "../../Sections/SubTask";
+import { createActivity } from "app/hooks/taskManagment";
+import { trackTaskActivities } from "./Sections/activityHelper";
 
 const TaskEditAddViewDetails = ({
   taskId,
@@ -60,24 +64,55 @@ const TaskEditAddViewDetails = ({
   projectId,
   boardId,
   Projects = [],
+  isSubtask = false, // New prop to indicate if this is a subtask
+  onTaskCreated, // New callback for when task/subtask is created
 }) => {
+  const userId = useSelector((state) => state.user.userProfile.id);
   const [isLoading, setIsLoading] = useState(false);
-  const [taskData, setTaskData] = useState({});
-  const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const [BoardList, setBoardList] = useState([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [editingField, setEditingField] = useState(null);
-  const [comments, setComments] = useState([]);
+  const [openProjectCustomFields, setOpenProjectCustomFields] = useState(false);
   const formRef = useRef();
-  const [initialValues, setInitialValues] = useState(CardTypes);
+  const [initialValues, setInitialValues] = useState({ Task });
   const [isEditMode, setIsEditMode] = useState(false);
   const [projectDetail, setProjectDetail] = useState(null);
   const [refreshComments, setRefreshComments] = useState(false);
   const employees = useSelector((state) => state.emp.employees);
-  const userId = useSelector((state) => state.user.userProfile.id);
-  const TaskLabelList = getLabelDropdownList(
-    useSelector((state) => state.task_managment.task_labels)
-  );
+ 
+// useEffect(() => {
+//   console.group("TaskEditAddViewDetails State Values");
+//   console.log({
+//     isLoading,
+//     taskData,
+//     isEditCardOpen,
+//     BoardList,
+//     isDeleteModalOpen,
+//     editingField,
+//     comments,
+//     formRef: formRef.current,
+//     initialValues,
+//     isEditMode,
+//     projectDetail,
+//     refreshComments,
+//     employees,
+//     userId,
+//   });
+//   console.groupEnd();
+// }, [
+//   isLoading,
+//   taskData,
+//   isEditCardOpen,
+//   BoardList,
+//   isDeleteModalOpen,
+//   editingField,
+//   comments,
+//   initialValues,
+//   isEditMode,
+//   projectDetail,
+//   refreshComments,
+//   employees,
+//   userId,
+// ]);
 
   const fetchBoardListByProjectId = async (isMounted, projectID) => {
     if (projectID) {
@@ -115,9 +150,7 @@ const TaskEditAddViewDetails = ({
       if (!cardDetails) {
         throw new Error("Card details not found.");
       }
-
       if (isMounted) {
-        setTaskData(cardDetails);
         setInitialValues(cardDetails);
         setIsLoading(false);
       }
@@ -134,6 +167,13 @@ const TaskEditAddViewDetails = ({
   useEffect(() => {
     let isMounted = true;
     if (taskId) fetchTaskData(isMounted);
+    else
+      setInitialValues({
+        ...initialValues,
+        assigned_by: userId,
+        project_id: projectId || null,
+        board_id: boardId || null,
+      });
     return () => {
       isMounted = false;
     };
@@ -141,9 +181,9 @@ const TaskEditAddViewDetails = ({
   useEffect(() => {
     let isMounted = true;
     const fetchProject = async (isMounted) => {
-      if (taskData?.project_id) {
+      if (initialValues?.project_id) {
         try {
-          const projectDetails = await getProjectById(taskData.project_id);
+          const projectDetails = await getProjectById(initialValues.project_id);
           if (isMounted && projectDetails) {
             setProjectDetail(projectDetails);
           }
@@ -153,20 +193,16 @@ const TaskEditAddViewDetails = ({
       }
     };
 
-    if (taskData?.project_id) {
+    if (initialValues?.project_id) {
       fetchProject(isMounted);
     }
     return () => {
       isMounted = false;
     };
-  }, [taskData?.project_id]);
+  }, [initialValues?.project_id]);
 
   const handleDelete = () => {
     setIsDeleteModalOpen(true);
-  };
-
-  const editDetails = () => {
-    setIsEditCardOpen(true);
   };
 
   const confirmDelete = async () => {
@@ -196,7 +232,7 @@ const TaskEditAddViewDetails = ({
   };
 
   const handleSubmit = async (values) => {
-    debugger
+    debugger;
     console.log("Form values:", values);
     setIsLoading(true);
     try {
@@ -233,17 +269,30 @@ const TaskEditAddViewDetails = ({
 
       const response = await addTask(finalData, taskId);
       if (response) {
-        await Promise.all(
-          (values.subtasks || []).map((subtask) =>
-            addSubtask({
-              ...subtask,
-              tasks: response.id,
-            })
-          )
+        // Notify parent component of the new task
+        if (onTaskCreated && isSubtask) {
+          console.log("onTaskCreated", response);
+          onTaskCreated(response.data);
+        }
+        //  setShowSuccessMessage(true);
+        // Track activities
+        await trackTaskActivities(
+          values,
+          taskId ? initialValues : null,
+          taskId || response.id,
+          userId,
+          createActivity
         );
-        toast.success("Task Updated Successfully!");
-        fetchTaskData(true);
-        reloadData();
+        toast.success(
+          isSubtask
+            ? "Subtask Created Successfully!"
+            : `Task ${!taskId ? "Updated" : "Added"} Successfully!`,
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+        taskId && fetchTaskData(true);
+        !isSubtask && reloadData();
       }
     } catch (error) {
       console.error("Error updating task:", error);
@@ -298,21 +347,19 @@ const TaskEditAddViewDetails = ({
                           }}
                         />
                       )}
-                      {!boardId && (
-                        <SelectComponent
-                          name="board_id"
-                          options={BoardList}
-                          showLabel={false}
-                          error={props.errors.board_id}
-                          touch={props.touched.board_id}
-                          value={props.values.board_id}
-                          placeholder="Select Project List"
-                          onChange={(field, value) => {
-                            setIsEditMode(true);
-                            props.setFieldValue(field, value);
-                          }}
-                        />
-                      )}
+                      <SelectComponent
+                        name="board_id"
+                        options={BoardList}
+                        showLabel={false}
+                        error={props.errors.board_id}
+                        touch={props.touched.board_id}
+                        value={props.values.board_id}
+                        placeholder="Select Project List"
+                        onChange={(field, value) => {
+                          setIsEditMode(true);
+                          props.setFieldValue(field, value);
+                        }}
+                      />
                     </div>
                   </div>
                   <div className="flex justify-between gap-5">
@@ -336,7 +383,7 @@ const TaskEditAddViewDetails = ({
                         value={props.values.description}
                         name={"description"}
                       />
-                      <div className="grid grid-cols-2 gap-4 my-8">
+                      <div className="grid grid-cols-2 gap-5 my-8">
                         <DateInput
                           name="end_date"
                           label="Due Date"
@@ -412,7 +459,7 @@ const TaskEditAddViewDetails = ({
                             props.setFieldValue("relation", value);
                             setIsEditMode(true);
                           }}
-                          projectId={taskData.project_id}
+                          projectId={props.values.project_id}
                           taskId={taskId}
                           editMode={true}
                           error={props.errors.relation}
@@ -434,20 +481,36 @@ const TaskEditAddViewDetails = ({
                           label="Custom Fields"
                           orientation="horizontal"
                           value={
-                            <Button variant="outline" className="w-full">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="w-full"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setOpenProjectCustomFields(true);
+                              }}
+                            >
                               Add
                             </Button>
                           }
                         />
-                        <DetailBox
-                          label="Sub Task"
-                          orientation="horizontal"
-                          value={
-                            <Button variant="outline" className="w-full">
-                              Add
-                            </Button>
-                          }
-                        />
+                        {!isSubtask && (
+                          <DetailBox
+                            label={"Subtasks"}
+                            orientation="horizontal"
+                            value={
+                              <Subtasks
+                                items={props.values.subtasks || []}
+                                onChange={(items) => {
+                                  props.setFieldValue("subtasks", items);
+                                }}
+                                projectId={projectId}
+                                taskId={taskId}
+                                boardId={boardId}
+                              />
+                            }
+                          />
+                        )}
                       </div>
                     </div>
                     <div className="flex flex-col w-[45%] gap-3">
@@ -456,13 +519,12 @@ const TaskEditAddViewDetails = ({
                           {"Checklist"}
                         </div>
                         <CheckList
-                            items={props.values.task_checklist || []}
-                            onChange={(items) => {
-                              debugger
-                              props.setFieldValue("task_checklist", items);
-                              setIsEditMode(true);
-                            }}
-                          />
+                          items={props.values.task_checklist || []}
+                          onChange={(items) => {
+                            props.setFieldValue("task_checklist", items);
+                            setIsEditMode(true);
+                          }}
+                        />
                       </div>
                       <DetailBox
                         label="Comments"
@@ -492,28 +554,44 @@ const TaskEditAddViewDetails = ({
                       </div>
                     </div>
                   </div>
-
-                  <div className="flex justify-between mt-8">
+                  <div className="flex justify-between">
                     <div className="flex justify-start gap-2 mt-4 border-t border-gray-200">
-                      <Button variant="outline" onClick={archeiveTask}>
-                        <CiEdit className="mr-2" />
-                        Archive
-                      </Button>
-                      <Button onClick={handleDelete}>
-                        <Trash className="mr-2" size={16} />
-                        Delete
-                      </Button>
+                      {taskId && (
+                        <>
+                          <Button
+                            variant="outline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              archeiveTask();
+                            }}
+                          >
+                            <CiEdit className="mr-2" />
+                            Archive
+                          </Button>
+                          <Button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDelete();
+                            }}
+                          >
+                            <Trash className="mr-2" size={16} />
+                            Delete
+                          </Button>
+                        </>
+                      )}
                     </div>
                     {isEditMode && (
                       <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
                         <Button
                           type="button"
                           variant="outline"
-                        //  onClick={toggleEditMode}
+                          //  onClick={toggleEditMode}
                         >
                           Cancel
                         </Button>
-                        <Button type="submit">Save Changes</Button>
+                        <Button type="submit">{`${
+                          taskId ? "Save Changes" : "Add Task"
+                        }`}</Button>
                       </div>
                     )}
                   </div>
@@ -523,7 +601,6 @@ const TaskEditAddViewDetails = ({
           )}
         </DialogContent>
       </Dialog>
-
       <AlertDialogue
         isOpen={isDeleteModalOpen}
         setIsOpen={setIsDeleteModalOpen}
@@ -531,6 +608,14 @@ const TaskEditAddViewDetails = ({
         title="Are you sure?"
         description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
       />
+      {openProjectCustomFields && projectDetail && (
+        <ProjectCustomFields
+          projectId={projectId}
+          projectData={projectDetail}
+          isOpen={openProjectCustomFields}
+          setIsOpen={setOpenProjectCustomFields}
+        />
+      )}
     </>
   );
 };
