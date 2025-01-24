@@ -11,8 +11,7 @@ const InputTaskTitle = ({
   const [editingMode, setEditingMode] = useState(false);
   return (
     <div onClick={()=>setEditingMode(true)}>
-      {editingMode ? (
-        <div className="min-w-[400px]">
+      {(editingMode || !value) ? (
           <TextInput
             name="name"
             error={error}
@@ -32,7 +31,6 @@ const InputTaskTitle = ({
             }}
             autoFocus
           />
-        </div>
       ) : (
         <div
           className="border border-neutral-500 font-semibold text-neutral-1200 cursor-pointer p-2 rounded"

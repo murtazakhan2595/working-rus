@@ -75,10 +75,7 @@ const TaskEditAddViewDetails = ({
   const [refreshComments, setRefreshComments] = useState(false);
   const employees = useSelector((state) => state.emp.employees);
   const userId = useSelector((state) => state.user.userProfile.id);
-  const TaskLabelList = getLabelDropdownList(
-    useSelector((state) => state.task_managment.task_labels)
-  );
-
+  
   const fetchBoardListByProjectId = async (isMounted, projectID) => {
     if (projectID) {
       try {
@@ -134,6 +131,13 @@ const TaskEditAddViewDetails = ({
   useEffect(() => {
     let isMounted = true;
     if (taskId) fetchTaskData(isMounted);
+    else
+      setInitialValues({
+        ...initialValues,
+        assigned_by: userId,
+        project_id: projectId || null,
+        board_id: boardId || null,
+      });
     return () => {
       isMounted = false;
     };
@@ -298,21 +302,19 @@ const TaskEditAddViewDetails = ({
                           }}
                         />
                       )}
-                      {!boardId && (
-                        <SelectComponent
-                          name="board_id"
-                          options={BoardList}
-                          showLabel={false}
-                          error={props.errors.board_id}
-                          touch={props.touched.board_id}
-                          value={props.values.board_id}
-                          placeholder="Select Project List"
-                          onChange={(field, value) => {
-                            setIsEditMode(true);
-                            props.setFieldValue(field, value);
-                          }}
-                        />
-                      )}
+                      <SelectComponent
+                        name="board_id"
+                        options={BoardList}
+                        showLabel={false}
+                        error={props.errors.board_id}
+                        touch={props.touched.board_id}
+                        value={props.values.board_id}
+                        placeholder="Select Project List"
+                        onChange={(field, value) => {
+                          setIsEditMode(true);
+                          props.setFieldValue(field, value);
+                        }}
+                      />
                     </div>
                   </div>
                   <div className="flex justify-between gap-5">
@@ -458,7 +460,6 @@ const TaskEditAddViewDetails = ({
                         <CheckList
                           items={props.values.task_checklist || []}
                           onChange={(items) => {
-                            debugger;
                             props.setFieldValue("task_checklist", items);
                             setIsEditMode(true);
                           }}
@@ -505,7 +506,12 @@ const TaskEditAddViewDetails = ({
                         <CiEdit className="mr-2" />
                         Archive
                       </Button>
-                      <Button onClick={handleDelete}>
+                      <Button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleDelete();
+                        }}
+                      >
                         <Trash className="mr-2" size={16} />
                         Delete
                       </Button>
@@ -529,7 +535,6 @@ const TaskEditAddViewDetails = ({
           )}
         </DialogContent>
       </Dialog>
-
       <AlertDialogue
         isOpen={isDeleteModalOpen}
         setIsOpen={setIsDeleteModalOpen}

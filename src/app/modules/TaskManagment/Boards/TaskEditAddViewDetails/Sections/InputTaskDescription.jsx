@@ -6,8 +6,7 @@ const InputTaskDescription = ({ onChange, error, value, touched, name }) => {
   const [editingMode, setEditingMode] = useState(false);
   return (
     <div onClick={() => setEditingMode(true)}>
-      {editingMode ? (
-        <div className="min-w-[400px]">
+      {(editingMode || !value) ? (
           <TextEditorInputField
             content={value}
             setContent={(value) => {
@@ -20,7 +19,6 @@ const InputTaskDescription = ({ onChange, error, value, touched, name }) => {
             //   return await handleAddCommentAttachment(file);
             // }}
           />
-        </div>
       ) : (
         <div
           className="cursor-pointer border border-neutral-500 text-neutral-1200 p-2 rounded block min-h-[150px]"

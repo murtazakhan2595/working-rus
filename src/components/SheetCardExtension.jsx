@@ -1,7 +1,6 @@
 import { ChevronLeft, ChevronRight, Paperclip } from "lucide-react";
 import moment from "moment";
 import React from "react";
-import { getFileSizeInKB } from "utils/fileUtils";
 import { Button } from "./ui/button";
 import AlertDialogue from "./ui/AlertDialogue";
 

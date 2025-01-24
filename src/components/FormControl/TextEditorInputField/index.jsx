@@ -41,6 +41,24 @@ function TextEditorInputField({
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const editorRef = useRef(null);
+
+  useEffect(() => {
+    const editor = document.getElementById("editor");
+
+    if (editor) {
+      // Set the desired content
+      editor.innerHTML = content ?? "Enter Description Here";
+
+      // Create and dispatch an input event to simulate user input
+      const inputEvent = new Event("input", {
+        bubbles: true,
+        cancelable: true,
+      });
+
+      editor.dispatchEvent(inputEvent);
+    }
+  }, []);
+
   const execCommand = useCallback((command, value = null) => {
     editorRef.current.focus(); // Ensure the editor is focused before executing commands
     document.execCommand(command, false, value);
@@ -222,6 +240,7 @@ function TextEditorInputField({
         )}
         <div
           ref={editorRef}
+          id="editor"
           className="w-full min-h-[150px] p-4 focus:outline-none rounded-b-lg textEditorText"
           contentEditable
           onInput={(e) => {

@@ -12,7 +12,7 @@ import {
   CustomDropdown,
 } from "app/modules/TaskManagment/Sections";
 import { AddNewListModel} from "./Sections";
-import CreateCardModal from "./CreateCardModal";
+import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import TaskCard from "./Task";
 import { ArrowLeft, LayoutGrid, LayoutList, MoreVertical } from "lucide-react";
 import { DateInput } from "components/FormControl";
@@ -299,15 +299,14 @@ const TaskColumn = ({
       </div>
 
       {openCreateCard && (
-        <CreateCardModal
-          onClose={() => {
-            setOpenCreateCard(false);
-            fetchData(true);
-          }}
+        <TaskEditAddViewDetails
           boardId={board.id}
           isOpen={openCreateCard}
           projectId={projectId}
-          setIsOpen={setOpenCreateCard}
+          setIsOpen={() => {
+            setOpenCreateCard(false);
+            fetchData(true);
+          }}
           reloadData={() => fetchData(true)}
         />
       )}
