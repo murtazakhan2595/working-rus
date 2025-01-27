@@ -222,7 +222,7 @@ const addBoard = async (payload) => {
   }
 };
 const addProject = async (payload, projectID) => {
-  debugger
+  debugger;
   const formData = new FormData();
   if (projectID) formData.append("id", projectID);
   if (payload.name) formData.append("name", payload.name || "");
@@ -230,8 +230,15 @@ const addProject = async (payload, projectID) => {
     formData.append("description", payload.description || "");
   if (payload.start_date)
     formData.append("start_date", payload.start_date || "");
-  if (payload.custom_fields && payload.custom_fields.length > 0)
-    formData.append("custom_fields", payload.custom_fields);
+  if (
+    payload.custom_fields &&
+    payload.custom_fields.length > 0 &&
+    Array.isArray(payload.custom_fields)
+  ) {
+    payload.custom_fields.forEach((custom_field) =>
+      formData.append("custom_fields", custom_field)
+    );
+  }
   // Append each member to formData
   if (Array.isArray(payload.project_members)) {
     payload.project_members.forEach((member) =>
