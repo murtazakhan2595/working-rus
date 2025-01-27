@@ -24,7 +24,7 @@ import {
 } from "app/modules/TaskManagment/Sections";
 import { TextInput, TextAreaInput } from "components/FormControl";
 import { Button } from "components/ui/button";
-import { Trash } from "lucide-react";
+import { ArrowLeft, Trash } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { PageLoader } from "components";
@@ -232,8 +232,7 @@ const TaskEditAddViewDetails = ({
   };
 
   const handleSubmit = async (values) => {
-    debugger;
-    console.log("Form values:", values);
+    console.log("values", values);
     setIsLoading(true);
     try {
       const getAttachmentFileIds = async (files) => {
@@ -266,12 +265,16 @@ const TaskEditAddViewDetails = ({
         attachment: await getAttachmentFileIds(values.attachment || []),
         task_checklist: await getCheckListIds(values.task_checklist || []),
       });
-
+      if (!finalData.hasOwnProperty("status") || finalData.status === null) {
+        finalData.status = "TODO";
+      }
+      if(isSubtask){
+        finalData.is_subtask = true;
+      }
       const response = await addTask(finalData, taskId);
       if (response) {
         // Notify parent component of the new task
         if (onTaskCreated && isSubtask) {
-          console.log("onTaskCreated", response);
           onTaskCreated(response.data);
         }
         //  setShowSuccessMessage(true);
@@ -286,13 +289,14 @@ const TaskEditAddViewDetails = ({
         toast.success(
           isSubtask
             ? "Subtask Created Successfully!"
-            : `Task ${!taskId ? "Updated" : "Added"} Successfully!`,
+            : `Task ${taskId ? "Updated" : "Added"} Successfully!`,
           {
             position: toast.POSITION.TOP_RIGHT,
           }
         );
         taskId && fetchTaskData(true);
         !isSubtask && reloadData();
+        setIsOpen(false)
       }
     } catch (error) {
       console.error("Error updating task:", error);
@@ -326,8 +330,14 @@ const TaskEditAddViewDetails = ({
               {(props) => (
                 <Form>
                   <div className="flex justify-between mb-6">
-                    <div className="text-md font-semibold dark:text-slate-50">
-                      Add/Edit Details
+                    <div className="text-md font-semibold dark:text-slate-50 flex items-center">
+                      {isSubtask &&<ArrowLeft
+                        className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm cursor-pointer"
+                        onClick={() => setIsOpen(false)}
+                      />}
+                      {isSubtask
+                        ? " Add/Edit Subtask Details"
+                        : " Add/Edit Details"}
                     </div>
                     <div className="flex justify-end gap-2">
                       {!projectId && (
@@ -459,39 +469,43 @@ const TaskEditAddViewDetails = ({
                             }}
                           />
                         </div>
-                        <TaskRelation
-                          relationsList={props.values.relation || []}
-                          onChange={(value) => {
-                            props.setFieldValue("relation", value);
-                            setIsEditMode(true);
-                          }}
-                          projectId={props.values.project_id}
-                          taskId={taskId}
-                          editMode={true}
-                          error={props.errors.relation}
-                          touch={props.touched.relation}
-                        />
-                        <SelectComponent
-                          name="status"
-                          options={TaskStatus}
-                          label={"Status"}
-                          error={props.errors.status}
-                          touch={props.touched.status}
-                          value={props.values.status}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                            setIsEditMode(true);
-                          }}
-                          icon={<Flag size={15} strokeWidth={2} />}
-                        />
+                        {!isSubtask && (
+                          <TaskRelation
+                            relationsList={props.values.relation || []}
+                            onChange={(value) => {
+                              props.setFieldValue("relation", value);
+                              setIsEditMode(true);
+                            }}
+                            projectId={props.values.project_id}
+                            taskId={taskId}
+                            editMode={true}
+                            error={props.errors.relation}
+                            touch={props.touched.relation}
+                          />
+                        )}
+                        {!isSubtask && (
+                          <SelectComponent
+                            name="status"
+                            options={TaskStatus}
+                            label={"Status"}
+                            error={props.errors.status}
+                            touch={props.touched.status}
+                            value={props.values.status}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                              setIsEditMode(true);
+                            }}
+                            icon={<Flag size={15} strokeWidth={2} />}
+                          />
+                        )}
                       </div>
                       <Attachments
                         attachmentSelected={props.values.attachment || []}
                         onChange={async (attachment) => {
-                          console.log("Attachments updated:", attachment);
                           await props.setFieldValue("attachment", attachment);
                           setIsEditMode(true);
                         }}
+                        acceptedFileTypes=".pdf,.png,.jpg,.jpeg"
                         error={props.errors.relation}
                         touch={props.touched.relation}
                       />
@@ -604,7 +618,9 @@ const TaskEditAddViewDetails = ({
                         <Button
                           type="button"
                           variant="outline"
-                          //  onClick={toggleEditMode}
+                          onClick={() => {
+                            setIsOpen(false);
+                          }}
                         >
                           Cancel
                         </Button>

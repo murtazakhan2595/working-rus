@@ -161,7 +161,9 @@ const TaskColumn = ({
 
   const fetchData = async (isMounted) => {
     try {
-      const taskData = await getAllTasks({ filterData });
+      const taskData = await getAllTasks({
+        filterData: { ...filterData, is_subtask:[false] },
+      });
       if (taskData && isMounted) {
         console.log(taskData)
         setTasks(taskData);
