@@ -268,6 +268,9 @@ const TaskEditAddViewDetails = ({
       if (!finalData.hasOwnProperty("status") || finalData.status === null) {
         finalData.status = "TODO";
       }
+      if(isSubtask){
+        finalData.is_subtask = true;
+      }
       const response = await addTask(finalData, taskId);
       if (response) {
         // Notify parent component of the new task
@@ -293,6 +296,7 @@ const TaskEditAddViewDetails = ({
         );
         taskId && fetchTaskData(true);
         !isSubtask && reloadData();
+        setIsOpen(false)
       }
     } catch (error) {
       console.error("Error updating task:", error);
@@ -453,7 +457,7 @@ const TaskEditAddViewDetails = ({
                             }}
                           />
                         </div>
-                        <TaskRelation
+                       {!isSubtask  &&<TaskRelation
                           relationsList={props.values.relation || []}
                           onChange={(value) => {
                             props.setFieldValue("relation", value);
@@ -464,7 +468,7 @@ const TaskEditAddViewDetails = ({
                           editMode={true}
                           error={props.errors.relation}
                           touch={props.touched.relation}
-                        />
+                        />}
                       </div>
                       <Attachments
                         attachmentSelected={props.values.attachment || []}
@@ -585,7 +589,9 @@ const TaskEditAddViewDetails = ({
                         <Button
                           type="button"
                           variant="outline"
-                          //  onClick={toggleEditMode}
+                          onClick={()=>{
+                            setIsOpen(false);
+                          }}
                         >
                           Cancel
                         </Button>
