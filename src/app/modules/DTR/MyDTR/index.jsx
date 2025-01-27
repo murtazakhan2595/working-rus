@@ -20,7 +20,6 @@ import {
   SaveUpdateLogTime,
   DailyReportList,
 } from "app/modules/DTR/MyDTR/Screens";
-import { ViewOptions } from "app/modules/DTR/Sections";
 import { getDtr, getLogTimeList } from "app/hooks/dtr";
 import { useSelector } from "react-redux";
 import { calculateTotal, calculateTotalCount } from "utils/renderValues";
@@ -28,6 +27,7 @@ import { GetDateRange } from "utils/renderValues";
 import { calculateTaskCount } from "utils/renderValues";
 import { PageLoader } from "components";
 import { DateRangeFilter } from "components/FormControl";
+import ViewOptions from "components/ViewOtions";
 
 const MyDtr = () => {
   const userProfile = useSelector((state) => state.user.userProfile);
