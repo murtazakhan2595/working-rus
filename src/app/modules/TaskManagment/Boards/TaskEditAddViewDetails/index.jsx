@@ -465,6 +465,19 @@ const TaskEditAddViewDetails = ({
                           error={props.errors.relation}
                           touch={props.touched.relation}
                         />
+                        <SelectComponent
+                          name="status"
+                          options={TaskStatus}
+                          label={"Status"}
+                          error={props.errors.status}
+                          touch={props.touched.status}
+                          value={props.values.status}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                            setIsEditMode(true);
+                          }}
+                          icon={<Flag size={15} strokeWidth={2} />}
+                        />
                       </div>
                       <Attachments
                         attachmentSelected={props.values.attachment || []}
