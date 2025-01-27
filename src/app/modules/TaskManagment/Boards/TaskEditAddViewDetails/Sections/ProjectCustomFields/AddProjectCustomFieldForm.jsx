@@ -16,7 +16,7 @@ import { Trash, GripHorizontal } from "lucide-react";
 import { addProject } from "app/hooks/taskManagment";
 import { toast } from "react-toastify";
 
-const AddProjectCustomFieldForm = ({ setIsOpen, isOpen, projectId, projectData }) => {
+const AddProjectCustomFieldForm = ({ setIsOpen, isOpen, projectId, projectData,reloadData=()=>{} }) => {
   const [isLoading, setIsLoading] = useState(false);
   const customFieldsFormRef = useRef();
   const [initialValues, setInitialValues] = useState(CustomField);
@@ -78,6 +78,7 @@ const AddProjectCustomFieldForm = ({ setIsOpen, isOpen, projectId, projectData }
         projectId
       );
       if (response) {
+        reloadData(projectId);
         setIsOpen(false);
         toast.success("Custom Field Added successfully");
       }

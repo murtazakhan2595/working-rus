@@ -17,6 +17,7 @@ const ProjectCustomFields = ({
   isOpen,
   projectId,
   projectData = {},
+  reloadData=()=>{},
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const CustomFields = projectData.custom_fields || [];
@@ -105,6 +106,7 @@ const ProjectCustomFields = ({
               projectData={projectData}
               isOpen={openProjectCustomFieldsForm}
               setIsOpen={setOpenProjectCustomFieldsForm}
+              reloadData={reloadData}
             />
           )}
         </div>
