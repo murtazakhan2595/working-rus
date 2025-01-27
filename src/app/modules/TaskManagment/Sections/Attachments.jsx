@@ -19,6 +19,7 @@ export default function Attachments({
   error,
   touch,
   editMode = true,
+  acceptedFileTypes = ".pdf",
 }) {
   const fileInputRef = useRef(null);
   const removeFile = async (file, id) => {
@@ -58,7 +59,7 @@ export default function Attachments({
       {((attachmentSelected && attachmentSelected.length < maxAttachments) ||
         !maxAttachments) && (
         <CoverFileUpload
-          acceptType=".pdf"
+          acceptType={acceptedFileTypes}
           name={`attachment`}
           //value={props.values.attachment}
           onChange={(field, value) => {

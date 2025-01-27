@@ -232,8 +232,7 @@ const TaskEditAddViewDetails = ({
   };
 
   const handleSubmit = async (values) => {
-    debugger;
-    console.log("Form values:", values);
+    console.log("values", values);
     setIsLoading(true);
     try {
       const getAttachmentFileIds = async (files) => {
@@ -266,12 +265,13 @@ const TaskEditAddViewDetails = ({
         attachment: await getAttachmentFileIds(values.attachment || []),
         task_checklist: await getCheckListIds(values.task_checklist || []),
       });
-
+      if (!finalData.hasOwnProperty("status") || finalData.status === null) {
+        finalData.status = "TODO";
+      }
       const response = await addTask(finalData, taskId);
       if (response) {
         // Notify parent component of the new task
         if (onTaskCreated && isSubtask) {
-          console.log("onTaskCreated", response);
           onTaskCreated(response.data);
         }
         //  setShowSuccessMessage(true);
@@ -286,7 +286,7 @@ const TaskEditAddViewDetails = ({
         toast.success(
           isSubtask
             ? "Subtask Created Successfully!"
-            : `Task ${!taskId ? "Updated" : "Added"} Successfully!`,
+            : `Task ${taskId ? "Updated" : "Added"} Successfully!`,
           {
             position: toast.POSITION.TOP_RIGHT,
           }
@@ -482,10 +482,10 @@ const TaskEditAddViewDetails = ({
                       <Attachments
                         attachmentSelected={props.values.attachment || []}
                         onChange={async (attachment) => {
-                          console.log("Attachments updated:", attachment);
                           await props.setFieldValue("attachment", attachment);
                           setIsEditMode(true);
                         }}
+                        acceptedFileTypes=".pdf,.png,.jpg,.jpeg"
                         error={props.errors.relation}
                         touch={props.touched.relation}
                       />
