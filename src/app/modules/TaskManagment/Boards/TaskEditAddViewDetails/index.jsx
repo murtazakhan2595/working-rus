@@ -378,6 +378,12 @@ const TaskEditAddViewDetails = ({
                           props.setFieldValue(field, value);
                           setIsEditMode(true);
                         }}
+                        setAttachment={async (attachment) => {
+                          console.log("Attachments updated:", attachment);
+                          await props.setFieldValue("attachment", attachment);
+                          setIsEditMode(true);
+                        }}
+                        attachments={props.values.attachment || []}
                         error={props.errors.description}
                         touched={props.touched.description}
                         value={props.values.description}

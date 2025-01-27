@@ -114,7 +114,7 @@ const BoardListView = ({ filterData, projectId }) => {
             setViewTask(null);
             fetchData(true);
           }}
-          reloadData={fetchData}
+          reloadData={()=>fetchData(true)}
         />
       )}
     </>

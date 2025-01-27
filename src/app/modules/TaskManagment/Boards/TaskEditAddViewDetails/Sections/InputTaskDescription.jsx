@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { TextInput } from "components/FormControl";
 import { TextEditorInputField } from "components/FormControl";
 
-const InputTaskDescription = ({ onChange, error, value, touched, name }) => {
+const InputTaskDescription = ({ onChange, error, value, setAttachment, name, attachments }) => {
   const [editingMode, setEditingMode] = useState(false);
   return (
     <div onClick={() => setEditingMode(true)}>
@@ -13,8 +13,8 @@ const InputTaskDescription = ({ onChange, error, value, touched, name }) => {
                 onChange(name, value);
               }}
               name={name}
-            // setAttachments={setCommentAttachment}
-            // attachments={commentAttachments}
+             setAttachments={setAttachment}
+             attachments={attachments}
             // removeAttachment={removeFile}
             // upload={async (file) => {
             //   return await handleAddCommentAttachment(file);
