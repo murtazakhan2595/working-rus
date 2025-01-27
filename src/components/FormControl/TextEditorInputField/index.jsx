@@ -14,13 +14,6 @@ import { AiOutlinePaperClip } from "react-icons/ai";
 import AttachmentUI from "components/ui/AttachmentUI";
 import "./style.css";
 
-const TextEditorStyle = [
-  "BOLD",
-  "ITALIC",
-  "UNDERLINE",
-  "UNORDEREDLIST",
-  "ORDEREDLIST",
-];
 const TextEditorIconClassName = "w-4 h-4";
 const TextEditorButtonClassName = (active) => {
   return `hover:bg-white hover:text-primary ${
@@ -36,6 +29,7 @@ function TextEditorInputField({
   setAttachments = () => {},
   removeAttachment = () => {},
   attachments = [],
+  name = "editor",
 }) {
   const fileInputRef = useRef(null);
   const [showLinkInput, setShowLinkInput] = useState(false);
@@ -44,7 +38,7 @@ function TextEditorInputField({
 
   useEffect(() => {
     if (content) {
-      const editor = document.getElementById("editor");
+      const editor = document.getElementById(name);
 
       if (editor) {
         // Set the desired content
@@ -242,7 +236,7 @@ function TextEditorInputField({
         )}
         <div
           ref={editorRef}
-          id="editor"
+          id={name}
           className="w-full min-h-[150px] p-4 focus:outline-none rounded-b-lg textEditorText"
           contentEditable
           onInput={(e) => {
@@ -278,12 +272,13 @@ function TextEditorButtons({ command, icon, handleCommand }) {
   return (
     <Button
       variant="ghost"
-      onClick={() => {
+      onClick={(e) => {
+        e.preventDefault();
         handleCommand(command);
-        setActive(true);
+        setActive(!active);
       }}
       className={`hover:bg-white hover:text-primary ${
-        active ? "active:text-primary" : ""
+        active ? "text-primary" : ""
       } p-1`}
     >
       {icon}

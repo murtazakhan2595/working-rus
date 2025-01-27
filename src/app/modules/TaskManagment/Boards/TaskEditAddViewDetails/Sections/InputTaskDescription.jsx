@@ -12,6 +12,7 @@ const InputTaskDescription = ({ onChange, error, value, touched, name }) => {
             setContent={(value) => {
                 onChange(name, value);
               }}
+              name={name}
             // setAttachments={setCommentAttachment}
             // attachments={commentAttachments}
             // removeAttachment={removeFile}
