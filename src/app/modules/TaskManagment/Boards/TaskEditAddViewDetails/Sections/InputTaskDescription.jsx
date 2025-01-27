@@ -12,6 +12,7 @@ const InputTaskDescription = ({ onChange, error, value, touched, name }) => {
             setContent={(value) => {
                 onChange(name, value);
               }}
+              name={name}
             // setAttachments={setCommentAttachment}
             // attachments={commentAttachments}
             // removeAttachment={removeFile}
@@ -21,7 +22,7 @@ const InputTaskDescription = ({ onChange, error, value, touched, name }) => {
           />
       ) : (
         <div
-          className="cursor-pointer border border-neutral-500 text-neutral-1200 p-2 rounded block min-h-[150px]"
+          className="cursor-pointer border border-neutral-500 text-neutral-1200 p-2 rounded block min-h-[150px] max-h-[350px] overflow-y-scroll textEditorText"
           //   onDoubleClick={() => setEditingField("description")}
           dangerouslySetInnerHTML={{
             __html: value,
