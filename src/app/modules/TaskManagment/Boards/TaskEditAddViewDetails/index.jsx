@@ -485,6 +485,7 @@ const TaskEditAddViewDetails = ({
                           await props.setFieldValue("attachment", attachment);
                           setIsEditMode(true);
                         }}
+                        acceptedFileTypes=".pdf,.png,.jpg,.jpeg"
                         error={props.errors.relation}
                         touch={props.touched.relation}
                       />
