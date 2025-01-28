@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { CiEdit } from "react-icons/ci";
-import { PriorityList, TaskStatus } from "data/Data";
 import moment from "moment";
 import { connect } from "react-redux";
-// import EditCard from "./EditCard";
-
 import { getTaskById, getAllBoards } from "app/hooks/taskManagment";
 import { toast } from "react-toastify";
 import { deleteTask } from "app/hooks/taskManagment";
@@ -15,43 +11,37 @@ import {
   DialogTitle,
 } from "src/@/components/ui/dialog.jsx";
 import {
-  Labels,
-  MembersList,
   TaskComments,
   CheckList,
   Attachments,
-  TaskRelation,
 } from "app/modules/TaskManagment/Sections";
-import { TextInput, TextAreaInput } from "components/FormControl";
 import { Button } from "components/ui/button";
-import { ArrowLeft, Trash } from "lucide-react";
+import { ArrowLeft, Trash ,Archive} from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { PageLoader } from "components";
-import { CheckBoxInput } from "components/FormControl";
 import { addTask } from "app/hooks/taskManagment";
-import TaskShare from "app/modules/TaskManagment/Sections/TaskShare";
 import {
   InputTaskTitle,
   InputTaskDescription,
   ProjectCustomFields,
+  InputTaskDetailFields,
 } from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails/Sections";
 import { CommentsInputField } from "components/FormControl";
 import { useSelector } from "react-redux";
 import { Formik, Form } from "formik";
 import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
 import { Task } from "app/utils/Types/TaskManagment";
-import { DateInput } from "components/FormControl";
 import { SelectComponent, CoverFileUpload } from "components/FormControl";
-import { Assignee } from "app/modules/TaskManagment/Sections";
 import { getProjectById } from "app/hooks/taskManagment";
-import { errorClassName } from "components/FormControl";
 import { addAttachments } from "app/hooks/taskManagment";
-import { addTaskCheckListItem } from "app/hooks/taskManagment";
+import {
+  addTaskCheckListItem,
+  getAllCustomFields,
+} from "app/hooks/taskManagment";
 import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
-import { addSubtask } from "app/hooks/taskManagment";
-import { Calendar, Flag } from "lucide-react";
-import { getDropdownList, getLabelDropdownList } from "utils/Lists";
+import { Plus } from "lucide-react";
+import { getDropdownList, convertJSONArrayToStringsArray } from "utils/Lists";
 import Subtasks from "../../Sections/SubTask";
 import { createActivity } from "app/hooks/taskManagment";
 import { trackTaskActivities } from "./Sections/activityHelper";
@@ -70,49 +60,41 @@ const TaskEditAddViewDetails = ({
   const userId = useSelector((state) => state.user.userProfile.id);
   const [isLoading, setIsLoading] = useState(false);
   const [BoardList, setBoardList] = useState([]);
+  const [CustomFields, setCustomFields] = useState([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [openProjectCustomFields, setOpenProjectCustomFields] = useState(false);
   const formRef = useRef();
-  const [initialValues, setInitialValues] = useState({ Task });
+  const [initialValues, setInitialValues] = useState(Task);
   const [isEditMode, setIsEditMode] = useState(false);
   const [projectDetail, setProjectDetail] = useState(null);
   const [refreshComments, setRefreshComments] = useState(false);
   const employees = useSelector((state) => state.emp.employees);
- 
-// useEffect(() => {
-//   console.group("TaskEditAddViewDetails State Values");
-//   console.log({
-//     isLoading,
-//     taskData,
-//     isEditCardOpen,
-//     BoardList,
-//     isDeleteModalOpen,
-//     editingField,
-//     comments,
-//     formRef: formRef.current,
-//     initialValues,
-//     isEditMode,
-//     projectDetail,
-//     refreshComments,
-//     employees,
-//     userId,
-//   });
-//   console.groupEnd();
-// }, [
-//   isLoading,
-//   taskData,
-//   isEditCardOpen,
-//   BoardList,
-//   isDeleteModalOpen,
-//   editingField,
-//   comments,
-//   initialValues,
-//   isEditMode,
-//   projectDetail,
-//   refreshComments,
-//   employees,
-//   userId,
-// ]);
+
+  const fetchCustomFieldsByProjectId = async (isMounted, projectID) => {
+    if (projectID) {
+      try {
+        // Fetch card details
+        const customFields = await getAllCustomFields(projectID);
+        if (!customFields) {
+          throw new Error("Custom Field not found.");
+        }
+        if (isMounted) {
+          setCustomFields(customFields.results);
+        }
+      } catch (error) {
+        console.error("Error fetching board list:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (initialValues.project_id)
+      fetchCustomFieldsByProjectId(isMounted, initialValues.project_id);
+    return () => {
+      isMounted = false;
+    };
+  }, [initialValues.project_id]);
 
   const fetchBoardListByProjectId = async (isMounted, projectID) => {
     if (projectID) {
@@ -213,15 +195,9 @@ const TaskEditAddViewDetails = ({
     setIsDeleteModalOpen(false);
   };
 
-  const archeiveTask = async (name, value, values) => {
+  const archeiveTask = async () => {
     try {
-      const newStatus = "ARCHIVED";
-      const response = await addTask(
-        {
-          status: newStatus,
-        },
-        taskId
-      );
+      const response = await addTask({ is_archive: true }, taskId);
       if (response) {
         setIsOpen(false);
         toast.success("Task Archeived updated successfully");
@@ -230,22 +206,30 @@ const TaskEditAddViewDetails = ({
       console.error("Error updating task status:", error);
     }
   };
+  const uploadAttachmentFile = async (file) => {
+    debugger;
+    try {
+      if (file.attachments instanceof File) {
+        const response = await addAttachments(
+          { attachments: file.attachments },
+          file.id
+        );
+        return response;
+      }
+      return file;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleSubmit = async (values) => {
-    console.log("values", values);
     setIsLoading(true);
     try {
       const getAttachmentFileIds = async (files) => {
         return await Promise.all(
           files.map(async (file) => {
-            if (file.attachments instanceof File) {
-              const response = await addAttachments(
-                { attachments: file.attachments },
-                file.id
-              );
-              return response.id;
-            }
-            return file.id;
+            const response = await uploadAttachmentFile(file);
+            return response.id;
           })
         );
       };
@@ -264,11 +248,16 @@ const TaskEditAddViewDetails = ({
         start_date: moment(new Date()).format("YYYY-MM-DD"),
         attachment: await getAttachmentFileIds(values.attachment || []),
         task_checklist: await getCheckListIds(values.task_checklist || []),
+        custom_fields: convertJSONArrayToStringsArray(
+          values.custom_fields,
+          "field",
+          "value"
+        ),
       });
       if (!finalData.hasOwnProperty("status") || finalData.status === null) {
         finalData.status = "TODO";
       }
-      if(isSubtask){
+      if (isSubtask) {
         finalData.is_subtask = true;
       }
       const response = await addTask(finalData, taskId);
@@ -296,7 +285,7 @@ const TaskEditAddViewDetails = ({
         );
         taskId && fetchTaskData(true);
         !isSubtask && reloadData();
-        setIsOpen(false)
+        setIsOpen(false);
       }
     } catch (error) {
       console.error("Error updating task:", error);
@@ -331,15 +320,42 @@ const TaskEditAddViewDetails = ({
                 <Form>
                   <div className="flex justify-between mb-6">
                     <div className="text-md font-semibold dark:text-slate-50 flex items-center">
-                      {isSubtask &&<ArrowLeft
-                        className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm cursor-pointer"
-                        onClick={() => setIsOpen(false)}
-                      />}
+                      {isSubtask && (
+                        <ArrowLeft
+                          className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm cursor-pointer"
+                          onClick={() => setIsOpen(false)}
+                        />
+                      )}
                       {isSubtask
                         ? " Add/Edit Subtask Details"
                         : " Add/Edit Details"}
                     </div>
                     <div className="flex justify-end gap-2">
+                      {taskId && (
+                        <Button
+                          size="sm"
+                          variant="continue"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            archeiveTask();
+                          }}
+                        >
+                          Move to Archive
+                          <Archive size={15} className="ml-1"/>
+                        </Button>
+                      )}
+                      {/* {taskId && (
+                        <Button
+                        size='sm'
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleDelete();
+                          }}
+                        >
+                          <Trash className="mr-2" size={16} />
+                          Delete
+                        </Button>
+                      )} */}
                       {!projectId && (
                         <SelectComponent
                           name="project_id"
@@ -389,7 +405,6 @@ const TaskEditAddViewDetails = ({
                           setIsEditMode(true);
                         }}
                         setAttachment={async (attachment) => {
-                          console.log("Attachments updated:", attachment);
                           await props.setFieldValue("attachment", attachment);
                           setIsEditMode(true);
                         }}
@@ -397,108 +412,25 @@ const TaskEditAddViewDetails = ({
                         error={props.errors.description}
                         touched={props.touched.description}
                         value={props.values.description}
+                        uploadAttachmentFile={async (file) => {
+                          return await uploadAttachmentFile(file);
+                        }}
                         name={"description"}
                       />
-                      <div className="grid grid-cols-2 gap-5 my-8">
-                        <DateInput
-                          name="end_date"
-                          label="Due Date"
-                          error={props.errors.end_date}
-                          touch={props.touched.end_date}
-                          value={props.values.end_date}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                            setIsEditMode(true);
-                          }}
-                        />
-                        <SelectComponent
-                          name="priority"
-                          options={PriorityList}
-                          label={"Priority"}
-                          error={props.errors.priority}
-                          touch={props.touched.priority}
-                          value={props.values.priority}
-                          onChange={(field, value) => {
-                            props.setFieldValue(field, value);
-                            setIsEditMode(true);
-                          }}
-                          icon={<Flag size={15} strokeWidth={2} />}
-                        />
-                        <Labels
-                          labelsSelected={props.values.label || []}
-                          onSelectedLabelsChange={(value) => {
-                            props.setFieldValue("label", value);
-                            setIsEditMode(true);
-                          }}
-                          editMode={true} // Always in edit mode
-                        />
-                        <Assignee
-                          assigneeSelected={props.values.assigned_to || []}
-                          employees={employees}
-                          onChange={(value) => {
-                            props.setFieldValue("assigned_to", value);
-                            setIsEditMode(true);
-                          }}
-                          editMode={true} // Always in edit mode
-                          projectMembers={projectDetail?.project_members || []}
-                          error={props.errors.assigned_to}
-                          touch={props.touched.assigned_to}
-                          value={props.values.assigned_to}
-                        />
-                        <div className="grid grid-cols-2 gap-2">
-                          <TextInput
-                            name="estimated_time"
-                            error={props.errors.estimated_time}
-                            label={"Estimated Time"}
-                            touch={props.touched.estimated_time}
-                            value={props.values.estimated_time}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                              setIsEditMode(true);
-                            }}
-                          />
-                          <TextInput
-                            label={"Time Spent"}
-                            name="consumed_time"
-                            error={props.errors.consumed_time}
-                            touch={props.touched.consumed_time}
-                            value={props.values.consumed_time}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                              setIsEditMode(true);
-                            }}
-                          />
-                        </div>
-                        {!isSubtask && (
-                          <TaskRelation
-                            relationsList={props.values.relation || []}
-                            onChange={(value) => {
-                              props.setFieldValue("relation", value);
-                              setIsEditMode(true);
-                            }}
-                            projectId={props.values.project_id}
-                            taskId={taskId}
-                            editMode={true}
-                            error={props.errors.relation}
-                            touch={props.touched.relation}
-                          />
-                        )}
-                        {!isSubtask && (
-                          <SelectComponent
-                            name="status"
-                            options={TaskStatus}
-                            label={"Status"}
-                            error={props.errors.status}
-                            touch={props.touched.status}
-                            value={props.values.status}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                              setIsEditMode(true);
-                            }}
-                            icon={<Flag size={15} strokeWidth={2} />}
-                          />
-                        )}
-                      </div>
+                      <InputTaskDetailFields
+                        errors={props.errors}
+                        touched={props.touched}
+                        taskData={props.values}
+                        isSubtask={isSubtask}
+                        taskId={taskId}
+                        projectDetail={projectDetail}
+                        onChange={(field, value) => {
+                          props.setFieldValue(field, value);
+                          setIsEditMode(true);
+                        }}
+                        employees={employees}
+                        CustomFields={CustomFields || []}
+                      />
                       <Attachments
                         attachmentSelected={props.values.attachment || []}
                         onChange={async (attachment) => {
@@ -515,7 +447,7 @@ const TaskEditAddViewDetails = ({
                           orientation="horizontal"
                           value={
                             <Button
-                              variant="outline"
+                              variant="continue"
                               size="sm"
                               className="w-full"
                               onClick={(e) => {
@@ -523,7 +455,7 @@ const TaskEditAddViewDetails = ({
                                 setOpenProjectCustomFields(true);
                               }}
                             >
-                              Add
+                              <Plus className="w-4 h-4 mr-2" /> Add
                             </Button>
                           }
                         />
@@ -587,49 +519,23 @@ const TaskEditAddViewDetails = ({
                       </div>
                     </div>
                   </div>
-                  <div className="flex justify-between">
-                    <div className="flex justify-start gap-2 mt-4 border-t border-gray-200">
-                      {taskId && (
-                        <>
-                          <Button
-                            variant="outline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              archeiveTask();
-                            }}
-                          >
-                            <CiEdit className="mr-2" />
-                            Archive
-                          </Button>
-                          <Button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleDelete();
-                            }}
-                          >
-                            <Trash className="mr-2" size={16} />
-                            Delete
-                          </Button>
-                        </>
-                      )}
+
+                  {isEditMode && (
+                    <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
+                      <Button
+                        type="button"
+                        variant="continue"
+                        onClick={() => {
+                          setIsOpen(false);
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit">{`${
+                        taskId ? "Save Changes" : "Add Task"
+                      }`}</Button>
                     </div>
-                    {isEditMode && (
-                      <div className="flex justify-end gap-2 mt-4 border-t border-gray-200">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                            setIsOpen(false);
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button type="submit">{`${
-                          taskId ? "Save Changes" : "Add Task"
-                        }`}</Button>
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </Form>
               )}
             </Formik>
@@ -649,6 +555,7 @@ const TaskEditAddViewDetails = ({
           projectData={projectDetail}
           isOpen={openProjectCustomFields}
           setIsOpen={setOpenProjectCustomFields}
+          reloadData={(projectId) => fetchCustomFieldsByProjectId(projectId)}
         />
       )}
     </>

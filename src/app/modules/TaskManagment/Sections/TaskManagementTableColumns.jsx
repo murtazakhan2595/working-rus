@@ -14,7 +14,7 @@ export const ProjectBoardColumn = [
           <h3 className="text-base font-bold text-capitalize">{cell}</h3>
           {row?.description && (
             <p
-              className="text-sm leading-5 truncate-text text-neutral-1000"
+              className="text-sm leading-5 truncate-text text-neutral-1000 image-none"
               style={{ maxHeight: "100px" }}
             >
               <span

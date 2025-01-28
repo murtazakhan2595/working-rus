@@ -11,7 +11,7 @@ import { RenderProject } from "./Sections";
 import { ArrowLeft } from "lucide-react";
 import { DateInput } from "components/FormControl";
 import { Button } from "components/ui/button";
-import { FilterInput,SortingFilters } from "components/FormControl";
+import { FilterInput, SortingFilters } from "components/FormControl";
 import { PriorityList, TaskSortingFilters } from "data/Data";
 import { getProjectById, addProject } from "app/hooks/taskManagment";
 import { AlignRight } from "lucide-react";
@@ -24,9 +24,11 @@ const Board = ({ TaskLabelList }) => {
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(
     viewTaskId ? true : false
   );
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({
+    is_subtask: [false],
+    is_archive: [false],
+  });
   const [projectData, setProjectData] = useState(null);
-  const [searchTaskQuery, setSearchTaskQuery] = useState("");
   const [activeView, setActiveView] = useState("grid");
 
   const fetchData = async (isMounted) => {
@@ -66,13 +68,9 @@ const Board = ({ TaskLabelList }) => {
     filterValue,
     filterValueStatus = true
   ) => {
-    if (filterName === "name") {
-      setSearchTaskQuery(filterValue);
-      return;
-    }
     const updatedFilters = { ...filterData };
 
-    if (filterName === "end_date") {
+    if (filterName === "end_date" || filterName === "name") {
       if (filterValue) {
         // Update end_date with the provided value
         updatedFilters[filterName] = filterValue;
@@ -80,7 +78,6 @@ const Board = ({ TaskLabelList }) => {
         // Remove end_date if the filterValue is null
         delete updatedFilters[filterName];
       }
-      console.log(updatedFilters);
       // Update the filter data
       setFilterData(updatedFilters);
       return;
@@ -105,7 +102,6 @@ const Board = ({ TaskLabelList }) => {
         delete updatedFilters[filterName];
       }
     }
-    console.log(updatedFilters);
     // Update the filter data
     setFilterData(updatedFilters);
     return;
@@ -183,7 +179,7 @@ const Board = ({ TaskLabelList }) => {
         </div>
       </div>
       {activeView === "grid" ? (
-        <BoardGridView filterData={filterData} projectId={projectId} searchTaskQuery ={searchTaskQuery}/>
+        <BoardGridView filterData={filterData} projectId={projectId} />
       ) : (
         <BoardListView filterData={filterData} projectId={projectId} />
       )}

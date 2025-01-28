@@ -1,6 +1,6 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
-import { getEmployeeCustomList, handleLogout } from "./general";
+import { getEmployeeCustomList, HandleLogout } from "./general";
 import moment from "moment";
 
 const baseUrl = initialState.baseUrl;
@@ -33,7 +33,7 @@ const getEmployeePayroll = async (payload) => {
   } catch (error) {
     console.error("Error fetching payroll data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return { results: [], count: 0 };
   }
@@ -53,7 +53,7 @@ const getEmployeePayrollById = async (id) => {
   } catch (error) {
     console.error("Error fetching payroll data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -87,7 +87,7 @@ const saveSalaryRevision = async (payload) => {
   } catch (error) {
     console.error("Error saving salary revision:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -128,7 +128,7 @@ const getSalaryRevision = async (payload) => {
   } catch (error) {
     console.error("Error fetching salary revision data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -148,7 +148,7 @@ const getSalaryRevisionByPayrollId = async (id) => {
   } catch (error) {
     console.error("Error fetching salary revision data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -166,7 +166,7 @@ const deleteSalaryRevision = async (id) => {
   } catch (error) {
     console.error("Error deleting salary revision data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -227,7 +227,7 @@ const getEmployeeEarnAndDeduction = async (payload) => {
   } catch (error) {
     console.error("Error fetching salary revision data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -252,7 +252,7 @@ const getPayslip = async (payload) => {
   } catch (error) {
     console.error("Error fetching salary revision data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -273,7 +273,7 @@ const updateSalaryRevisionStatus = async (payload) => {
   } catch (error) {
     console.error("Error updating salary revision status:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -298,7 +298,7 @@ const getEarnAndDeduction = async (payload) => {
   } catch (error) {
     console.error("Error fetching earn and deduction data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -312,7 +312,7 @@ const getSalarySetupData = async (payload) => {
   } catch (err) {
     console.error("Error fetching salary setup data:", err);
     if (err?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -346,7 +346,7 @@ const saveEarnAndDeduction = async (payload) => {
   } catch (error) {
     console.error("Error saving earn and deduction data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -364,7 +364,7 @@ const deleteEarnAndDeduction = async (id) => {
   } catch (error) {
     console.error("Error deleting earn and deduction data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -398,7 +398,7 @@ const saveEmployeePayroll = async (payload) => {
   } catch (error) {
     console.error("Error saving employee payroll data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -432,7 +432,7 @@ const saveEmployeeEarnDeduction = async (payload) => {
   } catch (error) {
     console.error("Error saving employee earn and deduction data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -466,7 +466,7 @@ const saveReimbursement = async (payload) => {
   } catch (error) {
     console.error("Error saving reimbursement data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -492,7 +492,7 @@ const getReimbursement = async (payload, options) => {
   } catch (error) {
     console.error("Error fetching reimbursement data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -509,7 +509,7 @@ const deleteReimbursement = async (id) => {
   } catch (error) {
     console.error("Error deleting reimbursement data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -526,7 +526,7 @@ const getPayrollSummary = async () => {
   } catch (error) {
     console.error("Error fetching payroll summary data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -564,7 +564,7 @@ const savePayrun = async (payload) => {
   } catch (error) {
     console.error("Error saving payrun data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -588,7 +588,7 @@ const getPayun = async (payload) => {
   } catch (error) {
     console.error("Error fetching payrun data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -607,7 +607,7 @@ const getPayslipByID = async (id) => {
   } catch (error) {
     console.error("Error fetching payslip data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -641,7 +641,7 @@ const saveFinalSettlement = async (payload) => {
   } catch (error) {
     console.error("Error saving final settlement data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -665,7 +665,7 @@ const getEmpPayrolDetails = async (payload) => {
   } catch (error) {
     console.error("Error fetching payroll data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return { results: [], count: 0 };
   }
@@ -690,7 +690,7 @@ const getFinalSettlement = async (payload) => {
   } catch (error) {
     console.error("Error fetching final settlement data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -710,7 +710,7 @@ const getPayRunById = async (id) => {
   } catch (error) {
     console.error("Error fetching payrun data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }

@@ -76,7 +76,6 @@ export default function Subtasks({
       toast.error("Failed to update subtask relationship");
     }
   };
-  console.log("Subtasks", subtasks);
   return (
     <div>
       {/* List existing subtasks */}
@@ -104,7 +103,7 @@ export default function Subtasks({
       {/* Add Subtask Button */}
       <Button
         type="button"
-        variant="outline"
+        variant="continue"
         size="sm"
         className="w-full"
         onClick={(e) => {

@@ -1,4 +1,12 @@
 import InputTaskTitle from "./InputTaskTitle";
 import InputTaskDescription from "./InputTaskDescription";
 import ProjectCustomFields from "./ProjectCustomFields";
-export { InputTaskTitle, InputTaskDescription, ProjectCustomFields };
+import InputTaskDetailFields from "./InputTaskDetailFields";
+import InputTaskCustomFields from './InputTaskCustomFields';
+export {
+  InputTaskTitle,
+  InputTaskDescription,
+  ProjectCustomFields,
+  InputTaskDetailFields,
+  InputTaskCustomFields,
+};

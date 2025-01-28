@@ -1,6 +1,6 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
-import { handleLogout } from "./general";
+import { HandleLogout} from "./general";
 import moment from "moment";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -30,7 +30,7 @@ const getDtr = async (payload) => {
   } catch (error) {
     console.error("Error fetching dtr list:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -52,7 +52,7 @@ const getLogTimeList = async (payload) => {
   } catch (error) {
     console.error("Error fetching dtr list:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -89,7 +89,7 @@ const getTaskDetailsFromLogtime = async (logTimeList) => {
     } catch (error) {
       console.error("Error fetching task details:", error.message);
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
     }
     return null; // Return null for failed or invalid cases
@@ -135,7 +135,7 @@ const addLogTime = async (payload, id = null) => {
   } catch (error) {
     // Handle errors
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding/updating LogTime:", error);
     return false;
@@ -163,7 +163,7 @@ const addUpdateDTR = async (payload, id = null) => {
   } catch (error) {
     // Handle errors
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding/updating LogTime:", error);
     return false;

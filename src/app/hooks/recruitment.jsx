@@ -1,7 +1,7 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { JobDetail } from "app/utils/Types/Recruitment.jsx";
-import { handleLogout } from "./general";
+import { HandleLogout} from "./general";
 import { toast } from "react-toastify";
 
 const baseUrl = initialState.baseUrl;
@@ -35,7 +35,7 @@ export const fetchJobPosts = async (filterData = {}, sortData = "asc", options =
     return response.data;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching posts:", error);
     throw error;
@@ -91,7 +91,7 @@ const getJobApplications = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching applicants:", error);
     return false;
@@ -119,7 +119,7 @@ export const updateApplicationStatus = async (selectedApplicant, option) => {
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error updating application status:", error);
     throw error;
@@ -141,7 +141,7 @@ export const downloadCV = async (cv, name) => {
     document.body.removeChild(link);
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching CV:", error);
     throw error;
@@ -156,7 +156,7 @@ export const addJob = async (baseUrl, values, token) => {
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding job:", error);
     throw error;
@@ -170,7 +170,7 @@ export const getJobById = async (id) => {
     return response.data;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding job:", error);
     return false;
@@ -186,7 +186,7 @@ const getNewJobCode = async () => {
     return Number(id) + 1;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching data:", error);
   }
@@ -202,7 +202,7 @@ export const addApplication = async (values) => {
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding job:", error);
     throw error;
@@ -217,7 +217,7 @@ export const updateJob = async (baseUrl, values, id) => {
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding job:", error);
     throw error;
@@ -281,7 +281,7 @@ export const deleteJob = async (id) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     } else {
       toast.error("Failed to delete the job", {
         position: toast.POSITION.TOP_RIGHT,

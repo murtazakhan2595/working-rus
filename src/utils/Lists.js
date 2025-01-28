@@ -8,6 +8,25 @@ export function getDropdownList(list, label = "name", value = "id") {
   });
   return dropdownList;
 }
+/**
+ * Converts an array of strings into an array of objects
+ * with `label` and `value` properties having the same value.
+ *
+ * @param {string[]} options - An array of strings to be converted into dropdown options.
+ * @returns {Object[]} - An array of objects where each object has `label` and `value` properties.
+ *                       Returns an empty array if the input is invalid or empty.
+ */
+export function createDropdownOptions(options) {
+  // If the input is invalid or empty, return an empty array.
+  if (!options || options.length === 0) return [];
+
+  // Map each string to an object with `label` and `value` properties.
+  const dropdownOptions = options.map((option) => {
+    return { label: option, value: option };
+  });
+
+  return dropdownOptions;
+}
 
 export function getLabelDropdownList(list, label = "name", value = "id") {
   if (!list || list.length === 0) return [];
@@ -131,3 +150,47 @@ export function getTaskFilteredData(tasksList, filterData) {
   }
   return tasksList;
 }
+
+/**
+ * Converts an array of objects with "field" and "value" keys
+ * into an array of strings in the format: "field: value".
+ *
+ * @param {Array} data - The array of objects to convert.
+ * @returns {Array} - An array of strings in "field: value" format.
+ */
+export function convertJSONArrayToStringsArray(
+  data,
+  label = "name",
+  value = "value"
+) {
+  // Check if the input is valid
+  if (!Array.isArray(data) || data.length === 0) {
+    return []; // Return an empty array if data is not valid
+  }
+
+  // Map each object to a string in the desired format
+  return data.map((item) => `${item[label]}: ${item[value]}`);
+}
+
+/**
+ * Converts an array of strings in the format "field: value"
+ * into an array of JSON objects with custom keys.
+ *
+ * @param {Array} data - The array of strings to convert.
+ * @param {string} label - The key name for the field (default: "name").
+ * @param {string} valueKey - The key name for the value (default: "value").
+ * @returns {Array} - An array of JSON objects with custom keys.
+ */
+export function convertStringsArrayToJsonArray(data, label = "name", valueKey = "value") {
+  // Check if the input is valid
+  if (!Array.isArray(data) || data.length === 0) {
+    return []; // Return an empty array if data is not valid
+  }
+
+  // Map each string to a JSON object
+  return data.map((item) => {
+    const [field, value] = item.split(":").map((str) => str.trim()); // Split and trim
+    return { [label]: field, [valueKey]: value };
+  });
+}
+

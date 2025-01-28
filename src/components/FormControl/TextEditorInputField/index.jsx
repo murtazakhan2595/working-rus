@@ -57,7 +57,18 @@ function TextEditorInputField({
 
   const execCommand = useCallback((command, value = null) => {
     editorRef.current.focus(); // Ensure the editor is focused before executing commands
-    document.execCommand(command, false, value);
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+
+    if (command === "insertImage") {
+      const img = document.createElement("img");
+      img.src = value;
+      img.className = "max-w-full h-auto";
+      range.insertNode(img);
+      range.collapse(false);
+    } else {
+      document.execCommand(command, false, value);
+    }
   }, []);
 
   const handleCommand = (command) => {
@@ -81,27 +92,33 @@ function TextEditorInputField({
       const file = e.target.files[0];
       if (upload) {
         const uploadedImage = await upload(file);
-        if (uploadedImage?.attachment) {
-          execCommand("insertImage", uploadedImage.attachment);
+        if (uploadedImage?.attachments) {
+          execCommand("insertImage", uploadedImage.attachments);
+          handleFileChange(uploadedImage);
         } else {
           console.error("Image upload failed");
         }
       } else {
         execCommand("insertImage", URL.createObjectURL(file));
+        handleFileChange({
+          attachments: file,
+          name: file.name,
+        });
       }
-
-      handleFileChange(e);
     },
     [execCommand]
   );
-  const handleFileChange = (event) => {
-    const file = event.target.files[0]; // Get the single file
-    if (file) {
+  const handleFileChange = (fileEvent) => {
+    debugger;
+    const file = fileEvent?.target?.files[0]; // Get the single file
+    if (file && file instanceof File) {
       const attachment = {
-        attachment: file,
+        attachments: file,
         name: file.name,
       };
       setAttachments([...attachments, ...[attachment]]);
+    } else {
+      setAttachments([...attachments, ...[fileEvent]]);
     }
   };
   const removeAttachmentFile = (file) => {
@@ -237,7 +254,7 @@ function TextEditorInputField({
         <div
           ref={editorRef}
           id={name}
-          className="w-full min-h-[150px] p-4 focus:outline-none rounded-b-lg textEditorText"
+          className="w-full min-h-[150px] p-4 focus:outline-none rounded-b-lg  max-h-[350px] overflow-y-scroll textEditorText"
           contentEditable
           onInput={(e) => {
             setContent(e.target.innerHTML);

@@ -12,3 +12,7 @@
   margin: 1rem auto;
   width: 50%;
 }
+
+.image-none img{
+display: none;
+}
