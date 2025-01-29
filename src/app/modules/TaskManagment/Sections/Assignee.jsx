@@ -77,7 +77,7 @@ export default function Assignee({
       }}
       error={error}
       touch={touch}
-      icon={<Users size={15} strokeWidth={2} />}
+      // icon={<Users size={15} strokeWidth={2} />}
       placeholder="Add Assignee"
     />
   ) : (

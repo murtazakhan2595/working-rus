@@ -5,7 +5,7 @@ const notifications = [
     {
         icon: null,
         title: 'Abdul',
-        description: 'some description',
+        description: 'some description sdf',
         time: 'Apr 18, 8:37',
         isRead: true,
     },

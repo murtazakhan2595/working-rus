@@ -131,7 +131,6 @@ export default function Labels({
       onChange={(field, value) => {
         onSelectedLabelsChange(value);
       }}
-      icon={<Flag size={15} strokeWidth={2} />}
     />
   ) : (
     <TaskDetailBox

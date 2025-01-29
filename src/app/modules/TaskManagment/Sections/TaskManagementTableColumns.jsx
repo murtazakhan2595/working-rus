@@ -17,13 +17,11 @@ export const ProjectBoardColumn = [
               className="text-sm leading-5 truncate-text text-neutral-1000 image-none"
               style={{ maxHeight: "100px" }}
             >
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: `${row?.description.slice(0, 30)}${
-                    row?.description.length > 30 ? "..." : ""
-                  }`,
-                }}
-              />
+              <span>{`${row?.description
+                .replace(/<[^>]*>/g, "")
+                .slice(0, 40)}${
+                row?.description.length > 40 ? "..." : ""
+              }`}</span>
             </p>
           )}
         </div>
