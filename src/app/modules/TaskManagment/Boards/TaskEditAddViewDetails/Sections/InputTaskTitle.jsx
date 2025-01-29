@@ -10,7 +10,10 @@ const InputTaskTitle = ({
 }) => {
   const [editingMode, setEditingMode] = useState(false);
   return (
-    <div onClick={()=>setEditingMode(true)}>
+    <div onClick={(e) => {
+      e.preventDefault();
+      setEditingMode(true);
+    }}>
       {(editingMode || !value) ? (
           <TextInput
             name="name"

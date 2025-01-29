@@ -209,9 +209,9 @@ const TaskEditAddViewDetails = ({
   const uploadAttachmentFile = async (file) => {
     debugger;
     try {
-      if (file.attachments instanceof File) {
+      if (file.attachment instanceof File) {
         const response = await addAttachments(
-          { attachments: file.attachments },
+          { attachment: file.attachment },
           file.id
         );
         return response;
@@ -405,7 +405,9 @@ const TaskEditAddViewDetails = ({
                           setIsEditMode(true);
                         }}
                         setAttachment={async (attachment) => {
-                          await props.setFieldValue("attachment", attachment);
+                          debugger
+                          const attachments= props.values.attachment || [];
+                          await props.setFieldValue("attachment",attachment);
                           setIsEditMode(true);
                         }}
                         attachments={props.values.attachment || []}

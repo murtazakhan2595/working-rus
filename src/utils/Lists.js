@@ -169,7 +169,7 @@ export function convertJSONArrayToStringsArray(
   }
 
   // Map each object to a string in the desired format
-  return data.map((item) => `${item[label]}: ${item[value]}`);
+  return data.map((item) => `${item[label]}:${item[value]}`);
 }
 
 /**

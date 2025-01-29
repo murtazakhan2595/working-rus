@@ -21,7 +21,15 @@ export default function Attachments({
   editMode = true,
   acceptedFileTypes = ".pdf",
 }) {
-  const fileInputRef = useRef(null);
+  const getFileAttachmentArray = (files) => {
+    if (!files || !Array.isArray(files)) return [];
+    const updatedFiles = files.map((file) => {
+      if (file instanceof File) {
+        return { attachment: file, name: file.name };
+      } else return file;
+    });
+    return updatedFiles;
+  };
   const removeFile = async (file, id) => {
     if (id) {
       try {
@@ -46,7 +54,7 @@ export default function Attachments({
 
     // Map selected files to the desired format
     const formattedFiles = selectedFiles.map((file) => ({
-      attachments: file,
+      attachment: file,
       id: null,
       name: file.name,
     }));
@@ -61,28 +69,17 @@ export default function Attachments({
         <CoverFileUpload
           acceptType={acceptedFileTypes}
           name={`attachment`}
-          //value={props.values.attachment}
+          value={attachmentSelected}
           onChange={(field, value) => {
-            onChange(value);
+            onChange(getFileAttachmentArray(value));
           }}
           label={"Attachments"}
           error={error}
           touch={touch}
+          variant="AttachmentFileUpload"
+          multiple={maxAttachments ? maxAttachments > 1 : true}
         />
       )}
-      {attachmentSelected && attachmentSelected.length > 0 ? (
-        <div className="flex flex-col w-full">
-          {attachmentSelected?.map((file, index) => (
-            <AttachmentUI
-              attachment={file.attachments}
-              name={file.name}
-              removeFile={editMode ? removeFile : null}
-              id={file.id}
-              key={index}
-            />
-          ))}
-        </div>
-      ) : null}
     </div>
   );
 }

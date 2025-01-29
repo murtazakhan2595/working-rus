@@ -1,3 +1,4 @@
+import React from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
@@ -436,10 +437,9 @@ const handleLogout = () => {
     setUserLogout();
   }
 };
-const HandleLogout = () => {
-  const navigate = useNavigate();
+function HandleLogout(){
   if (window.localStorage.getItem("token")) {
-    navigate(`/login`);
+    window.location.href = "/login";
     toast.error("Session Time Out", {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 2000,

@@ -30,6 +30,7 @@ function TextEditorInputField({
   removeAttachment = () => {},
   attachments = [],
   name = "editor",
+  displayAttachments = false,
 }) {
   const fileInputRef = useRef(null);
   const [showLinkInput, setShowLinkInput] = useState(false);
@@ -57,18 +58,7 @@ function TextEditorInputField({
 
   const execCommand = useCallback((command, value = null) => {
     editorRef.current.focus(); // Ensure the editor is focused before executing commands
-    const selection = window.getSelection();
-    const range = selection.getRangeAt(0);
-
-    if (command === "insertImage") {
-      const img = document.createElement("img");
-      img.src = value;
-      img.className = "max-w-full h-auto";
-      range.insertNode(img);
-      range.collapse(false);
-    } else {
-      document.execCommand(command, false, value);
-    }
+    document.execCommand(command, false, value);
   }, []);
 
   const handleCommand = (command) => {
@@ -89,11 +79,12 @@ function TextEditorInputField({
 
   const handleImageUpload = useCallback(
     async (e) => {
+      e.preventDefault();
       const file = e.target.files[0];
       if (upload) {
         const uploadedImage = await upload(file);
-        if (uploadedImage?.attachments) {
-          execCommand("insertImage", uploadedImage.attachments);
+        if (uploadedImage?.attachment) {
+          execCommand("insertImage", uploadedImage.attachment);
           handleFileChange(uploadedImage);
         } else {
           console.error("Image upload failed");
@@ -101,7 +92,7 @@ function TextEditorInputField({
       } else {
         execCommand("insertImage", URL.createObjectURL(file));
         handleFileChange({
-          attachments: file,
+          attachment: file,
           name: file.name,
         });
       }
@@ -109,11 +100,10 @@ function TextEditorInputField({
     [execCommand]
   );
   const handleFileChange = (fileEvent) => {
-    debugger;
     const file = fileEvent?.target?.files[0]; // Get the single file
     if (file && file instanceof File) {
       const attachment = {
-        attachments: file,
+        attachment: file,
         name: file.name,
       };
       setAttachments([...attachments, ...[attachment]]);
@@ -194,19 +184,33 @@ function TextEditorInputField({
             <Link strokeWidth={2.5} className={TextEditorIconClassName} />
           </Button> */}
           <label className={TextEditorButtonClassName}>
-            <Image strokeWidth={2.5} className={TextEditorIconClassName} />
             <input
               type="file"
               className="hidden"
+              ref={fileInputRef}
+              onClick={(event) => {
+                event.stopPropagation();
+              }}
               accept="image/*"
               onChange={handleImageUpload}
+            />{" "}
+            <Image
+              strokeWidth={2.5}
+              className={TextEditorIconClassName}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                fileInputRef.current.click();
+              }}
             />
           </label>
-          <label className={TextEditorButtonClassName}>
+          {/* <label className={TextEditorButtonClassName}>
             <input
               type="file"
               ref={fileInputRef}
-              onClick={(event) => event.stopPropagation()} // Prevent default behavior
+              onClick={(event) => {
+                event.stopPropagation();
+              }} // Prevent default behavior
               onChange={handleFileChange}
               className="hidden"
             />
@@ -218,7 +222,7 @@ function TextEditorInputField({
               }}
               className="w-5 h-5 mx-2 text-black cursor-pointer"
             />
-          </label>
+          </label> */}
           {showLinkInput && (
             <div className="flex items-center gap-2">
               <input
@@ -238,7 +242,7 @@ function TextEditorInputField({
             </div>
           )}
         </div>
-        {attachments.length > 0 && (
+        {attachments.length > 0 && displayAttachments && (
           <div className="p-1">
             {attachments?.map((file, index) => (
               <div key={index}>
@@ -271,7 +275,8 @@ function TextEditorInputField({
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
                   handleSubmitContent(content, attachments);
                 }}
               >

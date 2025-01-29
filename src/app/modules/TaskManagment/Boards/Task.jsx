@@ -33,7 +33,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
     const fetchData = async () => {
       const attachment = await getAttachmentDetails([task.attachment[0]]);
       if (attachment) {
-        setCoverImage(attachment[0]?.attachments);
+        setCoverImage(attachment[0]?.attachment);
       }
     };
     if (task?.attachment?.length > 0) {

@@ -408,7 +408,7 @@ const addAttachments = async (payload, id = null) => {
   try {
     // Create FormData object
     const formData = new FormData();
-    formData.append("attachments", payload.attachments);
+    formData.append("attachment", payload.attachment);
 
     const url = id
       ? `${baseUrl}/TaskmanagementAttachment/${id}` // Use id if updating
@@ -630,9 +630,9 @@ const getTaskById = async (taskId) => {
         attachmentIds.map(async (id) => {
           const response = await getAttachmentById(id);
           return {
-            attachments: response.attachments,
+            attachment: response.attachment,
             id: response.id,
-            name: getFileNameFromURL(response.attachments),
+            name: getFileNameFromURL(response.attachment),
           };
         })
       );
@@ -863,9 +863,9 @@ const getAttachmentDetails = async (attachmentIds) => {
       attachmentIds.map(async (id) => {
         const response = await getAttachmentById(id);
         return {
-          attachments: response.attachments,
+          attachment: response.attachment,
           id: response.id,
-          name: getFileNameFromURL(response.attachments),
+          name: getFileNameFromURL(response.attachment),
         };
       })
     );
