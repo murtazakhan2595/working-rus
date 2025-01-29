@@ -19,7 +19,7 @@ import {
 } from "src/@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "src/@/components/ui/radio-group";
 import AttachmentUI from "components/ui/AttachmentUI";
-import {CoverFileUpload} from 'components/FormControl/UploadFiles'
+import CoverFileUpload from 'components/FormControl/UploadFiles'
 import {
   ChevronsUpDown,
   Check,

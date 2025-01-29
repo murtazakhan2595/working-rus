@@ -1,6 +1,6 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
-import { getEmployeeCustomList, handleLogout } from "./general";
+import { getEmployeeCustomList, HandleLogout } from "./general";
 import moment from "moment";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -43,7 +43,7 @@ const saveLeaveComponents = async (payload) => {
   } catch (error) {
     console.error("Error saving leave components:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -68,7 +68,7 @@ const getLeaveComponents = async (payload) => {
   } catch (error) {
     console.error("Error fetching earn and deduction data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -85,7 +85,7 @@ const deleteLeaveComponent = async (id) => {
   } catch (error) {
     console.error("Error deleting leave component:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -121,7 +121,7 @@ const saveLeaveTransaction = async (payload) => {
   } catch (error) {
     console.error("Error saving leave transactions:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -153,7 +153,7 @@ const saveLeave = async (payload) => {
   } catch (error) {
     console.error("Error saving leave:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -176,7 +176,7 @@ const getLeaves = async (payload) => {
   } catch (error) {
     console.error("Error fetching leave data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -221,7 +221,7 @@ const getLeavestats = async (payload) => {
   } catch (error) {
     console.error("Error fetching leave stats:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -246,7 +246,7 @@ const getLeaveTransaction = async (payload) => {
   } catch (error) {
     console.error("Error fetching leave transaction data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -262,7 +262,7 @@ const saveAttachment = async (payload) => {
   } catch (error) {
     console.error("Error saving attachment:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -285,7 +285,7 @@ const getAttachmentById = async (attachmentId) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error getting attachment:", error);
     return {};
@@ -342,7 +342,7 @@ const getLeaveComponentsWithUsed = async (employeeId) => {
   } catch (error) {
     console.error("Error fetching leave components with used leaves:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -440,7 +440,7 @@ const getLeaveStatsEmployee = async (payload) => {
   } catch (error) {
     console.error("Error fetching leave stats:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -469,7 +469,7 @@ const getRemainingLeaves = async (leaveTypeId, employeeId) => {
   } catch (error) {
     console.error("Error fetching remaining leaves:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -493,7 +493,7 @@ const getLeavestatesCustomApi = async (payload) => {
   } catch (error) {
     console.error("Error fetching leave data:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -510,7 +510,7 @@ const getLeaveStatusDaily = async() =>{
   } catch(error){
     console.error("Error fetching daily leave status:", error);
     if(error?.response?.status === 401){
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }

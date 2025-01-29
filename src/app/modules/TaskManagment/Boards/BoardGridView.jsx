@@ -1,17 +1,11 @@
 import { connect } from "react-redux";
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import {  PageLoader } from "components";
-import {
-  getAllBoards,
-  deleteBoard,
-  moveTask,
-} from "app/hooks/taskManagment";
+import { PageLoader } from "components";
+import { getAllBoards, deleteBoard, moveTask } from "app/hooks/taskManagment";
 import { RxPlus } from "react-icons/rx";
-import {
-  CustomDropdown,
-} from "app/modules/TaskManagment/Sections";
-import { AddNewListModel} from "./Sections";
+import { CustomDropdown } from "app/modules/TaskManagment/Sections";
+import { AddNewListModel } from "./Sections";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import TaskCard from "./Task";
 import { ArrowLeft, LayoutGrid, LayoutList, MoreVertical } from "lucide-react";
@@ -32,8 +26,7 @@ import {
   DropdownMenuPortal,
 } from "src/@/components/ui/dropdown-menu";
 
-
-const BoardGridView = ({ searchTaskQuery, projectId, filterData }) => {
+const BoardGridView = ({ projectId, filterData }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [AllBoards, setAllBoards] = useState([]);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
@@ -98,9 +91,7 @@ const BoardGridView = ({ searchTaskQuery, projectId, filterData }) => {
                     filterData={{
                       ...filterData,
                       board_id: [board.id],
-                      status:"TODO,INPROGRESS,COMPLETED"
                     }}
-                    searchTaskQuery={searchTaskQuery}
                   />
                 ))}
               <div className="flex flex-col min-w-[290px] max-w-[320px] mb-5">
@@ -129,26 +120,11 @@ const BoardGridView = ({ searchTaskQuery, projectId, filterData }) => {
   );
 };
 
-const TaskColumn = ({
-  key,
-  reloadData,
-  board,
-  projectId,
-  filterData,
-  searchTaskQuery,
-}) => {
+const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  // Filter tasks based on search query
-  const filteredTasks = React.useMemo(() => {
-    return tasks && tasks.count > 0
-      ? tasks?.results?.filter((task) =>
-          task.name.toLowerCase().includes(searchTaskQuery.toLowerCase())
-        )
-      : [];
-  }, [searchTaskQuery, tasks]);
 
   const updateTaskLocally = (taskId, updatedData) => {
     setTasks((prevTasks) => ({
@@ -163,7 +139,6 @@ const TaskColumn = ({
     try {
       const taskData = await getAllTasks({ filterData });
       if (taskData && isMounted) {
-        console.log(taskData)
         setTasks(taskData);
       }
     } catch (error) {
@@ -282,9 +257,9 @@ const TaskColumn = ({
           <RxPlus className="text-xl" />
           <span className="ml-2">Add Card</span>
         </Button>
-        {filteredTasks &&
-          filteredTasks.length > 0 &&
-          filteredTasks.map((task) => (
+        {tasks?.results &&
+          tasks?.count > 0 &&
+          tasks?.results.map((task) => (
             <div key={task.id}>
               <TaskCard
                 task={task}
@@ -335,7 +310,6 @@ const TaskColumn = ({
     </div>
   );
 };
-
 
 const mapStateToProps = (state) => {
   return {

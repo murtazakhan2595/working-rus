@@ -1,6 +1,6 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
-import { getEmployeeCustomList, handleLogout } from "./general";
+import { HandleLogout } from "./general";
 import moment from "moment";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -42,7 +42,7 @@ const saveOrganization = async (id, payload) => {
   } catch (error) {
     console.error("Error saving organization:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -59,7 +59,7 @@ const deleteOrganization = async (id) => {
   } catch (error) {
     console.error("Error deleting organization:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -76,7 +76,7 @@ const getOrganizationCountryList = async () => {
   } catch (error) {
     console.error("Error getting country list:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -101,7 +101,7 @@ const getRegionsList = async (payload)=>{
   } catch (error) {
     console.error("Error getting regions list:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -125,7 +125,7 @@ const getRegionsList = async (payload)=>{
   } catch (error) {
     console.error("Error getting cities list:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -142,7 +142,7 @@ const getRegionById = async (id) => {
   } catch (error) {
     console.error("Error getting region by id:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -159,7 +159,7 @@ const getCityById = async (id) => {
   } catch (error) {
     console.error("Error getting city by id:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }
@@ -176,7 +176,7 @@ const getCountryById = async (id) => {
   } catch (error) {
     console.error("Error getting country by id:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return [];
   }

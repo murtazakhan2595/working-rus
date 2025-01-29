@@ -1,9 +1,9 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
-import { handleLogout } from "./general";
+import { HandleLogout} from "./general";
 import { Project } from "app/utils/Types/TaskManagment";
-//import { getTaskFilteredData } from "utils/Lists";
+import { convertStringsArrayToJsonArray } from "utils/Lists";
 import { getFileNameFromURL } from "utils/downUtils";
 
 const baseUrl = initialState.baseUrl;
@@ -55,7 +55,7 @@ const getAllProjects = async (payload, userProfile) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -84,7 +84,7 @@ const getTaskByBoardId = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -119,14 +119,14 @@ const getTaskByprojectId = async (projectId, payload) => {
       return tasksList; // Extract results from task data
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error(`Error fetching tasks for board IDs:`, error);
       return []; // Return an empty array for this board if fetching fails
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching tasks by project ID:", error);
     return {
@@ -158,7 +158,7 @@ const getAllBoards = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
   }
@@ -179,7 +179,7 @@ const getAllLabels = async () => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching task data :", error);
   }
@@ -215,14 +215,14 @@ const addBoard = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding job:", error);
     return false;
   }
 };
 const addProject = async (payload, projectID) => {
-  debugger
+  debugger;
   const formData = new FormData();
   if (projectID) formData.append("id", projectID);
   if (payload.name) formData.append("name", payload.name || "");
@@ -230,8 +230,12 @@ const addProject = async (payload, projectID) => {
     formData.append("description", payload.description || "");
   if (payload.start_date)
     formData.append("start_date", payload.start_date || "");
-  if (payload.custom_fields && payload.custom_fields.length > 0 && Array.isArray(payload.custom_fields))
-    {payload.custom_fields.forEach((custom_field) =>
+  if (
+    payload.custom_fields &&
+    payload.custom_fields.length > 0 &&
+    Array.isArray(payload.custom_fields)
+  ) {
+    payload.custom_fields.forEach((custom_field) =>
       formData.append("custom_fields", custom_field)
     );
   }
@@ -267,7 +271,7 @@ const addProject = async (payload, projectID) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding project:", error);
     return false;
@@ -297,7 +301,7 @@ const addTask = async (payload, id) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding task:", error);
     return false;
@@ -317,7 +321,7 @@ const moveTask = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding task:", error);
     return false;
@@ -346,7 +350,7 @@ const addTaskCheckListItem = async (payload, id = null) => {
   } catch (error) {
     // Handle errors
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding/updating CheckList:", error);
     return false;
@@ -366,7 +370,7 @@ const getTaskCheckListItem = async (checkListID) => {
     return false;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error deleting task Check List Item:", error);
     toast.error("Error deleting task Check List Item!", {
@@ -391,7 +395,7 @@ const deleteTaskCheckListItem = async (checkListID) => {
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error deleting task Check List Item:", error);
     toast.error("Error deleting task Check List Item!", {
@@ -404,7 +408,7 @@ const addAttachments = async (payload, id = null) => {
   try {
     // Create FormData object
     const formData = new FormData();
-    formData.append("attachments", payload.attachments);
+    formData.append("attachment", payload.attachment);
 
     const url = id
       ? `${baseUrl}/TaskmanagementAttachment/${id}` // Use id if updating
@@ -426,7 +430,7 @@ const addAttachments = async (payload, id = null) => {
   } catch (error) {
     // Handle errors
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding/updating attachment:", error);
     return false;
@@ -459,7 +463,7 @@ const addCommentAttachment = async (payload, id) => {
   } catch (error) {
     // Handle errors
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding/updating attachment:", error);
     return false;
@@ -480,7 +484,7 @@ const getProjectById = async (projectId) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding job:", error);
     return Project;
@@ -501,7 +505,7 @@ const getBoardById = async (boardId) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding job:", error);
     return Project;
@@ -521,7 +525,7 @@ const deleteProject = async (projectId) => {
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error deleting project:", error);
     toast.error("Error deleting project!", {
@@ -543,7 +547,7 @@ const deleteBoard = async (taskId) => {
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error deleting board:", error);
     toast.error("Error deleting board!", {
@@ -565,7 +569,7 @@ const deleteTask = async (taskId) => {
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error deleting task:", error);
     toast.error("Error deleting task!", {
@@ -586,7 +590,7 @@ const deleteAttachment = async (attachmentId) => {
     else return false;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error deleting attachment:", error);
     return false;
@@ -611,7 +615,7 @@ const getTaskById = async (taskId) => {
       return checklistDetails;
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching checklist items:", error);
       throw error; // Propagate error to the caller
@@ -626,16 +630,16 @@ const getTaskById = async (taskId) => {
         attachmentIds.map(async (id) => {
           const response = await getAttachmentById(id);
           return {
-            attachments: response.attachments,
+            attachment: response.attachment,
             id: response.id,
-            name: getFileNameFromURL(response.attachments),
+            name: getFileNameFromURL(response.attachment),
           };
         })
       );
       return attachmentDetails;
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching attachments:", error);
       throw error; // Propagate error to the caller
@@ -664,6 +668,11 @@ const getTaskById = async (taskId) => {
           ...cardDetails,
           attachment: attachments,
           task_checklist: checklistItems,
+          custom_fields: convertStringsArrayToJsonArray(
+            cardDetails.custom_fields,
+            "field",
+            "value"
+          ),
         };
         return finalDetails;
       } else {
@@ -672,7 +681,7 @@ const getTaskById = async (taskId) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error getting task:", error);
     return {};
@@ -695,7 +704,7 @@ const getAttachmentById = async (attachmentId) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error getting attachment:", error);
     return {};
@@ -715,7 +724,7 @@ const fetchComments = async (filter) => {
     return response.data?.results;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching comments:", error);
     return [];
@@ -730,7 +739,7 @@ const postComment = async (payload) => {
     return response;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error posting comment:", error);
     throw error; // Re-throw the error to handle it in the component
@@ -753,7 +762,7 @@ const getAllTasks = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching task data :", error);
   }
@@ -783,7 +792,7 @@ const getCommentsWithAttachments = async (filter) => {
       return attachmentDetails;
     } catch (error) {
       if (error?.response?.status === 401) {
-        handleLogout();
+        HandleLogout();
       }
       console.error("Error fetching attachments:", error);
       throw error; // Propagate error to the caller
@@ -813,7 +822,7 @@ const getCommentsWithAttachments = async (filter) => {
     return commentsWithAttachments;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching comments:", error);
   }
@@ -840,7 +849,7 @@ const addSubtask = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding task:", error);
     return false;
@@ -854,16 +863,16 @@ const getAttachmentDetails = async (attachmentIds) => {
       attachmentIds.map(async (id) => {
         const response = await getAttachmentById(id);
         return {
-          attachments: response.attachments,
+          attachment: response.attachment,
           id: response.id,
-          name: getFileNameFromURL(response.attachments),
+          name: getFileNameFromURL(response.attachment),
         };
       })
     );
     return attachmentDetails;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching attachments:", error);
   }
@@ -882,7 +891,7 @@ const getSubtaskById = async (subtaskId) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error getting subtask:", error);
     return {};
@@ -897,7 +906,7 @@ const createActivity = async (payload) => {
     return response.data;
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error adding activity:", error);
     return false;
@@ -921,11 +930,90 @@ const getActivities = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     console.error("Error fetching task data :", error);
   }
   return [];
+};
+
+const getAllCustomFields = async (projectId, payload = {}) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? { project: [projectId] };
+  const URL = `/dynamic-fields/?ordering=-created_at&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return { results: [], count: 0 };
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
+const addCustomFields = async (payload, id) => {
+  try {
+    // Create FormData object
+    const url = id
+      ? `${baseUrl}/dynamic-fields/${id}/` // Use id if updating
+      : `${baseUrl}/dynamic-fields/`; // No id means create new
+
+    const method = id ? "PUT" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: payload,
+      headers: headers(),
+    });
+
+    // Check response status
+    if (response.status === 201 || response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    // Handle errors
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error adding/updating attachment:", error);
+    return false;
+  }
+};
+
+const deleteCustomFields = async (id) => {
+  try {
+    debugger
+    const response = await axios.delete(`${baseUrl}/dynamic-fields/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response;
+    }
+    return false;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error deleting task Check List Item:", error);
+    toast.error("Error deleting task Check List Item!", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
 };
 
 export {
@@ -960,4 +1048,7 @@ export {
   getCommentsWithAttachments,
   getTaskByprojectId,
   getAttachmentDetails,
+  getAllCustomFields,
+  addCustomFields,
+  deleteCustomFields,
 };

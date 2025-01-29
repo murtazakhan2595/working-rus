@@ -9,22 +9,48 @@ import {
 } from "src/@/components/ui/dialog.jsx";
 import { Button } from "components/ui/button";
 import { TextInput, SelectComponent } from "components/FormControl";
-import  AddProjectCustomFieldForm  from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails/Sections/ProjectCustomFields/AddProjectCustomFieldForm";
-import { Trash, GripHorizontal } from "lucide-react";
+import AddProjectCustomFieldForm from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails/Sections/ProjectCustomFields/AddProjectCustomFieldForm";
+import { Trash, GripHorizontal, ArrowRight } from "lucide-react";
+import { getAllCustomFields } from "app/hooks/taskManagment";
 
 const ProjectCustomFields = ({
   setIsOpen,
   isOpen,
   projectId,
   projectData = {},
-  reloadData=()=>{},
+  reloadData = () => {},
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const CustomFields = projectData.custom_fields || [];
+  const [editCustomField, setEditCustomField] = useState(null);
+  const [CustomFields, setCustomFields] = useState([]);
   const [draggedItem, setDraggedItem] = useState(null);
   const [openProjectCustomFieldsForm, setOpenProjectCustomFieldsForm] =
     useState(false);
-  
+
+  const fetchAllCustomFields = async (isMounted, projectID) => {
+    if (projectID) {
+      try {
+        // Fetch card details
+        const custom_fields = await getAllCustomFields(projectID);
+
+        if (!custom_fields) {
+          throw new Error("Card details not found.");
+        }
+        if (isMounted) {
+          setCustomFields(custom_fields.results);
+        }
+      } catch (error) {
+        console.error("Error fetching board list:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (projectId) fetchAllCustomFields(isMounted, projectId);
+    return () => {
+      isMounted = false;
+    };
+  }, [projectId]);
 
   const handleDragStart = (e, option) => {
     setDraggedItem(option);
@@ -66,27 +92,35 @@ const ProjectCustomFields = ({
             CustomFields.map((customField, index) => (
               <div
                 key={index}
-                draggable
-                onDragStart={(e) => handleDragStart(e, customField)}
-                onDragOver={(e) => handleDragOver(e, customField)}
-                onDragEnd={handleDragEnd}
-                className="flex items-center justify-between space-x-2 bg-white"
+                // draggable
+                // onDragStart={(e) => handleDragStart(e, customField)}
+                // onDragOver={(e) => handleDragOver(e, customField)}
+                // onDragEnd={handleDragEnd}
+                className="flex items-center justify-start space-x-2 bg-white"
               >
-                <GripHorizontal className="cursor-move" />
-                <div className="w-[calc(100%_-_80px)]">
+                {/* <GripHorizontal className="cursor-move" /> */}
+                <div className="min-w-[calc(100%_-_80px)]">
                   <TextInput
                     name={`options[${index}].value`}
-                    value={customField.name}
+                    value={customField.field_data.field_name}
                     onChange={() => {}}
                   />
                 </div>
-                <Trash
+                <ArrowRight
+                  size={16}
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setEditCustomField(customField);
+                    setOpenProjectCustomFieldsForm(true);
+                  }}
+                />
+                {/* <Trash
                   size={16}
                   className="text-red-300 cursor-pointer"
                   // onClick={() =>
                   //   //deleteOption(option, props.values.options, props)
                   // }
-                />
+                /> */}
               </div>
             ))}
           <Button
@@ -102,11 +136,15 @@ const ProjectCustomFields = ({
           </Button>
           {openProjectCustomFieldsForm && (
             <AddProjectCustomFieldForm
+              customFieldData={editCustomField?.field_data}
+              customFieldId={editCustomField?.id}
               projectId={projectId}
-              projectData={projectData}
               isOpen={openProjectCustomFieldsForm}
               setIsOpen={setOpenProjectCustomFieldsForm}
-              reloadData={reloadData}
+              reloadData={() => {
+                fetchAllCustomFields(true, projectId);
+                setEditCustomField(null);
+              }}
             />
           )}
         </div>

@@ -5,7 +5,7 @@ import {
   ExitStatusCurrentStep,
   Status,
 } from "app/modules/ExitAndClearance/Sections";
-import { handleLogout } from "./general";
+import { HandleLogout} from "./general";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -75,7 +75,7 @@ const getEmployeesExitCount = async (payload) => {
     }
   } catch (error) {
     if (error?.response?.status === 401) {
-      // handleLogout();
+      // HandleLogout();
     }
     console.error("Error fetching Personal Info data:", error);
     return null;

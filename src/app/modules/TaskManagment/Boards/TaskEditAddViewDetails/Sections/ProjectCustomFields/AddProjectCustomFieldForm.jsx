@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { connect } from "react-redux";
 import {
   Dialog,
   DialogContent,
@@ -10,21 +9,31 @@ import {
 import { Button } from "components/ui/button";
 import { Formik, Form } from "formik";
 import { TextInput, SelectComponent } from "components/FormControl";
-import { CustomField } from "app/utils/Types/TaskManagment";
+import { CustomFieldData } from "app/utils/Types/TaskManagment";
+import { mapCustomFieldPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
 import { CustomeFieldTypeOption } from "data/Data";
 import { Trash, GripHorizontal } from "lucide-react";
-import { addProject } from "app/hooks/taskManagment";
+import { addCustomFields,deleteCustomFields } from "app/hooks/taskManagment";
 import { toast } from "react-toastify";
 
-const AddProjectCustomFieldForm = ({ setIsOpen, isOpen, projectId, projectData,reloadData=()=>{} }) => {
+const AddProjectCustomFieldForm = ({
+  setIsOpen,
+  isOpen,
+  projectId,
+  customFieldData = null,
+  customFieldId = null,
+  reloadData = () => {},
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const customFieldsFormRef = useRef();
-  const [initialValues, setInitialValues] = useState(CustomField);
+  const [initialValues, setInitialValues] = useState(
+    customFieldData ?? CustomFieldData
+  );
   const [draggedItem, setDraggedItem] = useState(null);
 
   useEffect(() => {
     if (!isOpen) {
-      setInitialValues(CustomField); // Reset form on dialog close
+      setInitialValues(CustomFieldData); // Reset form on dialog close
     }
   }, [isOpen]);
 
@@ -56,11 +65,7 @@ const AddProjectCustomFieldForm = ({ setIsOpen, isOpen, projectId, projectData,r
   };
 
   const addOption = (options, props) => {
-    const newOption = {
-      id: options.length + 1, // Ensure unique id
-      value: `Option ${options.length + 1}`,
-    };
-    props.setFieldValue("options", [...options, newOption]);
+    props.setFieldValue("value", [...options, ""]);
   };
 
   const deleteOption = (option, options, props) => {
@@ -72,15 +77,32 @@ const AddProjectCustomFieldForm = ({ setIsOpen, isOpen, projectId, projectData,r
     debugger;
     setIsLoading(true);
     try {
-      const custom_fields = [...(projectData.custom_fields || []), values];
-      const response = await addProject(
-        { custom_fields: custom_fields },
-        projectId
+      const payload = mapCustomFieldPayloadData(
+        values,
+        projectId,
+        customFieldId
       );
+      const response = await addCustomFields(payload, customFieldId);
       if (response) {
-        reloadData(projectId);
+        reloadData();
         setIsOpen(false);
         toast.success("Custom Field Added successfully");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleDelete = async () => {
+    debugger
+    setIsLoading(true);
+    try {
+      const response = await deleteCustomFields(customFieldId);
+      if (response) {
+        reloadData();
+        setIsOpen(false);
+        toast.success("Custom Field Deleted successfully");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -93,9 +115,15 @@ const AddProjectCustomFieldForm = ({ setIsOpen, isOpen, projectId, projectData,r
     <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
       <DialogContent className="max-w-[450px] max-h-[95vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-plum-900">New Field</DialogTitle>
+          <DialogTitle className="text-plum-900">
+            {`${customFieldId ? "Modify" : "New"}`} Field
+          </DialogTitle>
           <DialogDescription className="text-gray-900">
-            Add a new custom field
+            {`${
+              customFieldId
+                ? "Rename tile or modify this field"
+                : "Add a new custom field"
+            }`}
           </DialogDescription>
         </DialogHeader>
 
@@ -109,67 +137,77 @@ const AddProjectCustomFieldForm = ({ setIsOpen, isOpen, projectId, projectData,r
             <Form>
               <div className="space-y-4">
                 <TextInput
-                  name="name"
-                  error={props.errors.name}
+                  name="field_name"
+                  error={props.errors.field_name}
                   label="Title"
-                  touch={props.touched.name}
-                  value={props.values.name}
+                  touch={props.touched.field_name}
+                  value={props.values.field_name}
                   required={true}
                   onChange={(field, value) => props.setFieldValue(field, value)}
                 />
                 <SelectComponent
-                  name="type"
+                  name="field_type"
                   options={CustomeFieldTypeOption}
-                  error={props.errors.type}
-                  touch={props.touched.type}
-                  value={props.values.type}
+                  error={props.errors.field_type}
+                  touch={props.touched.field_type}
+                  value={props.values.field_type}
                   label="Type"
                   placeholder="Select Field Type"
                   onChange={(field, value) => props.setFieldValue(field, value)}
                 />
-
-                {props.values.type === "SELECT_DROPDOWN" && (
+                {props.values.field_type === "SELECT_DROPDOWN" && (
                   <div className="space-y-4 mb-6">
-                    {props.values.options.map((option, index) => (
-                      <div
-                        key={option.id}
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, option)}
-                        onDragOver={(e) =>
-                          handleDragOver(e, option, props.values.options, props)
-                        }
-                        onDragEnd={handleDragEnd}
-                        className="flex items-center justify-between space-x-2 bg-white"
-                      >
-                        <GripHorizontal className="cursor-move" />
-                        <div className="w-[calc(100%_-_80px)]">
-                          <TextInput
-                            name={`options[${index}].value`}
-                            error={props.errors.options?.[index]?.value}
-                            touch={props.touched.options?.[index]?.value}
-                            value={option.value}
-                            onChange={(field, value) => {
-                              const updatedOptions = [...props.values.options];
-                              updatedOptions[index].value = value;
-                              props.setFieldValue("options", updatedOptions);
-                            }}
+                    {props.values.value &&
+                      Array.isArray(props.values.value) &&
+                      props.values.value.map((option, index) => (
+                        <div
+                          key={index}
+                          // draggable
+                          // onDragStart={(e) => handleDragStart(e, option)}
+                          // onDragOver={(e) =>
+                          //   handleDragOver(
+                          //     e,
+                          //     option,
+                          //     props.values.options,
+                          //     props
+                          //   )
+                          // }
+                          // onDragEnd={handleDragEnd}
+                          className="flex items-center justify-between space-x-2 bg-white"
+                        >
+                          {/* <GripHorizontal className="cursor-move" /> */}
+                          <div className="w-[calc(100%_-_80px)]">
+                            <TextInput
+                              name={`option[${index}]`}
+                              // error={props.errors.options?.[index]?.value}
+                              // touch={props.touched.options?.[index]?.value}
+                              value={option}
+                              onChange={(field, value) => {
+                                const Options = props.values.value || null;
+                                Options[index] = value;
+                                props.setFieldValue("value", Options);
+                              }}
+                            />
+                          </div>
+                          <Trash
+                            size={16}
+                            className="text-red-300 cursor-pointer"
+                            onClick={() =>
+                              deleteOption(
+                                option,
+                                props.values.value || [],
+                                props
+                              )
+                            }
                           />
                         </div>
-                        <Trash
-                          size={16}
-                          className="text-red-300 cursor-pointer"
-                          onClick={() =>
-                            deleteOption(option, props.values.options, props)
-                          }
-                        />
-                      </div>
-                    ))}
+                      ))}
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={(event) => {
                         event.preventDefault();
-                        addOption(props.values.options, props);
+                        addOption(props.values.value || [], props);
                       }}
                     >
                       Add Option
@@ -177,18 +215,43 @@ const AddProjectCustomFieldForm = ({ setIsOpen, isOpen, projectId, projectData,r
                   </div>
                 )}
               </div>
+              <div className="flex justify-between">
+                <div className="flex justify-start gap-2 mt-4 border-t border-gray-200 pt-4">
+                  {customFieldId && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDelete();
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  )}
+                </div>
 
-              <div className="flex justify-end gap-2 mt-4 border-t border-gray-200 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" isLoading={isLoading}>
-                  {isLoading ? "Saving..." : "Create"}
-                </Button>
+                <div className="flex justify-end gap-2 mt-4 border-t border-gray-200 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsOpen(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  {customFieldId ? (
+                    <Button type="submit" isLoading={isLoading}>
+                      {isLoading ? "Modifying..." : "Modify"}
+                    </Button>
+                  ) : (
+                    <Button type="submit" isLoading={isLoading}>
+                      {isLoading ? "Saving..." : "Create"}
+                    </Button>
+                  )}
+                </div>
               </div>
             </Form>
           )}
@@ -197,6 +260,5 @@ const AddProjectCustomFieldForm = ({ setIsOpen, isOpen, projectId, projectData,r
     </Dialog>
   );
 };
-
 
 export default AddProjectCustomFieldForm;

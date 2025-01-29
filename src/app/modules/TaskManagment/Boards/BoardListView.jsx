@@ -11,7 +11,6 @@ import CreateAndEditCardForm from "app/modules/TaskManagment/Boards/Sections/Cre
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 
 const BoardListView = ({ filterData, projectId }) => {
-  const [isLoading, setIsLoading] = useState(false);
   const [AllBoardTasks, setAllBoardTasks] = useState([]);
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [options, setOptions] = useState({
@@ -41,7 +40,6 @@ const BoardListView = ({ filterData, projectId }) => {
   };
 
   const fetchData = async (isMounted) => {
-    setIsLoading(true);
     try {
       const boardsData = await getTaskByprojectId(projectId, {
         filterData,
@@ -52,10 +50,6 @@ const BoardListView = ({ filterData, projectId }) => {
       }
     } catch (error) {
       console.error("Error fetching employeeLeaveTypes:", error);
-    } finally {
-      if (isMounted) {
-        setIsLoading(false);
-      }
     }
   };
 
@@ -66,9 +60,7 @@ const BoardListView = ({ filterData, projectId }) => {
       isMounted = false;
     };
   }, [projectId, filterData, options]);
-  return isLoading ? (
-    <PageLoader />
-  ) : (
+  return (
     <>
       <Card>
         <CardContent>
@@ -114,7 +106,7 @@ const BoardListView = ({ filterData, projectId }) => {
             setViewTask(null);
             fetchData(true);
           }}
-          reloadData={()=>fetchData(true)}
+          reloadData={() => fetchData(true)}
         />
       )}
     </>

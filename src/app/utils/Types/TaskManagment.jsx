@@ -7,12 +7,17 @@ const Project = {
   project_members: [],
   color: "", // Add color field
   profile: null,
-  custom_fields:null,
+  custom_fields: null,
 };
 const CustomField = {
-  name: "",
-  type: "SELECT_DROPDOWN",
-  options: [],
+  id: null,
+  field_data: {},
+  project: null,
+};
+const CustomFieldData = {
+  field_type: null,
+  field_name: null,
+  value: null,
 };
 const CustomFieldTypes = {
   INPUT_TEXT: "INPUT_TEXT",
@@ -37,7 +42,9 @@ const Task = {
   relation: [],
   start_date: null,
   task_checklist: [],
-  status: "TODO",
+  status: null,
+  is_archive:false,
+  custom_fields:[],
 };
 const AddList = {
   name: "",
@@ -58,4 +65,12 @@ const CardTypes = {
   relation: [],
   subtasks: [],
 };
-export { Project, AddList, CardTypes, Task, CustomField, CustomFieldTypes };
+export {
+  Project,
+  AddList,
+  CardTypes,
+  Task,
+  CustomField,
+  CustomFieldTypes,
+  CustomFieldData,
+};

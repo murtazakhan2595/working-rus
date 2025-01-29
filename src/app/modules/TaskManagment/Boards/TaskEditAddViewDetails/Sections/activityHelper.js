@@ -218,24 +218,32 @@ export const trackTaskActivities = async (
       }
     }
     // Track due date changes
-    if (newValues.end_date !== oldValues.end_date) {
-      const formattedNewDate = newValues.end_date
-        ? moment(newValues.end_date).format("DD MMM YYYY")
-        : "";
-      const formattedOldDate = oldValues.end_date
-        ? moment(oldValues.end_date).format("DD MMM YYYY")
-        : "";
+    const normalizeDate = (date) => {
+      if (!date) return null;
+      return moment(date).startOf("day").format("YYYY-MM-DD");
+    };
 
-      activities.push({
-        task_id: taskId,
-        action_type: ActivityTypes.DUE_DATE_CHANGED,
-        content: oldValues.end_date
-          ? `Updated due date from ${formattedOldDate} to ${formattedNewDate}`
-          : `Set due date to ${formattedNewDate}`,
-        user_id: userId,
-      });
+    const oldDate = normalizeDate(oldValues.end_date);
+    const newDate = normalizeDate(newValues.end_date);
+
+    if (newDate !== oldDate) {
+      // Only create activity if there's an actual change (including setting or removing a date)
+      if (newDate || oldDate) {
+        const formattedNewDate = newDate
+          ? moment(newDate).format("DD MMM YYYY")
+          : "no due date";
+        const formattedOldDate = oldDate
+          ? moment(oldDate).format("DD MMM YYYY")
+          : "no due date";
+
+        activities.push({
+          task_id: taskId,
+          action_type: ActivityTypes.DUE_DATE_CHANGED,
+          content: `Changed due date from ${formattedOldDate} to ${formattedNewDate}`,
+          user_id: userId,
+        });
+      }
     }
-    // Track member changes
     // Track member changes
     if (
       JSON.stringify(newValues.assigned_to || []) !==

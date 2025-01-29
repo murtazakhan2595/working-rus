@@ -33,7 +33,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
     const fetchData = async () => {
       const attachment = await getAttachmentDetails([task.attachment[0]]);
       if (attachment) {
-        setCoverImage(attachment[0]?.attachments);
+        setCoverImage(attachment[0]?.attachment);
       }
     };
     if (task?.attachment?.length > 0) {
@@ -82,8 +82,8 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             />
           )}
         </div>
-        <div className="flex justify-between items-start py-0.5">
-          {task?.label && (
+        <div className="flex justify-start items-start py-0.5">
+          {task?.label && task?.label.length > 0 && (
             <Labels
               labelsSelected={task.label || []}
               onSelectedLabelsChange={() => {}}
@@ -99,9 +99,9 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
         </div>
         <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
           <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
-          {task?.description && (
+          {/* {task?.description && (
             <p
-              className="text-sm leading-5 truncate-text text-neutral-1000"
+              className="text-sm leading-5 truncate-text text-neutral-1000 image-none"
               style={{ maxHeight: "100px" }}
             >
               <span
@@ -112,7 +112,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
                 }}
               />
             </p>
-          )}
+          )} */}
         </div>
         <footer className="flex justify-between py-2">
           <div className="flex items-center gap-1">

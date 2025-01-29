@@ -1,6 +1,6 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
-import { handleLogout } from "./general";
+import { HandleLogout } from "./general";
 import moment from "moment";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -37,7 +37,7 @@ const saveShiftAssignment = async (payload) => {
   } catch (error) {
     console.error("Error saving shift assignment:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -62,7 +62,7 @@ const getEmployeeList = async (payload) => {
   } catch (error) {
     console.error("Error fetching employee list:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -85,7 +85,7 @@ const getShift = async (payload) => {
   } catch (error) {
     console.error("Error fetching shift list:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -108,7 +108,7 @@ const getShiftAssignment = async (payload) => {
   } catch (error) {
     console.error("Error fetching shift assignment list:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -131,7 +131,7 @@ const getAttendance = async (payload) => {
   } catch (error) {
     console.error("Error fetching attendance list:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -164,7 +164,7 @@ const getAttendanceSummary = async (payload) => {
     console.error("Error fetching attendance list:", error);
 
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
 
     return false;
@@ -195,7 +195,7 @@ const saveAttendance = async (payload) => {
   } catch (error) {
     console.error("Error saving attendance:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -225,7 +225,7 @@ const saveBreak = async (payload) => {
   } catch (error) {
     console.error("Error saving break:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -248,7 +248,7 @@ const getBreak = async (payload) => {
   } catch (error) {
     console.error("Error fetching break list:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -381,7 +381,7 @@ const getStats = async (id) => {
   } catch (error) {
     console.error("Error fetching stats:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -405,7 +405,7 @@ const getShiftById = async (id) => {
   } catch (error) {
     console.error("Error fetching shift by id:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -421,7 +421,7 @@ const getAttendanceStats = async () => {
   } catch (error) {
     console.error("Error fetching shift by id:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -439,7 +439,7 @@ const getDepartmentPercentage = async () => {
   } catch (error) {
     console.error("Error fetching shift by id:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
@@ -454,7 +454,7 @@ const getWeeklySummary = async () => {
   } catch (error) {
     console.error("Error fetching shift by id:", error);
     if (error?.response?.status === 401) {
-      handleLogout();
+      HandleLogout();
     }
     return false;
   }
