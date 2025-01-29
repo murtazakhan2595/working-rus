@@ -3,6 +3,7 @@ import { SheetMenu } from "./sheet-menu";
 import { useNavigate } from 'react-router-dom';
 import SearchInput  from "./search";
 import UserNotifications from './user-notifications';
+import WebSocketNotifications from "./WebSocketNotifications";
 
 
 function Navbar({ title, setUserLogout, userRole }) {
@@ -15,20 +16,22 @@ function Navbar({ title, setUserLogout, userRole }) {
 
   return (
     <>
-    <header className="sticky top-0 z-0 w-full h-16 bg-white ">
-      <div className="flex items-center mx-4 sm:mx-8 h-14">
-        <div className="flex items-center space-x-4 lg:space-x-0">
-          <SheetMenu userRole={userRole}/>
-        </div>
+      <header className="sticky top-0 z-0 w-full h-16 bg-white ">
+        <div className="flex items-center mx-4 sm:mx-8 h-14">
+          <div className="flex items-center space-x-4 lg:space-x-0">
+            <SheetMenu userRole={userRole} />
+          </div>
 
-        <div className="flex items-center justify-end flex-1 space-x-2">
-        
-          {/* <SearchInput /> */}
-          <UserNotifications/>
-          <UserNav setUserLogout={handleLogout} />
+          <div className="flex items-center justify-end flex-1 space-x-2">
+            {/* <SearchInput /> */}
+            {/* <UserNotifications/>
+             */}
+            <WebSocketNotifications />
+
+            <UserNav setUserLogout={handleLogout} />
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
     </>
   );
 }
