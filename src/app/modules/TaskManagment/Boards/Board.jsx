@@ -15,7 +15,7 @@ import { FilterInput, SortingFilters } from "components/FormControl";
 import { PriorityList, TaskSortingFilters } from "data/Data";
 import { getProjectById, addProject } from "app/hooks/taskManagment";
 import { AlignRight } from "lucide-react";
-import TaskDetail from "./TaskDetail";
+import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 
 const Board = ({ TaskLabelList }) => {
   const navigate = useNavigate();
@@ -185,13 +185,18 @@ const Board = ({ TaskLabelList }) => {
       )}
       {/* Render TaskDetail component if isTaskDetailOpen is true */}
       {isTaskDetailOpen && (
-        <TaskDetail
+        <TaskEditAddViewDetails
           taskId={viewTaskId} // Pass task Id as props to TaskDetail
           isOpen={isTaskDetailOpen}
-          setIsOpen={(value) => {
+          setIsOpen={() => {
             setIsTaskDetailOpen(false);
             fetchData(true);
           }}
+          reloadData={() => {
+            setIsTaskDetailOpen(false);
+            fetchData(true);
+          }}
+          projectId={projectId}
         />
       )}
     </>

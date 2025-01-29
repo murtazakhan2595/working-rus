@@ -34,6 +34,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "../../../../src/@/components/ui/popover";
+import { TaskStatus } from "data/Data";
 
 import CustomTable from "components/CustomTable";
 // import { Status } from "app/modules/LeaveManagment/Sections";
@@ -42,7 +43,9 @@ export default function MyTasks() {
   const userProfile = useSelector((state) => state.user.userProfile);
   const [AllProjects, setAllProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({
+    assigned_to: [userProfile.id],
+  });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [filterOption, setFilterOption] = useState("All Projects");
   const [options, setOptions] = useState([]);
@@ -67,7 +70,15 @@ export default function MyTasks() {
   const fetchProjects = async (isMounted) => {
     setIsLoading(true);
     try {
-      const projectsData = await getAllProjects({ filterData }, userProfile);
+      const projectsData = await getAllProjects(
+        {
+          filterData:
+            userProfile.role === 2 || userProfile.role === 4
+              ? { project_members: [userProfile.id] }
+              : {},
+        },
+        userProfile
+      );
       if (isMounted && projectsData.results) {
         setAllProjects(projectsData?.results);
         fetchTasks(isMounted, projectsData.results);
@@ -84,10 +95,11 @@ export default function MyTasks() {
   const fetchTasks = async (isMounted, projects) => {
     setIsLoading(true);
     try {
+      debugger;
       const filter =
         filterOption === "All Projects"
-          ? {}
-          : { filterData: { project_id: [filterOption.id] } };
+          ? { filterData: filterData }
+          : { filterData: { ...filterData, project_id: [filterOption.id] } };
       const tasksData = await getAllTasks(filter);
       if (isMounted) {
         const mergedResult = mergeTasksWithProjects(tasksData, projects);
@@ -110,7 +122,6 @@ export default function MyTasks() {
     };
   }, [filterData]);
 
-
   useEffect(() => {
     const dynamicOptions = AllProjects?.map((project) => ({
       label: project.name,
@@ -131,38 +142,26 @@ export default function MyTasks() {
     setOptions(dynamicOptions);
   }, [AllProjects]);
 
-
   useEffect(() => {
     if (AllProjects.length > 0) {
       fetchTasks(true, AllProjects);
     }
   }, [filterOption, AllProjects]);
 
-  const statusDropdownOptions = [
-    {
-      label: "Completed",
-      onClick: () => {
-        setStatusFilter("completed");
-        setIsStatusDropdownOpen(false);
-      },
-    },
-    {
-      label: "Delayed",
-      onClick: () => {
-        setStatusFilter("delayed");
-        setIsStatusDropdownOpen(false);
-        setIsStatusDropdownOpen(false);
-      },
-    },
-    {
-      label: "On going",
-      onClick: () => {
-        setStatusFilter("on going");
-        setIsStatusDropdownOpen(false);
-        setIsStatusDropdownOpen(false);
-      },
-    },
-  ];
+  const handleFilterChange = (filterName, filterValue) => {
+    const updatedFilters = { ...filterData };
+
+    if (filterValue) {
+      // Update end_date with the provided value
+      updatedFilters[filterName] = filterValue;
+    } else {
+      // Remove end_date if the filterValue is null
+      delete updatedFilters[filterName];
+    }
+    // Update the filter data
+    setFilterData(updatedFilters);
+    return;
+  };
 
   return (
     <>
@@ -172,103 +171,100 @@ export default function MyTasks() {
             <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
               My Tasks
             </div>
-            
+
             <div className="flex items-center gap-3">
-            <Popover open={openStatus} onOpenChange={setOpenStatus}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={openStatus}
-                  className="w-[110px] justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
-                >
-                  {value ? value : "Status"} 
-                  <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="max-w-[2000px] p-0">
-                <Command>
-                  <CommandInput placeholder="Search status..." />
-                  <CommandList>
-                    <CommandEmpty>No status found.</CommandEmpty>
-                    <CommandGroup>
-                      {statusDropdownOptions.map((option) => (
-                        <CommandItem
-                          key={option.label}
-                          value={option.label}
-                          onSelect={() => {
-                            option.onClick();
-                            setValue(option.label);
-                            setOpenStatus(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              value === option.label
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {option.label}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
+              <Popover open={openStatus} onOpenChange={setOpenStatus}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openStatus}
+                    className="w-[110px] justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
+                  >
+                    {value ? value : "Status"}
+                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="max-w-[2000px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search status..." />
+                    <CommandList>
+                      <CommandEmpty>No status found.</CommandEmpty>
+                      <CommandGroup>
+                        {TaskStatus.map((option) => (
+                          <CommandItem
+                            key={option.label}
+                            value={option.label}
+                            onSelect={() => {
+                              handleFilterChange("status", option.value);
+                              setIsStatusDropdownOpen(false);
+                              setIsStatusDropdownOpen(false);
+                              setValue(option.label);
+                              setOpenStatus(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                value === option.label
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {option.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
               </Popover>
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className="w-[110px] justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
-                >
-                  {selectedProject ? selectedProject : "Projects"}
-                  <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="max-w-[200px] p-0">
-                <Command>
-                  <CommandInput placeholder="Search project..." />
-                  <CommandList>
-                    <CommandEmpty>No project found.</CommandEmpty>
-                    <CommandGroup>
-                      {options.map((option) => (
-                        <CommandItem
-                          key={option.label}
-                          value={option.label}
-                          onSelect={() => {
-                            option.onClick();
-                            setSelectedProject(option.label);
-                            setOpen(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              selectedProject === option.label
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {option.label}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-[110px] justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
+                  >
+                    {selectedProject ? selectedProject : "Projects"}
+                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="max-w-[200px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search project..." />
+                    <CommandList>
+                      <CommandEmpty>No project found.</CommandEmpty>
+                      <CommandGroup>
+                        {options.map((option) => (
+                          <CommandItem
+                            key={option.label}
+                            value={option.label}
+                            onSelect={() => {
+                              option.onClick();
+                              setSelectedProject(option.label);
+                              setOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedProject === option.label
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {option.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
-            
-           
-             
-           
           </CardTitle>
-          
         </CardHeader>
         <CardContent>
           {tasks?.length > 0 ? (
@@ -330,7 +326,9 @@ function RenderTask({ tasks }) {
               size="sm"
               className="rounded-sm font-semidbold"
             >
-              <Link to={`project-board/${render?.project_id}`}>View Task</Link>
+              <Link to={`project-board/${render?.project_id}/${render.id}`}>
+                View Task
+              </Link>
             </Button>
           ),
         },
