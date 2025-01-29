@@ -97,7 +97,7 @@ export default function TaskComments({
     };
 
     return (
-      <div className="flex items-center gap-2 text-sm text-gray-600">
+      <div className="flex items-center gap-2 text-sm text-gray-900">
         <span>{getActivityIcon(activity.action_type)}</span>
         <span>{activity.content}</span>
       </div>
