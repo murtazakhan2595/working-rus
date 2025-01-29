@@ -1,13 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Pencil, X } from "lucide-react";
-import { Plus, Search } from "lucide-react";
-import { TaskDetailBox } from "app/modules/TaskManagment/Sections";
 import { Checkbox } from "src/@/components/ui/checkbox";
 import { Button } from "components/ui/button";
 import { calculateTotalCount, calculatePercentage } from "utils/renderValues";
 import { Input } from "components/ui/input";
 import { deleteTaskCheckListItem } from "app/hooks/taskManagment";
-import { DetailBox, DetailCard } from "components/SheetCardExtension";
+import { DetailCard } from "components/SheetCardExtension";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
 
 export default function CheckList({ items = [], onChange, editMode = true }) {
@@ -57,7 +55,7 @@ export default function CheckList({ items = [], onChange, editMode = true }) {
       <div className="flex justify-between gap-4 flex-col">
         <div className="flex justify-between gap-3 flex-4 items-center">
           <Progress value={checkCompleted} className="mt-1 h-2 bg-gray-400" />
-          <span>{`${checkCompleted}%`}</span>
+          <span>{`${parseFloat(checkCompleted).toFixed(0)}%`}</span>
         </div>
         <div className="flex gap-2">
           <Input

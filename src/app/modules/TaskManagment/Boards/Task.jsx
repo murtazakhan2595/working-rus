@@ -21,6 +21,7 @@ import { getAttachmentDetails } from "app/hooks/taskManagment";
 const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
+  const [isSubtask, setIsSubtask] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   // State to manage TaskDetail visibility
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
@@ -67,13 +68,14 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
         />
       )}
-      <div
-        className="flex flex-col"
-        onClick={() => {
-          setIsTaskDetailOpen(true);
-        }}
-      >
-        <div className="my-2">
+      <div className="flex flex-col">
+        <div
+          className="my-2"
+          onClick={(e) => {
+            e.preventDefault();
+            setIsTaskDetailOpen(true);
+          }}
+        >
           {coverImage && (
             <img
               src={coverImage}
@@ -82,7 +84,13 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             />
           )}
         </div>
-        <div className="flex justify-start items-start py-0.5">
+        <div
+          className="flex justify-start items-start py-0.5"
+          onClick={(e) => {
+            e.preventDefault();
+            setIsTaskDetailOpen(true);
+          }}
+        >
           {task?.label && task?.label.length > 0 && (
             <Labels
               labelsSelected={task.label || []}
@@ -98,7 +106,32 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           </span>
         </div>
         <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
-          <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
+          <h3
+            className="text-base font-bold text-capitalize"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsTaskDetailOpen(true);
+            }}
+          >
+            {task?.name}
+          </h3>
+
+          {task?.description && (
+            <p
+              className="text-sm leading-5 truncate-text text-neutral-1000 image-none"
+              style={{ maxHeight: "100px" }}
+              onClick={(e) => {
+                e.preventDefault();
+                setIsTaskDetailOpen(true);
+              }}
+            >
+              <span>{`${task?.description
+                .replace(/<[^>]*>/g, "")
+                .slice(0, 130)}${
+                task?.description.length > 130 ? "..." : ""
+              }`}</span>
+            </p>
+          )}
           <div className="flex gap-3 justify-start font-semibold text-sm text-grey-1000 mt-3">
             {task?.relation &&
               task.relation.map((relation) => (
@@ -108,6 +141,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     setViewTaskDetail(relation);
+                    setIsTaskDetailOpen(true);
                   }}
                 >{`RT-${relation}`}</span>
               ))}
@@ -118,23 +152,13 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
                   className="hover:text-gray-800 "
                   onClick={(e) => {
                     e.preventDefault();
+                    setIsSubtask(true);
                     setViewTaskDetail(sub_task);
+                    setIsTaskDetailOpen(true);
                   }}
                 >{`ST-${sub_task}`}</span>
               ))}
           </div>
-          {task?.description && (
-            <p
-              className="text-sm leading-5 truncate-text text-neutral-1000 image-none"
-              style={{ maxHeight: "100px" }}
-            >
-              <span>{`${task?.description
-                .replace(/<[^>]*>/g, "")
-                .slice(0, 130)}${
-                task?.description.length > 130 ? "..." : ""
-              }`}</span>
-            </p>
-          )}
         </div>
         <footer className="flex justify-between py-2">
           <div className="flex items-center gap-1">
@@ -175,6 +199,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           reloadData={reloadData}
           projectId={projectId}
           boardId={task.board_id}
+          isSubtask={isSubtask}
         />
       )}
       {isEditCardOpen && (
@@ -184,6 +209,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           onClose={() => {
             setIsEditCardOpen(false);
             setIsTaskDetailOpen(false);
+            setIsSubtask(false);
             reloadData();
           }}
           setIsOpen={setIsEditCardOpen}
