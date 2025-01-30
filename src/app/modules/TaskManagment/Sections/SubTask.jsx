@@ -15,6 +15,7 @@ export default function Subtasks({
   boardId,
   employees,
   projectDetail,
+  fetchTaskData,
 }) {
   const [isAddSubtaskOpen, setIsAddSubtaskOpen] = useState(false);
   const [subtasks, setSubtasks] = useState([]);
@@ -22,27 +23,6 @@ export default function Subtasks({
   const navigate = useNavigate();
 
   console.log("Opening subtask dialog", { projectId, boardId, projectDetail });
-
-  const fetchSubtasks = async () => {
-    try {
-      const taskData = await getTaskById(taskId);
-      if (taskData.sub_task && taskData.sub_task.length > 0) {
-        const subtaskDetails = await Promise.all(
-          taskData.sub_task.map((subtaskId) => getSubtaskById(subtaskId))
-        );
-        setSubtasks(subtaskDetails);
-      }
-    } catch (error) {
-      console.error("Error fetching subtasks:", error);
-      toast.error("Failed to load subtasks");
-    }
-  };
-
-  useEffect(() => {
-    if (taskId) {
-      fetchSubtasks();
-    }
-  }, [taskId]);
 
   const handleAddSubtask = async () => {
     setIsAddSubtaskOpen(true);
@@ -67,7 +47,7 @@ export default function Subtasks({
           taskId
         );
         // Refresh the subtasks list
-        await fetchSubtasks();
+        fetchTaskData(true);
         // Close the dialog and clean up
         setIsAddSubtaskOpen(false);
       }
@@ -78,7 +58,7 @@ export default function Subtasks({
   };
   return (
     <div>
-      {/* List existing subtasks */}
+      {/* List existing subtasks
       <div className="space-y-2">
         {subtasks.map((subtask) => (
           <div
@@ -98,7 +78,7 @@ export default function Subtasks({
             <span>{subtask.name}</span>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Add Subtask Button */}
       <Button
@@ -118,8 +98,8 @@ export default function Subtasks({
       {/* Subtask Creation Dialog */}
       {isAddSubtaskOpen && (
         <TaskEditAddViewDetails
-        taskId={viewSubtasks}
-        isOpen={isAddSubtaskOpen}
+          taskId={viewSubtasks}
+          isOpen={isAddSubtaskOpen}
           setIsOpen={(value) => {
             setViewSubtasks(null);
             setIsAddSubtaskOpen(value);

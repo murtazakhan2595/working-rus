@@ -98,7 +98,6 @@ const InputTaskDetailFields = ({
           touch={touched.relation}
         />
       )}
-      {!isSubtask && (
         <SelectComponent
           name="status"
           options={TaskStatus}
@@ -110,7 +109,6 @@ const InputTaskDetailFields = ({
             onChange(field, value);
           }}
         />
-      )}
       {CustomFields &&
         CustomFields.map((CustomField) => {
           return (
