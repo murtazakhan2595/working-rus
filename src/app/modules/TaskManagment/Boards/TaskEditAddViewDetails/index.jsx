@@ -70,7 +70,7 @@ const TaskEditAddViewDetails = ({
   const [isEditMode, setIsEditMode] = useState(false);
   const [projectDetail, setProjectDetail] = useState(null);
   const [refreshComments, setRefreshComments] = useState(false);
-    const [subTasksDetails, setSubTasksDetails] = useState([]);
+  const [subTasksDetails, setSubTasksDetails] = useState([]);
 
   const employees = useSelector((state) => state.emp.employees);
 
@@ -140,12 +140,12 @@ const TaskEditAddViewDetails = ({
         setInitialValues(cardDetails);
         setIsLoading(false);
       }
-              if (cardDetails.sub_task && cardDetails.sub_task.length > 0) {
-                const subtaskDetails = await Promise.all(
-                  cardDetails.sub_task.map((subtaskId) => getSubtaskById(subtaskId))
-                );
-                setSubTasksDetails(subtaskDetails);
-              }
+      if (cardDetails.sub_task && cardDetails.sub_task.length > 0) {
+        const subtaskDetails = await Promise.all(
+          cardDetails.sub_task.map((subtaskId) => getTaskById(subtaskId))
+        );
+        setSubTasksDetails(subtaskDetails);
+      }
     } catch (error) {
       console.error("Error fetching task data:", error);
       toast.error("Failed to load task details. Please try again later.");
@@ -170,7 +170,6 @@ const TaskEditAddViewDetails = ({
       isMounted = false;
     };
   }, [taskId]);
-
 
   useEffect(() => {
     let isMounted = true;
@@ -417,7 +416,7 @@ const TaskEditAddViewDetails = ({
                           setIsEditMode(true);
                         }}
                         setAttachment={async (attachment) => {
-                          console.log(attachment)
+                          console.log(attachment);
                           await props.setFieldValue("attachment", attachment);
                           setIsEditMode(true);
                         }}
@@ -491,23 +490,24 @@ const TaskEditAddViewDetails = ({
                           />
                         )}
                       </div>
-                      {!isSubtask && (
-                        <DetailBox
-                          label={"Subtasks"}
-                          orientation="horizontal"
-                          value={
-                            <>
-                              <SubtaskList
-                                items={props.values.subtasks || []}
-                                projectId={projectId}
-                                taskId={taskId}
-                                boardId={boardId}
-                                subTasksDetails={subTasksDetails}
-                              />
-                            </>
-                          }
-                        />
-                      )}
+                      {!isSubtask &&
+                        subTasksDetails.length>0 && (
+                          <DetailBox
+                            label={"Subtasks"}
+                            orientation="horizontal"
+                            value={
+                              <>
+                                <SubtaskList
+                                  items={props.values.subtasks || []}
+                                  projectId={projectId}
+                                  taskId={taskId}
+                                  boardId={boardId}
+                                  subTasksDetails={subTasksDetails}
+                                />
+                              </>
+                            }
+                          />
+                        )}
                     </div>
                     <div className="flex flex-col w-[45%] gap-3">
                       <div>
