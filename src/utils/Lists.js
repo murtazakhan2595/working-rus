@@ -1,6 +1,6 @@
 import moment from "moment";
 import { getDarkerTextColor } from "app/modules/TaskManagment/Boards/Sections/getTaskStatus";
-
+import { Badge } from "components/ui/badge";
 export function getDropdownList(list, label = "name", value = "id") {
   if (!list || list.length === 0) return [];
   const dropdownList = list.map((obj) => {
@@ -33,14 +33,11 @@ export function getLabelDropdownList(list, label = "name", value = "id") {
   const dropdownList = list.map((obj) => {
     return {
       label: (
-        <div
-          key={obj[value]}
-          className={`text-xs font-semibold mr-2 px-2.5 py-0.5 rounded-lg flex items-center ${
-            obj?.color
-          } ${getDarkerTextColor(obj?.color)}`}
+        <Badge
+          className={`mr-2 ${obj?.color} ${getDarkerTextColor(obj?.color)}`}
         >
           {obj[label]}
-        </div>
+        </Badge>
       ),
       value: obj[value],
     };
@@ -181,7 +178,11 @@ export function convertJSONArrayToStringsArray(
  * @param {string} valueKey - The key name for the value (default: "value").
  * @returns {Array} - An array of JSON objects with custom keys.
  */
-export function convertStringsArrayToJsonArray(data, label = "name", valueKey = "value") {
+export function convertStringsArrayToJsonArray(
+  data,
+  label = "name",
+  valueKey = "value"
+) {
   // Check if the input is valid
   if (!Array.isArray(data) || data.length === 0) {
     return []; // Return an empty array if data is not valid
@@ -193,4 +194,3 @@ export function convertStringsArrayToJsonArray(data, label = "name", valueKey = 
     return { [label]: field, [valueKey]: value };
   });
 }
-

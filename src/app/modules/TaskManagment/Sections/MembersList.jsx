@@ -13,7 +13,17 @@ import { Search } from "lucide-react";
 import { Input } from "components/ui/input";
 import { MdClose } from "react-icons/md";
 
-const MembersList = ({ members, removeMember, displayAll = false }) => {
+// Custom comparison function for React.memo
+const areEqual = (prevProps, nextProps) => {
+  return (
+    prevProps.members === nextProps.members &&
+    prevProps.removeMember === nextProps.removeMember &&
+    prevProps.displayAll === nextProps.displayAll
+  );
+};
+
+// Wrap the component with React.memo for optimization with custom equality check
+const MembersList = React.memo(({ members, removeMember, displayAll = false }) => {
   // Get all employees data once at the component level
   const [searchQuery, setSearchQuery] = React.useState("");
   const employees = useSelector((state) => state.emp.employees_detail);
@@ -25,8 +35,10 @@ const MembersList = ({ members, removeMember, displayAll = false }) => {
         members.includes(employee.value)
     );
   }, [searchQuery, employees, members]);
+
   const displayedMembers = displayAll ? members : members?.slice(0, 3);
   const remainingCount = members.length - displayedMembers.length;
+
   // Helper function to get employee profile
   const getEmployeeProfile = (id) => {
     const employee = employees.find((option) => option.value === parseInt(id));
@@ -35,8 +47,6 @@ const MembersList = ({ members, removeMember, displayAll = false }) => {
       return {
         profile_picture: employeeProfilePicture,
         name: `${employee?.first_name} ${employee?.last_name}`,
-        // department_position: employee.department_position || "N/A",
-        // department: employee.department_name || "N/A",
         name_initials: `${employee?.first_name?.charAt(0) || ""}${
           employee?.last_name?.charAt(0) || ""
         }`,
@@ -47,9 +57,11 @@ const MembersList = ({ members, removeMember, displayAll = false }) => {
       name: "N/A",
     };
   };
+
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
+
   if (!members || members?.length <= 0) return null;
 
   return (
@@ -57,9 +69,7 @@ const MembersList = ({ members, removeMember, displayAll = false }) => {
       <PopoverTrigger asChild>
         <div className="flex items-center justify-center cursor-pointer">
           <div
-            className={`flex ${
-              !displayAll ? "-space-x-2.5" : "gap-1"
-            } h-10 items-center`}
+            className={`flex ${!displayAll ? "-space-x-2.5" : "gap-1"} h-10 items-center`}
           >
             {displayedMembers?.map((member, index) => {
               const { profile_picture, name, name_initials } =
@@ -132,6 +142,6 @@ const MembersList = ({ members, removeMember, displayAll = false }) => {
       </PopoverContent>
     </Popover>
   );
-};
+}, areEqual); // Use custom equality check
 
 export default MembersList;
