@@ -242,24 +242,6 @@ function TextEditorInputField({
               }}
             />
           </label>
-          {showLinkInput && (
-            <div className="flex items-center gap-2">
-              <input
-                type="url"
-                placeholder="Enter URL"
-                className="px-2 py-1 border rounded"
-                value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
-              />
-              <Button
-                variant="ghost"
-                onClick={handleLink}
-                className="px-2 py-1 bg-blue-500 text-white rounded"
-              >
-                Add
-              </Button>
-            </div>
-          )}
         </div>
         {attachments.length > 0 && displayAttachments && (
           <div className="p-1">
