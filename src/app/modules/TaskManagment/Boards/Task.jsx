@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { deleteTask } from "app/hooks/taskManagment";
 import { PriorityList } from "data/Data";
 import { BiComment } from "react-icons/bi";
-import { getStatusIconColor } from "./Sections";
+import { getStatus, getStatusIconColor } from "./Sections";
 import { CustomDropdown, MembersList, Labels } from "../Sections";
 import { ImAttachment } from "react-icons/im";
 import TimeIcon from "assets/images/timeIcon";
@@ -17,6 +17,13 @@ import { CheckBoxInput } from "components/FormControl";
 import { toast } from "react-toastify";
 import { addTask } from "app/hooks/taskManagment";
 import { getAttachmentDetails } from "app/hooks/taskManagment";
+import { Input } from "components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "src/@/components/ui/tooltip";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
@@ -224,9 +231,8 @@ const TimeStatusIcon = ({ task, getStatusIconColor, onUpdate }) => {
   const [showCheckbox, setShowCheckbox] = useState(false);
   const [isChecked, setIsChecked] = useState(task.status === "COMPLETED");
 
-  const handleStatusChange = async (name, value) => {
+  const handleStatusChange = async (value) => {
     try {
-      console.log("Checkbox clicked:", name, value);
       const newStatus = value ? "COMPLETED" : "INPROGRESS";
       const response = await addTask({
         ...task,
@@ -245,42 +251,100 @@ const TimeStatusIcon = ({ task, getStatusIconColor, onUpdate }) => {
   };
 
   const handleContainerClick = (e) => {
-    e.stopPropagation(); // Stop event from bubbling up to card
+    e.stopPropagation();
+    handleStatusChange(!isChecked);
+  };
+
+  const getBackgroundClass = (date) => {
+    if (isChecked) {
+      return "bg-[#ECFDF3]";
+    }
+
+    const status = getStatus(date);
+    if (status === "Due Today") {
+      return "bg-amber-100";
+    } else if (status === "Overdue") {
+      return "bg-[#ffe2e2]";
+    } else {
+      return "bg-gray-50";
+    }
+  };
+
+  const getIconColor = () => {
+    if (isChecked) {
+      return "#12B76A";
+    }
+    return getStatusIconColor(task?.end_date);
+  };
+
+  const getTooltipMessage = () => {
+    if (isChecked) {
+      return "The card is complete.";
+    }
+
+    const status = getStatus(task?.end_date);
+    if (status === "Overdue") {
+      return "The card is past due.";
+    } else if (status === "Due Today") {
+      return "The card is due today.";
+    } else {
+      return "The card is due later.";
+    }
+  };
+
+  const textStyle = {
+    color: getIconColor(),
   };
 
   return (
-    <div
-      className="flex items-center text-sm"
-      onMouseEnter={() => setShowCheckbox(true)}
-      onMouseLeave={() => setShowCheckbox(false)}
-      onClick={handleContainerClick}
-    >
-      <div className="relative w-5 h-5">
-        <div
-          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
-            showCheckbox ? "opacity-100 z-10" : "opacity-0 z-0"
-          }`}
-        >
-          <CheckBoxInput
-            label=""
-            name="status"
-            value={isChecked}
-            onChange={handleStatusChange}
-          />
-        </div>
-        <div
-          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
-            showCheckbox ? "opacity-0 z-0" : "opacity-100 z-10"
-          }`}
-        >
-          <TimeIcon color={getStatusIconColor(task?.end_date)} />
-        </div>
-      </div>
-      <div className="">{moment(task?.end_date).format("MMMM DD")}</div>
-    </div>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            className={`flex items-center text-sm rounded px-1 py-1 ${getBackgroundClass(
+              task?.end_date
+            )} cursor-pointer`}
+            onMouseEnter={() => setShowCheckbox(true)}
+            onMouseLeave={() => setShowCheckbox(false)}
+            onClick={handleContainerClick}
+          >
+            <div className="relative w-5 h-5">
+              <div
+                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
+                  showCheckbox ? "opacity-100 z-10" : "opacity-0 z-0"
+                }`}
+              >
+                <Input
+                  type="checkbox"
+                  checked={isChecked}
+                  value={isChecked}
+                  className="w-4 h-4"
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    handleStatusChange(!isChecked);
+                  }}
+                />
+              </div>
+              <div
+                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
+                  showCheckbox ? "opacity-0 z-0" : "opacity-100 z-10"
+                }`}
+              >
+                <TimeIcon color={getIconColor()} />
+              </div>
+            </div>
+            <div style={textStyle} className="select-none">
+              {moment(task?.end_date).format("MMMM DD")}
+            </div>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{getTooltipMessage()}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
-
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
