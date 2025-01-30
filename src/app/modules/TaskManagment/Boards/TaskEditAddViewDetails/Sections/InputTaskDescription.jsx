@@ -13,7 +13,7 @@ const InputTaskDescription = ({
   const [editingMode, setEditingMode] = useState(false);
   return (
     <div
-      onClick={(e) => {
+      onDoubleClick={(e) => {
         e.preventDefault();
         setEditingMode(true);
       }}

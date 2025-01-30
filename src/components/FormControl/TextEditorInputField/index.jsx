@@ -117,40 +117,60 @@ function TextEditorInputField({
   };
 
   const handlePaste = async (e) => {
-    debugger;
     e.preventDefault();
     const clipboardData = e.clipboardData || window.Clipboard;
     const items = clipboardData.items;
     let TextAdded = "";
 
     for (let item of items) {
-      if (item.type.startsWith("image/")) {
-        const file = item.getAsFile();
-        if (file && upload) {
-          const uploadedImage = await upload(file);
-          if (uploadedImage?.attachment) {
-            execCommand("insertImage", uploadedImage.attachment);
-            handleFileChange(uploadedImage);
+      const itemType = item.type;
+      if (itemType)
+        if (itemType.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (file && upload) {
+            const uploadedImage = await upload(file);
+            if (uploadedImage?.attachment) {
+              execCommand("insertImage", uploadedImage.attachment);
+              handleFileChange(uploadedImage);
+            }
+          }
+        } else if (
+          itemType.startsWith("text/html") ||
+          itemType.startsWith("text/plain")
+        ) {
+          const html = clipboardData.getData("text/html");
+          const text = clipboardData.getData("text/plain");
+          if (text.startsWith("http")) {
+            debugger;
+           // try {
+            //   const response = await fetch(text, { mode: "cors" }); // Attempt CORS fetch
+            //   const html = await response.text(); // Get raw HTML
+        
+            //   // Extract <title> using regex
+            //   const match = html.match(/<title>(.*?)<\/title>/i);
+            //   const title = match ? match[1] : "Unknown Page";
+        
+            //   execCommand("insertHTML", `<a href="${text}" target="_blank">${title}</a>`);
+            // } catch (error) {
+            //   console.error("Error fetching page title:", error);
+            //   execCommand("createLink", text); // Fallback
+            // }
+            execCommand("insertHTML", `<a href="${text}" target="_blank">${text}</a>`);
+            return;
+          } else {
+            if (html) {
+              if (html !== TextAdded) {
+                execCommand("insertHTML", html);
+                TextAdded = html;
+              }
+            } else if (text) {
+              if (text !== TextAdded) {
+                execCommand("insertText", text);
+                TextAdded = text;
+              }
+            }
           }
         }
-      } else if (
-        item.type.startsWith("text/html") ||
-        item.type.startsWith("text/plain")
-      ) {
-        const html = clipboardData.getData("text/html");
-        const text = clipboardData.getData("text/plain");
-        if (html) {
-          if (html !== TextAdded) {
-            execCommand("insertHTML", html);
-            TextAdded = html;
-          }
-        } else if (text) {
-          if (text !== TextAdded) {
-            execCommand("insertText", text);
-            TextAdded = text;
-          }
-        }
-      }
     }
     // const text = clipboardData.getData("text/plain");
     // if (text && text.startsWith("http")) {
