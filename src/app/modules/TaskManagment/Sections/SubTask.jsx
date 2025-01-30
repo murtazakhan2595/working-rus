@@ -20,7 +20,6 @@ export default function Subtasks({
   const [isAddSubtaskOpen, setIsAddSubtaskOpen] = useState(false);
   const [subtasks, setSubtasks] = useState([]);
   const [viewSubtasks, setViewSubtasks] = useState(null);
-  const navigate = useNavigate();
 
   console.log("Opening subtask dialog", { projectId, boardId, projectDetail });
 
@@ -58,27 +57,6 @@ export default function Subtasks({
   };
   return (
     <div>
-      {/* List existing subtasks
-      <div className="space-y-2">
-        {subtasks.map((subtask) => (
-          <div
-            key={subtask.id}
-            className="flex items-center justify-between p-2 rounded-lg border border-gray-200 cursor-pointer"
-            onClick={() => {
-              console.log(
-                "Navigating to subtask:",
-                subtask.id,
-                `/project-board/${projectId}/${subtask.id}`
-              );
-              //navigate(`/project-board/${projectId}/${subtask.id}`);
-              setViewSubtasks(subtask.id);
-              setIsAddSubtaskOpen(true);
-            }}
-          >
-            <span>{subtask.name}</span>
-          </div>
-        ))}
-      </div> */}
 
       {/* Add Subtask Button */}
       <Button
