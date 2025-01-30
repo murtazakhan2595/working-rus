@@ -31,13 +31,10 @@ export default function Subtasks({
     try {
       const subTask = await addSubtask({ tasks: [newTask.id] });
       if (subTask) {
-        console.log("Subtask created:", subTask);
         // Get current parent task
         const parentTask = await getTaskById(taskId);
         // Update parent task's sub_task array
         const updatedSubTasks = [...(parentTask.sub_task || []), subTask.id];
-        console.log("Updated subtasks:", updatedSubTasks);
-        console.log("Parent task newTask.id:", newTask.id);
         // Update the parent task
         await addTask(
           {

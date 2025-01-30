@@ -16,7 +16,7 @@ import {
   Attachments,
 } from "app/modules/TaskManagment/Sections";
 import { Button } from "components/ui/button";
-import { ArrowLeft, Trash ,Archive} from "lucide-react";
+import { ArrowLeft, Trash, Archive } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { PageLoader } from "components";
@@ -353,7 +353,7 @@ const TaskEditAddViewDetails = ({
                           }}
                         >
                           Move to Archive
-                          <Archive size={15} className="ml-1" />
+                          {/* <Archive size={15} className="ml-1" /> */}
                         </Button>
                       )}
                       {/* {taskId && (
@@ -417,8 +417,7 @@ const TaskEditAddViewDetails = ({
                           setIsEditMode(true);
                         }}
                         setAttachment={async (attachment) => {
-                          debugger;
-                          const attachments = props.values.attachment || [];
+                          console.log(attachment)
                           await props.setFieldValue("attachment", attachment);
                           setIsEditMode(true);
                         }}

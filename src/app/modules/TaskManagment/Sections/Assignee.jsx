@@ -27,9 +27,6 @@ export default function Assignee({
   editMode = true,
 }) {
 
-  // console.log("assigneeSelected", assigneeSelected);
-  // console.log("projectMembers", projectMembers);
-  // console.log("employees", employees);
   const [searchQuery, setSearchQuery] = React.useState("");
   // Filter labels based on search query
   const filteredEmployees = React.useMemo(() => {
