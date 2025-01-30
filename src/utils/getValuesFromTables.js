@@ -201,7 +201,15 @@ function getOrganizationCountryFullName(countryCode, countryOptions) {
   return country ? country.label : countryCode;
 }
 
+const getStatusLabel = (statusValue, TaskStatus) => {
+  return (
+    TaskStatus.find((status) => status.value === statusValue)?.label ||
+    statusValue
+  );
+};
+
 export {
+  getStatusLabel,
   getCountryFullName,
   ResignationReason,
   getEmployeeType,
