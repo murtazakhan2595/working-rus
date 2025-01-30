@@ -16,13 +16,13 @@ const validationTaskFormSchema = (values) => {
     errors.assigned_to = "At least one assignee is required";
 
   // Validate Attachments
-  if (values.attachment && values.attachment.length > 0) {
+  if (values.attachment && values.attachment.length > 0&& Array.isArray(values.attachment) )  {
     const invalidAttachments = values.attachment
       .filter(
         (file) =>
-          file.attachments &&
-          file.attachments instanceof File &&
-          file.attachments.size > maxSize2MB // Check valid File objects and size
+          file.attachment &&
+          file.attachment instanceof File &&
+          file.attachment.size > maxSize2MB // Check valid File objects and size
       )
       .map((file) => file.name); // Collect file names of invalid attachments
 

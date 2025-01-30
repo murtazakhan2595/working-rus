@@ -20,9 +20,6 @@ export default function Subtasks({
   const [subtasks, setSubtasks] = useState([]);
   const [viewSubtasks, setViewSubtasks] = useState(null);
   const navigate = useNavigate();
-
-  console.log("Opening subtask dialog", { projectId, boardId, projectDetail });
-
   const fetchSubtasks = async () => {
     try {
       const taskData = await getTaskById(taskId);
@@ -52,13 +49,10 @@ export default function Subtasks({
     try {
       const subTask = await addSubtask({ tasks: [newTask.id] });
       if (subTask) {
-        console.log("Subtask created:", subTask);
         // Get current parent task
         const parentTask = await getTaskById(taskId);
         // Update parent task's sub_task array
         const updatedSubTasks = [...(parentTask.sub_task || []), subTask.id];
-        console.log("Updated subtasks:", updatedSubTasks);
-        console.log("Parent task newTask.id:", newTask.id);
         // Update the parent task
         await addTask(
           {
@@ -85,11 +79,6 @@ export default function Subtasks({
             key={subtask.id}
             className="flex items-center justify-between p-2 rounded-lg border border-gray-200 cursor-pointer"
             onClick={() => {
-              console.log(
-                "Navigating to subtask:",
-                subtask.id,
-                `/project-board/${projectId}/${subtask.id}`
-              );
               //navigate(`/project-board/${projectId}/${subtask.id}`);
               setViewSubtasks(subtask.id);
               setIsAddSubtaskOpen(true);
