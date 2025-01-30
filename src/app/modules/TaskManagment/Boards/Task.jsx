@@ -24,11 +24,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
+import { getTaskById } from "app/hooks/taskManagment";
+import { ListChecks } from "lucide-react";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const [isSubtask, setIsSubtask] = useState(false);
+  const [subTasksDetails, setSubTasksDetails] = useState([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   // State to manage TaskDetail visibility
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
@@ -36,6 +39,15 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   const handleDelete = () => {
     setIsDeleteModalOpen(true);
   };
+
+  const fetchSubtasks = async () => {
+    if (task.sub_task && task.sub_task.length > 0) {
+      const subtaskDetails = await Promise.all(
+        task.sub_task.map((subtaskId) => getTaskById(subtaskId))
+      );
+      setSubTasksDetails(subtaskDetails);
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,6 +59,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
     if (task?.attachment?.length > 0) {
       fetchData();
     }
+    fetchSubtasks()
   }, [task]);
 
   const confirmDelete = async () => {
@@ -152,18 +165,26 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
                   }}
                 >{`RT-${relation}`}</span>
               ))}
-            {task?.sub_task &&
-              task.sub_task.map((sub_task) => (
-                <span
-                  key={sub_task}
-                  className="hover:text-gray-800 "
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setIsSubtask(true);
-                    setViewTaskDetail(sub_task);
-                    setIsTaskDetailOpen(true);
-                  }}
-                >{`ST-${sub_task}`}</span>
+            {subTasksDetails &&
+              subTasksDetails.map((sub_task) => (
+                <TooltipProvider key={sub_task.id}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span
+                        className="hover:text-gray-800 cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setIsSubtask(true);
+                          setViewTaskDetail(sub_task.id);
+                          setIsTaskDetailOpen(true);
+                        }}
+                      >{`ST-${sub_task.id}`}</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{sub_task.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ))}
           </div>
         </div>
@@ -189,6 +210,10 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
               <ImAttachment />
               <div>{task?.attachment_count || 0}</div>
+            </div>
+            <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
+              <ListChecks size={16}/>
+              <div>{task?.sub_task?.length || 0}</div>
             </div>
           </div>
         </footer>
