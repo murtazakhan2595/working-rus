@@ -76,7 +76,7 @@ const SelectMultiInputComponent = React.memo(
                       useValueAsIdentifier ? (
                         <span
                           key={val}
-                          className="bg-plum-300 text-plum-800 text-xs font-semibold px-2.5 py-0.5 rounded-lg flex items-center max-w-[100%]"
+                          className="bg-plum-300 text-plum-800 text-xs font-semibold px-2.5 py-0.5 rounded-lg flex items-center max-w-[100%] overflow-hidden"
                         >
                           {options.find((opt) => opt.value === val)?.label}
                         </span>
