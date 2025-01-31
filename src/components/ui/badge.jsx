@@ -34,13 +34,14 @@ const badgeVariants = cva(
 )
 
 function Badge({
+  key,
   className,
   variant,
   dot,
   ...props
 }) {
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props}>
+    <div key={key} className={cn(badgeVariants({ variant }), className)} {...props}>
       {dot && <span className={`w-3 h-3 rounded-full ${dot}`} />}
       {props.children}
     </div>

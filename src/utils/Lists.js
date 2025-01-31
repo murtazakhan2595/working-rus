@@ -1,6 +1,7 @@
 import moment from "moment";
 import { getDarkerTextColor } from "app/modules/TaskManagment/Boards/Sections/getTaskStatus";
 import { Badge } from "components/ui/badge";
+import { lightenColor } from "utils/renderValues";
 export function getDropdownList(list, label = "name", value = "id") {
   if (!list || list.length === 0) return [];
   const dropdownList = list.map((obj) => {
@@ -34,7 +35,11 @@ export function getLabelDropdownList(list, label = "name", value = "id") {
     return {
       label: (
         <Badge
-          className={`mr-2 ${obj?.color} ${getDarkerTextColor(obj?.color)}`}
+          className={`mr-2`}
+          style={{
+            background: lightenColor(obj?.color,85),
+            color: obj.color,
+          }}
         >
           {obj[label]}
         </Badge>

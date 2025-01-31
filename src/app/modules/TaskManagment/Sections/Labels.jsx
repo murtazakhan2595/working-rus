@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Plus, Search } from "lucide-react";
+import { Plus,Trash, Edit } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -8,64 +8,91 @@ import {
 import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
 import { Label } from "src/@/components/ui/label";
-import { Checkbox } from "src/@/components/ui/checkbox";
-import { Card } from "components/ui/card";
-import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { getDarkerTextColor } from "app/modules/TaskManagment/Boards/Sections/getTaskStatus";
-import { getAllLabels } from "app/hooks/taskManagment";
-import { TaskDetailBox } from "app/modules/TaskManagment/Sections";
+import {
+  addTaskLabel,
+  deleteTaskLabel,
+  getTaskLabelById,
+} from "app/hooks/taskManagment";
 import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
-import { getDropdownList, getLabelDropdownList } from "utils/Lists";
+import { getLabelDropdownList } from "utils/Lists";
+import { lightenColor } from "utils/renderValues";
 import { SelectMultiInputComponent } from "components/FormControl";
-import { Calendar, Flag } from "lucide-react";
+import { Badge } from "components/ui/badge";
 
-const headers = () => ({
-  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-  "Content-Type": "application/json",
+export const TaskLabelBadge = React.memo(({ label }) => {
+  return (
+    <Badge
+      key={label.id}
+      className={`mr-2`}
+      style={{
+        background: lightenColor(label?.color, 85),
+        color: label.color,
+      }}
+    >
+      {label?.name}
+    </Badge>
+  );
 });
 
-const Labels = React.memo(
-  ({ labelsSelected, onSelectedLabelsChange = () => {}, editMode = true }) => {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [showNewLabel, setShowNewLabel] = useState(false);
-    const [newLabelTitle, setNewLabelTitle] = useState("");
-    const [selectedColor, setSelectedColor] = useState("bg-purple-300");
-    const baseUrl = useSelector((state) => state.user.baseUrl);
-    const labelsList = useSelector((state) => state.task_managment.task_labels);
+export const AddNewLabel = React.memo(
+  ({ showNewLabel = false, setShowNewLabel = () => {}, labelId = null }) => {
     const dispatch = useDispatch();
-    const TaskLabelListOptions = getLabelDropdownList(labelsList);
-
-    const filteredLabels = useMemo(() => {
-      return labelsList?.filter((label) =>
-        label.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }, [searchQuery, labelsList]);
-
-    const handleLabelToggle = (labelId) => {
-      if (labelsSelected.includes(labelId)) {
-        const updatedLabels = labelsSelected.filter((id) => id !== labelId);
-        onSelectedLabelsChange(updatedLabels);
-        return updatedLabels;
-      } else {
-        const updatedLabels = [...labelsSelected, labelId];
-        onSelectedLabelsChange(updatedLabels);
-        return updatedLabels;
+    const [selectedColor, setSelectedColor] = useState("#1B1B1B");
+    const [newLabelTitle, setNewLabelTitle] = useState("");
+    const colorTextMapping = [
+      "#641e16",
+      "#17202a",
+      "#7b7d7d",
+      "#7d6608",
+      "#186a3b",
+      "#2874a6",
+      "#6c3483",
+      "#e74c3c",
+      "#CC6633",
+      "#FFCC00",
+      "#669900",
+      "#00acc1",
+      "#5c6bc0",
+      "#ff9800",
+      "#8d6e63",
+    ];
+    const fetchTaskLabelData = async (isMounted) => {
+      try {
+        const labelDetails = await getTaskLabelById(labelId);
+        if (!labelDetails) {
+          throw new Error("Label details not found.");
+        }
+        if (isMounted) {
+          setSelectedColor(labelDetails.color);
+          setNewLabelTitle(labelDetails.name);
+        }
+      } catch (error) {
+        console.error("Error fetching task data:", error);
       }
     };
 
-    const handleSaveNewLabel = async () => {
+    useEffect(() => {
+      let isMounted = true;
+      if (labelId) fetchTaskLabelData(isMounted);
+      return () => {
+        isMounted = false;
+      };
+    }, [labelId]);
+
+    const handleSaveNewLabel = async (e) => {
       try {
-        const formData = new FormData();
-        formData.append("name", newLabelTitle);
-        formData.append("color", selectedColor);
+        const response = await addTaskLabel(
+          {
+            name: newLabelTitle,
+            color: selectedColor,
+            id: labelId,
+          },
+          labelId
+        );
 
-        const response = await axios.post(`${baseUrl}/TaskLabel`, formData, {
-          headers: headers(),
-        });
-
-        if (response.status === 201) {
+        if (response) {
           dispatch(fetchTaskLabels());
           toast.success("Label Added!", {
             position: toast.POSITION.TOP_RIGHT,
@@ -76,48 +103,145 @@ const Labels = React.memo(
       } finally {
         setShowNewLabel(false);
         setNewLabelTitle("");
-        setSelectedColor("bg-purple-300");
+        setSelectedColor("#1B1B1B");
       }
     };
 
-    const handleSearchChange = (e) => {
-      setSearchQuery(e.target.value);
+    return (
+      <Popover open={showNewLabel} onOpenChange={setShowNewLabel}>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="w-full justify-start">
+            <Plus className="w-4 h-4 mr-2" />
+            New label
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-80" align="start">
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg">Label</h3>
+            <div className="space-y-2">
+              <Label>Badge</Label>
+              {selectedColor && (
+                <div
+                  className={`w-full h-12 rounded-lg`}
+                  style={{ background: selectedColor }}
+                />
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label>Title</Label>
+              <Input
+                placeholder="Label"
+                value={newLabelTitle}
+                onChange={(e) => setNewLabelTitle(e.target.value)}
+              />
+            </div>
+
+            <div className="grid grid-cols-5 gap-2">
+              {colorTextMapping.map((color, index) => (
+                <button
+                  key={index} // Consider using a unique key if available
+                  className={`w-12 h-8 rounded-md ${
+                    selectedColor === color
+                      ? "ring-2 ring-offset-2 ring-black"
+                      : ""
+                  }`}
+                  style={{ background: color }}
+                  onClick={() => setSelectedColor(color)}
+                />
+              ))}
+            </div>
+
+            <div className="flex justify-between pt-4">
+              <Button variant="outline" onClick={() => setShowNewLabel(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveNewLabel}>Save</Button>
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
+    );
+  }
+);
+
+const Labels = React.memo(
+  ({ labelsSelected = [], onSelectedLabelsChange = () => {}, editMode = true }) => {
+    const dispatch = useDispatch();
+    const [showNewLabel, setShowNewLabel] = useState(false);
+    const [LabelID, setLabelID] = useState(null);
+    const labelsList = useSelector((state) => state.task_managment.task_labels);
+    const TaskLabelListOptions = getLabelDropdownList(labelsList);
+
+    const handleDeleteLabel = async (labelId) => {
+      const response = await deleteTaskLabel(labelId);
+      try {
+        if (response) {
+          dispatch(fetchTaskLabels());
+          toast.success("Label Deleted!", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        }
+      } catch (error) {
+        console.error("Error saving label:", error);
+      }
     };
 
-    return editMode ? (
-      <SelectMultiInputComponent
-        name="label"
-        options={TaskLabelListOptions}
-        label={"Label"}
-        value={labelsSelected || []}
-        valueIdentifier={false}
-        onChange={(field, value) => {
-          onSelectedLabelsChange(value);
-        }}
-        addNewOption={true}
-        NewOptionButtonDetail={{
-          buttonValue: "Add New Label",
-          onClick: () => {},
-        }}
-      />
-    ) : (
-      labelsSelected && labelsSelected.length > 0 && (
-        <ul className="flex flex-wrap gap-2">
-          {labelsSelected?.map((labelId) => {
-            const label = labelsList?.find((label) => label.id === labelId);
-            return (
-              <li
-                key={labelId}
-                className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                  label?.color
-                } ${getDarkerTextColor(label?.color)}`}
-              >
-                {label?.name}
-              </li>
-            );
-          })}
-        </ul>
-      )
+    return (
+      <>
+        {editMode ? (
+          <SelectMultiInputComponent
+            name="label"
+            options={TaskLabelListOptions}
+            label={"Label"}
+            value={labelsSelected || []}
+            useValueAsIdentifier={false}
+            onChange={(field, value) => {
+              onSelectedLabelsChange(value);
+            }}
+            allowNewOption={true}
+            newOptionConfig={{
+              buttonValue: "Add New Label",
+              onClick: () => {
+                setShowNewLabel(true);
+              },
+            }}
+            showOptionsActions={true}
+            optionsActions={[
+              {
+                content: <Edit />,
+                onClick: (labelId) => {
+                  setLabelID(labelId);
+                  setShowNewLabel(true);
+                },
+              },
+              {
+                content: <Trash />,
+                onClick: (labelId) => {
+                  handleDeleteLabel(labelId);
+                },
+              },
+            ]}
+          />
+        ) : (
+          labelsSelected &&
+          labelsSelected.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {labelsSelected?.map((labelId) => {
+                const label = labelsList?.find((label) => label.id === labelId);
+                return <TaskLabelBadge label={label} />;
+              })}
+            </div>
+          )
+        )}
+        {showNewLabel && (
+          <AddNewLabel
+            showNewLabel={showNewLabel}
+            setShowNewLabel={setShowNewLabel}
+            labelId={LabelID}
+          />
+        )}
+      </>
     );
   }
 );

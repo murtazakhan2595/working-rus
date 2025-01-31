@@ -25,58 +25,55 @@ const SelectMultiInputComponent = React.memo(
     value = [],
     label,
     onChange,
-    required,
-    classes = "flex flex-col gap-4",
+    required = false,
+    className = "flex flex-col gap-4",
     icon,
-    valueIdentifier = true,
-    addNewOption = false,
-    NewOptionButtonDetail = {
-      buttonValue: "Add",
-      onClick: () => {},
-    },
+    useValueAsIdentifier = true,
+    allowNewOption = false,
+    newOptionConfig = {},
+    showOptionsActions = false,
+    optionsActions = [],
   }) => {
-    const [open, setOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const selectedValues = value;
+    // Handle selection toggle
+    const handleSelectionToggle = useCallback(
+      (optionValue) => {
+        const updatedSelection = selectedValues.includes(optionValue)
+          ? selectedValues.filter((item) => item !== optionValue)
+          : [...selectedValues, optionValue];
 
-    const handleSelect = useCallback(
-      (option) => {
-        const newValue = value.includes(option)
-          ? value.filter((item) => item !== option)
-          : [...value, option];
-        onChange(name, newValue);
+        onChange(name, updatedSelection);
       },
-      [value, onChange, name]
-    );
-
-    const handleRemove = useCallback(
-      (option) => {
-        const newValue = value.filter((item) => item !== option);
-        onChange(name, newValue);
-      },
-      [value, onChange, name]
+      [selectedValues, onChange, name]
     );
 
     return (
-      <div className={classes}>
+      <div className={className}>
+        {/* Label */}
         {label && (
           <Label htmlFor={name}>
             {required && <span className="text-red-600">* </span>}
             {label}
           </Label>
         )}
-        <Popover open={open} onOpenChange={setOpen}>
+
+        {/* Dropdown Trigger */}
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               role="combobox"
-              aria-expanded={open}
+              aria-expanded={isOpen}
               className="flex-wrap justify-between w-full rounded-sm h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
             >
               <div className="flex justify-start w-full gap-2">
                 {icon && <div className="w-4">{icon}</div>}
-                <div className="flex flex-wrap justify-start gap-2 items-center max-w-[95%]">
-                  {value.length > 0 ? (
-                    value.map((val) =>
-                      valueIdentifier ? (
+
+                <div className="flex flex-wrap gap-2 items-center max-w-[95%]">
+                  {selectedValues.length > 0 ? (
+                    selectedValues.map((val) =>
+                      useValueAsIdentifier ? (
                         <span
                           key={val}
                           className="bg-plum-300 text-plum-800 text-xs font-semibold px-2.5 py-0.5 rounded-lg flex items-center max-w-[100%]"
@@ -93,10 +90,13 @@ const SelectMultiInputComponent = React.memo(
                     </span>
                   )}
                 </div>
+
                 <ChevronsUpDown className="w-4 h-4 ml-2 ml-auto opacity-50 shrink-0" />
               </div>
             </Button>
           </PopoverTrigger>
+
+          {/* Dropdown Content */}
           <PopoverContent className="w-[300px] p-0">
             <Command>
               <CommandInput
@@ -106,41 +106,71 @@ const SelectMultiInputComponent = React.memo(
               <CommandList>
                 <CommandEmpty>No options found.</CommandEmpty>
                 <CommandGroup>
-                  {options.map((option) => (
+                  {options.map(({ value, label }) => (
                     <CommandItem
-                      key={option.value}
-                      onSelect={() => handleSelect(option.value)}
+                      key={value}
+                      onSelect={() => handleSelectionToggle(value)}
                     >
-                      <Check
-                        className={`mr-2 h-4 w-4 ${
-                          value.includes(option.value)
-                            ? "opacity-100"
-                            : "opacity-0"
-                        }`}
-                      />
-                      {option.label}
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center">
+                          <Check
+                            className={`mr-2 h-4 w-4 ${
+                              selectedValues.includes(value)
+                                ? "opacity-100"
+                                : "opacity-0"
+                            }`}
+                          />
+                          {label}
+                        </div>
+
+                        {/* Action Buttons */}
+                        {showOptionsActions && (
+                          <div className="flex">
+                            {optionsActions.map(
+                              ({ content, onClick }, index) => (
+                                <Button
+                                  key={index}
+                                  variant="ghost"
+                                  size="sm"
+                                  className={`w-10 h-4`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onClick?.(value);
+                                  }}
+                                >
+                                  {content}
+                                </Button>
+                              )
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </CommandItem>
                   ))}
                 </CommandGroup>
               </CommandList>
             </Command>
-            {addNewOption && (
+
+            {/* Add New Option Button */}
+            {allowNewOption && (
               <div className="my-3 px-8">
                 <Button
-                  key={options.length + 1}
+                  key="add-new-option"
                   onClick={(e) => {
                     e.preventDefault();
-                    NewOptionButtonDetail.onClick();
+                    newOptionConfig.onClick();
                   }}
-                   className={`w-full`}
+                  className="w-full"
                   size="sm"
                 >
-                  {NewOptionButtonDetail.buttonValue}
+                  {newOptionConfig.buttonValue}
                 </Button>
               </div>
             )}
           </PopoverContent>
         </Popover>
+
+        {/* Error Message */}
         {error && touch && <div className="text-red-600 text-sm">{error}</div>}
       </div>
     );
