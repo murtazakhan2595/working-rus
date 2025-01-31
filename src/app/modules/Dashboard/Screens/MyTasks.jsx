@@ -3,6 +3,7 @@ import { getAllTasks, getAllProjects } from "app/hooks/taskManagment";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { EmployeeName } from "utils/getValuesFromTables";
 import {
   getStatusClass,
   getStatusIconColor,
@@ -18,7 +19,7 @@ import {
 import { Button } from "../../../../components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
-
+import { lightenColor } from "utils/renderValues";
 import { cn } from "../../../../src/@/lib/utils";
 
 import {
@@ -95,7 +96,6 @@ export default function MyTasks() {
   const fetchTasks = async (isMounted, projects) => {
     setIsLoading(true);
     try {
-      debugger;
       const filter =
         filterOption === "All Projects"
           ? { filterData: filterData }
@@ -278,18 +278,14 @@ export default function MyTasks() {
   );
 }
 
-const getStatusLabel = (status) => {
+const getStatusLabelBackground = (status) => {
   switch (status) {
-    case "complete":
-      return "Complete";
-    case "in_progress":
-      return "In Progress";
-    case "delay":
-      return "Delay";
-    case "pending":
-      return "Pending";
+    case "INPROGRESS":
+      return lightenColor("#669900", 85);
+    case "COMPLETED":
+      return lightenColor("#12B76A", 85);
     default:
-      return "In Progress";
+      return lightenColor("#84828E", 85);
   }
 };
 function RenderTask({ tasks }) {
@@ -307,13 +303,20 @@ function RenderTask({ tasks }) {
                 <div className="font-semibold text-neutral-1200">
                   {render.name}
                 </div>
-                <div className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2 py-2 h-[22px] rounded-full border border-mauve-500 flex items-center justify-center">
-                  {getStatusLabel(render.status)}
+                <div
+                  className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2 py-2 h-[22px] rounded-full border border-mauve-500 flex items-center justify-center"
+                  style={{
+                    background: getStatusLabelBackground(render.status),
+                  }}
+                >
+                  {TaskStatus.find((obj) => obj.value === render.status).label}
                 </div>
               </div>
               <div className="text-neutral-1000">
-                Due on {moment(render?.due_date).format("MMMM DD")} - Created by
-                Name of employee
+                {render?.end_date
+                  ? `Due on ${moment(render?.end_date).format("MMMM DD")} - `
+                  : ""}
+                Created by <EmployeeName value={render?.assigned_by} />
               </div>
             </div>
           ),
@@ -332,24 +335,6 @@ function RenderTask({ tasks }) {
             </Button>
           ),
         },
-        // {
-        //   text: "Action",
-        //   formatter: () => (
-        //     <DropdownMenu>
-        //       <DropdownMenuTrigger asChild>
-        //         <Button aria-haspopup="true" size="icon" variant="ghost">
-        //           <MoreHorizontal className="w-4 h-4" />
-        //           <span className="sr-only">Toggle menu</span>
-        //         </Button>
-        //       </DropdownMenuTrigger>
-        //       <DropdownMenuContent align="end">
-        //         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        //         <DropdownMenuItem>Edit</DropdownMenuItem>
-        //         <DropdownMenuItem>Delete</DropdownMenuItem>
-        //       </DropdownMenuContent>
-        //     </DropdownMenu>
-        //   ),
-        // },
       ]}
       data={tasks?.slice(0, 5).map((task) => ({
         ...task,

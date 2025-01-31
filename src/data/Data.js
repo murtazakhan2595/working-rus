@@ -337,9 +337,15 @@ export const PriorityList = [
 ];
 
 export const TaskStatus = [
-  { value: "TODO", label: "Todo" },
-  { value: "INPROGRESS", label: "In Progress" },
-  { value: "COMPLETED", label: "Completed" },
+  { value: "TODO", label: <span style={{ color: "#84828E" }}>Todo</span> },
+  {
+    value: "INPROGRESS",
+    label: <span style={{ color: "#669900" }}>In Progress</span>,
+  },
+  {
+    value: "COMPLETED",
+    label: <span style={{ color: "#12B76A" }}>Completed</span>,
+  },
 ];
 export const PriorityListIcons = [
   {
