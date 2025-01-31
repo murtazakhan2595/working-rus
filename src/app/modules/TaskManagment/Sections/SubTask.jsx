@@ -15,34 +15,13 @@ export default function Subtasks({
   boardId,
   employees,
   projectDetail,
+  fetchTaskData,
 }) {
   const [isAddSubtaskOpen, setIsAddSubtaskOpen] = useState(false);
   const [subtasks, setSubtasks] = useState([]);
   const [viewSubtasks, setViewSubtasks] = useState(null);
-  const navigate = useNavigate();
 
   console.log("Opening subtask dialog", { projectId, boardId, projectDetail });
-
-  const fetchSubtasks = async () => {
-    try {
-      const taskData = await getTaskById(taskId);
-      if (taskData.sub_task && taskData.sub_task.length > 0) {
-        const subtaskDetails = await Promise.all(
-          taskData.sub_task.map((subtaskId) => getSubtaskById(subtaskId))
-        );
-        setSubtasks(subtaskDetails);
-      }
-    } catch (error) {
-      console.error("Error fetching subtasks:", error);
-      toast.error("Failed to load subtasks");
-    }
-  };
-
-  useEffect(() => {
-    if (taskId) {
-      fetchSubtasks();
-    }
-  }, [taskId]);
 
   const handleAddSubtask = async () => {
     setIsAddSubtaskOpen(true);
@@ -50,15 +29,11 @@ export default function Subtasks({
 
   const handleSubtaskCreated = async (newTask) => {
     try {
-      const subTask = await addSubtask({ tasks: [newTask.id] });
-      if (subTask) {
-        console.log("Subtask created:", subTask);
+      if (newTask) {
         // Get current parent task
         const parentTask = await getTaskById(taskId);
         // Update parent task's sub_task array
-        const updatedSubTasks = [...(parentTask.sub_task || []), subTask.id];
-        console.log("Updated subtasks:", updatedSubTasks);
-        console.log("Parent task newTask.id:", newTask.id);
+        const updatedSubTasks = [...(parentTask.sub_task || []), newTask.id];
         // Update the parent task
         await addTask(
           {
@@ -67,7 +42,7 @@ export default function Subtasks({
           taskId
         );
         // Refresh the subtasks list
-        await fetchSubtasks();
+        fetchTaskData(true);
         // Close the dialog and clean up
         setIsAddSubtaskOpen(false);
       }
@@ -78,27 +53,6 @@ export default function Subtasks({
   };
   return (
     <div>
-      {/* List existing subtasks */}
-      <div className="space-y-2">
-        {subtasks.map((subtask) => (
-          <div
-            key={subtask.id}
-            className="flex items-center justify-between p-2 rounded-lg border border-gray-200 cursor-pointer"
-            onClick={() => {
-              console.log(
-                "Navigating to subtask:",
-                subtask.id,
-                `/project-board/${projectId}/${subtask.id}`
-              );
-              //navigate(`/project-board/${projectId}/${subtask.id}`);
-              setViewSubtasks(subtask.id);
-              setIsAddSubtaskOpen(true);
-            }}
-          >
-            <span>{subtask.name}</span>
-          </div>
-        ))}
-      </div>
 
       {/* Add Subtask Button */}
       <Button
@@ -118,8 +72,8 @@ export default function Subtasks({
       {/* Subtask Creation Dialog */}
       {isAddSubtaskOpen && (
         <TaskEditAddViewDetails
-        taskId={viewSubtasks}
-        isOpen={isAddSubtaskOpen}
+          taskId={viewSubtasks}
+          isOpen={isAddSubtaskOpen}
           setIsOpen={(value) => {
             setViewSubtasks(null);
             setIsAddSubtaskOpen(value);

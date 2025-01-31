@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
-import { HandleLogout} from "./general";
+import { HandleLogout } from "./general";
 import { Project } from "app/utils/Types/TaskManagment";
 import { convertStringsArrayToJsonArray } from "utils/Lists";
 import { getFileNameFromURL } from "utils/downUtils";
@@ -996,7 +996,6 @@ const addCustomFields = async (payload, id) => {
 
 const deleteCustomFields = async (id) => {
   try {
-    debugger
     const response = await axios.delete(`${baseUrl}/dynamic-fields/${id}`, {
       headers: headers(),
     });
@@ -1009,9 +1008,74 @@ const deleteCustomFields = async (id) => {
       HandleLogout();
     }
     console.error("Error deleting task Check List Item:", error);
-    toast.error("Error deleting task Check List Item!", {
-      position: toast.POSITION.TOP_RIGHT,
+    return false;
+  }
+};
+export const deleteTaskLabel = async (id) => {
+  debugger;
+  try {
+    const response = await axios.delete(`${baseUrl}/TaskLabel/${id}`, {
+      headers: headers(),
     });
+    if (response.status === 200 || response.status === 204) {
+      return response;
+    }
+    return false;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error deleting task Label:", error);
+    return false;
+  }
+};
+export const getTaskLabelById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/TaskLabel/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+    return false;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error deleting task Label:", error);
+    return false;
+  }
+};
+
+export const addTaskLabel = async (payload, id) => {
+  try {
+    // Create FormData object
+    const formData = new FormData();
+    formData.append("name", payload?.name);
+    formData.append("color", payload?.color);
+    const url = id
+      ? `${baseUrl}/TaskLabel/${id}` // Use id if updating
+      : `${baseUrl}/TaskLabel`; // No id means create new
+
+    const method = id ? "PUT" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: formData,
+      headers: formDataHeader(),
+    });
+
+    // Check response status
+    if (response.status === 201 || response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    // Handle errors
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error adding/updating task Label:", error);
     return false;
   }
 };

@@ -19,10 +19,8 @@ const InputTaskCustomFields = ({
   const handleOnChangeField = (field, value) => {
     // Create a shallow copy of customFieldValues to avoid directly mutating the original array
     const values = [...customFieldValues];
-
     // Check if the field already exists in the array
     const existingFieldIndex = values.findIndex((item) => item.field === field);
-
     if (existingFieldIndex !== -1) {
       // If the field exists, update its value
       values[existingFieldIndex].value = value;
@@ -30,7 +28,6 @@ const InputTaskCustomFields = ({
       // If the field doesn't exist, create a new object and push it into the array
       values.push({ field, value });
     }
-
     // Trigger the onChange callback to update the parent state or context
     onChange(name, values);
   };

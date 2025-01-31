@@ -258,3 +258,34 @@ export const calculateTaskCount = (data, statusType) => {
     return taskStatus === "todo" || taskStatus === "inprogress";
   }).length;
 };
+
+export const lightenColor = (hex, percent) => {
+  // Remove '#' if present
+  hex = hex.replace(/^#/, "");
+
+  // Convert to RGB
+  let r = parseInt(hex.substring(0, 2), 16);
+  let g = parseInt(hex.substring(2, 4), 16);
+  let b = parseInt(hex.substring(4, 6), 16);
+
+  // Lighten color by blending with white
+  r = Math.min(255, Math.floor(r + (255 - r) * (percent / 100)));
+  g = Math.min(255, Math.floor(g + (255 - g) * (percent / 100)));
+  b = Math.min(255, Math.floor(b + (255 - b) * (percent / 100)));
+
+  // Convert back to hex
+  const newHex =
+    "#" +
+    r.toString(16).padStart(2, "0") +
+    g.toString(16).padStart(2, "0") +
+    b.toString(16).padStart(2, "0");
+
+  return newHex;
+};
+
+// Example usage
+const originalColor = "#004C3F";
+const lightShade = lightenColor(originalColor, 40); // 40% lighter
+
+console.log(lightShade); // Outputs a lighter version of #004C3F
+

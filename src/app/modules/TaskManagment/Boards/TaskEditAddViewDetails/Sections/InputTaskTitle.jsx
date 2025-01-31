@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { TextInput} from "components/FormControl";
 
 
-const InputTaskTitle = ({
+const InputTaskTitle = React.memo(({
   onChange,
   error,
   value,
@@ -44,6 +44,6 @@ const InputTaskTitle = ({
       )}
     </div>
   );
-};
+});
 
 export default InputTaskTitle;

@@ -16,7 +16,7 @@ import {
   Attachments,
 } from "app/modules/TaskManagment/Sections";
 import { Button } from "components/ui/button";
-import { ArrowLeft, Trash ,Archive} from "lucide-react";
+import { ArrowLeft, Trash, Archive } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { PageLoader } from "components";
@@ -45,6 +45,8 @@ import { getDropdownList, convertJSONArrayToStringsArray } from "utils/Lists";
 import Subtasks from "../../Sections/SubTask";
 import { createActivity } from "app/hooks/taskManagment";
 import { trackTaskActivities } from "./Sections/activityHelper";
+import SubtaskList from "./Sections/SubtaskList";
+import { getSubtaskById } from "app/hooks/taskManagment";
 
 const TaskEditAddViewDetails = ({
   taskId,
@@ -68,6 +70,8 @@ const TaskEditAddViewDetails = ({
   const [isEditMode, setIsEditMode] = useState(false);
   const [projectDetail, setProjectDetail] = useState(null);
   const [refreshComments, setRefreshComments] = useState(false);
+  const [subTasksDetails, setSubTasksDetails] = useState([]);
+
   const employees = useSelector((state) => state.emp.employees);
 
   const fetchCustomFieldsByProjectId = async (isMounted, projectID) => {
@@ -136,6 +140,12 @@ const TaskEditAddViewDetails = ({
         setInitialValues(cardDetails);
         setIsLoading(false);
       }
+      if (cardDetails.sub_task && cardDetails.sub_task.length > 0) {
+        const subtaskDetails = await Promise.all(
+          cardDetails.sub_task.map((subtaskId) => getTaskById(subtaskId))
+        );
+        setSubTasksDetails(subtaskDetails);
+      }
     } catch (error) {
       console.error("Error fetching task data:", error);
       toast.error("Failed to load task details. Please try again later.");
@@ -160,6 +170,7 @@ const TaskEditAddViewDetails = ({
       isMounted = false;
     };
   }, [taskId]);
+
   useEffect(() => {
     let isMounted = true;
     const fetchProject = async (isMounted) => {
@@ -341,7 +352,7 @@ const TaskEditAddViewDetails = ({
                           }}
                         >
                           Move to Archive
-                          <Archive size={15} className="ml-1"/>
+                          {/* <Archive size={15} className="ml-1" /> */}
                         </Button>
                       )}
                       {/* {taskId && (
@@ -405,9 +416,8 @@ const TaskEditAddViewDetails = ({
                           setIsEditMode(true);
                         }}
                         setAttachment={async (attachment) => {
-                          debugger
-                          const attachments= props.values.attachment || [];
-                          await props.setFieldValue("attachment",attachment);
+                          console.log(attachment);
+                          await props.setFieldValue("attachment", attachment);
                           setIsEditMode(true);
                         }}
                         attachments={props.values.attachment || []}
@@ -474,11 +484,30 @@ const TaskEditAddViewDetails = ({
                                 projectId={projectId}
                                 taskId={taskId}
                                 boardId={boardId}
+                                fetchTaskData={fetchTaskData}
                               />
                             }
                           />
                         )}
                       </div>
+                      {!isSubtask &&
+                        subTasksDetails.length>0 && (
+                          <DetailBox
+                            label={"Subtasks"}
+                            orientation="horizontal"
+                            value={
+                              <>
+                                <SubtaskList
+                                  items={props.values.subtasks || []}
+                                  projectId={projectId}
+                                  taskId={taskId}
+                                  boardId={boardId}
+                                  subTasksDetails={subTasksDetails}
+                                />
+                              </>
+                            }
+                          />
+                        )}
                     </div>
                     <div className="flex flex-col w-[45%] gap-3">
                       <div>

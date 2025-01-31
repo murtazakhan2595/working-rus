@@ -1,18 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Button } from "components/ui/button";
 import { cn } from "src/@/lib/utils";
 import {
-  CalendarClock,
-  CalendarDays,
-  ClipboardCheck,
-  ClipboardList,
-  Contact,
-  Download,
-  Hourglass,
-  LayoutGrid,
   ListTodo,
-  UserRoundCheck,
-  UsersRound,
+  LayoutGrid,
 } from "lucide-react";
 
 const VIEW_TYPES = {
@@ -20,10 +11,11 @@ const VIEW_TYPES = {
   GRID: "grid",
 };
 
-const ViewOptions = ({ activeView = "list", setActiveView = () => {} }) => {
+const ViewOptions = React.memo(({ activeView = "list", setActiveView = () => {} }) => {
+  console.log("member list render again");
   const viewButtons = [
     {
-      icon: ListTodo ,
+      icon: ListTodo,
       isActive: activeView === VIEW_TYPES.LIST,
       onClick: () => setActiveView(VIEW_TYPES.LIST),
     },
@@ -33,6 +25,7 @@ const ViewOptions = ({ activeView = "list", setActiveView = () => {} }) => {
       onClick: () => setActiveView(VIEW_TYPES.GRID),
     },
   ];
+
   const IconButton = ({ icon: Icon, isActive, onClick }) => {
     return (
       <Button
@@ -45,6 +38,7 @@ const ViewOptions = ({ activeView = "list", setActiveView = () => {} }) => {
       </Button>
     );
   };
+
   return (
     <div className="flex gap-1 items-center self-stretch p-1 my-auto bg-white rounded min-h-[40px] text-neutral-900">
       {viewButtons.map((button, index) => (
@@ -57,6 +51,6 @@ const ViewOptions = ({ activeView = "list", setActiveView = () => {} }) => {
       ))}
     </div>
   );
-};
+});
 
 export default ViewOptions;

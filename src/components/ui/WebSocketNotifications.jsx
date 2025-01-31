@@ -23,6 +23,7 @@ import moment from "moment";
 import { getNotifications } from "app/hooks/notifications";
 import { markAsRead } from "app/hooks/notifications";
 import { markAllNotificationsAsRead } from "app/hooks/notifications";
+import { URLS } from "constants/config";
 
 const WebSocketNotifications = ({ onClose }) => {
   const [notifications, setNotifications] = useState([]);
@@ -70,14 +71,34 @@ const WebSocketNotifications = ({ onClose }) => {
       return notificationTime.format("MMM D, h:mm A");
     }
   };
+
+  const getWebSocketURL = () => {
+    const currentURL = window.location.origin;
+
+    // Find the matching URL configuration
+    const urlConfig = URLS.find((url) => url.Frontend === currentURL);
+
+    if (urlConfig) {
+      // Convert http(s):// to wss:// and add the WebSocket path
+      const wsURL = urlConfig.Backend.replace("https://", "wss://").replace(
+        "/api",
+        "/ws/notifications/"
+      );
+
+      return wsURL;
+    }
+
+    // Default to staging if no match found
+    return "wss://staging-hrms-be.tecbrix.cloud/ws/notifications/";
+  };
+
   useEffect(() => {
     // Fetch existing notifications when component mounts
     fetchNotifications();
     // Initialize WebSocket connection
-    const ws = new WebSocket(
-      "wss://staging-hrms-be.tecbrix.cloud/ws/notifications/?token=" +
-        localStorage.getItem("token")
-    );
+    const wsURL = getWebSocketURL() + "?token=" + localStorage.getItem("token");
+    console.log("WebSocket URL:", wsURL);
+    const ws = new WebSocket(wsURL);
 
     ws.onopen = () => {
       console.log("Connected to WebSocket");

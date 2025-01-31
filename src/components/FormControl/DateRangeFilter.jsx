@@ -4,19 +4,10 @@ import { cn } from "src/@/lib/utils";
 import moment from "moment";
 import { CardContent } from "components/ui/card";
 import {
-  CalendarClock,
-  CalendarDays,
-  ClipboardCheck,
-  ClipboardList,
   ArrowRight,
-  Download,
-  Hourglass,
-  LayoutGrid,
-  ListTodo,
   ArrowLeft,
-  UsersRound,
+  CalendarDays,
 } from "lucide-react";
-import { GetDateRange } from "utils/renderValues";
 import { format, parse, isValid } from "date-fns";
 import {
   Popover,
@@ -24,19 +15,19 @@ import {
   PopoverContent,
 } from "src/@/components/ui/popover";
 import { Calendar } from "src/@/components/ui/calendar";
+
 const TIME_FILTERS = {
   DAY: "Day",
   WEEK: "Week",
   MONTH: "Month",
 };
+
 const buttonClassName = "h-8 px-3 text-sm font-medium leading-tight rounded";
 const activeButtonClassName = "bg-fuchsia-50 text-fuchsia-700";
 
-const DateRangeFilter = ({
-  setDateRange = () => {},
-  activeDateRange = "Week",
-}) => {
+const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange = "Week" }) => {
   const [selectedTimeFilter, setSelectedTimeFilter] = useState(null);
+
   useEffect(() => {
     if (activeDateRange.toUpperCase() === "DAY") {
       setSelectedTimeFilter(TIME_FILTERS.DAY);
@@ -85,6 +76,7 @@ const DateRangeFilter = ({
       </Button>
     );
   };
+
   const renderDateRangePicker = (dateRangeValue) => {
     const dateRange = dateRangeValue ? dateRangeValue?.split(",") : null;
     const date = {
@@ -113,7 +105,6 @@ const DateRangeFilter = ({
                 date && date?.from && activeButtonClassName
               )}
             >
-              {/* <CalendarIcon /> */}
               {dateRange && date?.from ? (
                 date.to ? (
                   <>
@@ -159,11 +150,7 @@ const DateRangeFilter = ({
   };
 
   return (
-    <CardContent
-      className="p-1 bg-white rounded w-auto"
-      style={{ width: "fit-content" }}
-    >
-      {/* border border-gray-100 border-solid min-h-[40px] min-w-[240px] max-md:max-w-full */}
+    <CardContent className="p-1 bg-white rounded w-auto" style={{ width: "fit-content" }}>
       <div
         className="flex flex-wrap items-center self-stretch my-auto justify-between text-neutral-900"
         style={{ width: "fit-content" }}
@@ -178,13 +165,10 @@ const DateRangeFilter = ({
           />
         ))}
         {renderDateRangePicker(activeDateRange)}
-        {/* <Button variant="ghost" size="sm" className="h-8 gap-2">
-          <CalendarDays />
-          <span>11 Nov 2024 - 15 Nov 2024</span>
-        </Button> */}
         <ArrowRight className="h-5" />
       </div>
     </CardContent>
   );
-};
+});
+
 export default DateRangeFilter;

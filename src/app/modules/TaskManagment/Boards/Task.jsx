@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { deleteTask } from "app/hooks/taskManagment";
 import { PriorityList } from "data/Data";
 import { BiComment } from "react-icons/bi";
-import { getStatusIconColor } from "./Sections";
+import { getStatus, getStatusIconColor } from "./Sections";
 import { CustomDropdown, MembersList, Labels } from "../Sections";
 import { ImAttachment } from "react-icons/im";
 import TimeIcon from "assets/images/timeIcon";
@@ -17,10 +17,21 @@ import { CheckBoxInput } from "components/FormControl";
 import { toast } from "react-toastify";
 import { addTask } from "app/hooks/taskManagment";
 import { getAttachmentDetails } from "app/hooks/taskManagment";
+import { Input } from "components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "src/@/components/ui/tooltip";
+import { getTaskById } from "app/hooks/taskManagment";
+import { ListChecks } from "lucide-react";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
   const [isEditCardOpen, setIsEditCardOpen] = useState(false);
+  const [isSubtask, setIsSubtask] = useState(false);
+  const [subTasksDetails, setSubTasksDetails] = useState([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   // State to manage TaskDetail visibility
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
@@ -28,6 +39,15 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   const handleDelete = () => {
     setIsDeleteModalOpen(true);
   };
+
+  const fetchSubtasks = async () => {
+    if (task.sub_task && task.sub_task.length > 0) {
+      const subtaskDetails = await Promise.all(
+        task.sub_task.map((subtaskId) => getTaskById(subtaskId))
+      );
+      setSubTasksDetails(subtaskDetails);
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,6 +59,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
     if (task?.attachment?.length > 0) {
       fetchData();
     }
+    fetchSubtasks()
   }, [task]);
 
   const confirmDelete = async () => {
@@ -67,13 +88,14 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
         />
       )}
-      <div
-        className="flex flex-col"
-        onClick={() => {
-          setIsTaskDetailOpen(true);
-        }}
-      >
-        <div className="my-2">
+      <div className="flex flex-col">
+        <div
+          className="my-2"
+          onClick={(e) => {
+            e.preventDefault();
+            setIsTaskDetailOpen(true);
+          }}
+        >
           {coverImage && (
             <img
               src={coverImage}
@@ -82,7 +104,13 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             />
           )}
         </div>
-        <div className="flex justify-start items-start py-0.5">
+        <div
+          className="flex justify-start items-start py-0.5"
+          onClick={(e) => {
+            e.preventDefault();
+            setIsTaskDetailOpen(true);
+          }}
+        >
           {task?.label && task?.label.length > 0 && (
             <Labels
               labelsSelected={task.label || []}
@@ -98,7 +126,32 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           </span>
         </div>
         <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
-          <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
+          <h3
+            className="text-base font-bold text-capitalize"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsTaskDetailOpen(true);
+            }}
+          >
+            {task?.name}
+          </h3>
+
+          {task?.description && (
+            <p
+              className="text-sm leading-5 truncate-text text-neutral-1000 image-none"
+              style={{ maxHeight: "100px" }}
+              onClick={(e) => {
+                e.preventDefault();
+                setIsTaskDetailOpen(true);
+              }}
+            >
+              <span>{`${task?.description
+                .replace(/<[^>]*>/g, "")
+                .slice(0, 130)}${
+                task?.description.length > 130 ? "..." : ""
+              }`}</span>
+            </p>
+          )}
           <div className="flex gap-3 justify-start font-semibold text-sm text-grey-1000 mt-3">
             {task?.relation &&
               task.relation.map((relation) => (
@@ -108,33 +161,32 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     setViewTaskDetail(relation);
+                    setIsTaskDetailOpen(true);
                   }}
                 >{`RT-${relation}`}</span>
               ))}
-            {task?.sub_task &&
-              task.sub_task.map((sub_task) => (
-                <span
-                  key={sub_task}
-                  className="hover:text-gray-800 "
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setViewTaskDetail(sub_task);
-                  }}
-                >{`ST-${sub_task}`}</span>
+            {subTasksDetails &&
+              subTasksDetails.map((sub_task) => (
+                <TooltipProvider key={sub_task.id}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span
+                        className="hover:text-gray-800 cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setIsSubtask(true);
+                          setViewTaskDetail(sub_task.id);
+                          setIsTaskDetailOpen(true);
+                        }}
+                      >{`ST-${sub_task.id}`}</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{sub_task.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ))}
           </div>
-          {task?.description && (
-            <p
-              className="text-sm leading-5 truncate-text text-neutral-1000 image-none"
-              style={{ maxHeight: "100px" }}
-            >
-              <span>{`${task?.description
-                .replace(/<[^>]*>/g, "")
-                .slice(0, 130)}${
-                task?.description.length > 130 ? "..." : ""
-              }`}</span>
-            </p>
-          )}
         </div>
         <footer className="flex justify-between py-2">
           <div className="flex items-center gap-1">
@@ -159,6 +211,10 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
               <ImAttachment />
               <div>{task?.attachment_count || 0}</div>
             </div>
+            <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
+              <ListChecks size={16}/>
+              <div>{task?.sub_task?.length || 0}</div>
+            </div>
           </div>
         </footer>
       </div>
@@ -175,6 +231,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           reloadData={reloadData}
           projectId={projectId}
           boardId={task.board_id}
+          isSubtask={isSubtask}
         />
       )}
       {isEditCardOpen && (
@@ -184,6 +241,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           onClose={() => {
             setIsEditCardOpen(false);
             setIsTaskDetailOpen(false);
+            setIsSubtask(false);
             reloadData();
           }}
           setIsOpen={setIsEditCardOpen}
@@ -198,9 +256,8 @@ const TimeStatusIcon = ({ task, getStatusIconColor, onUpdate }) => {
   const [showCheckbox, setShowCheckbox] = useState(false);
   const [isChecked, setIsChecked] = useState(task.status === "COMPLETED");
 
-  const handleStatusChange = async (name, value) => {
+  const handleStatusChange = async (value) => {
     try {
-      console.log("Checkbox clicked:", name, value);
       const newStatus = value ? "COMPLETED" : "INPROGRESS";
       const response = await addTask({
         ...task,
@@ -219,42 +276,100 @@ const TimeStatusIcon = ({ task, getStatusIconColor, onUpdate }) => {
   };
 
   const handleContainerClick = (e) => {
-    e.stopPropagation(); // Stop event from bubbling up to card
+    e.stopPropagation();
+    handleStatusChange(!isChecked);
+  };
+
+  const getBackgroundClass = (date) => {
+    if (isChecked) {
+      return "bg-[#ECFDF3]";
+    }
+
+    const status = getStatus(date);
+    if (status === "Due Today") {
+      return "bg-amber-100";
+    } else if (status === "Overdue") {
+      return "bg-[#ffe2e2]";
+    } else {
+      return "bg-gray-50";
+    }
+  };
+
+  const getIconColor = () => {
+    if (isChecked) {
+      return "#12B76A";
+    }
+    return getStatusIconColor(task?.end_date);
+  };
+
+  const getTooltipMessage = () => {
+    if (isChecked) {
+      return "The card is complete.";
+    }
+
+    const status = getStatus(task?.end_date);
+    if (status === "Overdue") {
+      return "The card is past due.";
+    } else if (status === "Due Today") {
+      return "The card is due today.";
+    } else {
+      return "The card is due later.";
+    }
+  };
+
+  const textStyle = {
+    color: getIconColor(),
   };
 
   return (
-    <div
-      className="flex items-center text-sm"
-      onMouseEnter={() => setShowCheckbox(true)}
-      onMouseLeave={() => setShowCheckbox(false)}
-      onClick={handleContainerClick}
-    >
-      <div className="relative w-5 h-5">
-        <div
-          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
-            showCheckbox ? "opacity-100 z-10" : "opacity-0 z-0"
-          }`}
-        >
-          <CheckBoxInput
-            label=""
-            name="status"
-            value={isChecked}
-            onChange={handleStatusChange}
-          />
-        </div>
-        <div
-          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
-            showCheckbox ? "opacity-0 z-0" : "opacity-100 z-10"
-          }`}
-        >
-          <TimeIcon color={getStatusIconColor(task?.end_date)} />
-        </div>
-      </div>
-      <div className="">{moment(task?.end_date).format("MMMM DD")}</div>
-    </div>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            className={`flex items-center text-sm rounded px-1 py-1 ${getBackgroundClass(
+              task?.end_date
+            )} cursor-pointer`}
+            onMouseEnter={() => setShowCheckbox(true)}
+            onMouseLeave={() => setShowCheckbox(false)}
+            onClick={handleContainerClick}
+          >
+            <div className="relative w-5 h-5">
+              <div
+                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
+                  showCheckbox ? "opacity-100 z-10" : "opacity-0 z-0"
+                }`}
+              >
+                <Input
+                  type="checkbox"
+                  checked={isChecked}
+                  value={isChecked}
+                  className="w-4 h-4"
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    handleStatusChange(!isChecked);
+                  }}
+                />
+              </div>
+              <div
+                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
+                  showCheckbox ? "opacity-0 z-0" : "opacity-100 z-10"
+                }`}
+              >
+                <TimeIcon color={getIconColor()} />
+              </div>
+            </div>
+            <div style={textStyle} className="select-none">
+              {moment(task?.end_date).format("MMMM DD")}
+            </div>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{getTooltipMessage()}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
-
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,

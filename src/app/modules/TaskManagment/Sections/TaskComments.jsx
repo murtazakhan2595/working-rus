@@ -30,9 +30,6 @@ export default function TaskComments({
         getCommentsWithAttachments({ task_id: [taskId] }),
         getActivities({ filterData: { task_id: [taskId] } }),
       ]);
-      console.log("commentsData", commentsData);
-      console.log("activitiesData", activitiesData);
-
       if (isMounted) {
         // Combine and sort activities and comments by date
         const combined = [
