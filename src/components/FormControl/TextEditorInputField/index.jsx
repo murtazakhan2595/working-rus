@@ -13,14 +13,20 @@ import { AiOutlinePaperClip } from "react-icons/ai";
 // import { iconButtonClasses } from "@mui/material";
 import AttachmentUI from "components/ui/AttachmentUI";
 import "./style.css";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandItem,
+} from "src/@/components/ui/command";
+import Avatar from "components/ui/Avatar";
+
 
 const TextEditorIconClassName = "w-4 h-4";
-const TextEditorButtonClassName = (active) =>
-  `hover:bg-white hover:text-primary ${active ? "text-primary" : ""} p-1`;
 
 function TextEditorInputField({
   handleSubmitContent,
-  content = " ",
+  content = "",
   upload,
   setContent = () => {},
   setAttachments = () => {},
@@ -28,12 +34,20 @@ function TextEditorInputField({
   attachments = [],
   name = "editor",
   displayAttachments = false,
+  users = [], // Users for mentions
+  allowMentions = false, // New prop to control mention functionality
 }) {
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
-  const [taggedUsers, setTaggedUsers] = useState([]); // State to store tagged users
+
+  // Mention-related state - only used if allowMentions is true
+  const [showMentionPopover, setShowMentionPopover] = useState(false);
+  const [mentionFilter, setMentionFilter] = useState("");
+  const [mentionPosition, setMentionPosition] = useState({ x: 0, y: 0 });
+  const [lastCaretPosition, setLastCaretPosition] = useState(null);
+  const [mentionedUsers, setMentionedUsers] = useState([]);
 
   useEffect(() => {
     if (content) {
@@ -57,18 +71,6 @@ function TextEditorInputField({
   const handleCommand = (command) => {
     execCommand(command);
   };
-
-  const handleLink = useCallback(() => {
-    if (!showLinkInput) {
-      setShowLinkInput(true);
-      return;
-    }
-    if (linkUrl) {
-      execCommand("createLink", linkUrl);
-      setLinkUrl("");
-      setShowLinkInput(false);
-    }
-  }, [showLinkInput, linkUrl, execCommand]);
 
   const handleImageUpload = useCallback(
     async (e) => {
@@ -100,21 +102,152 @@ function TextEditorInputField({
     }
   };
 
-  const removeAttachmentFile = (file) => {
-    if (removeAttachment) {
-      removeAttachment(file);
-      return;
-    }
-    const filteredFiles = attachments.filter((f) => f.name !== file.name);
-    setAttachments(filteredFiles);
-  };
+  const handleMentionSelect = useCallback(
+    (user) => {
+      if (!allowMentions) return;
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && e.shiftKey) {
-      e.preventDefault();
-      execCommand("insertLineBreak");
-    }
-  };
+      const userId =
+        typeof user.id === "string" ? parseInt(user.id, 10) : user.id;
+
+      setMentionedUsers((prev) => {
+        if (!prev.includes(userId)) {
+          return [...prev, userId];
+        }
+        return prev;
+      });
+
+      if (lastCaretPosition) {
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(lastCaretPosition);
+
+        const range = selection.getRangeAt(0);
+        const textNode = range.startContainer;
+
+        let text = textNode.textContent;
+        let cursorPosition = range.startOffset;
+        let mentionStart = cursorPosition;
+
+        while (mentionStart > 0 && text[mentionStart - 1] !== "@") {
+          mentionStart--;
+        }
+        mentionStart = Math.max(0, mentionStart - 1);
+
+        const mentionSpan = document.createElement("span");
+        mentionSpan.className = "mention bg-blue-100 px-1 rounded";
+        mentionSpan.contentEditable = false;
+        mentionSpan.setAttribute("data-user-id", userId.toString());
+        mentionSpan.textContent = `@${user.name}`;
+
+        const beforeText = text.substring(0, mentionStart);
+        const afterText = text.substring(cursorPosition);
+
+        const fragment = document.createDocumentFragment();
+        if (beforeText) {
+          fragment.appendChild(document.createTextNode(beforeText));
+        }
+        fragment.appendChild(mentionSpan);
+        fragment.appendChild(document.createTextNode(" "));
+        if (afterText) {
+          fragment.appendChild(document.createTextNode(afterText));
+        }
+
+        const parentNode = textNode.parentNode;
+        parentNode.replaceChild(fragment, textNode);
+
+        const newRange = document.createRange();
+        newRange.setStartAfter(mentionSpan);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+
+        const inputEvent = new Event("input", { bubbles: true });
+        editorRef.current.dispatchEvent(inputEvent);
+      }
+
+      setShowMentionPopover(false);
+      editorRef.current.focus();
+    },
+    [lastCaretPosition, allowMentions]
+  );
+
+  const handleInput = useCallback(
+    (e) => {
+      const text = e.target.innerHTML;
+      setContent(text);
+
+      if (!allowMentions) return;
+
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        setLastCaretPosition(range.cloneRange());
+
+        const editorRect = editorRef.current.getBoundingClientRect();
+        const relativeX = rect.left - editorRect.left;
+        const relativeY = rect.bottom - editorRect.top;
+
+        const currentNode = range.startContainer;
+        if (currentNode.nodeType === Node.TEXT_NODE) {
+          const text = currentNode.textContent;
+          const cursorPosition = range.startOffset;
+          const textBeforeCursor = text.substring(0, cursorPosition);
+
+          const lastAtIndex = textBeforeCursor.lastIndexOf("@");
+          if (lastAtIndex !== -1) {
+            const mentionText = textBeforeCursor.slice(lastAtIndex + 1);
+            if (!mentionText.includes(" ")) {
+              setMentionFilter(mentionText);
+              setMentionPosition({
+                x: relativeX,
+                y: relativeY + 20,
+              });
+              setShowMentionPopover(true);
+              return;
+            }
+          }
+        }
+        setShowMentionPopover(false);
+      }
+    },
+    [setContent, allowMentions]
+  );
+
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Enter" && e.shiftKey) {
+        e.preventDefault();
+        execCommand("insertLineBreak");
+        return;
+      }
+
+      if (allowMentions && e.key === "Backspace") {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          const startContainer = range.startContainer;
+
+          if (
+            startContainer.nodeType === Node.TEXT_NODE &&
+            range.startOffset === 0
+          ) {
+            const previousSibling = startContainer.previousSibling;
+            if (previousSibling?.classList?.contains("mention")) {
+              const userId = previousSibling.getAttribute("data-user-id");
+              setMentionedUsers((prev) =>
+                prev.filter((id) => id !== Number(userId))
+              );
+              e.preventDefault();
+              previousSibling.remove();
+              return;
+            }
+          }
+        }
+      }
+    },
+    [allowMentions]
+  );
 
   const handlePaste = async (e) => {
     e.preventDefault();
@@ -124,7 +257,7 @@ function TextEditorInputField({
 
     for (let item of items) {
       const itemType = item.type;
-      if (itemType)
+      if (itemType) {
         if (itemType.startsWith("image/")) {
           const file = item.getAsFile();
           if (file && upload) {
@@ -141,63 +274,37 @@ function TextEditorInputField({
           const html = clipboardData.getData("text/html");
           const text = clipboardData.getData("text/plain");
           if (text.startsWith("http")) {
-            debugger;
-           // try {
-            //   const response = await fetch(text, { mode: "cors" }); // Attempt CORS fetch
-            //   const html = await response.text(); // Get raw HTML
-        
-            //   // Extract <title> using regex
-            //   const match = html.match(/<title>(.*?)<\/title>/i);
-            //   const title = match ? match[1] : "Unknown Page";
-        
-            //   execCommand("insertHTML", `<a href="${text}" target="_blank">${title}</a>`);
-            // } catch (error) {
-            //   console.error("Error fetching page title:", error);
-            //   execCommand("createLink", text); // Fallback
-            // }
-            execCommand("insertHTML", `<a href="${text}" target="_blank">${text}</a>`);
+            execCommand(
+              "insertHTML",
+              `<a href="${text}" target="_blank">${text}</a>`
+            );
             return;
           } else {
-            if (html) {
-              if (html !== TextAdded) {
-                execCommand("insertHTML", html);
-                TextAdded = html;
-              }
-            } else if (text) {
-              if (text !== TextAdded) {
-                execCommand("insertText", text);
-                TextAdded = text;
-              }
+            if (html && html !== TextAdded) {
+              execCommand("insertHTML", html);
+              TextAdded = html;
+            } else if (text && text !== TextAdded) {
+              execCommand("insertText", text);
+              TextAdded = text;
             }
           }
         }
+      }
     }
-    // const text = clipboardData.getData("text/plain");
-    // if (text && text.startsWith("http")) {
-    //   execCommand("createLink", text);
-    //   return;
-    // }
-
-    // if (!handled) {
-    //   const html = clipboardData.getData("text/html");
-    //   const text = clipboardData.getData("text/plain");
-
-    //   if (html) {
-    //     execCommand("insertHTML", html);
-    //   } else if (text) {
-    //     execCommand("insertText", text);
-    //   }
-    // }
   };
 
-  const handleTagUser = (user) => {
-    setTaggedUsers([...taggedUsers, user]);
-    const tagText = `@${user.username}`;
-    execCommand("insertText", tagText);
-  };
+  // Filter users based on input when mentions are enabled
+  const filteredUsers = allowMentions
+    ? users.filter(
+        (user) =>
+          user.name.toLowerCase().includes(mentionFilter.toLowerCase()) ||
+          (user.username &&
+            user.username.toLowerCase().includes(mentionFilter.toLowerCase()))
+      )
+    : [];
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto relative">
       <div className="rounded-lg border border-neutral-500 bg-white">
         <div className="flex flex-wrap items-center gap-2 border-b border-neutral-500 p-2">
           <TextEditorButtons
@@ -243,7 +350,7 @@ function TextEditorInputField({
             handleCommand={handleCommand}
           />
           <div className="h-4 w-[1px] bg-neutral-500 mx-2"></div>
-          <label className={TextEditorButtonClassName}>
+          <label className="hover:bg-white hover:text-primary p-1">
             <input
               type="file"
               className="hidden"
@@ -263,6 +370,7 @@ function TextEditorInputField({
             />
           </label>
         </div>
+
         {attachments.length > 0 && displayAttachments && (
           <div className="p-1">
             {attachments.map((file, index) => (
@@ -270,22 +378,66 @@ function TextEditorInputField({
                 <AttachmentUI
                   attachment={file.attachment}
                   name={file.name}
-                  removeFile={removeAttachmentFile}
+                  removeFile={removeAttachment}
                 />
               </div>
             ))}
           </div>
         )}
+
         <div
           ref={editorRef}
           id={name}
           className="w-full min-h-[150px] p-4 focus:outline-none rounded-b-lg max-h-[350px] overflow-y-scroll textEditorText"
           contentEditable
-          onInput={(e) => setContent(e.target.innerHTML)}
-          onKeyDown={handleKeyDown}
+          onInput={handleInput}
           onPaste={handlePaste}
-        ></div>
-        <div className="flex flex-row justify-between border-t border-neutral-500 p-2 ">
+          onKeyDown={handleKeyDown}
+        />
+
+        {allowMentions && showMentionPopover && (
+          <div
+            className="absolute z-50"
+            style={{ left: mentionPosition.x, top: mentionPosition.y }}
+          >
+            <div className="w-64 bg-white rounded-lg shadow-lg border border-gray-200">
+              <Command>
+                <CommandInput
+                  placeholder="Search users..."
+                  value={mentionFilter}
+                  onValueChange={setMentionFilter}
+                />
+                <CommandList className="max-h-48 overflow-y-auto">
+                  {filteredUsers.map((user) => (
+                    <CommandItem
+                      key={user.id}
+                      onSelect={() => handleMentionSelect(user)}
+                      className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+                    >
+                      <Avatar
+                        className="h-8 w-8"
+                        src={user.profile_picture || ""}
+                        fallbackText={user.name?.charAt(0)?.toUpperCase() || ""}
+                        text={user.name || "Unknown User"}
+                        alt={`Avatar of ${
+                          user.first_name || user.name || "User"
+                        }`}
+                      />
+                      <div>
+                        <div className="font-medium">{user.name}</div>
+                        <div className="text-sm text-gray-500">
+                          @{user.username}
+                        </div>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandList>
+              </Command>
+            </div>
+          </div>
+        )}
+
+        <div className="flex flex-row justify-between border-t border-neutral-500 p-2">
           <div className="flex items-center text-sm text-gray-900 font-inter">
             {content?.replace(/<[^>]*>/g, "").length} characters
           </div>
@@ -297,7 +449,11 @@ function TextEditorInputField({
                 size="sm"
                 onClick={(e) => {
                   e.preventDefault();
-                  handleSubmitContent(content, attachments);
+                  handleSubmitContent(
+                    content,
+                    attachments,
+                    allowMentions ? mentionedUsers : undefined
+                  );
                 }}
               >
                 Comment

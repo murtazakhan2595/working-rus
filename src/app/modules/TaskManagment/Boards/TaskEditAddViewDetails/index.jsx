@@ -490,24 +490,23 @@ const TaskEditAddViewDetails = ({
                           />
                         )}
                       </div>
-                      {!isSubtask &&
-                        subTasksDetails.length>0 && (
-                          <DetailBox
-                            label={"Subtasks"}
-                            orientation="horizontal"
-                            value={
-                              <>
-                                <SubtaskList
-                                  items={props.values.subtasks || []}
-                                  projectId={projectId}
-                                  taskId={taskId}
-                                  boardId={boardId}
-                                  subTasksDetails={subTasksDetails}
-                                />
-                              </>
-                            }
-                          />
-                        )}
+                      {!isSubtask && subTasksDetails.length > 0 && (
+                        <DetailBox
+                          label={"Subtasks"}
+                          orientation="horizontal"
+                          value={
+                            <>
+                              <SubtaskList
+                                items={props.values.subtasks || []}
+                                projectId={projectId}
+                                taskId={taskId}
+                                boardId={boardId}
+                                subTasksDetails={subTasksDetails}
+                              />
+                            </>
+                          }
+                        />
+                      )}
                     </div>
                     <div className="flex flex-col w-[45%] gap-3">
                       <div>
@@ -529,9 +528,10 @@ const TaskEditAddViewDetails = ({
                           !refreshComments && (
                             <CommentsInputField
                               fetchData={setRefreshComments}
-                              users={employees}
+                              employees={employees}
                               taskId={taskId}
                               userId={userId}
+                              projectDetail={projectDetail}
                             />
                           )
                         }

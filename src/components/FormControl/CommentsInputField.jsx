@@ -44,7 +44,8 @@ import { postComment } from "app/hooks/taskManagment";
 const CommentsInputField = ({
   taskId,
   userId,
-  users,
+  employees,
+  projectDetail,
   fetchData = () => {},
 }) => {
   const [newComment, setNewComment] = useState("");
@@ -55,6 +56,18 @@ const CommentsInputField = ({
     );
     setCommentAttachment(filteredFiles);
   };
+  const filteredUsers = React.useMemo(() => {
+    if (!employees || !projectDetail?.project_members) return [];
+
+    return employees
+      .filter((emp) => projectDetail.project_members.includes(emp.value))
+      .map((emp) => ({
+        id: emp.value, // Using value as id
+        name: emp.name, // Using name field
+        username: emp.username, // Using username field
+      }));
+  }, [employees, projectDetail?.project_members]);
+
   const handleAddCommentAttachment = async (attachment, id) => {
     console.log(attachment, "123456");
     if (attachment instanceof File) {
@@ -68,7 +81,8 @@ const CommentsInputField = ({
     }
   };
 
-  const handleSubmitComment = async (comment, attachments) => {
+  const handleSubmitComment = async (comment, attachments, mentionedUsers) => {
+    console.log("mentionedUsers", mentionedUsers, comment);
     const getAttachmentFileIds = async (attachmentfiles) => {
       if (attachmentfiles && attachmentfiles.length > 0) {
         try {
@@ -103,6 +117,7 @@ const CommentsInputField = ({
           comment: comment,
           user_id: userId,
           commentattach: await getAttachmentFileIds(attachments),
+          mentions: mentionedUsers,
         };
         const response = await postComment(payload);
         if (response.status === 201 || response.status === 200) {
@@ -125,6 +140,8 @@ const CommentsInputField = ({
         setAttachments={setCommentAttachment}
         attachments={commentAttachments}
         removeAttachment={removeFile}
+        users={filteredUsers}
+        allowMentions={true}
         upload={async (file) => {
           return await handleAddCommentAttachment(file);
         }}
