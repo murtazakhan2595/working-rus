@@ -21,6 +21,7 @@ import {
 } from "src/@/components/ui/command";
 import Avatar from "components/ui/Avatar";
 
+
 const TextEditorIconClassName = "w-4 h-4";
 
 function TextEditorInputField({
@@ -33,12 +34,15 @@ function TextEditorInputField({
   attachments = [],
   name = "editor",
   displayAttachments = false,
-  users = [], // Add users prop for mentions
+  users = [], // Users for mentions
+  allowMentions = false, // New prop to control mention functionality
 }) {
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
+
+  // Mention-related state - only used if allowMentions is true
   const [showMentionPopover, setShowMentionPopover] = useState(false);
   const [mentionFilter, setMentionFilter] = useState("");
   const [mentionPosition, setMentionPosition] = useState({ x: 0, y: 0 });
@@ -67,18 +71,6 @@ function TextEditorInputField({
   const handleCommand = (command) => {
     execCommand(command);
   };
-
-  const handleLink = useCallback(() => {
-    if (!showLinkInput) {
-      setShowLinkInput(true);
-      return;
-    }
-    if (linkUrl) {
-      execCommand("createLink", linkUrl);
-      setLinkUrl("");
-      setShowLinkInput(false);
-    }
-  }, [showLinkInput, linkUrl, execCommand]);
 
   const handleImageUpload = useCallback(
     async (e) => {
@@ -110,130 +102,153 @@ function TextEditorInputField({
     }
   };
 
-const handleMentionSelect = useCallback(
-  (user) => {
-    // Ensure user.id is properly parsed as a number if it isn't already
-    const userId =
-      typeof user.id === "string" ? parseInt(user.id, 10) : user.id;
+  const handleMentionSelect = useCallback(
+    (user) => {
+      if (!allowMentions) return;
 
-    setMentionedUsers((prev) => {
-      // Check if the ID already exists
-      if (!prev.includes(userId)) {
-        return [...prev, userId];
+      const userId =
+        typeof user.id === "string" ? parseInt(user.id, 10) : user.id;
+
+      setMentionedUsers((prev) => {
+        if (!prev.includes(userId)) {
+          return [...prev, userId];
+        }
+        return prev;
+      });
+
+      if (lastCaretPosition) {
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(lastCaretPosition);
+
+        const range = selection.getRangeAt(0);
+        const textNode = range.startContainer;
+
+        let text = textNode.textContent;
+        let cursorPosition = range.startOffset;
+        let mentionStart = cursorPosition;
+
+        while (mentionStart > 0 && text[mentionStart - 1] !== "@") {
+          mentionStart--;
+        }
+        mentionStart = Math.max(0, mentionStart - 1);
+
+        const mentionSpan = document.createElement("span");
+        mentionSpan.className = "mention bg-blue-100 px-1 rounded";
+        mentionSpan.contentEditable = false;
+        mentionSpan.setAttribute("data-user-id", userId.toString());
+        mentionSpan.textContent = `@${user.name}`;
+
+        const beforeText = text.substring(0, mentionStart);
+        const afterText = text.substring(cursorPosition);
+
+        const fragment = document.createDocumentFragment();
+        if (beforeText) {
+          fragment.appendChild(document.createTextNode(beforeText));
+        }
+        fragment.appendChild(mentionSpan);
+        fragment.appendChild(document.createTextNode(" "));
+        if (afterText) {
+          fragment.appendChild(document.createTextNode(afterText));
+        }
+
+        const parentNode = textNode.parentNode;
+        parentNode.replaceChild(fragment, textNode);
+
+        const newRange = document.createRange();
+        newRange.setStartAfter(mentionSpan);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+
+        const inputEvent = new Event("input", { bubbles: true });
+        editorRef.current.dispatchEvent(inputEvent);
       }
-      return prev;
-    });
 
-    if (lastCaretPosition) {
+      setShowMentionPopover(false);
+      editorRef.current.focus();
+    },
+    [lastCaretPosition, allowMentions]
+  );
+
+  const handleInput = useCallback(
+    (e) => {
+      const text = e.target.innerHTML;
+      setContent(text);
+
+      if (!allowMentions) return;
+
       const selection = window.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(lastCaretPosition);
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        setLastCaretPosition(range.cloneRange());
 
-      const range = selection.getRangeAt(0);
-      const textNode = range.startContainer;
+        const editorRect = editorRef.current.getBoundingClientRect();
+        const relativeX = rect.left - editorRect.left;
+        const relativeY = rect.bottom - editorRect.top;
 
-      // Find the @ symbol position
-      let text = textNode.textContent;
-      let cursorPosition = range.startOffset;
-      let mentionStart = cursorPosition;
+        const currentNode = range.startContainer;
+        if (currentNode.nodeType === Node.TEXT_NODE) {
+          const text = currentNode.textContent;
+          const cursorPosition = range.startOffset;
+          const textBeforeCursor = text.substring(0, cursorPosition);
 
-      while (mentionStart > 0 && text[mentionStart - 1] !== "@") {
-        mentionStart--;
+          const lastAtIndex = textBeforeCursor.lastIndexOf("@");
+          if (lastAtIndex !== -1) {
+            const mentionText = textBeforeCursor.slice(lastAtIndex + 1);
+            if (!mentionText.includes(" ")) {
+              setMentionFilter(mentionText);
+              setMentionPosition({
+                x: relativeX,
+                y: relativeY + 20,
+              });
+              setShowMentionPopover(true);
+              return;
+            }
+          }
+        }
+        setShowMentionPopover(false);
       }
-      mentionStart = Math.max(0, mentionStart - 1); // Include @ but prevent negative index
+    },
+    [setContent, allowMentions]
+  );
 
-      // Create the mention span
-      const mentionSpan = document.createElement("span");
-      mentionSpan.className = "mention bg-blue-100 px-1 rounded";
-      mentionSpan.contentEditable = false;
-      mentionSpan.setAttribute("data-user-id", userId.toString());
-      mentionSpan.textContent = `@${user.name}`;
-
-      // Split and reconstruct the content
-      const beforeText = text.substring(0, mentionStart);
-      const afterText = text.substring(cursorPosition);
-
-      // Create document fragment
-      const fragment = document.createDocumentFragment();
-      if (beforeText) {
-        fragment.appendChild(document.createTextNode(beforeText));
-      }
-      fragment.appendChild(mentionSpan);
-
-      // Always add a space after the mention
-      const spaceNode = document.createTextNode(" ");
-      fragment.appendChild(spaceNode);
-
-      if (afterText) {
-        fragment.appendChild(document.createTextNode(afterText));
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Enter" && e.shiftKey) {
+        e.preventDefault();
+        execCommand("insertLineBreak");
+        return;
       }
 
-      // Replace content
-      const parentNode = textNode.parentNode;
-      parentNode.replaceChild(fragment, textNode);
+      if (allowMentions && e.key === "Backspace") {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          const startContainer = range.startContainer;
 
-      // Set cursor position after the space
-      const newRange = document.createRange();
-      newRange.setStartAfter(spaceNode);
-      newRange.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(newRange);
-
-      // Trigger input event to update content
-      const inputEvent = new Event("input", { bubbles: true });
-      editorRef.current.dispatchEvent(inputEvent);
-    }
-
-    setShowMentionPopover(false);
-    editorRef.current.focus();
-  },
-  [lastCaretPosition]
-);
-
-// Modify handleInput to better track mentions
-const handleInput = useCallback(
-  (e) => {
-    const text = e.target.innerHTML;
-    setContent(text);
-
-    // Handle mentions
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      setLastCaretPosition(range.cloneRange());
-
-      const editorRect = editorRef.current.getBoundingClientRect();
-      const relativeX = rect.left - editorRect.left;
-      const relativeY = rect.bottom - editorRect.top;
-
-      const currentNode = range.startContainer;
-      if (currentNode.nodeType === Node.TEXT_NODE) {
-        const text = currentNode.textContent;
-        const cursorPosition = range.startOffset;
-        const textBeforeCursor = text.substring(0, cursorPosition);
-
-        // Look for @ symbol
-        const lastAtIndex = textBeforeCursor.lastIndexOf("@");
-        if (lastAtIndex !== -1) {
-          const mentionText = textBeforeCursor.slice(lastAtIndex + 1);
-          // Show popover if we're in a mention context
-          if (!mentionText.includes(" ")) {
-            setMentionFilter(mentionText);
-            setMentionPosition({
-              x: relativeX,
-              y: relativeY + 20,
-            });
-            setShowMentionPopover(true);
-            return;
+          if (
+            startContainer.nodeType === Node.TEXT_NODE &&
+            range.startOffset === 0
+          ) {
+            const previousSibling = startContainer.previousSibling;
+            if (previousSibling?.classList?.contains("mention")) {
+              const userId = previousSibling.getAttribute("data-user-id");
+              setMentionedUsers((prev) =>
+                prev.filter((id) => id !== Number(userId))
+              );
+              e.preventDefault();
+              previousSibling.remove();
+              return;
+            }
           }
         }
       }
-      setShowMentionPopover(false);
-    }
-  },
-  [setContent]
-);
+    },
+    [allowMentions]
+  );
+
   const handlePaste = async (e) => {
     e.preventDefault();
     const clipboardData = e.clipboardData || window.Clipboard;
@@ -242,7 +257,7 @@ const handleInput = useCallback(
 
     for (let item of items) {
       const itemType = item.type;
-      if (itemType)
+      if (itemType) {
         if (itemType.startsWith("image/")) {
           const file = item.getAsFile();
           if (file && upload) {
@@ -265,89 +280,28 @@ const handleInput = useCallback(
             );
             return;
           } else {
-            if (html) {
-              if (html !== TextAdded) {
-                execCommand("insertHTML", html);
-                TextAdded = html;
-              }
-            } else if (text) {
-              if (text !== TextAdded) {
-                execCommand("insertText", text);
-                TextAdded = text;
-              }
+            if (html && html !== TextAdded) {
+              execCommand("insertHTML", html);
+              TextAdded = html;
+            } else if (text && text !== TextAdded) {
+              execCommand("insertText", text);
+              TextAdded = text;
             }
-          }
-        }
-    }
-  };
-
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === "Backspace") {
-      const selection = window.getSelection();
-      if (selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const startContainer = range.startContainer;
-
-        // Case 1: When we're at the beginning of a text node right after a mention
-        if (
-          startContainer.nodeType === Node.TEXT_NODE &&
-          range.startOffset === 0
-        ) {
-          const previousSibling = startContainer.previousSibling;
-          if (previousSibling?.classList?.contains("mention")) {
-            const userId = previousSibling.getAttribute("data-user-id");
-            setMentionedUsers((prev) =>
-              prev.filter((id) => id !== Number(userId))
-            );
-            e.preventDefault();
-            previousSibling.remove();
-            return;
-          }
-        }
-
-        // Case 2: When we're in an empty text node after a mention
-        if (
-          startContainer.nodeType === Node.TEXT_NODE &&
-          startContainer.textContent.trim() === "" &&
-          startContainer.previousSibling?.classList?.contains("mention")
-        ) {
-          const userId =
-            startContainer.previousSibling.getAttribute("data-user-id");
-          setMentionedUsers((prev) =>
-            prev.filter((id) => id !== Number(userId))
-          );
-          e.preventDefault();
-          startContainer.previousSibling.remove();
-          return;
-        }
-
-        // Case 3: When we're right after a mention with empty space
-        const parentNode = startContainer.parentNode;
-        if (parentNode && range.startOffset === 0) {
-          const prevNode = parentNode.previousSibling;
-          if (prevNode?.classList?.contains("mention")) {
-            const userId = prevNode.getAttribute("data-user-id");
-            setMentionedUsers((prev) =>
-              prev.filter((id) => id !== Number(userId))
-            );
-            e.preventDefault();
-            prevNode.remove();
-            if (startContainer.textContent.trim() === "") {
-              startContainer.textContent = "";
-            }
-            return;
           }
         }
       }
     }
-  }, []);
-  // Filter users based on input
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(mentionFilter.toLowerCase()) ||
-      (user.username &&
-        user.username.toLowerCase().includes(mentionFilter.toLowerCase()))
-  );
+  };
+
+  // Filter users based on input when mentions are enabled
+  const filteredUsers = allowMentions
+    ? users.filter(
+        (user) =>
+          user.name.toLowerCase().includes(mentionFilter.toLowerCase()) ||
+          (user.username &&
+            user.username.toLowerCase().includes(mentionFilter.toLowerCase()))
+      )
+    : [];
 
   return (
     <div className="w-full max-w-4xl mx-auto relative">
@@ -441,7 +395,7 @@ const handleInput = useCallback(
           onKeyDown={handleKeyDown}
         />
 
-        {showMentionPopover && (
+        {allowMentions && showMentionPopover && (
           <div
             className="absolute z-50"
             style={{ left: mentionPosition.x, top: mentionPosition.y }}
@@ -495,7 +449,11 @@ const handleInput = useCallback(
                 size="sm"
                 onClick={(e) => {
                   e.preventDefault();
-                  handleSubmitContent(content, attachments, mentionedUsers);
+                  handleSubmitContent(
+                    content,
+                    attachments,
+                    allowMentions ? mentionedUsers : undefined
+                  );
                 }}
               >
                 Comment

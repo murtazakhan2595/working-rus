@@ -141,6 +141,7 @@ const CommentsInputField = ({
         attachments={commentAttachments}
         removeAttachment={removeFile}
         users={filteredUsers}
+        allowMentions={true}
         upload={async (file) => {
           return await handleAddCommentAttachment(file);
         }}
