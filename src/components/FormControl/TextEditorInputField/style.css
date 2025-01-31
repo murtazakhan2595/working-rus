@@ -16,3 +16,19 @@
 .image-none img{
 display: none;
 }
+
+
+.mention {
+  background-color:#FBEBFB ;
+  /* bg-blue-100 equivalent */
+  padding: 0 0.25rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  color:#953EA3;
+}
+
+/* Style for rendered comments */
+.comment-content .mention {
+  pointer-events: none;
+  /* Prevent interaction with rendered mentions */
+} 
