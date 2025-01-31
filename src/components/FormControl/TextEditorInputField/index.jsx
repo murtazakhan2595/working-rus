@@ -13,14 +13,19 @@ import { AiOutlinePaperClip } from "react-icons/ai";
 // import { iconButtonClasses } from "@mui/material";
 import AttachmentUI from "components/ui/AttachmentUI";
 import "./style.css";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandItem,
+} from "src/@/components/ui/command";
+import Avatar from "components/ui/Avatar";
 
 const TextEditorIconClassName = "w-4 h-4";
-const TextEditorButtonClassName = (active) =>
-  `hover:bg-white hover:text-primary ${active ? "text-primary" : ""} p-1`;
 
 function TextEditorInputField({
   handleSubmitContent,
-  content = " ",
+  content = "",
   upload,
   setContent = () => {},
   setAttachments = () => {},
@@ -28,12 +33,17 @@ function TextEditorInputField({
   attachments = [],
   name = "editor",
   displayAttachments = false,
+  users = [], // Add users prop for mentions
 }) {
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
-  const [taggedUsers, setTaggedUsers] = useState([]); // State to store tagged users
+  const [showMentionPopover, setShowMentionPopover] = useState(false);
+  const [mentionFilter, setMentionFilter] = useState("");
+  const [mentionPosition, setMentionPosition] = useState({ x: 0, y: 0 });
+  const [lastCaretPosition, setLastCaretPosition] = useState(null);
+  const [mentionedUsers, setMentionedUsers] = useState([]);
 
   useEffect(() => {
     if (content) {
@@ -100,21 +110,108 @@ function TextEditorInputField({
     }
   };
 
-  const removeAttachmentFile = (file) => {
-    if (removeAttachment) {
-      removeAttachment(file);
-      return;
-    }
-    const filteredFiles = attachments.filter((f) => f.name !== file.name);
-    setAttachments(filteredFiles);
-  };
+  const handleInput = useCallback(
+    (e) => {
+      const text = e.target.innerHTML;
+      setContent(text);
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && e.shiftKey) {
-      e.preventDefault();
-      execCommand("insertLineBreak");
-    }
-  };
+      // Handle mentions
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        setLastCaretPosition(range.cloneRange());
+
+        // Get the editor's position
+        const editorRect = editorRef.current.getBoundingClientRect();
+
+        // Calculate position relative to the editor
+        const relativeX = rect.left - editorRect.left;
+        const relativeY = rect.bottom - editorRect.top;
+
+        // Get text before cursor
+        const currentNode = range.startContainer;
+        const textBeforeCursor = currentNode.textContent.substring(
+          0,
+          range.startOffset
+        );
+        const words = textBeforeCursor.split(/\s+/);
+        const lastWord = words[words.length - 1];
+
+        if (lastWord.startsWith("@")) {
+          setMentionFilter(lastWord.slice(1));
+          setMentionPosition({
+            x: relativeX,
+            y: relativeY + 20, // Add some offset to prevent overlap
+          });
+          setShowMentionPopover(true);
+        } else {
+          setShowMentionPopover(false);
+        }
+      }
+    },
+    [setContent]
+  );
+
+  const handleMentionSelect = useCallback(
+    (user) => {
+      setMentionedUsers((prev) => {
+        if (!prev.includes(user.id)) {
+          return [...prev, user.id];
+        }
+        return prev;
+      });
+      if (lastCaretPosition) {
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(lastCaretPosition);
+
+        // Replace the @mention text with the selected user
+        const mentionSpan = document.createElement("span");
+        mentionSpan.className = "mention bg-blue-100 px-1 rounded";
+        mentionSpan.contentEditable = false;
+        mentionSpan.setAttribute("data-user-id", user.id);
+        mentionSpan.textContent = `@${user.name}`;
+
+        const range = selection.getRangeAt(0);
+        const textNode = range.startContainer;
+        const startOffset = range.startOffset;
+
+        // Find the start of the @mention
+        let mentionStart = startOffset;
+        while (
+          mentionStart > 0 &&
+          textNode.textContent[mentionStart - 1] !== "@"
+        ) {
+          mentionStart--;
+        }
+        if (mentionStart > 0) mentionStart--; // Include the @ symbol
+
+        // Replace the @mention text with the mention span
+        const textBefore = textNode.textContent.substring(0, mentionStart);
+        const textAfter = textNode.textContent.substring(startOffset);
+
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(document.createTextNode(textBefore));
+        fragment.appendChild(mentionSpan);
+        fragment.appendChild(document.createTextNode(" " + textAfter));
+
+        const parentNode = textNode.parentNode;
+        parentNode.replaceChild(fragment, textNode);
+
+        // Move cursor to end
+        const newRange = document.createRange();
+        newRange.setStartAfter(mentionSpan);
+        newRange.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+      }
+
+      setShowMentionPopover(false);
+      editorRef.current.focus();
+    },
+    [lastCaretPosition]
+  );
 
   const handlePaste = async (e) => {
     e.preventDefault();
@@ -141,21 +238,10 @@ function TextEditorInputField({
           const html = clipboardData.getData("text/html");
           const text = clipboardData.getData("text/plain");
           if (text.startsWith("http")) {
-            debugger;
-           // try {
-            //   const response = await fetch(text, { mode: "cors" }); // Attempt CORS fetch
-            //   const html = await response.text(); // Get raw HTML
-        
-            //   // Extract <title> using regex
-            //   const match = html.match(/<title>(.*?)<\/title>/i);
-            //   const title = match ? match[1] : "Unknown Page";
-        
-            //   execCommand("insertHTML", `<a href="${text}" target="_blank">${title}</a>`);
-            // } catch (error) {
-            //   console.error("Error fetching page title:", error);
-            //   execCommand("createLink", text); // Fallback
-            // }
-            execCommand("insertHTML", `<a href="${text}" target="_blank">${text}</a>`);
+            execCommand(
+              "insertHTML",
+              `<a href="${text}" target="_blank">${text}</a>`
+            );
             return;
           } else {
             if (html) {
@@ -172,32 +258,57 @@ function TextEditorInputField({
           }
         }
     }
-    // const text = clipboardData.getData("text/plain");
-    // if (text && text.startsWith("http")) {
-    //   execCommand("createLink", text);
-    //   return;
-    // }
-
-    // if (!handled) {
-    //   const html = clipboardData.getData("text/html");
-    //   const text = clipboardData.getData("text/plain");
-
-    //   if (html) {
-    //     execCommand("insertHTML", html);
-    //   } else if (text) {
-    //     execCommand("insertText", text);
-    //   }
-    // }
   };
 
-  const handleTagUser = (user) => {
-    setTaggedUsers([...taggedUsers, user]);
-    const tagText = `@${user.username}`;
-    execCommand("insertText", tagText);
-  };
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === "Backspace") {
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const startContainer = range.startContainer;
+
+        // Check if we're at the beginning of a text node right after a mention
+        if (
+          startContainer.nodeType === Node.TEXT_NODE &&
+          range.startOffset === 0
+        ) {
+          const previousSibling = startContainer.previousSibling;
+          if (previousSibling?.classList?.contains("mention")) {
+            const userId = previousSibling.getAttribute("data-user-id");
+            // Remove user from mentionedUsers array
+            setMentionedUsers((prev) =>
+              prev.filter((id) => id !== Number(userId))
+            );
+            e.preventDefault();
+            previousSibling.remove();
+          }
+        }
+
+        // Check if we're right after a mention in an empty text node
+        const parentNode = startContainer.parentNode;
+        if (parentNode?.previousSibling?.classList?.contains("mention")) {
+          const userId =
+            parentNode.previousSibling.getAttribute("data-user-id");
+          // Remove user from mentionedUsers array
+          setMentionedUsers((prev) =>
+            prev.filter((id) => id !== Number(userId))
+          );
+          e.preventDefault();
+          parentNode.previousSibling.remove();
+        }
+      }
+    }
+  }, []);
+  // Filter users based on input
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(mentionFilter.toLowerCase()) ||
+      (user.username &&
+        user.username.toLowerCase().includes(mentionFilter.toLowerCase()))
+  );
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto relative">
       <div className="rounded-lg border border-neutral-500 bg-white">
         <div className="flex flex-wrap items-center gap-2 border-b border-neutral-500 p-2">
           <TextEditorButtons
@@ -243,7 +354,7 @@ function TextEditorInputField({
             handleCommand={handleCommand}
           />
           <div className="h-4 w-[1px] bg-neutral-500 mx-2"></div>
-          <label className={TextEditorButtonClassName}>
+          <label className="hover:bg-white hover:text-primary p-1">
             <input
               type="file"
               className="hidden"
@@ -263,6 +374,7 @@ function TextEditorInputField({
             />
           </label>
         </div>
+
         {attachments.length > 0 && displayAttachments && (
           <div className="p-1">
             {attachments.map((file, index) => (
@@ -270,22 +382,66 @@ function TextEditorInputField({
                 <AttachmentUI
                   attachment={file.attachment}
                   name={file.name}
-                  removeFile={removeAttachmentFile}
+                  removeFile={removeAttachment}
                 />
               </div>
             ))}
           </div>
         )}
+
         <div
           ref={editorRef}
           id={name}
           className="w-full min-h-[150px] p-4 focus:outline-none rounded-b-lg max-h-[350px] overflow-y-scroll textEditorText"
           contentEditable
-          onInput={(e) => setContent(e.target.innerHTML)}
-          onKeyDown={handleKeyDown}
+          onInput={handleInput}
           onPaste={handlePaste}
-        ></div>
-        <div className="flex flex-row justify-between border-t border-neutral-500 p-2 ">
+          onKeyDown={handleKeyDown}
+        />
+
+        {showMentionPopover && (
+          <div
+            className="absolute z-50"
+            style={{ left: mentionPosition.x, top: mentionPosition.y }}
+          >
+            <div className="w-64 bg-white rounded-lg shadow-lg border border-gray-200">
+              <Command>
+                <CommandInput
+                  placeholder="Search users..."
+                  value={mentionFilter}
+                  onValueChange={setMentionFilter}
+                />
+                <CommandList className="max-h-48 overflow-y-auto">
+                  {filteredUsers.map((user) => (
+                    <CommandItem
+                      key={user.id}
+                      onSelect={() => handleMentionSelect(user)}
+                      className="flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100"
+                    >
+                      <Avatar
+                        className="h-8 w-8"
+                        src={user.profile_picture || ""}
+                        fallbackText={user.name?.charAt(0)?.toUpperCase() || ""}
+                        text={user.name || "Unknown User"}
+                        alt={`Avatar of ${
+                          user.first_name || user.name || "User"
+                        }`}
+                      />
+                      <div>
+                        <div className="font-medium">{user.name}</div>
+                        <div className="text-sm text-gray-500">
+                          @{user.username}
+                        </div>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandList>
+              </Command>
+            </div>
+          </div>
+        )}
+
+        <div className="flex flex-row justify-between border-t border-neutral-500 p-2">
           <div className="flex items-center text-sm text-gray-900 font-inter">
             {content?.replace(/<[^>]*>/g, "").length} characters
           </div>
@@ -297,7 +453,7 @@ function TextEditorInputField({
                 size="sm"
                 onClick={(e) => {
                   e.preventDefault();
-                  handleSubmitContent(content, attachments);
+                  handleSubmitContent(content, attachments, mentionedUsers);
                 }}
               >
                 Comment
