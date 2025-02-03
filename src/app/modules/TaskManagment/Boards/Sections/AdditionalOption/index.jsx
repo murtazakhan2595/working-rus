@@ -17,12 +17,14 @@ import {
 } from "src/@/components/ui/tooltip";
 import { useNavigate } from "react-router-dom";
 import { MoreHorizontal, Archive, Link, ShieldX, LogOut } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const AdditionalOption = React.memo(
   ({ projectId = null, reloadData = () => {} }) => {
     const [openArchive, setOpenArchive] = React.useState("");
     const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const navigate = useNavigate();
+    const userRole = useSelector((state) => state.user.userProfile)?.role;
 
     const handleCopyBoardLinkClick = (e) => {
       e.preventDefault();
@@ -58,9 +60,7 @@ const AdditionalOption = React.memo(
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={handleCopyBoardLinkClick}
-            >
+            <DropdownMenuItem onClick={handleCopyBoardLinkClick}>
               <TooltipProvider>
                 <Tooltip open={tooltipOpen}>
                   <TooltipTrigger asChild>
@@ -82,9 +82,11 @@ const AdditionalOption = React.memo(
             <DropdownMenuItem onClick={handleLeaveBoardClick}>
               <LogOut size={14} className="mr-2" /> Leave Board
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleCloseProjectClick}>
-              <ShieldX size={14} className="mr-2" /> Close Project
-            </DropdownMenuItem>
+            {userRole !== 4 && (
+              <DropdownMenuItem onClick={handleCloseProjectClick}>
+                <ShieldX size={14} className="mr-2" /> Close Project
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
 

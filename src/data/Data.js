@@ -391,7 +391,7 @@ export const ProjectStatusList = [
   {
     value: "upcoming",
     label: (
-      <div className="flex justify-center gap-x-2 text-mauve-900 ">
+      <div className="flex justify-center text-plum-1100 gap-x-2">
         Up Coming
       </div>
     ),
@@ -413,13 +413,13 @@ export const ProjectStatusList = [
   {
     value: "completed",
     label: (
-      <div className="flex justify-center text-red-500 gap-x-2">Completed</div>
+      <div className="flex justify-center text-emerald-500 gap-x-2">Completed</div>
     ),
   },
   {
     value: "closed",
     label: (
-      <div className="flex justify-center text-red-500 gap-x-2">Closed</div>
+      <div className="flex justify-center text-mauve-900 gap-x-2">Closed</div>
     ),
   },
 ];

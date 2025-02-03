@@ -21,11 +21,17 @@ import {
   CardHeader,
   CardTitle,
 } from "components/ui/card";
-import { LayoutGrid, ListTodo, TableOfContents, Timer } from "lucide-react";
+import { LayoutGrid, ListTodo, TableOfContents, Clock } from "lucide-react";
 import TableCustom from "components/CustomTable";
 import { projectBoard } from "app/utils/Types/TableColumns";
 import { Button } from "components/ui/button";
-
+import { ProjectStatusList } from "data/Data";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "src/@/components/ui/tooltip";
 const Projects = ({ userProfile }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
@@ -175,6 +181,21 @@ const Projects = ({ userProfile }) => {
   );
 };
 
+const getStatusDotColor = (status) => {
+  switch (status) {
+    case "on_going":
+      return "bg-yellow-500";
+    case "On_hold":
+      return "bg-red-500";
+    case "completed":
+      return "bg-emerald-500";
+    case "closed":
+      return "bg-mauve-900";
+    default:
+      return "bg-plum-1100";
+  }
+};
+
 const RenderProject = ({
   project,
   toggleAddProject,
@@ -211,10 +232,12 @@ const RenderProject = ({
           >
             <CardTitle>
               <Badge
-                variant="dot"
-                className="text-sm bg-green-100 text-green-700"
+                variant="dot-plum"
+                className="text-sm "
+                dot={`${getStatusDotColor(project?.status)}`}
               >
-                {project?.status || "On Going"}
+                {ProjectStatusList.find((obj) => obj.value === project?.status)
+                  ?.label || "On Going"}
               </Badge>
             </CardTitle>
             <div className="flex justify-center">
@@ -226,12 +249,11 @@ const RenderProject = ({
             </div>
           </CardHeader>
           <CardContent>
-            <div>
+            <div onClick={navigateToBoard} className="cursor-pointer">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold mb-2 text-neutral-1200">
                   {project.name}
                 </h3>
-                <Button onClick={navigateToBoard}>View</Button>
               </div>
               <div className="flex text-neutral-1100 text-sm mb-4 gap-1">
                 <ListTodo size={18} />
@@ -245,7 +267,22 @@ const RenderProject = ({
           <div className="border border-gray-400 m-2" />
           <CardFooter className="flex justify-between">
             <div className="text-neutral-1100 text-sm flex justify-center items-center gap-2">
-              {moment(project.start_date).format("MMM D, YYYY")}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="flex items-center">
+                      <Clock size={14} className="mr-1" />
+                      {moment(project.start_date).format("MMM D, YYYY")}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      Project was started on{" "}
+                      {moment(project.start_date).format("MMM D, YYYY")}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <MembersList members={project?.project_members || []} />
           </CardFooter>
