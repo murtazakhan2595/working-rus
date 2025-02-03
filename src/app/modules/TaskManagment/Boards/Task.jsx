@@ -26,6 +26,7 @@ import {
 } from "src/@/components/ui/tooltip";
 import { getTaskById } from "app/hooks/taskManagment";
 import { ListChecks } from "lucide-react";
+import TaskStatusLabel from "app/modules/TaskManagment/Sections/TaskStatus";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
@@ -125,7 +126,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             }
           </span>
         </div>
-        <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
+        <div className="flex flex-col gap-2 pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
           <h3
             className="text-base font-bold text-capitalize"
             onClick={(e) => {
@@ -136,6 +137,17 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             {task?.name}
           </h3>
           <TextUI text={task?.description} maxLength={130} />
+
+          <div className="flex flex-row justify-start flex-wrap overflow-hidden max-w-[100%]">
+            <TaskStatusLabel status={task.status} />
+            {task?.end_date && (
+              <TimeStatusIcon
+                task={task}
+                getStatusIconColor={getStatusIconColor}
+                onUpdate={onUpdate}
+              />
+            )}
+          </div>
           <div className="flex gap-3 justify-start font-semibold text-sm text-grey-1000 mt-3">
             {task?.relation &&
               task.relation.map((relation) => (
@@ -180,13 +192,6 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             </div>
           </div>
           <div className="flex items-center gap-2 text-neutral-1000">
-            {task?.end_date && (
-              <TimeStatusIcon
-                task={task}
-                getStatusIconColor={getStatusIconColor}
-                onUpdate={onUpdate}
-              />
-            )}
             <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
               <BiComment />
               <div>{task?.comment_count || 0}</div>

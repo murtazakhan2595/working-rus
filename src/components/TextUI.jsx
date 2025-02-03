@@ -28,9 +28,7 @@ const TextUI = React.memo(
           </span>
         )}
       </p>
-    ) : (
-      <></>
-    );
+    ) : null;
   }
 );
 
