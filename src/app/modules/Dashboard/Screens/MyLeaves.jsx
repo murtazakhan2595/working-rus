@@ -49,7 +49,6 @@ const MyLeaves = ({ userProfile }) => {
       options: { page: 1, sizePerPage: 7 },
     });
     if (leaveTransaction) {
-      console.log("leaveTransaction", leaveTransaction);
       setLeaveTransaction(leaveTransaction);
     }
     setIsLeaveTransactionLoading(false);
@@ -107,7 +106,7 @@ const MyLeaves = ({ userProfile }) => {
 
   return (
     <>
-      <Card className="w-full col-span-2">
+      <Card className="w-full h-full col-span-2">
         <CardHeader className="items-start pb-0">
           <CardTitle className="flex flex-row justify-between w-full">
             <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">

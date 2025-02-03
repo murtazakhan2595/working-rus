@@ -45,6 +45,7 @@ const Task = {
   status: 'TODO',
   is_archive:false,
   custom_fields:[],
+  cover_photo:null,
 };
 const AddList = {
   name: "",

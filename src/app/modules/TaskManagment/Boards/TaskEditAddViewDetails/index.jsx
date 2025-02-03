@@ -218,7 +218,6 @@ const TaskEditAddViewDetails = ({
     }
   };
   const uploadAttachmentFile = async (file) => {
-    debugger;
     try {
       if (file.attachment instanceof File) {
         const response = await addAttachments(
@@ -238,8 +237,11 @@ const TaskEditAddViewDetails = ({
     try {
       const getAttachmentFileIds = async (files) => {
         return await Promise.all(
-          files.map(async (file) => {
+          files.map(async (file, index) => {
             const response = await uploadAttachmentFile(file);
+            if (index === 0) {
+              values.cover_photo = response.attachment;
+            }
             return response.id;
           })
         );
@@ -254,8 +256,18 @@ const TaskEditAddViewDetails = ({
         );
       };
 
+      const AddCoverPhoto = async (checklist) => {
+        return await Promise.all(
+          checklist.map(async (item) => {
+            const response = await addTaskCheckListItem(item, item.id);
+            return response.id;
+          })
+        );
+      };
+
       const finalData = mapTaskPayloadData({
         ...values,
+
         start_date: moment(new Date()).format("YYYY-MM-DD"),
         attachment: await getAttachmentFileIds(values.attachment || []),
         task_checklist: await getCheckListIds(values.task_checklist || []),
@@ -264,6 +276,7 @@ const TaskEditAddViewDetails = ({
           "field",
           "value"
         ),
+        cover_photo: values.cover_photo,
       });
       if (!finalData.hasOwnProperty("status") || finalData.status === null) {
         finalData.status = "TODO";

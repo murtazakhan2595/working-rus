@@ -87,7 +87,6 @@ const LeaveTrackerOverview = ({ userProfile }) => {
   };
 
   return (
-    <>
       <Card className="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-1 ">
         <CardHeader className="items-start p-6">
           <CardTitle className="flex flex-row justify-between w-full">
@@ -139,33 +138,6 @@ const LeaveTrackerOverview = ({ userProfile }) => {
           )}
         </CardContent>
       </Card>
-
-      <Card className="w-full xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-1">
-        <CardHeader>
-          <CardTitle>
-            <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
-              Who's on Leave{""}
-            </div>
-          </CardTitle>
-        </CardHeader>
-        {/* <CardContent>
-          <div className="p-4 border-b-1 bg-mauve-200">Today</div>
-          {onLeaveToday?.map((application) => (
-            <div className="flex flex-col gap-2 p-4">
-              <div className="">{application.start_date}</div>
-              <FormateLeaveTrackerName row={application} />
-            </div>
-          ))}
-          <div className="p-4 border-b-1 bg-mauve-200">Next Week</div>
-          {onLeaveNextWeek?.map((application) => (
-            <div className="flex flex-col gap-2 p-4">
-              <div className="">{application.start_date}</div>
-              <FormateLeaveTrackerName row={application} />
-            </div>
-          ))}
-        </CardContent> */}
-      </Card>
-    </>
   );
 };
 

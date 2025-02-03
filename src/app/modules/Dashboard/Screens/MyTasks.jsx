@@ -166,7 +166,7 @@ export default function MyTasks() {
 
   return (
     <>
-      <Card className="">
+      <Card className="h-full">
         <CardHeader className="items-start pb-0">
           <CardTitle className="flex flex-row justify-between w-full">
             <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
