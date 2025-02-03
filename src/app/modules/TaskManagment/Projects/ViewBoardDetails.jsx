@@ -106,7 +106,7 @@ const ViewBoardDetails = ({
         <DetailBox
           label="Members"
           value={
-            <MembersList members={project?.project_members} displayAll={true} />
+            <MembersList members={project?.project_members || []} displayAll={true} />
           }
         />
         <DetailBox
