@@ -288,7 +288,7 @@ const addTask = async (payload, id) => {
           headers: headers(),
         }
       );
-      if (response.status === 200) return response;
+      if (response.status === 200 || response.status ===201) return response;
       else return false;
     } else {
       console.log("SUBTASK ADDTASK", payload);
@@ -999,7 +999,7 @@ const deleteCustomFields = async (id) => {
     const response = await axios.delete(`${baseUrl}/dynamic-fields/${id}`, {
       headers: headers(),
     });
-    if (response.status === 200) {
+    if (response.status === 204 || response.status === 200) {
       return response;
     }
     return false;

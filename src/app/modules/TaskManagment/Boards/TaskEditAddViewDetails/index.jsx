@@ -218,7 +218,6 @@ const TaskEditAddViewDetails = ({
     }
   };
   const uploadAttachmentFile = async (file) => {
-    debugger;
     try {
       if (file.attachment instanceof File) {
         const response = await addAttachments(
@@ -238,8 +237,11 @@ const TaskEditAddViewDetails = ({
     try {
       const getAttachmentFileIds = async (files) => {
         return await Promise.all(
-          files.map(async (file) => {
+          files.map(async (file, index) => {
             const response = await uploadAttachmentFile(file);
+            if (index === 0) {
+              values.cover_photo = response.attachment;
+            }
             return response.id;
           })
         );
@@ -254,8 +256,18 @@ const TaskEditAddViewDetails = ({
         );
       };
 
+      const AddCoverPhoto = async (checklist) => {
+        return await Promise.all(
+          checklist.map(async (item) => {
+            const response = await addTaskCheckListItem(item, item.id);
+            return response.id;
+          })
+        );
+      };
+
       const finalData = mapTaskPayloadData({
         ...values,
+
         start_date: moment(new Date()).format("YYYY-MM-DD"),
         attachment: await getAttachmentFileIds(values.attachment || []),
         task_checklist: await getCheckListIds(values.task_checklist || []),
@@ -264,6 +276,7 @@ const TaskEditAddViewDetails = ({
           "field",
           "value"
         ),
+        cover_photo: values.cover_photo,
       });
       if (!finalData.hasOwnProperty("status") || finalData.status === null) {
         finalData.status = "TODO";
@@ -282,7 +295,7 @@ const TaskEditAddViewDetails = ({
         await trackTaskActivities(
           values,
           taskId ? initialValues : null,
-          taskId || response.id,
+          taskId || response?.data.id,
           userId,
           createActivity
         );
@@ -312,11 +325,7 @@ const TaskEditAddViewDetails = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
-        <DialogContent className="max-w-[70%] max-h-[95vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle></DialogTitle>
-          </DialogHeader>
-
+        <DialogContent className="max-w-[70vw] w-[70vw] max-h-[95vh] overflow-y-auto overflow-x-hidden">
           {isLoading ? (
             <PageLoader />
           ) : (
@@ -328,7 +337,7 @@ const TaskEditAddViewDetails = ({
               validate={validationTaskFormSchema}
             >
               {(props) => (
-                <Form>
+                <Form className="overflow-x-hidden">
                   <div className="flex justify-between mb-6">
                     <div className="text-md font-semibold dark:text-slate-50 flex items-center">
                       {isSubtask && (
@@ -399,8 +408,8 @@ const TaskEditAddViewDetails = ({
                       />
                     </div>
                   </div>
-                  <div className="flex justify-between gap-5">
-                    <div className="flex flex-col w-[55%] gap-3">
+                  <div className="flex justify-between">
+                    <div className="flex flex-col w-[55%] max-w-[calc(55%_-_25px)] gap-3">
                       <InputTaskTitle
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
@@ -508,7 +517,7 @@ const TaskEditAddViewDetails = ({
                         />
                       )}
                     </div>
-                    <div className="flex flex-col w-[45%] gap-3">
+                    <div className="flex flex-col w-[45%] max-w-[45%] gap-3">
                       <div>
                         <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
                           {"Checklist"}
@@ -585,8 +594,10 @@ const TaskEditAddViewDetails = ({
           projectId={projectId}
           projectData={projectDetail}
           isOpen={openProjectCustomFields}
-          setIsOpen={setOpenProjectCustomFields}
-          reloadData={(projectId) => fetchCustomFieldsByProjectId(projectId)}
+          setIsOpen={() => {
+            setOpenProjectCustomFields();
+            fetchCustomFieldsByProjectId(true, projectId);
+          }}
         />
       )}
     </>

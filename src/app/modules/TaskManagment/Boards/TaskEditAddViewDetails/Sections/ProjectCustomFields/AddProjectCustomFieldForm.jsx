@@ -95,7 +95,6 @@ const AddProjectCustomFieldForm = ({
     }
   };
   const handleDelete = async () => {
-    debugger
     setIsLoading(true);
     try {
       const response = await deleteCustomFields(customFieldId);

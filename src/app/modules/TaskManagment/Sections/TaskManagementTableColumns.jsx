@@ -2,7 +2,7 @@ import { PriorityList } from "data/Data";
 import moment from "moment";
 import { Clock } from "lucide-react";
 import { MembersList, Labels } from "app/modules/TaskManagment/Sections";
-
+import { TextUI } from "components";
 export const ProjectBoardColumn = [
   {
     text: "Tasks",
@@ -12,18 +12,7 @@ export const ProjectBoardColumn = [
       return (
         <div className="flex flex-col pb-4 mt-3">
           <h3 className="text-base font-bold text-capitalize">{cell}</h3>
-          {row?.description && (
-            <p
-              className="text-sm leading-5 truncate-text text-neutral-1000 image-none"
-              style={{ maxHeight: "100px" }}
-            >
-              <span>{`${row?.description
-                .replace(/<[^>]*>/g, "")
-                .slice(0, 40)}${
-                row?.description.length > 40 ? "..." : ""
-              }`}</span>
-            </p>
-          )}
+          <TextUI text={row?.description} maxLength={40} />
         </div>
       );
     },

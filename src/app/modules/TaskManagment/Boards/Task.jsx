@@ -13,7 +13,7 @@ import moment from "moment";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import { Card } from "components/ui/card";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { CheckBoxInput } from "components/FormControl";
+import { TextUI, TooltipText } from "components";
 import { toast } from "react-toastify";
 import { addTask } from "app/hooks/taskManagment";
 import { getAttachmentDetails } from "app/hooks/taskManagment";
@@ -26,6 +26,7 @@ import {
 } from "src/@/components/ui/tooltip";
 import { getTaskById } from "app/hooks/taskManagment";
 import { ListChecks } from "lucide-react";
+import TaskStatusLabel from "app/modules/TaskManagment/Sections/TaskStatus";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
@@ -47,7 +48,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
       );
       setSubTasksDetails(subtaskDetails);
     }
-  }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,7 +60,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
     if (task?.attachment?.length > 0) {
       fetchData();
     }
-    fetchSubtasks()
+    fetchSubtasks();
   }, [task]);
 
   const confirmDelete = async () => {
@@ -125,7 +126,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             }
           </span>
         </div>
-        <div className="flex flex-col pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
+        <div className="flex flex-col gap-2 pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
           <h3
             className="text-base font-bold text-capitalize"
             onClick={(e) => {
@@ -135,23 +136,21 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           >
             {task?.name}
           </h3>
+          <TextUI text={task?.description} maxLength={130} />
 
-          {task?.description && (
-            <p
-              className="text-sm leading-5 truncate-text text-neutral-1000 image-none"
-              style={{ maxHeight: "100px" }}
-              onClick={(e) => {
-                e.preventDefault();
-                setIsTaskDetailOpen(true);
-              }}
-            >
-              <span>{`${task?.description
-                .replace(/<[^>]*>/g, "")
-                .slice(0, 130)}${
-                task?.description.length > 130 ? "..." : ""
-              }`}</span>
-            </p>
-          )}
+          <div className="flex flex-row justify-start flex-wrap overflow-hidden max-w-[100%]">
+            <TooltipText
+              tooltipTriggerText={<TaskStatusLabel status={task.status} />}
+              content={`Task Status`}
+            />
+            {task?.end_date && (
+              <TimeStatusIcon
+                task={task}
+                getStatusIconColor={getStatusIconColor}
+                onUpdate={onUpdate}
+              />
+            )}
+          </div>
           <div className="flex gap-3 justify-start font-semibold text-sm text-grey-1000 mt-3">
             {task?.relation &&
               task.relation.map((relation) => (
@@ -196,25 +195,34 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             </div>
           </div>
           <div className="flex items-center gap-2 text-neutral-1000">
-            {task?.end_date && (
-              <TimeStatusIcon
-                task={task}
-                getStatusIconColor={getStatusIconColor}
-                onUpdate={onUpdate}
-              />
-            )}
-            <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
-              <BiComment />
-              <div>{task?.comment_count || 0}</div>
-            </div>
-            <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
-              <ImAttachment />
-              <div>{task?.attachment_count || 0}</div>
-            </div>
-            <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
-              <ListChecks size={16}/>
-              <div>{task?.sub_task?.length || 0}</div>
-            </div>
+            <TooltipText
+              tooltipTriggerText={
+                <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
+                  <BiComment />
+                  <div>{task?.comment_count || 0}</div>
+                </div>
+              }
+              content={`${task?.comment_count || 0} Comments`}
+            />
+
+            <TooltipText
+              tooltipTriggerText={
+                <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
+                  <ImAttachment />
+                  <div>{task?.attachment_count || 0}</div>
+                </div>
+              }
+              content={`${task?.attachment_count || 0} Attachment`}
+            />
+            <TooltipText
+              tooltipTriggerText={
+                <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
+                  <ListChecks size={16} />
+                  <div>{task?.sub_task?.length || 0}</div>
+                </div>
+              }
+              content={`${task?.sub_task?.length || 0} Subtasks`}
+            />
           </div>
         </footer>
       </div>
@@ -326,7 +334,7 @@ const TimeStatusIcon = ({ task, getStatusIconColor, onUpdate }) => {
       <Tooltip>
         <TooltipTrigger asChild>
           <div
-            className={`flex items-center text-sm rounded px-1 py-1 ${getBackgroundClass(
+            className={`flex items-center text-xs rounded px-1 py-1 ${getBackgroundClass(
               task?.end_date
             )} cursor-pointer`}
             onMouseEnter={() => setShowCheckbox(true)}

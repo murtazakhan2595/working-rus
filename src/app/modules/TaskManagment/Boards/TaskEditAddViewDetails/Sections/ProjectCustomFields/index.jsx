@@ -17,8 +17,6 @@ const ProjectCustomFields = ({
   setIsOpen,
   isOpen,
   projectId,
-  projectData = {},
-  reloadData = () => {},
 }) => {
   const [editCustomField, setEditCustomField] = useState(null);
   const [CustomFields, setCustomFields] = useState([]);

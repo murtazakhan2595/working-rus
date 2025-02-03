@@ -24,7 +24,7 @@ export const DetailBox = ({
   if (orientation === "horizontal") {
     return (
       <div className={`flex flex-col w-full ${className}`}>
-        <div className="text-sm font-medium text-neutral-900 mb-2">{label}</div>
+        <div className="text-sm font-medium text-neutral-1200 mb-2">{label}</div>
         <div className="leading-5">{value ?? "N/A"}</div>
       </div>
     );

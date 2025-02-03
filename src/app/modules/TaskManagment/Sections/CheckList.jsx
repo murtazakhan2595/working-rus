@@ -8,6 +8,7 @@ import { deleteTaskCheckListItem } from "app/hooks/taskManagment";
 import { DetailCard } from "components/SheetCardExtension";
 import { Progress } from "src/@/components/ui/progress";
 import React from "react";
+import { TextUI } from "components";
 
 const CheckList = React.memo(
   ({ items = [], onChange, editMode = true }) => {
@@ -94,7 +95,7 @@ const CheckList = React.memo(
                   key={index}
                   className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-gray-100"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 max-w-[calc(100%_-_36px)] w-full overflow-hidden">
                     <Checkbox
                       checked={item.is_completed}
                       onCheckedChange={() => {
@@ -115,15 +116,16 @@ const CheckList = React.memo(
                         }}
                       />
                     ) : (
-                      <span
-                        className={
-                          item.is_completed
-                            ? "line-through text-muted-foreground"
-                            : ""
-                        }
-                      >
-                        {item.description}
-                      </span>
+                      <div className=" w-full w-[calc(100%_-_25px)]">
+                        <TextUI
+                          text={item.description}
+                          className={`${
+                            item.is_completed
+                              ? "line-through text-muted-foreground"
+                              : ""
+                          }`}
+                        />
+                      </div>
                     )}
                   </div>
                   {editMode && (

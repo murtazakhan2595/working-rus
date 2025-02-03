@@ -21,6 +21,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
 import { lightenColor } from "utils/renderValues";
 import { cn } from "../../../../src/@/lib/utils";
+import TaskStatusLabel from "app/modules/TaskManagment/Sections/TaskStatus";
 
 import {
   Command,
@@ -165,7 +166,7 @@ export default function MyTasks() {
 
   return (
     <>
-      <Card className="">
+      <Card className="h-full">
         <CardHeader className="items-start pb-0">
           <CardTitle className="flex flex-row justify-between w-full">
             <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
@@ -278,16 +279,6 @@ export default function MyTasks() {
   );
 }
 
-const getStatusLabelBackground = (status) => {
-  switch (status) {
-    case "INPROGRESS":
-      return lightenColor("#669900", 85);
-    case "COMPLETED":
-      return lightenColor("#12B76A", 85);
-    default:
-      return lightenColor("#84828E", 85);
-  }
-};
 function RenderTask({ tasks }) {
   return (
     <CustomTable
@@ -300,17 +291,10 @@ function RenderTask({ tasks }) {
           formatter: (cell, render) => (
             <div className="flex flex-col w-full gap-2">
               <div className="flex flex-row w-full gap-4">
-                <div className="font-semibold text-neutral-1200">
+                <div className=" text-sm font-semibold text-neutral-1200 py-1 text-capitalize">
                   {render.name}
                 </div>
-                <div
-                  className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2 py-2 h-[22px] rounded-full border border-mauve-500 flex items-center justify-center"
-                  style={{
-                    background: getStatusLabelBackground(render.status),
-                  }}
-                >
-                  {TaskStatus.find((obj) => obj.value === render.status)?.label}
-                </div>
+                <TaskStatusLabel status={render.status} />
               </div>
               <div className="text-neutral-1000">
                 {render?.end_date

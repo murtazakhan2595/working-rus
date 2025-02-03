@@ -9,6 +9,21 @@ import MyLeaves from "./MyLeaves";
 import AllProjects from "./AllProjects";
 import MyTeams from "./MyTeams";
 import TaskProgress from "./TaskProgress";
+import LeaveEmployeeDetails from "./LeaveTrackerOverview/LeaveEmployeeDetails";
+import OnGoingApplications from "./TalentSphere/OnGoingApplications";
 
-export {RecentActivity, EmployeeOverview, ProfileManagement, LeaveBalance, TalentSphere, LeaveTrackerOverview, MyTasks, MyLeaves, AllProjects, MyTeams, TaskProgress};
-
+export {
+  RecentActivity,
+  LeaveEmployeeDetails,
+  OnGoingApplications,
+  EmployeeOverview,
+  ProfileManagement,
+  LeaveBalance,
+  TalentSphere,
+  LeaveTrackerOverview,
+  MyTasks,
+  MyLeaves,
+  AllProjects,
+  MyTeams,
+  TaskProgress,
+};

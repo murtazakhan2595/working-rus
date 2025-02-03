@@ -81,20 +81,6 @@ export default function AttachmentUI({
             </span>
           </span>
         </div>
-        {/* <div className="flex items-center gap-x-2">
-          <div
-            onClick={() => downloadFile(attachment, name)}
-            className="text-gray-500 hover:text-gray-700 cursor-pointer"
-          >
-            <AiOutlineDownload className="w-5 h-5" />
-          </div>
-          {removeFile && (
-            <MdClose
-              className="w-5 h-5 text-gray-500 cursor-pointer"
-              onClick={() => removeFile(attachment, id)}
-            />
-          )}
-        </div> */}
         <div className="flex items-center gap-4">
           {handleUpdateFileClick && (
             <button
@@ -122,61 +108,61 @@ export default function AttachmentUI({
       </div>
       {viewAttachment && (
         <Dialog open={viewAttachment} onOpenChange={setViewAttachment}>
-          <DialogContent className="max-w-[80vw] w-[80vw] h-[80vh]">
-            <DialogHeader>
-              <DialogTitle className={"text-sm"}>
-                <div className="flex justify-between">
-                  <span> {name}</span>
-                  <Button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      downloadFile(attachment, name);
+          <DialogContent className="w-[90vw] min-w-[90vw] max-h-[100%] h-[90vh] ">
+            <div className="flex flex-col max-h-[100%] max-w-[100%] overflow-hidden gap-4">
+              <div className="flex flex-row justify-between px-6">
+                <h6 className=""> {name || 'Attachment'}</h6>
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    downloadFile(attachment, name);
+                  }}
+                  className="mr-3"
+                  variant="continue"
+                  size={"sm"}
+                >
+                  Download <AiOutlineDownload className="w-5 h-5" />
+                </Button>
+              </div>
+
+              <div className=" overflow-hidden mb-2 w-full">
+                {imageFileType.includes(fileType) ? (
+                  <img
+                    src={fileURL}
+                    alt={name || "Attachment"}
+                    style={{
+                      width: "auto",
+                      objectFit: "cover",
+                      // maxWidth:'100%',
+                      margin: "auto",
+                      maxHeight: "100%",
+                      minHeight: "100%",
                     }}
-                    className="mr-3"
-                    variant="outline"
-                    size={"sm"}
-                  >
-                    Download <AiOutlineDownload className="w-5 h-5" />
-                  </Button>{" "}
-                </div>
-              </DialogTitle>
-            </DialogHeader>
-            <div className="max-h-[100%] overflow-hidden mb-2">
-              {imageFileType.includes(fileType) ? (
-                <img
-                  src={fileURL}
-                  alt={name || "Attachment"}
-                  style={{
-                    width: "auto",
-                    objectFit: "cover",
-                    // maxWidth:'100%',
-                    margin:'auto',
-                    maxHeight:'100%'
-                  }}
-                />
-              ) : (
-                <iframe
-                  src={
-                    fileType === "pdf"
-                      ? fileURL
-                      : `https://docs.google.com/gview?url=${encodeURIComponent(
-                          fileURL
-                        )}&embedded=true`
-                  }
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    maxHeight: "80vh",
-                    border: "none",
-                  }}
-                  title={name}
-                  onLoad={(e) => {
-                    if (attachment instanceof File) {
-                      URL.revokeObjectURL(e.target.src); // Clean up object URL
+                  />
+                ) : (
+                  <iframe
+                    src={
+                      fileType === "pdf"
+                        ? fileURL
+                        : `https://docs.google.com/gview?url=${encodeURIComponent(
+                            fileURL
+                          )}&embedded=true`
                     }
-                  }}
-                />
-              )}
+                    style={{
+                      width: "100%",
+                      height: "auto",
+                      maxHeight: "80vh",
+                      border: "none",
+                    }}
+                    title={name}
+                    onLoad={(e) => {
+                      if (attachment instanceof File) {
+                        URL.revokeObjectURL(e.target.src); // Clean up object URL
+                      }
+                    }}
+                  />
+                )}
+              </div>
             </div>
           </DialogContent>
         </Dialog>

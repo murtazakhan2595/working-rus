@@ -42,9 +42,10 @@ const Task = {
   relation: [],
   start_date: null,
   task_checklist: [],
-  status: null,
+  status: 'TODO',
   is_archive:false,
   custom_fields:[],
+  cover_photo:null,
 };
 const AddList = {
   name: "",

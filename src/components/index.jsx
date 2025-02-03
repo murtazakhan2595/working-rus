@@ -7,7 +7,9 @@ import BarChart from "./BarChart";
 import ConfirmationModal from "./ConfirmationModal";
 import { StatusLabel } from "./StatusLabel";
 import ViewOptions from 'components/ViewOtions';
-import TableCustom from './CustomTable'
+import TableCustom from './CustomTable';
+import TextUI from './TextUI';
+import TooltipText from './TooltipText';
 export {
   Header,
   PageLoader,
@@ -19,4 +21,6 @@ export {
   StatusLabel,
   ViewOptions,
   TableCustom,
+  TextUI,
+  TooltipText,
 };

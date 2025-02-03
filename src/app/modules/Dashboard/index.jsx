@@ -1,10 +1,7 @@
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
-import {  getDashboard } from "./Sections";
+import { getDashboard } from "./Sections";
 import { Header } from "components";
-
-
-
 
 const filters = {
   TalentSphere: "TalentSphere",
@@ -30,10 +27,8 @@ const Dashboard = ({ userProfile }) => {
       setDashBoardSections(sections);
     }
   }, [userProfile]);
-  
 
   const handleFilterChange = (filterName, filterValue, filterCheckStatus) => {
-
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (!filterValue || filterCheckStatus === false) {
@@ -65,27 +60,25 @@ const Dashboard = ({ userProfile }) => {
   console.log("filterData", filterData);
 
   return (
-    <>    
-      
+    <>
       <div className="dashboard ">
-     <Header/>
-        <div className="flex flex-col w-full gap-4">
+        <Header />
+        <div className="grid gap-4 grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-2">
           {DashBoardSections.map((section, index) => {
-            if (!!filterData[section.value])
-              return (
-                <div key={index} className={section.className}>
-                  {section.content}
-                </div>
-              );
-            else if (section.children && section.children.length > 0)
-              return (
-                <div key={index} className={section.className}>
-                {console.log("section.children", section.children)}
-                  {section.children && (
-                    <>{renderSectionOptions(section.children)}</>
-                  )}
-                </div>
-              );
+            return (
+              <div key={index} className={section.className}>
+                {section.content}
+              </div>
+            );
+            // else if (section.children && section.children.length > 0)
+            //   return (
+            //     <div key={index} className={section.className}>
+            //     {console.log("section.children", section.children)}
+            //       {section.children && (
+            //         <>{renderSectionOptions(section.children)}</>
+            //       )}
+            //     </div>
+            //   );
           })}
         </div>
       </div>

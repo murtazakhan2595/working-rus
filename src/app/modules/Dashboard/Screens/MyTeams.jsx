@@ -30,7 +30,6 @@ const MyTeams = ({user_details }) => {
   const [openIndex, setOpenIndex] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
-      debugger
       try {
         const response = await getEmployeeCustomList({
           filterData: { department_name: user_details?.department_name },

@@ -304,7 +304,7 @@ function TextEditorInputField({
     : [];
 
   return (
-    <div className="w-full max-w-4xl mx-auto relative">
+    <div className="w-full max-w-[100%] mx-auto relative">
       <div className="rounded-lg border border-neutral-500 bg-white">
         <div className="flex flex-wrap items-center gap-2 border-b border-neutral-500 p-2">
           <TextEditorButtons
