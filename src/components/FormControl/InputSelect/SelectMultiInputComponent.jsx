@@ -26,7 +26,7 @@ const SelectMultiInputComponent = React.memo(
     label,
     onChange,
     required = false,
-    className = "flex flex-col gap-4",
+    className = "flex flex-col gap-4 w-full",
     icon,
     useValueAsIdentifier = true,
     allowNewOption = false,
@@ -49,7 +49,7 @@ const SelectMultiInputComponent = React.memo(
     );
 
     return (
-      <div className={className}>
+      <div className={`${className} flex flex-col w-full`}>
         {/* Label */}
         {label && (
           <Label htmlFor={name}>

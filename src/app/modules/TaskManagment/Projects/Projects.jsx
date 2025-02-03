@@ -49,6 +49,7 @@ import {
   DropdownMenuItem,
 } from "src/@/components/ui/dropdown-menu";
 const Projects = ({ userProfile }) => {
+  console.log(userProfile);
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState(
@@ -132,17 +133,27 @@ const Projects = ({ userProfile }) => {
       <Header
         content={
           userProfile.role !== 4 ? (
-            <CreateEditProject
-              isEditMode={false}
-              isOpen={isOpen}
-              setIsOpen={setIsOpen}
-              reload={fetchData}
-            />
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                setIsOpen(true);
+              }}
+            >
+              Add Project
+            </Button>
           ) : (
             <></>
           )
         }
       />
+      {isOpen && (
+        <CreateEditProject
+          isEditMode={false}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          reload={fetchData}
+        />
+      )}
 
       {isLoading ? (
         <PageLoader />

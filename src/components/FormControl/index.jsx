@@ -5,7 +5,6 @@ import DatePicker from "react-datepicker";
 import { getFileNameFromURL } from "utils/downUtils";
 import moment from "moment";
 import { Card } from "components/ui/card";
-import upload from "assets/images/upload.png";
 import ReactQuill from "react-quill";
 import { Input } from "components/ui/input";
 import { Button } from "components/ui/button";
@@ -45,8 +44,8 @@ import DateRangeFilter from "./DateRangeFilter";
 import SortingFilters from "./SortingFilters";
 import TimePicker from "./TimePicker";
 import { SelectMultiInputComponent } from "components/FormControl/InputSelect";
-
-const errorClassName = "text-red-100 text-sm font-[inter] font-normal ml-1";
+import ImageInput from 'components/FormControl/UploadFiles/ImageInput';
+import { errorClassName } from "app/utils/Types/General";
 
 const SelectComponent = ({
   name,
@@ -58,7 +57,7 @@ const SelectComponent = ({
   disabled,
   required,
   onChange,
-  classes,
+  classes = 'gap-4',
   placeholder,
   icon,
   showLabel = true,
@@ -74,7 +73,7 @@ const SelectComponent = ({
     onChange(name, newValue);
   };
   return (
-    <div className={`${classes || ""} flex flex-col`}>
+    <div className={`${classes} flex flex-col w-full`}>
       {showLabel && (
         <Label className={`mb-4`} htmlFor={name}>
           {required && <span className="text-red-600">* </span>} {label}
@@ -130,120 +129,6 @@ const SelectComponent = ({
     </div>
   );
 };
-
-// const SelectMultiInputComponent = ({
-//   name,
-//   options,
-//   error,
-//   touch,
-//   value = [],
-//   label,
-//   onChange,
-//   required,
-//   classes,
-//   icon,
-//   valueIdentifier = true,
-// }) => {
-//   const [open, setOpen] = React.useState(false);
-
-//   // Ensure value is an array
-//   if (value === null || typeof value === "string") {
-//     value = [];
-//   }
-
-//   const handleSelect = (option) => {
-//     const newValue = value.includes(option)
-//       ? value.filter((item) => item !== option)
-//       : [...value, option];
-//     onChange(name, newValue);
-//   };
-
-//   const handleRemove = (option) => {
-//     const newValue = value.filter((item) => item !== option);
-//     onChange(name, newValue);
-//   };
-
-//   return (
-//     <div className={`${classes || "flex flex-col gap-4"}`}>
-//       {label && (
-//         <Label className={` ${value ? "" : ""}`} htmlFor={name}>
-//           {required && <span className="text-red-600">* </span>} {label}
-//         </Label>
-//       )}
-//       <Popover open={open} onOpenChange={setOpen}>
-//         <PopoverTrigger asChild>
-//           <Button
-//             variant="outline"
-//             role="combobox"
-//             aria-expanded={open}
-//             className="flex-wrap justify-between w-full rounded-sm h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
-//           >
-//             <div className="flex justify-start w-full gap-2">
-//               {icon && <div className="w-4"> {icon}</div>}
-//               <div className="flex flex-wrap justify-start gap-2 items-center max-w-[95%]">
-//                 {value.length > 0 ? (
-//                   value?.map((val) => {
-//                     return valueIdentifier ? (
-//                       <span
-//                         key={val}
-//                         className="bg-plum-300 text-plum-800 text-xs font-semibold px-2.5 py-0.5 rounded-lg flex items-center max-w-[100%] overflow-hidden max-w-[100%]"
-//                       >
-//                         {options.find((opt) => opt.value === val)?.label}
-//                         {/* <CircleX
-//                           className="ml-1 text-sm text-red-600 cursor-pointer"
-//                           onClick={(e) => {
-//                             e.stopPropagation();
-//                             handleRemove(val);
-//                           }}
-//                         /> */}
-//                       </span>
-//                     ) : (
-//                       options.find((opt) => opt.value === val)?.label
-//                     );
-//                   })
-//                 ) : (
-//                   <span className="text-sm font-normal text-neutral-1000">
-//                     {`Select`}
-//                   </span>
-//                 )}
-//               </div>
-//               <ChevronsUpDown className="w-4 h-4 ml-2 ml-auto opacity-50 shrink-0" />
-//             </div>
-//           </Button>
-//         </PopoverTrigger>
-//         <PopoverContent className="w-[300px] p-0">
-//           <Command>
-//             <CommandInput
-//               placeholder="Search options..."
-//               className="text-sm font-normal text-neutral-900"
-//             />
-//             <CommandList>
-//               <CommandEmpty>No options found.</CommandEmpty>
-//               <CommandGroup>
-//                 {options.map((option) => (
-//                   <CommandItem
-//                     key={option.value}
-//                     onSelect={() => handleSelect(option.value)}
-//                   >
-//                     <Check
-//                       className={`mr-2 h-4 w-4 ${
-//                         value.includes(option.value)
-//                           ? "opacity-100"
-//                           : "opacity-0"
-//                       }`}
-//                     />
-//                     {option.label}
-//                   </CommandItem>
-//                 ))}
-//               </CommandGroup>
-//             </CommandList>
-//           </Command>
-//         </PopoverContent>
-//       </Popover>
-//       {error && touch && <div className={errorClassName}>{error}</div>}
-//     </div>
-//   );
-// };
 
 const DateInput = ({
   name,
@@ -960,65 +845,6 @@ const CustomLightOutlineButton = ({ label, onClick, disabled, style }) => {
   );
 };
 
-const ImageInput = ({ label, value, error, onChange, touch, name }) => {
-  return (
-    <>
-      <div className="relative flex flex-row items-center justify-start w-full h-full border-solid rounded-3xl">
-        <div className="relative overflow-hidden w-[110px]">
-          {value ? (
-            <img
-              src={
-                typeof value === "string"
-                  ? value // If value is a URL, use it directly
-                  : URL.createObjectURL(value) // If value is a file object, create a temporary URL
-              }
-              alt="Preview"
-              className="h-[100px] object-cover border-2 border-gray-400 rounded-full"
-              width={"100px"}
-            />
-          ) : (
-            <img
-              src={upload}
-              alt="Default"
-              className="h-[100px] block mx-auto border-2 border-gray-400 rounded-full"
-              width={"100px"}
-            />
-          )}
-        </div>
-        <div className="">
-          <div>
-            <Label htmlFor="picture"> {label}</Label>
-            <Input
-              id="picture"
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const selectedFile = e.target.files[0];
-                if (selectedFile) {
-                  // Check file size
-                  const maxSize = 1024 * 1024; // 1 MB in bytes
-                  let imageError = null;
-                  if (selectedFile.size > maxSize) {
-                    // File size exceeds 1 MB, handle error
-                    imageError = "Please upload a file smaller than 1 MB.";
-                  }
-                  // Pass the file object directly
-                  onChange(
-                    name,
-                    selectedFile, // Pass the file object instead of Base64
-                    imageError
-                  );
-                }
-              }}
-            />
-            {error && touch && <div className={errorClassName}>{error}</div>}
-          </div>
-          <span>JPEG or PNG. Max size of 100KB</span>
-        </div>
-      </div>
-    </>
-  );
-};
 const FileInput = ({
   value,
   error,

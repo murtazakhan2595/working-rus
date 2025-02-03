@@ -297,33 +297,29 @@ function RenderTask({ tasks }) {
         {
           text: "Title",
           dataField: "name",
-          formatter: (cell, render) =>
-            render.status ? (
-              <div className="flex flex-col w-full gap-2">
-                <div className="flex flex-row w-full gap-4">
-                  <div className="font-semibold text-neutral-1200">
-                    {render.name}
-                  </div>
-                  <div
-                    className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2 py-2 h-[22px] rounded-full border border-mauve-500 flex items-center justify-center"
-                    style={{
-                      background: getStatusLabelBackground(render.status),
-                    }}
-                  >
-                    {
-                      TaskStatus.find((obj) => obj.value === render.status)
-                        ?.label
-                    }
-                  </div>
+          formatter: (cell, render) => (
+            <div className="flex flex-col w-full gap-2">
+              <div className="flex flex-row w-full gap-4">
+                <div className="font-semibold text-neutral-1200">
+                  {render.name}
                 </div>
-                <div className="text-neutral-1000">
-                  {render?.end_date
-                    ? `Due on ${moment(render?.end_date).format("MMMM DD")} - `
-                    : ""}
-                  Created by <EmployeeName value={render?.assigned_by} />
+                <div
+                  className="bg-mauve-600 text-nowrap text-mauve-1000 text-xs font-medium me-2 px-2 py-2 h-[22px] rounded-full border border-mauve-500 flex items-center justify-center"
+                  style={{
+                    background: getStatusLabelBackground(render.status),
+                  }}
+                >
+                  {TaskStatus.find((obj) => obj.value === render.status)?.label}
                 </div>
               </div>
-            ) : null,
+              <div className="text-neutral-1000">
+                {render?.end_date
+                  ? `Due on ${moment(render?.end_date).format("MMMM DD")} - `
+                  : ""}
+                Created by <EmployeeName value={render?.assigned_by} />
+              </div>
+            </div>
+          ),
         },
         {
           text: "View Project",
