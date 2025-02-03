@@ -8,7 +8,6 @@ import { getStatus, getStatusIconColor } from "./Sections";
 import { CustomDropdown, MembersList, Labels } from "../Sections";
 import { ImAttachment } from "react-icons/im";
 import TimeIcon from "assets/images/timeIcon";
-import EditCard from "./EditCard";
 import moment from "moment";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import { Card } from "components/ui/card";
@@ -89,14 +88,14 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
         />
       )}
-      <div className="flex flex-col">
-        <div
-          className="my-2"
-          onClick={(e) => {
-            e.preventDefault();
-            setIsTaskDetailOpen(true);
-          }}
-        >
+      <div
+        className="flex flex-col"
+        onClick={(e) => {
+          e.preventDefault();
+          setIsTaskDetailOpen(true);
+        }}
+      >
+        <div className="my-2">
           {coverImage && (
             <img
               src={coverImage}
@@ -105,13 +104,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             />
           )}
         </div>
-        <div
-          className="flex justify-start items-start py-0.5"
-          onClick={(e) => {
-            e.preventDefault();
-            setIsTaskDetailOpen(true);
-          }}
-        >
+        <div className="flex justify-start items-start py-0.5">
           {task?.label && task?.label.length > 0 && (
             <Labels
               labelsSelected={task.label || []}
@@ -127,15 +120,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           </span>
         </div>
         <div className="flex flex-col gap-2 pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
-          <h3
-            className="text-base font-bold text-capitalize"
-            onClick={(e) => {
-              e.preventDefault();
-              setIsTaskDetailOpen(true);
-            }}
-          >
-            {task?.name}
-          </h3>
+          <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
           <TextUI text={task?.description} maxLength={130} />
 
           <div className="flex flex-row justify-start flex-wrap overflow-hidden max-w-[100%]">
@@ -240,20 +225,6 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           projectId={projectId}
           boardId={task.board_id}
           isSubtask={isSubtask}
-        />
-      )}
-      {isEditCardOpen && (
-        <EditCard
-          cardId={task.id}
-          projectId={projectId}
-          onClose={() => {
-            setIsEditCardOpen(false);
-            setIsTaskDetailOpen(false);
-            setIsSubtask(false);
-            reloadData();
-          }}
-          setIsOpen={setIsEditCardOpen}
-          isOpen={isEditCardOpen}
         />
       )}
     </Card>
