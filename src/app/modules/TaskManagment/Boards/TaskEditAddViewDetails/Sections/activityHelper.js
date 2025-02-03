@@ -122,10 +122,11 @@ export const trackTaskActivities = async (
   createActivityFn
 ) => {
   console.log("task id in tracktraskactivities", taskId)
+  console.log("task id in oldValues", oldValues?.id);
   const activities = [];
 
   // If no oldValues, it's a new task
-  if (!oldValues) {
+  if (!oldValues && !oldValues?.id) {
     activities.push({
       task_id: taskId,
       action_type: ActivityTypes.TASK_CREATED,
