@@ -9,6 +9,8 @@ import {
 import { TextInput } from "components/FormControl";
 import { DateInput } from "components/FormControl";
 import { SelectComponent, CoverFileUpload } from "components/FormControl";
+import TaskShare from "app/modules/TaskManagment/Sections/TaskShare";
+import { DetailBox } from "components/SheetCardExtension";
 
 const InputTaskDetailFields = React.memo(
   ({
@@ -112,6 +114,12 @@ const InputTaskDetailFields = React.memo(
             }}
           />
         )}
+
+        <DetailBox
+          label="Share Task"
+          orientation="horizontal"
+          value={<TaskShare projectId={taskData.project_id} taskId={taskId} />}
+        />
         {CustomFields &&
           CustomFields.map((CustomField) => {
             return (
