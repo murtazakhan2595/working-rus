@@ -219,10 +219,6 @@ const RenderProject = ({
   userProfile,
 }) => {
   const navigate = useNavigate();
-  const projectMembers = project?.project_members || [];
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
-
   const navigateToBoard = () => {
     navigate(`/project-board/${project.id}`);
   };
@@ -232,14 +228,14 @@ const RenderProject = ({
       {project && (
         <>
           <CardHeader
-            className="m-2 cursor-pointer rounded-t-lg bg-gray-500 transition-all duration-300 hover:opacity-90 hover:shadow-md"
+            className="m-2 p-2 cursor-pointer rounded-t-lg bg-gray-500 transition-all duration-300 hover:opacity-90 hover:shadow-md"
             style={project?.color ? { backgroundColor: project.color } : {}}
           >
             <CardTitle>
-              <div className="flex justify-between">
+              <div className="flex justify-between py-1 pr-3 pb-4">
                 <Badge
                   variant="dot-plum"
-                  className="text-sm "
+                  className=""
                   dot={`${getStatusDotColor(project?.status)}`}
                 >
                   {ProjectStatusList.find(
@@ -315,7 +311,7 @@ const ProjectActions = React.memo(
     };
     const handleEditClick = (e) => {
       e.preventDefault();
-      navigate(-1);
+      setIsEditMode(true);
     };
     const handleCloseProjectClick = (e) => {
       e.preventDefault();
@@ -329,15 +325,17 @@ const ProjectActions = React.memo(
       <>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <MoreVertical className="w-4 h-4" />
+            <MoreVertical className="w-4 h-4 text-neutral-1100" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={handleViewClick}>
               <Eye size={14} className="mr-2" /> View
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleEditClick}>
-              <Edit size={14} className="mr-2" /> Edit
-            </DropdownMenuItem>
+            {userRole !== 4 && (
+              <DropdownMenuItem onClick={handleEditClick}>
+                <Edit size={14} className="mr-2" /> Edit
+              </DropdownMenuItem>
+            )}
             {userRole !== 4 && (
               <DropdownMenuItem onClick={handleCloseProjectClick}>
                 <Trash size={14} className="mr-2" /> Delete
@@ -354,6 +352,15 @@ const ProjectActions = React.memo(
             setIsOpen={setIsViewBoardDetails}
             fetchData={fetchData}
             role={userRole}
+          />
+        )}
+        {isEditMode && project && (
+          <CreateEditProject
+            project={project}
+            isEditMode={true}
+            isOpen={isEditMode}
+            setIsOpen={setIsEditMode}
+            reload={fetchData}
           />
         )}
       </>

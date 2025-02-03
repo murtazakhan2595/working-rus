@@ -15,7 +15,7 @@ const CreateEditProject = ({
   };
 
   const formSheetData = {
-    triggerText: `${isEditMode ? "Update Project" : "Add New Project"}`,
+    triggerText: null,
     title: `${isEditMode ? "Update Project" : "Add New Project"}`,
     description: null,
     footer: null,

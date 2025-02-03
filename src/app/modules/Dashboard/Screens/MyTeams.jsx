@@ -25,7 +25,7 @@ import { getRandomColor } from "utils/renderValues";
 
 
 
-const MyTeams = ({ userProfile, employees,user_details }) => {
+const MyTeams = ({user_details }) => {
   const [teamMembers, setTeamMembers] = useState([]);
   const [openIndex, setOpenIndex] = useState(null);
   useEffect(() => {
