@@ -54,7 +54,7 @@ export default function AllProjects(){
         </CardTitle>
         
       </CardHeader>
-      <CardContent>
+      <CardContent className='p-2'>
       {AllProjects.count > 0 &&
           AllProjects.results.slice(0, 5).map((project) => (
             <RenderProject key={project.id} project={project} />
@@ -81,7 +81,7 @@ const RenderProject = ({ project }) => {
             <TableRow>
               <TableCell className="w-full px-4 py-4">
                 <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 max-w-[calc(100%_-_105px)]">
                   <Avatar
                   src="/placeholder-user.jpg"
                   alt="Avatar"

@@ -312,11 +312,7 @@ const TaskEditAddViewDetails = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
-        <DialogContent className="max-w-[70%] max-h-[95vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle></DialogTitle>
-          </DialogHeader>
-
+        <DialogContent className="max-w-[70vw] w-[70vw] max-h-[95vh] overflow-y-auto overflow-x-hidden">
           {isLoading ? (
             <PageLoader />
           ) : (
@@ -328,7 +324,7 @@ const TaskEditAddViewDetails = ({
               validate={validationTaskFormSchema}
             >
               {(props) => (
-                <Form>
+                <Form className="overflow-x-hidden">
                   <div className="flex justify-between mb-6">
                     <div className="text-md font-semibold dark:text-slate-50 flex items-center">
                       {isSubtask && (
@@ -399,8 +395,8 @@ const TaskEditAddViewDetails = ({
                       />
                     </div>
                   </div>
-                  <div className="flex justify-between gap-5">
-                    <div className="flex flex-col w-[55%] gap-3">
+                  <div className="flex justify-between">
+                    <div className="flex flex-col w-[55%] max-w-[calc(55%_-_25px)] gap-3">
                       <InputTaskTitle
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
@@ -508,7 +504,7 @@ const TaskEditAddViewDetails = ({
                         />
                       )}
                     </div>
-                    <div className="flex flex-col w-[45%] gap-3">
+                    <div className="flex flex-col w-[45%] max-w-[45%] gap-3">
                       <div>
                         <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
                           {"Checklist"}

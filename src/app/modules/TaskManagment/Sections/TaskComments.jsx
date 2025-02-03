@@ -11,7 +11,7 @@ import {
   getActivities, // Add this new import
 } from "app/hooks/taskManagment";
 import { MembersList } from "app/modules/TaskManagment/Sections";
-import { imageFileType } from "app/utils/Types/General";
+import { TextUI } from "components";
 import { ActivityTypes } from "../Boards/TaskEditAddViewDetails/Sections/activityHelper";
 
 export default function TaskComments({
@@ -119,10 +119,12 @@ export default function TaskComments({
               <div className="w-full">
                 {item.type === "comment" ? (
                   <>
-                    <p
-                      className="mt-1 text-neutral-1000 textEditorText"
-                      dangerouslySetInnerHTML={{ __html: item.comment }}
+                    <TextUI
+                      text={item.comment}
+                      isHTMLText={true}
+                      className={"text-neutral-1000 mt-1"}
                     />
+                    
                     {item?.commentattach?.length > 0 && (
                       <div className="mt-2">
                         {item.commentattach.map((file, fileIndex) => (

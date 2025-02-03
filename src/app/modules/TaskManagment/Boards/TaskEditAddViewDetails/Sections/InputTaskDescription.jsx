@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextInput } from "components/FormControl";
+import { TextUI } from "components";
 import { TextEditorInputField } from "components/FormControl";
 
 const InputTaskDescription = React.memo(
@@ -35,12 +35,17 @@ const InputTaskDescription = React.memo(
           />
         ) : (
           <div
-            className="cursor-pointer border border-neutral-500 text-neutral-1200 p-2 rounded block min-h-[150px] max-h-[350px] overflow-y-scroll textEditorText"
-            //   onDoubleClick={() => setEditingField("description")}
-            dangerouslySetInnerHTML={{
-              __html: value,
-            }}
-          />
+            className="border border-neutral-500 p-2 rounded block min-h-[150px] max-h-[350px] overflow-y-scroll textEditorText"
+            // dangerouslySetInnerHTML={{
+            //   __html: value,
+            // }}
+          >
+            <TextUI
+              text={value}
+              isHTMLText={true}
+              className={"text-neutral-1200"}
+            />
+          </div>
         )}
       </div>
     );

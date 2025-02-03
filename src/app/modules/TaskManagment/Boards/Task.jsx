@@ -13,7 +13,7 @@ import moment from "moment";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import { Card } from "components/ui/card";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { CheckBoxInput } from "components/FormControl";
+import { TextUI } from "components";
 import { toast } from "react-toastify";
 import { addTask } from "app/hooks/taskManagment";
 import { getAttachmentDetails } from "app/hooks/taskManagment";
@@ -47,7 +47,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
       );
       setSubTasksDetails(subtaskDetails);
     }
-  }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,7 +59,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
     if (task?.attachment?.length > 0) {
       fetchData();
     }
-    fetchSubtasks()
+    fetchSubtasks();
   }, [task]);
 
   const confirmDelete = async () => {
@@ -135,23 +135,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           >
             {task?.name}
           </h3>
-
-          {task?.description && (
-            <p
-              className="text-sm leading-5 truncate-text text-neutral-1000 image-none"
-              style={{ maxHeight: "100px" }}
-              onClick={(e) => {
-                e.preventDefault();
-                setIsTaskDetailOpen(true);
-              }}
-            >
-              <span>{`${task?.description
-                .replace(/<[^>]*>/g, "")
-                .slice(0, 130)}${
-                task?.description.length > 130 ? "..." : ""
-              }`}</span>
-            </p>
-          )}
+          <TextUI text={task?.description} maxLength={130} />
           <div className="flex gap-3 justify-start font-semibold text-sm text-grey-1000 mt-3">
             {task?.relation &&
               task.relation.map((relation) => (
@@ -212,7 +196,7 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
               <div>{task?.attachment_count || 0}</div>
             </div>
             <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
-              <ListChecks size={16}/>
+              <ListChecks size={16} />
               <div>{task?.sub_task?.length || 0}</div>
             </div>
           </div>
