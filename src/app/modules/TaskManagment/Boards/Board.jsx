@@ -7,7 +7,7 @@ import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
 import BoardGridView from "app/modules/TaskManagment/Boards/BoardGridView";
 import { MembersList } from "app/modules/TaskManagment/Sections";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { RenderProject } from "./Sections";
+import { RenderProject ,AdditionalOption} from "app/modules/TaskManagment/Boards/Sections";
 import { ArrowLeft } from "lucide-react";
 import { DateInput } from "components/FormControl";
 import { Button } from "components/ui/button";
@@ -176,6 +176,9 @@ const Board = ({ TaskLabelList }) => {
             removeMember={removeMember}
           />
           <ViewOptions activeView={activeView} setActiveView={setActiveView} />
+          <AdditionalOption 
+            projectId={projectId}
+            />
         </div>
       </div>
       {activeView === "grid" ? (

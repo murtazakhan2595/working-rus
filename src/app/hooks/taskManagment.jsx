@@ -90,7 +90,7 @@ const getTaskByBoardId = async (payload) => {
   }
   return [];
 };
-const getTaskByprojectId = async (projectId, payload) => {
+export const getTaskByprojectId = async (projectId, payload) => {
   try {
     // Fetch all boards
     const allBoards = await getAllBoards({
@@ -1110,7 +1110,6 @@ export {
   postComment,
   getAllLabels,
   getCommentsWithAttachments,
-  getTaskByprojectId,
   getAttachmentDetails,
   getAllCustomFields,
   addCustomFields,
