@@ -282,7 +282,7 @@ const TaskEditAddViewDetails = ({
         await trackTaskActivities(
           values,
           taskId ? initialValues : null,
-          taskId || response.id,
+          taskId || response?.data.id,
           userId,
           createActivity
         );

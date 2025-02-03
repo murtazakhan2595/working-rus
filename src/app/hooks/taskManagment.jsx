@@ -288,7 +288,7 @@ const addTask = async (payload, id) => {
           headers: headers(),
         }
       );
-      if (response.status === 200) return response;
+      if (response.status === 200 || response.status ===201) return response;
       else return false;
     } else {
       console.log("SUBTASK ADDTASK", payload);
