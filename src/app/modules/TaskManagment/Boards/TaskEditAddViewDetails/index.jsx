@@ -581,8 +581,10 @@ const TaskEditAddViewDetails = ({
           projectId={projectId}
           projectData={projectDetail}
           isOpen={openProjectCustomFields}
-          setIsOpen={setOpenProjectCustomFields}
-          reloadData={(projectId) => fetchCustomFieldsByProjectId(projectId)}
+          setIsOpen={() => {
+            setOpenProjectCustomFields();
+            fetchCustomFieldsByProjectId(true, projectId);
+          }}
         />
       )}
     </>

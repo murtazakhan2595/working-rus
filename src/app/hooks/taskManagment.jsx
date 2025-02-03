@@ -999,7 +999,7 @@ const deleteCustomFields = async (id) => {
     const response = await axios.delete(`${baseUrl}/dynamic-fields/${id}`, {
       headers: headers(),
     });
-    if (response.status === 200) {
+    if (response.status === 204 || response.status === 200) {
       return response;
     }
     return false;
