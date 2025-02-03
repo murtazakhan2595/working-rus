@@ -14,7 +14,7 @@ const buttonVariants = cva(
         destructive:
           "bg-red-300 text-white hover:bg-red-500/90 dark:bg-red-900 dark:text-slate-50 dark:hover:bg-red-900/90",
         continue:
-          "border border-slate-700 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50",
+          "border text-neutral-1200 border-slate-700 bg-white hover:shadow-custom dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50",
         outline:
           "border border-primary bg-white hover:bg-primary text-primary hover:shadow-custom hover:text-white dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50",
         secondary:
@@ -22,6 +22,8 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50",
         link: "text-neutral-1000 underline-offset-4 hover:underline dark:text-slate-50",
+        destructiveOutline:
+          "bg-red-50 text-red-300 border border-slate-700 hover:shadow-custom",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -25,7 +25,7 @@ export const TaskLabelBadge = React.memo(({ label }) => {
   return (
     <Badge
       key={label.id}
-      className={`mr-2`}
+      className={`mr-1`}
       style={{
         background: lightenColor(label?.color, 85),
         color: label.color,
@@ -56,7 +56,7 @@ export const AddNewLabel = React.memo(
       "#00acc1",
       "#5c6bc0",
       "#ff9800",
-      "#8d6e63",
+      "#12B76A",
     ];
     const fetchTaskLabelData = async (isMounted) => {
       try {

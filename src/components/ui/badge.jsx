@@ -1,10 +1,10 @@
-import * as React from "react"
+import * as React from "react";
 import { cva } from "class-variance-authority";
 
-import { cn } from "../../src/@/lib/utils.js"
+import { cn } from "../../src/@/lib/utils.js";
 
 const badgeVariants = cva(
-  "inline-flex items-center text-nowrap rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 dark:border-slate-800 dark:focus:ring-slate-300",
+  "inline-flex items-center w-fit text-nowrap rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 dark:border-slate-800 dark:focus:ring-slate-300",
   {
     variants: {
       variant: {
@@ -20,7 +20,8 @@ const badgeVariants = cva(
         warning: "bg-amber-100 text-amber-500",
         success: "bg-emerald-100 text-emerald-500",
         neutral: "bg-neutral-300 text-neutral-1100",
-        "dot-plum": "bg-white border-neutral-300 flex items-center gap-2",
+        "dot-plum":
+          "bg-white border-neutral-300 flex items-center gap-2 text-neutral-1100",
         "dot-error": "bg-white border-neutral-300 flex items-center gap-2",
         "dot-warning": "bg-white border-neutral-300 flex items-center gap-2",
         "dot-emerald": "bg-white border-neutral-300 flex items-center gap-2",
@@ -31,21 +32,19 @@ const badgeVariants = cva(
       variant: "default",
     },
   }
-)
+);
 
-function Badge({
-  key,
-  className,
-  variant,
-  dot,
-  ...props
-}) {
+function Badge({ key, className, variant, dot, ...props }) {
   return (
-    <div key={key} className={cn(badgeVariants({ variant }), className)} {...props}>
+    <div
+      key={key}
+      className={cn(badgeVariants({ variant }), className)}
+      {...props}
+    >
       {dot && <span className={`w-3 h-3 rounded-full ${dot}`} />}
       {props.children}
     </div>
   );
 }
 
-export { Badge, badgeVariants }
+export { Badge, badgeVariants };
