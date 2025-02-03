@@ -35,7 +35,7 @@ const ProjectForm = ({
   const formRef = useRef();
   let dispatch = useDispatch();
   const initialValues = editProject || Project;
-  const [membersOpen, setMembersOpen] = useState(false);
+  const [profilePictureError, setProfilePictureError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedColor, setSelectedColor] = useState("#f7f7f7");
   const [closeSheet, setCloseSheet] = useState(false);
@@ -112,12 +112,16 @@ const ProjectForm = ({
                   }}
                   validate={(values) => {
                     const errors = { ...validationProjectFormSchema(values) };
+                    if (profilePictureError)
+                      errors.profile = profilePictureError;
                     return errors;
                   }}
                 >
                   {(props) => (
                     <form onSubmit={props.handleSubmit}>
-                      <div className={`flex w-full flex-col rounded-lg pt-2.5 gap-8`}>
+                      <div
+                        className={`flex w-full flex-col rounded-lg pt-2.5 gap-8`}
+                      >
                         <SheetCardExtension title="Project Details">
                           <div className="space-y-2">
                             <ImageInput
@@ -125,10 +129,12 @@ const ProjectForm = ({
                               error={props.errors.profile}
                               touch={props.touched.profile}
                               value={props.values.profile}
-                              label={"Cover Photo"}
                               required={true}
                               onChange={(field, value, error) => {
                                 props.setFieldValue(field, value);
+                                if (error) {
+                                  setProfilePictureError(error);
+                                }
                               }}
                             />
                           </div>
@@ -164,60 +170,60 @@ const ProjectForm = ({
                           </div>
                         </SheetCardExtension>
                         <SheetCardExtension
-                        title={`${
-                          isEditMode ? "Update" : "Add"
-                        } Project Details`}
-                        className="mt-4"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="label text-sm flex-1">Colors</div>
+                          title={`${
+                            isEditMode ? "Update" : "Add"
+                          } Project Details`}
+                          className="mt-4"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="label text-sm flex-1">Colors</div>
 
-                          <div className="flex space-x-2 flex-1">
-                            {[
-                              "#f7f7f7",
-                              "#f9e8f7",
-                              "#e7f9f7",
-                              "#fdf7e7",
-                              "#f9f7f9",
-                            ].map((color, index) => (
-                              <span
-                                key={index}
-                                className={`w-6 h-6 rounded-full border border-gray-300 cursor-pointer ${
-                                  selectedColor === color
-                                    ? "ring-2 ring-blue-500"
-                                    : ""
-                                }`}
-                                style={{ backgroundColor: color }}
-                                onClick={() => {
-                                  setSelectedColor(color);
-                                  props.setFieldValue("color", color); // Update Formik field
-                                }}
-                              ></span>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                          <div className="label text-sm flex-1">
-                            Team Members
+                            <div className="flex space-x-2 flex-1">
+                              {[
+                                "#f7f7f7",
+                                "#f9e8f7",
+                                "#e7f9f7",
+                                "#fdf7e7",
+                                "#f9f7f9",
+                              ].map((color, index) => (
+                                <span
+                                  key={index}
+                                  className={`w-6 h-6 rounded-full border border-gray-300 cursor-pointer ${
+                                    selectedColor === color
+                                      ? "ring-2 ring-blue-500"
+                                      : ""
+                                  }`}
+                                  style={{ backgroundColor: color }}
+                                  onClick={() => {
+                                    setSelectedColor(color);
+                                    props.setFieldValue("color", color); // Update Formik field
+                                  }}
+                                ></span>
+                              ))}
+                            </div>
                           </div>
 
-                          <div className="space-y-2 flex-1">
-                            <div className="flex flex-wrap items-center justify-start gap-2 h-100">
-                              <SelectMultiInputComponent
-                                name="project_members"
-                                options={employees}
-                                // label={"Assignee"}
-                                showLabel={false}
-                                value={props.values.project_members || []}
-                                onChange={(field, value) => {
-                                  props.setFieldValue(field, value);
-                                }}
-                                error={props.errors.project_members}
-                                touch={props.touched.project_members}
-                                placeholder="Add Project Members"
-                              />
-                              {/* {props.values.project_members &&
+                          <div className="flex items-center gap-4">
+                            <div className="label text-sm flex-1">
+                              Team Members
+                            </div>
+
+                            <div className="space-y-2 flex-1">
+                              <div className="flex flex-wrap items-center justify-start gap-2 h-100">
+                                <SelectMultiInputComponent
+                                  name="project_members"
+                                  options={employees}
+                                  // label={"Assignee"}
+                                  showLabel={false}
+                                  value={props.values.project_members || []}
+                                  onChange={(field, value) => {
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  error={props.errors.project_members}
+                                  touch={props.touched.project_members}
+                                  placeholder="Add Project Members"
+                                />
+                                {/* {props.values.project_members &&
                                 props.values.project_members.length > 0 &&
                                 props.values.project_members.map(
                                   (member, index) => (
@@ -244,10 +250,10 @@ const ProjectForm = ({
                                   <RxPlus />
                                 </div>
                               </div> */}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        {/* {membersOpen && (
+                          {/* {membersOpen && (
                           <SelectComponent
                             name="project_members"
                             placeholder="Select Members"
@@ -280,30 +286,29 @@ const ProjectForm = ({
                           />
                         )} */}
 
-                        <div className="flex items-center gap-4">
-                          <div className="label text-sm mt-4 flex-1">
-                            Status
+                          <div className="flex items-center gap-4">
+                            <div className="label text-sm mt-4 flex-1">
+                              Status
+                            </div>
+                            <div className="flex-1">
+                              <SelectComponent
+                                name="status"
+                                options={ProjectStatusList}
+                                error={props.errors.status}
+                                touch={props.touched.status}
+                                value={props.values.status}
+                                showLabel={false}
+                                // required
+                                onChange={(field, value) => {
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            </div>
                           </div>
-                          <div className="flex-1">
-                            <SelectComponent
-                              name="status"
-                              options={ProjectStatusList}
-                              error={props.errors.status}
-                              touch={props.touched.status}
-                              value={props.values.status}
-                              // required
-                              onChange={(field, value) => {
-                                props.setFieldValue(field, value);
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </SheetCardExtension>
+                        </SheetCardExtension>
                       </div>
 
                       {/* Color Selection */}
-
-                     
 
                       <div className="p-6 border-t border-gray-200 ">
                         <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">

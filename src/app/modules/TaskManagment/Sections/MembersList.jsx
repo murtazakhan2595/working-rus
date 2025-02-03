@@ -80,7 +80,7 @@ const MembersList = React.memo(({ members, removeMember, displayAll = false }) =
                   src={profile_picture}
                   alt="Avatar"
                   fallbackText={name_initials}
-                  className={`${getRandomColor(name?.charAt(0))} h-8 w-8`}
+                  className={`h-8 w-8`}
                   text={name}
                 />
               );
