@@ -1,7 +1,6 @@
 import * as React from "react";
 import { lightenColor } from "utils/renderValues";
 import { TaskStatus } from "data/Data";
-import { Badge } from "components/ui/badge";
 
 const getStatusLabelBackground = (status) => {
   switch (status) {
@@ -15,11 +14,11 @@ const getStatusLabelBackground = (status) => {
       return lightenColor("#FBBF24", 85);
   }
 };
-const TaskStatusLabel = ({ status }) => {
+const TaskStatusLabel = React.memo(({ status }) => {
   if (!status) return null;
   return (
     <div
-      className="text-nowrap text-sm font-medium me-2 px-2 py-1 rounded flex items-center justify-center"
+      className="text-nowrap text-xs font-medium me-2 px-2 py-1 rounded flex items-center justify-center"
       style={{
         background: getStatusLabelBackground(status),
       }}
@@ -27,6 +26,6 @@ const TaskStatusLabel = ({ status }) => {
       {TaskStatus.find((obj) => obj.value === status)?.label || status}
     </div>
   );
-};
+});
 
 export default TaskStatusLabel;

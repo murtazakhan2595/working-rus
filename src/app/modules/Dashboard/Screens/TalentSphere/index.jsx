@@ -24,12 +24,8 @@ import { CreateUpdateJob } from "app/modules/RecruitmentData";
  */
 const TalentSphere = () => {
   const [posts, setPosts] = useState([]);
-  const [applicantsData, setApplicantsData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isApplicantsLoading, setIsApplicantsLoading] = useState(true);
   const [jobOpenings, setJobOpenings] = useState(0);
-  const [applications, setApplications] = useState(0);
-  const [shortlisted, setShortlisted] = useState(0);
   const [interviewed, setInterviewed] = useState(0);
   const navigate = useNavigate();
 
@@ -53,30 +49,9 @@ const TalentSphere = () => {
       setIsLoading(false);
     }
   };
-/**
-   * Fetches job applicants and updates the state
-   * 
-   * @async
-   * @returns {Promise<void>}
-   */
-  const fetchLists = async () => {
-    try {
-      const applicants = await getJobApplicants();
-      if (applicants) {
-        setApplicantsData(applicants);
-        setApplications(applicants.length); // Set applications count
-        setShortlisted(applicants.filter(applicant => applicant.status === 'shortlisted').length); // Set shortlisted count
-      }
-    } catch (error) {
-      console.error("Error fetching applications:", error);
-    } finally {
-      setIsApplicantsLoading(false);
-    }
-  };
 
   useEffect(() => {
     fetchData();
-    fetchLists();
   }, []);
 
   // const statsData = [
@@ -86,7 +61,6 @@ const TalentSphere = () => {
   //   { icon: Users, label: "Interviewed", value: interviewed },
   // ];
   return (
-    <>
       <Card className="col-span-2">
         <CardHeader className="items-start p-6">
           <CardTitle className="flex flex-row justify-between w-full">
@@ -119,47 +93,8 @@ const TalentSphere = () => {
           )}
         </CardContent>
       </Card>
-      <Card className="w-full xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-1">
-        <CardHeader>
-          <CardTitle>
-            <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">Ongoing Process</div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isApplicantsLoading ? (
-            <PageLoader />
-          ) : (
-            <OnGoingApplications applicantsData={applicantsData} />
-          )}
-        </CardContent>
-      </Card>
-    </>
+      
   );
 };
 
 export default TalentSphere;
-
-
-// ...
-
-  /**
-   * OnGoingApplications component
-   * 
-   * This component displays a table of ongoing job applications
-   * 
-   * @param {object} applicantsData - The applicants data
-   * @returns {JSX.Element} The OnGoingApplications component
-   */
-  const OnGoingApplications = ({ applicantsData }) => {
-    const navigate = useNavigate();
-    return (
-      <div className="h-full overflow-y-auto hideScroll">
-        <CustomTable
-          showHeader={false}
-          columns={DashboardOnGoingColumns(navigate)}
-          data={applicantsData.slice(0, 5)}
-          pagination={false}
-        />
-      </div>
-    );
-  };

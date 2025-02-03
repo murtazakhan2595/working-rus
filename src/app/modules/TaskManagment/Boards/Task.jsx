@@ -13,7 +13,7 @@ import moment from "moment";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import { Card } from "components/ui/card";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { TextUI } from "components";
+import { TextUI, TooltipText } from "components";
 import { toast } from "react-toastify";
 import { addTask } from "app/hooks/taskManagment";
 import { getAttachmentDetails } from "app/hooks/taskManagment";
@@ -139,7 +139,10 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
           <TextUI text={task?.description} maxLength={130} />
 
           <div className="flex flex-row justify-start flex-wrap overflow-hidden max-w-[100%]">
-            <TaskStatusLabel status={task.status} />
+            <TooltipText
+              tooltipTriggerText={<TaskStatusLabel status={task.status} />}
+              content={`Task Status`}
+            />
             {task?.end_date && (
               <TimeStatusIcon
                 task={task}
@@ -192,18 +195,34 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
             </div>
           </div>
           <div className="flex items-center gap-2 text-neutral-1000">
-            <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
-              <BiComment />
-              <div>{task?.comment_count || 0}</div>
-            </div>
-            <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
-              <ImAttachment />
-              <div>{task?.attachment_count || 0}</div>
-            </div>
-            <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
-              <ListChecks size={16} />
-              <div>{task?.sub_task?.length || 0}</div>
-            </div>
+            <TooltipText
+              tooltipTriggerText={
+                <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
+                  <BiComment />
+                  <div>{task?.comment_count || 0}</div>
+                </div>
+              }
+              content={`${task?.comment_count || 0} Comments`}
+            />
+
+            <TooltipText
+              tooltipTriggerText={
+                <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
+                  <ImAttachment />
+                  <div>{task?.attachment_count || 0}</div>
+                </div>
+              }
+              content={`${task?.attachment_count || 0} Attachment`}
+            />
+            <TooltipText
+              tooltipTriggerText={
+                <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
+                  <ListChecks size={16} />
+                  <div>{task?.sub_task?.length || 0}</div>
+                </div>
+              }
+              content={`${task?.sub_task?.length || 0} Subtasks`}
+            />
           </div>
         </footer>
       </div>
@@ -315,7 +334,7 @@ const TimeStatusIcon = ({ task, getStatusIconColor, onUpdate }) => {
       <Tooltip>
         <TooltipTrigger asChild>
           <div
-            className={`flex items-center text-sm rounded px-1 py-1 ${getBackgroundClass(
+            className={`flex items-center text-xs rounded px-1 py-1 ${getBackgroundClass(
               task?.end_date
             )} cursor-pointer`}
             onMouseEnter={() => setShowCheckbox(true)}

@@ -9,6 +9,7 @@ import { StatusLabel } from "./StatusLabel";
 import ViewOptions from 'components/ViewOtions';
 import TableCustom from './CustomTable';
 import TextUI from './TextUI';
+import TooltipText from './TooltipText';
 export {
   Header,
   PageLoader,
@@ -21,4 +22,5 @@ export {
   ViewOptions,
   TableCustom,
   TextUI,
+  TooltipText,
 };
