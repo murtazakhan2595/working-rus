@@ -17,6 +17,23 @@ import {
   Edit,
   Trash,
 } from "lucide-react";
+import { ProjectStatusList } from "data/Data";
+
+const getStatusDotColor = (status) => {
+  switch (status) {
+    case "on_going":
+      return "bg-yellow-500";
+    case "On_hold":
+      return "bg-red-500";
+    case "completed":
+      return "bg-emerald-500";
+    case "closed":
+      return "bg-mauve-900";
+    default:
+      return "bg-plum-1100";
+  }
+};
+
 const ViewBoardDetails = ({
   isOpen,
   setIsOpen,
@@ -85,19 +102,20 @@ const ViewBoardDetails = ({
               style={{ background: project?.color }}
             ></div>
           )}
-          <p>{project?.name}</p>
+          <h6 className="text-capitalize">{project?.name}</h6>
         </div>
         {role !== 4 && (
           <div className="flex gap-4">
-            <Button variant="continue" onClick={onEdit}>
-              <Edit size={14} className="mr-2" />
+            <Button variant="continue" onClick={onEdit} size={"sm"}>
+              <Edit size={14} className="mr-1" />
               Edit
             </Button>
             <Button
               variant="continue"
               onClick={() => setIsDeleteModalOpen(true)}
+              size={"sm"}
             >
-              <Trash size={14} className="mr-2" /> Delete
+              <Trash size={14} className="mr-1" /> Delete
             </Button>
           </div>
         )}
@@ -108,10 +126,8 @@ const ViewBoardDetails = ({
         date={project?.created_at}
         dateTitle="Created On"
       >
+        <div className="flex flex-col gap-4">
         <DetailBox label="Description" value={project?.description} />
-      </DetailCard>
-
-      <DetailCard detailCardTitle="Project Members">
         <DetailBox
           label="Colors"
           value={
@@ -133,15 +149,29 @@ const ViewBoardDetails = ({
         <DetailBox
           label="Status"
           value={
+            // <Badge
+            //   variant="secondary"
+            //   className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full"
+            //   style={{
+            //     background: getStatusDotColor(render.status),
+            //   }}
+            // >
+            //   {project?.status || "Ongoing"}
+            // </Badge>
             <Badge
-              variant="secondary"
-              className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full"
+              variant="dot-plum"
+              className="text-sm"
+              dot={`${getStatusDotColor(project?.status)}`}
             >
-              {project?.status || "Ongoing"}
+              {ProjectStatusList.find((obj) => obj.value === project?.status)
+                ?.label || "On Going"}
             </Badge>
           }
         />
+        </div>
+        
       </DetailCard>
+
     </SheetComponent>
   );
 };

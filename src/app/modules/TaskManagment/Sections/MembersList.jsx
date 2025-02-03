@@ -69,7 +69,7 @@ const MembersList = React.memo(({ members, removeMember, displayAll = false }) =
       <PopoverTrigger asChild>
         <div className="flex items-center justify-start cursor-pointer">
           <div
-            className={`flex ${!displayAll ? "-space-x-2.5" : "gap-1"} h-10 items-center`}
+            className={`flex ${!displayAll ? "-space-x-2.5" : "gap-1"} h-auto items-center flex-wrap`}
           >
             {displayedMembers?.map((member, index) => {
               const { profile_picture, name, name_initials } =

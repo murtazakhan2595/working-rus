@@ -30,6 +30,10 @@ ul {
   /* height: 100vh; */
 }
 
+.text-capitalize{
+  text-transform: capitalize;
+}
+
 .card {
   border-radius: 8px;
   padding: 45px 35px;
