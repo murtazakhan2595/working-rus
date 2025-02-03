@@ -158,7 +158,7 @@ const ProjectForm = ({
                                 props.handleChange(field)(value);
                               }}
                             />
-                            <p>
+                            <p className="text-xs text-neutral-800 font-normal">
                               Give important details regarding the new project
                             </p>
                           </div>
