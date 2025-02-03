@@ -7,14 +7,23 @@ import CreateEditProject from "./CreateEditProject";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteProject } from "app/hooks/taskManagment";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
-
+import {
+  LayoutGrid,
+  ListTodo,
+  TableOfContents,
+  Clock,
+  MoreVertical,
+  Eye,
+  Edit,
+  Trash,
+} from "lucide-react";
 const ViewBoardDetails = ({
   isOpen,
   setIsOpen,
   onClose,
   project,
   fetchData,
-  role
+  role,
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -71,18 +80,27 @@ const ViewBoardDetails = ({
               className="h-[50px] w-[50px] object-cover border-2 border-gray-400 rounded-full"
             />
           ) : (
-            <div className="h-[50px] w-[50px] object-cover border-2 border-gray-400 rounded-full" style={{ background: project?.color }}></div>
+            <div
+              className="h-[50px] w-[50px] object-cover border-2 border-gray-400 rounded-full"
+              style={{ background: project?.color }}
+            ></div>
           )}
           <p>{project?.name}</p>
         </div>
-        {role !== 4 && (<div className="flex gap-4">
-          <Button variant="outline" onClick={onEdit}>
-            Edit
-          </Button>
-          <Button variant="outline" onClick={() => setIsDeleteModalOpen(true)}>
-            Delete
-          </Button>
-        </div>)}
+        {role !== 4 && (
+          <div className="flex gap-4">
+            <Button variant="continue" onClick={onEdit}>
+              <Edit size={14} className="mr-2" />
+              Edit
+            </Button>
+            <Button
+              variant="continue"
+              onClick={() => setIsDeleteModalOpen(true)}
+            >
+              <Trash size={14} className="mr-2" /> Delete
+            </Button>
+          </div>
+        )}
       </div>
 
       <DetailCard
@@ -106,7 +124,10 @@ const ViewBoardDetails = ({
         <DetailBox
           label="Members"
           value={
-            <MembersList members={project?.project_members} displayAll={true} />
+            <MembersList
+              members={project?.project_members || []}
+              displayAll={true}
+            />
           }
         />
         <DetailBox

@@ -5,7 +5,11 @@ import { RxPlus } from "react-icons/rx";
 import { Members } from "../Sections";
 import { Formik } from "formik";
 import { addProject } from "app/hooks/taskManagment";
-import { TextInput, SelectComponent } from "components/FormControl";
+import {
+  TextInput,
+  SelectComponent,
+  SelectMultiInputComponent,
+} from "components/FormControl";
 import { Project } from "app/utils/Types/TaskManagment";
 import { useDispatch } from "react-redux";
 import { fetchProjects } from "state/slices/CommonSlice";
@@ -113,7 +117,7 @@ const ProjectForm = ({
                 >
                   {(props) => (
                     <form onSubmit={props.handleSubmit}>
-                      <div className={`flex w-full flex-col rounded-lg pt-2.5`}>
+                      <div className={`flex w-full flex-col rounded-lg pt-2.5 gap-8`}>
                         <SheetCardExtension title="Project Details">
                           <div className="space-y-2">
                             <ImageInput
@@ -159,12 +163,10 @@ const ProjectForm = ({
                             </p>
                           </div>
                         </SheetCardExtension>
-                      </div>
-
-                      {/* Color Selection */}
-
-                      <SheetCardExtension
-                        title="Add to Project"
+                        <SheetCardExtension
+                        title={`${
+                          isEditMode ? "Update" : "Add"
+                        } Project Details`}
                         className="mt-4"
                       >
                         <div className="flex items-center gap-4">
@@ -202,7 +204,20 @@ const ProjectForm = ({
 
                           <div className="space-y-2 flex-1">
                             <div className="flex flex-wrap items-center justify-start gap-2 h-100">
-                              {props.values.project_members &&
+                              <SelectMultiInputComponent
+                                name="project_members"
+                                options={employees}
+                                // label={"Assignee"}
+                                showLabel={false}
+                                value={props.values.project_members || []}
+                                onChange={(field, value) => {
+                                  props.setFieldValue(field, value);
+                                }}
+                                error={props.errors.project_members}
+                                touch={props.touched.project_members}
+                                placeholder="Add Project Members"
+                              />
+                              {/* {props.values.project_members &&
                                 props.values.project_members.length > 0 &&
                                 props.values.project_members.map(
                                   (member, index) => (
@@ -228,11 +243,11 @@ const ProjectForm = ({
                                 <div className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
                                   <RxPlus />
                                 </div>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                         </div>
-                        {membersOpen && (
+                        {/* {membersOpen && (
                           <SelectComponent
                             name="project_members"
                             placeholder="Select Members"
@@ -263,7 +278,7 @@ const ProjectForm = ({
                               )
                             }
                           />
-                        )}
+                        )} */}
 
                         <div className="flex items-center gap-4">
                           <div className="label text-sm mt-4 flex-1">
@@ -284,6 +299,11 @@ const ProjectForm = ({
                           </div>
                         </div>
                       </SheetCardExtension>
+                      </div>
+
+                      {/* Color Selection */}
+
+                     
 
                       <div className="p-6 border-t border-gray-200 ">
                         <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">

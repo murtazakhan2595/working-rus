@@ -25,15 +25,15 @@ import { getRandomColor } from "utils/renderValues";
 
 
 
-const MyTeams = ({ userProfile, employees }) => {
+const MyTeams = ({user_details }) => {
   const [teamMembers, setTeamMembers] = useState([]);
   const [openIndex, setOpenIndex] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
-      const user = employees.find((emp) => emp.value === userProfile.id);
+      debugger
       try {
         const response = await getEmployeeCustomList({
-          filterData: { department_name: user.department_name },
+          filterData: { department_name: user_details?.department_name },
         });
         if (response) {
           setTeamMembers(response);
@@ -43,7 +43,7 @@ const MyTeams = ({ userProfile, employees }) => {
       }
     };
     fetchData();
-  }, [userProfile, employees]);
+  }, [user_details]);
   const toggleCollapse = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
@@ -142,6 +142,7 @@ const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
     employees: state.emp.employees,
+    user_details: state.emp.user_details,
   };
 };
 

@@ -8,7 +8,7 @@ import moment from "moment";
 import ViewBoardDetails from "./ViewBoardDetails";
 import { MembersList } from "../Sections";
 import { LuFolderX } from "react-icons/lu";
-
+import { useSelector } from "react-redux";
 import { fetchProjects } from "state/slices/CommonSlice";
 import { useDispatch } from "react-redux";
 import CreateEditProject from "./CreateEditProject";
@@ -21,7 +21,16 @@ import {
   CardHeader,
   CardTitle,
 } from "components/ui/card";
-import { LayoutGrid, ListTodo, TableOfContents, Clock } from "lucide-react";
+import {
+  LayoutGrid,
+  ListTodo,
+  TableOfContents,
+  Clock,
+  MoreVertical,
+  Eye,
+  Edit,
+  Trash,
+} from "lucide-react";
 import TableCustom from "components/CustomTable";
 import { projectBoard } from "app/utils/Types/TableColumns";
 import { Button } from "components/ui/button";
@@ -32,6 +41,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "src/@/components/ui/dropdown-menu";
 const Projects = ({ userProfile }) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
@@ -203,42 +219,31 @@ const RenderProject = ({
   userProfile,
 }) => {
   const navigate = useNavigate();
-  const projectMembers = project?.project_members || [];
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-
-  const viewDetails = () => {
-    setIsDropdownOpen(false);
-    setIsViewBoardDetails(true);
-  };
-
   const navigateToBoard = () => {
     navigate(`/project-board/${project.id}`);
   };
 
-  const closeModal = () => {
-    setIsViewBoardDetails(false);
-    setIsEditMode(false);
-  };
   return (
     <Card className="rounded-lg">
       {project && (
         <>
           <CardHeader
-            className="m-2 cursor-pointer rounded-t-lg bg-gray-500 transition-all duration-300 hover:opacity-90 hover:shadow-md"
+            className="m-2 p-2 cursor-pointer rounded-t-lg bg-gray-500 transition-all duration-300 hover:opacity-90 hover:shadow-md"
             style={project?.color ? { backgroundColor: project.color } : {}}
-            onClick={viewDetails}
           >
             <CardTitle>
-              <Badge
-                variant="dot-plum"
-                className="text-sm "
-                dot={`${getStatusDotColor(project?.status)}`}
-              >
-                {ProjectStatusList.find((obj) => obj.value === project?.status)
-                  ?.label || "On Going"}
-              </Badge>
+              <div className="flex justify-between py-1 pr-3 pb-4">
+                <Badge
+                  variant="dot-plum"
+                  className=""
+                  dot={`${getStatusDotColor(project?.status)}`}
+                >
+                  {ProjectStatusList.find(
+                    (obj) => obj.value === project?.status
+                  )?.label || "On Going"}
+                </Badge>
+                <ProjectActions project={project} fetchData={fetchData} />
+              </div>
             </CardTitle>
             <div className="flex justify-center">
               <img
@@ -288,20 +293,80 @@ const RenderProject = ({
           </CardFooter>
         </>
       )}
-      {isViewBoardDetails && project && (
-        <ViewBoardDetails
-          project={project}
-          onClose={closeModal}
-          setIsEditMode={setIsEditMode}
-          isOpen={isViewBoardDetails}
-          setIsOpen={setIsViewBoardDetails}
-          fetchData={fetchData}
-          role={userProfile?.role}
-        />
-      )}
     </Card>
   );
 };
+
+const ProjectActions = React.memo(
+  ({ project = null, fetchData = () => {} }) => {
+    const [openArchive, setOpenArchive] = React.useState("");
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
+    const navigate = useNavigate();
+    const userRole = useSelector((state) => state.user.userProfile)?.role;
+
+    const handleViewClick = (e) => {
+      e.preventDefault();
+      setIsViewBoardDetails(true);
+    };
+    const handleEditClick = (e) => {
+      e.preventDefault();
+      setIsEditMode(true);
+    };
+    const handleCloseProjectClick = (e) => {
+      e.preventDefault();
+      setOpenArchive(true);
+    };
+    const closeModal = () => {
+      setIsViewBoardDetails(false);
+      setIsEditMode(false);
+    };
+    return (
+      <>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <MoreVertical className="w-4 h-4 text-neutral-1100" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleViewClick}>
+              <Eye size={14} className="mr-2" /> View
+            </DropdownMenuItem>
+            {userRole !== 4 && (
+              <DropdownMenuItem onClick={handleEditClick}>
+                <Edit size={14} className="mr-2" /> Edit
+              </DropdownMenuItem>
+            )}
+            {userRole !== 4 && (
+              <DropdownMenuItem onClick={handleCloseProjectClick}>
+                <Trash size={14} className="mr-2" /> Delete
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        {isViewBoardDetails && project && (
+          <ViewBoardDetails
+            project={project}
+            onClose={closeModal}
+            setIsEditMode={setIsEditMode}
+            isOpen={isViewBoardDetails}
+            setIsOpen={setIsViewBoardDetails}
+            fetchData={fetchData}
+            role={userRole}
+          />
+        )}
+        {isEditMode && project && (
+          <CreateEditProject
+            project={project}
+            isEditMode={true}
+            isOpen={isEditMode}
+            setIsOpen={setIsEditMode}
+            reload={fetchData}
+          />
+        )}
+      </>
+    );
+  }
+);
 
 const mapStateToProps = (state) => {
   return {

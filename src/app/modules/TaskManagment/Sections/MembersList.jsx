@@ -67,7 +67,7 @@ const MembersList = React.memo(({ members, removeMember, displayAll = false }) =
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <div className="flex items-center justify-center cursor-pointer">
+        <div className="flex items-center justify-start cursor-pointer">
           <div
             className={`flex ${!displayAll ? "-space-x-2.5" : "gap-1"} h-10 items-center`}
           >

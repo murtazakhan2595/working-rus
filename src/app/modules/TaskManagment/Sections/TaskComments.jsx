@@ -102,7 +102,7 @@ export default function TaskComments({
   };
 
   return (
-    <div className="mt-3">
+    <div className="mt-3  max-h-[530px] overflow-y-auto hideScroll">
       <div className="mt-3 space-y-4 flex flex-col gap-6">
         {combinedActivities.map((item, index) => (
           <div key={index} className="flex items-start space-x-3">
