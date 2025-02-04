@@ -27,8 +27,8 @@ const MembersList = React.memo(
   ({ members, removeMember, displayAll = false }) => {
     // Get all employees data once at the component level
     const [searchQuery, setSearchQuery] = React.useState("");
-    const employees = useSelector((state) => state.emp.employees_detail);
-
+    const employees = useSelector((state) => state.emp.employees_detail); 
+    const userProfile = useSelector((state) => state.user.userProfile);
     const filteredMembers = React.useMemo(() => {
       return employees?.filter(
         (employee) =>
@@ -126,7 +126,7 @@ const MembersList = React.memo(
                         position={member.department_position}
                         name={member.name}
                       />
-                      {removeMember && (
+                      {removeMember && userProfile?.role !==4 && (
                         <MdClose
                           className="w-5 h-5 text-gray-700 cursor-pointer"
                           onClick={() => {
