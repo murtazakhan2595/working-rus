@@ -7,7 +7,10 @@ import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
 import BoardGridView from "app/modules/TaskManagment/Boards/BoardGridView";
 import { MembersList } from "app/modules/TaskManagment/Sections";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { RenderProject ,AdditionalOption} from "app/modules/TaskManagment/Boards/Sections";
+import {
+  RenderProject,
+  AdditionalOption,
+} from "app/modules/TaskManagment/Boards/Sections";
 import { ArrowLeft } from "lucide-react";
 import { DateInput } from "components/FormControl";
 import { Button } from "components/ui/button";
@@ -16,11 +19,15 @@ import { PriorityList, TaskSortingFilters } from "data/Data";
 import { getProjectById, addProject } from "app/hooks/taskManagment";
 import { AlignRight } from "lucide-react";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
+import AlertDialogue from "components/ui/AlertDialogue";
+import { toast } from "react-toastify";
 
 const Board = ({ TaskLabelList }) => {
   const navigate = useNavigate();
   const projectId = useParams()?.projectId || null;
   const viewTaskId = useParams()?.taskId || null;
+  const [isDelete, setIsDelete] = useState(false);
+  const [selectedMembers, setSelectedMembers] = useState([]);
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(
     viewTaskId ? true : false
   );
@@ -49,18 +56,26 @@ const Board = ({ TaskLabelList }) => {
       isMounted = false;
     };
   }, [projectId]);
-  const removeMember = async (members) => {
+
+  const removeMember = (members) => {
+    setSelectedMembers(members);
+    setIsDelete(true);
+  };
+
+  const handleRemoveMember = async () => {
     try {
       const response = await addProject(
-        { project_members: members },
+        { project_members: selectedMembers },
         projectId
       );
       if (response) {
         fetchData(true);
+        toast.success("Member Removed successfully");
       }
     } catch (error) {
       console.error(error);
     }
+    setIsDelete(false);
   };
 
   const handleFilterChange = (
@@ -175,10 +190,18 @@ const Board = ({ TaskLabelList }) => {
             members={projectData?.project_members || []}
             removeMember={removeMember}
           />
-          <ViewOptions activeView={activeView} setActiveView={setActiveView} />
-          <AdditionalOption 
-            projectId={projectId}
+          {isDelete && (
+            <AlertDialogue
+              isOpen={isDelete}
+              setIsOpen={setIsDelete}
+              handleContinue={handleRemoveMember}
+              continueText="Delete"
+              title="Are you sure you want to Remove this Member?"
+              description="The member will be deleted , but you can add the member again as well."
             />
+          )}
+          <ViewOptions activeView={activeView} setActiveView={setActiveView} />
+          <AdditionalOption projectId={projectId} />
         </div>
       </div>
       {activeView === "grid" ? (

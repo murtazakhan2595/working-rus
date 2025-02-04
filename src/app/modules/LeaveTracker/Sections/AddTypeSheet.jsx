@@ -224,7 +224,6 @@ const ViewComponent = ({
   isDelete,
   setIsDelete,
 }) => {
-  console.log(type, "TYPES");
   const details = [
     { label: "Leave name", value: type.name },
     { label: "No. of days", value: type.max_days },
