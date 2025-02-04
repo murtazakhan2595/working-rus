@@ -2,7 +2,7 @@ import * as React from "react";
 import ArchiveTasks from "./ArchiveTasks";
 import MembersBoard from "./MembersBoard";
 import { Button } from "components/ui/button";
-import { toast } from "react-toastify";
+import CopyLink from "components/ui/CopyLink";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -17,29 +17,23 @@ import {
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
 import { useNavigate } from "react-router-dom";
-import { MoreHorizontal, Archive, Link, ShieldX, LogOut,Users } from "lucide-react";
+import {
+  MoreHorizontal,
+  Archive,
+  Link,
+  ShieldX,
+  LogOut,
+  Users,
+} from "lucide-react";
 import { useSelector } from "react-redux";
 
 const AdditionalOption = React.memo(
   ({ projectId = null, reloadData = () => {} }) => {
     const [openArchive, setOpenArchive] = React.useState("");
     const [openMembersBoard, setOpenMembersBoard] = React.useState("");
-    const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const navigate = useNavigate();
     const userRole = useSelector((state) => state.user.userProfile)?.role;
 
-    const handleCopyBoardLinkClick = (e) => {
-      e.preventDefault();
-      console.log(window.location.href);
-      const Url = window.location.href;
-      navigator.clipboard
-        .writeText(Url)
-        .then(() => {
-          setTooltipOpen(true);
-          setTimeout(() => setTooltipOpen(false), 2000);
-        })
-        .catch((err) => console.error("Failed to copy:", err));
-    };
     const handleArchiveCardsClick = (e) => {
       e.preventDefault();
       setOpenArchive(true);
@@ -50,7 +44,7 @@ const AdditionalOption = React.memo(
     };
     const handleLeaveBoardClick = (e) => {
       e.preventDefault();
-      navigate(-1);
+      navigate("/projects");
     };
     const handleCloseProjectClick = (e) => {
       e.preventDefault();
@@ -66,26 +60,17 @@ const AdditionalOption = React.memo(
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleCopyBoardLinkClick}>
-              <TooltipProvider>
-                <Tooltip open={tooltipOpen}>
-                  <TooltipTrigger asChild>
-                    <span className="flex">
-                      <Link size={14} className="mr-2" />
-                      Copy Board Link
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Copied!</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <DropdownMenuItem>
+              <CopyLink
+                link={`/project-board/${projectId}`}
+                text={"Copy Board Link"}
+              />
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleArchiveCardsClick}>
               <Archive size={14} className="mr-2" /> Archive Cards
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleMembersClick}>
-              <Users  size={14} className="mr-2" /> Members
+              <Users size={14} className="mr-2" /> Members
             </DropdownMenuItem>
             <DropdownMenuSeparator className={`bg-neutral-600`} />
             <DropdownMenuItem onClick={handleLeaveBoardClick}>

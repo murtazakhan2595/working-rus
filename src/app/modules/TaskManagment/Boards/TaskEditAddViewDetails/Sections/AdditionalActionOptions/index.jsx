@@ -8,19 +8,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "src/@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "src/@/components/ui/tooltip";
+import CopyLink from "components/ui/CopyLink";
 import { useNavigate } from "react-router-dom";
 import { initialState } from "state/slices/UserSlice";
 import {
   MoreHorizontal,
   Archive,
   Link,
-  ShieldX,
+  RotateCcw,
   LogOut,
   Trash,
 } from "lucide-react";
@@ -31,27 +26,17 @@ import AlertDialogue from "components/ui/AlertDialogue";
 const frontendURL = initialState.frontendURL;
 
 const AdditionalActionOption = React.memo(
-  ({ projectId = null, taskId = null, reloadData = () => {} }) => {
-    const [tooltipOpen, setTooltipOpen] = useState(false);
-    const navigate = useNavigate();
-    const userRole = useSelector((state) => state.user.userProfile)?.role;
+  ({
+    projectId = null,
+    taskId = null,
+    reloadData = () => {},
+    isArchive = false,
+  }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-    const handleCopyBoardLinkClick = (e) => {
-      e.preventDefault();
-      const Url = `${frontendURL}/project-board/${projectId}/${taskId}`;
-      console.log(Url);
-      navigator.clipboard
-        .writeText(Url)
-        .then(() => {
-          setTooltipOpen(true);
-          setTimeout(() => setTooltipOpen(false), 2000);
-        })
-        .catch((err) => console.error("Failed to copy:", err));
-    };
-    const archeiveTask = async () => {
+    const archeiveTask = async (archeived = true) => {
       try {
-        const response = await addTask({ is_archive: true }, taskId);
+        const response = await addTask({ is_archive: archeived }, taskId);
         if (response) {
           reloadData();
           toast.success("Task Archeived updated successfully");
@@ -63,6 +48,10 @@ const AdditionalActionOption = React.memo(
     const handleArchiveCardClick = (e) => {
       e.preventDefault();
       archeiveTask();
+    };
+    const handleRestoreCardClick = (e) => {
+      e.preventDefault();
+      archeiveTask(false);
     };
     const handleDeleteCardClick = (e) => {
       e.preventDefault();
@@ -85,24 +74,20 @@ const AdditionalActionOption = React.memo(
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleCopyBoardLinkClick}>
-              <TooltipProvider>
-                <Tooltip open={tooltipOpen}>
-                  <TooltipTrigger asChild>
-                    <span className="flex">
-                      <Link size={14} className="mr-2" />
-                      Copy Card Link
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Copied!</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <DropdownMenuItem>
+              <CopyLink
+                link={`/project-board/${projectId}/${taskId}`}
+                text={"Copy Card Link"}
+              />
             </DropdownMenuItem>
-            {taskId && (
+            {taskId && !isArchive && (
               <DropdownMenuItem onClick={handleArchiveCardClick}>
                 <Archive size={14} className="mr-2" /> Archive Card
+              </DropdownMenuItem>
+            )}
+            {taskId && isArchive && (
+              <DropdownMenuItem onClick={handleRestoreCardClick}>
+                <RotateCcw size={14} className="mr-2" /> Restore
               </DropdownMenuItem>
             )}
             {taskId && (

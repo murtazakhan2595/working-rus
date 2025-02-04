@@ -70,7 +70,7 @@ const SelectMultiInputComponent = React.memo(
               <div className="flex justify-start w-full gap-2">
                 {icon && <div className="w-4">{icon}</div>}
 
-                <div className="flex flex-wrap gap-2 items-center max-w-[95%]">
+                <div className="flex flex-wrap gap-2 items-center max-w-[90%]">
                   {selectedValues.length > 0 ? (
                     selectedValues.map((val) =>
                       useValueAsIdentifier ? (
@@ -114,7 +114,7 @@ const SelectMultiInputComponent = React.memo(
                       <div className="flex items-center justify-between w-full">
                         <div className="flex items-center">
                           <Check
-                            className={`mr-2 h-4 w-4 ${
+                            className={`mr-2 h-4 w-4 min-w-4 ${
                               selectedValues.includes(value)
                                 ? "opacity-100"
                                 : "opacity-0"

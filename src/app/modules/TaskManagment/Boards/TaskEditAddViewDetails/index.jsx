@@ -15,7 +15,7 @@ import {
   Attachments,
 } from "app/modules/TaskManagment/Sections";
 import { Button } from "components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { PageLoader } from "components";
 import { addTask } from "app/hooks/taskManagment";
@@ -39,13 +39,12 @@ import {
   getAllCustomFields,
 } from "app/hooks/taskManagment";
 import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
-import { Plus } from "lucide-react";
 import { getDropdownList, convertJSONArrayToStringsArray } from "utils/Lists";
 import Subtasks from "../../Sections/SubTask";
 import { createActivity } from "app/hooks/taskManagment";
 import { trackTaskActivities } from "./Sections/activityHelper";
 import SubtaskList from "./Sections/SubtaskList";
-import { getSubtaskById } from "app/hooks/taskManagment";
+import CopyLink from "components/ui/CopyLink";
 import TaskCommentsContainer from "../../Sections/TaskComments";
 
 const TaskEditAddViewDetails = ({
@@ -319,15 +318,26 @@ const TaskEditAddViewDetails = ({
             >
               {(props) => (
                 <Form className="overflow-x-hidden">
-                  <div className="flex justify-between mb-6 mt-3">
-                    <div className="text-md font-semibold dark:text-slate-50 flex items-center">
+                  <div className="flex justify-between mb-3 px-3 mt-3">
+                    <div className="text-md font-semibold dark:text-slate-50 flex items-center gap-2">
                       {isSubtask && (
                         <ArrowLeft
                           className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm cursor-pointer"
                           onClick={() => setIsOpen(false)}
                         />
                       )}
-                      {isSubtask ? " Edit Subtask Details" : " Edit Details"}
+                      {props.values.is_archive ? (
+                        <span className="text-amber-400">Archive Card</span>
+                      ) : (
+                        `${taskId ? "Edit" : "Add"} ${
+                          isSubtask ? "Subtask" : "Task"
+                        }`
+                      )}
+                      {taskId && (
+                        <CopyLink
+                          link={`/project-board/${projectId}/${taskId}`}
+                        />
+                      )}
                     </div>
                     <div className="flex justify-end gap-2">
                       {!projectId && (
@@ -364,10 +374,11 @@ const TaskEditAddViewDetails = ({
                         projectId={props.values.project_id}
                         taskId={taskId}
                         reloadData={additionalActionReload}
+                        isArchive={props.values.is_archive}
                       />
                     </div>
                   </div>
-                  <div className=" grid grid-cols-7 gap-4">
+                  <div className="grid grid-cols-7 gap-4">
                     <div className="flex flex-col col-span-4 gap-3 p-3">
                       <InputTaskTitle
                         onChange={(field, value) => {

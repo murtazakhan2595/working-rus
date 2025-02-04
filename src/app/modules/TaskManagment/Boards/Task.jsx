@@ -1,21 +1,20 @@
 import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
-import "react-toastify/dist/ReactToastify.css";
 import { deleteTask } from "app/hooks/taskManagment";
 import { PriorityList } from "data/Data";
 import { BiComment } from "react-icons/bi";
 import { getStatus, getStatusIconColor } from "./Sections";
-import { CustomDropdown, MembersList, Labels } from "../Sections";
+import { MembersList, Labels } from "../Sections";
 import { ImAttachment } from "react-icons/im";
 import TimeIcon from "assets/images/timeIcon";
 import moment from "moment";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
-import { Card } from "components/ui/card";
+import { Card, CardContent, CardFooter } from "components/ui/card";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { TextUI, TooltipText } from "components";
 import { toast } from "react-toastify";
 import { addTask } from "app/hooks/taskManagment";
-import { getAttachmentDetails } from "app/hooks/taskManagment";
+import { ListChecks, Trash2, RotateCcw ,ExternalLink} from "lucide-react";
 import { Input } from "components/ui/input";
 import {
   Tooltip,
@@ -23,11 +22,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
-import { getTaskById } from "app/hooks/taskManagment";
-import { ListChecks } from "lucide-react";
 import TaskStatusLabel from "app/modules/TaskManagment/Sections/TaskStatus";
+import { Button } from "components/ui/button";
 
-const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
+const TaskCard = ({
+  projectId,
+  task,
+  reloadData,
+  onDragStart = () => {},
+  onUpdate = () => {},
+  showMembers = true,
+  showDueDate = true,
+}) => {
   const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
   const [isSubtask, setIsSubtask] = useState(false);
   const [subTasksDetails, setSubTasksDetails] = useState([]);
@@ -42,116 +48,110 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
     setIsDeleteModalOpen(false);
   };
 
+  const handleDelete = (e) => {
+    e.preventDefault();
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleRestore = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await addTask({ is_archive: false }, task.id);
+      if (response) {
+        reloadData();
+        toast.success("Task Restored successfully");
+      }
+    } catch (error) {
+      console.error("Error updating task status:", error);
+    }
+  };
+
   return (
     <Card
-      className="w-full p-3 mt-6 bg-white rounded-lg shadow cursor-pointer"
+      className="w-full p-3 mt-6 bg-white rounded-lg shadow"
       draggable
-      onDragStart={(e) => onDragStart(e, task.id)}
+      onDragStart={(e) => {
+        onDragStart(e, task.id);
+      }}
     >
-      {/* Render ConfirmationModal component when isDeleteModalOpen is true */}
-      {isDeleteModalOpen && (
-        <AlertDialogue
-          isOpen={isDeleteModalOpen}
-          setIsOpen={() => {
-            setIsDeleteModalOpen(false);
+      <CardContent className="p-0 w-full cursor-pointer">
+        <div
+          className="flex flex-col"
+          onClick={(e) => {
+            e.preventDefault();
+            setIsTaskDetailOpen(true);
           }}
-          handleContinue={confirmDelete}
-          title="Are you sure?"
-          description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
-        />
-      )}
-      <div
-        className="flex flex-col"
-        onClick={(e) => {
-          e.preventDefault();
-          setIsTaskDetailOpen(true);
-        }}
-      >
-        <div className="my-2">
-          {task.cover_photo && (
-            <img
-              src={task.cover_photo}
-              alt="cover image"
-              className="w-full h-auto max-h-[200px]  object-contain rounded-lg"
-            />
-          )}
-        </div>
-        <div className="flex justify-start items-start py-0.5">
-          {task?.label && task?.label.length > 0 && (
-            <Labels
-              labelsSelected={task.label || []}
-              onSelectedLabelsChange={() => {}}
-              editMode={false}
-            />
-          )}
-          <span>
-            {
-              PriorityList.find((option) => option.value === task?.priority)
-                ?.label
-            }
-          </span>
-        </div>
-        <div className="flex flex-col gap-2 pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
-          <h3 className="text-base font-bold text-capitalize">{task?.name}</h3>
-          <TextUI text={task?.description} maxLength={130} />
-
-          <div className="flex flex-row justify-start flex-wrap overflow-hidden max-w-[100%]">
-            <TooltipText
-              tooltipTriggerText={<TaskStatusLabel status={task.status} />}
-              content={`Task Status`}
-            />
-            {task?.end_date && (
-              <TimeStatusIcon
-                task={task}
-                getStatusIconColor={getStatusIconColor}
-                onUpdate={onUpdate}
+        >
+          <div className="my-2">
+            {task.cover_photo && (
+              <img
+                src={task.cover_photo}
+                alt="cover image"
+                className="w-full h-auto max-h-[200px]  object-contain rounded-lg"
               />
             )}
           </div>
-          <div className="flex gap-3 justify-start font-semibold text-sm text-grey-1000 mt-3">
-            {task?.relation &&
-              task.relation.map((relation) => (
-                <span
-                  key={relation}
-                  className="hover:text-gray-800 "
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setViewTaskDetail(relation);
-                    setIsTaskDetailOpen(true);
-                  }}
-                >{`RT-${relation}`}</span>
-              ))}
-            {subTasksDetails &&
-              subTasksDetails.map((sub_task) => (
-                <TooltipProvider key={sub_task.id}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span
-                        className="hover:text-gray-800 cursor-pointer"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setIsSubtask(true);
-                          setViewTaskDetail(sub_task.id);
-                          setIsTaskDetailOpen(true);
-                        }}
-                      >{`ST-${sub_task.id}`}</span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{sub_task.name}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              ))}
+          <div className="flex justify-start items-start py-0.5">
+            {task?.label && task?.label.length > 0 && (
+              <Labels
+                labelsSelected={task.label || []}
+                onSelectedLabelsChange={() => {}}
+                editMode={false}
+              />
+            )}
+            <span>
+              {
+                PriorityList.find((option) => option.value === task?.priority)
+                  ?.label
+              }
+            </span>
           </div>
-        </div>
-        <footer className="flex justify-between py-2">
-          <div className="flex items-center gap-1">
-            <div className="flex -space-x-2.5">
-              {/* Render MembersList component */}
-              <MembersList members={task?.assigned_to} />
+          <div className="flex flex-col gap-2 pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
+            <h3 className="text-base font-bold text-capitalize">
+              {task?.name}
+            </h3>
+            <TextUI text={task?.description} maxLength={130} />
+
+            <div className="flex flex-row justify-start flex-wrap overflow-hidden max-w-[100%]">
+              <TooltipText
+                tooltipTriggerText={<TaskStatusLabel status={task.status} />}
+                content={`Task Status`}
+              />
+              {task?.end_date && showDueDate && (
+                <TimeStatusIcon
+                  task={task}
+                  getStatusIconColor={getStatusIconColor}
+                  onUpdate={onUpdate}
+                />
+              )}
             </div>
           </div>
-          <div className="flex items-center gap-2 text-neutral-1000">
+        </div>
+      </CardContent>
+      <CardFooter className="w-full justify-between py-2 px-0">
+          <div className="flex items-center gap-1">
+            {showMembers ? (
+              <div className="flex -space-x-2.5">
+                {/* Render MembersList component */}
+                <MembersList members={task?.assigned_to} />
+              </div>
+            ) : (
+              <div className="flex items-center gap-1">
+                <Button variant="continue" size="sm" onClick={handleRestore}>
+                  <RotateCcw size={15} className="mr-1" />
+                  Restore
+                </Button>
+                <Button
+                  variant="destructiveOutline"
+                  size="sm"
+                  onClick={handleDelete}
+                >
+                  <Trash2 size={15} />
+                </Button>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-3 text-neutral-1000">
             <TooltipText
               tooltipTriggerText={
                 <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
@@ -180,9 +180,30 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
               }
               content={`${task?.sub_task?.length || 0} Subtasks`}
             />
+            <TooltipText
+              tooltipTriggerText={
+                <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
+                  <ExternalLink  size={16} />
+                  <div>{task?.relation?.length || 0}</div>
+                </div>
+              }
+              content={`${task?.relation?.length || 0} Task Related`}
+            />
           </div>
-        </footer>
-      </div>
+      </CardFooter>
+      {/* Render ConfirmationModal component when isDeleteModalOpen is true */}
+      {isDeleteModalOpen && (
+        <AlertDialogue
+          isOpen={isDeleteModalOpen}
+          setIsOpen={() => {
+            setIsDeleteModalOpen(false);
+          }}
+          handleContinue={confirmDelete}
+          title="Are you sure?"
+          description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
+        />
+      )}
+
       {/* Render TaskDetail component if isTaskDetailOpen is true */}
       {isTaskDetailOpen && (
         <TaskEditAddViewDetails

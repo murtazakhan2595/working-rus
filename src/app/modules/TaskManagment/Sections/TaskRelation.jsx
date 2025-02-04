@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MdClose } from "react-icons/md";
 import { getTaskByprojectId } from "app/hooks/taskManagment";
 import { SelectMultiInputComponent } from "components/FormControl";
+import { getDropdownList} from 'utils/Lists'
 
 export default function TaskRelation({
   relationsList,
@@ -21,7 +22,7 @@ export default function TaskRelation({
     const finalTaskList = taskId
       ? tasks.filter((obj) => obj.id !== taskId)
       : tasks;
-    setTaskList(finalTaskList || []); // Update this to `tasklList`
+    setTaskList(getDropdownList(finalTaskList,'name','id','id','-') || []); // Update this to `tasklList`
   };
 
   useEffect(() => {
@@ -48,10 +49,7 @@ export default function TaskRelation({
       {editMode ? (
         <SelectMultiInputComponent
           name="relation"
-          options={taskList.map((task) => ({
-            label: task.name,
-            value: task.id,
-          }))}
+          options={taskList}
           label={"Relation"}
           error={error}
           touch={touch}
