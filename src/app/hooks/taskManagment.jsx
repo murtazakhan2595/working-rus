@@ -288,7 +288,7 @@ const addTask = async (payload, id) => {
           headers: headers(),
         }
       );
-      if (response.status === 200 || response.status ===201) return response;
+      if (response.status === 200 || response.status === 201) return response;
       else return false;
     } else {
       console.log("SUBTASK ADDTASK", payload);
@@ -561,7 +561,7 @@ const deleteTask = async (taskId) => {
     const response = await axios.delete(`${baseUrl}/task/${taskId}`, {
       headers: headers(),
     });
-    if (response.status === 200) {
+    if (response.status === 200 || response.status === 204) {
       toast.success("Task Deleted!", {
         position: toast.POSITION.TOP_RIGHT,
       });

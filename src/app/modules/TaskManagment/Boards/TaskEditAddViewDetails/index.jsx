@@ -3,7 +3,6 @@ import moment from "moment";
 import { connect } from "react-redux";
 import { getTaskById, getAllBoards } from "app/hooks/taskManagment";
 import { toast } from "react-toastify";
-import { deleteTask } from "app/hooks/taskManagment";
 import {
   Dialog,
   DialogContent,
@@ -16,8 +15,7 @@ import {
   Attachments,
 } from "app/modules/TaskManagment/Sections";
 import { Button } from "components/ui/button";
-import { ArrowLeft, Trash, Archive } from "lucide-react";
-import AlertDialogue from "components/ui/AlertDialogue";
+import { ArrowLeft } from "lucide-react";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { PageLoader } from "components";
 import { addTask } from "app/hooks/taskManagment";
@@ -26,6 +24,7 @@ import {
   InputTaskDescription,
   ProjectCustomFields,
   InputTaskDetailFields,
+  AdditionalActionOption,
 } from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails/Sections";
 import { CommentsInputField } from "components/FormControl";
 import { useSelector } from "react-redux";
@@ -63,7 +62,6 @@ const TaskEditAddViewDetails = ({
   const [isLoading, setIsLoading] = useState(false);
   const [BoardList, setBoardList] = useState([]);
   const [CustomFields, setCustomFields] = useState([]);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [openProjectCustomFields, setOpenProjectCustomFields] = useState(false);
   const formRef = useRef();
   const [initialValues, setInitialValues] = useState(Task);
@@ -194,28 +192,8 @@ const TaskEditAddViewDetails = ({
     };
   }, [initialValues?.project_id]);
 
-  const handleDelete = () => {
-    setIsDeleteModalOpen(true);
-  };
-
-  const confirmDelete = async () => {
-    const response = await deleteTask(taskId);
-    if (response && response.status === 200) {
-      setIsOpen(false);
-    }
-    setIsDeleteModalOpen(false);
-  };
-
-  const archeiveTask = async () => {
-    try {
-      const response = await addTask({ is_archive: true }, taskId);
-      if (response) {
-        setIsOpen(false);
-        toast.success("Task Archeived updated successfully");
-      }
-    } catch (error) {
-      console.error("Error updating task status:", error);
-    }
+  const additionalActionReload = async () => {
+    setIsOpen(false);
   };
   const uploadAttachmentFile = async (file) => {
     try {
@@ -256,15 +234,6 @@ const TaskEditAddViewDetails = ({
         );
       };
 
-      const AddCoverPhoto = async (checklist) => {
-        return await Promise.all(
-          checklist.map(async (item) => {
-            const response = await addTaskCheckListItem(item, item.id);
-            return response.id;
-          })
-        );
-      };
-
       const finalData = mapTaskPayloadData({
         ...values,
 
@@ -284,6 +253,7 @@ const TaskEditAddViewDetails = ({
       if (isSubtask) {
         finalData.is_subtask = true;
       }
+      console.log(finalData);
       const response = await addTask(finalData, taskId);
       if (response) {
         // Notify parent component of the new task
@@ -338,7 +308,7 @@ const TaskEditAddViewDetails = ({
             >
               {(props) => (
                 <Form className="overflow-x-hidden">
-                  <div className="flex justify-between mb-6">
+                  <div className="flex justify-between mb-6 mt-3">
                     <div className="text-md font-semibold dark:text-slate-50 flex items-center">
                       {isSubtask && (
                         <ArrowLeft
@@ -351,31 +321,6 @@ const TaskEditAddViewDetails = ({
                         : " Add/Edit Details"}
                     </div>
                     <div className="flex justify-end gap-2">
-                      {taskId && (
-                        <Button
-                          size="sm"
-                          variant="continue"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            archeiveTask();
-                          }}
-                        >
-                          Move to Archive
-                          {/* <Archive size={15} className="ml-1" /> */}
-                        </Button>
-                      )}
-                      {/* {taskId && (
-                        <Button
-                        size='sm'
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleDelete();
-                          }}
-                        >
-                          <Trash className="mr-2" size={16} />
-                          Delete
-                        </Button>
-                      )} */}
                       {!projectId && (
                         <SelectComponent
                           name="project_id"
@@ -405,6 +350,11 @@ const TaskEditAddViewDetails = ({
                           setIsEditMode(true);
                           props.setFieldValue(field, value);
                         }}
+                      />
+                      <AdditionalActionOption
+                        projectId={props.values.project_id}
+                        taskId={taskId}
+                        reloadData={additionalActionReload}
                       />
                     </div>
                   </div>
@@ -582,13 +532,6 @@ const TaskEditAddViewDetails = ({
           )}
         </DialogContent>
       </Dialog>
-      <AlertDialogue
-        isOpen={isDeleteModalOpen}
-        setIsOpen={setIsDeleteModalOpen}
-        handleContinue={confirmDelete}
-        title="Are you sure?"
-        description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
-      />
       {openProjectCustomFields && projectDetail && (
         <ProjectCustomFields
           projectId={projectId}
