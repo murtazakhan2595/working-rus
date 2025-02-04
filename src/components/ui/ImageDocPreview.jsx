@@ -86,7 +86,7 @@ export default function ImageDocPreview({
         if (!open) resetZoom();
       }}
     >
-      <DialogContent className="w-[90vw] min-w-[90vw] max-h-[100%] h-[90vh] flex flex-col gap-4">
+      <DialogContent className="w-[90vw] min-w-[90vw] min-h-[90%] h-[90vh] flex flex-col gap-4">
         <div className="flex flex-row w-full max-w-full overflow-hidden justify-between">
           <h6>{name || "Attachment"}</h6>
           <Button
@@ -98,7 +98,7 @@ export default function ImageDocPreview({
             Download <AiOutlineDownload className="w-5 h-5" />
           </Button>
         </div>
-        <div className="overflow-hidden flex-grow relative bg-gray-100 flex justify-center items-center">
+        <div className="overflow-hidden flex-grow relative flex justify-center items-center h-[calc(100%_-_100px)]">
           {imageFileType.includes(fileType) ? (
             <img
               ref={imgRef}

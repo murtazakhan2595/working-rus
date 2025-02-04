@@ -29,38 +29,10 @@ import TaskStatusLabel from "app/modules/TaskManagment/Sections/TaskStatus";
 
 const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
   const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
-  const [isEditCardOpen, setIsEditCardOpen] = useState(false);
   const [isSubtask, setIsSubtask] = useState(false);
   const [subTasksDetails, setSubTasksDetails] = useState([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  // State to manage TaskDetail visibility
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
-  const [coverImage, setCoverImage] = useState(null);
-  const handleDelete = () => {
-    setIsDeleteModalOpen(true);
-  };
-
-  const fetchSubtasks = async () => {
-    if (task.sub_task && task.sub_task.length > 0) {
-      const subtaskDetails = await Promise.all(
-        task.sub_task.map((subtaskId) => getTaskById(subtaskId))
-      );
-      setSubTasksDetails(subtaskDetails);
-    }
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const attachment = await getAttachmentDetails([task.attachment[0]]);
-      if (attachment) {
-        setCoverImage(attachment[0]?.attachment);
-      }
-    };
-    if (task?.attachment?.length > 0) {
-      fetchData();
-    }
-    fetchSubtasks();
-  }, [task]);
 
   const confirmDelete = async () => {
     const response = await deleteTask(task.id);
@@ -96,9 +68,9 @@ const TaskCard = ({ projectId, task, reloadData, onDragStart, onUpdate }) => {
         }}
       >
         <div className="my-2">
-          {coverImage && (
+          {task.cover_photo && (
             <img
-              src={coverImage}
+              src={task.cover_photo}
               alt="cover image"
               className="w-full h-auto max-h-[200px]  object-contain rounded-lg"
             />

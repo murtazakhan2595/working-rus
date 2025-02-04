@@ -367,8 +367,8 @@ const TaskEditAddViewDetails = ({
                       />
                     </div>
                   </div>
-                  <div className="flex justify-between">
-                    <div className="flex flex-col w-[55%] max-w-[calc(55%_-_25px)] gap-3">
+                  <div className=" grid grid-cols-7 gap-4">
+                    <div className="flex flex-col col-span-4 gap-3 p-3">
                       <InputTaskTitle
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
@@ -477,7 +477,7 @@ const TaskEditAddViewDetails = ({
                         />
                       )}
                     </div>
-                    <div className="flex flex-col w-[45%] max-w-[45%] gap-3">
+                    <div className="flex flex-col col-span-3 gap-3 p-3">
                       <div>
                         <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
                           {"Checklist"}
