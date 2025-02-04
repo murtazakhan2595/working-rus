@@ -46,6 +46,7 @@ const InputTaskDetailFields = React.memo(
           onChange={(field, value) => {
             onChange(field, value);
           }}
+          classes=""
         />
         <Labels
           labelsSelected={taskData.label || []}
@@ -115,11 +116,11 @@ const InputTaskDetailFields = React.memo(
           />
         )}
 
-        <DetailBox
+        {/* <DetailBox
           label="Share Task"
           orientation="horizontal"
           value={<TaskShare projectId={taskData.project_id} taskId={taskId} />}
-        />
+        /> */}
         {CustomFields &&
           CustomFields.map((CustomField) => {
             return (
