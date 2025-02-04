@@ -12,8 +12,8 @@ import { imageFileType } from "app/utils/Types/General";
 export default function ImageDocPreview({
   attachment,
   name,
-  isOpen=false,
-  setIsOpen=()=>{}
+  isOpen = false,
+  setIsOpen = () => {},
 }) {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -87,26 +87,17 @@ export default function ImageDocPreview({
       }}
     >
       <DialogContent className="w-[90vw] min-w-[90vw] max-h-[100%] h-[90vh] flex flex-col gap-4">
-        <div className="flex flex-row justify-between px-6">
+        <div className="flex flex-row w-full max-w-full overflow-hidden justify-between">
           <h6>{name || "Attachment"}</h6>
-          <div className="flex gap-2">
-            <Button onClick={handleZoomIn} variant="secondary" size="sm">
-              <AiOutlineZoomIn className="w-5 h-5" />
-            </Button>
-            <Button onClick={handleZoomOut} variant="secondary" size="sm">
-              <AiOutlineZoomOut className="w-5 h-5" />
-            </Button>
-            <Button
-              onClick={() => downloadFile(attachment, name)}
-              className="mr-3"
-              variant="continue"
-              size="sm"
-            >
-              Download <AiOutlineDownload className="w-5 h-5" />
-            </Button>
-          </div>
+          <Button
+            onClick={() => downloadFile(attachment, name)}
+            className="mr-3"
+            variant="continue"
+            size="sm"
+          >
+            Download <AiOutlineDownload className="w-5 h-5" />
+          </Button>
         </div>
-
         <div className="overflow-hidden flex-grow relative bg-gray-100 flex justify-center items-center">
           {imageFileType.includes(fileType) ? (
             <img
@@ -117,7 +108,7 @@ export default function ImageDocPreview({
               style={{
                 transform: `scale(${scale})`,
                 transition: "transform 0.2s ease-out",
-                cursor: `${scale === 1 ? "zoom-in" : "zoom-out"}`,
+                cursor: `${scale === 1 ? "zoom-in" : "grab"}`,
               }}
               onWheel={handleWheel}
               onMouseDown={handleMouseDown}
@@ -138,6 +129,14 @@ export default function ImageDocPreview({
               title={name}
             />
           )}
+        </div>
+        <div className="flex gap-x-2 justify-center">
+          <Button onClick={handleZoomIn} variant="ghost" size="sm" className='py-0'>
+            <AiOutlineZoomIn className="w-5 h-5" />
+          </Button>
+          <Button onClick={handleZoomOut} variant="ghost" size="sm" className='py-0'>
+            <AiOutlineZoomOut className="w-5 h-5" />
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

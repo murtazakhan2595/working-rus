@@ -32,7 +32,7 @@ import { Formik, Form } from "formik";
 import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
 import { Task } from "app/utils/Types/TaskManagment";
 import { SelectComponent, CoverFileUpload } from "components/FormControl";
-import { getProjectById } from "app/hooks/taskManagment";
+import { getProjectById, deleteAttachment } from "app/hooks/taskManagment";
 import { addAttachments } from "app/hooks/taskManagment";
 import {
   addTaskCheckListItem,
@@ -205,6 +205,17 @@ const TaskEditAddViewDetails = ({
         return response;
       }
       return file;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const deleteAttachmentFile = async (id) => {
+    debugger
+    try {
+      if (id) {
+        const response = await deleteAttachment(id);
+        return response;
+      }
     } catch (error) {
       console.error(error);
     }
@@ -411,6 +422,7 @@ const TaskEditAddViewDetails = ({
                         acceptedFileTypes=".pdf,.png,.jpg,.jpeg"
                         error={props.errors.relation}
                         touch={props.touched.relation}
+                        deleteAttachmentFile={deleteAttachmentFile}
                       />
                       <div className="grid grid-cols-2 gap-4">
                         <DetailBox

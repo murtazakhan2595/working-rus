@@ -11,6 +11,7 @@ const Attachments = React.memo(
     touch,
     editMode = true,
     acceptedFileTypes = ".pdf",
+    deleteAttachmentFile = () => {},
   }) => {
     const getFileAttachmentArray = useCallback((files) => {
       if (!files || !Array.isArray(files)) return [];
@@ -33,6 +34,7 @@ const Attachments = React.memo(
             touch={touch}
             variant="AttachmentFileUpload"
             multiple={maxAttachments ? maxAttachments > 1 : true}
+            deleteAttachment={deleteAttachmentFile}
           />
         )}
       </div>
