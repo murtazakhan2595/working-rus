@@ -75,7 +75,7 @@ const SelectComponent = ({
   return (
     <div className={`${classes} flex flex-col w-full`}>
       {showLabel && (
-        <Label className="mb-3" htmlFor={name}>
+        <Label className="" htmlFor={name}>
           {required && <span className="text-red-600">* </span>} {label}
         </Label>
       )}

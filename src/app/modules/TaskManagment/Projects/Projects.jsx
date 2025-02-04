@@ -246,7 +246,7 @@ const RenderProject = ({
               <div className="flex justify-between py-1 pr-3 pb-4">
                 <Badge
                   variant="dot-plum"
-                  className=""
+                  className="py-1 px-3 text-sm"
                   dot={`${getStatusDotColor(project?.status)}`}
                 >
                   {ProjectStatusList.find(
@@ -260,7 +260,7 @@ const RenderProject = ({
               <img
                 src={project?.profile || logo}
                 alt={project.name}
-                className="h-10 mb-3 transition-transform duration-300 hover:scale-105"
+                className="h-12 mb-3 transition-transform duration-300 hover:scale-105"
               />
             </div>
           </CardHeader>

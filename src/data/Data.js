@@ -313,24 +313,24 @@ export const PriorityList = [
   {
     value: 3,
     label: (
-      <div className="flex justify-center gap-x-2 text-mauve-900 ">
-        <ArrowDown className="text-2xl" /> Low
+      <div className="flex justify-center gap-x-1 text-mauve-900 items-center">
+        <ArrowDown size={16}/> Low
       </div>
     ),
   },
   {
     value: 2,
     label: (
-      <div className="flex justify-center text-yellow-500 gap-x-2 items-center">
-        <ArrowRight className="text-xl" /> Medium
+      <div className="flex justify-center text-yellow-500 gap-x-1 items-center">
+        <ArrowRight size={16}/> Medium
       </div>
     ),
   },
   {
     value: 1,
     label: (
-      <div className="flex justify-center text-red-500 gap-x-2">
-        <ArrowUp className="text-2xl" /> High
+      <div className="flex justify-center text-red-500 gap-x-1 items-center">
+        <ArrowUp size={16} /> High
       </div>
     ),
   },
