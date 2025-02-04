@@ -16,6 +16,7 @@ import { ActivityTypes } from "../Boards/TaskEditAddViewDetails/Sections/activit
 import { Clock, Redo2, X } from "lucide-react";
 import { DetailCard } from "components/SheetCardExtension";
 import { Button } from "components/ui/button";
+import { deleteComment } from "app/hooks/taskManagment";
 
 function EmptyStateMessage({ message }) {
   return (
@@ -75,6 +76,12 @@ function TaskComments({
     };
   }, [taskId, refreshComments]);
 
+  const handleDeleteComment = async (commentId) => {
+    const response = await deleteComment( commentId );
+    if (response) {
+      setRefreshComments(true);
+    }
+  }
   const renderActivityContent = (activity) => {
     return (
       <div className="text-neutral-1000 text-sm">
@@ -165,6 +172,7 @@ function TaskComments({
                   <button
                     className="p-1  bg-neutral-200 flex items-center gap-1 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50 rounded-lg"
                     type="button"
+                    onClick={() => handleDeleteComment(item.id)}
                   >
                     <X size={16} />
                     Remove

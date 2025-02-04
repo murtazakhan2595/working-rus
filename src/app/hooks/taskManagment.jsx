@@ -1080,6 +1080,29 @@ export const addTaskLabel = async (payload, id) => {
   }
 };
 
+const deleteComment = async (commentId) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/comments/${commentId}`, {
+      headers: headers(),
+    });
+    if (response.status === 204) {
+      toast.success("Comment Deleted!", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+    return true;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error deleting comment:", error);
+    toast.error("Error deleting comment!", {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    return false;
+  }
+}
+
 export {
   createActivity,
   getActivities,
@@ -1109,6 +1132,7 @@ export {
   fetchComments,
   postComment,
   getAllLabels,
+  deleteComment,
   getCommentsWithAttachments,
   getAttachmentDetails,
   getAllCustomFields,
