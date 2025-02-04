@@ -60,7 +60,6 @@ const ImageInput = React.memo(
                 className="hidden"
                 accept="image/*"
                 onChange={(e) => {
-                  debugger
                   const selectedFile = e.target.files[0];
                   if (selectedFile) {
                     // Check file size

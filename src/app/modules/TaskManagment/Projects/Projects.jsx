@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { getAllProjects } from "app/hooks/taskManagment";
+import { getAllProjects,deleteProject } from "app/hooks/taskManagment";
 import { Header, PageLoader } from "components";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
@@ -13,7 +13,7 @@ import { fetchProjects } from "state/slices/CommonSlice";
 import { useDispatch } from "react-redux";
 import CreateEditProject from "./CreateEditProject";
 import { Badge } from "components/ui/badge";
-import logo from "../../../../assets/images/tecbrix-logo.png";
+import logo from "assets/images/tecbrix-logo.png";
 import {
   CardContent,
   Card,
@@ -45,11 +45,11 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuSeparator,
   DropdownMenuItem,
 } from "src/@/components/ui/dropdown-menu";
+import AlertDialogue from "components/ui/AlertDialogue";
+
 const Projects = ({ userProfile }) => {
-  console.log(userProfile);
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState(
@@ -239,7 +239,7 @@ const RenderProject = ({
       {project && (
         <>
           <CardHeader
-            className="m-2 p-2 cursor-pointer rounded-t-lg bg-gray-500 transition-all duration-300 hover:opacity-90 hover:shadow-md"
+            className="m-2 p-2 cursor-pointer rounded-lg bg-gray-500 transition-all duration-300 hover:opacity-90 hover:shadow-md"
             style={project?.color ? { backgroundColor: project.color } : {}}
           >
             <CardTitle>
@@ -310,10 +310,9 @@ const RenderProject = ({
 
 const ProjectActions = React.memo(
   ({ project = null, fetchData = () => {} }) => {
-    const [openArchive, setOpenArchive] = React.useState("");
+    const [openAlertDialogue, setOpenAlertDialogue] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
-    const navigate = useNavigate();
     const userRole = useSelector((state) => state.user.userProfile)?.role;
 
     const handleViewClick = (e) => {
@@ -324,13 +323,18 @@ const ProjectActions = React.memo(
       e.preventDefault();
       setIsEditMode(true);
     };
-    const handleCloseProjectClick = (e) => {
+    const handleDeleteProjectClick = (e) => {
       e.preventDefault();
-      setOpenArchive(true);
+      setOpenAlertDialogue(true);
     };
     const closeModal = () => {
       setIsViewBoardDetails(false);
       setIsEditMode(false);
+    };
+    const confirmDelete = async () => {
+      const response = await deleteProject(project.id);
+      if (response) fetchData(true);
+      setOpenAlertDialogue(false);
     };
     return (
       <>
@@ -348,7 +352,7 @@ const ProjectActions = React.memo(
               </DropdownMenuItem>
             )}
             {userRole !== 4 && (
-              <DropdownMenuItem onClick={handleCloseProjectClick}>
+              <DropdownMenuItem onClick={handleDeleteProjectClick}>
                 <Trash size={14} className="mr-2" /> Delete
               </DropdownMenuItem>
             )}
@@ -372,6 +376,16 @@ const ProjectActions = React.memo(
             isOpen={isEditMode}
             setIsOpen={setIsEditMode}
             reload={fetchData}
+          />
+        )}
+        {openAlertDialogue && (
+          <AlertDialogue
+            isOpen={openAlertDialogue}
+            setIsOpen={setOpenAlertDialogue}
+            handleContinue={confirmDelete}
+            continueText="Delete"
+            title="Are you Sure?"
+            description="Are you sure you want to delete this Project? This action is irreversible and will delete all tasks within."
           />
         )}
       </>
