@@ -46,6 +46,7 @@ import { createActivity } from "app/hooks/taskManagment";
 import { trackTaskActivities } from "./Sections/activityHelper";
 import SubtaskList from "./Sections/SubtaskList";
 import { getSubtaskById } from "app/hooks/taskManagment";
+import TaskCommentsContainer from "../../Sections/TaskComments";
 
 const TaskEditAddViewDetails = ({
   taskId,
@@ -327,9 +328,7 @@ const TaskEditAddViewDetails = ({
                           onClick={() => setIsOpen(false)}
                         />
                       )}
-                      {isSubtask
-                        ? " Add/Edit Subtask Details"
-                        : " Add/Edit Details"}
+                      {isSubtask ? " Edit Subtask Details" : " Edit Details"}
                     </div>
                     <div className="flex justify-end gap-2">
                       {!projectId && (
@@ -508,7 +507,7 @@ const TaskEditAddViewDetails = ({
                         }
                       />
                       <div>
-                        <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
+                        {/* <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
                           {"Activity"}
                         </div>
                         <DetailCard detailCardTitle="" classNames="mt-0">
@@ -517,7 +516,12 @@ const TaskEditAddViewDetails = ({
                             refreshComments={refreshComments}
                             setRefreshComments={setRefreshComments}
                           />
-                        </DetailCard>
+                        </DetailCard> */}
+                        <TaskCommentsContainer
+                          taskId={taskId}
+                          refreshComments={refreshComments}
+                          setRefreshComments={setRefreshComments}
+                        />
                       </div>
                     </div>
                   </div>
