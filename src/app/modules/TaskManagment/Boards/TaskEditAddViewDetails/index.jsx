@@ -211,7 +211,6 @@ const TaskEditAddViewDetails = ({
     }
   };
   const deleteAttachmentFile = async (id) => {
-    debugger
     try {
       if (id) {
         const response = await deleteAttachment(id);

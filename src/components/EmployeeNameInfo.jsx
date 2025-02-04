@@ -18,6 +18,7 @@ const EmployeeNameInfo = ({
   showPosition = false,
   showBadge = false,
   showDepartment = false,
+  showEmail = false,
 }) => {
   const userProfile = id ? GetUser(id) : {};
   return (
@@ -26,10 +27,7 @@ const EmployeeNameInfo = ({
         className="h-10 w-10"
         src={userProfile?.profile_picture || ""}
         fallbackText={
-          userProfile?.first_name?.charAt(0)?.toUpperCase() +
-            userProfile?.last_name?.charAt(0)?.toUpperCase() ||
-          name?.charAt(0)?.toUpperCase() ||
-          ""
+          userProfile?.name_initials || name?.charAt(0)?.toUpperCase() || ""
         }
         text={userProfile?.name || name || "Unknown User"}
         alt={`Avatar of ${userProfile?.first_name || name || "User"}`}
@@ -41,10 +39,13 @@ const EmployeeNameInfo = ({
             ID: {userProfile?.serial_number || ""}
           </div>
         )}
-        <div className="">{`${name ?? userProfile?.name ?? "N/A"}`}</div>
+        <div className="text-capitalize font-semibold">{`${
+          name ?? userProfile?.name ?? "N/A"
+        }`}</div>
         {date && <p className="sm:inline text-sm">{date}</p>}
-        <div className="hidden text-sm text-neutral-1200 md:inline">
+        <div className="hidden text-sm text-neutral-1100 md:inline">
           <div className="flex flex-col items-start gap-1">
+            {showEmail && <span>{userProfile.work_email}</span>}
             {showPosition && (
               <DesignationName
                 value={position || userProfile?.department_position}

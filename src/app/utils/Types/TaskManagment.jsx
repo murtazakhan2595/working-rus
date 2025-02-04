@@ -8,6 +8,7 @@ const Project = {
   color: "", // Add color field
   profile: null,
   custom_fields: null,
+  joining_request:[],
 };
 const CustomField = {
   id: null,

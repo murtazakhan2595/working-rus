@@ -213,6 +213,9 @@ const getEmployeeList = async () => {
         department_name: employee.department_name,
         department_position: employee.department_position,
         work_email: employee.work_email,
+        name_initials: `${
+          employee?.first_name?.charAt(0)?.toUpperCase() || ""
+        }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
       }));
       return employeeList;
     } else return [];
@@ -243,6 +246,9 @@ const getEmployeeListWithDetail = async () => {
         profile_picture: employee.profile_picture,
         shift_assignment: employee.shift_assignment,
         serial_number: employee.serial_number,
+        name_initials: `${
+          employee?.first_name?.charAt(0)?.toUpperCase() || ""
+        }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
       }));
       return employeeList;
     } else return [];
@@ -437,7 +443,7 @@ const handleLogout = () => {
     setUserLogout();
   }
 };
-function HandleLogout(){
+function HandleLogout() {
   if (window.localStorage.getItem("token")) {
     window.location.href = "/login";
     toast.error("Session Time Out", {
@@ -447,7 +453,7 @@ function HandleLogout(){
     window.localStorage.setItem("token", "");
     setUserLogout();
   }
-};
+}
 
 export {
   getDepartmentList,

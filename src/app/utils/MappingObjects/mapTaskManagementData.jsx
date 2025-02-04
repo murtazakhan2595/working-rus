@@ -1,12 +1,7 @@
-import {
-  Task,
-  CustomField,
-  CustomFieldData,
-} from "app/utils/Types/TaskManagment";
+import { Task, Project, CustomFieldData } from "app/utils/Types/TaskManagment";
 export function mapTaskPayloadData(data) {
   // Initialize an empty payload object
   const payload = {};
-
   // Iterate over the keys in the Task object
   for (const key in Task) {
     // Check if the key exists in the data object
@@ -19,6 +14,29 @@ export function mapTaskPayloadData(data) {
   // Return the constructed payload
   return payload;
 }
+
+export function mapProjectPayloadData(data) {
+  const formData = new FormData();
+  for (const key in Project) {
+    if (data.hasOwnProperty(key) && data[key]) {
+      if (key === "profile") {
+        if (data[key] instanceof File) formData.append(key, data[key]);
+      } else if (Array.isArray(data[key])) {
+        const array = data[key];
+        if (array.length > 0) {
+          array.forEach((obj) => formData.append(key, obj));
+        } else {
+          formData.append(key, "[]"); // Or JSON.stringify([]) if backend expects JSON format
+        }
+      } else {
+        formData.append(key, data[key]);
+      }
+    }
+  }
+
+  return formData;
+}
+
 export function mapCustomFieldPayloadData(data, projectID = null, id) {
   const fieldData = {};
   for (const key in CustomFieldData) {

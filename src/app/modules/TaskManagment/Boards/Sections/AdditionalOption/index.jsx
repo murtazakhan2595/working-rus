@@ -1,5 +1,6 @@
 import * as React from "react";
 import ArchiveTasks from "./ArchiveTasks";
+import MembersBoard from "./MembersBoard";
 import { Button } from "components/ui/button";
 import { toast } from "react-toastify";
 import {
@@ -16,12 +17,13 @@ import {
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
 import { useNavigate } from "react-router-dom";
-import { MoreHorizontal, Archive, Link, ShieldX, LogOut } from "lucide-react";
+import { MoreHorizontal, Archive, Link, ShieldX, LogOut,Users } from "lucide-react";
 import { useSelector } from "react-redux";
 
 const AdditionalOption = React.memo(
   ({ projectId = null, reloadData = () => {} }) => {
     const [openArchive, setOpenArchive] = React.useState("");
+    const [openMembersBoard, setOpenMembersBoard] = React.useState("");
     const [tooltipOpen, setTooltipOpen] = React.useState(false);
     const navigate = useNavigate();
     const userRole = useSelector((state) => state.user.userProfile)?.role;
@@ -41,6 +43,10 @@ const AdditionalOption = React.memo(
     const handleArchiveCardsClick = (e) => {
       e.preventDefault();
       setOpenArchive(true);
+    };
+    const handleMembersClick = (e) => {
+      e.preventDefault();
+      setOpenMembersBoard(true);
     };
     const handleLeaveBoardClick = (e) => {
       e.preventDefault();
@@ -78,6 +84,9 @@ const AdditionalOption = React.memo(
             <DropdownMenuItem onClick={handleArchiveCardsClick}>
               <Archive size={14} className="mr-2" /> Archive Cards
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleMembersClick}>
+              <Users  size={14} className="mr-2" /> Members
+            </DropdownMenuItem>
             <DropdownMenuSeparator className={`bg-neutral-600`} />
             <DropdownMenuItem onClick={handleLeaveBoardClick}>
               <LogOut size={14} className="mr-2" /> Leave Board
@@ -94,6 +103,14 @@ const AdditionalOption = React.memo(
           <ArchiveTasks
             onClose={setOpenArchive}
             isOpen={openArchive}
+            projectId={projectId}
+            reloadData={reloadData}
+          />
+        )}
+        {openMembersBoard && (
+          <MembersBoard
+            onClose={setOpenMembersBoard}
+            isOpen={openMembersBoard}
             projectId={projectId}
             reloadData={reloadData}
           />

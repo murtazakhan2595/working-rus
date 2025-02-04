@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { HandleLogout } from "./general";
 import { Project } from "app/utils/Types/TaskManagment";
+import { mapProjectPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
 import { convertStringsArrayToJsonArray } from "utils/Lists";
 import { getFileNameFromURL } from "utils/downUtils";
 
@@ -222,35 +223,7 @@ const addBoard = async (payload) => {
   }
 };
 const addProject = async (payload, projectID) => {
-  debugger;
-  const formData = new FormData();
-  if (projectID) formData.append("id", projectID);
-  if (payload.name) formData.append("name", payload.name || "");
-  if (payload.description)
-    formData.append("description", payload.description || "");
-  if (payload.start_date)
-    formData.append("start_date", payload.start_date || "");
-  if (
-    payload.custom_fields &&
-    payload.custom_fields.length > 0 &&
-    Array.isArray(payload.custom_fields)
-  ) {
-    payload.custom_fields.forEach((custom_field) =>
-      formData.append("custom_fields", custom_field)
-    );
-  }
-  // Append each member to formData
-  if (Array.isArray(payload.project_members)) {
-    payload.project_members.forEach((member) =>
-      formData.append("project_members", member)
-    );
-  }
-  if (payload.end_date) formData.append("end_date", payload.end_date || "");
-  if (payload.color) formData.append("color", payload.color || "");
-  if (payload.status) formData.append("status", payload.status || "");
-  if (payload.profile && payload.profile instanceof File)
-    // Handle file fields
-    formData.append("profile", payload.profile);
+  const formData = mapProjectPayloadData(payload);
   try {
     if (projectID) {
       const response = await axios.patch(
@@ -291,11 +264,9 @@ const addTask = async (payload, id) => {
       if (response.status === 200 || response.status === 201) return response;
       else return false;
     } else {
-      console.log("SUBTASK ADDTASK", payload);
       const response = await axios.post(`${baseUrl}/task/`, payload, {
         headers: headers(),
       });
-      console.log("SUBTASK ADDTASK", response, response.status);
       if (response.status === 201) return response;
       else return false;
     }
@@ -818,7 +789,6 @@ const getCommentsWithAttachments = async (filter) => {
         };
       })
     );
-    console.log(commentsWithAttachments);
     return commentsWithAttachments;
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -1012,7 +982,6 @@ const deleteCustomFields = async (id) => {
   }
 };
 export const deleteTaskLabel = async (id) => {
-  debugger;
   try {
     const response = await axios.delete(`${baseUrl}/TaskLabel/${id}`, {
       headers: headers(),
