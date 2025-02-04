@@ -1,8 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { URLS } from "constants/config";
 
-
-
 const getBaseUrl = () => {
   let baseUrl = null;
   URLS.forEach((url) => {
@@ -11,6 +9,16 @@ const getBaseUrl = () => {
     }
   });
   return baseUrl ?? "https://staging-hrms-be.tecbrix.cloud/api";
+};
+
+const getFrontendBaseUrl = () => {
+  let frontend = null;
+  URLS.forEach((url) => {
+    if (window.location.href.startsWith(url.Frontend)) {
+      frontend = url.Frontend;
+    }
+  });
+  return frontend ?? "https://staging-hrms-be.tecbrix.cloud";
 };
 
 export const initialState = {
@@ -24,6 +32,7 @@ export const initialState = {
   sidebarRefresh: false,
   token: "",
   baseUrl: getBaseUrl(),
+  frontendURL: getFrontendBaseUrl(),
 };
 
 const userSlice = createSlice({
@@ -43,7 +52,7 @@ const userSlice = createSlice({
         is_filled: null,
         role: null,
       };
-      window.localStorage.setItem("token", '');
+      window.localStorage.setItem("token", "");
     },
     setToken(state, action) {
       state.token = action.payload;

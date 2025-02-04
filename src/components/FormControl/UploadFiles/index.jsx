@@ -19,6 +19,7 @@ const CoverFileUpload = ({
   maxSize = 10,
   variant = "CoverFileUpload",
   multiple = true,
+  deleteAttachment = () => {},
 }) => {
   const [files, setFiles] = useState([]); // Store multiple files
   // Initialize files from value
@@ -51,20 +52,25 @@ const CoverFileUpload = ({
     if (validateFile(file)) {
       const reader = new FileReader();
       reader.onload = () => {
-    debugger
-    const updatedFiles = [...files, file];
+        debugger;
+        const updatedFiles = [...files, file];
         // Replace existing files with new file
         setFiles(updatedFiles);
-        onChange(name, multiple ? updatedFiles : file); // Send single file to parent
+        onChange(name, multiple ? updatedFiles : file); // Send single file to parent if mutiple is false
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleRemoveFile = (indexToRemove) => {
-    const updatedFiles = files.filter((_, index) => index !== indexToRemove);
+  const handleRemoveFile = (attachment, id) => {
+    console.log(files);
+    debugger;
+    const updatedFiles = files.filter((file) => file.attachment !== attachment);
     setFiles(updatedFiles);
-    onChange(name, updatedFiles.length ? updatedFiles : null);
+    onChange(name, updatedFiles.length && multiple ? updatedFiles : null);
+    if(id){
+      deleteAttachment(id);
+    }
   };
 
   const handleUpdateFileClick = () => {
@@ -76,7 +82,7 @@ const CoverFileUpload = ({
 
     // Add change event listener
     tempFileInput.addEventListener("change", (e) => {
-    e.preventDefault()
+      e.preventDefault();
       if (e.target.files && e.target.files[0]) {
         const file = e.target.files[0];
         handleFile(file);
