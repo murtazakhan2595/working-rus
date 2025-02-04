@@ -161,14 +161,16 @@ function TaskComments({
               )}
 
               <div className="flex items-center gap-2">
-                <button
-                  className="p-1  bg-neutral-200 flex items-center gap-1 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50 rounded-lg"
-                  type="button"
-                >
-                  <Redo2 size={16} />
-                  Reply
-                </button>
-                {item.user_id === userId && (
+                {item.type === "comment" && (
+                  <button
+                    className="p-1  bg-neutral-200 flex items-center gap-1 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50 rounded-lg"
+                    type="button"
+                  >
+                    <Redo2 size={16} />
+                    Reply
+                  </button>
+                )}
+                {item.user_id === userId && item.type === "comment" && (
                   <button
                     className="p-1  bg-neutral-200 flex items-center gap-1 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50 rounded-lg"
                     type="button"
