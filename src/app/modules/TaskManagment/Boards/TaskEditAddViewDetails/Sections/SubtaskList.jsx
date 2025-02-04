@@ -51,7 +51,7 @@ const SubtaskList = ({
             setViewSubtasks(subtask.id);
             setIsAddSubtaskOpen(true);
           }}
-          className="group flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:border-primary hover:shadow-sm transition-all cursor-pointer"
+          className="group flex items-center justify-between p-3 bg-white rounded-lg border border-gray-500 hover:border-primary hover:shadow-sm transition-all cursor-pointer"
         >
           <div className="flex items-center space-x-3">
             {getStatusIcon(subtask.status)}

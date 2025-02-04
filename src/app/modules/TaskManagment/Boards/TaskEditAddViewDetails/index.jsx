@@ -317,8 +317,8 @@ const TaskEditAddViewDetails = ({
                         />
                       )}
                       {isSubtask
-                        ? " Add/Edit Subtask Details"
-                        : " Add/Edit Details"}
+                        ? " Edit Subtask Details"
+                        : " Edit Details"}
                     </div>
                     <div className="flex justify-end gap-2">
                       {!projectId && (
