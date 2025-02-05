@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { SelectMultiInputComponent } from "components/FormControl";
 import { getProjectById, addProject } from "app/hooks/taskManagment";
 import { Button } from "components/ui/button";
-import { EmployeeNameInfo } from "components";
+import { EmployeeOverview } from "components";
 import { fetchProjects } from "state/slices/CommonSlice";
 import AlertDialogue from "components/ui/AlertDialogue";
 import {
@@ -231,7 +231,7 @@ const BoardMembers = React.memo(
                 key={member}
               >
                 <div className="col-span-3">
-                  <EmployeeNameInfo
+                  <EmployeeOverview
                     showPosition={true}
                     id={member}
                     showEmail={true}

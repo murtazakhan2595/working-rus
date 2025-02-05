@@ -35,7 +35,7 @@ const SelectMultiInputComponent = React.memo(
     optionsActions = [],
   }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const selectedValues = value;
+    const selectedValues = value && Array.isArray(value) ? value : [];
     // Handle selection toggle
     const handleSelectionToggle = useCallback(
       (optionValue) => {

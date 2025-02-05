@@ -6,7 +6,7 @@ import { Link as ExLink } from "lucide-react";
 import { Badge } from "../../../../../components/ui/badge";
 import { DesignationName } from "utils/getValuesFromTables";
 import { Button } from "components/ui/button";
-import { EmployeeNameInfo } from "components";
+import { EmployeeOverview } from "components";
 export const DashboardJobApplicationColumns = (navigate) => [
   {
     dataField: "id",
@@ -55,7 +55,6 @@ export const DashboardOnGoingColumns = (navigate) => [
         <p className="text-neutral-900 font-semibold">{cell}</p>
       </div>
     ),
-    // formatter: (cell, row) => <EmployeeNameInfo row={row} />,
   },
   {
     dataField: "application_status",
@@ -65,7 +64,6 @@ export const DashboardOnGoingColumns = (navigate) => [
         {cell}
       </Badge>
     ),
-
   },
 ];
 
@@ -74,19 +72,14 @@ export const DashboardLeaveTrackerColumns = [
     dataField: "id",
     text: "Employee",
     formatter: (cell, row) => (
-      <EmployeeNameInfo
-        name={`${row.name}`}
-        department={row.department_name}
-        position={row.position}
-        showPosition={false}
+      <EmployeeOverview
+        id={cell}
+        showDepartment={true}
+        showPosition={true}
+        showEmail={true}
       />
     ),
     width: "30%",
-  },
-  {
-    dataField: "id",
-    text: "Designation",
-    formatter: (cell, row) => <DesignationName value={row?.position} />,
   },
   {
     dataField: "status_hr",

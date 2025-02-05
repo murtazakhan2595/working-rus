@@ -1,7 +1,7 @@
 import Header from "./Header";
 import PageLoader from "./PageLoader";
 import Tabs from "./Tabs";
-import EmployeeNameInfo from "./EmployeeNameInfo";
+import EmployeeOverview from "./EmployeeOverview";
 import Table from "./CustomTable";
 import BarChart from "./BarChart";
 import ConfirmationModal from "./ConfirmationModal";
@@ -10,11 +10,12 @@ import ViewOptions from 'components/ViewOtions';
 import TableCustom from './CustomTable';
 import TextUI from './TextUI';
 import TooltipText from './TooltipText';
+import OverviewCard from './OverviewCard';
 export {
   Header,
   PageLoader,
   Tabs,
-  EmployeeNameInfo,
+  EmployeeOverview,
   Table,
   BarChart,
   ConfirmationModal,
@@ -23,4 +24,5 @@ export {
   TableCustom,
   TextUI,
   TooltipText,
+  OverviewCard,
 };

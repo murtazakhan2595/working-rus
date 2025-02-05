@@ -1,6 +1,6 @@
 import { EmployeeAttendenceActions } from "app/modules/Attendance/Sections";
 import { calculatePercentage } from "utils/renderValues";
-import { EmployeeNameInfo } from "components";
+import { EmployeeOverview } from "components";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
 
 /**
@@ -15,7 +15,7 @@ export const EmployeesAttendanceColumns = [
     dataField: "employee_id",
     text: "Employees",
     formatter: (cell, row) => (
-      <EmployeeNameInfo id={cell} showId showPosition />
+      <EmployeeOverview id={cell} showId showPosition />
     ),
   },
 

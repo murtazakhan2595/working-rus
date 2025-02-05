@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { EmployeeNameInfo } from "components";
+import { EmployeeOverview } from "components";
 import { FiEye } from "react-icons/fi";
 import {
   DepartmentName,
@@ -79,11 +79,10 @@ const RenderResignedRow = ({ resignedEmployee, resignedEmployeeList }) => {
           className=""
           style={{ maxWidth: "calc(100% - 12.5rem)", minWidth: "420px" }}
         >
-          <EmployeeNameInfo
-            name={resignedEmployee.emp_name}
-            department={resignedEmployee.department_name}
-            position={resignedEmployee.position}
+          <EmployeeOverview
             id={resignedEmployee.employee_id}
+            showPosition={true}
+            showDepartment={true}
           />
         </div>
         <div className="text-base text-baseGray flex items-center gap-x-4">

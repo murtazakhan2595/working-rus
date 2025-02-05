@@ -282,10 +282,3 @@ export const lightenColor = (hex, percent) => {
 
   return newHex;
 };
-
-// Example usage
-const originalColor = "#004C3F";
-const lightShade = lightenColor(originalColor, 40); // 40% lighter
-
-console.log(lightShade); // Outputs a lighter version of #004C3F
-

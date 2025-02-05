@@ -10,7 +10,7 @@ import {
   ResignationReason,
   ManagerName,
 } from "utils/getValuesFromTables";
-import { EmployeeNameInfo } from "components";
+import { EmployeeOverview } from "components";
 import { Labels } from "components/StatusLabel";
 import {
   Sheet,
@@ -85,11 +85,10 @@ const RenderTerminatedRow = ({
           className=""
           style={{ maxWidth: "calc(100% - 12.5rem)", minWidth: "420px" }}
         >
-          <EmployeeNameInfo
-            name={terminatedEmployee.emp_name}
-            department={terminatedEmployee.department_name}
-            position={terminatedEmployee.position}
+          <EmployeeOverview
             id={terminatedEmployee.employee_id}
+            showPosition={true}
+            showDepartment={true}
           />
         </div>
         <div className="text-base text-baseGray flex items-center gap-x-4">

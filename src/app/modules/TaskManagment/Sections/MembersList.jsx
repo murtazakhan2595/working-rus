@@ -2,7 +2,7 @@ import * as React from "react";
 import Avatar from "components/ui/Avatar";
 import { useSelector } from "react-redux";
 import { getRandomColor } from "utils/renderValues";
-import { EmployeeNameInfo } from "components";
+import { EmployeeOverview } from "components";
 import {
   Popover,
   PopoverContent,
@@ -27,7 +27,7 @@ const MembersList = React.memo(
   ({ members, removeMember, displayAll = false }) => {
     // Get all employees data once at the component level
     const [searchQuery, setSearchQuery] = React.useState("");
-    const employees = useSelector((state) => state.emp.employees_detail); 
+    const employees = useSelector((state) => state.emp.employees_detail);
     const userProfile = useSelector((state) => state.user.userProfile);
     const filteredMembers = React.useMemo(() => {
       return employees?.filter(
@@ -92,7 +92,7 @@ const MembersList = React.memo(
             {remainingCount > 0 && !displayAll && (
               <span
                 className="text-plum-1100 h-6 w-6 flex items-center justify-center text-sm rounded-full"
-                style={{marginLeft:'1px'}}
+                style={{ marginLeft: "1px" }}
                 key="remaining-count"
               >
                 +{remainingCount}
@@ -119,14 +119,12 @@ const MembersList = React.memo(
                       key={member.id}
                       className="flex justify-between w-full items-center"
                     >
-                      <EmployeeNameInfo
+                      <EmployeeOverview
+                        id={member}
+                        showEmail={true}
                         showPosition={true}
-                        showDepartment={true}
-                        department={member.department_name}
-                        position={member.department_position}
-                        name={member.name}
                       />
-                      {removeMember && userProfile?.role !==4 && (
+                      {removeMember && userProfile?.role !== 4 && (
                         <MdClose
                           className="w-5 h-5 text-gray-700 cursor-pointer"
                           onClick={() => {
