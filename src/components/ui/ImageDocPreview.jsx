@@ -104,7 +104,7 @@ export default function ImageDocPreview({
               ref={imgRef}
               src={fileURL}
               alt={name || "Attachment"}
-              className="max-h-[100%] max-w-[100%] object-contain"
+              className="max-h-[100%] max-w-[100%] object-contain h-[100%] w-auto"
               style={{
                 transform: `scale(${scale})`,
                 transition: "transform 0.2s ease-out",
