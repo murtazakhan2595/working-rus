@@ -454,10 +454,12 @@ const getProjectById = async (projectId) => {
       }
     }
   } catch (error) {
+    console.error("Error adding job:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
+    } else if (error?.response?.status === 404) {
+      return -1;
     }
-    console.error("Error adding job:", error);
     return Project;
   }
 };
@@ -1070,7 +1072,7 @@ const deleteComment = async (commentId) => {
     });
     return false;
   }
-}
+};
 
 export {
   createActivity,

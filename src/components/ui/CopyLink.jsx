@@ -22,7 +22,13 @@ const frontendURL = initialState.frontendURL;
  * @returns {JSX.Element} - The CopyLink component.
  */
 const CopyLink = React.memo(
-  ({ link = "", text = "", message = "Copied!" }) => {
+  ({
+    link = "",
+    text = "",
+    message = "Copied!",
+    linkIcon = <Link size={14} className="mr-2" />,
+    textClassName = "text-neutral-1100"
+  }) => {
     const [tooltipVisible, setTooltipVisible] = useState(false);
     /**
      * Handles the copy action when the user clicks the component.
@@ -49,8 +55,8 @@ const CopyLink = React.memo(
         <TooltipProvider>
           <Tooltip open={tooltipVisible}>
             <TooltipTrigger asChild>
-              <span className="flex items-center">
-                <Link size={14} className="mr-2" />
+              <span className={`${textClassName} flex items-center`}>
+                {linkIcon}
                 {text}
               </span>
             </TooltipTrigger>

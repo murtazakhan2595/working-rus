@@ -2,12 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import SheetComponent from "components/ui/CustomSheet";
 import { Plus, Trash2, Link } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "src/@/components/ui/tooltip";
 import { SelectMultiInputComponent } from "components/FormControl";
 import { getProjectById, addProject } from "app/hooks/taskManagment";
 import { Button } from "components/ui/button";
@@ -20,6 +14,8 @@ import {
   TabsTrigger,
   TabsContent,
 } from "src/@/components/ui/tabs";
+import CopyLink from "components/ui/CopyLink";
+
 const TabsData = [
   { value: "board_members", label: "Board Members" },
   { value: "join_request", label: "Join Request" },
@@ -88,18 +84,6 @@ const MembersBoard = ({ onClose, isOpen, projectId }) => {
     }
   };
 
-  const handleCopyBoardLinkClick = (e) => {
-    e.preventDefault();
-    const Url = window.location.href;
-    navigator.clipboard
-      .writeText(Url)
-      .then(() => {
-        setTooltipOpen(true);
-        setTimeout(() => setTooltipOpen(false), 2000);
-      })
-      .catch((err) => console.error("Failed to copy:", err));
-  };
-
   const handleAddMember = (e) => {
     e.preventDefault();
     handleAddRemoveMembers({ project_members: membersSelected || [] });
@@ -114,9 +98,9 @@ const MembersBoard = ({ onClose, isOpen, projectId }) => {
         width="550px"
         contentClassName="custom-sheet-width"
       >
-        <div className="flex flex-col w-full overflow-hidden max-w-full gap-8">
-          <div className="grid grid-cols-5 gap-3">
-            <div className="col-span-3">
+        <div className="flex flex-col w-full overflow-hidden max-w-full gap-8 pr-3">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row justify-between gap-3">
               <SelectMultiInputComponent
                 name="project_members"
                 options={Employees}
@@ -127,8 +111,6 @@ const MembersBoard = ({ onClose, isOpen, projectId }) => {
                 }}
                 placeholder="Add Members"
               />
-            </div>
-            <div className="">
               <Button
                 variant="outline"
                 disabled={isLoading && !membersSelected.length ? true : false}
@@ -137,27 +119,18 @@ const MembersBoard = ({ onClose, isOpen, projectId }) => {
                 Add Memebers
               </Button>
             </div>
-            <div className="col-span-5">
+            <div className="">
               <div className="flex justify start flex-row w-full max-w-full overflow-hidden items-center text-neutral-1100 gap-3">
                 <Link size={16} />
                 <div className="flex flex-col gap-1">
                   <p>Anyone with the link can join as a member</p>
                   <div className="flex flex-row text-sm">
-                    <TooltipProvider>
-                      <Tooltip open={tooltipOpen}>
-                        <TooltipTrigger asChild>
-                          <span
-                            className="text-plum-1100 cursor-pointer"
-                            onClick={handleCopyBoardLinkClick}
-                          >
-                            Copy Link
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Copied!</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <CopyLink
+                      link={`/project-board/${projectId}`}
+                      text={"Copy Link"}
+                      linkIcon={' '}
+                      textClassName={"text-plum-1100"}
+                    />
                   </div>
                 </div>
               </div>
