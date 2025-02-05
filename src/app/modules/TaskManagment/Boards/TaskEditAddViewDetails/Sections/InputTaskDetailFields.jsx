@@ -46,7 +46,6 @@ const InputTaskDetailFields = React.memo(
           onChange={(field, value) => {
             onChange(field, value);
           }}
-          classes=""
         />
         <Labels
           labelsSelected={taskData.label || []}

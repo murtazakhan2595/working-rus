@@ -5,14 +5,16 @@ import { ViewOptions } from "components";
 import { getLabelDropdownList } from "utils/Lists";
 import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
 import BoardGridView from "app/modules/TaskManagment/Boards/BoardGridView";
+import BoardHeader from "app/modules/TaskManagment/Boards/BoardHeader";
 import { MembersList } from "app/modules/TaskManagment/Sections";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import {
-  RenderProject,
-  AdditionalOption,
-} from "app/modules/TaskManagment/Boards/Sections";
-import { ArrowLeft } from "lucide-react";
-import { DateInput } from "components/FormControl";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogDescription,
+  DialogTitle,
+} from "src/@/components/ui/dialog.jsx";
 import { Button } from "components/ui/button";
 import { FilterInput, SortingFilters } from "components/FormControl";
 import { PriorityList, TaskSortingFilters } from "data/Data";
@@ -20,35 +22,28 @@ import { getProjectById, addProject } from "app/hooks/taskManagment";
 import { AlignRight } from "lucide-react";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { toast } from "react-toastify";
+import ActionAlert from "components/ui/ActionAlert";
+import { useSelector } from "react-redux";
+import Err404 from "app/modules/Error/Err404";
 
-const Board = ({ TaskLabelList }) => {
-  const navigate = useNavigate();
+const Board = ({}) => {
   const projectId = useParams()?.projectId || null;
+  const navigate = useNavigate();
+  const userId = useSelector((state) => state.user.userProfile).id;
+  const userRole = useSelector((state) => state.user.userProfile).role;
   const viewTaskId = useParams()?.taskId || null;
-  const [isDelete, setIsDelete] = useState(false);
-  const [selectedMembers, setSelectedMembers] = useState([]);
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(
     viewTaskId ? true : false
   );
+  const [projectData, setProjectData] = useState({});
+  const [openSuccessMessage, setOpenSuccessMessage] = useState(false);
+  const [openRequestJoinDialogBox, setOpenRequestJoinDialogBox] =
+    useState(false);
   const [filterData, setFilterData] = useState({
     is_subtask: [false],
     is_archive: [false],
   });
-  const [projectData, setProjectData] = useState(null);
   const [activeView, setActiveView] = useState("grid");
-
-  const fetchData = async (isMounted) => {
-    try {
-      const projectDetails = await getProjectById(projectId);
-      if (isMounted) {
-        setProjectData(projectDetails);
-      }
-    } catch (error) {
-      console.error("Error fetching employeeLeaveTypes:", error);
-    }
-  };
-
   useEffect(() => {
     let isMounted = true;
     fetchData(isMounted);
@@ -57,153 +52,49 @@ const Board = ({ TaskLabelList }) => {
     };
   }, [projectId]);
 
-  const removeMember = (members) => {
-    setSelectedMembers(members);
-    setIsDelete(true);
-  };
-
-  const handleRemoveMember = async () => {
+  const fetchData = async (isMounted) => {
     try {
-      const response = await addProject(
-        { project_members: selectedMembers },
-        projectId
-      );
-      if (response) {
-        fetchData(true);
-        toast.success("Member Removed successfully");
+      const projectDetails = await getProjectById(projectId);
+      if (isMounted) {
+        setProjectData(projectDetails);
+        const members = projectDetails?.project_members || [];
+        if (userRole === 4 || userRole === 3)
+          if (!Array.isArray(members) || !members.includes(userId)) {
+            setOpenRequestJoinDialogBox(true);
+          }
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching employeeLeaveTypes:", error);
     }
-    setIsDelete(false);
+  };
+  const SubmitJoinRequest = async () => {
+    try {
+      const updatedMembers = [...(projectData.joining_request || []), userId];
+      const payload = { joining_request: updatedMembers || [] };
+      const response = await addProject(payload, projectId);
+      if (response) {
+        setOpenRequestJoinDialogBox(false);
+        setOpenSuccessMessage(true);
+      }
+    } catch (error) {
+      console.error("Error fetching employeeLeaveTypes:", error);
+    }
   };
 
-  const handleFilterChange = (
-    filterName,
-    filterValue,
-    filterValueStatus = true
-  ) => {
-    const updatedFilters = { ...filterData };
-
-    if (filterName === "end_date" || filterName === "name") {
-      if (filterValue) {
-        // Update end_date with the provided value
-        updatedFilters[filterName] = filterValue;
-      } else {
-        // Remove end_date if the filterValue is null
-        delete updatedFilters[filterName];
-      }
-      // Update the filter data
-      setFilterData(updatedFilters);
-      return;
-    }
-
-    // Check if the filterName exists in updatedFilters, if not, initialize it as an array
-    if (!updatedFilters[filterName]) {
-      updatedFilters[filterName] = [];
-    }
-    if (filterValueStatus) {
-      // Add the filterValue if it does not already exist
-      if (!updatedFilters[filterName].includes(filterValue)) {
-        updatedFilters[filterName].push(filterValue);
-      }
-    } else {
-      // Remove the filterValue if it exists
-      updatedFilters[filterName] = updatedFilters[filterName].filter(
-        (value) => value !== filterValue
-      );
-      // Remove the filterName from updatedFilters if the array is empty
-      if (updatedFilters[filterName].length === 0) {
-        delete updatedFilters[filterName];
-      }
-    }
-    // Update the filter data
-    setFilterData(updatedFilters);
-    return;
-  };
-
+  if (projectData === -1) {
+    return <Err404 />;
+  }
   return (
     <>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center">
-          <ArrowLeft
-            className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm cursor-pointer"
-            onClick={() => navigate(-1)}
-          />
-          <RenderProject
-            projectId={projectId}
-            projectName={projectData?.name}
-          />
-        </div>
-        <div className="flex items-center justify-end gap-3 flex-wrap">
-          <FilterInput
-            filters={[
-              {
-                type: "search",
-                placeholder: "Search by Task Name",
-                name: "name",
-              },
-            ]}
-            onChange={handleFilterChange}
-          />
-          <SortingFilters
-            items={TaskSortingFilters}
-            lists={[
-              {
-                title: "Priority",
-                label: "priority",
-                options: PriorityList,
-                values: filterData["priority"] || [],
-              },
-              {
-                title: "Label",
-                label: "label",
-                options: getLabelDropdownList(TaskLabelList, "name", "id"),
-                values: filterData["label"] || [],
-              },
-            ]}
-            onChange={(name, value, filterCheckStatus) => {
-              handleFilterChange(name, value, filterCheckStatus);
-            }}
-            values={filterData}
-            filterButton={
-              <Button variant="outline" className="">
-                <AlignRight className="w-4 h-4 mr-1" />
-                Filters
-              </Button>
-            }
-            label={"Task Sort"}
-            className={null}
-          />
-
-          <DateInput
-            placeholder="Due Date"
-            value={filterData[""]}
-            className="flex items-center align-middle "
-            name="end_date"
-            onChange={(field, value) => {
-              handleFilterChange(field, value);
-            }}
-            showReset={true}
-          />
-          <MembersList
-            members={projectData?.project_members || []}
-            removeMember={removeMember}
-          />
-          {isDelete && (
-            <AlertDialogue
-              isOpen={isDelete}
-              setIsOpen={setIsDelete}
-              handleContinue={handleRemoveMember}
-              continueText="Delete"
-              title="Are you sure you want to Remove this Member?"
-              description="The member will be deleted , but you can add the member again as well."
-            />
-          )}
-          <ViewOptions activeView={activeView} setActiveView={setActiveView} />
-          <AdditionalOption projectId={projectId} />
-        </div>
-      </div>
+      <BoardHeader
+        setFilterData={setFilterData}
+        filterData={filterData}
+        projectId={projectId}
+        activeView={activeView}
+        setActiveView={setActiveView}
+        projectData={projectData}
+        fetchData={fetchData}
+      />
       {activeView === "grid" ? (
         <BoardGridView filterData={filterData} projectId={projectId} />
       ) : (
@@ -216,24 +107,45 @@ const Board = ({ TaskLabelList }) => {
           isOpen={isTaskDetailOpen}
           setIsOpen={() => {
             setIsTaskDetailOpen(false);
-            fetchData(true);
+            //    fetchData(true);
           }}
           reloadData={() => {
             setIsTaskDetailOpen(false);
-            fetchData(true);
+            //   fetchData(true);
           }}
           projectId={projectId}
+        />
+      )}
+      {openRequestJoinDialogBox && (
+        <AlertDialogue
+          isOpen={openRequestJoinDialogBox}
+          setIsOpen={() => {
+            setOpenRequestJoinDialogBox(false);
+            navigate("/projects");
+          }}
+          handleContinue={SubmitJoinRequest}
+          continueText="Submit Request"
+          title="Request to Join Project"
+          description="You are not a member of this project. To request access, please submit your application by clicking 'Submit Request'."
+          buttonType={"default"}
+          className={"text-plum-1200"}
+        />
+      )}
+      {openSuccessMessage && (
+        <ActionAlert
+          isOpen={openSuccessMessage}
+          onClose={() => {
+            setOpenSuccessMessage(false);
+            navigate("/projects");
+          }}
+          title={"Request Submitted!"}
+          description={
+            "Your request has been submitted successfully!. You can access the project, once request is aprroved."
+          }
         />
       )}
     </>
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    employees: state.emp.employees,
-    TaskLabelList: state.task_managment.task_labels,
-  };
-};
-
-export default connect(mapStateToProps)(Board);
+export default Board;

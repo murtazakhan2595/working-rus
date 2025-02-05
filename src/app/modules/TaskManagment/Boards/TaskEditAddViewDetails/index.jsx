@@ -15,7 +15,7 @@ import {
   Attachments,
 } from "app/modules/TaskManagment/Sections";
 import { Button } from "components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { PageLoader } from "components";
 import { addTask } from "app/hooks/taskManagment";
@@ -39,13 +39,12 @@ import {
   getAllCustomFields,
 } from "app/hooks/taskManagment";
 import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
-import { Plus } from "lucide-react";
 import { getDropdownList, convertJSONArrayToStringsArray } from "utils/Lists";
 import Subtasks from "../../Sections/SubTask";
 import { createActivity } from "app/hooks/taskManagment";
 import { trackTaskActivities } from "./Sections/activityHelper";
 import SubtaskList from "./Sections/SubtaskList";
-import { getSubtaskById } from "app/hooks/taskManagment";
+import CopyLink from "components/ui/CopyLink";
 import TaskCommentsContainer from "../../Sections/TaskComments";
 
 const TaskEditAddViewDetails = ({
@@ -136,7 +135,10 @@ const TaskEditAddViewDetails = ({
         throw new Error("Card details not found.");
       }
       if (isMounted) {
-        setInitialValues(cardDetails);
+        setInitialValues({
+          ...cardDetails,
+          project_id: projectId || cardDetails.project_id, //
+        });
         setIsLoading(false);
       }
       if (cardDetails.sub_task && cardDetails.sub_task.length > 0) {
@@ -211,7 +213,6 @@ const TaskEditAddViewDetails = ({
     }
   };
   const deleteAttachmentFile = async (id) => {
-    debugger
     try {
       if (id) {
         const response = await deleteAttachment(id);
@@ -245,10 +246,10 @@ const TaskEditAddViewDetails = ({
           })
         );
       };
-
+      debugger;
+      console.log(values);
       const finalData = mapTaskPayloadData({
         ...values,
-
         start_date: moment(new Date()).format("YYYY-MM-DD"),
         attachment: await getAttachmentFileIds(values.attachment || []),
         task_checklist: await getCheckListIds(values.task_checklist || []),
@@ -257,7 +258,6 @@ const TaskEditAddViewDetails = ({
           "field",
           "value"
         ),
-        cover_photo: values.cover_photo,
       });
       if (!finalData.hasOwnProperty("status") || finalData.status === null) {
         finalData.status = "TODO";
@@ -265,7 +265,8 @@ const TaskEditAddViewDetails = ({
       if (isSubtask) {
         finalData.is_subtask = true;
       }
-      console.log(finalData);
+      finalData.cover_photo =
+        values?.attachment?.length > 0 ? values.cover_photo : null;
       const response = await addTask(finalData, taskId);
       if (response) {
         // Notify parent component of the new task
@@ -320,15 +321,26 @@ const TaskEditAddViewDetails = ({
             >
               {(props) => (
                 <Form className="overflow-x-hidden">
-                  <div className="flex justify-between mb-6 mt-3">
-                    <div className="text-md font-semibold dark:text-slate-50 flex items-center">
+                  <div className="flex justify-between mb-3 px-3 mt-3">
+                    <div className="text-md font-semibold dark:text-slate-50 flex items-center gap-2">
                       {isSubtask && (
                         <ArrowLeft
                           className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm cursor-pointer"
                           onClick={() => setIsOpen(false)}
                         />
                       )}
-                      {isSubtask ? " Edit Subtask Details" : " Edit Details"}
+                      {props.values.is_archive ? (
+                        <span className="text-amber-400">Archive Card</span>
+                      ) : (
+                        `${taskId ? "Edit" : "Add"} ${
+                          isSubtask ? "Subtask" : "Task"
+                        }`
+                      )}
+                      {taskId && (
+                        <CopyLink
+                          link={`/project-board/${projectId}/${taskId}`}
+                        />
+                      )}
                     </div>
                     <div className="flex justify-end gap-2">
                       {!projectId && (
@@ -365,11 +377,15 @@ const TaskEditAddViewDetails = ({
                         projectId={props.values.project_id}
                         taskId={taskId}
                         reloadData={additionalActionReload}
+                        isArchive={props.values.is_archive}
                       />
                     </div>
                   </div>
-                  <div className="flex justify-between">
-                    <div className="flex flex-col w-[55%] max-w-[calc(55%_-_25px)] gap-3">
+                  <div className="grid grid-cols-7 gap-4">
+                    <div className="flex flex-col col-span-4 gap-3 p-3">
+                      <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap">
+                        {"Title"}
+                      </div>
                       <InputTaskTitle
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
@@ -378,14 +394,17 @@ const TaskEditAddViewDetails = ({
                         error={props.errors.name}
                         touched={props.touched.name}
                         value={props.values.name}
+                        taskId={taskId}
                       />
+                      <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap">
+                        {"Description"}
+                      </div>
                       <InputTaskDescription
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
                           setIsEditMode(true);
                         }}
                         setAttachment={async (attachment) => {
-                          console.log(attachment);
                           await props.setFieldValue("attachment", attachment);
                           setIsEditMode(true);
                         }}
@@ -478,7 +497,7 @@ const TaskEditAddViewDetails = ({
                         />
                       )}
                     </div>
-                    <div className="flex flex-col w-[45%] max-w-[45%] gap-3">
+                    <div className="flex flex-col col-span-3 gap-3 p-3">
                       <div>
                         <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
                           {"Checklist"}

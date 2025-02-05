@@ -2,13 +2,24 @@ import moment from "moment";
 import { getDarkerTextColor } from "app/modules/TaskManagment/Boards/Sections/getTaskStatus";
 import { Badge } from "components/ui/badge";
 import { lightenColor } from "utils/renderValues";
-export function getDropdownList(list, label = "name", value = "id") {
-  if (!list || list.length === 0) return [];
-  const dropdownList = list.map((obj) => {
-    return { label: obj[label], value: obj[value] };
-  });
-  return dropdownList;
+
+export function getDropdownList(
+  items,
+  labelKey = "name",
+  valueKey = "id",
+  prefixKey = null,
+  separator = null
+) {
+  if (!Array.isArray(items) || items.length === 0) return [];
+
+  return items.map((item) => ({
+    label: prefixKey
+      ? `${item[prefixKey]} ${separator} ${item[labelKey]}`
+      : item[labelKey],
+    value: item[valueKey],
+  }));
 }
+
 /**
  * Converts an array of strings into an array of objects
  * with `label` and `value` properties having the same value.
@@ -20,7 +31,6 @@ export function getDropdownList(list, label = "name", value = "id") {
 export function createDropdownOptions(options) {
   // If the input is invalid or empty, return an empty array.
   if (!options || options.length === 0) return [];
-
   // Map each string to an object with `label` and `value` properties.
   const dropdownOptions = options.map((option) => {
     return { label: option, value: option };
@@ -37,7 +47,7 @@ export function getLabelDropdownList(list, label = "name", value = "id") {
         <Badge
           className={`mr-2`}
           style={{
-            background: lightenColor(obj?.color,85),
+            background: lightenColor(obj?.color, 85),
             color: obj.color,
           }}
         >

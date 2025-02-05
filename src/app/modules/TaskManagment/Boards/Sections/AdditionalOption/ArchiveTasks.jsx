@@ -13,6 +13,7 @@ import AlertDialogue from "components/ui/AlertDialogue";
 import { getAttachmentDetails } from "app/hooks/taskManagment";
 import { Button } from "components/ui/button";
 import { toast } from "react-toastify";
+import TaskCard from "app/modules/TaskManagment/Boards/Task";
 
 const ArchiveTasks = ({ onClose, isOpen, projectId }) => {
   const [TaskList, setTaskList] = useState([]);
@@ -50,10 +51,19 @@ const ArchiveTasks = ({ onClose, isOpen, projectId }) => {
         contentClassName="custom-sheet-width"
       >
         <>
-          {TaskList &&
+          {TaskList && TaskList.length?
             TaskList.map((task) => (
-              <TaskDetailsCard {...task} reloadData={() => fetchTasks(true)} />
-            ))}
+              <div key={task.id}>
+                <TaskCard
+                  task={task}
+                  projectId={projectId}
+                  boardId={task.board_id}
+                  reloadData={() => fetchTasks(true)}
+                  showMembers={false}
+                  showDueDate={false}
+                />
+              </div>
+            )):<div className="flex w-full my-4 justify-center text-neutral-1000">No Archieve Cards</div>}
         </>
       </SheetComponent>
     </>
@@ -72,6 +82,7 @@ const TaskDetailsCard = ({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
   const [coverImage, setCoverImage] = useState(null);
+
   const handleDelete = (e) => {
     e.preventDefault();
     setIsDeleteModalOpen(true);

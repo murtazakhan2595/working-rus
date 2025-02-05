@@ -75,7 +75,7 @@ const SelectComponent = ({
   return (
     <div className={`${classes} flex flex-col w-full`}>
       {showLabel && (
-        <Label className="mb-3" htmlFor={name}>
+        <Label className="" htmlFor={name}>
           {required && <span className="text-red-600">* </span>} {label}
         </Label>
       )}
@@ -223,7 +223,7 @@ const DateInput = ({
           <Button
             variant="outline"
             className={`w-full justify-start text-left font-normal rounded-sm h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200 ${
-              !date ? "text-muted-foreground" : ""
+              !date ? "text-neutral-1000" : ""
             }`}
             onMouseEnter={() => showReset && date && setShowResetText(true)}
             onMouseLeave={() => setShowResetText(false)}
@@ -245,7 +245,7 @@ const DateInput = ({
             ) : (
               <div className="flex items-center gap-2">
                 <LucideCalendar size={16} />
-                <div className="text-sm font-normal text-neutral-600">
+                <div className="text-sm font-normal text-neutral-1000">
                   {placeholder ? placeholder : "Pick a date"}
                 </div>
               </div>

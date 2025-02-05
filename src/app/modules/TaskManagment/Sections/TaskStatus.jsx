@@ -8,7 +8,7 @@ const getStatusLabelBackground = (status) => {
       return lightenColor("#2e86c1", 85);
     case "COMPLETED":
       return lightenColor("#12B76A", 85);
-    case "OnHold":
+    case "Onhold":
       return lightenColor("#B00D1B", 85);
     default:
       return lightenColor("#FBBF24", 85);

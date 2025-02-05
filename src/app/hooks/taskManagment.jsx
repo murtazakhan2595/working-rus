@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { HandleLogout } from "./general";
 import { Project } from "app/utils/Types/TaskManagment";
+import { mapProjectPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
 import { convertStringsArrayToJsonArray } from "utils/Lists";
 import { getFileNameFromURL } from "utils/downUtils";
 
@@ -222,35 +223,7 @@ const addBoard = async (payload) => {
   }
 };
 const addProject = async (payload, projectID) => {
-  debugger;
-  const formData = new FormData();
-  if (projectID) formData.append("id", projectID);
-  if (payload.name) formData.append("name", payload.name || "");
-  if (payload.description)
-    formData.append("description", payload.description || "");
-  if (payload.start_date)
-    formData.append("start_date", payload.start_date || "");
-  if (
-    payload.custom_fields &&
-    payload.custom_fields.length > 0 &&
-    Array.isArray(payload.custom_fields)
-  ) {
-    payload.custom_fields.forEach((custom_field) =>
-      formData.append("custom_fields", custom_field)
-    );
-  }
-  // Append each member to formData
-  if (Array.isArray(payload.project_members)) {
-    payload.project_members.forEach((member) =>
-      formData.append("project_members", member)
-    );
-  }
-  if (payload.end_date) formData.append("end_date", payload.end_date || "");
-  if (payload.color) formData.append("color", payload.color || "");
-  if (payload.status) formData.append("status", payload.status || "");
-  if (payload.profile && payload.profile instanceof File)
-    // Handle file fields
-    formData.append("profile", payload.profile);
+  const formData = mapProjectPayloadData(payload);
   try {
     if (projectID) {
       const response = await axios.patch(
@@ -291,11 +264,9 @@ const addTask = async (payload, id) => {
       if (response.status === 200 || response.status === 201) return response;
       else return false;
     } else {
-      console.log("SUBTASK ADDTASK", payload);
       const response = await axios.post(`${baseUrl}/task/`, payload, {
         headers: headers(),
       });
-      console.log("SUBTASK ADDTASK", response, response.status);
       if (response.status === 201) return response;
       else return false;
     }
@@ -483,10 +454,12 @@ const getProjectById = async (projectId) => {
       }
     }
   } catch (error) {
+    console.error("Error adding job:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
+    } else if (error?.response?.status === 404) {
+      return -1;
     }
-    console.error("Error adding job:", error);
     return Project;
   }
 };
@@ -596,6 +569,31 @@ const deleteAttachment = async (attachmentId) => {
     return false;
   }
 };
+export const getAttachmentDetails = async (attachmentIds) => {
+  if (!attachmentIds || attachmentIds.length === 0) return [];
+  try {
+    const attachmentDetails = (
+      await Promise.all(
+        attachmentIds.map(async (id) => {
+          const response = await getAttachmentById(id);
+          return response.attachment
+            ? {
+                attachment: response.attachment,
+                id: response.id,
+                name: getFileNameFromURL(response.attachment),
+              }
+            : null; // Return null if no attachment
+        })
+      )
+    ).filter(Boolean); // Remove null values in the same statement
+    return attachmentDetails;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching attachments:", error);
+  }
+};
 
 const getTaskById = async (taskId) => {
   // Helper function to fetch checklist item details
@@ -618,30 +616,6 @@ const getTaskById = async (taskId) => {
         HandleLogout();
       }
       console.error("Error fetching checklist items:", error);
-      throw error; // Propagate error to the caller
-    }
-  };
-
-  // Helper function to fetch attachment details
-  const getAttachmentDetails = async (attachmentIds) => {
-    if (!attachmentIds || attachmentIds.length === 0) return [];
-    try {
-      const attachmentDetails = await Promise.all(
-        attachmentIds.map(async (id) => {
-          const response = await getAttachmentById(id);
-          return {
-            attachment: response.attachment,
-            id: response.id,
-            name: getFileNameFromURL(response.attachment),
-          };
-        })
-      );
-      return attachmentDetails;
-    } catch (error) {
-      if (error?.response?.status === 401) {
-        HandleLogout();
-      }
-      console.error("Error fetching attachments:", error);
       throw error; // Propagate error to the caller
     }
   };
@@ -774,21 +748,25 @@ const getCommentsWithAttachments = async (filter) => {
   const getAttachmentDetails = async (attachmentIds) => {
     if (!attachmentIds || attachmentIds.length === 0) return [];
     try {
-      const attachmentDetails = await Promise.all(
-        attachmentIds.map(async (id) => {
-          const response = await axios.get(
-            `${baseUrl}/CommentAttachment/${id}`,
-            {
-              headers: headers(),
-            }
-          );
-          return {
-            attachment: response?.data?.attachment,
-            id: response?.data?.id,
-            name: getFileNameFromURL(response?.data?.attachment),
-          };
-        })
-      );
+      const attachmentDetails = (
+        await Promise.all(
+          attachmentIds.map(async (id) => {
+            const response = await axios.get(
+              `${baseUrl}/CommentAttachment/${id}`,
+              {
+                headers: headers(),
+              }
+            );
+            return response?.data?.attachment
+              ? {
+                  attachment: response?.data?.attachment,
+                  id: response?.data?.id,
+                  name: getFileNameFromURL(response?.data?.attachment),
+                }
+              : null; // Return null if no attachment
+          })
+        )
+      ).filter(Boolean); // Remove null values in the same statement
       return attachmentDetails;
     } catch (error) {
       if (error?.response?.status === 401) {
@@ -818,7 +796,6 @@ const getCommentsWithAttachments = async (filter) => {
         };
       })
     );
-    console.log(commentsWithAttachments);
     return commentsWithAttachments;
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -856,27 +833,6 @@ const addSubtask = async (payload) => {
   }
 };
 
-const getAttachmentDetails = async (attachmentIds) => {
-  if (!attachmentIds || attachmentIds.length === 0) return [];
-  try {
-    const attachmentDetails = await Promise.all(
-      attachmentIds.map(async (id) => {
-        const response = await getAttachmentById(id);
-        return {
-          attachment: response.attachment,
-          id: response.id,
-          name: getFileNameFromURL(response.attachment),
-        };
-      })
-    );
-    return attachmentDetails;
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("Error fetching attachments:", error);
-  }
-};
 const getSubtaskById = async (subtaskId) => {
   try {
     if (subtaskId) {
@@ -1012,7 +968,6 @@ const deleteCustomFields = async (id) => {
   }
 };
 export const deleteTaskLabel = async (id) => {
-  debugger;
   try {
     const response = await axios.delete(`${baseUrl}/TaskLabel/${id}`, {
       headers: headers(),
@@ -1101,7 +1056,7 @@ const deleteComment = async (commentId) => {
     });
     return false;
   }
-}
+};
 
 export {
   createActivity,
@@ -1134,7 +1089,6 @@ export {
   getAllLabels,
   deleteComment,
   getCommentsWithAttachments,
-  getAttachmentDetails,
   getAllCustomFields,
   addCustomFields,
   deleteCustomFields,
