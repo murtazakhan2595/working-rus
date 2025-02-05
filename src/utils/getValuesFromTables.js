@@ -70,7 +70,7 @@ function DepartmentName({ value }) {
 function ProjectName({ value }) {
   const projects = useSelector((state) => state.common.projects);
   const project = projects.find((option) => option.value === parseInt(value));
-  return <>{project ? project.label : "N/A"}</>;
+  return project ? project.label : "N/A";
 }
 function DesignationName({ value }) {
   const designations = useSelector((state) => state.common.designations);
