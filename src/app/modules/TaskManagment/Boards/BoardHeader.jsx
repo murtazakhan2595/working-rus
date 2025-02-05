@@ -15,7 +15,7 @@ import { ArrowLeft } from "lucide-react";
 import { DateInput } from "components/FormControl";
 import { Button } from "components/ui/button";
 import { FilterInput, SortingFilters } from "components/FormControl";
-import { PriorityList, TaskSortingFilters } from "data/Data";
+import { PriorityList, TaskSortingFilters, TaskStatus } from "data/Data";
 import { getProjectById, addProject } from "app/hooks/taskManagment";
 import { AlignRight } from "lucide-react";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
@@ -30,13 +30,15 @@ const BoardHeader = ({
   activeView = "grid",
   setActiveView = () => {},
   projectData = {},
-  fetchData=()=>{}
+  fetchData = () => {},
 }) => {
   const navigate = useNavigate();
   const [isDelete, setIsDelete] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState([]);
-  const TaskLabelList = useSelector(
-    (state) => state.task_managment.task_labels
+  const TaskLabelList = getLabelDropdownList(
+    useSelector((state) => state.task_managment.task_labels),
+    "name",
+    "id"
   );
 
   const handleFilterChange = (
@@ -132,9 +134,15 @@ const BoardHeader = ({
               values: filterData["priority"] || [],
             },
             {
+              title: "Status",
+              label: "status",
+              options: TaskStatus,
+              values: filterData["status"] || [],
+            },
+            {
               title: "Label",
               label: "label",
-              options: getLabelDropdownList(TaskLabelList, "name", "id"),
+              options: TaskLabelList,
               values: filterData["label"] || [],
             },
           ]}
