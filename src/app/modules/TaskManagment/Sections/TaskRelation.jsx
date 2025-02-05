@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MdClose } from "react-icons/md";
 import { getTaskByprojectId } from "app/hooks/taskManagment";
 import { SelectMultiInputComponent } from "components/FormControl";
-import { getDropdownList} from 'utils/Lists'
+import { getDropdownList } from "utils/Lists";
 
 export default function TaskRelation({
   relationsList,
@@ -16,19 +16,26 @@ export default function TaskRelation({
   const [taskList, setTaskList] = useState([]);
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
   const [viewTaskId, setViewTaskId] = useState(null);
-  const fetchTasks = async () => {
+  const fetchTasks = async (isMounted) => {
     const taskList = await getTaskByprojectId(projectId);
-    const tasks = taskList.results || [];
-    const finalTaskList = taskId
-      ? tasks.filter((obj) => obj.id !== taskId)
-      : tasks;
-    setTaskList(getDropdownList(finalTaskList,'name','id','id','-') || []); // Update this to `tasklList`
+    if (isMounted) {
+      const tasks = taskList.results || [];
+      const finalTaskList = taskId
+        ? tasks.filter((obj) => obj.id !== taskId)
+        : tasks;
+      setTaskList(
+        getDropdownList(finalTaskList, "name", "id", "id", "-") || []
+      ); // Update this to `tasklList`
+    }
   };
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
-
+    let isMounted = true;
+    if (projectId) fetchTasks(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [projectId]);
 
   const handleTaskToggle = (taskId) => {
     if (relationsList.includes(taskId)) {

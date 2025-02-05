@@ -347,7 +347,7 @@ export const TaskStatus = [
     label: <span style={{ color: "#12B76A" }}>Completed</span>,
   },
   {
-    value: "OnHold",
+    value: "Onhold",
     label: <span style={{ color: "#B00D1B" }}>On Hold</span>,
   },
 ];

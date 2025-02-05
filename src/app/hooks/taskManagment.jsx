@@ -569,6 +569,31 @@ const deleteAttachment = async (attachmentId) => {
     return false;
   }
 };
+export const getAttachmentDetails = async (attachmentIds) => {
+  if (!attachmentIds || attachmentIds.length === 0) return [];
+  try {
+    const attachmentDetails = (
+      await Promise.all(
+        attachmentIds.map(async (id) => {
+          const response = await getAttachmentById(id);
+          return response.attachment
+            ? {
+                attachment: response.attachment,
+                id: response.id,
+                name: getFileNameFromURL(response.attachment),
+              }
+            : null; // Return null if no attachment
+        })
+      )
+    ).filter(Boolean); // Remove null values in the same statement
+    return attachmentDetails;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching attachments:", error);
+  }
+};
 
 const getTaskById = async (taskId) => {
   // Helper function to fetch checklist item details
@@ -591,30 +616,6 @@ const getTaskById = async (taskId) => {
         HandleLogout();
       }
       console.error("Error fetching checklist items:", error);
-      throw error; // Propagate error to the caller
-    }
-  };
-
-  // Helper function to fetch attachment details
-  const getAttachmentDetails = async (attachmentIds) => {
-    if (!attachmentIds || attachmentIds.length === 0) return [];
-    try {
-      const attachmentDetails = await Promise.all(
-        attachmentIds.map(async (id) => {
-          const response = await getAttachmentById(id);
-          return {
-            attachment: response.attachment,
-            id: response.id,
-            name: getFileNameFromURL(response.attachment),
-          };
-        })
-      );
-      return attachmentDetails;
-    } catch (error) {
-      if (error?.response?.status === 401) {
-        HandleLogout();
-      }
-      console.error("Error fetching attachments:", error);
       throw error; // Propagate error to the caller
     }
   };
@@ -747,21 +748,25 @@ const getCommentsWithAttachments = async (filter) => {
   const getAttachmentDetails = async (attachmentIds) => {
     if (!attachmentIds || attachmentIds.length === 0) return [];
     try {
-      const attachmentDetails = await Promise.all(
-        attachmentIds.map(async (id) => {
-          const response = await axios.get(
-            `${baseUrl}/CommentAttachment/${id}`,
-            {
-              headers: headers(),
-            }
-          );
-          return {
-            attachment: response?.data?.attachment,
-            id: response?.data?.id,
-            name: getFileNameFromURL(response?.data?.attachment),
-          };
-        })
-      );
+      const attachmentDetails = (
+        await Promise.all(
+          attachmentIds.map(async (id) => {
+            const response = await axios.get(
+              `${baseUrl}/CommentAttachment/${id}`,
+              {
+                headers: headers(),
+              }
+            );
+            return response?.data?.attachment
+              ? {
+                  attachment: response?.data?.attachment,
+                  id: response?.data?.id,
+                  name: getFileNameFromURL(response?.data?.attachment),
+                }
+              : null; // Return null if no attachment
+          })
+        )
+      ).filter(Boolean); // Remove null values in the same statement
       return attachmentDetails;
     } catch (error) {
       if (error?.response?.status === 401) {
@@ -828,27 +833,6 @@ const addSubtask = async (payload) => {
   }
 };
 
-const getAttachmentDetails = async (attachmentIds) => {
-  if (!attachmentIds || attachmentIds.length === 0) return [];
-  try {
-    const attachmentDetails = await Promise.all(
-      attachmentIds.map(async (id) => {
-        const response = await getAttachmentById(id);
-        return {
-          attachment: response.attachment,
-          id: response.id,
-          name: getFileNameFromURL(response.attachment),
-        };
-      })
-    );
-    return attachmentDetails;
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("Error fetching attachments:", error);
-  }
-};
 const getSubtaskById = async (subtaskId) => {
   try {
     if (subtaskId) {
@@ -1105,7 +1089,6 @@ export {
   getAllLabels,
   deleteComment,
   getCommentsWithAttachments,
-  getAttachmentDetails,
   getAllCustomFields,
   addCustomFields,
   deleteCustomFields,

@@ -135,7 +135,10 @@ const TaskEditAddViewDetails = ({
         throw new Error("Card details not found.");
       }
       if (isMounted) {
-        setInitialValues(cardDetails);
+        setInitialValues({
+          ...cardDetails,
+          project_id: projectId || cardDetails.project_id, //
+        });
         setIsLoading(false);
       }
       if (cardDetails.sub_task && cardDetails.sub_task.length > 0) {
@@ -243,10 +246,8 @@ const TaskEditAddViewDetails = ({
           })
         );
       };
-
       const finalData = mapTaskPayloadData({
         ...values,
-
         start_date: moment(new Date()).format("YYYY-MM-DD"),
         attachment: await getAttachmentFileIds(values.attachment || []),
         task_checklist: await getCheckListIds(values.task_checklist || []),
@@ -255,7 +256,7 @@ const TaskEditAddViewDetails = ({
           "field",
           "value"
         ),
-        cover_photo: values.cover_photo,
+        cover_photo: values?.attachment?.length ? values.cover_photo : null,
       });
       if (!finalData.hasOwnProperty("status") || finalData.status === null) {
         finalData.status = "TODO";
@@ -263,7 +264,6 @@ const TaskEditAddViewDetails = ({
       if (isSubtask) {
         finalData.is_subtask = true;
       }
-      console.log(finalData);
       const response = await addTask(finalData, taskId);
       if (response) {
         // Notify parent component of the new task
@@ -380,6 +380,9 @@ const TaskEditAddViewDetails = ({
                   </div>
                   <div className="grid grid-cols-7 gap-4">
                     <div className="flex flex-col col-span-4 gap-3 p-3">
+                      <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap">
+                        {"Title"}
+                      </div>
                       <InputTaskTitle
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
@@ -388,14 +391,17 @@ const TaskEditAddViewDetails = ({
                         error={props.errors.name}
                         touched={props.touched.name}
                         value={props.values.name}
+                        taskId={taskId}
                       />
+                      <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap">
+                        {"Description"}
+                      </div>
                       <InputTaskDescription
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
                           setIsEditMode(true);
                         }}
                         setAttachment={async (attachment) => {
-                          console.log(attachment);
                           await props.setFieldValue("attachment", attachment);
                           setIsEditMode(true);
                         }}
