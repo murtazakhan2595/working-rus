@@ -246,6 +246,8 @@ const TaskEditAddViewDetails = ({
           })
         );
       };
+      debugger;
+      console.log(values);
       const finalData = mapTaskPayloadData({
         ...values,
         start_date: moment(new Date()).format("YYYY-MM-DD"),
@@ -256,7 +258,6 @@ const TaskEditAddViewDetails = ({
           "field",
           "value"
         ),
-        cover_photo: values?.attachment?.length ? values.cover_photo : null,
       });
       if (!finalData.hasOwnProperty("status") || finalData.status === null) {
         finalData.status = "TODO";
@@ -264,6 +265,8 @@ const TaskEditAddViewDetails = ({
       if (isSubtask) {
         finalData.is_subtask = true;
       }
+      finalData.cover_photo =
+        values?.attachment?.length > 0 ? values.cover_photo : null;
       const response = await addTask(finalData, taskId);
       if (response) {
         // Notify parent component of the new task
