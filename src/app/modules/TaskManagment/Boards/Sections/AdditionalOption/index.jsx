@@ -10,12 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "src/@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "src/@/components/ui/tooltip";
 import { useNavigate } from "react-router-dom";
 import {
   MoreHorizontal,
@@ -69,9 +63,11 @@ const AdditionalOption = React.memo(
             <DropdownMenuItem onClick={handleArchiveCardsClick}>
               <Archive size={14} className="mr-2" /> Archive Cards
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleMembersClick}>
-              <Users size={14} className="mr-2" /> Members
-            </DropdownMenuItem>
+            {userRole !== 4 && (
+              <DropdownMenuItem onClick={handleMembersClick}>
+                <Users size={14} className="mr-2" /> Members
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator className={`bg-neutral-600`} />
             <DropdownMenuItem onClick={handleLeaveBoardClick}>
               <LogOut size={14} className="mr-2" /> Leave Board
