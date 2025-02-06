@@ -2,37 +2,98 @@ import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { PageLoader, TableCustom } from "components";
-import { getTaskByprojectId } from "app/hooks/taskManagment";
+import { getTaskByprojectId, getAllTasks } from "app/hooks/taskManagment";
 import { ProjectBoardColumn } from "app/modules/TaskManagment/Sections";
 import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { RxPlus } from "react-icons/rx";
 import CreateAndEditCardForm from "app/modules/TaskManagment/Boards/Sections/CreateAndEditCardForm";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "src/@/components/ui/accordion";
 
-const BoardListView = ({ filterData, projectId }) => {
+const BoardListView = ({
+  filterData,
+  projectId,
+  AllBoards = [],
+  reloadData = () => {},
+  toggleAddBoardModal = () => {},
+}) => {
+  const [openCreateCard, setOpenCreateCard] = useState(false);
+  const [selectedBoard, setSelectedBoard] = useState(null);
+  return (
+    <>
+      <div className="flex justify-end my-4">
+        <Button variant="outline" type="button" onClick={toggleAddBoardModal}>
+          <RxPlus size={15} />
+          <span className="ml-2">Add New List</span>
+        </Button>
+      </div>
+      <Accordion type="single" collapsible>
+        {AllBoards.count > 0 &&
+          AllBoards.results.map((board) => (
+            <AccordionItem value={board.id} className="mb-3">
+              <AccordionTrigger className="bg-white rounded-t-sm py-1 px-4">
+                <div className="flex flex-row justify-between gap-3 items-center">
+                  <p className="flex text-sm font-semibold">
+                    {board.name} ({board.task_count || 0})
+                  </p>
+                  <Button
+                    variant="link"
+                    type="button"
+                    size="sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedBoard(board.id);
+                      setOpenCreateCard(true);
+                    }}
+                  >
+                    <RxPlus size={15} />
+                    <span className="ml-2">Add Task</span>
+                  </Button>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <ListTasks
+                  filterData={{
+                    ...filterData,
+                    board_id: [board.id],
+                  }}
+                  projectId={projectId}
+                  board={board}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+      </Accordion>
+      {openCreateCard && (
+        <TaskEditAddViewDetails
+          isOpen={openCreateCard}
+          projectId={projectId}
+          boardId={selectedBoard}
+          setIsOpen={() => {
+            setOpenCreateCard(false);
+            reloadData(true);
+            setSelectedBoard(null)
+          }}
+          reloadData={() => reloadData(true)}
+        />
+      )}
+    </>
+  );
+};
+
+const ListTasks = ({ filterData, projectId, board }) => {
   const [AllBoardTasks, setAllBoardTasks] = useState([]);
   const [openCreateCard, setOpenCreateCard] = useState(false);
-  const [options, setOptions] = useState({
-    page: 1,
-    sizePerPage: 10,
-  });
-  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
   const [viewTask, setViewTask] = useState(null);
-
-  const onPageChange = (name, value) => {
-    debugger;
-    const pageOptions = options;
-    if (pageOptions[name] !== value) {
-      pageOptions[name] = value;
-      setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
-    }
-  };
+  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
 
   const tableOptions = {
-    page: options.page,
-    sizePerPage: options.sizePerPage,
-    onPageChange: onPageChange,
     onRowClick: (row) => {
       setIsTaskDetailOpen(true);
       setViewTask(row);
@@ -41,10 +102,7 @@ const BoardListView = ({ filterData, projectId }) => {
 
   const fetchData = async (isMounted) => {
     try {
-      const boardsData = await getTaskByprojectId(projectId, {
-        filterData,
-        options,
-      });
+      const boardsData = await getAllTasks({ filterData });
       if (isMounted) {
         setAllBoardTasks(boardsData);
       }
@@ -59,31 +117,22 @@ const BoardListView = ({ filterData, projectId }) => {
     return () => {
       isMounted = false;
     };
-  }, [projectId, filterData, options]);
+  }, [filterData]);
   return (
-    <>
-      <Card>
-        <CardContent>
+    <div key={board.id}>
+      <Card className="rounded-t-none rounded-b-sm p-0 mt-2">
+        <CardContent className="pb-1 py-2">
           <TableCustom
             columns={ProjectBoardColumn}
             data={AllBoardTasks.results || []}
-            pagination={true}
+            pagination={false}
             dataTotalSize={AllBoardTasks?.count || 0}
             tableOptions={tableOptions}
             dataStyle={{ backgroundColor: "white" }}
           />
         </CardContent>
       </Card>
-      <Button
-        variant="outline"
-        type="button"
-        size="lg"
-        className="mt-3"
-        onClick={() => setOpenCreateCard(true)}
-      >
-        <RxPlus className="text-xl" />
-        <span className="ml-2">Add Task</span>
-      </Button>
+
       {openCreateCard && (
         <CreateAndEditCardForm
           onClose={() => {
@@ -109,7 +158,7 @@ const BoardListView = ({ filterData, projectId }) => {
           reloadData={() => fetchData(true)}
         />
       )}
-    </>
+    </div>
   );
 };
 

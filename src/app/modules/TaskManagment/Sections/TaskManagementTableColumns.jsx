@@ -2,6 +2,7 @@ import { PriorityList } from "data/Data";
 import moment from "moment";
 import { Clock } from "lucide-react";
 import { MembersList, Labels } from "app/modules/TaskManagment/Sections";
+import TaskStatusLabel from "app/modules/TaskManagment/Sections/TaskStatus";
 import { TextUI } from "components";
 export const ProjectBoardColumn = [
   {
@@ -10,16 +11,27 @@ export const ProjectBoardColumn = [
     width: "25%",
     formatter: (cell, row) => {
       return (
-        <div className="flex flex-col pb-4 mt-3">
-          <h3 className="text-base font-bold text-capitalize">{cell}</h3>
-          <TextUI text={row?.description} maxLength={40} />
+        <div className="flex flex-col w-full">
+          <div className=" text-sm font-semibold text-neutral-1200 py-1 text-capitalize">
+            {cell}
+          </div>
+          <div className="text-neutral-1000">
+            <TextUI text={row?.description} maxLength={40} />
+          </div>
         </div>
       );
     },
   },
   {
-    text: "List",
-    dataField: "board_name",
+    text: "Status",
+    dataField: "status",
+    formatter: (cell) => (
+      <div className="flex justify-center">
+        <TaskStatusLabel status={cell} />
+      </div>
+    ),
+    headerAlign: "center",
+    dataAlign: "center",
   },
   {
     text: "Priority",
@@ -41,7 +53,6 @@ export const ProjectBoardColumn = [
     text: "Members",
     dataField: "assigned_to",
     formatter: (cell) => <MembersList members={cell} />,
-    headerAlign: "center",
   },
   {
     text: "Due Date",

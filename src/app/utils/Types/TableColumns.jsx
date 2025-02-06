@@ -8,7 +8,7 @@ import {
 import { Badge } from "components/ui/badge";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions, formatNumber } from "data/Data";
-import { EmployeeNameInfo, StatusLabel } from "components";
+import { EmployeeOverview, StatusLabel,OverviewCard } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
 import { EmployeeAttendenceHistoryActions } from "app/modules/Attendance/EmployeeAttendance/Section";
 // import {
@@ -58,16 +58,11 @@ export const EmployeeColumns = [
     formatter: (cell, row) => <EmployeeID value={cell || row?.id} />,
   },
   {
-    dataField: "name",
+    dataField: "id",
     text: "Employees",
 
     formatter: (cell, row) => (
-      <EmployeeNameInfo
-        name={`${row.first_name} ${row.last_name}`}
-        department={row.department_name}
-        position={row.department_position}
-        showDepartment
-      />
+      <EmployeeOverview id={cell} showPosition={true} showDepartment={true} />
     ),
   },
 
@@ -155,15 +150,11 @@ export const ExitRequestColumns = (
 ) => {
   const columns = [
     {
-      dataField: "emp_name",
+      dataField: "employee_id",
       text: "Employees",
-      width: "25%",
-      formatter: (cell, row) => (
-        <EmployeeNameInfo
-          name={cell}
-          department={row.department_name}
-          position={row.position}
-        />
+      width: "20%",
+      formatter: (cell) => (
+        <EmployeeOverview id={cell} showPosition={true} showDepartment={true} />
       ),
       onClick: (recordIndex, data, row) => {
         handleRowClicked(recordIndex, data, row);
@@ -231,16 +222,12 @@ export const ExitRequestColumns = (
 export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
   const columns = [
     {
-      dataField: "emp_name",
+      dataField: "employee_id",
       text: "Employees",
       formatter: (cell, row) => (
-        <EmployeeNameInfo
-          name={cell}
-          department={row.department_name}
-          position={row.position}
-        />
+        <EmployeeOverview id={cell} showPosition={true} showDepartment={true} />
       ),
-      width: "25%",
+      width: "23%",
       onClick: (recordIndex, data, row) => {
         handleRowClicked(recordIndex, data, row);
       },
@@ -314,13 +301,19 @@ export const AllJobApplicationColumns = (
   {
     dataField: "first_name",
     text: "Candidate",
-    formatter: (cell, row) => (
-      <EmployeeNameInfo
-        name={`${cell} ${row?.last_name}`}
-        date={row?.email}
-        department={false}
-      />
-    ),
+    formatter: (cell, row) => {
+      const name = (`${cell} ${row?.last_name}`).replace(/[^a-zA-Z0-9\s]/g, "");
+      return (
+        <OverviewCard
+          avatarProps={{
+            fallbackText: name.charAt(0),
+            text: name,
+          }}
+          title={name}
+          additionalInfo={[row?.email]}
+        />
+      );
+    },
     onClick: (index, list) => {
       setViewApplicationDetails({ index, list });
       setIsViewApplicationDetailOpen(true);
@@ -1136,7 +1129,6 @@ export const MyDtrTasksColumns = [
     ),
   },
 ];
-
 
 export const myAttendanceColumn = [
   {

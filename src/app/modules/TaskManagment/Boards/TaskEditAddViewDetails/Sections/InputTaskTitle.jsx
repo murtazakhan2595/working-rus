@@ -37,7 +37,7 @@ const InputTaskTitle = React.memo(({
           />
       ) : (
         <div
-          className="border border-neutral-500 font-semibold text-neutral-1200 cursor-pointer p-2 rounded"
+          className="border border-neutral-500 font-semibold text-neutral-1200 cursor-pointer p-2 rounded-sm"
           // onDoubleClick={() => setEditingField("name")}
         >
           {taskId ? `${taskId} - `:''}{value}

@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "src/@/components/ui/dialog.jsx";
+import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import {
   TaskComments,
   CheckList,
@@ -69,8 +70,14 @@ const TaskEditAddViewDetails = ({
   const [projectDetail, setProjectDetail] = useState(null);
   const [refreshComments, setRefreshComments] = useState(false);
   const [subTasksDetails, setSubTasksDetails] = useState([]);
-
+  const [closeSheet, setCloseSheet] = useState(false);
   const employees = useSelector((state) => state.emp.employees);
+
+  const handleClose = (e) => {
+    debugger;
+    if (e && e.event) e.preventDefault();
+    setCloseSheet(true);
+  };
 
   const fetchCustomFieldsByProjectId = async (isMounted, projectID) => {
     if (projectID) {
@@ -307,7 +314,12 @@ const TaskEditAddViewDetails = ({
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
+      {handleCloseWithConfirmation({
+        isOpen: closeSheet,
+        setCloseSheet,
+        setIsOpen,
+      })}
+      <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="max-w-[70vw] w-[70vw] max-h-[95vh] overflow-y-auto overflow-x-hidden">
           {isLoading ? (
             <PageLoader />
@@ -550,9 +562,7 @@ const TaskEditAddViewDetails = ({
                       <Button
                         type="button"
                         variant="continue"
-                        onClick={() => {
-                          setIsOpen(false);
-                        }}
+                        onClick={handleClose}
                       >
                         Cancel
                       </Button>

@@ -721,9 +721,12 @@ const postComment = async (payload) => {
 };
 const getAllTasks = async (payload) => {
   const filterData = payload?.filterData ?? {};
-  const URL = `/task/?ordering=-start_date&search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const URL = `/task/?ordering=-start_date&${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),

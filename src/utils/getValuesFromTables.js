@@ -65,19 +65,19 @@ function DepartmentName({ value }) {
   const department = departments.find(
     (option) => option.value === parseInt(value)
   );
-  return <>{department ? department.label : value ?? "N/A"}</>;
+  return department ? department.label : value ?? "N/A";
 }
 function ProjectName({ value }) {
   const projects = useSelector((state) => state.common.projects);
   const project = projects.find((option) => option.value === parseInt(value));
-  return <>{project ? project.label : "N/A"}</>;
+  return project ? project.label : "N/A";
 }
 function DesignationName({ value }) {
   const designations = useSelector((state) => state.common.designations);
   const designation = designations.find(
     (option) => option.value === parseInt(value)
   );
-  return <>{designation ? designation.label : "N/A"}</>;
+  return designation ? designation.label : "N/A";
 }
 
 function EmployeeName({ value, length }) {
@@ -117,7 +117,7 @@ function EmployeeID({ value }) {
       ? value
       : `TBX-${String(value || "").padStart(4, "0")}`;
 
-  return <>{employee}</>;
+  return employee;
 }
 
 function getEmployeeid(value) {

@@ -35,7 +35,7 @@ const InputTaskDescription = React.memo(
           />
         ) : (
           <div
-            className="border border-neutral-500 p-2 rounded block min-h-[150px] max-h-[350px] overflow-y-scroll textEditorText"
+            className="border border-neutral-500 p-2 rounded-sm block min-h-[150px] max-h-[350px] overflow-y-scroll textEditorText"
             // dangerouslySetInnerHTML={{
             //   __html: value,
             // }}

@@ -1,8 +1,8 @@
 import * as React from "react";
 import Avatar from "components/ui/Avatar";
 import { useSelector } from "react-redux";
-import { getRandomColor } from "utils/renderValues";
-import { EmployeeNameInfo } from "components";
+import { GetUser } from "utils/getValuesFromTables";
+import { EmployeeOverview } from "components";
 import {
   Popover,
   PopoverContent,
@@ -13,141 +13,112 @@ import { Search } from "lucide-react";
 import { Input } from "components/ui/input";
 import { MdClose } from "react-icons/md";
 
-// Custom comparison function for React.memo
-const areEqual = (prevProps, nextProps) => {
+// Wrap the component with React.memo for optimization with custom equality check
+const MembersList = ({ members, removeMember, displayAll = false }) => {
+  // Get all employees data once at the component level
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const employees = useSelector((state) => state.emp.employees_detail);
+  const userProfile = useSelector((state) => state.user.userProfile);
+  const filteredMembers = React.useMemo(() => {
+    return employees?.filter(
+      (employee) =>
+        employee.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        members.includes(employee.value)
+    );
+  }, [searchQuery, employees, members]);
+
+  const displayedMembers = displayAll ? members : members?.slice(0, 3);
+  const remainingCount = members.length - displayedMembers.length;
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  if (!members || members?.length <= 0) return null;
+console.log(filteredMembers,'filteredMembers')
   return (
-    prevProps.members === nextProps.members &&
-    prevProps.removeMember === nextProps.removeMember &&
-    prevProps.displayAll === nextProps.displayAll
+    <Popover>
+      <PopoverTrigger asChild>
+        <div
+          className={`flex ${
+            !displayAll ? "-space-x-2.5" : "gap-1"
+          } h-auto items-center flex-wrap cursor-pointer`}
+        >
+          {displayedMembers?.map((member) => (
+            <MembersAvatar member={member} />
+          ))}
+          {remainingCount > 0 && !displayAll && (
+            <span
+              className="text-plum-1100 h-6 w-6 flex items-center justify-center text-sm rounded-full"
+              style={{ marginLeft: "1px" }}
+              key="remaining-count"
+            >
+              +{remainingCount}
+            </span>
+          )}
+        </div>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 p-0" align="start">
+        <Card className="border-0 shadow-none">
+          <div className="p-4 space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Search Member"
+                className="pl-9"
+                value={searchQuery}
+                onChange={handleSearchChange}
+              />
+            </div>
+            <div className="space-y-3 max-h-[200px] overflow-y-auto scroll-smooth">
+              {filteredMembers.map((member) => {
+                return (
+                  <div
+                    key={member.id}
+                    className="flex justify-between w-full items-center"
+                  >
+                    <EmployeeOverview
+                      id={member.id}
+                      showEmail={true}
+                      showPosition={true}
+                    />
+                    {removeMember && userProfile?.role !== 4 && (
+                      <MdClose
+                        className="w-5 h-5 text-gray-700 cursor-pointer"
+                        onClick={() => {
+                          const updatedMember = members.filter(
+                            (obj) => obj !== member.id
+                          );
+                          removeMember(updatedMember);
+                        }}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </Card>
+      </PopoverContent>
+    </Popover>
   );
 };
 
-// Wrap the component with React.memo for optimization with custom equality check
-const MembersList = React.memo(
-  ({ members, removeMember, displayAll = false }) => {
-    // Get all employees data once at the component level
-    const [searchQuery, setSearchQuery] = React.useState("");
-    const employees = useSelector((state) => state.emp.employees_detail); 
-    const userProfile = useSelector((state) => state.user.userProfile);
-    const filteredMembers = React.useMemo(() => {
-      return employees?.filter(
-        (employee) =>
-          employee.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-          members.includes(employee.value)
-      );
-    }, [searchQuery, employees, members]);
+const MembersAvatar = React.memo(({ member = null }) => {
+  if (!member) return null;
+  const userProfile = GetUser(member);
+  if (!userProfile) return null;
 
-    const displayedMembers = displayAll ? members : members?.slice(0, 3);
-    const remainingCount = members.length - displayedMembers.length;
-
-    // Helper function to get employee profile
-    const getEmployeeProfile = (id) => {
-      const employee = employees.find(
-        (option) => option.value === parseInt(id)
-      );
-      if (employee) {
-        const employeeProfilePicture = employee.profile_picture ?? null;
-        return {
-          profile_picture: employeeProfilePicture,
-          name: `${employee?.first_name} ${employee?.last_name}`,
-          name_initials: `${employee?.first_name?.charAt(0) || ""}${
-            employee?.last_name?.charAt(0) || ""
-          }`,
-        };
-      }
-      return {
-        profile_picture: null,
-        name: "N/A",
-      };
-    };
-
-    const handleSearchChange = (e) => {
-      setSearchQuery(e.target.value);
-    };
-
-    if (!members || members?.length <= 0) return null;
-
-    return (
-      <Popover>
-        <PopoverTrigger asChild>
-          <div
-            className={`flex ${
-              !displayAll ? "-space-x-2.5" : "gap-1"
-            } h-auto items-center flex-wrap cursor-pointer`}
-          >
-            {displayedMembers?.map((member, index) => {
-              const { profile_picture, name, name_initials } =
-                getEmployeeProfile(member);
-              return (
-                <Avatar
-                  key={index}
-                  src={profile_picture}
-                  alt="Avatar"
-                  fallbackText={name_initials}
-                  className={`h-8 w-8`}
-                  text={name}
-                />
-              );
-            })}
-            {remainingCount > 0 && !displayAll && (
-              <span
-                className="text-plum-1100 h-6 w-6 flex items-center justify-center text-sm rounded-full"
-                style={{marginLeft:'1px'}}
-                key="remaining-count"
-              >
-                +{remainingCount}
-              </span>
-            )}
-          </div>
-        </PopoverTrigger>
-        <PopoverContent className="w-80 p-0" align="start">
-          <Card className="border-0 shadow-none">
-            <div className="p-4 space-y-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search Member"
-                  className="pl-9"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                />
-              </div>
-              <div className="space-y-3 max-h-[200px] overflow-y-auto scroll-smooth">
-                {filteredMembers.map((member) => {
-                  return (
-                    <div
-                      key={member.id}
-                      className="flex justify-between w-full items-center"
-                    >
-                      <EmployeeNameInfo
-                        showPosition={true}
-                        showDepartment={true}
-                        department={member.department_name}
-                        position={member.department_position}
-                        name={member.name}
-                      />
-                      {removeMember && userProfile?.role !==4 && (
-                        <MdClose
-                          className="w-5 h-5 text-gray-700 cursor-pointer"
-                          onClick={() => {
-                            const updatedMember = members.filter(
-                              (obj) => obj !== member.id
-                            );
-                            removeMember(updatedMember);
-                          }}
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </Card>
-        </PopoverContent>
-      </Popover>
-    );
-  },
-  areEqual
-); // Use custom equality check
+  return (
+    <Avatar
+      key={member}
+      src={userProfile.profile_picture}
+      alt="Avatar"
+      fallbackText={userProfile.name_initials}
+      className={`h-8 w-8`}
+      text={userProfile.name}
+    />
+  );
+});
 
 export default MembersList;
