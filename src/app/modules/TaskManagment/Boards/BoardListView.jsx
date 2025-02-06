@@ -21,23 +21,36 @@ const BoardListView = ({
   projectId,
   AllBoards = [],
   reloadData = () => {},
+  toggleAddBoardModal = () => {},
 }) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
-  console.log(AllBoards, "AllBoards");
+  const [selectedBoard, setSelectedBoard] = useState(null);
   return (
     <>
+      <div className="flex justify-end my-4">
+        <Button variant="outline" type="button" onClick={toggleAddBoardModal}>
+          <RxPlus size={15} />
+          <span className="ml-2">Add New List</span>
+        </Button>
+      </div>
       <Accordion type="single" collapsible>
         {AllBoards.count > 0 &&
           AllBoards.results.map((board) => (
             <AccordionItem value={board.id} className="mb-3">
-              <AccordionTrigger className="bg-white rounded-t-sm py-1 px-2">
+              <AccordionTrigger className="bg-white rounded-t-sm py-1 px-4">
                 <div className="flex flex-row justify-between gap-3 items-center">
-                  <p className="flex text-sm font-semibold">{board.name} ({board.task_count || 0})</p>
+                  <p className="flex text-sm font-semibold">
+                    {board.name} ({board.task_count || 0})
+                  </p>
                   <Button
                     variant="link"
                     type="button"
                     size="sm"
-                    onClick={() => setOpenCreateCard(true)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedBoard(board.id);
+                      setOpenCreateCard(true);
+                    }}
                   >
                     <RxPlus size={15} />
                     <span className="ml-2">Add Task</span>
@@ -57,26 +70,17 @@ const BoardListView = ({
             </AccordionItem>
           ))}
       </Accordion>
-
-      <Button
-        variant="outline"
-        type="button"
-        size="lg"
-        className="mt-3"
-        onClick={() => setOpenCreateCard(true)}
-      >
-        <RxPlus className="text-xl" />
-        <span className="ml-2">Add Task</span>
-      </Button>
       {openCreateCard && (
-        <CreateAndEditCardForm
-          onClose={() => {
-            setOpenCreateCard(false);
-            reloadData(true);
-          }}
+        <TaskEditAddViewDetails
           isOpen={openCreateCard}
           projectId={projectId}
-          setIsOpen={setOpenCreateCard}
+          boardId={selectedBoard}
+          setIsOpen={() => {
+            setOpenCreateCard(false);
+            reloadData(true);
+            setSelectedBoard(null)
+          }}
+          reloadData={() => reloadData(true)}
         />
       )}
     </>
@@ -86,8 +90,8 @@ const BoardListView = ({
 const ListTasks = ({ filterData, projectId, board }) => {
   const [AllBoardTasks, setAllBoardTasks] = useState([]);
   const [openCreateCard, setOpenCreateCard] = useState(false);
-  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
   const [viewTask, setViewTask] = useState(null);
+  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
 
   const tableOptions = {
     onRowClick: (row) => {
@@ -117,7 +121,7 @@ const ListTasks = ({ filterData, projectId, board }) => {
   return (
     <div key={board.id}>
       <Card className="rounded-t-none rounded-b-sm p-0 mt-2">
-        <CardContent className="p-0">
+        <CardContent className="pb-1 py-2">
           <TableCustom
             columns={ProjectBoardColumn}
             data={AllBoardTasks.results || []}

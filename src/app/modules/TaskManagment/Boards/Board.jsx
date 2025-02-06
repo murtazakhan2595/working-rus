@@ -5,12 +5,17 @@ import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
 import BoardGridView from "app/modules/TaskManagment/Boards/BoardGridView";
 import BoardHeader from "app/modules/TaskManagment/Boards/BoardHeader";
 import { useParams, useNavigate } from "react-router-dom";
-import { getProjectById, addProject ,getAllBoards} from "app/hooks/taskManagment";
+import {
+  getProjectById,
+  addProject,
+  getAllBoards,
+} from "app/hooks/taskManagment";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import AlertDialogue from "components/ui/AlertDialogue";
 import ActionAlert from "components/ui/ActionAlert";
 import { useSelector } from "react-redux";
 import Err404 from "app/modules/Error/Err404";
+import { AddNewListModel } from "./Sections";
 
 const Board = ({}) => {
   const projectId = useParams()?.projectId || null;
@@ -30,6 +35,7 @@ const Board = ({}) => {
     is_subtask: [false],
     is_archive: [false],
   });
+  const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const [activeView, setActiveView] = useState("grid");
   useEffect(() => {
     let isMounted = true;
@@ -91,11 +97,25 @@ const Board = ({}) => {
     }
   };
 
+  const toggleAddBoardModal = () => {
+    if (showAddNewListModel) {
+      fetchAllBoards(true);
+    }
+    setshowAddNewListModel(!showAddNewListModel);
+  };
+
   if (projectData === -1) {
     return <Err404 />;
   }
   return (
     <>
+      {showAddNewListModel && (
+        <AddNewListModel
+          projectId={projectId}
+          onClose={toggleAddBoardModal}
+          setIsOpen={setshowAddNewListModel}
+        />
+      )}
       <BoardHeader
         setFilterData={setFilterData}
         filterData={filterData}
@@ -111,6 +131,7 @@ const Board = ({}) => {
           projectId={projectId}
           AllBoards={AllBoards}
           reloadData={fetchAllBoards}
+          toggleAddBoardModal={toggleAddBoardModal}
         />
       ) : (
         <BoardListView
@@ -118,6 +139,7 @@ const Board = ({}) => {
           projectId={projectId}
           AllBoards={AllBoards}
           reloadData={fetchAllBoards}
+          toggleAddBoardModal={toggleAddBoardModal}
         />
       )}
       {/* Render TaskDetail component if isTaskDetailOpen is true */}

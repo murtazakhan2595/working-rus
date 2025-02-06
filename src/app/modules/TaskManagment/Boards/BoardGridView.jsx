@@ -26,26 +26,16 @@ import {
   DropdownMenuPortal,
 } from "src/@/components/ui/dropdown-menu";
 
-const BoardGridView = ({ projectId, filterData, AllBoards = [] ,reloadData=()=>{}}) => {
-  const [showAddNewListModel, setshowAddNewListModel] = useState(false);
-
-  const toggleAddBoardModal = () => {
-    if (showAddNewListModel) {
-      reloadData(true);
-    }
-    setshowAddNewListModel(!showAddNewListModel);
-  };
-
+const BoardGridView = ({
+  projectId,
+  filterData,
+  AllBoards = [],
+  reloadData = () => {},
+  toggleAddBoardModal = () => {},
+}) => {
   return (
     <>
-      {showAddNewListModel && (
-        <AddNewListModel
-          projectId={projectId}
-          onClose={toggleAddBoardModal}
-          setIsOpen={setshowAddNewListModel}
-        />
-      )}
-      <Card className="p-0 relative overflow-scroll h-[76vh] bg-transparent">
+      <Card className="p-0 relative overflow-y-hidden overflow-x-scroll bg-transparent shadow-none border-none">
         <CardContent className="py-3">
           <div className="flex gap-8 mt-5">
             {AllBoards.count > 0 &&
@@ -167,12 +157,13 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
 
   return (
     <div
-      className="flex flex-col min-w-[320px] max-w-[320px] mb-5"
+      className="flex flex-col min-w-[320px] max-w-[320px]"
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
       key={key}
     >
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-2">
+        <div className="pr-8">
         <header className="flex justify-between w-full gap-5 pl-5 mb-2">
           <div className="flex gap-4">
             <h2 className="flex gap-2 text-base font-bold text-zinc-800">
@@ -222,7 +213,8 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
         >
           <RxPlus className="text-xl" />
           <span className="ml-2">Add Card</span>
-        </Button>
+        </Button></div>
+        <div className="pb-2 pr-4 h-[calc(100vh_-335px)] overflow-y-scroll overflow-x-hidden">
         {tasks?.results &&
           tasks?.count > 0 &&
           tasks?.results.map((task) => (
@@ -237,6 +229,7 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
               />
             </div>
           ))}
+      </div>
       </div>
 
       {openCreateCard && (
