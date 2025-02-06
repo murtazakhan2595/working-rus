@@ -68,7 +68,7 @@ const TaskCard = ({
 
   return (
     <Card
-      className="w-full p-3 bg-white rounded-lg shadow"
+      className="w-full p-3 bg-white rounded-lg border-2 border-gray-300"
       draggable
       onDragStart={(e) => {
         onDragStart(e, task.id);

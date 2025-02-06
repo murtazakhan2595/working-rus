@@ -163,77 +163,74 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
       onDrop={handleDrop}
       key={key}
     >
-      <div className="flex flex-col gap-2">
-        <div className="pr-5">
-          <header className="flex justify-between w-full gap-5 pl-5 mb-2">
-            <div className="flex gap-4">
-              <h2 className="flex gap-2 text-base font-bold text-zinc-800">
-                <span>{board.name}</span>
-              </h2>
+      <div className="flex flex-col">
+        <div className="bg-white rounded-xl p-4">
+          <header className="flex justify-between w-full items-center mb-3">
+            <h2 className="text-zinc-800 text-base font-bold">{board.name}</h2>
+            <div className="flex gap-1">
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className=" p-1">
+                    <MoreVertical className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setshowAddNewListModel(true)}>
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)}>
+                    Delete
+                  </DropdownMenuItem>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>Sort by...</DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem onClick={() => sortTasks("newest")}>
+                        Date created (newest first)
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => sortTasks("oldest")}>
+                        Date created (oldest first)
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => sortTasks("alphabetical")}>
+                        Card name (alphabetically)
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => sortTasks("dueDate")}>
+                        Due date
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setshowAddNewListModel(true)}>
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)}>
-                  Delete
-                </DropdownMenuItem>
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>Sort by...</DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent>
-                    <DropdownMenuItem onClick={() => sortTasks("newest")}>
-                      Date created (newest first)
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => sortTasks("oldest")}>
-                      Date created (oldest first)
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => sortTasks("alphabetical")}>
-                      Card name (alphabetically)
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => sortTasks("dueDate")}>
-                      Due date
-                    </DropdownMenuItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </header>
 
           <Button
             variant="outline"
             type="button"
-            size="lg"
-            className="w-full"
+            className="w-full justify-start  group mb-3 "
             onClick={() => setOpenCreateCard(true)}
           >
             <RxPlus className="text-xl" />
-            <span className="ml-2">Add Card</span>
+            <span className="ml-2">Add a card</span>
           </Button>
-        </div>
-        <ScrollArea className="[&>div>div[style]]:!block">
-          <div className="pr-4 h-[calc(100vh_-290px)]">
-            {tasks?.results &&
-              tasks?.count > 0 &&
-              tasks?.results.map((task) => (
-                <div key={task.id} className="pb-4">
+
+          <ScrollArea className="[&>div>div[style]]:!block">
+            <div className="space-y-3 h-[calc(100vh_-335px)]">
+              {tasks?.results &&
+                tasks?.count > 0 &&
+                tasks?.results.map((task) => (
                   <TaskCard
-                    task={task}
-                    projectId={projectId}
-                    boardId={board.id}
-                    reloadData={() => fetchData(true)}
-                    onDragStart={handleDragStart}
-                    onUpdate={updateTaskLocally}
-                  />
-                </div>
-              ))}
-          </div>
-        </ScrollArea>
+                  task={task}
+                  projectId={projectId}
+                  boardId={board.id}
+                  reloadData={() => fetchData(true)}
+                  onDragStart={handleDragStart}
+                  onUpdate={updateTaskLocally}
+                />
+                ))}
+            </div>
+          </ScrollArea>
+        </div>
       </div>
 
       {openCreateCard && (
