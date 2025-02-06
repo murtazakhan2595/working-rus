@@ -5,7 +5,7 @@ import { getAllBoards, deleteBoard, moveTask } from "app/hooks/taskManagment";
 import { RxPlus } from "react-icons/rx";
 import { AddNewListModel } from "./Sections";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
-import { ScrollArea,ScrollBar } from "src/@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "src/@/components/ui/scroll-area";
 import TaskCard from "./Task";
 import { ArrowLeft, LayoutGrid, LayoutList, MoreVertical } from "lucide-react";
 import { Button } from "components/ui/button";
@@ -164,11 +164,13 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
       key={key}
     >
       <div className="flex flex-col">
-        <div className="bg-white rounded-xl p-4">
+        <div
+          className={`rounded-xl p-4`}
+          style={{ background: board.color ? board.color : "bg-white" }}
+        >
           <header className="flex justify-between w-full items-center mb-3">
             <h2 className="text-zinc-800 text-base font-bold">{board.name}</h2>
             <div className="flex gap-1">
-
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className=" p-1">
@@ -176,7 +178,9 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setshowAddNewListModel(true)}>
+                  <DropdownMenuItem
+                    onClick={() => setshowAddNewListModel(true)}
+                  >
                     Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)}>
@@ -191,7 +195,9 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
                       <DropdownMenuItem onClick={() => sortTasks("oldest")}>
                         Date created (oldest first)
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => sortTasks("alphabetical")}>
+                      <DropdownMenuItem
+                        onClick={() => sortTasks("alphabetical")}
+                      >
                         Card name (alphabetically)
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => sortTasks("dueDate")}>
@@ -220,13 +226,13 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
                 tasks?.count > 0 &&
                 tasks?.results.map((task) => (
                   <TaskCard
-                  task={task}
-                  projectId={projectId}
-                  boardId={board.id}
-                  reloadData={() => fetchData(true)}
-                  onDragStart={handleDragStart}
-                  onUpdate={updateTaskLocally}
-                />
+                    task={task}
+                    projectId={projectId}
+                    boardId={board.id}
+                    reloadData={() => fetchData(true)}
+                    onDragStart={handleDragStart}
+                    onUpdate={updateTaskLocally}
+                  />
                 ))}
             </div>
           </ScrollArea>
@@ -249,12 +255,11 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
       {showAddNewListModel && (
         <AddNewListModel
           boardId={board.id}
-          onClose={() => {
+          setIsOpen={() => {
             setshowAddNewListModel(false);
-            fetchData(true);
+            reloadData(true);
           }}
           isEditMode
-          setIsOpen={setshowAddNewListModel}
         />
       )}
 

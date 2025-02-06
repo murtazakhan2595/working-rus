@@ -9,20 +9,20 @@ import { CircleX } from "lucide-react";
  * Predefined color options for selection.
  */
 const DEFAULT_COLOR_OPTIONS = [
-  "#e5b3ad", // 65% lighter than #641e16
-  "#d1d1d1", // 65% lighter than #7b7d7d
-  "#e8c86a", // 65% lighter than #7d6608
-  "#a8e0c6", // 65% lighter than #186a3b
-  "#a3d2f0", // 65% lighter than #2874a6
-  "#d7b3e5", // 65% lighter than #6c3483
-  "#f3a89f", // 65% lighter than #e74c3c
-  "#efc2b3", // 65% lighter than #CC6633
-  "#ffe08a", // 65% lighter than #FFCC00
-  "#c2e6a5", // 65% lighter than #669900
-  "#8ae4ef", // 65% lighter than #00acc1
-  "#b3b6ed", // 65% lighter than #5c6bc0
-  "#ffc072", // 65% lighter than #ff9800
-  "#91e6b8", // 65% lighter than #12B76A
+  "#f2dede", // 80% lighter than #641e16
+  "#ebebeb", // 80% lighter than #7b7d7d
+  "#f7e6b0", // 80% lighter than #7d6608
+  "#d2f2e4", // 80% lighter than #186a3b
+  "#d1e8ff", // 80% lighter than #2874a6
+  "#eed9f2", // 80% lighter than #6c3483
+  "#fad3cf", // 80% lighter than #e74c3c
+  "#f6e1d9", // 80% lighter than #CC6633
+  "#fff4cc", // 80% lighter than #FFCC00
+  "#e6f7d9", // 80% lighter than #669900
+  "#d1f4fa", // 80% lighter than #00acc1
+  "#d9dbfa", // 80% lighter than #5c6bc0
+  "#ffe3b2", // 80% lighter than #ff9800
+  "#c6f2da", // 80% lighter than #12B76A
 ];
 
 /**

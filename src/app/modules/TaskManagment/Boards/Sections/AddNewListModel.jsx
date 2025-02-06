@@ -10,7 +10,6 @@ import { Button } from "components/ui/button";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
 const AddNewListModel = ({
-  onClose,
   projectId,
   boardId,
   isEditMode,
@@ -60,7 +59,7 @@ const AddNewListModel = ({
     try {
       const response = await addBoard(formData);
       if (response) {
-        onClose();
+        setIsOpen();
       }
     } catch (error) {
       console.error("Error:", error);
