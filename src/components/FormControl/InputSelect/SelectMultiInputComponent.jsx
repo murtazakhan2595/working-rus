@@ -6,7 +6,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "src/@/components/ui/popover";
-import { ChevronsUpDown, Check } from "lucide-react";
+import { ChevronsUpDown, Check,CircleX } from "lucide-react";
 import {
   Command,
   CommandInput,
@@ -47,7 +47,13 @@ const SelectMultiInputComponent = React.memo(
       },
       [selectedValues, onChange, name]
     );
-
+    const handleRemove = useCallback(
+      (option) => {
+        const newValue = value.filter((item) => item !== option);
+        onChange(name, newValue);
+      },
+      [value, onChange, name]
+    );
     return (
       <div className={`${className} flex flex-col w-full`}>
         {/* Label */}
@@ -79,6 +85,14 @@ const SelectMultiInputComponent = React.memo(
                           className="bg-plum-300 text-plum-800 text-xs font-semibold px-2.5 py-0.5 rounded-lg flex items-center max-w-[100%] overflow-hidden"
                         >
                           {options.find((opt) => opt.value === val)?.label}
+                          <CircleX
+                            className="ml-1 text-red-700 cursor-pointer"
+                            size={16}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemove(val);
+                            }}
+                          />
                         </span>
                       ) : (
                         options.find((opt) => opt.value === val)?.label

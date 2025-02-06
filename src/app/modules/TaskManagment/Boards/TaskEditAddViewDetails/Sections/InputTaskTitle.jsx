@@ -7,7 +7,6 @@ const InputTaskTitle = React.memo(({
   error,
   value,
   touched,
-  taskId=null,
 }) => {
   const [editingMode, setEditingMode] = useState(false);
   return (
@@ -40,7 +39,7 @@ const InputTaskTitle = React.memo(({
           className="border border-neutral-500 font-semibold text-neutral-1200 cursor-pointer p-2 rounded-sm"
           // onDoubleClick={() => setEditingField("name")}
         >
-          {taskId ? `${taskId} - `:''}{value}
+          {value}
         </div>
       )}
     </div>

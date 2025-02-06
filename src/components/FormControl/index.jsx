@@ -46,6 +46,7 @@ import TimePicker from "./TimePicker";
 import { SelectMultiInputComponent } from "components/FormControl/InputSelect";
 import ImageInput from 'components/FormControl/UploadFiles/ImageInput';
 import { errorClassName } from "app/utils/Types/General";
+import ColorInput from './ColorInput';
 
 const SelectComponent = ({
   name,
@@ -463,8 +464,8 @@ const TextInput = ({
     <div className="flex flex-col gap-4">
       {label && (
         <Label htmlFor={name}>
-          {label}
           {required && <span className="text-red-600">* </span>}
+          {label}
         </Label>
       )}
       <Input
@@ -1323,4 +1324,5 @@ export {
   TextEditorInputField,
   SortingFilters,
   DateRangeFilter,
+  ColorInput,
 };
