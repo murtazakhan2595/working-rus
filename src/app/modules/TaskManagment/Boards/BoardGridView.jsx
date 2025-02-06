@@ -26,40 +26,12 @@ import {
   DropdownMenuPortal,
 } from "src/@/components/ui/dropdown-menu";
 
-const BoardGridView = ({ projectId, filterData }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [AllBoards, setAllBoards] = useState([]);
+const BoardGridView = ({ projectId, filterData, AllBoards = [] ,reloadData=()=>{}}) => {
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
-
-  const fetchData = async (isMounted) => {
-    // debugger
-    try {
-      const boardsData = await getAllBoards({
-        filterData: { project_id: [projectId] },
-      });
-      if (isMounted) {
-        setAllBoards(boardsData);
-      }
-    } catch (error) {
-      console.error("Error fetching employeeLeaveTypes:", error);
-    } finally {
-      if (isMounted) {
-        setIsLoading(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    fetchData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [projectId]);
 
   const toggleAddBoardModal = () => {
     if (showAddNewListModel) {
-      fetchData(true);
+      reloadData(true);
     }
     setshowAddNewListModel(!showAddNewListModel);
   };
@@ -75,45 +47,39 @@ const BoardGridView = ({ projectId, filterData }) => {
       )}
       <Card className="p-0 relative overflow-scroll h-[76vh] bg-transparent">
         <CardContent className="py-3">
-          {isLoading ? (
-            <PageLoader />
-          ) : (
-            <div className="flex gap-8 mt-5">
-              {AllBoards.count > 0 &&
-                AllBoards.results.map((board) => (
-                  <TaskColumn
-                    key={board.id}
-                    board={board}
-                    projectId={projectId}
-                    reloadData={() => {
-                      fetchData(true);
-                    }}
-                    filterData={{
-                      ...filterData,
-                      board_id: [board.id],
-                    }}
-                  />
-                ))}
-              <div className="flex flex-col min-w-[290px] max-w-[320px] mb-5">
-                <div className="flex flex-col ">
-                  <header className="">
-                    <Button
-                      variant="outline"
-                      type="button"
-                      size="lg"
-                      className="w-full text-start"
-                      onClick={toggleAddBoardModal}
-                    >
-                      <RxPlus className="text-xl " />
-                      <span className="ml-2">Add New List</span>
-                    </Button>
-                  </header>
-                </div>
+          <div className="flex gap-8 mt-5">
+            {AllBoards.count > 0 &&
+              AllBoards.results.map((board) => (
+                <TaskColumn
+                  key={board.id}
+                  board={board}
+                  projectId={projectId}
+                  reloadData={() => {
+                    reloadData(true);
+                  }}
+                  filterData={{
+                    ...filterData,
+                    board_id: [board.id],
+                  }}
+                />
+              ))}
+            <div className="flex flex-col min-w-[290px] max-w-[320px] mb-5">
+              <div className="flex flex-col ">
+                <header className="">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    size="lg"
+                    className="w-full text-start"
+                    onClick={toggleAddBoardModal}
+                  >
+                    <RxPlus className="text-xl " />
+                    <span className="ml-2">Add New List</span>
+                  </Button>
+                </header>
               </div>
-
-              {/* <Button variant="outline" onClick={toggleAddBoardModal}>Add New List</Button> */}
             </div>
-          )}
+          </div>
         </CardContent>
       </Card>
     </>

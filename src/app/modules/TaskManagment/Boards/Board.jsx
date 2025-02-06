@@ -1,25 +1,11 @@
 import { connect } from "react-redux";
 import React, { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { ViewOptions } from "components";
-import { getLabelDropdownList } from "utils/Lists";
 import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
 import BoardGridView from "app/modules/TaskManagment/Boards/BoardGridView";
 import BoardHeader from "app/modules/TaskManagment/Boards/BoardHeader";
-import { MembersList } from "app/modules/TaskManagment/Sections";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogDescription,
-  DialogTitle,
-} from "src/@/components/ui/dialog.jsx";
-import { Button } from "components/ui/button";
-import { FilterInput, SortingFilters } from "components/FormControl";
-import { PriorityList, TaskSortingFilters } from "data/Data";
-import { getProjectById, addProject } from "app/hooks/taskManagment";
-import { AlignRight } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getProjectById, addProject ,getAllBoards} from "app/hooks/taskManagment";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import AlertDialogue from "components/ui/AlertDialogue";
 import ActionAlert from "components/ui/ActionAlert";
@@ -31,6 +17,7 @@ const Board = ({}) => {
   const navigate = useNavigate();
   const userId = useSelector((state) => state.user.userProfile).id;
   const userRole = useSelector((state) => state.user.userProfile).role;
+  const [AllBoards, setAllBoards] = useState([]);
   const viewTaskId = useParams()?.taskId || null;
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(
     viewTaskId ? true : false
@@ -67,6 +54,29 @@ const Board = ({}) => {
       console.error("Error fetching employeeLeaveTypes:", error);
     }
   };
+
+  const fetchAllBoards = async (isMounted) => {
+    // debugger
+    try {
+      const boardsData = await getAllBoards({
+        filterData: { project_id: [projectId] },
+      });
+      if (isMounted) {
+        setAllBoards(boardsData);
+      }
+    } catch (error) {
+      console.error("Error fetching employeeLeaveTypes:", error);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchAllBoards(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [projectId]);
+
   const SubmitJoinRequest = async () => {
     try {
       const updatedMembers = [...(projectData.joining_request || []), userId];
@@ -96,9 +106,19 @@ const Board = ({}) => {
         fetchData={fetchData}
       />
       {activeView === "grid" ? (
-        <BoardGridView filterData={filterData} projectId={projectId} />
+        <BoardGridView
+          filterData={filterData}
+          projectId={projectId}
+          AllBoards={AllBoards}
+          reloadData={fetchAllBoards}
+        />
       ) : (
-        <BoardListView filterData={filterData} projectId={projectId} />
+        <BoardListView
+          filterData={filterData}
+          projectId={projectId}
+          AllBoards={AllBoards}
+          reloadData={fetchAllBoards}
+        />
       )}
       {/* Render TaskDetail component if isTaskDetailOpen is true */}
       {isTaskDetailOpen && (
@@ -107,11 +127,11 @@ const Board = ({}) => {
           isOpen={isTaskDetailOpen}
           setIsOpen={() => {
             setIsTaskDetailOpen(false);
-            //    fetchData(true);
+            fetchAllBoards(true);
           }}
           reloadData={() => {
             setIsTaskDetailOpen(false);
-            //   fetchData(true);
+            fetchAllBoards(true);
           }}
           projectId={projectId}
         />
