@@ -29,7 +29,6 @@ const MembersBoard = ({ onClose, isOpen, projectId }) => {
   const [joiningRequest, setJoiningRequest] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [projectMembers, setProjectMembers] = useState([]);
-  const [tooltipOpen, setTooltipOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("board_members");
 
   const Employees = useMemo(() => {
@@ -86,7 +85,9 @@ const MembersBoard = ({ onClose, isOpen, projectId }) => {
 
   const handleAddMember = (e) => {
     e.preventDefault();
-    handleAddRemoveMembers({ project_members: membersSelected || [] });
+    handleAddRemoveMembers({
+      project_members: [...projectMembers, ...membersSelected] || [],
+    });
   };
 
   return (
@@ -128,7 +129,7 @@ const MembersBoard = ({ onClose, isOpen, projectId }) => {
                     <CopyLink
                       link={`/project-board/${projectId}`}
                       text={"Copy Link"}
-                      linkIcon={' '}
+                      linkIcon={" "}
                       textClassName={"text-plum-1100"}
                     />
                   </div>
@@ -158,7 +159,6 @@ const MembersBoard = ({ onClose, isOpen, projectId }) => {
               <BoardMembers
                 members={projectMembers}
                 handleAddRemoveMembers={handleAddRemoveMembers}
-                joiningRequest={joiningRequest}
               />
             </TabsContent>
             <TabsContent value="join_request">
@@ -182,7 +182,6 @@ const BoardMembers = React.memo(
     request = false,
     handleAddRemoveMembers = () => {},
     projectMembers = [],
-    joiningRequest = [],
   }) => {
     const [openAlertDialogue, setOpenAlertDialogue] = useState(false);
     const [memberSelected, setMemberSelected] = useState(null);
@@ -190,11 +189,9 @@ const BoardMembers = React.memo(
       const updatedMembers = members.filter(
         (member) => member !== memberSelected
       );
-      handleAddRemoveMembers({
-        project_members: updatedMembers || [],
-        joining_request: [...joiningRequest, memberSelected],
-      });
+      handleAddRemoveMembers({ project_members: updatedMembers || [] });
       setMemberSelected(null);
+      setOpenAlertDialogue(false);
     };
     return (
       <div className="mt-4">

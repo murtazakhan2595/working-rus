@@ -9,18 +9,18 @@ export const ProjectBoardColumn = [
     text: "Tasks",
     dataField: "name",
     width: "25%",
-    formatter: (cell, row) => {
-      return (
-        <div className="flex flex-col w-full">
-          <div className=" text-sm font-semibold text-neutral-1200 py-1 text-capitalize">
-            {cell}
-          </div>
-          <div className="text-neutral-1000">
-            <TextUI text={row?.description} maxLength={40} />
-          </div>
-        </div>
-      );
-    },
+    // formatter: (cell, row) => {
+    //   return (
+    //     <div className="flex flex-col w-full">
+    //       <div className=" text-sm font-semibold text-neutral-1200 py-1 text-capitalize">
+    //         {cell}
+    //       </div>
+    //       <div className="text-neutral-1000">
+    //         <TextUI text={row?.description} maxLength={40} />
+    //       </div>
+    //     </div>
+    //   );
+    // },
   },
   {
     text: "Status",
@@ -40,14 +40,6 @@ export const ProjectBoardColumn = [
       return PriorityList.find((option) => option.value === cell)?.label;
     },
     headerAlign: "center",
-  },
-  {
-    text: "Labels",
-    dataField: "label",
-    formatter: (cell) => (
-      <Labels labelsSelected={cell || []} editMode={false} />
-    ),
-    width: "20%",
   },
   {
     text: "Members",

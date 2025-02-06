@@ -183,7 +183,10 @@ const getManagersList = async () => {
       const managerResponse = response.data;
       const managersList = managerResponse.map((manager) => ({
         value: manager.id,
-        label: manager.username,
+        label: `${manager.first_name} ${manager.last_name}`,
+        id: manager.id,
+        name:`${manager.first_name} ${manager.last_name}`,
+        username: manager.username,
       }));
       return managersList;
     } else return [];
