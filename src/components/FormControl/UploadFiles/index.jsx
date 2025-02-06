@@ -52,7 +52,6 @@ const CoverFileUpload = ({
     if (validateFile(file)) {
       const reader = new FileReader();
       reader.onload = () => {
-        debugger;
         const updatedFiles = [...files, file];
         // Replace existing files with new file
         setFiles(updatedFiles);
@@ -64,7 +63,6 @@ const CoverFileUpload = ({
 
   const handleRemoveFile = (attachment, id) => {
     console.log(files);
-    debugger;
     const updatedFiles = files.filter((file) => file.attachment !== attachment);
     setFiles(updatedFiles);
     onChange(name, updatedFiles.length && multiple ? updatedFiles : null);
