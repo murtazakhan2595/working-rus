@@ -252,7 +252,6 @@ const TaskEditAddViewDetails = ({
           })
         );
       };
-      debugger;
       console.log(values);
       const finalData = mapTaskPayloadData({
         ...values,
