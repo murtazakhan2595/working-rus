@@ -68,7 +68,7 @@ const TaskCard = ({
 
   return (
     <Card
-      className="w-full p-3 mt-4 mb-2 bg-white rounded-lg shadow"
+      className="w-full p-3 bg-white rounded-lg border-2 border-gray-300"
       draggable
       onDragStart={(e) => {
         onDragStart(e, task.id);
@@ -119,7 +119,6 @@ const TaskCard = ({
               {task?.end_date && showDueDate && (
                 <TimeStatusIcon
                   task={task}
-                  getStatusIconColor={getStatusIconColor}
                   onUpdate={onUpdate}
                 />
               )}
@@ -223,7 +222,7 @@ const TaskCard = ({
   );
 };
 
-const TimeStatusIcon = ({ task, getStatusIconColor, onUpdate }) => {
+const TimeStatusIcon = ({ task, onUpdate }) => {
   const [showCheckbox, setShowCheckbox] = useState(false);
   const [isChecked, setIsChecked] = useState(task.status === "COMPLETED");
 

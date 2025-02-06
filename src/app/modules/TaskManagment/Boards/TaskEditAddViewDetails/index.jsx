@@ -347,9 +347,7 @@ const TaskEditAddViewDetails = ({
                         }`
                       )}
                       {taskId && (
-                        <CopyLink
-                          link={`/project-board/${projectId}/${taskId}`}
-                        />
+                        <CopyLink link={`${taskId}`} text={`T-${taskId}`} directCopy={true} />
                       )}
                     </div>
                     <div className="flex justify-end gap-2">

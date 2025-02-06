@@ -33,9 +33,9 @@ const BoardGridView = ({
 }) => {
   return (
     <>
-      <ScrollArea className="[&>div>div[style]]:!block">
-        <Card className="p-0 relative overflow-y-hidden overflow-x-scroll bg-transparent shadow-none border-none">
-          <CardContent className="py-3">
+      <ScrollArea className="">
+        <Card className="p-0 relative bg-transparent shadow-none border-none">
+          <CardContent className="p-0">
             <div className="flex gap-8 mt-5">
               {AllBoards.count > 0 &&
                 AllBoards.results.map((board) => (
@@ -207,7 +207,7 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
           <Button
             variant="outline"
             type="button"
-            className="w-full justify-start  group mb-3"
+            className="w-full justify-start  group mb-3 "
             onClick={() => setOpenCreateCard(true)}
           >
             <RxPlus className="text-xl" />

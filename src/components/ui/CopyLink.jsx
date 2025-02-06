@@ -19,6 +19,7 @@ const frontendURL = initialState.frontendURL;
  * @param {string} link - The relative project board link (default: '').
  * @param {string} text - The text displayed in the UI (default: 'Copy Card Link').
  * @param {string} message - The tooltip message when copied (default: 'Copied').
+ * @param {string} directCopy – Implies copying the link as-is, without modification.
  * @returns {JSX.Element} - The CopyLink component.
  */
 const CopyLink = React.memo(
@@ -27,7 +28,8 @@ const CopyLink = React.memo(
     text = "",
     message = "Copied!",
     linkIcon = <Link size={14} className="mr-2" />,
-    textClassName = "text-neutral-1100"
+    directCopy = false,
+    textClassName = "text-neutral-1100",
   }) => {
     const [tooltipVisible, setTooltipVisible] = useState(false);
     /**
@@ -39,7 +41,7 @@ const CopyLink = React.memo(
     const handleCopyClick = (event) => {
       event.preventDefault();
 
-      const fullUrl = `${frontendURL}${link}`;
+      const fullUrl = directCopy ? link : `${frontendURL}${link}`;
 
       navigator.clipboard
         .writeText(fullUrl)
