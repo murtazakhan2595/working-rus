@@ -72,6 +72,11 @@ const TaskEditAddViewDetails = ({
   const [subTasksDetails, setSubTasksDetails] = useState([]);
   const [closeSheet, setCloseSheet] = useState(false);
   const employees = useSelector((state) => state.emp.employees);
+    const [showActivities, setShowActivities] = useState(true);
+  
+    const toggleActivities = () => {
+      setShowActivities(!showActivities);
+    };
 
   const handleClose = (e) => {
     if (e && e.event) e.preventDefault();
@@ -519,7 +524,18 @@ const TaskEditAddViewDetails = ({
                         />
                       </div>
                       <DetailBox
-                        label="Comments"
+                          label={
+                            <div className="flex justify-between items-center w-full">
+                              <span>Activity</span>
+                              <button
+          className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3"
+          type="button"
+          onClick={toggleActivities}
+        >
+          {showActivities ? "Hide Details" : "Show Details"}
+        </button>
+                            </div>
+                          }
                         orientation="horizontal"
                         value={
                           !refreshComments && (
@@ -533,23 +549,12 @@ const TaskEditAddViewDetails = ({
                           )
                         }
                       />
-                      <div>
-                        {/* <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
-                          {"Activity"}
-                        </div>
-                        <DetailCard detailCardTitle="" classNames="mt-0">
-                          <TaskComments
-                            taskId={taskId}
-                            refreshComments={refreshComments}
-                            setRefreshComments={setRefreshComments}
-                          />
-                        </DetailCard> */}
                         <TaskCommentsContainer
                           taskId={taskId}
                           refreshComments={refreshComments}
                           setRefreshComments={setRefreshComments}
+                          showActivities={showActivities}
                         />
-                      </div>
                     </div>
                   </div>
 

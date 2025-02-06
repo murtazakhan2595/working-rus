@@ -69,11 +69,9 @@ const CommentsInputField = ({
   }, [employees, projectDetail?.project_members]);
 
   const handleAddCommentAttachment = async (attachment, id) => {
-    console.log(attachment, "123456");
     if (attachment instanceof File) {
       const payload = { attachment: attachment };
       const response = await addCommentAttachment(payload, id);
-      console.log(response, "123456");
       if (response) return response;
       else {
         return { id: null, attachment: null };

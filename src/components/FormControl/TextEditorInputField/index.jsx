@@ -388,7 +388,7 @@ function TextEditorInputField({
         <div
           ref={editorRef}
           id={name}
-          className="w-full min-h-[150px] p-4 focus:outline-none rounded-b-lg max-h-[350px] overflow-y-scroll textEditorText"
+          className="w-full min-h-20 p-4 focus:outline-none rounded-b-lg max-h-[350px] overflow-y-scroll textEditorText"
           contentEditable
           onInput={handleInput}
           onPaste={handlePaste}
