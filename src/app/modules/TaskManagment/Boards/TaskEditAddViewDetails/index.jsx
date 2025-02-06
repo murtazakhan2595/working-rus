@@ -74,7 +74,6 @@ const TaskEditAddViewDetails = ({
   const employees = useSelector((state) => state.emp.employees);
 
   const handleClose = (e) => {
-    debugger;
     if (e && e.event) e.preventDefault();
     setCloseSheet(true);
   };
@@ -253,7 +252,6 @@ const TaskEditAddViewDetails = ({
           })
         );
       };
-      debugger;
       console.log(values);
       const finalData = mapTaskPayloadData({
         ...values,

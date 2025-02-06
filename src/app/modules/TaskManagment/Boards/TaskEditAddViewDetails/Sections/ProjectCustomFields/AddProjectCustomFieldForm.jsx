@@ -74,7 +74,6 @@ const AddProjectCustomFieldForm = ({
   };
 
   const handleSubmit = async (values) => {
-    debugger;
     setIsLoading(true);
     try {
       const payload = mapCustomFieldPayloadData(
