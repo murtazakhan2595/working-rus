@@ -74,7 +74,6 @@ const TaskEditAddViewDetails = ({
   const employees = useSelector((state) => state.emp.employees);
 
   const handleClose = (e) => {
-    debugger;
     if (e && e.event) e.preventDefault();
     setCloseSheet(true);
   };
@@ -349,9 +348,7 @@ const TaskEditAddViewDetails = ({
                         }`
                       )}
                       {taskId && (
-                        <CopyLink
-                          link={`/project-board/${projectId}/${taskId}`}
-                        />
+                        <CopyLink link={`${taskId}`} text={`T-${taskId}`} directCopy={true} />
                       )}
                     </div>
                     <div className="flex justify-end gap-2">

@@ -8,6 +8,7 @@ import TaskRelation from './TaskRelation';
 import TaskComments from './TaskComments';
 import TaskDetailBox from './TaskDetailsBox';
 import {ProjectBoardColumn} from './TaskManagementTableColumns';
+import TaskEndDate from './TaskEndDate';
 export {
   Members,
   MembersList,
@@ -19,4 +20,5 @@ export {
   TaskComments,
   TaskDetailBox,
   ProjectBoardColumn,
+  TaskEndDate,
 };

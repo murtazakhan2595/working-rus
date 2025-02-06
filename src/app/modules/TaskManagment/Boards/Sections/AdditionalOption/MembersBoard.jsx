@@ -117,7 +117,7 @@ const MembersBoard = ({ onClose, isOpen, projectId }) => {
                 disabled={isLoading && !membersSelected.length ? true : false}
                 onClick={handleAddMember}
               >
-                Add Memebers
+                Add Members
               </Button>
             </div>
             <div className="">
