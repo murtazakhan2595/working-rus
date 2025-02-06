@@ -112,7 +112,8 @@ export default function EmployeeManagement() {
     <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}>
       <Header content={<SheetOnBoarding />} />
       <Stats stats={statsData} />
-      <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
+      <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row gap-2">
+        <div className="flex">
         <SelectComponent
           name="Employee Status"
           value={selectedStatus}
@@ -120,6 +121,7 @@ export default function EmployeeManagement() {
           onChange={(name, newStatus) => onEmpStatusChange(newStatus)}
           classes="flex-row"
         />
+        </div>
         <FilterInput
           filters={[
             {

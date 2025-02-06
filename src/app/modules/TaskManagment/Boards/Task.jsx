@@ -68,7 +68,7 @@ const TaskCard = ({
 
   return (
     <Card
-      className="w-full p-3 mt-6 bg-white rounded-lg shadow"
+      className="w-full p-3 bg-white rounded-lg shadow"
       draggable
       onDragStart={(e) => {
         onDragStart(e, task.id);
@@ -110,8 +110,7 @@ const TaskCard = ({
             <h3 className="text-base font-bold text-capitalize">
               {task?.name}
             </h3>
-            <TextUI text={task?.description} maxLength={130} />
-
+            {/* <TextUI text={task?.description} maxLength={130} /> */}
             <div className="flex flex-row justify-start flex-wrap overflow-hidden max-w-[100%]">
               <TooltipText
                 tooltipTriggerText={<TaskStatusLabel status={task.status} />}
@@ -120,7 +119,6 @@ const TaskCard = ({
               {task?.end_date && showDueDate && (
                 <TimeStatusIcon
                   task={task}
-                  getStatusIconColor={getStatusIconColor}
                   onUpdate={onUpdate}
                 />
               )}
@@ -224,7 +222,7 @@ const TaskCard = ({
   );
 };
 
-const TimeStatusIcon = ({ task, getStatusIconColor, onUpdate }) => {
+const TimeStatusIcon = ({ task, onUpdate }) => {
   const [showCheckbox, setShowCheckbox] = useState(false);
   const [isChecked, setIsChecked] = useState(task.status === "COMPLETED");
 
