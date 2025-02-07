@@ -166,7 +166,7 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
       <div className="flex flex-col">
         <div
           className={`rounded-xl p-4`}
-          style={{ background: board.color ? board.color : "bg-white" }}
+          style={{ background: board.color ? board.color : "white" }}
         >
           <header className="flex justify-between w-full items-center mb-3">
             <h2 className="text-zinc-800 text-base font-bold">{board.name}</h2>
