@@ -44,10 +44,12 @@ import DateRangeFilter from "./DateRangeFilter";
 import SortingFilters from "./SortingFilters";
 import TimePicker from "./TimePicker";
 import { SelectMultiInputComponent } from "components/FormControl/InputSelect";
-import ImageInput from 'components/FormControl/UploadFiles/ImageInput';
-import { errorClassName } from "app/utils/Types/General";
-import ColorInput from './ColorInput';
+import ImageInput from "components/FormControl/UploadFiles/ImageInput";
+import ColorInput from "./ColorInput";
 
+const errorClassName = "text-red-100 text-sm font-[inter] font-normal ml-1";
+export const inputButtonClassName =
+"inline-flex items-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-white text-primary  dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-fit px-4 py-2 flex-wrap justify-between w-full rounded-sm border-neutral-500 hover:border-primary-200 hover:text-primary-1100 hover:bg-primary-200"
 const SelectComponent = ({
   name,
   value,
@@ -58,7 +60,7 @@ const SelectComponent = ({
   disabled,
   required,
   onChange,
-  classes = 'gap-4',
+  classes = "gap-4",
   placeholder,
   icon,
   showLabel = true,

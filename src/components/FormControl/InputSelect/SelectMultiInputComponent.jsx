@@ -33,6 +33,7 @@ const SelectMultiInputComponent = React.memo(
     newOptionConfig = {},
     showOptionsActions = false,
     optionsActions = [],
+    placeholder=null,
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectedValues = value && Array.isArray(value) ? value : [];
@@ -100,7 +101,7 @@ const SelectMultiInputComponent = React.memo(
                     )
                   ) : (
                     <span className="text-sm font-normal text-neutral-1000">
-                      Select
+                      {placeholder ? placeholder : `Select ${label}`}
                     </span>
                   )}
                 </div>

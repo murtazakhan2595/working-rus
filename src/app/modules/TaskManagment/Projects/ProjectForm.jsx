@@ -1,7 +1,12 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef,useMemo } from "react";
 import { toast } from "react-toastify";
 import { connect } from "react-redux";
-import { RxPlus } from "react-icons/rx";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "src/@/components/ui/dialog";
 import { Members } from "../Sections";
 import { Formik } from "formik";
 import { addProject } from "app/hooks/taskManagment";
@@ -13,7 +18,7 @@ import {
 import { Project } from "app/utils/Types/TaskManagment";
 import { useDispatch } from "react-redux";
 import { fetchProjects } from "state/slices/CommonSlice";
-import { TextAreaInput } from "components/FormControl";
+import { TextAreaInput, DateInput, ColorInput } from "components/FormControl";
 import { Button } from "components/ui/button";
 import { ProjectStatusList } from "data/Data";
 import { ImageInput } from "components/FormControl";
@@ -21,15 +26,16 @@ import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { validationProjectFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
 import { PageLoader } from "components";
-
+import { ScrollArea, ScrollBar } from "src/@/components/ui/scroll-area";
+import { DEFAULT_PROJECT_COLOR_OPTIONS } from "app/utils/Types/TaskManagment";
 const ProjectForm = ({
   employees,
-  reload,
+  reload = () => {},
   isEditMode,
   projectId,
-  isOpen,
-  setIsOpen,
-  editProject,
+  isOpen = false,
+  setIsOpen = () => {},
+  editProject = Project,
   userProfile,
 }) => {
   const formRef = useRef();
@@ -39,6 +45,14 @@ const ProjectForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [selectedColor, setSelectedColor] = useState("#f7f7f7");
   const [closeSheet, setCloseSheet] = useState(false);
+  const [selectedMembers, setSelectedMembers] = useState(
+    initialValues.project_members || []
+  );
+  const Employees = useMemo(() => {
+    return employees?.filter(
+      (employee) => !selectedMembers.includes(employee.value)
+    );
+  }, [employees, selectedMembers]);
 
   const handleClose = () => {
     // setIsOpen(false)
@@ -96,13 +110,16 @@ const ProjectForm = ({
         setCloseSheet,
         setIsOpen,
       })}
-      <div open={isOpen} onOpenChange={setIsOpen}>
-        <div className="flex flex-col ">
-          <div className="flex-grow ">
-            <div className="p-0">
-              {isLoading ? (
-                <PageLoader />
-              ) : (
+      <Dialog open={isOpen} onOpenChange={setIsOpen} className="z-[999]">
+        <DialogContent className="max-w-[70vw] w-[50vw]">
+          <DialogHeader>
+            <DialogTitle className={""}>Project Details</DialogTitle>
+          </DialogHeader>
+          {isLoading ? (
+            <PageLoader />
+          ) : (
+            <ScrollArea className="[&>div>div[style]]:!block">
+              <div className="h-[85vh] pr-3">
                 <Formik
                   initialValues={initialValues}
                   innerRef={formRef}
@@ -122,53 +139,123 @@ const ProjectForm = ({
                       <div
                         className={`flex w-full flex-col rounded-lg pt-2.5 gap-8`}
                       >
-                        <SheetCardExtension title="Project Details">
+                        <div className="space-y-2">
+                          <ImageInput
+                            name={"profile"}
+                            error={props.errors.profile}
+                            touch={props.touched.profile}
+                            value={props.values.profile}
+                            required={true}
+                            onChange={(field, value, error) => {
+                              props.setFieldValue(field, value);
+                              if (error) {
+                                setProfilePictureError(error);
+                              }
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
+                            name="name"
+                            error={props.errors.name}
+                            touch={props.touched.name}
+                            value={props.values.name}
+                            label="Title"
+                            required
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextAreaInput
+                            name="description"
+                            error={props.errors.description}
+                            touch={props.touched.description}
+                            value={props.values.description}
+                            maxRows={5}
+                            label="Project Description"
+                            required
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                          <p className="text-xs text-neutral-800 font-normal">
+                            Give important details regarding the new project
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <DateInput
+                            name="end_date"
+                            label="Aspected Completion Date"
+                            error={props.errors.end_date}
+                            touch={props.touched.end_date}
+                            value={props.values.end_date}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                          <SelectComponent
+                            name="status"
+                            options={ProjectStatusList}
+                            error={props.errors.status}
+                            touch={props.touched.status}
+                            value={props.values.status}
+                            label={"Status"}
+                            // required
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
                           <div className="space-y-2">
-                            <ImageInput
-                              name={"profile"}
-                              error={props.errors.profile}
-                              touch={props.touched.profile}
-                              value={props.values.profile}
-                              required={true}
-                              onChange={(field, value, error) => {
-                                props.setFieldValue(field, value);
-                                if (error) {
-                                  setProfilePictureError(error);
-                                }
-                              }}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <TextInput
-                              name="name"
-                              error={props.errors.name}
-                              touch={props.touched.name}
-                              value={props.values.name}
-                              label="Title"
-                              required
+                            <SelectMultiInputComponent
+                              name="member"
+                              options={Employees}
+                              label={"Members"}
+                              // value={props.values.project_members || []}
                               onChange={(field, value) => {
-                                props.handleChange(field)(value);
+                                const members =
+                                  props.values.project_members || [];
+                                const updatedMembers = [...members, value];
+                                props.setFieldValue(
+                                  "project_members",
+                                  updatedMembers
+                                );
+                                setSelectedMembers(updatedMembers);
                               }}
+                              error={props.errors.project_members}
+                              touch={props.touched.project_members}
+                              placeholder="Add Project Members"
                             />
+                            <div className="flex flex-row justify-statrt flex-wrap gap-2">
+                              {props.values.project_members &&
+                                props.values.project_members.length > 0 &&
+                                props.values.project_members.map(
+                                  (member, index) => (
+                                    <div key={index}>
+                                      <Members
+                                        member={member}
+                                        isEditMode={true}
+                                        removeMember={removeMember}
+                                      />
+                                    </div>
+                                  )
+                                )}
+                            </div>
                           </div>
-                          <div className="space-y-2">
-                            <TextAreaInput
-                              name="description"
-                              error={props.errors.description}
-                              touch={props.touched.description}
-                              value={props.values.description}
-                              maxRows={3}
-                              label="Project Description"
-                              required
-                              onChange={(field, value) => {
-                                props.handleChange(field)(value);
-                              }}
-                            />
-                            <p className="text-xs text-neutral-800 font-normal">
-                              Give important details regarding the new project
-                            </p>
-                          </div>
-                        </SheetCardExtension>
+                          <ColorInput
+                            name="color"
+                            COLOR_OPTIONS={DEFAULT_PROJECT_COLOR_OPTIONS}
+                            label={"Color"}
+                            selectedColor={props.values.color}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                            error={props.errors.color}
+                            touch={props.touched.color}
+                            variant="preset-custom"
+                          />
+                        </div>
                         <SheetCardExtension
                           title={`${
                             isEditMode ? "Update" : "Add"
@@ -210,19 +297,6 @@ const ProjectForm = ({
 
                             <div className="space-y-2 flex-1">
                               <div className="flex flex-wrap items-center justify-start gap-2 h-100">
-                                <SelectMultiInputComponent
-                                  name="project_members"
-                                  options={employees}
-                                  // label={"Assignee"}
-                                  showLabel={false}
-                                  value={props.values.project_members || []}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                  error={props.errors.project_members}
-                                  touch={props.touched.project_members}
-                                  placeholder="Add Project Members"
-                                />
                                 {/* {props.values.project_members &&
                                 props.values.project_members.length > 0 &&
                                 props.values.project_members.map(
@@ -290,20 +364,7 @@ const ProjectForm = ({
                             <div className="label text-sm mt-4 flex-1">
                               Status
                             </div>
-                            <div className="flex-1">
-                              <SelectComponent
-                                name="status"
-                                options={ProjectStatusList}
-                                error={props.errors.status}
-                                touch={props.touched.status}
-                                value={props.values.status}
-                                showLabel={false}
-                                // required
-                                onChange={(field, value) => {
-                                  props.setFieldValue(field, value);
-                                }}
-                              />
-                            </div>
+                            <div className="flex-1"></div>
                           </div>
                         </SheetCardExtension>
                       </div>
@@ -328,11 +389,21 @@ const ProjectForm = ({
                     </form>
                   )}
                 </Formik>
-              )}
+              </div>
+              <ScrollBar />
+            </ScrollArea>
+          )}
+        </DialogContent>
+      </Dialog>
+      {/* <div open={isOpen} onOpenChange={setIsOpen}>
+        <div className="flex flex-col ">
+          <div className="flex-grow ">
+            <div className="p-0">
+             
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

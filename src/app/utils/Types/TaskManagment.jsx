@@ -8,7 +8,7 @@ const Project = {
   color: "", // Add color field
   profile: null,
   custom_fields: null,
-  joining_request:[],
+  joining_request: [],
 };
 const CustomField = {
   id: null,
@@ -43,10 +43,10 @@ const Task = {
   relation: [],
   start_date: null,
   task_checklist: [],
-  status: 'TODO',
-  is_archive:false,
-  custom_fields:[],
-  cover_photo:null,
+  status: "TODO",
+  is_archive: false,
+  custom_fields: [],
+  cover_photo: null,
 };
 const AddList = {
   name: "",
@@ -67,6 +67,33 @@ const CardTypes = {
   relation: [],
   subtasks: [],
 };
+/**
+ * Predefined color options for selection.
+ */
+const DEFAULT_LIST_COLOR_OPTIONS = [
+  "#f2dede", // 80% lighter than #641e16
+  "#ebebeb", // 80% lighter than #7b7d7d
+  "#f7e6b0", // 80% lighter than #7d6608
+  "#d2f2e4", // 80% lighter than #186a3b
+  "#d1e8ff", // 80% lighter than #2874a6
+  "#eed9f2", // 80% lighter than #6c3483
+  "#fad3cf", // 80% lighter than #e74c3c
+  "#f6e1d9", // 80% lighter than #CC6633
+  "#fff4cc", // 80% lighter than #FFCC00
+  "#e6f7d9", // 80% lighter than #669900
+  "#d1f4fa", // 80% lighter than #00acc1
+  "#d9dbfa", // 80% lighter than #5c6bc0
+  "#ffe3b2", // 80% lighter than #ff9800
+  "#c6f2da", // 80% lighter than #12B76A
+];
+
+export const DEFAULT_PROJECT_COLOR_OPTIONS = [
+  "#f7f7f7",
+  "#f9e8f7",
+  "#e7f9f7",
+  "#fdf7e7",
+  "#f9f7f9",
+];
 export {
   Project,
   AddList,
@@ -75,4 +102,5 @@ export {
   CustomField,
   CustomFieldTypes,
   CustomFieldData,
+  DEFAULT_LIST_COLOR_OPTIONS,
 };

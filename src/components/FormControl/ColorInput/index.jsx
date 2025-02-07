@@ -4,26 +4,8 @@ import { Input } from "components/ui/input";
 import { Label } from "src/@/components/ui/label";
 import { errorClassName } from "components/FormControl";
 import { CircleX } from "lucide-react";
-
-/**
- * Predefined color options for selection.
- */
-const DEFAULT_COLOR_OPTIONS = [
-  "#f2dede", // 80% lighter than #641e16
-  "#ebebeb", // 80% lighter than #7b7d7d
-  "#f7e6b0", // 80% lighter than #7d6608
-  "#d2f2e4", // 80% lighter than #186a3b
-  "#d1e8ff", // 80% lighter than #2874a6
-  "#eed9f2", // 80% lighter than #6c3483
-  "#fad3cf", // 80% lighter than #e74c3c
-  "#f6e1d9", // 80% lighter than #CC6633
-  "#fff4cc", // 80% lighter than #FFCC00
-  "#e6f7d9", // 80% lighter than #669900
-  "#d1f4fa", // 80% lighter than #00acc1
-  "#d9dbfa", // 80% lighter than #5c6bc0
-  "#ffe3b2", // 80% lighter than #ff9800
-  "#c6f2da", // 80% lighter than #12B76A
-];
+import PresetCustom from "./PresetCustom";
+import { DEFAULT_LIST_COLOR_OPTIONS } from "app/utils/Types/TaskManagment";
 
 /**
  * ColorPicker Component
@@ -39,10 +21,11 @@ const DEFAULT_COLOR_OPTIONS = [
  * @param {boolean} props.touched - Indicates if the field has been touched
  * @param {string} props.selectedColor - Currently selected color value
  * @param {Function} props.onChange - Callback function for color selection
- * @param {"palette" | "dropdown" | "text-input"} props.variant - UI variant of the color picker
+ * @param {"palette" | "dropdown" | "text-input" | "preset-custom"} props.variant - UI variant of the color picker
  */
 const ColorPicker = React.memo(
   ({
+    COLOR_OPTIONS = DEFAULT_LIST_COLOR_OPTIONS,
     label = null,
     name = null,
     required = false,
@@ -57,9 +40,9 @@ const ColorPicker = React.memo(
      * Memoized color options list, allowing dynamic updates when custom colors are added.
      */
     const colorOptions = useMemo(() => {
-      return selectedColor && !DEFAULT_COLOR_OPTIONS.includes(selectedColor)
-        ? [...DEFAULT_COLOR_OPTIONS, selectedColor]
-        : DEFAULT_COLOR_OPTIONS;
+      return selectedColor && !COLOR_OPTIONS.includes(selectedColor)
+        ? [...COLOR_OPTIONS, selectedColor]
+        : COLOR_OPTIONS;
     }, [selectedColor]);
 
     /**
@@ -67,6 +50,7 @@ const ColorPicker = React.memo(
      * @param {string} color - Selected color value
      */
     const handleColorSelection = (event, color) => {
+      debugger
       event.preventDefault(); // ✅ Prevents default behavior
       onChange(name, color);
     };
@@ -75,7 +59,7 @@ const ColorPicker = React.memo(
      * Renders different UI variants for the color picker.
      */
     return (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-4">
         {/* Label */}
         {label && (
           <Label htmlFor={name}>
@@ -130,6 +114,15 @@ const ColorPicker = React.memo(
                 </option>
               ))}
             </select>
+          )}
+
+          {/* Preset Custom Input */}
+          {variant === "preset-custom" && (
+            <PresetCustom
+              COLOR_OPTIONS={colorOptions}
+              selectedColor={selectedColor}
+              handleColorSelection={handleColorSelection}
+            />
           )}
 
           {/* Custom Color Input */}
