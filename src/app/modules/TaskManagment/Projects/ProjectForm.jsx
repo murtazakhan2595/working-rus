@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef,useMemo } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { toast } from "react-toastify";
 import { connect } from "react-redux";
 import {
@@ -209,39 +209,18 @@ const ProjectForm = ({
                           />
                           <div className="space-y-2">
                             <SelectMultiInputComponent
-                              name="member"
-                              options={Employees}
+                              name="project_members"
+                              options={employees}
                               label={"Members"}
-                              // value={props.values.project_members || []}
+                              value={props.values.project_members || []}
                               onChange={(field, value) => {
-                                const members =
-                                  props.values.project_members || [];
-                                const updatedMembers = [...members, value];
-                                props.setFieldValue(
-                                  "project_members",
-                                  updatedMembers
-                                );
-                                setSelectedMembers(updatedMembers);
+                                props.setFieldValue(field, value);
                               }}
+                              showSelectedValuesBelow={true}
                               error={props.errors.project_members}
                               touch={props.touched.project_members}
-                              placeholder="Add Project Members"
+                              placeholder="Select Project Members"
                             />
-                            <div className="flex flex-row justify-statrt flex-wrap gap-2">
-                              {props.values.project_members &&
-                                props.values.project_members.length > 0 &&
-                                props.values.project_members.map(
-                                  (member, index) => (
-                                    <div key={index}>
-                                      <Members
-                                        member={member}
-                                        isEditMode={true}
-                                        removeMember={removeMember}
-                                      />
-                                    </div>
-                                  )
-                                )}
-                            </div>
                           </div>
                           <ColorInput
                             name="color"
@@ -256,120 +235,9 @@ const ProjectForm = ({
                             variant="preset-custom"
                           />
                         </div>
-                        <SheetCardExtension
-                          title={`${
-                            isEditMode ? "Update" : "Add"
-                          } Project Details`}
-                          className="mt-4"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="label text-sm flex-1">Colors</div>
-
-                            <div className="flex space-x-2 flex-1">
-                              {[
-                                "#f7f7f7",
-                                "#f9e8f7",
-                                "#e7f9f7",
-                                "#fdf7e7",
-                                "#f9f7f9",
-                              ].map((color, index) => (
-                                <span
-                                  key={index}
-                                  className={`w-6 h-6 rounded-full border border-gray-300 cursor-pointer ${
-                                    selectedColor === color
-                                      ? "ring-2 ring-blue-500"
-                                      : ""
-                                  }`}
-                                  style={{ backgroundColor: color }}
-                                  onClick={() => {
-                                    setSelectedColor(color);
-                                    props.setFieldValue("color", color); // Update Formik field
-                                  }}
-                                ></span>
-                              ))}
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-4">
-                            <div className="label text-sm flex-1">
-                              Team Members
-                            </div>
-
-                            <div className="space-y-2 flex-1">
-                              <div className="flex flex-wrap items-center justify-start gap-2 h-100">
-                                {/* {props.values.project_members &&
-                                props.values.project_members.length > 0 &&
-                                props.values.project_members.map(
-                                  (member, index) => (
-                                    <div key={index}>
-                                      <Members
-                                        member={member}
-                                        isEditMode={true}
-                                        removeMember={removeMember}
-                                      />
-                                    </div>
-                                  )
-                                )}
-                              <div
-                                onClick={() => {
-                                  setMembersOpen(!membersOpen);
-                                }}
-                                className={`w-9 h-9 rounded-full flex justify-center items-center cursor-pointer border-2 transition-all duration-300 ${
-                                  membersOpen
-                                    ? "bg-red-300 rotate-45"
-                                    : "bg-emerald-600"
-                                }`}
-                              >
-                                <div className="flex items-center justify-center text-2xl text-white plus-icon w-9 h-9">
-                                  <RxPlus />
-                                </div>
-                              </div> */}
-                              </div>
-                            </div>
-                          </div>
-                          {/* {membersOpen && (
-                          <SelectComponent
-                            name="project_members"
-                            placeholder="Select Members"
-                            classes="flex-1 flex flex-col gap-4"
-                            options={employees.map((emp) => ({
-                              ...emp,
-                              isDisabled:
-                                props.values.project_members?.includes(
-                                  emp.value
-                                ),
-                            }))}
-                            error={props.errors.project_members}
-                            touch={props.touched.project_members}
-                            label="Project Members"
-                            required
-                            onChange={(field, value) => {
-                              setMembersOpen(false);
-                              const members =
-                                props.values.project_members || [];
-                              if (!members.includes(value)) {
-                                members.push(value);
-                                props.setFieldValue(field, members);
-                              }
-                            }}
-                            isDisabled={(option) =>
-                              props.values.project_members?.includes(
-                                option.value
-                              )
-                            }
-                          />
-                        )} */}
-
-                          <div className="flex items-center gap-4">
-                            <div className="label text-sm mt-4 flex-1">
-                              Status
-                            </div>
-                            <div className="flex-1"></div>
-                          </div>
-                        </SheetCardExtension>
+                       
                       </div>
 
-                      {/* Color Selection */}
 
                       <div className="p-6 border-t border-gray-200 ">
                         <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
@@ -382,7 +250,7 @@ const ProjectForm = ({
                             Cancel
                           </Button>
                           <Button type="submit" size="lg">
-                            {isEditMode ? "Update" : "Add"}
+                            {`${isEditMode ? "Update" : "Save"} Changes`}
                           </Button>
                         </div>
                       </div>

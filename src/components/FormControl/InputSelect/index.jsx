@@ -19,27 +19,28 @@ import {
 const SelectMultiInputComponent = React.memo(
   ({
     name,
-    options,
+    options, // List of selectable options
     error,
     touch,
-    value = [],
-    label,
-    onChange,
-    required = false,
-    className = "flex flex-col gap-4 w-full",
-    icon,
-    useValueAsIdentifier = true,
-    allowNewOption = false,
-    newOptionConfig = {},
-    showOptionsActions = false,
-    optionsActions = [],
-    placeholder = null,
-    mutipleOptions = false, // suggest a name
-    displayvaluebelow = false,//suggest a name
+    value = [], // Current selected values
+    label, // Label for the select field
+    onChange, // Function to handle selection change
+    required = false, // Whether the field is required
+    className = "w-full", // Custom styling
+    icon, // Optional icon inside the button
+    useValueAsIdentifier = true, // Determines if value or label is used for selection
+    allowNewOption = false, // Whether users can add new options
+    newOptionConfig = {}, // Configuration for new options
+    showOptionsActions = false, // Show additional actions for options
+    optionsActions = [], // List of action buttons for options
+    placeholder = null, // Placeholder text when no value is selected
+    allowMultipleSelection = false, // Allow multiple selections (Generalized name)
+    showSelectedValuesBelow = false, // Show selected values below the dropdown (Generalized name)
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectedValues = value && Array.isArray(value) ? value : [];
-    // Handle selection toggle
+
+    // Toggle selection for a given option
     const handleSelectionToggle = useCallback(
       (optionValue) => {
         const updatedSelection = selectedValues.includes(optionValue)
@@ -50,6 +51,8 @@ const SelectMultiInputComponent = React.memo(
       },
       [selectedValues, onChange, name]
     );
+
+    // Remove a selected value
     const handleRemove = useCallback(
       (option) => {
         const newValue = value.filter((item) => item !== option);
@@ -57,9 +60,10 @@ const SelectMultiInputComponent = React.memo(
       },
       [value, onChange, name]
     );
+
     return (
-      <div className={`${className} flex flex-col w-full`}>
-        {/* Label */}
+      <div className={`${className} flex flex-col gap-4`}>
+        {/* Field Label */}
         {label && (
           <Label htmlFor={name}>
             {required && <span className="text-red-600">* </span>}
@@ -67,7 +71,7 @@ const SelectMultiInputComponent = React.memo(
           </Label>
         )}
 
-        {/* Dropdown Trigger */}
+        {/* Dropdown Button */}
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -80,15 +84,13 @@ const SelectMultiInputComponent = React.memo(
                 {icon && <div className="w-4">{icon}</div>}
 
                 <div className="flex flex-wrap gap-2 items-center max-w-[90%]">
-                  {selectedValues.length > 0 ? (
-                    !displayvaluebelow && (
-                      <SelectedValues
-                        selectedValues={selectedValues}
-                        useValueAsIdentifier={useValueAsIdentifier}
-                        options={options}
-                        handleRemove={handleRemove}
-                      />
-                    )
+                  {selectedValues.length > 0 && !showSelectedValuesBelow ? (
+                    <SelectedOptionsList
+                      selectedValues={selectedValues}
+                      useValueAsIdentifier={useValueAsIdentifier}
+                      options={options}
+                      handleRemove={handleRemove}
+                    />
                   ) : (
                     <span className="text-sm font-normal text-neutral-1000">
                       {placeholder ? placeholder : `Select ${label}`}
@@ -99,9 +101,10 @@ const SelectMultiInputComponent = React.memo(
               </div>
             </Button>
           </PopoverTrigger>
+
           {/* Dropdown Content */}
           <PopoverContent className="w-[300px] p-0">
-            <DropdownOptions
+            <SelectableOptionsList
               options={options}
               selectedValues={selectedValues}
               handleSelectionToggle={handleSelectionToggle}
@@ -126,23 +129,31 @@ const SelectMultiInputComponent = React.memo(
             )}
           </PopoverContent>
         </Popover>
-        {displayvaluebelow && (
-          <SelectedValues
-            selectedValues={selectedValues}
-            useValueAsIdentifier={useValueAsIdentifier}
-            options={options}
-            handleRemove={handleRemove}
-          />
+
+        {/* Show Selected Values Below if Enabled */}
+        {showSelectedValuesBelow && (
+          <div className="flex fex-row flex-wrap gap-2 items-center max-w-[90%]">
+            <SelectedOptionsList
+              selectedValues={selectedValues}
+              useValueAsIdentifier={useValueAsIdentifier}
+              options={options}
+              handleRemove={handleRemove}
+            />
+          </div>
         )}
 
-        {/* Error Message */}
+        {/* Error Message Display */}
         {error && touch && <div className="text-red-600 text-sm">{error}</div>}
       </div>
     );
   }
 );
 
-const SelectedValues = ({ //suggest a name
+/**
+ * Component to Display Selected Options.
+ * It supports removing selected options.
+ */
+const SelectedOptionsList = ({
   selectedValues = [],
   useValueAsIdentifier = true,
   options = [],
@@ -170,7 +181,11 @@ const SelectedValues = ({ //suggest a name
   );
 };
 
-const DropdownOptions = ({////suggest a name
+/**
+ * Component to Render Selectable Options in the Dropdown.
+ * Allows selection/deselection of items.
+ */
+const SelectableOptionsList = ({
   options = [],
   selectedValues = [],
   handleSelectionToggle = () => {},
@@ -203,7 +218,7 @@ const DropdownOptions = ({////suggest a name
                   {label}
                 </div>
 
-                {/* Action Buttons */}
+                {/* Additional Actions for Each Option */}
                 {showOptionsActions && (
                   <div className="flex">
                     {optionsActions.map(({ content, onClick }, index) => (
