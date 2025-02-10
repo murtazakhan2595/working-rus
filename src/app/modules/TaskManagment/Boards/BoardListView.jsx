@@ -15,6 +15,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "src/@/components/ui/accordion";
+import { ListActionOptions } from "app/modules/TaskManagment/Boards/Sections";
 
 const BoardListView = ({
   filterData,
@@ -23,7 +24,6 @@ const BoardListView = ({
   reloadData = () => {},
   toggleAddBoardModal = () => {},
 }) => {
- 
   return (
     <>
       <div className="flex justify-end my-4">
@@ -42,6 +42,7 @@ const BoardListView = ({
               }}
               projectId={projectId}
               board={board}
+              reloadData={reloadData}
             />
           ))}
       </Accordion>
@@ -49,7 +50,7 @@ const BoardListView = ({
   );
 };
 
-const ListTasks = ({ filterData, projectId, board }) => {
+const ListTasks = ({ filterData, projectId, board, reloadData = () => {} }) => {
   const [AllBoardTasks, setAllBoardTasks] = useState([]);
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [viewTask, setViewTask] = useState(null);
@@ -91,6 +92,15 @@ const ListTasks = ({ filterData, projectId, board }) => {
           <p className="flex text-sm font-semibold">
             {board.name} ({AllBoardTasks.count || 0})
           </p>
+          <ListActionOptions
+            fetchData={fetchData}
+            setTasks={(task) => {
+              setAllBoardTasks(task);
+            }}
+            reloadData={reloadData}
+            boardId={board.id}
+            buttonOrientation={"horizontal"}
+          />
           <Button
             variant="link"
             type="button"
@@ -141,7 +151,7 @@ const ListTasks = ({ filterData, projectId, board }) => {
               setIsOpen={() => {
                 setIsTaskDetailOpen(false);
                 setViewTask(null);
-                setSelectedBoard(null)
+                setSelectedBoard(null);
                 fetchData(true);
               }}
               reloadData={() => fetchData(true)}
@@ -153,10 +163,4 @@ const ListTasks = ({ filterData, projectId, board }) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    employees: state.emp.employees,
-  };
-};
-
-export default connect(mapStateToProps)(BoardListView);
+export default BoardListView;

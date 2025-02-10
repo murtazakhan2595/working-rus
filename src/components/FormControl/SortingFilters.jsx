@@ -54,8 +54,7 @@ const SelectedFiltersSummary = ({ lists }) => {
   ) : null;
 };
 
-const SortingFilters = ({ lists, onChange, filterButton }) => {
-  console.log(lists, "lists");
+const SortingFilters = React.memo(({ lists, onChange, filterButton }) => {
   return (
     <Popover>
       <PopoverTrigger asChild>{filterButton}</PopoverTrigger>
@@ -98,6 +97,6 @@ const SortingFilters = ({ lists, onChange, filterButton }) => {
       </PopoverContent>
     </Popover>
   );
-};
+});
 
 export default SortingFilters;

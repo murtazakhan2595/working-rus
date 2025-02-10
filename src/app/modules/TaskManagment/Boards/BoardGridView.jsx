@@ -23,6 +23,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuPortal,
 } from "src/@/components/ui/dropdown-menu";
+import { ListActionOptions } from "app/modules/TaskManagment/Boards/Sections";
 
 const BoardGridView = ({
   projectId,
@@ -80,8 +81,6 @@ const BoardGridView = ({
 const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [tasks, setTasks] = useState([]);
-  const [showAddNewListModel, setshowAddNewListModel] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const updateTaskLocally = (taskId, updatedData) => {
     setTasks((prevTasks) => ({
@@ -126,36 +125,6 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
     }
   };
 
-  const confirmDelete = async () => {
-    await deleteBoard(board.id);
-    fetchData(true);
-    setIsDeleteModalOpen(false);
-  };
-
-  const sortTasks = (sortType) => {
-    setTasks((prevTasks) => {
-      const sortedResults = [...prevTasks.results].sort((a, b) => {
-        switch (sortType) {
-          case "newest":
-            return new Date(b.start_date) - new Date(a.start_date);
-          case "oldest":
-            return new Date(a.start_date) - new Date(b.start_date);
-          case "alphabetical":
-            return a.name.localeCompare(b.name);
-          case "dueDate":
-            return new Date(a.end_date) - new Date(b.end_date);
-          default:
-            return 0;
-        }
-      });
-
-      return {
-        ...prevTasks,
-        results: sortedResults,
-      };
-    });
-  };
-
   return (
     <div
       className="flex flex-col min-w-[320px] max-w-[320px]"
@@ -169,57 +138,32 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
           style={{ background: board.color ? board.color : "white" }}
         >
           <div className="flex flex-col px-4">
-          <header className="flex justify-between w-full items-center mb-3">
-            <h2 className="text-zinc-800 text-base font-bold">{board.name}</h2>
-            <div className="flex gap-1">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className=" p-1">
-                    <MoreVertical className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => setshowAddNewListModel(true)}
-                  >
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)}>
-                    Delete
-                  </DropdownMenuItem>
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>Sort by...</DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      <DropdownMenuItem onClick={() => sortTasks("newest")}>
-                        Date created (newest first)
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => sortTasks("oldest")}>
-                        Date created (oldest first)
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => sortTasks("alphabetical")}
-                      >
-                        Card name (alphabetically)
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => sortTasks("dueDate")}>
-                        Due date
-                      </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </header>
+            <header className="flex justify-between w-full items-center mb-3">
+              <h2 className="text-zinc-800 text-base font-bold">
+                {board.name}
+              </h2>
+              <div className="flex gap-1">
+                <ListActionOptions
+                  fetchData={fetchData}
+                  setTasks={(task) => {
+                    debugger;
+                    setTasks(task);
+                  }}
+                  reloadData={reloadData}
+                  boardId={board.id}
+                />
+              </div>
+            </header>
 
-          <Button
-            variant="outline"
-            type="button"
-            className="w-full justify-start group mb-3"
-            onClick={() => setOpenCreateCard(true)}
-          >
-            <RxPlus className="text-xl" />
-            <span className="ml-2">Add a card</span>
-          </Button>
+            <Button
+              variant="outline"
+              type="button"
+              className="w-full justify-start group mb-3"
+              onClick={() => setOpenCreateCard(true)}
+            >
+              <RxPlus className="text-xl" />
+              <span className="ml-2">Add a card</span>
+            </Button>
           </div>
           <ScrollArea className="[&>div>div[style]]:!block">
             <div className="space-y-3 h-[calc(100vh_-335px)] px-4">
@@ -252,35 +196,8 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
           reloadData={() => fetchData(true)}
         />
       )}
-
-      {showAddNewListModel && (
-        <AddNewListModel
-          boardId={board.id}
-          setIsOpen={() => {
-            setshowAddNewListModel(false);
-            reloadData(true);
-          }}
-          isEditMode
-        />
-      )}
-
-      {isDeleteModalOpen && (
-        <AlertDialogue
-          isOpen={isDeleteModalOpen}
-          setIsOpen={() => setIsDeleteModalOpen(false)}
-          handleContinue={confirmDelete}
-          title="Confirm Delete"
-          description="This action can't be undone. All information associated with this will be lost."
-        />
-      )}
     </div>
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    employees: state.emp.employees,
-  };
-};
-
-export default connect(mapStateToProps)(BoardGridView);
+export default BoardGridView;
