@@ -1,6 +1,8 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
+import { Link } from "react-router-dom"; // Import Link
+
 
 import { cn } from "../../src/@/lib/utils";
 
@@ -41,13 +43,16 @@ const buttonVariants = cva(
 );
 
 const Button = React.forwardRef(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
+  ({ className, variant, size, asChild = false, to, ...props }, ref) => {
+    // If "to" exists, use "Link" for navigation; otherwise, use a button
+    const Comp = asChild ? Slot : to ? Link : "button";
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
+        {...(to ? { to } : {})} // Add "to" prop only if it exists
       />
     );
   }

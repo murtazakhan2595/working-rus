@@ -1,26 +1,62 @@
-import { PriorityList } from "data/Data";
+import { PriorityList, ProjectStatusList } from "data/Data";
 import moment from "moment";
 import { Clock } from "lucide-react";
 import { MembersList, TaskEndDate } from "app/modules/TaskManagment/Sections";
 import TaskStatusLabel from "app/modules/TaskManagment/Sections/TaskStatus";
-import { TextUI } from "components";
+import { Link } from "react-router-dom";
+import { Button } from "components/ui/button";
+
+export const ProjectColumn = [
+  {
+    text: "Project",
+    dataField: "name",
+    dataSort: true,
+  },
+  {
+    text: "Status",
+    dataField: "status",
+    formatter: (cell) => (
+      <div>{ProjectStatusList.find((obj) => obj.value === cell)?.label}</div>
+    ),
+    // dataAlign: "center",
+  },
+  {
+    text: "Tasks",
+    dataField: "task_count",
+  },
+  {
+    text: "Members",
+    dataField: "project_members",
+    formatter: (cell) => <MembersList members={cell} />,
+  },
+  {
+    text: "Due Date",
+    dataField: "end_date",
+    formatter: (cell, row) => {
+      return <TaskEndDate dueDate={cell} />;
+    },
+    width: "160px",
+  },
+  {
+    text: "",
+    dataField: "id",
+    formatter: (cell) => {
+      return (
+        <Button to={`/project-board/${cell}`} variant={"outline"} size={"sm"}>
+          View Project
+        </Button>
+      );
+    },
+    dataAlign: "right",
+  },
+];
+
 export const ProjectBoardColumn = [
   {
     text: "Tasks",
     dataField: "name",
     width: "25%",
-    // formatter: (cell, row) => {
-    //   return (
-    //     <div className="flex flex-col w-full">
-    //       <div className=" text-sm font-semibold text-neutral-1200 py-1 text-capitalize">
-    //         {cell}
-    //       </div>
-    //       <div className="text-neutral-1000">
-    //         <TextUI text={row?.description} maxLength={40} />
-    //       </div>
-    //     </div>
-    //   );
-    // },
+    dataSort: true,
   },
   {
     text: "Status",
@@ -31,6 +67,7 @@ export const ProjectBoardColumn = [
       </div>
     ),
     headerAlign: "center",
+    dataSort: true,
     dataAlign: "center",
   },
   {
@@ -40,6 +77,7 @@ export const ProjectBoardColumn = [
       return PriorityList.find((option) => option.value === cell)?.label;
     },
     headerAlign: "center",
+    dataSort: true,
   },
   {
     text: "Members",
@@ -49,26 +87,9 @@ export const ProjectBoardColumn = [
   {
     text: "Due Date",
     dataField: "end_date",
-    formatter: (cell,row) => {
-      // Check if the cell has a value
-      if (!cell) return <></>;
-      // Try parsing the date using both formats
-      let formattedDate;
-      if (moment(cell, "MM-DD-YYYY", true).isValid()) {
-        formattedDate = moment(cell, "MM-DD-YYYY").format("MMM D");
-      } else if (moment(cell, "YYYY-MM-DD", true).isValid()) {
-        formattedDate = moment(cell, "YYYY-MM-DD").format("MMM D");
-      } else {
-        // Handle invalid date format
-        formattedDate = "Invalid Date";
-      }
-
-      return (
-        // <div className="flex items-center gap-2">
-        //   <Clock size={18} /> {formattedDate}
-        // </div>
-        <TaskEndDate dueDate={cell} taskStatus={row.status} />
-      );
+    formatter: (cell, row) => {
+      return <TaskEndDate dueDate={cell} taskStatus={row.status} />;
     },
+    width: "160px",
   },
 ];

@@ -809,50 +809,6 @@ export const tasksColumns = () => [
   },
 ];
 
-export const projectBoard = [
-  {
-    text: "Project",
-    dataField: "name",
-  },
-  {
-    text: "Status",
-    dataField: "status",
-  },
-  {
-    text: "Tasks",
-    dataField: "task_count",
-  },
-  {
-    text: "Members",
-    dataField: "project_members",
-    formatter: (cell) => <MembersList members={cell} />,
-  },
-  {
-    text: "Due Date",
-    dataField: "end_date",
-    formatter: (cell, row) => {
-      // Check if the cell has a value
-
-      // Try parsing the date using both formats
-      let formattedDate;
-      if (moment(cell, "MM-DD-YYYY", true).isValid()) {
-        formattedDate = moment(cell, "MM-DD-YYYY").format("MMM D");
-      } else if (moment(cell, "YYYY-MM-DD", true).isValid()) {
-        formattedDate = moment(cell, "YYYY-MM-DD").format("MMM D");
-      } else {
-        // Handle invalid date format
-        formattedDate = "Invalid Date";
-      }
-
-      return (
-        <div className="flex items-center gap-2">
-          <Clock size={18} /> {formattedDate}
-        </div>
-      );
-    },
-  },
-];
-
 export const LeaveRecordColumns = [
   {
     dataField: "id",

@@ -1,29 +1,8 @@
-import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
-import { deleteTask } from "app/hooks/taskManagment";
-import { PriorityList } from "data/Data";
-import { BiComment } from "react-icons/bi";
-import { getStatus, getStatusIconColor } from "../Boards/Sections";
-import { MembersList, Labels } from "../Sections";
-import { ImAttachment } from "react-icons/im";
 import TimeIcon from "assets/images/timeIcon";
 import moment from "moment";
-import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
-import { Card, CardContent, CardFooter } from "components/ui/card";
-import AlertDialogue from "components/ui/AlertDialogue";
-import { TextUI, TooltipText } from "components";
-import { toast } from "react-toastify";
-import { addTask } from "app/hooks/taskManagment";
-import { ListChecks, Trash2, RotateCcw, ExternalLink } from "lucide-react";
-import { Input } from "components/ui/input";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "src/@/components/ui/tooltip";
-import TaskStatusLabel from "app/modules/TaskManagment/Sections/TaskStatus";
-import { Button } from "components/ui/button";
+import { TooltipText } from "components";
+import { renderDate } from "utils/renderValues";
 
 export const getTaskDateStatus = (date) => {
   const currentDate = moment(new Date()).format("YYYY-MM-DD");
@@ -35,7 +14,6 @@ export const getTaskDateStatus = (date) => {
     return "Due Soon";
   }
 };
-
 export const getBackgroundClass = (dateStatus, isChecked) => {
   if (isChecked) {
     return "bg-[#ECFDF3]";
@@ -49,30 +27,42 @@ export const getBackgroundClass = (dateStatus, isChecked) => {
   }
 };
 
-const TaskEndDate = ({ dueDate, taskStatus }) => {
-  const [showCheckbox, setShowCheckbox] = useState(false);
-  const [isChecked, setIsChecked] = useState(taskStatus === "COMPLETED");
+const getDateIconColor = (date) => {
+  const status = getTaskDateStatus(date);
+  if (status === "Due Today") {
+    return "#FF9A1F";
+  } else if (status === "Overdue") {
+    return "#FF4C4C";
+  } else {
+    return "#5C5E64";
+  }
+};
 
-  if (!dueDate) return null;
+const TaskEndDate = ({ dueDate, taskStatus = "" }) => {
+  if (!dueDate || !moment(dueDate).isValid()) return null;
   const taskDateStatus = getTaskDateStatus(dueDate);
   const taskCompleted = taskStatus.toUpperCase() === "COMPLETED";
+  console.log(
+    moment(dueDate).isValid(),
+    taskCompleted,
+    taskDateStatus,
+    "moment(dueDate).isValid()"
+  );
 
   const getIconColor = () => {
-    if (isChecked) {
+    if (taskCompleted) {
       return "#12B76A";
     }
-    return getStatusIconColor(dueDate);
+    return getDateIconColor(dueDate);
   };
 
   const getTooltipMessage = () => {
-    if (isChecked) {
+    if (taskCompleted) {
       return "The card is complete.";
     }
-
-    const status = getStatus(dueDate);
-    if (status === "Overdue") {
+    if (taskDateStatus === "Overdue") {
       return "The card has past due date.";
-    } else if (status === "Due Today") {
+    } else if (taskDateStatus === "Due Today") {
       return "The card is due today.";
     } else {
       return "The card is due later.";
@@ -88,11 +78,14 @@ const TaskEndDate = ({ dueDate, taskStatus }) => {
       <TooltipText
         tooltipTriggerText={
           <div
-            className={`${getBackgroundClass(taskDateStatus, taskCompleted)} w-fit flex flex-row gap-1 rounded px-2 py-1 items-center`}
+            className={`${getBackgroundClass(
+              taskDateStatus,
+              taskCompleted
+            )} w-fit flex flex-row gap-1 rounded px-2 py-1 items-center`}
           >
             <TimeIcon color={getIconColor()} />
             <div style={textStyle} className="select-none">
-              {moment(dueDate).format("MMMM DD")}
+              {renderDate(dueDate)}
             </div>
           </div>
         }

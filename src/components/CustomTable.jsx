@@ -35,7 +35,6 @@ export default function TableCustom({
   setSelectedRows,
   disabledRows,
 }) {
-  console.log("data", data);
   const [expandedRow, setExpandedRow] = useState(null);
   const options = {
     page: tableOptions?.page ?? 1,
@@ -134,6 +133,10 @@ export default function TableCustom({
       setSelectedRows(paginatedData.map((row) => row.id)); // Select all rows
     }
   };
+  const handleHeaderClick = (event, column) => {
+    event.preventDefault();
+    if (column.dataSort) handleSort(column.dataField);
+  };
   return (
     <>
       <div className={`space-y-4 ${className}`}>
@@ -159,17 +162,17 @@ export default function TableCustom({
                     {columns.map((column, index) => (
                       <TableHead
                         key={index}
-                        className="cursor-pointer"
+                        className={column.dataSort ? "cursor-pointer" : "cursor-default"}
                         style={{
                           ...(column.width ? { width: column.width } : {}),
                           ...(column.headerAlign
                             ? { textAlign: column.headerAlign }
                             : {}),
                         }}
-                        onClick={() => handleSort(column.dataField)}
+                        onClick={(e) => handleHeaderClick(e, column)}
                       >
                         {column.text}
-                        {sort.key === column.dataField && (
+                        {column.dataSort && sort.key === column.dataField && (
                           <span className="ml-1">
                             {sort.order === "asc" ? "↑" : "↓"}
                           </span>

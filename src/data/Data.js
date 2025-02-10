@@ -314,7 +314,7 @@ export const PriorityList = [
     value: 3,
     label: (
       <div className="flex justify-center gap-x-1 text-mauve-900 items-center">
-        <ArrowDown size={16}/> Low
+        <ArrowDown size={16} /> Low
       </div>
     ),
   },
@@ -322,7 +322,7 @@ export const PriorityList = [
     value: 2,
     label: (
       <div className="flex justify-center text-yellow-500 gap-x-1 items-center">
-        <ArrowRight size={16}/> Medium
+        <ArrowRight size={16} /> Medium
       </div>
     ),
   },
@@ -394,39 +394,23 @@ export const relationList = [
 export const ProjectStatusList = [
   {
     value: "upcoming",
-    label: (
-      <div className="flex justify-center text-plum-1100 gap-x-2">
-        Up Coming
-      </div>
-    ),
+    label: <div className="text-plum-1100"> Up Coming </div>,
   },
   {
     value: "on_going",
-    label: (
-      <div className="flex justify-center text-yellow-500 gap-x-2 items-center">
-        On Going
-      </div>
-    ),
+    label: <div className="text-yellow-500">On Going</div>,
   },
   {
     value: "On_hold",
-    label: (
-      <div className="flex justify-center text-red-500 gap-x-2">On Hold</div>
-    ),
+    label: <div className="text-red-500">On Hold</div>,
   },
   {
     value: "completed",
-    label: (
-      <div className="flex justify-center text-emerald-500 gap-x-2">
-        Completed
-      </div>
-    ),
+    label: <div className="text-emerald-500">Completed</div>,
   },
   {
     value: "closed",
-    label: (
-      <div className="flex justify-center text-mauve-900 gap-x-2">Closed</div>
-    ),
+    label: <div className="text-mauve-900">Closed</div>,
   },
 ];
 

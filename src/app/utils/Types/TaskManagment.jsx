@@ -9,6 +9,7 @@ const Project = {
   profile: null,
   custom_fields: null,
   joining_request: [],
+  status: "on_going",
 };
 const CustomField = {
   id: null,
