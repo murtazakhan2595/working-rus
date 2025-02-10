@@ -51,11 +51,11 @@ import AlertDialogue from "components/ui/AlertDialogue";
 
 const Projects = ({ userProfile }) => {
   const dispatch = useDispatch();
+  const userRole = useSelector((state) => state.user.userProfile)?.role;
+  const userId = useSelector((state) => state.user.userProfile)?.role;
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState(
-    userProfile.role === 2 || userProfile.role === 4
-      ? { project_members: [userProfile.id] }
-      : {}
+    userRole === 2 || userRole === 4 ? { project_members: [userId] } : {}
   );
   const [viewProject, setViewProject] = useState(false);
   const [AllProjects, setAllProjects] = useState([]);
@@ -80,7 +80,7 @@ const Projects = ({ userProfile }) => {
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
     onRowClick: (row) => {
-      setViewProject(row);
+      if (userRole !== 4) setViewProject(row);
     },
   };
 
@@ -98,7 +98,7 @@ const Projects = ({ userProfile }) => {
       if (isMounted) {
         setIsLoading(false);
       }
-    } 
+    }
   };
 
   useEffect(() => {
@@ -174,7 +174,7 @@ const Projects = ({ userProfile }) => {
             <RenderProject
               toggleAddProject={toggleAddProject}
               fetchData={fetchData}
-              userProfile={userProfile}
+              userRole={userRole}
             />
           )}
           {viewMode === "table" ? (
@@ -208,7 +208,8 @@ const Projects = ({ userProfile }) => {
                   project={project}
                   toggleAddProject={toggleAddProject}
                   fetchData={fetchData}
-                  userProfile={userProfile}
+                  userRole={userRole}
+
                 />
               ))}
             </div>
@@ -244,6 +245,7 @@ const RenderProject = ({
   // toggleAddProject,
   fetchData = () => {},
   // userProfile,
+  userRole,
 }) => {
   const navigate = useNavigate();
   const [isEditMode, setIsEditMode] = useState(false);
@@ -253,7 +255,7 @@ const RenderProject = ({
 
   const handleProjectClick = (event) => {
     event.preventDefault();
-    setIsEditMode(true);
+    if (userRole !== 4) setIsEditMode(true);
   };
   return (
     <Card className="rounded-lg">
