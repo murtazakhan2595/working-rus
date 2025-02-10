@@ -77,11 +77,11 @@ function TaskComments({
   }, [taskId, refreshComments]);
 
   const handleDeleteComment = async (commentId) => {
-    const response = await deleteComment( commentId );
+    const response = await deleteComment(commentId);
     if (response) {
       setRefreshComments(true);
     }
-  }
+  };
   const renderActivityContent = (activity) => {
     return (
       <div className="text-neutral-1000 text-sm">
@@ -95,7 +95,6 @@ function TaskComments({
     showActivities ? true : item.type === "comment"
   );
 
-  console.log("filteredActivities", filteredActivities);
   // Check for empty states
   const hasComments = combinedActivities.some(
     (item) => item.type === "comment"
@@ -121,71 +120,70 @@ function TaskComments({
       <div className="space-y-4">
         {filteredActivities.map((item, index) => (
           <div key={index} className="flex gap-3 items-start w-full">
-  {/* Avatar Section */}
-  <div className="flex-shrink-0">
-    <MembersList members={[item.user_id]} display={true} />
-  </div>
+            {/* Avatar Section */}
+            <div className="flex-shrink-0">
+              <MembersList members={[item.user_id]} display={true} />
+            </div>
 
-  {/* Comment Content */}
-  <div className="flex-1 min-w-0">
-    <div className=" rounded-md">
-      {/* User Name & Timestamp */}
-      <div className="flex items-center gap-2">
-        <p className="font-semibold">
-          <EmployeeName value={item.user_id} />
-        </p>
-        <time className="text-sm mt-1 text-neutral-1000 flex items-center gap-1">
-          {moment(item.timestamp).format("D MMM YYYY, HH:mm")}
-        </time>
-      </div>
+            {/* Comment Content */}
+            <div className="flex-1 min-w-0">
+              <div className=" rounded-md">
+                {/* User Name & Timestamp */}
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold">
+                    <EmployeeName value={item.user_id} />
+                  </p>
+                  <time className="text-sm mt-1 text-neutral-1000 flex items-center gap-1">
+                    {moment(item.timestamp).format("D MMM YYYY, HH:mm")}
+                  </time>
+                </div>
 
-      {/* Comment Text */}
-      <div className="mt-1">
-        {item.type === "comment" ? (
-          <TextUI text={item.comment} isHTMLText={true} />
-        ) : (
-          <span>{renderActivityContent(item)}</span>
-        )}
-      </div>
+                {/* Comment Text */}
+                <div className="mt-1">
+                  {item.type === "comment" ? (
+                    <TextUI text={item.comment} isHTMLText={true} />
+                  ) : (
+                    <span>{renderActivityContent(item)}</span>
+                  )}
+                </div>
 
-      {/* Attachments */}
-      {item?.commentattach?.length > 0 && (
-        <div className="mt-2">
-          {item.commentattach.map((file, fileIndex) => (
-            <AttachmentUI
-              key={fileIndex}
-              attachment={file.attachment}
-              name={file.name}
-              displayImageAttachment={false}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+                {/* Attachments */}
+                {item?.commentattach?.length > 0 && (
+                  <div className="mt-2">
+                    {item.commentattach.map((file, fileIndex) => (
+                      <AttachmentUI
+                        key={fileIndex}
+                        attachment={file.attachment}
+                        name={file.name}
+                        displayImageAttachment={false}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
 
-    {/* Actions (Reply / Remove) */}
-    <div className="flex items-center gap-3 mt-1">
-      {item.type === "comment" && (
-        <button
-          className="text-sm text-blue-600 hover:underline"
-          type="button"
-        >
-          Reply
-        </button>
-      )}
-      {item.user_id === userId && item.type === "comment" && (
-        <button
-          className="text-sm text-red-600 hover:underline"
-          type="button"
-          onClick={() => handleDeleteComment(item.id)}
-        >
-          Remove
-        </button>
-      )}
-    </div>
-  </div>
-</div>
-
+              {/* Actions (Reply / Remove) */}
+              <div className="flex items-center gap-3 mt-1">
+                {item.type === "comment" && (
+                  <button
+                    className="text-sm text-blue-600 hover:underline"
+                    type="button"
+                  >
+                    Reply
+                  </button>
+                )}
+                {item.user_id === userId && item.type === "comment" && (
+                  <button
+                    className="text-sm text-red-600 hover:underline"
+                    type="button"
+                    onClick={() => handleDeleteComment(item.id)}
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         ))}
       </div>
     </div>
@@ -219,12 +217,12 @@ export default function TaskCommentsContainer({
         </button> */}
       </div>
       {/* <DetailCard detailCardTitle="" classNames="mt-0"> */}
-        <TaskComments
-          taskId={taskId}
-          refreshComments={refreshComments}
-          setRefreshComments={setRefreshComments}
-          showActivities={showActivities}
-        />
+      <TaskComments
+        taskId={taskId}
+        refreshComments={refreshComments}
+        setRefreshComments={setRefreshComments}
+        showActivities={showActivities}
+      />
       {/* </DetailCard> */}
     </>
   );

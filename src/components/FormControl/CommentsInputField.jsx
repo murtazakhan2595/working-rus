@@ -1,47 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-// import Select from "react-select";
-import DatePicker from "react-datepicker";
-import { getFileNameFromURL } from "utils/downUtils";
-import moment from "moment";
-import { Card } from "components/ui/card";
-import ReactQuill from "react-quill";
-import { Input } from "components/ui/input";
-import { Button } from "components/ui/button";
 import { TextEditorInputField } from "components/FormControl";
-import { Calendar as LucideCalendar } from "lucide-react";
-import { AiOutlinePaperClip } from "react-icons/ai";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "src/@/components/ui/popover";
-import { RadioGroup, RadioGroupItem } from "src/@/components/ui/radio-group";
-import AttachmentUI from "components/ui/AttachmentUI";
-
-import {
-  ChevronsUpDown,
-  Check,
-  FileUp,
-  CircleX,
-  SearchIcon,
-} from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "src/@/components/ui/command";
-import { cn } from "src/@/lib/utils";
-import { format, parse, isValid } from "date-fns";
-import { Calendar } from "src/@/components/ui/calendar";
-import { PatternFormat } from "react-number-format";
 import { addCommentAttachment } from "app/hooks/taskManagment";
 import { toast } from "react-toastify";
 import { postComment } from "app/hooks/taskManagment";
 
 const CommentsInputField = ({
+  addAttachment = () => {},  //Add the comments attchment to include in task attachments
   taskId,
   userId,
   employees,
@@ -72,15 +36,16 @@ const CommentsInputField = ({
     if (attachment instanceof File) {
       const payload = { attachment: attachment };
       const response = await addCommentAttachment(payload, id);
-      if (response) return response;
-      else {
+      if (response) {
+        addAttachment({ attachment: attachment });
+        return response;
+      } else {
         return { id: null, attachment: null };
       }
     }
   };
 
   const handleSubmitComment = async (comment, attachments, mentionedUsers) => {
-    console.log("mentionedUsers", mentionedUsers, comment);
     const getAttachmentFileIds = async (attachmentfiles) => {
       if (attachmentfiles && attachmentfiles.length > 0) {
         try {

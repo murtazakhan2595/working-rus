@@ -631,7 +631,7 @@ const getTaskById = async (taskId) => {
         }
         // Fetch attachment and checklist details if they exist
         const attachments = cardDetails.attachment?.length
-          ? await getAttachmentDetails(cardDetails.attachment)
+          ? await getAttachmentDetails([cardDetails.attachment])
           : [];
         const checklistItems = cardDetails.task_checklist?.length
           ? await getCheckListItemDetails(cardDetails.task_checklist)
@@ -746,39 +746,40 @@ const getAllTasks = async (payload) => {
   return [];
 };
 
+const getCommentsAttachmentDetails = async (attachmentIds) => {
+  if (!attachmentIds || attachmentIds.length === 0) return [];
+  try {
+    const attachmentDetails = (
+      await Promise.all(
+        attachmentIds.map(async (id) => {
+          const response = await axios.get(
+            `${baseUrl}/CommentAttachment/${id}`,
+            {
+              headers: headers(),
+            }
+          );
+          return response?.data?.attachment
+            ? {
+                attachment: response?.data?.attachment,
+                id: response?.data?.id,
+                name: getFileNameFromURL(response?.data?.attachment),
+              }
+            : null; // Return null if no attachment
+        })
+      )
+    ).filter(Boolean); // Remove null values in the same statement
+    return attachmentDetails;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching attachments:", error);
+    throw error; // Propagate error to the caller
+  }
+};
+
 const getCommentsWithAttachments = async (filter) => {
   // Helper function to fetch attachment details
-  const getAttachmentDetails = async (attachmentIds) => {
-    if (!attachmentIds || attachmentIds.length === 0) return [];
-    try {
-      const attachmentDetails = (
-        await Promise.all(
-          attachmentIds.map(async (id) => {
-            const response = await axios.get(
-              `${baseUrl}/CommentAttachment/${id}`,
-              {
-                headers: headers(),
-              }
-            );
-            return response?.data?.attachment
-              ? {
-                  attachment: response?.data?.attachment,
-                  id: response?.data?.id,
-                  name: getFileNameFromURL(response?.data?.attachment),
-                }
-              : null; // Return null if no attachment
-          })
-        )
-      ).filter(Boolean); // Remove null values in the same statement
-      return attachmentDetails;
-    } catch (error) {
-      if (error?.response?.status === 401) {
-        HandleLogout();
-      }
-      console.error("Error fetching attachments:", error);
-      throw error; // Propagate error to the caller
-    }
-  };
   try {
     const comments = await fetchComments(filter);
     if (!comments) {
@@ -791,7 +792,7 @@ const getCommentsWithAttachments = async (filter) => {
         // Fetch attachment and checklist details if they exist
         const attachments =
           comment.commentattach?.length > 0
-            ? await getAttachmentDetails(comment.commentattach)
+            ? await getCommentsAttachmentDetails(comment.commentattach)
             : [];
         return {
           ...comment,
