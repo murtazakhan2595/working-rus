@@ -52,7 +52,7 @@ import AlertDialogue from "components/ui/AlertDialogue";
 const Projects = ({ userProfile }) => {
   const dispatch = useDispatch();
   const userRole = useSelector((state) => state.user.userProfile)?.role;
-  const userId = useSelector((state) => state.user.userProfile)?.role;
+  const userId = useSelector((state) => state.user.userProfile)?.id;
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState(
     userRole === 2 || userRole === 4 ? { project_members: [userId] } : {}
