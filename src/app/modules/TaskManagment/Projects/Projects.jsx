@@ -32,7 +32,7 @@ import {
   Trash,
 } from "lucide-react";
 import TableCustom from "components/CustomTable";
-import { projectBoard } from "app/utils/Types/TableColumns";
+import { ProjectColumn } from "app/modules/TaskManagment/Sections/TaskManagementTableColumns";
 import { Button } from "components/ui/button";
 import { ProjectStatusList } from "data/Data";
 import {
@@ -57,6 +57,7 @@ const Projects = ({ userProfile }) => {
       ? { project_members: [userProfile.id] }
       : {}
   );
+  const [viewProject, setViewProject] = useState(false);
   const [AllProjects, setAllProjects] = useState([]);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -78,9 +79,13 @@ const Projects = ({ userProfile }) => {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
+    onRowClick: (row) => {
+      setViewProject(row);
+    },
   };
 
   const fetchData = async (isMounted) => {
+    setViewProject(null);
     setIsLoading(true);
     try {
       const projectsData = await getAllProjects({ filterData }, userProfile);
@@ -93,7 +98,7 @@ const Projects = ({ userProfile }) => {
       if (isMounted) {
         setIsLoading(false);
       }
-    }
+    } 
   };
 
   useEffect(() => {
@@ -176,7 +181,7 @@ const Projects = ({ userProfile }) => {
             <Card>
               <CardContent>
                 <TableCustom
-                  columns={projectBoard}
+                  columns={ProjectColumn}
                   data={AllProjects?.results || []}
                   pagination={false}
                   dataTotalSize={AllProjects?.length || 0}
@@ -184,6 +189,17 @@ const Projects = ({ userProfile }) => {
                   dataStyle={{ backgroundColor: "white" }}
                 />
               </CardContent>
+              {viewProject && (
+                <CreateEditProject
+                  project={viewProject}
+                  isEditMode={!!viewProject}
+                  isOpen={!!viewProject}
+                  setIsOpen={() => {
+                    setViewProject(null);
+                  }}
+                  reload={fetchData}
+                />
+              )}
             </Card>
           ) : AllProjects?.count > 0 ? (
             <div className="grid grid-cols-1 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 gap-4">
@@ -225,9 +241,9 @@ const getStatusDotColor = (status) => {
 
 const RenderProject = ({
   project,
-  toggleAddProject,
+  // toggleAddProject,
   fetchData = () => {},
-  userProfile,
+  // userProfile,
 }) => {
   const navigate = useNavigate();
   const [isEditMode, setIsEditMode] = useState(false);
@@ -236,7 +252,6 @@ const RenderProject = ({
   };
 
   const handleProjectClick = (event) => {
-    debugger;
     event.preventDefault();
     setIsEditMode(true);
   };
@@ -260,7 +275,6 @@ const RenderProject = ({
                     (obj) => obj.value === project?.status
                   )?.label || "On Going"}
                 </Badge>
-                <ProjectActions project={project} fetchData={fetchData} />
               </div>
             </CardTitle>
             <div className="flex justify-center">
@@ -300,7 +314,7 @@ const RenderProject = ({
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>
-                      Project was started on{" "}
+                      Project was created on{" "}
                       {moment(project.start_date).format("MMM D, YYYY")}
                     </p>
                   </TooltipContent>
@@ -324,90 +338,90 @@ const RenderProject = ({
   );
 };
 
-const ProjectActions = React.memo(
-  ({ project = null, fetchData = () => {} }) => {
-    const [openAlertDialogue, setOpenAlertDialogue] = useState(false);
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
-    const userRole = useSelector((state) => state.user.userProfile)?.role;
+// const ProjectActions = React.memo(
+//   ({ project = null, fetchData = () => {} }) => {
+//     const [openAlertDialogue, setOpenAlertDialogue] = useState(false);
+//     const [isEditMode, setIsEditMode] = useState(false);
+//     const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
+//     const userRole = useSelector((state) => state.user.userProfile)?.role;
 
-    const handleViewClick = (e) => {
-      e.preventDefault();
-      setIsViewBoardDetails(true);
-    };
-    const handleEditClick = (e) => {
-      e.preventDefault();
-      setIsEditMode(true);
-    };
-    const handleDeleteProjectClick = (e) => {
-      e.preventDefault();
-      setOpenAlertDialogue(true);
-    };
-    const closeModal = () => {
-      setIsViewBoardDetails(false);
-      setIsEditMode(false);
-    };
-    const confirmDelete = async () => {
-      const response = await deleteProject(project.id);
-      if (response) fetchData(true);
-      setOpenAlertDialogue(false);
-    };
-    return (
-      <>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <MoreVertical className="w-4 h-4 text-neutral-1100" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleViewClick}>
-              <Eye size={14} className="mr-2" /> View
-            </DropdownMenuItem>
-            {userRole !== 4 && (
-              <DropdownMenuItem onClick={handleEditClick}>
-                <Edit size={14} className="mr-2" /> Edit
-              </DropdownMenuItem>
-            )}
-            {userRole !== 4 && (
-              <DropdownMenuItem onClick={handleDeleteProjectClick}>
-                <Trash size={14} className="mr-2" /> Delete
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        {isViewBoardDetails && project && (
-          <ViewBoardDetails
-            project={project}
-            onClose={closeModal}
-            setIsEditMode={setIsEditMode}
-            isOpen={isViewBoardDetails}
-            setIsOpen={setIsViewBoardDetails}
-            fetchData={fetchData}
-            role={userRole}
-          />
-        )}
-        {isEditMode && project && (
-          <CreateEditProject
-            project={project}
-            isEditMode={true}
-            isOpen={isEditMode}
-            setIsOpen={setIsEditMode}
-            reload={fetchData}
-          />
-        )}
-        {openAlertDialogue && (
-          <AlertDialogue
-            isOpen={openAlertDialogue}
-            setIsOpen={setOpenAlertDialogue}
-            handleContinue={confirmDelete}
-            continueText="Delete"
-            title="Are you Sure?"
-            description="Are you sure you want to delete this Project? This action is irreversible and will delete all tasks within."
-          />
-        )}
-      </>
-    );
-  }
-);
+//     const handleViewClick = (e) => {
+//       e.preventDefault();
+//       setIsViewBoardDetails(true);
+//     };
+//     const handleEditClick = (e) => {
+//       e.preventDefault();
+//       setIsEditMode(true);
+//     };
+//     const handleDeleteProjectClick = (e) => {
+//       e.preventDefault();
+//       setOpenAlertDialogue(true);
+//     };
+//     const closeModal = () => {
+//       setIsViewBoardDetails(false);
+//       setIsEditMode(false);
+//     };
+//     const confirmDelete = async () => {
+//       const response = await deleteProject(project.id);
+//       if (response) fetchData(true);
+//       setOpenAlertDialogue(false);
+//     };
+//     return (
+//       <>
+//         <DropdownMenu>
+//           <DropdownMenuTrigger asChild>
+//             <MoreVertical className="w-4 h-4 text-neutral-1100" />
+//           </DropdownMenuTrigger>
+//           <DropdownMenuContent align="end">
+//             <DropdownMenuItem onClick={handleViewClick}>
+//               <Eye size={14} className="mr-2" /> View
+//             </DropdownMenuItem>
+//             {userRole !== 4 && (
+//               <DropdownMenuItem onClick={handleEditClick}>
+//                 <Edit size={14} className="mr-2" /> Edit
+//               </DropdownMenuItem>
+//             )}
+//             {userRole !== 4 && (
+//               <DropdownMenuItem onClick={handleDeleteProjectClick}>
+//                 <Trash size={14} className="mr-2" /> Delete
+//               </DropdownMenuItem>
+//             )}
+//           </DropdownMenuContent>
+//         </DropdownMenu>
+//         {isViewBoardDetails && project && (
+//           <ViewBoardDetails
+//             project={project}
+//             onClose={closeModal}
+//             setIsEditMode={setIsEditMode}
+//             isOpen={isViewBoardDetails}
+//             setIsOpen={setIsViewBoardDetails}
+//             fetchData={fetchData}
+//             role={userRole}
+//           />
+//         )}
+//         {isEditMode && project && (
+//           <CreateEditProject
+//             project={project}
+//             isEditMode={true}
+//             isOpen={isEditMode}
+//             setIsOpen={setIsEditMode}
+//             reload={fetchData}
+//           />
+//         )}
+//         {openAlertDialogue && (
+//           <AlertDialogue
+//             isOpen={openAlertDialogue}
+//             setIsOpen={setOpenAlertDialogue}
+//             handleContinue={confirmDelete}
+//             continueText="Delete"
+//             title="Are you Sure?"
+//             description="Are you sure you want to delete this Project? This action is irreversible and will delete all tasks within."
+//           />
+//         )}
+//       </>
+//     );
+//   }
+// );
 
 const mapStateToProps = (state) => {
   return {
