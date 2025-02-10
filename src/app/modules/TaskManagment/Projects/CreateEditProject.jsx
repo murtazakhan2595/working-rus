@@ -23,22 +23,13 @@ const CreateEditProject = ({
 
   return (
     <div>
-      <SheetComponent
-        {...formSheetData}
-        onSubmit={handleSubmit}
-        width="568px"
+      <ProjectForm
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        contentClassName="custom-sheet-width"
-      >
-        <ProjectForm
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          editProject={project}
-          isEditMode={isEditMode}
-          reload={reload}
-        />
-      </SheetComponent>
+        editProject={project}
+        isEditMode={isEditMode}
+        reload={reload}
+      />
     </div>
   );
 };

@@ -37,7 +37,7 @@ const BoardListView = ({
         {AllBoards.count > 0 &&
           AllBoards.results.map((board) => (
             <AccordionItem value={board.id} className="mb-3">
-              <AccordionTrigger className="bg-white rounded-t-sm py-1 px-4">
+              <AccordionTrigger className="bg-white rounded-t-sm py-1 px-4" style={{backgroundColor : board.color ? board.color : "white" }}>
                 <div className="flex flex-row justify-between gap-3 items-center">
                   <p className="flex text-sm font-semibold">
                     {board.name} ({board.task_count || 0})

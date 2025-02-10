@@ -98,6 +98,7 @@ const Board = ({}) => {
   };
 
   const toggleAddBoardModal = () => {
+    debugger;
     if (showAddNewListModel) {
       fetchAllBoards(true);
     }
@@ -112,8 +113,7 @@ const Board = ({}) => {
       {showAddNewListModel && (
         <AddNewListModel
           projectId={projectId}
-          onClose={toggleAddBoardModal}
-          setIsOpen={setshowAddNewListModel}
+          setIsOpen={toggleAddBoardModal}
         />
       )}
       <BoardHeader

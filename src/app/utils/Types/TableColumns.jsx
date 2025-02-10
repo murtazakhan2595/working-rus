@@ -8,7 +8,7 @@ import {
 import { Badge } from "components/ui/badge";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions, formatNumber } from "data/Data";
-import { EmployeeOverview, StatusLabel,OverviewCard } from "components";
+import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
 import { EmployeeAttendenceHistoryActions } from "app/modules/Attendance/EmployeeAttendance/Section";
 // import {
@@ -302,7 +302,7 @@ export const AllJobApplicationColumns = (
     dataField: "first_name",
     text: "Candidate",
     formatter: (cell, row) => {
-      const name = (`${cell} ${row?.last_name}`).replace(/[^a-zA-Z0-9\s]/g, "");
+      const name = `${cell} ${row?.last_name}`.replace(/[^a-zA-Z0-9\s]/g, "");
       return (
         <OverviewCard
           avatarProps={{
@@ -928,45 +928,44 @@ export const LeaveAplicationColumns = [
     formatter: (cell) => <EmployeeID value={cell} />,
   },
   {
-    dataField: "employee",
+    dataField: "employee_id",
     text: "Employees",
     formatter: (cell, row) => (
       <>
-        <EmployeeDataInfo
-          name={row?.leave_request?.employee_info?.last_name}
-          email={row?.leave_request?.employee_info?.work_email}
-          src={row?.leave_request?.employee_info?.profile_picture?.file}
-        />
+        <EmployeeOverview id={cell} showEmail={true} showDepartment={true} />
       </>
     ),
   },
+  // {
+  //   dataField: "",
+  //   text: "Department",
+  //   formatter: (cell, row) => (
+  //     <>
+  //       <DepartmentName
+  //         value={row?.leave_request?.employee_info?.department_name}
+  //       />
+  //     </>
+  //   ),
+  // },
   {
     dataField: "",
-    text: "Department",
+    text: "Leave Period",
     formatter: (cell, row) => (
-      <>
-        <DepartmentName
-          value={row?.leave_request?.employee_info?.department_name}
-        />
-      </>
+      <div className="flex flex-col">
+        <span>
+          {`${moment(row?.leave_request?.start_date).format(
+            "MMM D"
+          )} - ${moment(row?.leave_request?.end_date).format("MMM D")}`}
+        </span>
+        <span>{row?.leave_request?.no_of_days} Days</span>
+      </div>
     ),
   },
-  {
-    dataField: "",
-    text: "Leave Dates",
-    formatter: (cell, row) => (
-      <>
-        {`${moment(row?.leave_request?.start_date).format("MMM D")} - ${moment(
-          row?.leave_request?.end_date
-        ).format("MMM D")}`}
-      </>
-    ),
-  },
-  {
-    dataField: "",
-    text: "Days",
-    formatter: (cell, row) => <>{row?.leave_request?.no_of_days}</>,
-  },
+  // {
+  //   dataField: "",
+  //   text: "Days",
+  //   formatter: (cell, row) => <>{row?.leave_request?.no_of_days}</>,
+  // },
   {
     dataField: "component_name",
     text: "Leave Type",

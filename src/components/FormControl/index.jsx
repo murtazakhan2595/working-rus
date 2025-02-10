@@ -44,9 +44,12 @@ import DateRangeFilter from "./DateRangeFilter";
 import SortingFilters from "./SortingFilters";
 import TimePicker from "./TimePicker";
 import { SelectMultiInputComponent } from "components/FormControl/InputSelect";
-import ImageInput from 'components/FormControl/UploadFiles/ImageInput';
-import { errorClassName } from "app/utils/Types/General";
+import ImageInput from "components/FormControl/UploadFiles/ImageInput";
+import ColorInput from "./ColorInput";
 
+const errorClassName = "text-red-800 text-sm font-[inter] font-normal ml-1";
+export const inputButtonClassName =
+  "inline-flex items-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-white text-primary  dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-fit px-4 py-2 flex-wrap justify-between w-full rounded-sm border-neutral-500 hover:border-primary-200 hover:text-primary-1100 hover:bg-primary-200 hover:shadow-none";
 const SelectComponent = ({
   name,
   value,
@@ -57,7 +60,7 @@ const SelectComponent = ({
   disabled,
   required,
   onChange,
-  classes = 'gap-4',
+  classes = "w-full",
   placeholder,
   icon,
   showLabel = true,
@@ -73,59 +76,61 @@ const SelectComponent = ({
     onChange(name, newValue);
   };
   return (
-    <div className={`${classes} flex flex-col w-full`}>
-      {showLabel && (
+    <div className={`${classes} flex flex-col gap-4`}>
+      {showLabel && label && (
         <Label className="" htmlFor={name}>
           {required && <span className="text-red-600">* </span>} {label}
         </Label>
       )}
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="justify-between w-full rounded-sm text-neutral-1100 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
-            disabled={disabled}
-          >
-            {icon}{" "}
-            {value ? (
-              options.find((option) => option.value == value)?.label
-            ) : (
-              <span className="text-sm font-normal text-neutral-1000">
-                {placeholder || `Select`}
-              </span>
-            )}
-            <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0">
-          <Command>
-            <CommandInput placeholder={`Enter ${label || ""}`} />
-            <CommandList>
-              <CommandEmpty>No {label} found.</CommandEmpty>
-              <CommandGroup>
-                {options?.map((option) => (
-                  <CommandItem
-                    key={option.value}
-                    value={option.value}
-                    onSelect={() => handleSelect(option.value)}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        value === option.value ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {option.label}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-      {error && touch && <div className={errorClassName}>{error}</div>}
+      <div className="flex flex-col gap-1">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className={inputButtonClassName}
+              disabled={disabled}
+            >
+              {icon}{" "}
+              {value ? (
+                options.find((option) => option.value == value)?.label
+              ) : (
+                <span className="text-sm font-normal text-neutral-1000">
+                  {placeholder || `Select`}
+                </span>
+              )}
+              <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[300px] p-0">
+            <Command>
+              <CommandInput placeholder={`Enter ${label || ""}`} />
+              <CommandList>
+                <CommandEmpty>No {label} found.</CommandEmpty>
+                <CommandGroup>
+                  {options?.map((option) => (
+                    <CommandItem
+                      key={option.value}
+                      value={option.value}
+                      onSelect={() => handleSelect(option.value)}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          value === option.value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {option.label}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+        {error && touch && <div className={errorClassName}>{error}</div>}
+      </div>
     </div>
   );
 };
@@ -463,8 +468,8 @@ const TextInput = ({
     <div className="flex flex-col gap-4">
       {label && (
         <Label htmlFor={name}>
-          {label}
           {required && <span className="text-red-600">* </span>}
+          {label}
         </Label>
       )}
       <Input
@@ -1323,4 +1328,5 @@ export {
   TextEditorInputField,
   SortingFilters,
   DateRangeFilter,
+  ColorInput,
 };

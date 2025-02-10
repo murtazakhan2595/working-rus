@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { CoverFileUpload } from "components/FormControl";
 import { deleteAttachment } from "app/hooks/taskManagment";
+import AttachmentUI from "components/ui/AttachmentUI";
 
 const Attachments = React.memo(
   ({
@@ -19,7 +20,6 @@ const Attachments = React.memo(
         file instanceof File ? { attachment: file, name: file.name } : file
       );
     }, []);
-
     return (
       <div className="flex flex-col w-full">
         {((attachmentSelected && attachmentSelected.length < maxAttachments) ||

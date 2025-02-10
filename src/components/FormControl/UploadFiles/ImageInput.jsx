@@ -1,8 +1,8 @@
-import React, { useRef, useCallback } from "react";
-import { Label } from "src/@/components/ui/label";
+import React, { useRef, useState } from "react";
+import ImageDocPreview from "components/ui/ImageDocPreview";
 import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
-
+import { getFileNameFromURL } from "utils/downUtils";
 import upload from "assets/images/upload.png";
 
 import { errorClassName } from "app/utils/Types/General";
@@ -16,6 +16,12 @@ const ImageInput = React.memo(
     touch = null,
     name = null,
   }) => {
+    const [viewImage, setViewImage] = useState(false);
+    const imageURL = value
+      ? typeof value === "string"
+        ? value // If value is a URL, use it directly
+        : URL.createObjectURL(value) // If value is a file object, create a temporary URL
+      : null;
     const ImageFileInputRef = useRef(null);
     const handleUpload = (e) => {
       e.preventDefault();
@@ -27,20 +33,21 @@ const ImageInput = React.memo(
       e.stopPropagation();
       onChange(name, null);
     };
+    const handleImageClick = (event) => {
+      event.preventDefault();
+      setViewImage(true);
+    };
     return (
       <>
         <div className="relative flex flex-row items-center justify-start w-full h-full border-solid rounded-3xl">
           <div className="relative overflow-hidden w-[110px]">
             {value ? (
               <img
-                src={
-                  typeof value === "string"
-                    ? value // If value is a URL, use it directly
-                    : URL.createObjectURL(value) // If value is a file object, create a temporary URL
-                }
+                src={imageURL}
                 alt="Preview"
-                className="h-[100px] object-cover border-2 border-gray-400 rounded-full"
+                className="h-[100px] object-cover border-2 border-gray-400 rounded-full cursor-pointer"
                 width={"100px"}
+                onClick={handleImageClick}
               />
             ) : (
               <img
@@ -78,9 +85,11 @@ const ImageInput = React.memo(
                   }
                 }}
               />
-              <Button variant="continue" onClick={handleUpload}>
-                {`${value ? "Update" : "Upload"} ${label}`}
-              </Button>
+              {!value && (
+                <Button variant="continue" onClick={handleUpload}>
+                  {`${value ? "Update" : "Upload"} ${label}`}
+                </Button>
+              )}
               {value && (
                 <Button variant="continue" onClick={handlRemove}>
                   {`Remove`}
@@ -93,6 +102,14 @@ const ImageInput = React.memo(
             </span>
           </div>
         </div>
+        {viewImage && (
+          <ImageDocPreview
+            attachment={imageURL}
+            name={getFileNameFromURL(imageURL)}
+            isOpen={viewImage}
+            setIsOpen={setViewImage}
+          />
+        )}
       </>
     );
   }

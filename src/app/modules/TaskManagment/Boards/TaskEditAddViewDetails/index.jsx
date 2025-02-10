@@ -72,6 +72,11 @@ const TaskEditAddViewDetails = ({
   const [subTasksDetails, setSubTasksDetails] = useState([]);
   const [closeSheet, setCloseSheet] = useState(false);
   const employees = useSelector((state) => state.emp.employees);
+  const [showActivities, setShowActivities] = useState(true);
+
+  const toggleActivities = () => {
+    setShowActivities(!showActivities);
+  };
 
   const handleClose = (e) => {
     if (e && e.event) e.preventDefault();
@@ -233,26 +238,29 @@ const TaskEditAddViewDetails = ({
     setIsLoading(true);
     try {
       const getAttachmentFileIds = async (files) => {
-        return await Promise.all(
-          files.map(async (file, index) => {
-            const response = await uploadAttachmentFile(file);
-            if (index === 0) {
-              values.cover_photo = response.attachment;
-            }
-            return response.id;
-          })
-        );
+        return (
+          await Promise.all(
+            files.map(async (file, index) => {
+              const response = await uploadAttachmentFile(file);
+              if (index === 0) {
+                values.cover_photo = response.attachment;
+              }
+              return response.id;
+            })
+          )
+        ).filter(Boolean); // Remove null values;
       };
 
       const getCheckListIds = async (checklist) => {
-        return await Promise.all(
-          checklist.map(async (item) => {
-            const response = await addTaskCheckListItem(item, item.id);
-            return response.id;
-          })
-        );
+        return (
+          await Promise.all(
+            checklist.map(async (item) => {
+              const response = await addTaskCheckListItem(item, item.id);
+              return response.id;
+            })
+          )
+        ).filter(Boolean); // Remove null values;
       };
-      console.log(values);
       const finalData = mapTaskPayloadData({
         ...values,
         start_date: moment(new Date()).format("YYYY-MM-DD"),
@@ -347,7 +355,11 @@ const TaskEditAddViewDetails = ({
                         }`
                       )}
                       {taskId && (
-                        <CopyLink link={`${taskId}`} text={`T-${taskId}`} directCopy={true} />
+                        <CopyLink
+                          link={`${taskId}`}
+                          text={`T-${taskId}`}
+                          directCopy={true}
+                        />
                       )}
                     </div>
                     <div className="flex justify-end gap-2">
@@ -519,7 +531,18 @@ const TaskEditAddViewDetails = ({
                         />
                       </div>
                       <DetailBox
-                        label="Comments"
+                        label={
+                          <div className="flex justify-between items-center w-full">
+                            <span>Activity</span>
+                            <button
+                              className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3"
+                              type="button"
+                              onClick={toggleActivities}
+                            >
+                              {showActivities ? "Hide Details" : "Show Details"}
+                            </button>
+                          </div>
+                        }
                         orientation="horizontal"
                         value={
                           !refreshComments && (
@@ -529,27 +552,27 @@ const TaskEditAddViewDetails = ({
                               taskId={taskId}
                               userId={userId}
                               projectDetail={projectDetail}
+                              addAttachment={async (attachment) => {
+                                debugger;
+                                const uploadedAttachment =
+                                  await uploadAttachmentFile(attachment);
+                                const attachmentSelected =
+                                  props.values.attachment || [];
+                                props.setFieldValue("attachment", [
+                                  ...attachmentSelected,
+                                  uploadedAttachment,
+                                ]);
+                              }}
                             />
                           )
                         }
                       />
-                      <div>
-                        {/* <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
-                          {"Activity"}
-                        </div>
-                        <DetailCard detailCardTitle="" classNames="mt-0">
-                          <TaskComments
-                            taskId={taskId}
-                            refreshComments={refreshComments}
-                            setRefreshComments={setRefreshComments}
-                          />
-                        </DetailCard> */}
-                        <TaskCommentsContainer
-                          taskId={taskId}
-                          refreshComments={refreshComments}
-                          setRefreshComments={setRefreshComments}
-                        />
-                      </div>
+                      <TaskCommentsContainer
+                        taskId={taskId}
+                        refreshComments={refreshComments}
+                        setRefreshComments={setRefreshComments}
+                        showActivities={showActivities}
+                      />
                     </div>
                   </div>
 

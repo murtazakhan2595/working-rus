@@ -86,9 +86,27 @@ export default function ImageDocPreview({
         if (!open) resetZoom();
       }}
     >
-      <DialogContent className="w-[90vw] min-w-[90vw] min-h-[90%] h-[90vh] flex flex-col gap-4">
+      <DialogContent className="w-[90vw] min-w-[90vw] min-h-[90%] h-[90vh] flex flex-col gap-1 pb-2">
         <div className="flex flex-row w-full max-w-full overflow-hidden justify-between">
           <h6>{name || "Attachment"}</h6>
+          <div className="flex gap-x-2 justify-center">
+            <Button
+              onClick={handleZoomIn}
+              variant="ghost"
+              size="sm"
+              className="py-0"
+            >
+              <AiOutlineZoomIn className="w-5 h-5" />
+            </Button>
+            <Button
+              onClick={handleZoomOut}
+              variant="ghost"
+              size="sm"
+              className="py-0"
+            >
+              <AiOutlineZoomOut className="w-5 h-5" />
+            </Button>
+          </div>
           <Button
             onClick={() => downloadFile(attachment, name)}
             className="mr-3"
@@ -98,13 +116,13 @@ export default function ImageDocPreview({
             Download <AiOutlineDownload className="w-5 h-5" />
           </Button>
         </div>
-        <div className="overflow-hidden flex-grow relative flex justify-center items-center h-[calc(100%_-_100px)]">
+        <div className="overflow-hidden flex-grow relative flex justify-center items-center h-[calc(100%_-_90px)] ">
           {imageFileType.includes(fileType) ? (
             <img
               ref={imgRef}
               src={fileURL}
               alt={name || "Attachment"}
-              className="max-h-[100%] max-w-[100%] object-contain h-[100%] w-auto"
+              className="max-h-[100%] max-w-[100%] object-contain w-auto"
               style={{
                 transform: `scale(${scale})`,
                 transition: "transform 0.2s ease-out",
@@ -129,14 +147,6 @@ export default function ImageDocPreview({
               title={name}
             />
           )}
-        </div>
-        <div className="flex gap-x-2 justify-center">
-          <Button onClick={handleZoomIn} variant="ghost" size="sm" className='py-0'>
-            <AiOutlineZoomIn className="w-5 h-5" />
-          </Button>
-          <Button onClick={handleZoomOut} variant="ghost" size="sm" className='py-0'>
-            <AiOutlineZoomOut className="w-5 h-5" />
-          </Button>
         </div>
       </DialogContent>
     </Dialog>

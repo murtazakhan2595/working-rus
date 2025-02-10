@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import { Formik } from "formik";
-import { TextInput } from "components/FormControl";
+import { TextInput, ColorInput } from "components/FormControl";
 import { addBoard, getBoardById } from "app/hooks/taskManagment";
 import { AddList } from "app/utils/Types/TaskManagment";
 import { PageLoader } from "components";
@@ -9,9 +9,14 @@ import SheetComponent from "components/ui/SheetComponent";
 import { Button } from "components/ui/button";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
-const AddNewListModel = ({ onClose, projectId, boardId, isEditMode, setIsOpen }) => {
+const AddNewListModel = ({
+  projectId,
+  boardId,
+  isEditMode,
+  setIsOpen,
+}) => {
   const formRef = useRef();
-  const [closeSheet, setCloseSheet] = useState(false)
+  const [closeSheet, setCloseSheet] = useState(false);
 
   const [initialValues, setInitialValues] = useState({
     ...AddList,
@@ -19,10 +24,10 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode, setIsOpen })
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleClose = ()=>{
+  const handleClose = () => {
     // setIsOpen(false)
-    setCloseSheet(true)
-  }
+    setCloseSheet(true);
+  };
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -54,7 +59,7 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode, setIsOpen })
     try {
       const response = await addBoard(formData);
       if (response) {
-        onClose();
+        setIsOpen();
       }
     } catch (error) {
       console.error("Error:", error);
@@ -72,10 +77,12 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode, setIsOpen })
 
   return (
     <>
-     {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
-      <SheetComponent {...formSheetData}  isOpen={true}
-       width="568px"
-      >
+      {handleCloseWithConfirmation({
+        isOpen: closeSheet,
+        setCloseSheet,
+        setIsOpen,
+      })}
+      <SheetComponent {...formSheetData} isOpen={true} width="468px">
         {isLoading ? (
           <PageLoader />
         ) : (
@@ -92,17 +99,29 @@ const AddNewListModel = ({ onClose, projectId, boardId, isEditMode, setIsOpen })
           >
             {(props) => (
               <form onSubmit={props.handleSubmit}>
-                <TextInput
-                  name="name"
-                  error={props.errors.name}
-                  touch={props.touched.name}
-                  value={props.values.name}
-                  label="Title"
-                  required
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                />
+                <div className="space-y-4">
+                  <TextInput
+                    name="name"
+                    error={props.errors.name}
+                    touch={props.touched.name}
+                    value={props.values.name}
+                    label="Title"
+                    required
+                    onChange={(field, value) => {
+                      props.handleChange(field)(value);
+                    }}
+                  />
+                  <ColorInput
+                    name="color"
+                    error={props.errors.color}
+                    touch={props.touched.color}
+                    selectedColor={props.values.color}
+                    label="Color"
+                    onChange={(field, value) => {
+                      props.handleChange(field)(value);
+                    }}
+                  />
+                </div>
                 <div className="flex justify-end gap-2 mt-4">
                   <Button type="button" variant="outline" onClick={handleClose}>
                     Cancel
