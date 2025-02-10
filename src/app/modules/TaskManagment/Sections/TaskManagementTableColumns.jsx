@@ -3,7 +3,6 @@ import moment from "moment";
 import { Clock } from "lucide-react";
 import { MembersList, TaskEndDate } from "app/modules/TaskManagment/Sections";
 import TaskStatusLabel from "app/modules/TaskManagment/Sections/TaskStatus";
-import { Link } from "react-router-dom";
 import { Button } from "components/ui/button";
 
 export const ProjectColumn = [
@@ -33,7 +32,7 @@ export const ProjectColumn = [
     text: "Due Date",
     dataField: "end_date",
     formatter: (cell, row) => {
-      return <TaskEndDate dueDate={cell} />;
+      return <TaskEndDate dueDate={cell} taskStatus={row.status} tooltipMessagePrefix={'This Project'}/>;
     },
     width: "160px",
   },

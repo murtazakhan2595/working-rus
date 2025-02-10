@@ -38,16 +38,14 @@ const getDateIconColor = (date) => {
   }
 };
 
-const TaskEndDate = ({ dueDate, taskStatus = "" }) => {
+const TaskEndDate = ({
+  dueDate,
+  taskStatus = "",
+  tooltipMessagePrefix = "This card",
+}) => {
   if (!dueDate || !moment(dueDate).isValid()) return null;
   const taskDateStatus = getTaskDateStatus(dueDate);
-  const taskCompleted = taskStatus.toUpperCase() === "COMPLETED";
-  console.log(
-    moment(dueDate).isValid(),
-    taskCompleted,
-    taskDateStatus,
-    "moment(dueDate).isValid()"
-  );
+  const taskCompleted = taskStatus && taskStatus.toUpperCase() === "COMPLETED";
 
   const getIconColor = () => {
     if (taskCompleted) {
@@ -57,16 +55,17 @@ const TaskEndDate = ({ dueDate, taskStatus = "" }) => {
   };
 
   const getTooltipMessage = () => {
+    let message = "";
     if (taskCompleted) {
-      return "The card is complete.";
-    }
-    if (taskDateStatus === "Overdue") {
-      return "The card has past due date.";
+      message = "is complete.";
+    } else if (taskDateStatus === "Overdue") {
+      message = "has past due date.";
     } else if (taskDateStatus === "Due Today") {
-      return "The card is due today.";
+      message = "is due today.";
     } else {
-      return "The card is due later.";
+      message = "is due later.";
     }
+    return `${tooltipMessagePrefix} ${message}`;
   };
 
   const textStyle = {
