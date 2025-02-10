@@ -1,11 +1,10 @@
 import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { getAllProjects, deleteProject } from "app/hooks/taskManagment";
+import { getAllProjects } from "app/hooks/taskManagment";
 import { Header, PageLoader } from "components";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import ViewBoardDetails from "./ViewBoardDetails";
 import { MembersList } from "../Sections";
 import { LuFolderX } from "react-icons/lu";
 import { useSelector } from "react-redux";
@@ -26,10 +25,6 @@ import {
   ListTodo,
   TableOfContents,
   Clock,
-  MoreVertical,
-  Eye,
-  Edit,
-  Trash,
 } from "lucide-react";
 import TableCustom from "components/CustomTable";
 import { ProjectColumn } from "app/modules/TaskManagment/Sections/TaskManagementTableColumns";
@@ -41,13 +36,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "src/@/components/ui/dropdown-menu";
-import AlertDialogue from "components/ui/AlertDialogue";
 
 const Projects = ({ userProfile }) => {
   const dispatch = useDispatch();

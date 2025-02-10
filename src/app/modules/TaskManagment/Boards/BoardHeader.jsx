@@ -40,7 +40,13 @@ const BoardHeader = ({
     "name",
     "id"
   );
-
+  const Employees = useSelector((state) => state.emp.employees);
+  const ProjectMembers = projectData?.project_members || [];
+  const AssigneesList = React.useMemo(() => {
+    return Employees?.filter((employee) =>
+      ProjectMembers.includes(employee.value)
+    );
+  }, [Employees, ProjectMembers]);
   const handleFilterChange = (
     filterName,
     filterValue,
@@ -140,6 +146,12 @@ const BoardHeader = ({
               values: filterData["status"] || [],
             },
             {
+              title: "Assignees",
+              label: "assigned_to",
+              options: AssigneesList,
+              values: filterData["assigned_to"] || [],
+            },
+            {
               title: "Label",
               label: "label",
               options: TaskLabelList,
@@ -171,7 +183,7 @@ const BoardHeader = ({
           showReset={true}
         />
         <MembersList
-          members={projectData?.project_members || []}
+          members={ProjectMembers || []}
           removeMember={removeMember}
         />
         {isDelete && (
@@ -185,7 +197,7 @@ const BoardHeader = ({
           />
         )}
         <ViewOptions activeView={activeView} setActiveView={setActiveView} />
-        <AdditionalOption projectId={projectId} />
+        <AdditionalOption projectId={projectId} reloadData={fetchData}/>
       </div>
     </div>
   );

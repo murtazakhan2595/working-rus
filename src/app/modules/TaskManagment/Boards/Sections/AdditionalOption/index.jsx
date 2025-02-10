@@ -44,6 +44,11 @@ const AdditionalOption = React.memo(
       e.preventDefault();
       setOpenArchive(true);
     };
+    const handleOnClose = () => {
+      setOpenMembersBoard(false);
+      setOpenArchive(false);
+      reloadData(true);
+    };
     return (
       <>
         <DropdownMenu>
@@ -82,7 +87,7 @@ const AdditionalOption = React.memo(
 
         {openArchive && (
           <ArchiveTasks
-            onClose={setOpenArchive}
+            onClose={handleOnClose}
             isOpen={openArchive}
             projectId={projectId}
             reloadData={reloadData}
@@ -90,10 +95,9 @@ const AdditionalOption = React.memo(
         )}
         {openMembersBoard && (
           <MembersBoard
-            onClose={setOpenMembersBoard}
+            onClose={handleOnClose}
             isOpen={openMembersBoard}
             projectId={projectId}
-            reloadData={reloadData}
           />
         )}
       </>
