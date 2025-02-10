@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { getAllProjects,deleteProject } from "app/hooks/taskManagment";
+import { getAllProjects, deleteProject } from "app/hooks/taskManagment";
 import { Header, PageLoader } from "components";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
@@ -226,14 +226,20 @@ const getStatusDotColor = (status) => {
 const RenderProject = ({
   project,
   toggleAddProject,
-  fetchData,
+  fetchData = () => {},
   userProfile,
 }) => {
   const navigate = useNavigate();
+  const [isEditMode, setIsEditMode] = useState(false);
   const navigateToBoard = () => {
     navigate(`/project-board/${project.id}`);
   };
 
+  const handleProjectClick = (event) => {
+    debugger;
+    event.preventDefault();
+    setIsEditMode(true);
+  };
   return (
     <Card className="rounded-lg">
       {project && (
@@ -241,6 +247,7 @@ const RenderProject = ({
           <CardHeader
             className="m-2 p-2 cursor-pointer rounded-lg bg-gray-500 transition-all duration-300 hover:opacity-90 hover:shadow-md"
             style={project?.color ? { backgroundColor: project.color } : {}}
+            onClick={handleProjectClick}
           >
             <CardTitle>
               <div className="flex justify-between py-1 pr-3 pb-4">
@@ -303,6 +310,15 @@ const RenderProject = ({
             <MembersList members={project?.project_members || []} />
           </CardFooter>
         </>
+      )}
+      {isEditMode && project && (
+        <CreateEditProject
+          project={project}
+          isEditMode={true}
+          isOpen={isEditMode}
+          setIsOpen={setIsEditMode}
+          reload={fetchData}
+        />
       )}
     </Card>
   );

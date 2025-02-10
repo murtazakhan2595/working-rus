@@ -7,9 +7,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "src/@/components/ui/dialog";
-import { Members } from "../Sections";
 import { Formik } from "formik";
-import { addProject } from "app/hooks/taskManagment";
+import { addProject, deleteProject } from "app/hooks/taskManagment";
 import {
   TextInput,
   SelectComponent,
@@ -23,11 +22,14 @@ import { Button } from "components/ui/button";
 import { ProjectStatusList } from "data/Data";
 import { ImageInput } from "components/FormControl";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
-import { SheetCardExtension } from "components/SheetCardExtension";
+import AlertDialogue from "components/ui/AlertDialogue";
 import { validationProjectFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
 import { PageLoader } from "components";
 import { ScrollArea, ScrollBar } from "src/@/components/ui/scroll-area";
 import { DEFAULT_PROJECT_COLOR_OPTIONS } from "app/utils/Types/TaskManagment";
+import { EmployeeName, FormatID } from "utils/getValuesFromTables";
+import { renderDate } from "utils/renderValues";
+
 const ProjectForm = ({
   employees,
   reload = () => {},
@@ -43,16 +45,11 @@ const ProjectForm = ({
   const initialValues = editProject || Project;
   const [profilePictureError, setProfilePictureError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedColor, setSelectedColor] = useState("#f7f7f7");
+  const [openAlertDialogue, setOpenAlertDialogue] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState(
     initialValues.project_members || []
   );
-  const Employees = useMemo(() => {
-    return employees?.filter(
-      (employee) => !selectedMembers.includes(employee.value)
-    );
-  }, [employees, selectedMembers]);
 
   const handleClose = () => {
     // setIsOpen(false)
@@ -98,6 +95,18 @@ const ProjectForm = ({
     }
   };
 
+  const handleDeleteProjectClick = (e) => {
+    e.preventDefault();
+    setOpenAlertDialogue(true);
+  };
+  const confirmDelete = async () => {
+    const response = await deleteProject(editProject.id);
+    if (response) {
+      reload(true);
+      setIsOpen(false);
+    }
+    setOpenAlertDialogue(false);
+  };
   const removeMember = (member) => {
     const members = formRef.current.values.project_members || [];
     const updatedMembers = members.filter((m) => m !== member);
@@ -111,7 +120,7 @@ const ProjectForm = ({
         setIsOpen,
       })}
       <Dialog open={isOpen} onOpenChange={setIsOpen} className="z-[999]">
-        <DialogContent className="max-w-[70vw] w-[50vw]">
+        <DialogContent className="max-w-[738px] w-[90vw]">
           <DialogHeader>
             <DialogTitle className={""}>Project Details</DialogTitle>
           </DialogHeader>
@@ -220,6 +229,7 @@ const ProjectForm = ({
                               error={props.errors.project_members}
                               touch={props.touched.project_members}
                               placeholder="Select Project Members"
+                              selectedOptionClassName={"bg-neutral-300 text-neutral-1200"}
                             />
                           </div>
                           <ColorInput
@@ -235,21 +245,43 @@ const ProjectForm = ({
                             variant="preset-custom"
                           />
                         </div>
-                       
+                        <div className="grid grid-cols-2 grid-cols-[100px_auto] gap-x-1 gap-y-1 text-sm">
+                          <div className="text-neutral-1100">Project Id:</div>
+                          <div className="text-plum-1100 font-semibold">
+                            <FormatID value={editProject.id} prefix={"PI-"} />
+                          </div>
+                          <div className="text-neutral-1100">Created On:</div>
+                          <div className="text-plum-1100 font-semibold">
+                            {renderDate(editProject.created_at)}
+                          </div>
+                          <div className="text-neutral-1100">Created By:</div>
+                          <div className="text-plum-1100 font-semibold">
+                            <EmployeeName value={editProject.created_by} />
+                          </div>
+                        </div>
                       </div>
 
-
-                      <div className="p-6 border-t border-gray-200 ">
+                      <div className="p-6 pl-0 border-t border-gray-200 flex flex-row justify-between w-full">
+                        <div>
+                          {isEditMode && (
+                            <Button
+                              variant="continue"
+                              type="button"
+                              onClick={handleDeleteProjectClick}
+                            >
+                              Delete
+                            </Button>
+                          )}
+                        </div>
                         <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
                           <Button
                             variant="outline"
                             type="button"
-                            size="lg"
                             onClick={handleClose}
                           >
                             Cancel
                           </Button>
-                          <Button type="submit" size="lg">
+                          <Button type="submit">
                             {`${isEditMode ? "Update" : "Save"} Changes`}
                           </Button>
                         </div>
@@ -263,15 +295,16 @@ const ProjectForm = ({
           )}
         </DialogContent>
       </Dialog>
-      {/* <div open={isOpen} onOpenChange={setIsOpen}>
-        <div className="flex flex-col ">
-          <div className="flex-grow ">
-            <div className="p-0">
-             
-            </div>
-          </div>
-        </div>
-      </div> */}
+      {openAlertDialogue && (
+        <AlertDialogue
+          isOpen={openAlertDialogue}
+          setIsOpen={setOpenAlertDialogue}
+          handleContinue={confirmDelete}
+          continueText="Delete"
+          title="Are you Sure?"
+          description="Are you sure you want to delete this Project? This action is irreversible and will delete all tasks within."
+        />
+      )}
     </>
   );
 };

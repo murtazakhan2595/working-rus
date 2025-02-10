@@ -6,7 +6,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "src/@/components/ui/popover";
-import { ChevronsUpDown, Check,CircleX } from "lucide-react";
+import { ChevronsUpDown, Check, CircleX } from "lucide-react";
 import {
   Command,
   CommandInput,
@@ -15,29 +15,34 @@ import {
   CommandEmpty,
   CommandGroup,
 } from "src/@/components/ui/command";
+import { errorClassName, inputButtonClassName } from "components/FormControl";
+import { cn } from "src/@/lib/utils.js";
 
 const SelectMultiInputComponent = React.memo(
   ({
     name,
-    options,
+    options, // List of selectable options
     error,
     touch,
-    value = [],
-    label,
-    onChange,
-    required = false,
-    className = "flex flex-col gap-4 w-full",
-    icon,
-    useValueAsIdentifier = true,
-    allowNewOption = false,
-    newOptionConfig = {},
-    showOptionsActions = false,
-    optionsActions = [],
-    placeholder=null,
+    value = [], // Current selected values
+    label, // Label for the select field
+    onChange, // Function to handle selection change
+    required = false, // Whether the field is required
+    className = "w-full", // Custom styling
+    icon, // Optional icon inside the button
+    useValueAsIdentifier = true, // Determines if value or label is used for selection
+    allowNewOption = false, // Whether users can add new options
+    newOptionConfig = {}, // Configuration for new options
+    showOptionsActions = false, // Show additional actions for options
+    optionsActions = [], // List of action buttons for options
+    placeholder = null, // Placeholder text when no value is selected
+    selectedOptionClassName = "", // Add custom style to value labels
+    showSelectedValuesBelow = false, // Show selected values below the dropdown (Generalized name)
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectedValues = value && Array.isArray(value) ? value : [];
-    // Handle selection toggle
+
+    // Toggle selection for a given option
     const handleSelectionToggle = useCallback(
       (optionValue) => {
         const updatedSelection = selectedValues.includes(optionValue)
@@ -48,6 +53,8 @@ const SelectMultiInputComponent = React.memo(
       },
       [selectedValues, onChange, name]
     );
+
+    // Remove a selected value
     const handleRemove = useCallback(
       (option) => {
         const newValue = value.filter((item) => item !== option);
@@ -55,141 +62,195 @@ const SelectMultiInputComponent = React.memo(
       },
       [value, onChange, name]
     );
+
     return (
-      <div className={`${className} flex flex-col w-full`}>
-        {/* Label */}
+      <div className={`${className} flex flex-col gap-4`}>
+        {/* Field Label */}
         {label && (
           <Label htmlFor={name}>
             {required && <span className="text-red-600">* </span>}
             {label}
           </Label>
         )}
-
-        {/* Dropdown Trigger */}
-        <Popover open={isOpen} onOpenChange={setIsOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={isOpen}
-              className="flex-wrap justify-between w-full rounded-sm h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
-            >
-              <div className="flex justify-start w-full gap-2">
-                {icon && <div className="w-4">{icon}</div>}
-
-                <div className="flex flex-wrap gap-2 items-center max-w-[90%]">
-                  {selectedValues.length > 0 ? (
-                    selectedValues.map((val) =>
-                      useValueAsIdentifier ? (
-                        <span
-                          key={val}
-                          className="bg-plum-300 text-plum-800 text-xs font-semibold px-2.5 py-0.5 rounded-lg flex items-center max-w-[100%] overflow-hidden"
-                        >
-                          {options.find((opt) => opt.value === val)?.label}
-                          <CircleX
-                            className="ml-1 text-red-700 cursor-pointer"
-                            size={16}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemove(val);
-                            }}
-                          />
-                        </span>
-                      ) : (
-                        options.find((opt) => opt.value === val)?.label
-                      )
-                    )
-                  ) : (
-                    <span className="text-sm font-normal text-neutral-1000">
-                      {placeholder ? placeholder : `Select ${label}`}
-                    </span>
-                  )}
+        <div className="flex-col flex gap-1">
+          {/* Dropdown Button */}
+          <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={isOpen}
+                className={inputButtonClassName}
+              >
+                <div className="flex justify-start w-full gap-2">
+                  {icon && <div className="w-4">{icon}</div>}
+                  <div className="flex flex-wrap gap-2 items-center max-w-[90%]">
+                    {selectedValues.length > 0 && !showSelectedValuesBelow ? (
+                      <SelectedOptionsList
+                        selectedValues={selectedValues}
+                        useValueAsIdentifier={useValueAsIdentifier}
+                        options={options}
+                        handleRemove={handleRemove}
+                        selectedOptionClassName={selectedOptionClassName}
+                      />
+                    ) : (
+                      <span className="text-sm font-normal text-neutral-1000">
+                        {placeholder ? placeholder : `Select ${label}`}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronsUpDown className="w-4 h-4 ml-2 ml-auto opacity-50 shrink-0" />
                 </div>
+              </Button>
+            </PopoverTrigger>
 
-                <ChevronsUpDown className="w-4 h-4 ml-2 ml-auto opacity-50 shrink-0" />
-              </div>
-            </Button>
-          </PopoverTrigger>
-
-          {/* Dropdown Content */}
-          <PopoverContent className="w-[300px] p-0">
-            <Command>
-              <CommandInput
-                placeholder="Search options..."
-                className="text-sm font-normal text-neutral-900"
+            {/* Dropdown Content */}
+            <PopoverContent className="w-[300px] p-0">
+              <SelectableOptionsList
+                options={options}
+                selectedValues={selectedValues}
+                handleSelectionToggle={handleSelectionToggle}
+                showOptionsActions={showOptionsActions}
+                optionsActions={optionsActions}
               />
-              <CommandList>
-                <CommandEmpty>No options found.</CommandEmpty>
-                <CommandGroup>
-                  {options.map(({ value, label }) => (
-                    <CommandItem
-                      key={value}
-                      onSelect={() => handleSelectionToggle(value)}
-                    >
-                      <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center">
-                          <Check
-                            className={`mr-2 h-4 w-4 min-w-4 ${
-                              selectedValues.includes(value)
-                                ? "opacity-100"
-                                : "opacity-0"
-                            }`}
-                          />
-                          {label}
-                        </div>
-
-                        {/* Action Buttons */}
-                        {showOptionsActions && (
-                          <div className="flex">
-                            {optionsActions.map(
-                              ({ content, onClick }, index) => (
-                                <Button
-                                  key={index}
-                                  variant="ghost"
-                                  size="sm"
-                                  className={`w-10 h-4`}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onClick?.(value);
-                                  }}
-                                >
-                                  {content}
-                                </Button>
-                              )
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-
-            {/* Add New Option Button */}
-            {allowNewOption && (
-              <div className="my-3 px-8">
-                <Button
-                  key="add-new-option"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    newOptionConfig.onClick();
-                  }}
-                  className="w-full"
-                  size="sm"
-                >
-                  {newOptionConfig.buttonValue}
-                </Button>
-              </div>
-            )}
-          </PopoverContent>
-        </Popover>
-
-        {/* Error Message */}
-        {error && touch && <div className="text-red-600 text-sm">{error}</div>}
+              {/* Add New Option Button */}
+              {allowNewOption && (
+                <div className="my-3 px-8">
+                  <Button
+                    key="add-new-option"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      newOptionConfig.onClick();
+                    }}
+                    className="w-full"
+                    size="sm"
+                  >
+                    {newOptionConfig.buttonValue}
+                  </Button>
+                </div>
+              )}
+            </PopoverContent>
+          </Popover>
+          {/* Show Selected Values Below if Enabled */}
+          {showSelectedValuesBelow && selectedValues.length > 0 && (
+            <div className="flex fex-row flex-wrap gap-2 items-center max-w-[90%]">
+              <SelectedOptionsList
+                selectedValues={selectedValues}
+                useValueAsIdentifier={useValueAsIdentifier}
+                options={options}
+                handleRemove={handleRemove}
+                selectedOptionClassName={selectedOptionClassName}
+              />
+            </div>
+          )}
+          {/* Error Message Display */}
+          {error && touch && <div className={errorClassName}>{error}</div>}
+        </div>
       </div>
     );
   }
 );
+
+/**
+ * Component to Display Selected Options.
+ * It supports removing selected options.
+ */
+const SelectedOptionsList = ({
+  selectedValues = [],
+  useValueAsIdentifier = true,
+  options = [],
+  handleRemove = () => {},
+  selectedOptionClassName = "",
+}) => {
+  console.log(selectedOptionClassName, "selectedOptionClassName");
+  return selectedValues.map((val) =>
+    useValueAsIdentifier ? (
+      <div
+        key={val}
+        className={cn(
+          "bg-plum-300 text-plum-800 text-xs font-semibold px-2 py-1 rounded-lg flex items-center max-w-[100%] overflow-hidden",
+          selectedOptionClassName
+        )}
+      >
+        {options.find((opt) => opt.value === val)?.label}
+        <CircleX
+          className="ml-1 text-red-700 cursor-pointer"
+          size={16}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleRemove(val);
+          }}
+        />
+      </div>
+    ) : (
+      options.find((opt) => opt.value === val)?.label
+    )
+  );
+};
+
+/**
+ * Component to Render Selectable Options in the Dropdown.
+ * Allows selection/deselection of items.
+ */
+const SelectableOptionsList = ({
+  options = [],
+  selectedValues = [],
+  handleSelectionToggle = () => {},
+  showOptionsActions = false,
+  optionsActions = [],
+}) => {
+  return (
+    <Command>
+      <CommandInput
+        placeholder="Search options..."
+        className="text-sm font-normal text-neutral-900"
+      />
+      <CommandList>
+        <CommandEmpty>No options found.</CommandEmpty>
+        <CommandGroup>
+          {options.map(({ value, label }) => (
+            <CommandItem
+              key={value}
+              onSelect={() => handleSelectionToggle(value)}
+            >
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center">
+                  <Check
+                    className={`mr-2 h-4 w-4 min-w-4 ${
+                      selectedValues.includes(value)
+                        ? "opacity-100"
+                        : "opacity-0"
+                    }`}
+                  />
+                  {label}
+                </div>
+
+                {/* Additional Actions for Each Option */}
+                {showOptionsActions && (
+                  <div className="flex">
+                    {optionsActions.map(({ content, onClick }, index) => (
+                      <Button
+                        key={index}
+                        variant="ghost"
+                        size="sm"
+                        className={`w-10 h-4`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onClick?.(value);
+                        }}
+                      >
+                        {content}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CommandItem>
+          ))}
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  );
+};
 
 export { SelectMultiInputComponent };

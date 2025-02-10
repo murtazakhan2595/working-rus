@@ -119,6 +119,16 @@ function EmployeeID({ value }) {
 
   return employee;
 }
+export function FormatID({ value, prefix }) {
+  // Generate a formatted ID for various entities (e.g., project, task, employee, job applicant, etc.)
+  const formattedID =
+    value && typeof value === "string"
+      ? value // Use the value directly if it's a string
+      : `${prefix}${String(value || "").padStart(4, "0")}`; // Ensure numeric values are zero-padded with prefix
+
+  return formattedID;
+}
+
 
 function getEmployeeid(value) {
   const employee = value ? `${value.toString().padStart(4, "0")}` : "N/A";
