@@ -116,6 +116,7 @@ const MembersBoard = ({ onClose, isOpen, projectId }) => {
                 variant="outline"
                 disabled={isLoading && !membersSelected.length ? true : false}
                 onClick={handleAddMember}
+                size={'sm'}
               >
                 Add Members
               </Button>

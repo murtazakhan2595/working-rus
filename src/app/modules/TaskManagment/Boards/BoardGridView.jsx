@@ -165,9 +165,10 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
     >
       <div className="flex flex-col">
         <div
-          className={`rounded-xl p-4`}
+          className={`rounded-xl py-4`}
           style={{ background: board.color ? board.color : "white" }}
         >
+          <div className="flex flex-col px-4">
           <header className="flex justify-between w-full items-center mb-3">
             <h2 className="text-zinc-800 text-base font-bold">{board.name}</h2>
             <div className="flex gap-1">
@@ -213,15 +214,15 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
           <Button
             variant="outline"
             type="button"
-            className="w-full justify-start  group mb-3 "
+            className="w-full justify-start group mb-3"
             onClick={() => setOpenCreateCard(true)}
           >
             <RxPlus className="text-xl" />
             <span className="ml-2">Add a card</span>
           </Button>
-
+          </div>
           <ScrollArea className="[&>div>div[style]]:!block">
-            <div className="space-y-3 h-[calc(100vh_-335px)]">
+            <div className="space-y-3 h-[calc(100vh_-335px)] px-4">
               {tasks?.results &&
                 tasks?.count > 0 &&
                 tasks?.results.map((task) => (
