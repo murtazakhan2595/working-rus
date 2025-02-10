@@ -3,10 +3,8 @@ import React, { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { ViewOptions } from "components";
 import { getLabelDropdownList } from "utils/Lists";
-import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
-import BoardGridView from "app/modules/TaskManagment/Boards/BoardGridView";
 import { MembersList } from "app/modules/TaskManagment/Sections";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   RenderProject,
   AdditionalOption,
@@ -16,9 +14,8 @@ import { DateInput } from "components/FormControl";
 import { Button } from "components/ui/button";
 import { FilterInput, SortingFilters } from "components/FormControl";
 import { PriorityList, TaskSortingFilters, TaskStatus } from "data/Data";
-import { getProjectById, addProject } from "app/hooks/taskManagment";
+import { addProject } from "app/hooks/taskManagment";
 import { AlignRight } from "lucide-react";
-import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
@@ -185,6 +182,9 @@ const BoardHeader = ({
         <MembersList
           members={ProjectMembers || []}
           removeMember={removeMember}
+          onMemberClick={(event, user) => {
+            event.preventDefault();
+          }}
         />
         {isDelete && (
           <AlertDialogue
@@ -197,7 +197,7 @@ const BoardHeader = ({
           />
         )}
         <ViewOptions activeView={activeView} setActiveView={setActiveView} />
-        <AdditionalOption projectId={projectId} reloadData={fetchData}/>
+        <AdditionalOption projectId={projectId} reloadData={fetchData} />
       </div>
     </div>
   );
