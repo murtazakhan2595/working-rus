@@ -32,7 +32,13 @@ export const ProjectColumn = [
     text: "Due Date",
     dataField: "end_date",
     formatter: (cell, row) => {
-      return <TaskEndDate dueDate={cell} taskStatus={row.status} tooltipMessagePrefix={'This Project'}/>;
+      return (
+        <TaskEndDate
+          dueDate={cell}
+          taskStatus={row.status}
+          tooltipMessagePrefix={"This Project"}
+        />
+      );
     },
     width: "160px",
   },
@@ -54,33 +60,36 @@ export const ProjectBoardColumn = [
   {
     text: "Tasks",
     dataField: "name",
-    width: "25%",
     dataSort: true,
   },
   {
     text: "Status",
     dataField: "status",
     formatter: (cell) => (
-      <div className="flex justify-center">
+      <div className="flex justify-start">
         <TaskStatusLabel status={cell} />
       </div>
     ),
-    headerAlign: "center",
+    width: "20%",
+    // headerAlign: "center",
     dataSort: true,
-    dataAlign: "center",
+    // dataAlign: "center",
   },
   {
     text: "Priority",
     dataField: "priority",
-    formatter: (cell) => {
-      return PriorityList.find((option) => option.value === cell)?.label;
-    },
-    headerAlign: "center",
+    formatter: (cell) => (
+      <div className="flex justify-start">
+        {PriorityList.find((option) => option.value === cell)?.label}
+      </div>
+    ),
+    width: "20%",
     dataSort: true,
   },
   {
     text: "Members",
     dataField: "assigned_to",
+    width: "20%",
     formatter: (cell) => <MembersList members={cell} />,
   },
   {

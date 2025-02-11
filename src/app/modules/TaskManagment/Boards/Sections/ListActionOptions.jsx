@@ -26,10 +26,8 @@ const ListActionOptions = ({
   reloadData = () => {},
   boardId = null,
   fetchData = () => {},
-  setTasks = () => {},
   buttonOrientation = "vertical",
-  taskFilters = {},
-  setTaskFilters = () => {},
+  setOrdering = () => {},
 }) => {
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -46,22 +44,22 @@ const ListActionOptions = ({
       let filter = "";
       switch (sortType) {
         case "newest":
-          filter = "start_date";
+          filter = "-start_date";
           return filter;
         case "oldest":
-          filter = "-start_date";
+          filter = "start_date";
           return filter;
         case "alphabetical":
           filter = "name";
           return filter;
         case "dueDate":
-          filter = "end_date";
+          filter = "-end_date";
           return filter;
         default:
           return filter;
       }
     };
-    setTaskFilters({ ...taskFilters, ...{ ordering: getFilter(sortType) } });
+    setOrdering(getFilter(sortType));
   };
 
   return (

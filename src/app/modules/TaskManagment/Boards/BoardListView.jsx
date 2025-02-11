@@ -65,28 +65,21 @@ const ListTasks = ({
   const [viewTask, setViewTask] = useState(null);
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
   const [selectedBoard, setSelectedBoard] = useState(null);
-  const [boardTaskFilters, setBoardTaskFilters] = useState(null);
-  useEffect(() => {
-    let isMounted = true;
-    if (isMounted)
-      setBoardTaskFilters((prev) => {
-        return { ...prev, filterData: filterData };
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, [filterData]);
+  const [ordering, setOrdering] = useState("-start_date");
 
   const tableOptions = {
     onRowClick: (row) => {
       setIsTaskDetailOpen(true);
       setViewTask(row);
     },
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
   };
 
   const fetchData = async (isMounted) => {
     try {
-      const boardsData = await getAllTasks(boardTaskFilters);
+      const boardsData = await getAllTasks({ ordering, filterData });
       if (isMounted) {
         setAllBoardTasks(boardsData);
       }
@@ -97,11 +90,11 @@ const ListTasks = ({
 
   useEffect(() => {
     let isMounted = true;
-    if (boardTaskFilters) fetchData(isMounted);
+    fetchData(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [boardTaskFilters]);
+  }, [ordering, filterData]);
   if (!isEditMode && AllBoardTasks.count === 0) return null;
   return (
     <AccordionItem value={board.id} className="mb-3">
@@ -122,8 +115,7 @@ const ListTasks = ({
               reloadData={reloadData}
               boardId={board.id}
               buttonOrientation={"horizontal"}
-              taskFilters={boardTaskFilters}
-              setTaskFilters={setBoardTaskFilters}
+              setOrdering={setOrdering}
             />
           )}
           {isEditMode && (

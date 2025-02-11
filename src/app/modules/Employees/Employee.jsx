@@ -32,7 +32,6 @@ export default function EmployeeManagement() {
   const [selectedRole, setSelectedRole] = useState("");
 
   const onPageChange = (name, value) => {
-    console.log(name, value, "NAME")
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
