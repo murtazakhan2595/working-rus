@@ -2,18 +2,8 @@ import React, { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { UserActivities, UserCards } from "app/modules/TaskManagment/Boards";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  getProjectById,
-  addProject,
-  getAllBoards,
-} from "app/hooks/taskManagment";
-import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
-import AlertDialogue from "components/ui/AlertDialogue";
-import ActionAlert from "components/ui/ActionAlert";
-import { useSelector } from "react-redux";
 import Err404 from "app/modules/Error/Err404";
 import { ArrowLeft } from "lucide-react";
-import { GetUser } from "utils/getValuesFromTables";
 import { EmployeeOverview } from "components";
 import {
   Tabs,

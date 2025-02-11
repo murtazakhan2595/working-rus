@@ -28,6 +28,8 @@ const ListActionOptions = ({
   fetchData = () => {},
   setTasks = () => {},
   buttonOrientation = "vertical",
+  taskFilters = {},
+  setTaskFilters = () => {},
 }) => {
   const [showAddNewListModel, setshowAddNewListModel] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -40,27 +42,26 @@ const ListActionOptions = ({
 
   const sortTasks = (event, sortType) => {
     event.preventDefault();
-    setTasks((prevTasks) => {
-      const sortedResults = [...prevTasks.results].sort((a, b) => {
-        switch (sortType) {
-          case "newest":
-            return new Date(b.start_date) - new Date(a.start_date);
-          case "oldest":
-            return new Date(a.start_date) - new Date(b.start_date);
-          case "alphabetical":
-            return a.name.localeCompare(b.name);
-          case "dueDate":
-            return new Date(a.end_date) - new Date(b.end_date);
-          default:
-            return 0;
-        }
-      });
-
-      return {
-        ...prevTasks,
-        results: sortedResults,
-      };
-    });
+    const getFilter = (sortType) => {
+      let filter = "";
+      switch (sortType) {
+        case "newest":
+          filter = "start_date";
+          return filter;
+        case "oldest":
+          filter = "-start_date";
+          return filter;
+        case "alphabetical":
+          filter = "name";
+          return filter;
+        case "dueDate":
+          filter = "end_date";
+          return filter;
+        default:
+          return filter;
+      }
+    };
+    setTaskFilters({ ...taskFilters, ...{ ordering: getFilter(sortType) } });
   };
 
   return (

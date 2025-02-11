@@ -62,10 +62,20 @@ const ListTasks = ({
   isEditMode = true,
 }) => {
   const [AllBoardTasks, setAllBoardTasks] = useState([]);
-  const [openCreateCard, setOpenCreateCard] = useState(false);
   const [viewTask, setViewTask] = useState(null);
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
   const [selectedBoard, setSelectedBoard] = useState(null);
+  const [boardTaskFilters, setBoardTaskFilters] = useState(null);
+  useEffect(() => {
+    let isMounted = true;
+    if (isMounted)
+      setBoardTaskFilters((prev) => {
+        return { ...prev, filterData: filterData };
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [filterData]);
 
   const tableOptions = {
     onRowClick: (row) => {
@@ -76,7 +86,7 @@ const ListTasks = ({
 
   const fetchData = async (isMounted) => {
     try {
-      const boardsData = await getAllTasks({ filterData });
+      const boardsData = await getAllTasks(boardTaskFilters);
       if (isMounted) {
         setAllBoardTasks(boardsData);
       }
@@ -87,11 +97,11 @@ const ListTasks = ({
 
   useEffect(() => {
     let isMounted = true;
-    fetchData(isMounted);
+    if (boardTaskFilters) fetchData(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [filterData]);
+  }, [boardTaskFilters]);
   if (!isEditMode && AllBoardTasks.count === 0) return null;
   return (
     <AccordionItem value={board.id} className="mb-3">
@@ -112,6 +122,8 @@ const ListTasks = ({
               reloadData={reloadData}
               boardId={board.id}
               buttonOrientation={"horizontal"}
+              taskFilters={boardTaskFilters}
+              setTaskFilters={setBoardTaskFilters}
             />
           )}
           {isEditMode && (
@@ -122,7 +134,7 @@ const ListTasks = ({
               onClick={(e) => {
                 e.preventDefault();
                 setSelectedBoard(board.id);
-                setOpenCreateCard(true);
+                setIsTaskDetailOpen(true);
               }}
             >
               <RxPlus size={15} />
@@ -145,24 +157,12 @@ const ListTasks = ({
               />
             </CardContent>
           </Card>
-
-          {openCreateCard && (
-            <CreateAndEditCardForm
-              onClose={() => {
-                setOpenCreateCard(false);
-                fetchData(true);
-              }}
-              isOpen={openCreateCard}
-              projectId={projectId}
-              setIsOpen={setOpenCreateCard}
-            />
-          )}
           {isTaskDetailOpen && (
             <TaskEditAddViewDetails
-              taskId={viewTask.id} // Pass task Id as props to TaskDetail
+              taskId={viewTask?.id} // Pass task Id as props to TaskDetail
               isOpen={isTaskDetailOpen}
               projectId={projectId}
-              boardId={viewTask.board_id || selectedBoard}
+              boardId={viewTask?.board_id || selectedBoard}
               setIsOpen={() => {
                 setIsTaskDetailOpen(false);
                 setViewTask(null);
