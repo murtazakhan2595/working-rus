@@ -13,7 +13,11 @@ import {
   MyLeaveTracker,
   LeaveRequests,
 } from "app/modules/LeaveTracker";
-import { Projects, Board } from "app/modules/TaskManagment";
+import {
+  Projects,
+  Board,
+  UserProfileTaskDetails,
+} from "app/modules/TaskManagment";
 import ViewEmployee from "app/modules/Employees/Screens/View";
 import "react-toastify/dist/ReactToastify.css";
 import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
@@ -75,9 +79,9 @@ const SidebarRoutes = [
     name: "Project Board",
   },
   Config.TASK_MANAGMENT && {
-    path: "/project-board/:projectId",
-    component: <Board />,
-    name: "Project Board",
+    path: "/project-board/:projectId/user/:userId",
+    component: <UserProfileTaskDetails />,
+    name: "User Profile Details",
   },
   Config.SELF_SERVICE_HUB &&
     Config.PROFIL_MANAGMENT && {

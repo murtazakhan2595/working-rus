@@ -1,3 +1,3 @@
 import { Projects } from "./Projects";
-import { Board } from "./Boards";
-export { Projects, Board };
+import { Board, UserProfileTaskDetails } from "./Boards";
+export { Projects, Board, UserProfileTaskDetails };

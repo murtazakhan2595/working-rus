@@ -23,15 +23,18 @@ const BoardListView = ({
   AllBoards = [],
   reloadData = () => {},
   toggleAddBoardModal = () => {},
+  isEditMode = true,
 }) => {
   return (
     <>
-      <div className="flex justify-end my-4">
-        <Button variant="outline" type="button" onClick={toggleAddBoardModal}>
-          <RxPlus size={15} />
-          <span className="ml-2">Add New List</span>
-        </Button>
-      </div>
+      {isEditMode && (
+        <div className="flex justify-end my-4">
+          <Button variant="outline" type="button" onClick={toggleAddBoardModal}>
+            <RxPlus size={15} />
+            <span className="ml-2">Add New List</span>
+          </Button>
+        </div>
+      )}
       <Accordion type="single" collapsible>
         {AllBoards.count > 0 &&
           AllBoards.results.map((board) => (
@@ -43,6 +46,7 @@ const BoardListView = ({
               projectId={projectId}
               board={board}
               reloadData={reloadData}
+              isEditMode={isEditMode}
             />
           ))}
       </Accordion>
@@ -50,7 +54,13 @@ const BoardListView = ({
   );
 };
 
-const ListTasks = ({ filterData, projectId, board, reloadData = () => {} }) => {
+const ListTasks = ({
+  filterData,
+  projectId,
+  board,
+  reloadData = () => {},
+  isEditMode = true,
+}) => {
   const [AllBoardTasks, setAllBoardTasks] = useState([]);
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [viewTask, setViewTask] = useState(null);
@@ -82,38 +92,43 @@ const ListTasks = ({ filterData, projectId, board, reloadData = () => {} }) => {
       isMounted = false;
     };
   }, [filterData]);
+  if (!isEditMode && AllBoardTasks.count === 0) return null;
   return (
     <AccordionItem value={board.id} className="mb-3">
       <AccordionTrigger
-        className="bg-white rounded-t-sm py-1 px-4"
+        className="bg-white rounded-t-sm py-1 px-4 min-h-[44px]"
         style={{ backgroundColor: board.color ? board.color : "white" }}
       >
         <div className="flex flex-row justify-between gap-3 items-center">
           <p className="flex text-sm font-semibold">
             {board.name} ({AllBoardTasks.count || 0})
           </p>
-          <ListActionOptions
-            fetchData={fetchData}
-            setTasks={(task) => {
-              setAllBoardTasks(task);
-            }}
-            reloadData={reloadData}
-            boardId={board.id}
-            buttonOrientation={"horizontal"}
-          />
-          <Button
-            variant="link"
-            type="button"
-            size="sm"
-            onClick={(e) => {
-              e.preventDefault();
-              setSelectedBoard(board.id);
-              setOpenCreateCard(true);
-            }}
-          >
-            <RxPlus size={15} />
-            <span className="ml-2">Add Task</span>
-          </Button>
+          {isEditMode && (
+            <ListActionOptions
+              fetchData={fetchData}
+              setTasks={(task) => {
+                setAllBoardTasks(task);
+              }}
+              reloadData={reloadData}
+              boardId={board.id}
+              buttonOrientation={"horizontal"}
+            />
+          )}
+          {isEditMode && (
+            <Button
+              variant="link"
+              type="button"
+              size="sm"
+              onClick={(e) => {
+                e.preventDefault();
+                setSelectedBoard(board.id);
+                setOpenCreateCard(true);
+              }}
+            >
+              <RxPlus size={15} />
+              <span className="ml-2">Add Task</span>
+            </Button>
+          )}
         </div>
       </AccordionTrigger>
       <AccordionContent>
