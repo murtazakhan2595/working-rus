@@ -1,28 +1,14 @@
-import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { getAllBoards, deleteBoard, moveTask } from "app/hooks/taskManagment";
 import { RxPlus } from "react-icons/rx";
-import { AddNewListModel } from "./Sections";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import { ScrollArea, ScrollBar } from "src/@/components/ui/scroll-area";
 import TaskCard from "./Task";
-import { ArrowLeft, LayoutGrid, LayoutList, MoreVertical } from "lucide-react";
 import { Button } from "components/ui/button";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
-import AlertDialogue from "components/ui/AlertDialogue";
 import { getAllTasks } from "app/hooks/taskManagment";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuPortal,
-} from "src/@/components/ui/dropdown-menu";
 import { ListActionOptions } from "app/modules/TaskManagment/Boards/Sections";
 
 const BoardGridView = ({
@@ -80,19 +66,8 @@ const BoardGridView = ({
 
 const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
-  const [boardTaskFilters, setBoardTaskFilters] = useState(null);
   const [tasks, setTasks] = useState([]);
-
-  useEffect(() => {
-    let isMounted = true;
-    if (isMounted)
-      setBoardTaskFilters((prev) => {
-        return { ...prev, filterData: filterData };
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, [filterData]);
+  const [ordering, setOrdering] = useState("-start_date");
 
   const updateTaskLocally = (taskId, updatedData) => {
     setTasks((prevTasks) => ({
@@ -105,7 +80,7 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
 
   const fetchData = async (isMounted) => {
     try {
-      const taskData = await getAllTasks(boardTaskFilters);
+      const taskData = await getAllTasks({ ordering, filterData });
       if (taskData && isMounted) {
         setTasks(taskData);
       }
@@ -116,11 +91,11 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
 
   useEffect(() => {
     let isMounted = true;
-    if (boardTaskFilters) fetchData(isMounted);
+    fetchData(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [boardTaskFilters]);
+  }, [ordering, filterData]);
 
   const handleDragStart = async (e, taskId) => {
     e.dataTransfer.setData("taskId", taskId);
@@ -157,13 +132,9 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
               <div className="flex gap-1">
                 <ListActionOptions
                   fetchData={fetchData}
-                  setTasks={(task) => {
-                    setTasks(task);
-                  }}
                   reloadData={reloadData}
                   boardId={board.id}
-                  taskFilters={boardTaskFilters}
-                  setTaskFilters={setBoardTaskFilters}
+                  setOrdering={setOrdering}
                 />
               </div>
             </header>
