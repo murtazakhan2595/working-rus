@@ -14,7 +14,7 @@ import AlertDialogue from "components/ui/AlertDialogue";
 import { TextUI, TooltipText } from "components";
 import { toast } from "react-toastify";
 import { addTask } from "app/hooks/taskManagment";
-import { ListChecks, Trash2, RotateCcw ,ExternalLink} from "lucide-react";
+import { ListChecks, Trash2, RotateCcw, ExternalLink } from "lucide-react";
 import { Input } from "components/ui/input";
 import {
   Tooltip,
@@ -24,6 +24,7 @@ import {
 } from "src/@/components/ui/tooltip";
 import TaskStatusLabel from "app/modules/TaskManagment/Sections/TaskStatus";
 import { Button } from "components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const TaskCard = ({
   projectId,
@@ -34,6 +35,7 @@ const TaskCard = ({
   showMembers = true,
   showDueDate = true,
 }) => {
+   const navigate = useNavigate();
   const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
   const [isSubtask, setIsSubtask] = useState(false);
   const [subTasksDetails, setSubTasksDetails] = useState([]);
@@ -117,77 +119,80 @@ const TaskCard = ({
                 content={`Task Status`}
               />
               {task?.end_date && showDueDate && (
-                <TimeStatusIcon
-                  task={task}
-                  onUpdate={onUpdate}
-                />
+                <TimeStatusIcon task={task} onUpdate={onUpdate} />
               )}
             </div>
           </div>
         </div>
       </CardContent>
       <CardFooter className="w-full justify-between py-2 px-0">
-          <div className="flex items-center gap-1">
-            {showMembers ? (
-              <div className="flex -space-x-2.5">
-                {/* Render MembersList component */}
-                <MembersList members={task?.assigned_to} />
+        <div className="flex items-center gap-1">
+          {showMembers ? (
+            <div className="flex -space-x-2.5">
+              {/* Render MembersList component */}
+              <MembersList
+                members={task?.assigned_to}
+                onMemberClick={(event, user) => {
+                  event.preventDefault();
+                  navigate(`/project-board/${projectId}/user/${user.id}`);
+                }}
+              />
+            </div>
+          ) : (
+            <div className="flex items-center gap-1">
+              <Button variant="continue" size="sm" onClick={handleRestore}>
+                <RotateCcw size={15} className="mr-1" />
+                Restore
+              </Button>
+              <Button
+                variant="destructiveOutline"
+                size="sm"
+                onClick={handleDelete}
+              >
+                <Trash2 size={15} />
+              </Button>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-3 text-neutral-1000">
+          <TooltipText
+            tooltipTriggerText={
+              <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
+                <BiComment />
+                <div>{task?.comment_count || 0}</div>
               </div>
-            ) : (
-              <div className="flex items-center gap-1">
-                <Button variant="continue" size="sm" onClick={handleRestore}>
-                  <RotateCcw size={15} className="mr-1" />
-                  Restore
-                </Button>
-                <Button
-                  variant="destructiveOutline"
-                  size="sm"
-                  onClick={handleDelete}
-                >
-                  <Trash2 size={15} />
-                </Button>
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-3 text-neutral-1000">
-            <TooltipText
-              tooltipTriggerText={
-                <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
-                  <BiComment />
-                  <div>{task?.comment_count || 0}</div>
-                </div>
-              }
-              content={`${task?.comment_count || 0} Comments`}
-            />
+            }
+            content={`${task?.comment_count || 0} Comments`}
+          />
 
-            <TooltipText
-              tooltipTriggerText={
-                <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
-                  <ImAttachment />
-                  <div>{task?.attachment_count || 0}</div>
-                </div>
-              }
-              content={`${task?.attachment_count || 0} Attachment`}
-            />
-            <TooltipText
-              tooltipTriggerText={
-                <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
-                  <ListChecks size={16} />
-                  <div>{task?.sub_task?.length || 0}</div>
-                </div>
-              }
-              content={`${task?.sub_task?.length || 0} Subtasks`}
-            />
-            <TooltipText
-              tooltipTriggerText={
-                <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
-                  <ExternalLink  size={16} />
-                  <div>{task?.relation?.length || 0}</div>
-                </div>
-              }
-              content={`${task?.relation?.length || 0} Task Related`}
-            />
-          </div>
+          <TooltipText
+            tooltipTriggerText={
+              <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
+                <ImAttachment />
+                <div>{task?.attachment_count || 0}</div>
+              </div>
+            }
+            content={`${task?.attachment_count || 0} Attachment`}
+          />
+          <TooltipText
+            tooltipTriggerText={
+              <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
+                <ListChecks size={16} />
+                <div>{task?.sub_task?.length || 0}</div>
+              </div>
+            }
+            content={`${task?.sub_task?.length || 0} Subtasks`}
+          />
+          <TooltipText
+            tooltipTriggerText={
+              <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
+                <ExternalLink size={16} />
+                <div>{task?.relation?.length || 0}</div>
+              </div>
+            }
+            content={`${task?.relation?.length || 0} Task Related`}
+          />
+        </div>
       </CardFooter>
       {/* Render ConfirmationModal component when isDeleteModalOpen is true */}
       {isDeleteModalOpen && (

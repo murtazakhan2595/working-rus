@@ -44,10 +44,10 @@ const UserActivities =({ userId = null }) => {
   return (
     <Card>
       <CardContent className="mt-4 flex flex-col gap-3">
-        {AllActivityDetails.count > 0 &&
+        {AllActivityDetails.count > 0 ?
           AllActivityDetails.results.map((activity) => (
             <ListActivities activity={activity} />
-          ))}
+          )):<div className="w-full text-neutral-1100 flex justify-center items-center">No Recent Activities</div>}
       </CardContent>
     </Card>
   );

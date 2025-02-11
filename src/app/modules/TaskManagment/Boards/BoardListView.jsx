@@ -35,9 +35,9 @@ const BoardListView = ({
           </Button>
         </div>
       )}
-      <Accordion type="single" collapsible>
+      <Accordion type="single" collapsible defaultValue="board-0">
         {AllBoards.count > 0 &&
-          AllBoards.results.map((board) => (
+          AllBoards.results.map((board, index) => (
             <ListTasks
               filterData={{
                 ...filterData,
@@ -47,6 +47,7 @@ const BoardListView = ({
               board={board}
               reloadData={reloadData}
               isEditMode={isEditMode}
+              accordionItemValue={`board-${index}`}
             />
           ))}
       </Accordion>
@@ -60,8 +61,10 @@ const ListTasks = ({
   board,
   reloadData = () => {},
   isEditMode = true,
+  accordionItemValue,
 }) => {
-  const [AllBoardTasks, setAllBoardTasks] = useState([]);
+  console.log(accordionItemValue,'accordionItemValue')
+  const [AllBoardTasks, setAllBoardTasks] = useState({ results: [], count: 0 });
   const [viewTask, setViewTask] = useState(null);
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
   const [selectedBoard, setSelectedBoard] = useState(null);
@@ -97,7 +100,7 @@ const ListTasks = ({
   }, [ordering, filterData]);
   if (!isEditMode && AllBoardTasks.count === 0) return null;
   return (
-    <AccordionItem value={board.id} className="mb-3">
+    <AccordionItem value={accordionItemValue} className="mb-3">
       <AccordionTrigger
         className="bg-white rounded-t-sm py-1 px-4 min-h-[44px]"
         style={{ backgroundColor: board.color ? board.color : "white" }}
