@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  BoardListView,
-  UserTaskActivityDetails,
-} from "app/modules/TaskManagment/Boards";
+import { UserActivities, UserCards } from "app/modules/TaskManagment/Boards";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   getProjectById,
@@ -34,38 +31,9 @@ const TabsData = [
 const UserProfileTaskDetails = ({}) => {
   const projectId = useParams()?.projectId || null;
   const userId = useParams()?.userId || null;
-  const userDetails = GetUser(userId);
   const [activeTab, setActiveTab] = useState("cards");
-  const [AllBoards, setAllBoards] = useState([]);
-  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
-  const [filterData, setFilterData] = useState({
-    is_subtask: [false],
-    is_archive: [false],
-    assigned_to: [userId],
-  });
 
-  const fetchAllBoards = async (isMounted) => {
-    try {
-      const boardsData = await getAllBoards({
-        filterData: { project_id: [projectId] },
-      });
-      if (isMounted) {
-        setAllBoards(boardsData);
-      }
-    } catch (error) {
-      console.error("Error fetching employeeLeaveTypes:", error);
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    fetchAllBoards(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [projectId]);
-
-  if (projectId === -1 || !userId || !userDetails) {
+  if (projectId === -1 || !userId) {
     return <Err404 />;
   }
   return (
@@ -112,18 +80,16 @@ const UserProfileTaskDetails = ({}) => {
               ))}
             </TabsList>
           </div>
-          <TabsContent value="activity">
-            <UserTaskActivityDetails userId={userId} />
-          </TabsContent>
-          <TabsContent value="cards">
-            <BoardListView
-              filterData={filterData}
-              projectId={projectId}
-              AllBoards={AllBoards}
-              reloadData={fetchAllBoards}
-              isEditMode={false}
-            />
-          </TabsContent>
+          {activeTab === "activity" && (
+            <TabsContent value="activity">
+              <UserActivities userId={userId} />
+            </TabsContent>
+          )}
+          {activeTab === "cards" && (
+            <TabsContent value="cards">
+              <UserCards projectId={projectId} userId={userId} />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </>

@@ -18,7 +18,7 @@ import {
 import { ListActionOptions } from "app/modules/TaskManagment/Boards/Sections";
 import moment from "moment";
 
-const UserTaskActivityDetails = ({ userId = null }) => {
+const UserActivities =({ userId = null }) => {
   const [AllActivityDetails, setAllActivityDetails] = useState([]);
   const fetchAllActivityDetails = async (isMounted) => {
     try {
@@ -110,4 +110,4 @@ const ListActivities = ({ activity }) => {
   );
 };
 
-export default UserTaskActivityDetails;
+export default UserActivities;
