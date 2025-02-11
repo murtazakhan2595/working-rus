@@ -101,7 +101,6 @@ const InputTaskDetailFields = React.memo(
             touch={touched.relation}
           />
         )}
-        {!isSubtask && (
           <SelectComponent
             name="status"
             options={TaskStatus}
@@ -113,7 +112,6 @@ const InputTaskDetailFields = React.memo(
               onChange(field, value);
             }}
           />
-        )}
 
         {/* <DetailBox
           label="Share Task"

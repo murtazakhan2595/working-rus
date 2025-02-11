@@ -44,7 +44,7 @@ const SubtaskList = ({
 
   return (
     <div className="space-y-2">
-      {subTasksDetails.map((subtask, index) => (
+      {subTasksDetails?.map((subtask, index) => (
         <div
           key={subtask.id || index}
           onClick={() => {
