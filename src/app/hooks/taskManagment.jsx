@@ -719,11 +719,12 @@ const postComment = async (payload) => {
     throw error; // Re-throw the error to handle it in the component
   }
 };
-const getAllTasks = async (payload) => {
+export const getAllTasks = async (payload) => {
   const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? '-start_date';
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
-  const URL = `/task/?ordering=-start_date&${pageNo ? `page=${pageNo}&` : ""}${
+  const URL = `/task/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
 
@@ -1068,7 +1069,6 @@ export {
   addSubtask,
   getSubtaskById,
   getAllProjects,
-  getAllTasks,
   addProject,
   getAllBoards,
   getProjectById,

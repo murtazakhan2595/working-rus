@@ -33,7 +33,9 @@ const OverviewCard = React.memo(
         {/* Avatar Section */}
         {showAvatar && (
           <Avatar
-            className="h-10 w-10"
+            className={`h-${avatarProps.size ?? "10"} w-${
+              avatarProps.size ?? "10"
+            }`}
             src={avatarProps.src || ""}
             fallbackText={avatarProps.fallbackText || ""}
             text={avatarProps.text || "Unknown User"}
@@ -43,8 +45,16 @@ const OverviewCard = React.memo(
 
         {/* Text Content Section */}
         <div className="flex flex-col flex-wrap ml-2 whitespace-break-spaces self-center">
-          {subtitle && <div className="sm:inline text-xs text-neutral-1100">{subtitle}</div>}
-          {title && <div className="text-capitalize font-semibold text-neutral-1200">{title}</div>}
+          {subtitle && (
+            <div className="sm:inline text-xs text-neutral-1100">
+              {subtitle}
+            </div>
+          )}
+          {title && (
+            <div className="text-capitalize font-semibold text-neutral-1200">
+              {title}
+            </div>
+          )}
           <div className="flex flex-col items-start gap-1 text-sm text-neutral-1100 md:inline">
             {additionalInfo.map((desc, index) => (
               <div key={index}>{desc}</div>

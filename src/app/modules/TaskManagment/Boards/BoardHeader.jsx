@@ -106,6 +106,7 @@ const BoardHeader = ({
     }
     setIsDelete(false);
   };
+  if (!projectId) return null;
 
   return (
     <div className="flex items-center justify-between mb-4">
@@ -184,6 +185,7 @@ const BoardHeader = ({
           removeMember={removeMember}
           onMemberClick={(event, user) => {
             event.preventDefault();
+            navigate(`/project-board/${projectId}/user/${user.id}`)
           }}
         />
         {isDelete && (
@@ -203,10 +205,4 @@ const BoardHeader = ({
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    token: state.user.token,
-    employees: state.emp.employees,
-  };
-};
-export default connect(mapStateToProps)(BoardHeader);
+export default BoardHeader;

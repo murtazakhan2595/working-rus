@@ -371,7 +371,7 @@ const TaskEditAddViewDetails = ({
                       )}
                     </div>
                     <div className="flex justify-end gap-2">
-                      {!projectId && (
+                      {!props.values.project_id && (
                         <SelectComponent
                           name="project_id"
                           options={Projects}

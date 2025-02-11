@@ -80,7 +80,19 @@ const BoardGridView = ({
 
 const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
   const [openCreateCard, setOpenCreateCard] = useState(false);
+  const [boardTaskFilters, setBoardTaskFilters] = useState(null);
   const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (isMounted)
+      setBoardTaskFilters((prev) => {
+        return { ...prev, filterData: filterData };
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [filterData]);
 
   const updateTaskLocally = (taskId, updatedData) => {
     setTasks((prevTasks) => ({
@@ -93,7 +105,7 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
 
   const fetchData = async (isMounted) => {
     try {
-      const taskData = await getAllTasks({ filterData });
+      const taskData = await getAllTasks(boardTaskFilters);
       if (taskData && isMounted) {
         setTasks(taskData);
       }
@@ -104,11 +116,11 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
 
   useEffect(() => {
     let isMounted = true;
-    fetchData(isMounted);
+    if (boardTaskFilters) fetchData(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [filterData]);
+  }, [boardTaskFilters]);
 
   const handleDragStart = async (e, taskId) => {
     e.dataTransfer.setData("taskId", taskId);
@@ -146,11 +158,12 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
                 <ListActionOptions
                   fetchData={fetchData}
                   setTasks={(task) => {
-                    debugger;
                     setTasks(task);
                   }}
                   reloadData={reloadData}
                   boardId={board.id}
+                  taskFilters={boardTaskFilters}
+                  setTaskFilters={setBoardTaskFilters}
                 />
               </div>
             </header>

@@ -12,6 +12,7 @@ const EmployeeOverview = React.memo(
     showPosition = false,
     showDepartment = false,
     showEmail = false,
+    avatarSize='10',
   }) => {
     const userProfile = id ? GetUser(id) : {};
     if (!userProfile) return null;
@@ -22,6 +23,7 @@ const EmployeeOverview = React.memo(
           src: userProfile?.profile_picture,
           fallbackText: userProfile?.name_initials,
           text: userProfile?.name,
+          size: avatarSize,
         }}
         title={userProfile?.name}
         subtitle={showId ? userProfile?.serial_number : null}

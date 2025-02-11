@@ -23,15 +23,18 @@ const BoardListView = ({
   AllBoards = [],
   reloadData = () => {},
   toggleAddBoardModal = () => {},
+  isEditMode = true,
 }) => {
   return (
     <>
-      <div className="flex justify-end my-4">
-        <Button variant="outline" type="button" onClick={toggleAddBoardModal}>
-          <RxPlus size={15} />
-          <span className="ml-2">Add New List</span>
-        </Button>
-      </div>
+      {isEditMode && (
+        <div className="flex justify-end my-4">
+          <Button variant="outline" type="button" onClick={toggleAddBoardModal}>
+            <RxPlus size={15} />
+            <span className="ml-2">Add New List</span>
+          </Button>
+        </div>
+      )}
       <Accordion type="single" collapsible>
         {AllBoards.count > 0 &&
           AllBoards.results.map((board) => (
@@ -43,6 +46,7 @@ const BoardListView = ({
               projectId={projectId}
               board={board}
               reloadData={reloadData}
+              isEditMode={isEditMode}
             />
           ))}
       </Accordion>
@@ -50,12 +54,28 @@ const BoardListView = ({
   );
 };
 
-const ListTasks = ({ filterData, projectId, board, reloadData = () => {} }) => {
+const ListTasks = ({
+  filterData,
+  projectId,
+  board,
+  reloadData = () => {},
+  isEditMode = true,
+}) => {
   const [AllBoardTasks, setAllBoardTasks] = useState([]);
-  const [openCreateCard, setOpenCreateCard] = useState(false);
   const [viewTask, setViewTask] = useState(null);
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
   const [selectedBoard, setSelectedBoard] = useState(null);
+  const [boardTaskFilters, setBoardTaskFilters] = useState(null);
+  useEffect(() => {
+    let isMounted = true;
+    if (isMounted)
+      setBoardTaskFilters((prev) => {
+        return { ...prev, filterData: filterData };
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [filterData]);
 
   const tableOptions = {
     onRowClick: (row) => {
@@ -66,7 +86,7 @@ const ListTasks = ({ filterData, projectId, board, reloadData = () => {} }) => {
 
   const fetchData = async (isMounted) => {
     try {
-      const boardsData = await getAllTasks({ filterData });
+      const boardsData = await getAllTasks(boardTaskFilters);
       if (isMounted) {
         setAllBoardTasks(boardsData);
       }
@@ -77,43 +97,50 @@ const ListTasks = ({ filterData, projectId, board, reloadData = () => {} }) => {
 
   useEffect(() => {
     let isMounted = true;
-    fetchData(isMounted);
+    if (boardTaskFilters) fetchData(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [filterData]);
+  }, [boardTaskFilters]);
+  if (!isEditMode && AllBoardTasks.count === 0) return null;
   return (
     <AccordionItem value={board.id} className="mb-3">
       <AccordionTrigger
-        className="bg-white rounded-t-sm py-1 px-4"
+        className="bg-white rounded-t-sm py-1 px-4 min-h-[44px]"
         style={{ backgroundColor: board.color ? board.color : "white" }}
       >
         <div className="flex flex-row justify-between gap-3 items-center">
           <p className="flex text-sm font-semibold">
             {board.name} ({AllBoardTasks.count || 0})
           </p>
-          <ListActionOptions
-            fetchData={fetchData}
-            setTasks={(task) => {
-              setAllBoardTasks(task);
-            }}
-            reloadData={reloadData}
-            boardId={board.id}
-            buttonOrientation={"horizontal"}
-          />
-          <Button
-            variant="link"
-            type="button"
-            size="sm"
-            onClick={(e) => {
-              e.preventDefault();
-              setSelectedBoard(board.id);
-              setOpenCreateCard(true);
-            }}
-          >
-            <RxPlus size={15} />
-            <span className="ml-2">Add Task</span>
-          </Button>
+          {isEditMode && (
+            <ListActionOptions
+              fetchData={fetchData}
+              setTasks={(task) => {
+                setAllBoardTasks(task);
+              }}
+              reloadData={reloadData}
+              boardId={board.id}
+              buttonOrientation={"horizontal"}
+              taskFilters={boardTaskFilters}
+              setTaskFilters={setBoardTaskFilters}
+            />
+          )}
+          {isEditMode && (
+            <Button
+              variant="link"
+              type="button"
+              size="sm"
+              onClick={(e) => {
+                e.preventDefault();
+                setSelectedBoard(board.id);
+                setIsTaskDetailOpen(true);
+              }}
+            >
+              <RxPlus size={15} />
+              <span className="ml-2">Add Task</span>
+            </Button>
+          )}
         </div>
       </AccordionTrigger>
       <AccordionContent>
@@ -130,24 +157,12 @@ const ListTasks = ({ filterData, projectId, board, reloadData = () => {} }) => {
               />
             </CardContent>
           </Card>
-
-          {openCreateCard && (
-            <CreateAndEditCardForm
-              onClose={() => {
-                setOpenCreateCard(false);
-                fetchData(true);
-              }}
-              isOpen={openCreateCard}
-              projectId={projectId}
-              setIsOpen={setOpenCreateCard}
-            />
-          )}
           {isTaskDetailOpen && (
             <TaskEditAddViewDetails
-              taskId={viewTask.id} // Pass task Id as props to TaskDetail
+              taskId={viewTask?.id} // Pass task Id as props to TaskDetail
               isOpen={isTaskDetailOpen}
               projectId={projectId}
-              boardId={viewTask.board_id || selectedBoard}
+              boardId={viewTask?.board_id || selectedBoard}
               setIsOpen={() => {
                 setIsTaskDetailOpen(false);
                 setViewTask(null);
