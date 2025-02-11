@@ -142,11 +142,11 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
             <Button
               variant="outline"
               type="button"
-              className="w-full justify-start group mb-3"
+              className="w-full justify-center group mb-3"
               onClick={() => setOpenCreateCard(true)}
             >
               <RxPlus className="text-xl" />
-              <span className="ml-2">Add a card</span>
+              <span className="ml-2">Add Task</span>
             </Button>
           </div>
           <ScrollArea className="[&>div>div[style]]:!block">
