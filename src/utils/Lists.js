@@ -45,7 +45,7 @@ export function getLabelDropdownList(list, label = "name", value = "id") {
     return {
       label: (
         <Badge
-          className={`mr-2`}
+          className={``}
           style={{
             background: lightenColor(obj?.color, 85),
             color: obj.color,

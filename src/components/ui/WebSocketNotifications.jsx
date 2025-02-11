@@ -19,6 +19,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuItem,
 } from "src/@/components/ui/dropdown-menu";
+import DOMPurify from "dompurify";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "src/@/components/ui/tooltip";
 import moment from "moment";
 import { getNotifications } from "app/hooks/notifications";
 import { markAsRead } from "app/hooks/notifications";
@@ -147,6 +154,15 @@ const WebSocketNotifications = ({ onClose }) => {
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
+  const stripHtml = (html) => {
+    const cleanText = DOMPurify.sanitize(html, { ALLOWED_TAGS: [] }); // Remove all HTML tags
+    return cleanText.replace(/&nbsp;/g, " "); // Replace non-breaking spaces with normal spaces
+  };
+
+  const truncateText = (text, maxLength) => {
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
+
   const markRead = async (id) => {
     const response = await markAsRead(id);
     if (response) {
@@ -169,81 +185,98 @@ const WebSocketNotifications = ({ onClose }) => {
   };
 
   return (
-    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full relative">
-          <Bell className="w-5 h-5" />
-          {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {unreadCount}
-            </span>
-          )}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[400px] p-0">
-        <Card className="border-0 shadow-none">
-          <CardHeader className="px-6 py-4 border-b">
-            <CardTitle>Notifications</CardTitle>
+    <TooltipProvider>
+      <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="rounded-full relative">
+            <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <CardDescription className="text-yellow-500">
-                You have {unreadCount} unread notifications
-              </CardDescription>
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {unreadCount}
+              </span>
             )}
-          </CardHeader>
-          <CardContent className="p-0 max-h-[270px] overflow-y-auto overflow-x-hidden">
-            <div className="divide-y">
-              {filteredNotifications.length === 0 ? (
-                <div className="text-center text-gray-500 py-4">
-                  No notifications
-                </div>
-              ) : (
-                notifications.map((notification, index) => (
-                  <div
-                    key={index}
-                    className={`flex items-start gap-4 px-6 py-4  transition-colors
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-[400px] p-0">
+          <Card className="border-0 shadow-none">
+            <CardHeader className="px-6 py-4 border-b">
+              <CardTitle>Notifications</CardTitle>
+              {unreadCount > 0 && (
+                <CardDescription className="text-yellow-500">
+                  You have {unreadCount} unread notifications
+                </CardDescription>
+              )}
+            </CardHeader>
+            <CardContent className="p-0 max-h-[270px] overflow-y-auto overflow-x-hidden">
+              <div className="divide-y">
+                {filteredNotifications.length === 0 ? (
+                  <div className="text-center text-gray-500 py-4">
+                    No notifications
+                  </div>
+                ) : (
+                  notifications.map((notification, index) => {
+                    const plainTextDescription = stripHtml(
+                      notification.description
+                    );
+                    return (
+                      <div
+                        key={index}
+                        className={`flex items-start gap-4 px-6 py-4  transition-colors
     ${
+      ("flex items-start gap-4 px-6 py-4 transition-colors cursor-pointer",
       notification.isRead
         ? "bg-gray-50 hover:bg-gray-100"
-        : "hover:bg-muted cursor-pointer"
+        : "bg-blue-50 hover:bg-blue-100")
     }
   `}
-                    onClick={() =>
-                      !notification.isRead && markRead(notification.id)
-                    }
-                  >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full">
-                      <Bell className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <p
-                        className={`text-sm font-medium leading-none ${
-                          !notification.isRead ? "font-bold" : ""
-                        }`}
+                        onClick={() =>
+                          !notification.isRead && markRead(notification.id)
+                        }
                       >
-                        {notification.description}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {notification.time}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="px-6 py-4 border-t">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={markAllRead}
-              disabled={unreadCount === 0}
-            >
-              Mark all as read
-            </Button>
-          </CardFooter>
-        </Card>
-      </DropdownMenuContent>
-    </DropdownMenu>
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full">
+                          <Bell className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <p
+                                className={`text-sm font-medium leading-none ${
+                                  !notification.isRead ? "font-bold" : ""
+                                }`}
+                              >
+                                {truncateText(plainTextDescription, 50)}
+                              </p>
+                            </TooltipTrigger>
+                            {notification.description.length > 50 && (
+                              <TooltipContent className="max-w-[250px] max-h-[150px] overflow-y-auto p-2 bg-white shadow-lg rounded-md border border-gray-200">
+                                {plainTextDescription}
+                              </TooltipContent>
+                            )}
+                          </Tooltip>
+                          <p className="text-sm text-muted-foreground">
+                            {notification.time}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </CardContent>
+            <CardFooter className="px-6 py-4 border-t">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={markAllRead}
+                disabled={unreadCount === 0}
+              >
+                Mark all as read
+              </Button>
+            </CardFooter>
+          </Card>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </TooltipProvider>
   );
 };
 

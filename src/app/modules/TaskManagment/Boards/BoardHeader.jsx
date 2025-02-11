@@ -3,10 +3,8 @@ import React, { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { ViewOptions } from "components";
 import { getLabelDropdownList } from "utils/Lists";
-import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
-import BoardGridView from "app/modules/TaskManagment/Boards/BoardGridView";
 import { MembersList } from "app/modules/TaskManagment/Sections";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   RenderProject,
   AdditionalOption,
@@ -16,9 +14,8 @@ import { DateInput } from "components/FormControl";
 import { Button } from "components/ui/button";
 import { FilterInput, SortingFilters } from "components/FormControl";
 import { PriorityList, TaskSortingFilters, TaskStatus } from "data/Data";
-import { getProjectById, addProject } from "app/hooks/taskManagment";
+import { addProject } from "app/hooks/taskManagment";
 import { AlignRight } from "lucide-react";
-import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
@@ -40,7 +37,13 @@ const BoardHeader = ({
     "name",
     "id"
   );
-
+  const Employees = useSelector((state) => state.emp.employees);
+  const ProjectMembers = projectData?.project_members || [];
+  const AssigneesList = React.useMemo(() => {
+    return Employees?.filter((employee) =>
+      ProjectMembers.includes(employee.value)
+    );
+  }, [Employees, ProjectMembers]);
   const handleFilterChange = (
     filterName,
     filterValue,
@@ -103,6 +106,7 @@ const BoardHeader = ({
     }
     setIsDelete(false);
   };
+  if (!projectId) return null;
 
   return (
     <div className="flex items-center justify-between mb-4">
@@ -140,6 +144,12 @@ const BoardHeader = ({
               values: filterData["status"] || [],
             },
             {
+              title: "Assignees",
+              label: "assigned_to",
+              options: AssigneesList,
+              values: filterData["assigned_to"] || [],
+            },
+            {
               title: "Label",
               label: "label",
               options: TaskLabelList,
@@ -171,8 +181,12 @@ const BoardHeader = ({
           showReset={true}
         />
         <MembersList
-          members={projectData?.project_members || []}
+          members={ProjectMembers || []}
           removeMember={removeMember}
+          onMemberClick={(event, user) => {
+            event.preventDefault();
+            navigate(`/project-board/${projectId}/user/${user.id}`)
+          }}
         />
         {isDelete && (
           <AlertDialogue
@@ -185,16 +199,10 @@ const BoardHeader = ({
           />
         )}
         <ViewOptions activeView={activeView} setActiveView={setActiveView} />
-        <AdditionalOption projectId={projectId} />
+        <AdditionalOption projectId={projectId} reloadData={fetchData} />
       </div>
     </div>
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    token: state.user.token,
-    employees: state.emp.employees,
-  };
-};
-export default connect(mapStateToProps)(BoardHeader);
+export default BoardHeader;

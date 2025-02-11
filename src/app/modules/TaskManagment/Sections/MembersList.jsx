@@ -14,7 +14,12 @@ import { Input } from "components/ui/input";
 import { MdClose } from "react-icons/md";
 
 // Wrap the component with React.memo for optimization with custom equality check
-const MembersList = ({ members, removeMember, displayAll = false }) => {
+const MembersList = ({
+  members,
+  removeMember,
+  displayAll = false,
+  onMemberClick = () => {},
+}) => {
   // Get all employees data once at the component level
   const [searchQuery, setSearchQuery] = React.useState("");
   const employees = useSelector((state) => state.emp.employees_detail);
@@ -35,7 +40,6 @@ const MembersList = ({ members, removeMember, displayAll = false }) => {
   };
 
   if (!members || members?.length <= 0) return null;
-console.log(filteredMembers,'filteredMembers')
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -75,7 +79,8 @@ console.log(filteredMembers,'filteredMembers')
                 return (
                   <div
                     key={member.id}
-                    className="flex justify-between w-full items-center"
+                    className="flex justify-between w-full items-center cursor-pointer"
+                    onClick={(e) => onMemberClick(e, member)}
                   >
                     <EmployeeOverview
                       id={member.id}

@@ -7,7 +7,6 @@ const Project = {
   project_members: [],
   color: "", // Add color field
   profile: null,
-  custom_fields: null,
   joining_request: [],
   status: "on_going",
 };
