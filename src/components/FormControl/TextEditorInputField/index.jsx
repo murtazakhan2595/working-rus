@@ -425,7 +425,7 @@ function TextEditorInputField({
                       />
                       <div>
                         <div className="font-medium">{user.name}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm">
                           @{user.username}
                         </div>
                       </div>
