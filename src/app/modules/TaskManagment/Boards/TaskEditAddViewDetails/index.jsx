@@ -35,6 +35,8 @@ import { Task } from "app/utils/Types/TaskManagment";
 import { SelectComponent, CoverFileUpload } from "components/FormControl";
 import { getProjectById, deleteAttachment } from "app/hooks/taskManagment";
 import { addAttachments } from "app/hooks/taskManagment";
+import { Progress } from "src/@/components/ui/progress";
+
 import {
   addTaskCheckListItem,
   getAllCustomFields,
@@ -47,6 +49,7 @@ import { trackTaskActivities } from "./Sections/activityHelper";
 import SubtaskList from "./Sections/SubtaskList";
 import CopyLink from "components/ui/CopyLink";
 import TaskCommentsContainer from "../../Sections/TaskComments";
+
 
 const TaskEditAddViewDetails = ({
   taskId,
@@ -98,6 +101,10 @@ const TaskEditAddViewDetails = ({
         console.error("Error fetching board list:", error);
       }
     }
+  };
+
+  const countCompletedTasks = (tasks) => {
+    return tasks.filter((task) => task.status === "COMPLETED").length;
   };
 
   useEffect(() => {
@@ -156,6 +163,7 @@ const TaskEditAddViewDetails = ({
         const subtaskDetails = await Promise.all(
           cardDetails.sub_task.map((subtaskId) => getTaskById(subtaskId))
         );
+        console.log(subtaskDetails, "SUB TASK");
         setSubTasksDetails(subtaskDetails);
       }
     } catch (error) {
@@ -505,8 +513,24 @@ const TaskEditAddViewDetails = ({
                           orientation="horizontal"
                           value={
                             <>
+                              <div className="flex justify-between gap-3 mb-4 flex-4 items-center">
+                                <Progress
+                                  value={
+                                    (countCompletedTasks(subTasksDetails) /
+                                      subTasksDetails?.length) *
+                                    100
+                                  }
+                                  className="mt-1 h-2 bg-gray-400"
+                                />
+                                <span>{`${(
+                                  (countCompletedTasks(subTasksDetails) /
+                                    subTasksDetails?.length) *
+                                  100
+                                )?.toFixed(0)}%`}</span>
+                              </div>
+
                               <SubtaskList
-                                items={props.values.subtasks || []}
+                                items={props?.values?.subtasks || []}
                                 projectId={projectId}
                                 taskId={taskId}
                                 boardId={boardId}
