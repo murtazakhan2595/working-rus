@@ -1,15 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
 import { imageFileType } from "app/utils/Types/General";
-import ImageDocPreview  from "components/ui/ImageDocPreview";
+import ImageDocPreview from "components/ui/ImageDocPreview";
 
 export default function AttachmentUI({
   attachment,
   name,
   removeFile,
   key,
-  handleUpdateFileClick,
+  handleUpdateFileClick = () => {},
   id = null,
   displayImageAttachment = true,
+  allowUpdate = true,
 }) {
   const [viewAttachment, setViewAttachment] = useState(false);
   if (!attachment) return null;
@@ -61,13 +62,10 @@ export default function AttachmentUI({
           </span>
         </div>
         <div className="flex items-center gap-4">
-          {handleUpdateFileClick && (
+          {allowUpdate && (
             <button
               type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                handleUpdateFileClick();
-              }}
+              onClick={(e) => handleUpdateFileClick(e, id)}
               className="text-sm font-medium text-primary hover:text-plum-700"
             >
               Update

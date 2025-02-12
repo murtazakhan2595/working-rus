@@ -20,7 +20,7 @@ import {
   CommandItem,
 } from "src/@/components/ui/command";
 import Avatar from "components/ui/Avatar";
-
+import { ScrollArea } from "src/@/components/ui/scroll-area";
 
 const TextEditorIconClassName = "w-4 h-4";
 
@@ -385,15 +385,17 @@ function TextEditorInputField({
           </div>
         )}
 
-        <div
-          ref={editorRef}
-          id={name}
-          className="w-full min-h-20 p-4 focus:outline-none rounded-b-lg max-h-[350px] overflow-y-scroll textEditorText"
-          contentEditable
-          onInput={handleInput}
-          onPaste={handlePaste}
-          onKeyDown={handleKeyDown}
-        />
+        {/* <ScrollArea className="[&>div>div[style]]:!block"> */}
+          <div
+            ref={editorRef}
+            id={name}
+            className="w-full min-h-20 p-4 focus:outline-none rounded-b-lg max-h-[200px] textEditorText overflow-y-scroll"
+            contentEditable
+            onInput={handleInput}
+            onPaste={handlePaste}
+            onKeyDown={handleKeyDown}
+          />
+        {/* </ScrollArea> */}
 
         {allowMentions && showMentionPopover && (
           <div
@@ -425,9 +427,7 @@ function TextEditorInputField({
                       />
                       <div>
                         <div className="font-medium">{user.name}</div>
-                        <div className="text-sm">
-                          @{user.username}
-                        </div>
+                        <div className="text-sm">@{user.username}</div>
                       </div>
                     </CommandItem>
                   ))}

@@ -20,6 +20,7 @@ const CoverFileUpload = ({
   variant = "CoverFileUpload",
   multiple = true,
   deleteAttachment = () => {},
+  allowUpdate = true,
 }) => {
   const [files, setFiles] = useState([]); // Store multiple files
   // Initialize files from value
@@ -48,30 +49,42 @@ const CoverFileUpload = ({
     return true;
   };
 
-  const handleFile = (file) => {
+  const handleFile = (file, attachmentId = null) => {
     if (validateFile(file)) {
       const reader = new FileReader();
-      reader.onload = () => {
-        const updatedFiles = [...files, file];
-        // Replace existing files with new file
-        setFiles(updatedFiles);
-        onChange(name, multiple ? updatedFiles : file); // Send single file to parent if mutiple is false
+      reader.onload = () => {  
+        setFiles((prevFiles) => {
+          debugger
+          let updatedFiles;
+          if (attachmentId) {
+            // Replace existing file with the same attachmentId
+            updatedFiles = prevFiles.map((existingFile) =>
+              existingFile.id === attachmentId ? file : existingFile
+            );
+          } else {
+            // Add new file
+            updatedFiles = [...prevFiles, file];
+          }
+          // Send updated file list to parent
+          onChange(name, multiple ? updatedFiles : file);
+          return updatedFiles;
+        });
       };
       reader.readAsDataURL(file);
     }
   };
 
   const handleRemoveFile = (attachment, id) => {
-    console.log(files);
     const updatedFiles = files.filter((file) => file.attachment !== attachment);
     setFiles(updatedFiles);
     onChange(name, updatedFiles.length && multiple ? updatedFiles : null);
-    if(id){
+    if (id) {
       deleteAttachment(id);
     }
   };
 
-  const handleUpdateFileClick = () => {
+  const handleUpdateFileClick = (event, attachmentId) => {
+    event.preventDefault();
     // Create a temporary file input
     const tempFileInput = document.createElement("input");
     tempFileInput.type = "file";
@@ -83,7 +96,7 @@ const CoverFileUpload = ({
       e.preventDefault();
       if (e.target.files && e.target.files[0]) {
         const file = e.target.files[0];
-        handleFile(file);
+        handleFile(file, attachmentId);
       }
       // Remove the temporary input after use
       document.body.removeChild(tempFileInput);
@@ -110,6 +123,7 @@ const CoverFileUpload = ({
           multiple={multiple}
           handleRemoveFile={handleRemoveFile}
           handleUpdateFileClick={handleUpdateFileClick}
+          allowUpdate={allowUpdate}
         />
       )}
       {variant === "AttachmentFileUpload" && (
@@ -120,6 +134,7 @@ const CoverFileUpload = ({
           multiple={multiple}
           handleRemoveFile={handleRemoveFile}
           handleUpdateFileClick={handleUpdateFileClick}
+          allowUpdate={allowUpdate}
         />
       )}
       {error && touch && <div className={errorClassName}>{error}</div>}

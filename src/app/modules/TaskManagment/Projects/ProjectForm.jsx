@@ -229,7 +229,7 @@ const ProjectForm = ({
                               error={props.errors.project_members}
                               touch={props.touched.project_members}
                               placeholder="Select Project Members"
-                              selectedOptionClassName={"bg-neutral-300 text-neutral-1200"}
+                              selectedOptionListClassName={"z-[2] mt-3 w-[80vw] max-w-[700px]"}
                             />
                           </div>
                           <ColorInput

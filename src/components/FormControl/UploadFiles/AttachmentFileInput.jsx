@@ -10,6 +10,7 @@ function AttachmentFileInput({
   handleFile,
   handleRemoveFile = () => {},
   handleUpdateFileClick = () => {},
+  allowUpdate=true,
 }) {
   const [dragActive, setDragActive] = useState(false);
   const AttachmentFileInputRef = useRef(null);
@@ -50,6 +51,7 @@ function AttachmentFileInput({
         handleUpdateFileClick={handleUpdateFileClick}
         id={fileData.id}
         key={index}
+        allowUpdate={allowUpdate}
       />
     ));
   };

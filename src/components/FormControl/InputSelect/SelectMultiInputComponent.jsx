@@ -6,7 +6,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "src/@/components/ui/popover";
-import { ChevronsUpDown, Check, CircleX } from "lucide-react";
+import { ChevronsUpDown, Check, X } from "lucide-react";
 import {
   Command,
   CommandInput,
@@ -37,6 +37,7 @@ const SelectMultiInputComponent = React.memo(
     optionsActions = [], // List of action buttons for options
     placeholder = null, // Placeholder text when no value is selected
     selectedOptionClassName = "", // Add custom style to value labels
+    selectedOptionListClassName = "", // Add custom style to value labels List
     showSelectedValuesBelow = false, // Show selected values below the dropdown (Generalized name)
   }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -84,21 +85,20 @@ const SelectMultiInputComponent = React.memo(
               >
                 <div className="flex justify-start w-full gap-2">
                   {icon && <div className="w-4">{icon}</div>}
-                  <div className="flex flex-wrap gap-2 items-center max-w-[90%]">
-                    {selectedValues.length > 0 && !showSelectedValuesBelow ? (
-                      <SelectedOptionsList
-                        selectedValues={selectedValues}
-                        useValueAsIdentifier={useValueAsIdentifier}
-                        options={options}
-                        handleRemove={handleRemove}
-                        selectedOptionClassName={selectedOptionClassName}
-                      />
-                    ) : (
-                      <span className="text-sm font-normal text-neutral-1000">
-                        {placeholder ? placeholder : `Select ${label}`}
-                      </span>
-                    )}
-                  </div>
+                  {selectedValues.length > 0 && !showSelectedValuesBelow ? (
+                    <SelectedOptionsList
+                      selectedValues={selectedValues}
+                      useValueAsIdentifier={useValueAsIdentifier}
+                      options={options}
+                      handleRemove={handleRemove}
+                      selectedOptionClassName={selectedOptionClassName}
+                      selectedOptionListClassName={selectedOptionListClassName}
+                    />
+                  ) : (
+                    <div className="text-sm font-normal text-neutral-1000 max-w-[90%] overflow-hidden">
+                      {placeholder ? placeholder : `Select ${label}`}
+                    </div>
+                  )}
                   <ChevronsUpDown className="w-4 h-4 ml-2 ml-auto opacity-50 shrink-0" />
                 </div>
               </Button>
@@ -133,15 +133,14 @@ const SelectMultiInputComponent = React.memo(
           </Popover>
           {/* Show Selected Values Below if Enabled */}
           {showSelectedValuesBelow && selectedValues.length > 0 && (
-            <div className="flex fex-row flex-wrap gap-2 items-center max-w-[90%]">
-              <SelectedOptionsList
-                selectedValues={selectedValues}
-                useValueAsIdentifier={useValueAsIdentifier}
-                options={options}
-                handleRemove={handleRemove}
-                selectedOptionClassName={selectedOptionClassName}
-              />
-            </div>
+            <SelectedOptionsList
+              selectedValues={selectedValues}
+              useValueAsIdentifier={useValueAsIdentifier}
+              options={options}
+              handleRemove={handleRemove}
+              selectedOptionClassName={selectedOptionClassName}
+              selectedOptionListClassName={selectedOptionListClassName}
+            />
           )}
           {/* Error Message Display */}
           {error && touch && <div className={errorClassName}>{error}</div>}
@@ -161,30 +160,40 @@ const SelectedOptionsList = ({
   options = [],
   handleRemove = () => {},
   selectedOptionClassName = "",
+  selectedOptionListClassName = "",
 }) => {
   console.log(selectedOptionClassName, "selectedOptionClassName");
-  return selectedValues.map((val) =>
-    useValueAsIdentifier ? (
-      <div
-        key={val}
-        className={cn(
-          "bg-plum-300 text-plum-800 text-xs font-semibold px-2 py-1 rounded-lg flex items-center max-w-[100%] overflow-hidden",
-          selectedOptionClassName
-        )}
-      >
-        {options.find((opt) => opt.value === val)?.label}
-        <CircleX
-          className="ml-1 text-red-700 cursor-pointer"
-          size={16}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleRemove(val);
-          }}
-        />
-      </div>
-    ) : (
-      options.find((opt) => opt.value === val)?.label
-    )
+  return (
+    <div
+      className={cn(
+        "flex fex-row flex-wrap gap-2 items-center max-w-[90%]",
+        selectedOptionListClassName
+      )}
+    >
+      {selectedValues.map((val) =>
+        useValueAsIdentifier ? (
+          <div
+            key={val}
+            className={cn(
+              "bg-neutral-300 text-neutral-1200 text-xs font-semibold px-2 py-1 rounded-lg flex items-center max-w-[100%] min-w-fit overflow-hidden",
+              selectedOptionClassName
+            )}
+          >
+            {options.find((opt) => opt.value === val)?.label}
+            <X
+              className="ml-1 text-neutral-1000 cursor-pointer"
+              size={15}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleRemove(val);
+              }}
+            />
+          </div>
+        ) : (
+          options.find((opt) => opt.value === val)?.label
+        )
+      )}
+    </div>
   );
 };
 

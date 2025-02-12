@@ -35,6 +35,7 @@ const Attachments = React.memo(
             variant="AttachmentFileUpload"
             multiple={maxAttachments ? maxAttachments > 1 : true}
             deleteAttachment={deleteAttachmentFile}
+            allowUpdate = {false}
           />
         )}
       </div>
