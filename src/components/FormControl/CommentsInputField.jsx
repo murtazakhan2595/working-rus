@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { TextEditorInputField } from "components/FormControl";
-import { addCommentAttachment } from "app/hooks/taskManagment";
+import { addCommentAttachment,addTask } from "app/hooks/taskManagment";
 import { toast } from "react-toastify";
 import { postComment } from "app/hooks/taskManagment";
 
 const CommentsInputField = ({
-  addAttachment = () => {},  //Add the comments attchment to include in task attachments
+  addAttachment = () => {}, //Add the comments attchment to include in task attachments
   taskId,
   userId,
   employees,
@@ -14,6 +14,8 @@ const CommentsInputField = ({
 }) => {
   const [newComment, setNewComment] = useState("");
   const [commentAttachments, setCommentAttachment] = useState([]);
+  const [taskAttachment, setTaskAttachment] = useState([]);
+
   const removeFile = (file) => {
     const filteredFiles = commentAttachments.filter(
       (f) => f.name !== file.name
@@ -37,14 +39,17 @@ const CommentsInputField = ({
       const payload = { attachment: attachment };
       const response = await addCommentAttachment(payload, id);
       if (response) {
-        addAttachment({ attachment: attachment });
+        const attachmentId = await addAttachment({ attachment: attachment });
+        if(attachmentId)
+        setTaskAttachment((preAttachment) => {
+          return [...preAttachment, attachmentId];
+        });
         return response;
       } else {
         return { id: null, attachment: null };
       }
     }
   };
-
   const handleSubmitComment = async (comment, attachments, mentionedUsers) => {
     const getAttachmentFileIds = async (attachmentfiles) => {
       if (attachmentfiles && attachmentfiles.length > 0) {
@@ -60,7 +65,7 @@ const CommentsInputField = ({
               return file.id;
             }
           });
-          return await Promise.all(attachmentPromises);
+          return (await Promise.all(attachmentPromises)).filter(Boolean);
         } catch (error) {
           console.error("Error uploading attachments:", error);
           toast.error(
@@ -86,6 +91,7 @@ const CommentsInputField = ({
         if (response.status === 201 || response.status === 200) {
           fetchData(true);
           setNewComment("");
+          await addTask({ attachment: taskAttachment }, taskId);
           setCommentAttachment([]);
         }
       } catch (error) {

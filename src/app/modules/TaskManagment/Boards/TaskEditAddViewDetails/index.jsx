@@ -50,7 +50,6 @@ import SubtaskList from "./Sections/SubtaskList";
 import CopyLink from "components/ui/CopyLink";
 import TaskCommentsContainer from "../../Sections/TaskComments";
 
-
 const TaskEditAddViewDetails = ({
   taskId,
   setIsOpen,
@@ -577,7 +576,6 @@ const TaskEditAddViewDetails = ({
                               userId={userId}
                               projectDetail={projectDetail}
                               addAttachment={async (attachment) => {
-                                debugger;
                                 const uploadedAttachment =
                                   await uploadAttachmentFile(attachment);
                                 const attachmentSelected =
@@ -586,6 +584,7 @@ const TaskEditAddViewDetails = ({
                                   ...attachmentSelected,
                                   uploadedAttachment,
                                 ]);
+                                return uploadedAttachment.id || null;
                               }}
                             />
                           )
