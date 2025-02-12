@@ -17,16 +17,13 @@ import { useSelector } from "react-redux";
 import Err404 from "app/modules/Error/Err404";
 import { AddNewListModel } from "./Sections";
 
-const Board = ({}) => {
-  const projectId = useParams()?.projectId || null;
+const Board = () => {
+  const { projectId, taskId } = useParams();
   const navigate = useNavigate();
   const userId = useSelector((state) => state.user.userProfile).id;
   const userRole = useSelector((state) => state.user.userProfile).role;
   const [AllBoards, setAllBoards] = useState([]);
-  const viewTaskId = useParams()?.taskId || null;
-  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(
-    viewTaskId ? true : false
-  );
+  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(!!taskId);
   const [projectData, setProjectData] = useState({});
   const [openSuccessMessage, setOpenSuccessMessage] = useState(false);
   const [openRequestJoinDialogBox, setOpenRequestJoinDialogBox] =
@@ -35,15 +32,29 @@ const Board = ({}) => {
     is_subtask: [false],
     is_archive: [false],
   });
-  const [showAddNewListModel, setshowAddNewListModel] = useState(false);
+  const [showAddNewListModel, setShowAddNewListModel] = useState(false);
   const [activeView, setActiveView] = useState("grid");
+
   useEffect(() => {
     let isMounted = true;
     fetchData(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [projectId]);
+  }, [projectId, taskId]);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchAllBoards(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [projectId, taskId]);
+
+  useEffect(() => {
+    // Open the modal when taskId changes
+    setIsTaskDetailOpen(!!taskId);
+  }, [taskId]);
 
   const fetchData = async (isMounted) => {
     try {
@@ -51,18 +62,18 @@ const Board = ({}) => {
       if (isMounted) {
         setProjectData(projectDetails);
         const members = projectDetails?.project_members || [];
-        if (userRole === 4 || userRole === 3)
+        if (userRole === 4 || userRole === 3) {
           if (!Array.isArray(members) || !members.includes(userId)) {
             setOpenRequestJoinDialogBox(true);
           }
+        }
       }
     } catch (error) {
-      console.error("Error fetching employeeLeaveTypes:", error);
+      console.error("Error fetching project details:", error);
     }
   };
 
   const fetchAllBoards = async (isMounted) => {
-    // debugger
     try {
       const boardsData = await getAllBoards({
         filterData: { project_id: [projectId] },
@@ -71,17 +82,9 @@ const Board = ({}) => {
         setAllBoards(boardsData);
       }
     } catch (error) {
-      console.error("Error fetching employeeLeaveTypes:", error);
+      console.error("Error fetching boards:", error);
     }
   };
-
-  useEffect(() => {
-    let isMounted = true;
-    fetchAllBoards(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [projectId]);
 
   const SubmitJoinRequest = async () => {
     try {
@@ -93,7 +96,7 @@ const Board = ({}) => {
         setOpenSuccessMessage(true);
       }
     } catch (error) {
-      console.error("Error fetching employeeLeaveTypes:", error);
+      console.error("Error submitting join request:", error);
     }
   };
 
@@ -101,19 +104,17 @@ const Board = ({}) => {
     if (showAddNewListModel) {
       fetchAllBoards(true);
     }
-    setshowAddNewListModel(!showAddNewListModel);
+    setShowAddNewListModel(!showAddNewListModel);
   };
 
   if (projectData === -1) {
     return <Err404 />;
   }
+
   return (
     <>
       {showAddNewListModel && (
-        <AddNewListModel
-          projectId={projectId}
-          setIsOpen={toggleAddBoardModal}
-        />
+        <AddNewListModel projectId={projectId} setIsOpen={toggleAddBoardModal} />
       )}
       <BoardHeader
         setFilterData={setFilterData}
@@ -141,13 +142,14 @@ const Board = ({}) => {
           toggleAddBoardModal={toggleAddBoardModal}
         />
       )}
-      {/* Render TaskDetail component if isTaskDetailOpen is true */}
+      {/* Task Detail Modal */}
       {isTaskDetailOpen && (
         <TaskEditAddViewDetails
-          taskId={viewTaskId} // Pass task Id as props to TaskDetail
+          taskId={taskId}
           isOpen={isTaskDetailOpen}
           setIsOpen={() => {
             setIsTaskDetailOpen(false);
+            navigate(`/project-board/${projectId}`);
             fetchAllBoards(true);
           }}
           reloadData={() => {
@@ -162,7 +164,7 @@ const Board = ({}) => {
           isOpen={openRequestJoinDialogBox}
           setIsOpen={() => {
             setOpenRequestJoinDialogBox(false);
-            navigate("/projects");
+            navigate("/project-board");
           }}
           handleContinue={SubmitJoinRequest}
           continueText="Submit Request"
@@ -177,11 +179,11 @@ const Board = ({}) => {
           isOpen={openSuccessMessage}
           onClose={() => {
             setOpenSuccessMessage(false);
-            navigate("/projects");
+            navigate("/project-board");
           }}
           title={"Request Submitted!"}
           description={
-            "Your request has been submitted successfully!. You can access the project, once request is aprroved."
+            "Your request has been submitted successfully! You can access the project once the request is approved."
           }
         />
       )}

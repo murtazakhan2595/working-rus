@@ -31,6 +31,7 @@ import { getNotifications } from "app/hooks/notifications";
 import { markAsRead } from "app/hooks/notifications";
 import { markAllNotificationsAsRead } from "app/hooks/notifications";
 import { URLS } from "constants/config";
+import { useNavigate } from "react-router-dom";
 
 const WebSocketNotifications = ({ onClose }) => {
   const [notifications, setNotifications] = useState([]);
@@ -38,10 +39,21 @@ const WebSocketNotifications = ({ onClose }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showUnread, setShowUnread] = useState(false);
 
+  const navigate = useNavigate(); // Initialize navigate
+
+  const handleNotificationClick = (notification) => {
+    if (!notification.isRead) {
+      markRead(notification.id);
+    }
+
+    if (notification.project_id && notification.task_id) {
+      navigate(`/project-board/${notification.project_id}/${notification.task_id}`);
+    }
+  }
+
   const fetchNotifications = async () => {
     try {
       const response = await getNotifications();
-
       // Transform the notifications to match your UI format
       const transformedNotifications = response.results.map((notification) => ({
         icon: null,
@@ -50,6 +62,8 @@ const WebSocketNotifications = ({ onClose }) => {
         time: formatNotificationTime(notification.created_at),
         isRead: notification.is_read,
         id: notification.id, // Keep the ID for future reference
+        task_id: notification?.task_id,
+        project_id: notification?.project_id
       }));
 
       setNotifications(transformedNotifications);
@@ -113,7 +127,6 @@ const WebSocketNotifications = ({ onClose }) => {
 
     ws.onmessage = (event) => {
       const newNotification = JSON.parse(event.data);
-      // Transform the WebSocket notification to match your notification format
       const transformedNotification = {
         icon: null,
         type: newNotification.type,
@@ -222,16 +235,14 @@ const WebSocketNotifications = ({ onClose }) => {
                       <div
                         key={index}
                         className={`flex items-start gap-4 px-6 py-4  transition-colors
-    ${
-      ("flex items-start gap-4 px-6 py-4 transition-colors cursor-pointer",
-      notification.isRead
-        ? "bg-gray-50 hover:bg-gray-100"
-        : "bg-blue-50 hover:bg-blue-100")
-    }
-  `}
-                        onClick={() =>
-                          !notification.isRead && markRead(notification.id)
-                        }
+                          ${
+                            ("flex items-start gap-4 px-6 py-4 transition-colors cursor-pointer",
+                            notification.isRead
+                              ? "bg-gray-50 hover:bg-gray-100"
+                              : "bg-blue-50 hover:bg-blue-100")
+                          }
+                        `}
+                        onClick={() => handleNotificationClick(notification)}
                       >
                         <div className="flex h-8 w-8 items-center justify-center rounded-full">
                           <Bell className="w-5 h-5" />
