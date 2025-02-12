@@ -19,7 +19,9 @@ import {
   LogOut,
   Users,
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { addProject } from "app/hooks/taskManagment";
+import { fetchProjects } from "state/slices/CommonSlice";
 
 const AdditionalOption = React.memo(
   ({ projectId = null, reloadData = () => {} }) => {
@@ -27,6 +29,8 @@ const AdditionalOption = React.memo(
     const [openMembersBoard, setOpenMembersBoard] = React.useState("");
     const navigate = useNavigate();
     const userRole = useSelector((state) => state.user.userProfile)?.role;
+    const userProfile = useSelector((state) => state.user.userProfile);
+    const dispatch = useDispatch();
 
     const handleArchiveCardsClick = (e) => {
       e.preventDefault();
@@ -40,9 +44,17 @@ const AdditionalOption = React.memo(
       e.preventDefault();
       navigate("/projects");
     };
-    const handleCloseProjectClick = (e) => {
+    const handleCloseProjectClick = async (e) => {
       e.preventDefault();
-      setOpenArchive(true);
+      try {
+        const response = await addProject({ status: "closed" }, projectId);
+        if (response && response.status === 200) {
+          dispatch(fetchProjects(userProfile));
+          navigate("/projects");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
     };
     const handleOnClose = () => {
       setOpenMembersBoard(false);
@@ -65,9 +77,11 @@ const AdditionalOption = React.memo(
                 text={"Copy Board Link"}
               />
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleArchiveCardsClick}>
-              <Archive size={14} className="mr-2" /> Archive Cards
-            </DropdownMenuItem>
+            {userRole !== 4 && (
+              <DropdownMenuItem onClick={handleArchiveCardsClick}>
+                <Archive size={14} className="mr-2" /> Archive Cards
+              </DropdownMenuItem>
+            )}
             {userRole !== 4 && (
               <DropdownMenuItem onClick={handleMembersClick}>
                 <Users size={14} className="mr-2" /> Members

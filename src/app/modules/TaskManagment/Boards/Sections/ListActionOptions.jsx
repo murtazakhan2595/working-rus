@@ -34,7 +34,7 @@ const ListActionOptions = ({
 
   const confirmDelete = async () => {
     await deleteBoard(boardId);
-    fetchData(true);
+    reloadData(true);
     setIsDeleteModalOpen(false);
   };
 

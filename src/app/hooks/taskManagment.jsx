@@ -534,9 +534,6 @@ const deleteBoard = async (taskId) => {
       HandleLogout();
     }
     console.error("Error deleting board:", error);
-    toast.error("Error deleting board!", {
-      position: toast.POSITION.TOP_RIGHT,
-    });
     return false;
   }
 };
