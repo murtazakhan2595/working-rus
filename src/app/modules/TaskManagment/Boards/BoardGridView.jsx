@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { getAllBoards, deleteBoard, moveTask } from "app/hooks/taskManagment";
+import { getAllBoards, deleteBoard, moveTask, updateBoardPosition } from "app/hooks/taskManagment";
 import { RxPlus } from "react-icons/rx";
 import { AddNewListModel } from "./Sections";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
@@ -32,16 +32,96 @@ const BoardGridView = ({
   reloadData = () => {},
   toggleAddBoardModal = () => {},
 }) => {
+  const [boards, setBoards] = useState([]);
+  const [draggedBoard, setDraggedBoard] = useState(null);
+
+  useEffect(() => {
+    if (AllBoards?.results) {
+      console.log(AllBoards?.results, "RESULTS")
+      setBoards(AllBoards.results);
+    }
+  }, [AllBoards]);
+
+  const handleDragStart = (e, board) => {
+    setDraggedBoard(board);
+    e.dataTransfer.effectAllowed = "move";
+    // Add some styling to dragged element
+    e.target.style.opacity = "0.5";
+  };
+
+  const handleDragEnd = (e) => {
+    setDraggedBoard(null);
+    // Reset styling
+    e.target.style.opacity = "1";
+  };
+
+  const handleDragOver = (e, board) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    
+    // Add visual feedback
+    const draggedOverElement = e.currentTarget;
+    if (draggedOverElement) {
+      draggedOverElement.style.borderLeft = draggedBoard?.id === board.id ? "" : "3px solid #4f46e5";
+    }
+  };
+
+  const handleDragLeave = (e) => {
+    e.currentTarget.style.borderLeft = "";
+  };
+
+  const handleDrop = async (e, targetBoard) => {
+    e.preventDefault();
+    e.currentTarget.style.borderLeft = "";
+    
+    if (!draggedBoard || draggedBoard.id === targetBoard.id) return;
+
+    const oldIndex = boards.findIndex(b => b.id === draggedBoard.id);
+    const newIndex = boards.findIndex(b => b.id === targetBoard.id);
+    
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    // Create new array with reordered columns
+    const newBoards = [...boards];
+    newBoards.splice(oldIndex, 1);
+    newBoards.splice(newIndex, 0, draggedBoard);
+
+    // Update local state immediately for smooth UI
+    setBoards(newBoards);
+
+    try {
+      // Update the position in backend
+      await Promise.all(newBoards.map((board, index) => 
+        updateBoardPosition(board.id, index)
+      ));
+      
+      // Refresh data from server
+      reloadData(true);
+    } catch (error) {
+      console.error("Error updating board positions:", error);
+      // Revert to original order on error
+      setBoards(AllBoards.results);
+    }
+  };
+
   return (
     <>
       <ScrollArea className="">
         <Card className="p-0 relative bg-transparent shadow-none border-none">
           <CardContent className="p-0">
             <div className="flex gap-8 mt-5">
-              {AllBoards.count > 0 &&
-                AllBoards.results.map((board) => (
+              {boards.map((board) => (
+                <div
+                  key={board.id}
+                  draggable={true}
+                  onDragStart={(e) => handleDragStart(e, board)}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={(e) => handleDragOver(e, board)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, board)}
+                  className="cursor-move transition-all duration-200"
+                >
                   <TaskColumn
-                    key={board.id}
                     board={board}
                     projectId={projectId}
                     reloadData={() => {
@@ -52,9 +132,10 @@ const BoardGridView = ({
                       board_id: [board.id],
                     }}
                   />
-                ))}
+                </div>
+              ))}
               <div className="flex flex-col min-w-[290px] max-w-[320px] mb-5">
-                <div className="flex flex-col ">
+                <div className="flex flex-col">
                   <header className="">
                     <Button
                       variant="outline"
@@ -63,7 +144,7 @@ const BoardGridView = ({
                       className="w-full text-start"
                       onClick={toggleAddBoardModal}
                     >
-                      <RxPlus className="text-xl " />
+                      <RxPlus className="text-xl" />
                       <span className="ml-2">Add New List</span>
                     </Button>
                   </header>

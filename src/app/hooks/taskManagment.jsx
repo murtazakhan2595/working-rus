@@ -143,28 +143,39 @@ const getAllBoards = async (payload) => {
   const URL = `/board/?order=-id&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
+
+
     if (response.status === 200) {
-      const data = response.data?.results;
-      const BoardsData = {
+      let data = response.data?.results;
+
+      // Sort by 'ordering' if available, otherwise fall back to 'id'
+      data = data.sort((a, b) => {
+        if (a.ordering !== null && b.ordering !== null) {
+          return a.ordering - b.ordering;
+        }
+        return a.id - b.id; // Fallback sorting by ID
+      });
+
+      return {
         count: data.length,
         results: data,
       };
-      return BoardsData;
-    } else {
-      return [];
     }
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    console.error("Error fetching Personal Info data :", error);
+    console.error("Error fetching Board data:", error);
   }
+
   return [];
 };
+
 const getAllLabels = async () => {
   const URL = `/TaskLabel`;
   try {
@@ -1063,6 +1074,24 @@ const deleteComment = async (commentId) => {
   }
 };
 
+const updateBoardPosition = async (boardId, ordering) => {
+  console.log(boardId, ordering, "HELLO KASHIF")
+  try {
+    const response = await axios.patch(
+      `${baseUrl}/board/${boardId}`,
+      { ordering },
+      { headers: headers() }
+    );
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error updating board position:", error);
+    throw error;
+  }
+};
+
 export {
   createActivity,
   getActivities,
@@ -1096,4 +1125,5 @@ export {
   getAllCustomFields,
   addCustomFields,
   deleteCustomFields,
+  updateBoardPosition,
 };

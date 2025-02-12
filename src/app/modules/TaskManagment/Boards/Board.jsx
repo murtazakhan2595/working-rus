@@ -98,7 +98,6 @@ const Board = ({}) => {
   };
 
   const toggleAddBoardModal = () => {
-    debugger;
     if (showAddNewListModel) {
       fetchAllBoards(true);
     }

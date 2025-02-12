@@ -50,7 +50,6 @@ const ColorPicker = React.memo(
      * @param {string} color - Selected color value
      */
     const handleColorSelection = (event, color) => {
-      debugger
       event.preventDefault(); // ✅ Prevents default behavior
       onChange(name, color);
     };
