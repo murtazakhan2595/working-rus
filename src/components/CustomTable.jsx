@@ -135,9 +135,10 @@ export default function TableCustom({
                 {columns.map((column, index) => (
                   <TableHead
                     key={index}
-                    className={column.dataSort ? "cursor-pointer" : ""}
+                    className={`min-w-fit ${column.dataSort ? "cursor-pointer" : ""}`}
                     style={{
                       ...(column.width ? { width: column.width } : {}),
+                      ...(column.minWidth ? { minWidth: column.minWidth } : {}),
                       ...(column.headerAlign
                         ? { textAlign: column.headerAlign }
                         : {}),
@@ -189,11 +190,12 @@ export default function TableCustom({
                       columns.map((column, index) => (
                         <TableCell
                           key={index}
-                          className={`text-neutral-1200 ${
+                          className={`min-w-fit text-neutral-1200 ${
                             column.onClick ? "cursor-pointer " : ""
                           }`}
                           style={{
                             ...(column.width ? { width: column.width } : {}),
+                            ...(column.minWidth ? { minWidth: column.minWidth } : {}),
                             ...(column.dataAlign
                               ? { textAlign: column.dataAlign }
                               : {}),

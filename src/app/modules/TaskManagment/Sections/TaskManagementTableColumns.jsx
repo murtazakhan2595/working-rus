@@ -27,6 +27,7 @@ export const ProjectColumn = [
     text: "Members",
     dataField: "project_members",
     formatter: (cell) => <MembersList members={cell} />,
+    minWidth:'135px'
   },
   {
     text: "Due Date",
@@ -61,6 +62,7 @@ export const ProjectBoardColumn = [
     text: "Tasks",
     dataField: "name",
     dataSort: true,
+    minWidth:'200px'
   },
   {
     text: "Status",
@@ -70,7 +72,7 @@ export const ProjectBoardColumn = [
         <TaskStatusLabel status={cell} />
       </div>
     ),
-    width: "20%",
+    width: "18%",
     // headerAlign: "center",
     dataSort: true,
     // dataAlign: "center",
@@ -83,13 +85,14 @@ export const ProjectBoardColumn = [
         {PriorityList.find((option) => option.value === cell)?.label}
       </div>
     ),
-    width: "20%",
+    width: "18%",
     dataSort: true,
   },
   {
     text: "Members",
     dataField: "assigned_to",
-    width: "20%",
+    width: "18%",
+    minWidth:'135px',
     formatter: (cell) => <MembersList members={cell} />,
   },
   {
@@ -98,6 +101,7 @@ export const ProjectBoardColumn = [
     formatter: (cell, row) => {
       return <TaskEndDate dueDate={cell} taskStatus={row.status} />;
     },
+    minWidth: "160px",
     width: "160px",
   },
 ];

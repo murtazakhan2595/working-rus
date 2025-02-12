@@ -12,6 +12,7 @@ import { Card } from "components/ui/card";
 import { Search } from "lucide-react";
 import { Input } from "components/ui/input";
 import { MdClose } from "react-icons/md";
+import { ScrollArea } from "src/@/components/ui/scroll-area";
 
 // Wrap the component with React.memo for optimization with custom equality check
 const MembersList = ({
@@ -65,43 +66,47 @@ const MembersList = ({
       <PopoverContent className="w-80 p-0" align="start">
         <Card className="border-0 shadow-none">
           <div className="p-4 space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search Member"
-                className="pl-9"
-                value={searchQuery}
-                onChange={handleSearchChange}
-              />
-            </div>
-            <div className="space-y-3 max-h-[200px] overflow-y-auto scroll-smooth">
-              {filteredMembers.map((member) => {
-                return (
-                  <div
-                    key={member.id}
-                    className="flex justify-between w-full items-center cursor-pointer"
-                    onClick={(e) => onMemberClick(e, member)}
-                  >
-                    <EmployeeOverview
-                      id={member.id}
-                      showEmail={true}
-                      showPosition={true}
-                    />
-                    {removeMember && userProfile?.role !== 4 && (
-                      <MdClose
-                        className="w-5 h-5 text-gray-700 cursor-pointer"
-                        onClick={() => {
-                          const updatedMember = members.filter(
-                            (obj) => obj !== member.id
-                          );
-                          removeMember(updatedMember);
-                        }}
+            {remainingCount > 0 && (
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search Member"
+                  className="pl-9"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                />
+              </div>
+            )}
+            <ScrollArea className="[&>div>div[style]]:!block">
+              <div className="pr-2 space-y-3 max-h-[200px]">
+                {filteredMembers.map((member) => {
+                  return (
+                    <div
+                      key={member.id}
+                      className="flex justify-between w-full items-center cursor-pointer"
+                      onClick={(e) => onMemberClick(e, member)}
+                    >
+                      <EmployeeOverview
+                        id={member.id}
+                        showEmail={true}
+                        showPosition={true}
                       />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                      {removeMember && userProfile?.role !== 4 && (
+                        <MdClose
+                          className="w-5 h-5 text-gray-700 cursor-pointer"
+                          onClick={() => {
+                            const updatedMember = members.filter(
+                              (obj) => obj !== member.id
+                            );
+                            removeMember(updatedMember);
+                          }}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </ScrollArea>
           </div>
         </Card>
       </PopoverContent>
