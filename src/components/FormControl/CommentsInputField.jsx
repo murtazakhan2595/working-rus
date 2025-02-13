@@ -12,12 +12,16 @@ const CommentsInputField = ({
   projectDetail,
   editCommentContent,
   setEditCommentContent,
+  replyComment,
+  setReplyComment,
   fetchData = () => {},
 }) => {
   const [newComment, setNewComment] = useState("");
   const [commentAttachments, setCommentAttachment] = useState([]);
   const [taskAttachment, setTaskAttachment] = useState([]);
   const [editMode, setEditMode] = useState(false);
+  const [replyTo, setReplyTo] = useState(null);
+
   // Reset states when editCommentContent changes
   useEffect(() => {
     if (editCommentContent) {
@@ -31,13 +35,6 @@ const CommentsInputField = ({
       setEditMode(false);
     }
   }, [editCommentContent]);
-
-  const removeFile = (file) => {
-    const filteredFiles = commentAttachments.filter(
-      (f) => f.name !== file.name
-    );
-    setCommentAttachment(filteredFiles);
-  };
   const filteredUsers = React.useMemo(() => {
     if (!employees || !projectDetail?.project_members) return [];
 
@@ -49,6 +46,32 @@ const CommentsInputField = ({
         username: emp.username, // Using username field
       }));
   }, [employees, projectDetail?.project_members]);
+
+  // Add this useEffect to handle reply comments
+  useEffect(() => {
+    if (replyComment) {
+      const userToReplyTo = filteredUsers.find(
+        (user) => user.id === replyComment.user_id
+      );
+      if (userToReplyTo) {
+        setReplyTo({
+          id: userToReplyTo.id,
+          name: userToReplyTo.name || userToReplyTo.username,
+        });
+        // Focus the editor
+        document.getElementById("editor")?.focus();
+      }
+    } else {
+      setReplyTo(null);
+    }
+  }, [replyComment, filteredUsers]);
+
+  const removeFile = (file) => {
+    const filteredFiles = commentAttachments.filter(
+      (f) => f.name !== file.name
+    );
+    setCommentAttachment(filteredFiles);
+  };
 
   const handleAddCommentAttachment = async (attachment, id) => {
     if (attachment instanceof File) {
@@ -112,6 +135,8 @@ const CommentsInputField = ({
           setCommentAttachment([]);
           setEditMode(!editMode);
           setEditCommentContent(null);
+          setReplyComment(null);
+          setReplyTo(null);
         }
       } catch (error) {
         console.error("Error Adding Comment:", error);
@@ -134,6 +159,7 @@ const CommentsInputField = ({
           return await handleAddCommentAttachment(file);
         }}
         editMode={editMode}
+        replyToUser={replyTo}
       />
     </>
   );
