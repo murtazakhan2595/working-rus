@@ -31,6 +31,7 @@ function TaskComments({
   refreshComments,
   setRefreshComments,
   showActivities,
+  setEditCommentContent,
 }) {
   const employees = useSelector((state) => state.emp.employees);
   const userId = useSelector((state) => state.user.userProfile.id);
@@ -82,6 +83,12 @@ function TaskComments({
       setRefreshComments(true);
     }
   };
+
+  const handleEditComment = async (comment) => {
+    setEditCommentContent(comment);
+    console.log("comment", comment.comment);
+  };
+
   const renderActivityContent = (activity) => {
     return (
       <div className="text-neutral-1000 text-sm">
@@ -181,6 +188,15 @@ function TaskComments({
                     Remove
                   </button>
                 )}
+                {item.user_id === userId && item.type === "comment" && (
+                  <button
+                    className="text-sm text-yellow-600 hover:underline"
+                    type="button"
+                    onClick={() => handleEditComment(item)}
+                  >
+                    Edit
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -195,6 +211,7 @@ export default function TaskCommentsContainer({
   refreshComments,
   showActivities,
   setRefreshComments,
+  setEditCommentContent,
 }) {
   // const [showActivities, setShowActivities] = useState(true);
 
@@ -222,6 +239,7 @@ export default function TaskCommentsContainer({
         refreshComments={refreshComments}
         setRefreshComments={setRefreshComments}
         showActivities={showActivities}
+        setEditCommentContent={setEditCommentContent}
       />
       {/* </DetailCard> */}
     </>

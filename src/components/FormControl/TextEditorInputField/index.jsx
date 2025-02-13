@@ -36,6 +36,7 @@ function TextEditorInputField({
   displayAttachments = false,
   users = [], // Users for mentions
   allowMentions = false, // New prop to control mention functionality
+  editMode= false,
 }) {
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
@@ -50,7 +51,6 @@ function TextEditorInputField({
   const [mentionedUsers, setMentionedUsers] = useState([]);
 
   useEffect(() => {
-    if (content) {
       const editor = editorRef.current;
       if (editor) {
         editor.innerHTML = content;
@@ -60,8 +60,7 @@ function TextEditorInputField({
         });
         editor.dispatchEvent(inputEvent);
       }
-    }
-  }, []);
+  }, [editMode]);
 
   const execCommand = useCallback((command, value = null) => {
     editorRef.current.focus();

@@ -715,16 +715,27 @@ const fetchComments = async (filter) => {
 
 const postComment = async (payload) => {
   try {
-    const response = await axios.post(`${baseUrl}/comments/`, payload, {
-      headers: headers(),
-    });
-    return response;
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/comments/${payload.id}/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      return response
+    } else {
+      const response = await axios.post(`${baseUrl}/comments/`, payload, {
+        headers: headers(),
+      });
+      return response;
+    }
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    console.error("Error posting comment:", error);
-    throw error; // Re-throw the error to handle it in the component
+    console.error("Error handling comment:", error);
+    return false;
   }
 };
 export const getAllTasks = async (payload) => {
