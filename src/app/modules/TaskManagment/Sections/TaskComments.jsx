@@ -32,6 +32,7 @@ function TaskComments({
   setRefreshComments,
   showActivities,
   setEditCommentContent,
+  setReplyComment,
 }) {
   const employees = useSelector((state) => state.emp.employees);
   const userId = useSelector((state) => state.user.userProfile.id);
@@ -86,7 +87,9 @@ function TaskComments({
 
   const handleEditComment = async (comment) => {
     setEditCommentContent(comment);
-    console.log("comment", comment.comment);
+  };
+  const handleReplyComment = (comment) => {
+    setReplyComment(comment);
   };
 
   const renderActivityContent = (activity) => {
@@ -171,10 +174,11 @@ function TaskComments({
 
               {/* Actions (Reply / Remove) */}
               <div className="flex items-center gap-3 mt-1">
-                {item.type === "comment" && (
+                {item.user_id !== userId && item.type === "comment" && (
                   <button
                     className="text-sm text-blue-600 hover:underline"
                     type="button"
+                    onClick={() => handleReplyComment(item)}
                   >
                     Reply
                   </button>
@@ -212,13 +216,8 @@ export default function TaskCommentsContainer({
   showActivities,
   setRefreshComments,
   setEditCommentContent,
+  setReplyComment,
 }) {
-  // const [showActivities, setShowActivities] = useState(true);
-
-  // const toggleActivities = () => {
-  //   setShowActivities(!showActivities);
-  // };
-
   return (
     <>
       <div className="flex justify-end items-center mt-2">
@@ -240,6 +239,7 @@ export default function TaskCommentsContainer({
         setRefreshComments={setRefreshComments}
         showActivities={showActivities}
         setEditCommentContent={setEditCommentContent}
+        setReplyComment={setReplyComment}
       />
       {/* </DetailCard> */}
     </>

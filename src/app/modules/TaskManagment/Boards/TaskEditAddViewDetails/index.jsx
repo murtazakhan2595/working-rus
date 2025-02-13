@@ -78,6 +78,7 @@ const TaskEditAddViewDetails = ({
   const employees = useSelector((state) => state.emp.employees);
   const [showActivities, setShowActivities] = useState(true);
   const [editCommentContent, setEditCommentContent] = useState(null);
+  const [replyComment, setReplyComment] = useState(null);
 
   const toggleActivities = () => {
     setShowActivities(!showActivities);
@@ -585,6 +586,8 @@ const TaskEditAddViewDetails = ({
                                   fetchData={setRefreshComments}
                                   editCommentContent={editCommentContent}
                                   setEditCommentContent={setEditCommentContent}
+                                  replyComment={replyComment}
+                                  setReplyComment={setReplyComment}
                                   employees={employees}
                                   taskId={taskId}
                                   userId={userId}
@@ -610,6 +613,7 @@ const TaskEditAddViewDetails = ({
                             setRefreshComments={setRefreshComments}
                             showActivities={showActivities}
                             setEditCommentContent={setEditCommentContent}
+                            setReplyComment={setReplyComment}
                           />
                         </div>
                       </div>
