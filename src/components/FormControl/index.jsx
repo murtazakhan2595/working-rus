@@ -60,7 +60,7 @@ const SelectComponent = ({
   disabled,
   required,
   onChange,
-  classes = "w-full",
+  className = "w-full",
   placeholder,
   icon,
   showLabel = true,
@@ -76,7 +76,7 @@ const SelectComponent = ({
     onChange(name, newValue);
   };
   return (
-    <div className={`${classes} flex flex-col gap-4`}>
+    <div className={`${className} flex flex-col gap-4`}>
       {showLabel && label && (
         <Label className="" htmlFor={name}>
           {required && <span className="text-red-600">* </span>} {label}

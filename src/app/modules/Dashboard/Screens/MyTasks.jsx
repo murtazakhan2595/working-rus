@@ -19,7 +19,7 @@ import {
 import { Button } from "../../../../components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
-import { lightenColor } from "utils/renderValues";
+import { getDropdownList } from "utils/Lists.js";
 import { cn } from "../../../../src/@/lib/utils";
 import TaskStatusLabel from "app/modules/TaskManagment/Sections/TaskStatus";
 
@@ -39,7 +39,7 @@ import {
 import { TaskStatus } from "data/Data";
 
 import CustomTable from "components/CustomTable";
-// import { Status } from "app/modules/LeaveManagment/Sections";
+import { SelectComponent } from "components/FormControl";
 
 export default function MyTasks() {
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -47,9 +47,11 @@ export default function MyTasks() {
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState({
     assigned_to: [userProfile.id],
+    is_subtask: [false],
+    is_archive: [false],
   });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [filterOption, setFilterOption] = useState("All Projects");
+  const [projectSelected, setProjectSelected] = useState("All Projects");
   const [options, setOptions] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
@@ -82,8 +84,12 @@ export default function MyTasks() {
         userProfile
       );
       if (isMounted && projectsData.results) {
-        setAllProjects(projectsData?.results);
-        fetchTasks(isMounted, projectsData.results);
+        setAllProjects(
+          getDropdownList(projectsData?.results, "name", "id", null, null, {
+            label: "All Projects",
+            value: "All Projects",
+          })
+        );
       }
     } catch (error) {
       console.error("Error fetching projects:", error);
@@ -94,17 +100,13 @@ export default function MyTasks() {
     }
   };
 
-  const fetchTasks = async (isMounted, projects) => {
+  const fetchTasks = async (isMounted) => {
     setIsLoading(true);
     try {
-      const filter =
-        filterOption === "All Projects"
-          ? { filterData: filterData }
-          : { filterData: { ...filterData, project_id: [filterOption.id] } };
-      const tasksData = await getAllTasks(filter);
+      const tasksData = await getAllTasks({ filterData });
       if (isMounted) {
-        const mergedResult = mergeTasksWithProjects(tasksData, projects);
-        setTasks(mergedResult);
+        // const mergedResult = mergeTasksWithProjects(tasksData, projects);
+        setTasks(tasksData);
       }
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -121,14 +123,14 @@ export default function MyTasks() {
     return () => {
       isMounted = false;
     };
-  }, [filterData]);
+  }, []);
 
   useEffect(() => {
     const dynamicOptions = AllProjects?.map((project) => ({
       label: project.name,
       onClick: () => {
         setIsDropdownOpen(false);
-        setFilterOption(project);
+        setProjectSelected(project);
       },
     }));
 
@@ -136,7 +138,7 @@ export default function MyTasks() {
       label: "All Projects",
       onClick: () => {
         setIsDropdownOpen(false);
-        setFilterOption("All Projects");
+        setProjectSelected("All Projects");
       },
     });
 
@@ -144,17 +146,20 @@ export default function MyTasks() {
   }, [AllProjects]);
 
   useEffect(() => {
-    if (AllProjects.length > 0) {
-      fetchTasks(true, AllProjects);
-    }
-  }, [filterOption, AllProjects]);
+    let isMounted = true;
+    fetchTasks(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [filterData]);
 
   const handleFilterChange = (filterName, filterValue) => {
+    debugger;
     const updatedFilters = { ...filterData };
 
     if (filterValue) {
       // Update end_date with the provided value
-      updatedFilters[filterName] = filterValue;
+      updatedFilters[filterName] = [filterValue];
     } else {
       // Remove end_date if the filterValue is null
       delete updatedFilters[filterName];
@@ -174,101 +179,34 @@ export default function MyTasks() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Popover open={openStatus} onOpenChange={setOpenStatus}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openStatus}
-                    className="w-[110px] justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
-                  >
-                    {value ? value : "Status"}
-                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="max-w-[2000px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search status..." />
-                    <CommandList>
-                      <CommandEmpty>No status found.</CommandEmpty>
-                      <CommandGroup>
-                        {TaskStatus.map((option) => (
-                          <CommandItem
-                            key={option.label}
-                            value={option.label}
-                            onSelect={() => {
-                              handleFilterChange("status", option.value);
-                              setIsStatusDropdownOpen(false);
-                              setIsStatusDropdownOpen(false);
-                              setValue(option.label);
-                              setOpenStatus(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                value === option.label
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            {option.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-[110px] justify-between rounded-sm text-neutral-1000 h-fit border-neutral-500 hover:border-primary-200 hover:shadow-none hover:text-primary-1100 hover:bg-primary-200"
-                  >
-                    {selectedProject ? selectedProject : "Projects"}
-                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="max-w-[200px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search project..." />
-                    <CommandList>
-                      <CommandEmpty>No project found.</CommandEmpty>
-                      <CommandGroup>
-                        {options.map((option) => (
-                          <CommandItem
-                            key={option.label}
-                            value={option.label}
-                            onSelect={() => {
-                              option.onClick();
-                              setSelectedProject(option.label);
-                              setOpen(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                selectedProject === option.label
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            {option.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <SelectComponent
+                name="status"
+                options={TaskStatus}
+                value={filterData.status?.[0]}
+                showLabel={false}
+                placeholder="Select Status"
+                onChange={(field, value) => {
+                  handleFilterChange(field, value);
+                }}
+                className="w-fit"
+              />
+              <SelectComponent
+                name="project_id"
+                options={AllProjects}
+                value={filterData.project_id?.[0] || "All Projects"}
+                showLabel={false}
+                placeholder="Select Project"
+                onChange={(field, value) => {
+                  if (value === "All Projects") handleFilterChange(field, null);
+                  else handleFilterChange(field, value);
+                }}
+                className="w-fit"
+              />
             </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {tasks?.length > 0 ? (
+          {tasks?.count > 0 ? (
             <RenderTask tasks={tasks} />
           ) : (
             <div>No tasks available.</div>
@@ -320,13 +258,7 @@ function RenderTask({ tasks }) {
           ),
         },
       ]}
-      data={tasks?.slice(0, 5).map((task) => ({
-        ...task,
-        due_date: moment(task.due_date).format("MMMM D, YYYY"),
-        priority_icon: PriorityListIcons[task.priority],
-        status_class: getStatusClass(task.status),
-        status_icon_color: getStatusIconColor(task.status),
-      }))}
+      data={tasks?.results || []}
       options={{
         filtering: true,
         exportButton: true,

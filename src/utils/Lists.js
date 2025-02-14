@@ -3,21 +3,42 @@ import { getDarkerTextColor } from "app/modules/TaskManagment/Boards/Sections/ge
 import { Badge } from "components/ui/badge";
 import { lightenColor } from "utils/renderValues";
 
+/**
+ * Generates a dropdown list from an array of items.
+ *
+ * @param {Array} items - The array of objects to generate dropdown options from.
+ * @param {string} labelKey - The key used for the label in dropdown options (default: "name").
+ * @param {string} valueKey - The key used for the value in dropdown options (default: "id").
+ * @param {string|null} prefixKey - Optional key to add a prefix before the label.
+ * @param {string|null} separator - Separator to use between prefix and label (if prefixKey is provided).
+ * @param {Object|null} additionalOption - An optional extra option to add (e.g., { label: "All", value: "all" }).
+ *
+ * @returns {Array} - Returns an array of dropdown options.
+ */
 export function getDropdownList(
   items,
   labelKey = "name",
   valueKey = "id",
   prefixKey = null,
-  separator = null
+  separator = null,
+  additionalOption = null
 ) {
-  if (!Array.isArray(items) || items.length === 0) return [];
+  // If the input array is empty or not an array, return only the additional option if provided
+  if (!Array.isArray(items) || items.length === 0)
+    return additionalOption ? [additionalOption] : [];
 
-  return items.map((item) => ({
+  // Map items to dropdown-friendly format
+  const dropdownOptions = items.map((item) => ({
     label: prefixKey
-      ? `${item[prefixKey]} ${separator} ${item[labelKey]}`
-      : item[labelKey],
+      ? `${item[prefixKey]} ${separator} ${item[labelKey]}` // Format: "Prefix - Label"
+      : item[labelKey], // If no prefix, use label directly
     value: item[valueKey],
   }));
+
+  // If additionalOption exists, append it to the dropdown options
+  return additionalOption
+    ? [additionalOption, ...dropdownOptions]
+    : dropdownOptions;
 }
 
 /**
