@@ -31,6 +31,8 @@ function TaskComments({
   refreshComments,
   setRefreshComments,
   showActivities,
+  setEditCommentContent,
+  setReplyComment,
 }) {
   const employees = useSelector((state) => state.emp.employees);
   const userId = useSelector((state) => state.user.userProfile.id);
@@ -82,6 +84,14 @@ function TaskComments({
       setRefreshComments(true);
     }
   };
+
+  const handleEditComment = async (comment) => {
+    setEditCommentContent(comment);
+  };
+  const handleReplyComment = (comment) => {
+    setReplyComment(comment);
+  };
+
   const renderActivityContent = (activity) => {
     return (
       <div className="text-neutral-1000 text-sm">
@@ -164,10 +174,11 @@ function TaskComments({
 
               {/* Actions (Reply / Remove) */}
               <div className="flex items-center gap-3 mt-1">
-                {item.type === "comment" && (
+                {item.user_id !== userId && item.type === "comment" && (
                   <button
                     className="text-sm text-blue-600 hover:underline"
                     type="button"
+                    onClick={() => handleReplyComment(item)}
                   >
                     Reply
                   </button>
@@ -179,6 +190,15 @@ function TaskComments({
                     onClick={() => handleDeleteComment(item.id)}
                   >
                     Remove
+                  </button>
+                )}
+                {item.user_id === userId && item.type === "comment" && (
+                  <button
+                    className="text-sm text-yellow-600 hover:underline"
+                    type="button"
+                    onClick={() => handleEditComment(item)}
+                  >
+                    Edit
                   </button>
                 )}
               </div>
@@ -195,13 +215,9 @@ export default function TaskCommentsContainer({
   refreshComments,
   showActivities,
   setRefreshComments,
+  setEditCommentContent,
+  setReplyComment,
 }) {
-  // const [showActivities, setShowActivities] = useState(true);
-
-  // const toggleActivities = () => {
-  //   setShowActivities(!showActivities);
-  // };
-
   return (
     <>
       <div className="flex justify-end items-center mt-2">
@@ -222,6 +238,8 @@ export default function TaskCommentsContainer({
         refreshComments={refreshComments}
         setRefreshComments={setRefreshComments}
         showActivities={showActivities}
+        setEditCommentContent={setEditCommentContent}
+        setReplyComment={setReplyComment}
       />
       {/* </DetailCard> */}
     </>

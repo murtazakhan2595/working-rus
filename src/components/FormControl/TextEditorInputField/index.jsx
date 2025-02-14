@@ -36,6 +36,8 @@ function TextEditorInputField({
   displayAttachments = false,
   users = [], // Users for mentions
   allowMentions = false, // New prop to control mention functionality
+  editMode = false,
+  replyToUser = null,
 }) {
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
@@ -50,18 +52,49 @@ function TextEditorInputField({
   const [mentionedUsers, setMentionedUsers] = useState([]);
 
   useEffect(() => {
-    if (content) {
-      const editor = editorRef.current;
-      if (editor) {
-        editor.innerHTML = content;
-        const inputEvent = new Event("input", {
-          bubbles: true,
-          cancelable: true,
-        });
-        editor.dispatchEvent(inputEvent);
-      }
+    const editor = editorRef.current;
+    if (editor) {
+      editor.innerHTML = content;
+      const inputEvent = new Event("input", {
+        bubbles: true,
+        cancelable: true,
+      });
+      editor.dispatchEvent(inputEvent);
     }
-  }, []);
+  }, [editMode]);
+  // Effect to handle reply initialization
+  useEffect(() => {
+    if (replyToUser && editorRef.current) {
+      const mentionSpan = document.createElement("span");
+      mentionSpan.className = "mention bg-blue-100 px-1 rounded";
+      mentionSpan.contentEditable = false;
+      mentionSpan.setAttribute("data-user-id", replyToUser.id.toString());
+      mentionSpan.textContent = `@${replyToUser.name}`;
+
+      // Clear existing content and add mention
+      editorRef.current.innerHTML = "";
+      editorRef.current.appendChild(mentionSpan);
+      editorRef.current.appendChild(document.createTextNode(" "));
+
+      // Update mentioned users
+      setMentionedUsers((prev) =>
+        prev.includes(replyToUser.id) ? prev : [...prev, replyToUser.id]
+      );
+
+      // Focus editor and move cursor to end
+      editorRef.current.focus();
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(editorRef.current);
+      range.collapse(false);
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      // Trigger input event
+      const inputEvent = new Event("input", { bubbles: true });
+      editorRef.current.dispatchEvent(inputEvent);
+    }
+  }, [replyToUser]);
 
   const execCommand = useCallback((command, value = null) => {
     editorRef.current.focus();
@@ -386,15 +419,15 @@ function TextEditorInputField({
         )}
 
         {/* <ScrollArea className="[&>div>div[style]]:!block"> */}
-          <div
-            ref={editorRef}
-            id={name}
-            className="w-full min-h-20 p-4 focus:outline-none rounded-b-lg max-h-[200px] textEditorText overflow-y-scroll"
-            contentEditable
-            onInput={handleInput}
-            onPaste={handlePaste}
-            onKeyDown={handleKeyDown}
-          />
+        <div
+          ref={editorRef}
+          id={name}
+          className="w-full min-h-20 p-4 focus:outline-none rounded-b-lg max-h-[200px] textEditorText overflow-y-scroll"
+          contentEditable
+          onInput={handleInput}
+          onPaste={handlePaste}
+          onKeyDown={handleKeyDown}
+        />
         {/* </ScrollArea> */}
 
         {allowMentions && showMentionPopover && (
