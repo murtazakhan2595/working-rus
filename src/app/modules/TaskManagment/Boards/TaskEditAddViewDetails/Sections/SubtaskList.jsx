@@ -10,7 +10,7 @@ import {
   TaskStatusLabel,
   TaskEndDate,
   MembersList,
-  RenderTaskTitle
+  RenderTaskTitle,
 } from "app/modules/TaskManagment/Sections";
 
 const SubtaskList = ({ taskId, projectId, boardId, items, projectDetail }) => {
@@ -49,7 +49,7 @@ const RenderSubTask = ({ taskId }) => {
   return (
     <div
       key={taskId}
-      className="w-fit max-w-full gap-4 flex items-center justify-between py-1 px-3 rounded-lg bg-white border border-gray-500 hover:border-primary hover:shadow-sm transition-all cursor-pointer"
+      className="w-full max-w-full gap-4 flex items-center justify-between py-1 px-3 rounded-lg bg-white border border-gray-500 hover:border-primary hover:shadow-sm transition-all cursor-pointer"
     >
       <div className="flex items-center space-x-3 w-fit">
         <RenderTaskTitle
@@ -58,17 +58,15 @@ const RenderSubTask = ({ taskId }) => {
           isChecked={subTaskDetails.status?.toUpperCase() === "COMPLETED"}
           className="text-sm font-medium text-neutral-1100"
           reload={fetchTaskData}
+          onClick={(e) => {
+            e.preventDefault();
+            setViewSubtasks(subTaskDetails);
+            setIsAddSubtaskOpen(true);
+          }}
         />
       </div>
 
-      <div
-        className="flex items-center space-x-3 justify-end"
-        onClick={(e) => {
-          e.preventDefault();
-          setViewSubtasks(subTaskDetails);
-          setIsAddSubtaskOpen(true);
-        }}
-      >
+      <div className="flex items-center space-x-3 justify-end">
         <TaskEndDate
           dueDate={subTaskDetails.end_date}
           taskStatus={subTaskDetails.status}

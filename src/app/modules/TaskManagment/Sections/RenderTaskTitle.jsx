@@ -10,6 +10,7 @@ const RenderTaskTitle = ({
   className = "",
   isChecked = false,
   reload = () => {},
+  onClick=()=>{},
 }) => {
   const [checked, setChecked] = useState(isChecked);
 
@@ -46,7 +47,7 @@ const RenderTaskTitle = ({
       </div>
 
       {/* Task Title */}
-      <span className="">{title}</span>
+      <div onClick={onClick}>{title}</div>
     </div>
   );
 };
