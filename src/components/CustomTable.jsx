@@ -135,7 +135,9 @@ export default function TableCustom({
                 {columns.map((column, index) => (
                   <TableHead
                     key={index}
-                    className={`min-w-fit ${column.dataSort ? "cursor-pointer" : ""}`}
+                    className={`min-w-fit ${
+                      column.dataSort ? "cursor-pointer" : ""
+                    }`}
                     style={{
                       ...(column.width ? { width: column.width } : {}),
                       ...(column.minWidth ? { minWidth: column.minWidth } : {}),
@@ -163,16 +165,20 @@ export default function TableCustom({
               data.map((row, recordIndex) => (
                 <React.Fragment key={row.id}>
                   <TableRow
-                    onClick={() =>
-                      rowExpand
-                        ? toggleRowExpansion(row.id)
-                        : tableOptions?.onRowClick?.(row)
-                    }
+                    onClick={(e) => {
+                      e.preventDefault();
+                      !e.target.closest(".expandable-cell") &&
+                        (rowExpand
+                          ? toggleRowExpansion(row.id)
+                          : tableOptions?.onRowClick?.(row));
+                    }}
                     className={`${
-                      tableOptions?.onRowClick ? "cursor-pointer" : ""
-                    } ${selectedRows?.includes(row.id) ? "bg-[#fdf7fd]" : ""} ${
-                      disabledRows?.includes(row.id) ? "opacity-50" : ""
-                    }`}
+                      expandedRowId === row.id && renderExpandedContent
+                        ? "border-none"
+                        : ""
+                    } ${tableOptions?.onRowClick ? "cursor-pointer" : ""} ${
+                      selectedRows?.includes(row.id) ? "bg-[#fdf7fd]" : ""
+                    } ${disabledRows?.includes(row.id) ? "opacity-50" : ""}`}
                   >
                     {/* Select Row Checkbox */}
                     {selectable && (
@@ -191,17 +197,22 @@ export default function TableCustom({
                         <TableCell
                           key={index}
                           className={`min-w-fit text-neutral-1200 ${
-                            column.onClick ? "cursor-pointer " : ""
+                            column.onClick || column.rowExpandOnClick
+                              ? "cursor-pointer expandable-cell"
+                              : ""
                           }`}
                           style={{
                             ...(column.width ? { width: column.width } : {}),
-                            ...(column.minWidth ? { minWidth: column.minWidth } : {}),
+                            ...(column.minWidth
+                              ? { minWidth: column.minWidth }
+                              : {}),
                             ...(column.dataAlign
                               ? { textAlign: column.dataAlign }
                               : {}),
                             ...dataStyle,
                           }}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.preventDefault();
                             if (column.rowExpandOnClick)
                               toggleRowExpansion(row.id);
                             else if (column.onClick)
@@ -224,7 +235,7 @@ export default function TableCustom({
                     <TableRow>
                       <TableCell
                         colSpan={columns.length}
-                        className="text-neutral-1200"
+                        className="text-neutral-1200 pt-0"
                       >
                         {renderExpandedContent(row)}
                       </TableCell>
@@ -264,7 +275,9 @@ export default function TableCustom({
                     <PaginationLink
                       onClick={() => handlePageChange(index + 1)}
                       className={`hover:bg-plum-300 ${
-                        currentPage - 1 === index ? "text-plum-1000 bg-plum-300" : ""
+                        currentPage - 1 === index
+                          ? "text-plum-1000 bg-plum-300"
+                          : ""
                       }`}
                     >
                       {index + 1}

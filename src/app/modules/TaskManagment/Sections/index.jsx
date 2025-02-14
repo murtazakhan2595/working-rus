@@ -9,6 +9,8 @@ import TaskComments from './TaskComments';
 import TaskDetailBox from './TaskDetailsBox';
 import {ProjectBoardColumn} from './TaskManagementTableColumns';
 import TaskEndDate from './TaskEndDate';
+import TaskStatusLabel from './TaskStatus';
+import RenderTaskTitle from './RenderTaskTitle';
 export {
   Members,
   MembersList,
@@ -21,4 +23,6 @@ export {
   TaskDetailBox,
   ProjectBoardColumn,
   TaskEndDate,
+  RenderTaskTitle,
+  TaskStatusLabel,
 };

@@ -4,6 +4,7 @@ import ProjectCustomFields from "./ProjectCustomFields";
 import InputTaskDetailFields from "./InputTaskDetailFields";
 import InputTaskCustomFields from './InputTaskCustomFields';
 import AdditionalActionOption from './AdditionalActionOptions';
+import SubtaskList from './SubtaskList';
 export {
   InputTaskTitle,
   InputTaskDescription,
@@ -11,4 +12,5 @@ export {
   InputTaskDetailFields,
   InputTaskCustomFields,
   AdditionalActionOption,
+  SubtaskList,
 };

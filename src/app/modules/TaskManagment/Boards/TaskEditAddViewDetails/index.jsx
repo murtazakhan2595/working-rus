@@ -540,11 +540,11 @@ const TaskEditAddViewDetails = ({
                                   </div>
 
                                   <SubtaskList
-                                    items={props?.values?.subtasks || []}
+                                    items={props?.values?.sub_task || []}
                                     projectId={projectId}
                                     taskId={taskId}
                                     boardId={boardId}
-                                    subTasksDetails={subTasksDetails}
+                                    //subTasksDetails={subTasksDetails}
                                   />
                                 </>
                               }

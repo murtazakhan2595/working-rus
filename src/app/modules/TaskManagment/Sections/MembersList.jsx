@@ -16,7 +16,7 @@ import { ScrollArea } from "src/@/components/ui/scroll-area";
 
 // Wrap the component with React.memo for optimization with custom equality check
 const MembersList = ({
-  members,
+  members = [],
   removeMember,
   displayAll = false,
   onMemberClick = () => {},

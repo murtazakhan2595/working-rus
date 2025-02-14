@@ -7,7 +7,7 @@ import { ProjectBoardColumn } from "app/modules/TaskManagment/Sections";
 import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { RxPlus } from "react-icons/rx";
-import CreateAndEditCardForm from "app/modules/TaskManagment/Boards/Sections/CreateAndEditCardForm";
+import { SubtaskList } from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails/Sections";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import {
   Accordion,
@@ -63,7 +63,7 @@ const ListTasks = ({
   isEditMode = true,
   accordionItemValue,
 }) => {
-  console.log(accordionItemValue,'accordionItemValue')
+  console.log(accordionItemValue, "accordionItemValue");
   const [AllBoardTasks, setAllBoardTasks] = useState({ results: [], count: 0 });
   const [viewTask, setViewTask] = useState(null);
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
@@ -149,6 +149,7 @@ const ListTasks = ({
                 dataTotalSize={AllBoardTasks?.count || 0}
                 tableOptions={tableOptions}
                 dataStyle={{ backgroundColor: "white" }}
+                renderExpandedContent={renderTaskSubTasks}
               />
             </CardContent>
           </Card>
@@ -170,6 +171,21 @@ const ListTasks = ({
         </div>
       </AccordionContent>
     </AccordionItem>
+  );
+};
+
+const renderTaskSubTasks = (row) => {
+  console.log(row, "subTasksDetails");
+  return (
+    <div>
+      <div className="font-semibold text-sm mb-3 ml-1">Subtasks</div>
+      <SubtaskList
+        items={row.sub_task || []}
+        projectId={row.project_id}
+        taskId={row.id}
+        boardId={row.board_id}
+      />
+    </div>
   );
 };
 
