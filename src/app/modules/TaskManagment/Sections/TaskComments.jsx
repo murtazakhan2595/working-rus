@@ -45,6 +45,8 @@ function TaskComments({
         getActivities({ filterData: { task_id: [taskId] } }),
       ]);
 
+
+      console.log(commentsData, "COMMENTS DATA")
       if (isMounted) {
         const combined = [
           ...commentsData.map((comment) => ({
@@ -151,7 +153,7 @@ function TaskComments({
                 {/* Comment Text */}
                 <div className="mt-1">
                   {item.type === "comment" ? (
-                    <TextUI text={item.comment} isHTMLText={true} />
+                    <TextUI text={item.comment.replace(/@/g, '')} isHTMLText={true} />
                   ) : (
                     <span>{renderActivityContent(item)}</span>
                   )}
