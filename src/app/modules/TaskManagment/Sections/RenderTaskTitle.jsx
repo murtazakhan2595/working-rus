@@ -10,7 +10,7 @@ const RenderTaskTitle = ({
   className = "",
   isChecked = false,
   reload = () => {},
-  onClick=()=>{},
+  onClick = () => {},
 }) => {
   const [checked, setChecked] = useState(isChecked);
 
@@ -31,23 +31,24 @@ const RenderTaskTitle = ({
 
   return (
     <div
-      className={`group flex items-center gap-2 text-base font-bold capitalize transition-all duration-200 ${className}`}
-      onClick={(e) => {
-        e.stopPropagation();
-        handleStatusChange(!checked);
-      }}
+      className={`group flex items-center gap-2 text-base font-bold capitalize transition-all duration-200 transform -translate-x-2 group-hover:translate-x-0 ${className}`}
     >
       {/* Checkbox only appears on hover */}
       <div className="hidden group-hover:block transition-opacity duration-200">
         <Checkbox
           checked={checked}
-          className="w-4 h-4 cursor-pointer accent-blue-600"
+          className=""
           onCheckedChange={(e) => handleStatusChange(e)}
         />
       </div>
 
       {/* Task Title */}
-      <div onClick={onClick}>{title}</div>
+      <div
+        onClick={onClick}
+        className="transition-all duration-300 transform group-hover:translate-x-2 group-hover:opacity-100"
+      >
+        {title}
+      </div>
     </div>
   );
 };

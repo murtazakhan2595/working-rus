@@ -83,7 +83,6 @@ const RenderSubTask = ({ taskId }) => {
           taskId={viewSubtasks.id}
           isOpen={isAddSubtaskOpen}
           setIsOpen={(value) => {
-            debugger;
             setViewSubtasks(null);
             setIsAddSubtaskOpen(false);
           }}
