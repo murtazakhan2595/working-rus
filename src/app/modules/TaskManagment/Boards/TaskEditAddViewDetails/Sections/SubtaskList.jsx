@@ -67,10 +67,10 @@ const RenderSubTask = ({ taskId }) => {
       </div>
 
       <div className="flex items-center space-x-3 justify-end">
-        <TaskEndDate
+        {/* <TaskEndDate
           dueDate={subTaskDetails.end_date}
           taskStatus={subTaskDetails.status}
-        />
+        /> */}
         <TaskStatusLabel status={subTaskDetails.status} />
         <MembersList members={subTaskDetails.assigned_to || []} />
         <ChevronRight
