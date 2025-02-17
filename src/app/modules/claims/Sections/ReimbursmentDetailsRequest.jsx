@@ -6,7 +6,7 @@ import { Paperclip } from "lucide-react";
 
 import {
   TextInput,
-  SelectComponent,
+  SelectInputComponent,
   TextAreaInput,
 } from "components/FormControl";
 import { DateInput } from "components/FormControl";
@@ -135,7 +135,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
           {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
               <SheetCardExtension title="Details">
-                <SelectComponent
+                <SelectInputComponent
                   name={"expense_type"}
                   error={props.errors?.expense_type}
                   touch={props.touched?.expense_type}

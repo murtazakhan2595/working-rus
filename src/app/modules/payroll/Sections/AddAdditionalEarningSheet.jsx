@@ -17,7 +17,7 @@ import { getEarnAndDeduction } from "app/hooks/payroll";
 import { Formik } from "formik";
 import { RadioGroupInput } from "components/FormControl";
 import { TextInput } from "components/FormControl";
-import { SelectComponent } from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 import { monthsOptions } from "data/Data";
 import { toast } from "react-toastify";
 import { saveEmployeeEarnDeduction } from "app/hooks/payroll";
@@ -185,7 +185,7 @@ const AddAdditionalEarningSheet = ({ reload, payrollId, isEos }) => {
                         <div className="pt-4">
                           <div>Pick a month</div>
                         </div>
-                        <SelectComponent
+                        <SelectInputComponent
                           name={"month"}
                           value={props.values?.month}
                           error={props.errors?.month}

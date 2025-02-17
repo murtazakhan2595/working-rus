@@ -2,7 +2,7 @@ import { getDepartmentList } from "app/hooks/general";
 import { saveDepartment } from "app/hooks/general";
 import { getOrganizationList } from "app/hooks/general";
 import { DepartmentsInformation } from "app/utils/Types/Departments";
-import { SelectComponent } from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 import { TextAreaInput } from "components/FormControl";
 import { TextInput } from "components/FormControl";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
@@ -66,7 +66,7 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
         {(props) => (
           <form onSubmit={props?.handleSubmit}>
             <SheetCardExtension title="Department Details">
-              <SelectComponent
+              <SelectInputComponent
                 name={"organization"}
                 options={organization}
                 error={props.errors.organization}

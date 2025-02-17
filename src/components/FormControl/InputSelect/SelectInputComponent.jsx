@@ -17,7 +17,7 @@ const SelectInputComponent = React.memo(
     options, // List of selectable options
     error,
     touch,
-    value = [], // Current selected values
+    value = null, // Current selected values
     label = null, // Label for the select field
     onChange, // Function to handle selection change
     required = false, // Whether the field is required
@@ -30,8 +30,6 @@ const SelectInputComponent = React.memo(
     placeholder = null, // Placeholder text when no value is selected
   }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const selectedValues = value && Array.isArray(value) ? value : [];
-
     // Toggle selection for a given option
     const handleSelectionToggle = useCallback(
       (optionValue) => {
@@ -42,7 +40,7 @@ const SelectInputComponent = React.memo(
         setIsOpen(false);
         onChange(name, newValue);
       },
-      [selectedValues, onChange, name]
+      [onChange, name]
     );
 
     return (
@@ -73,7 +71,7 @@ const SelectInputComponent = React.memo(
           popoverContent={
             <SelectableOptionsList
               options={options}
-              selectedValues={selectedValues}
+              selectedValues={[value]}
               handleSelectionToggle={handleSelectionToggle}
               showOptionsActions={showOptionsActions}
               optionsActions={optionsActions}

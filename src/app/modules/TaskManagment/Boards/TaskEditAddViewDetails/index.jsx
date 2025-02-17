@@ -32,7 +32,7 @@ import { useSelector } from "react-redux";
 import { Formik, Form } from "formik";
 import { validationTaskFormSchema } from "app/utils/FormSchema/taskManagementFormSchema";
 import { Task } from "app/utils/Types/TaskManagment";
-import { SelectComponent, CoverFileUpload } from "components/FormControl";
+import { SelectInputComponent, CoverFileUpload } from "components/FormControl";
 import { getProjectById, deleteAttachment } from "app/hooks/taskManagment";
 import { addAttachments } from "app/hooks/taskManagment";
 import { Progress } from "src/@/components/ui/progress";
@@ -308,7 +308,7 @@ const TaskEditAddViewDetails = ({
         //  setShowSuccessMessage(true);
         // Track activities
         await trackTaskActivities(
-          values,
+          response?.data,
           taskId ? initialValues : null,
           taskId || response?.data.id,
           userId,
@@ -385,7 +385,7 @@ const TaskEditAddViewDetails = ({
                         </div>
                         <div className="flex justify-end gap-2">
                           {!props.values.project_id && (
-                            <SelectComponent
+                            <SelectInputComponent
                               name="project_id"
                               options={Projects}
                               error={props.errors.project_id}

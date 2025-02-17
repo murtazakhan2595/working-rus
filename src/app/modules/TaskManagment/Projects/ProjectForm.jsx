@@ -11,7 +11,7 @@ import { Formik } from "formik";
 import { addProject, deleteProject } from "app/hooks/taskManagment";
 import {
   TextInput,
-  SelectComponent,
+  SelectInputComponent,
   SelectMultiInputComponent,
 } from "components/FormControl";
 import { Project } from "app/utils/Types/TaskManagment";
@@ -204,7 +204,7 @@ const ProjectForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                          <SelectComponent
+                          <SelectInputComponent
                             name="status"
                             options={ProjectStatusList}
                             error={props.errors.status}

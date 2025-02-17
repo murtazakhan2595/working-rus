@@ -1,7 +1,7 @@
 import { PageLoader } from "components";
 import { connect } from "react-redux";
 import {
-  SelectComponent,
+  SelectInputComponent,
   DateInput,
   TextInput,
   PhoneNumberInput,
@@ -140,7 +140,7 @@ function ExitRequestForm({
                             />
                           </Col>
                           <Col md={6}>
-                            <SelectComponent
+                            <SelectInputComponent
                               name={"department_name"}
                               options={departments}
                               error={props.errors.department_name}
@@ -154,7 +154,7 @@ function ExitRequestForm({
                             />
                           </Col>
                           <Col md={6}>
-                            <SelectComponent
+                            <SelectInputComponent
                               name={"department_position"}
                               options={designations}
                               error={props.errors.department_position}
@@ -168,7 +168,7 @@ function ExitRequestForm({
                             />
                           </Col>
                           <Col md={6}>
-                            <SelectComponent
+                            <SelectInputComponent
                               name={"employee_location"}
                               options={countriesList}
                               error={props.errors?.employee_location}
@@ -183,7 +183,7 @@ function ExitRequestForm({
                             />
                           </Col>
                           <Col md={6}>
-                            <SelectComponent
+                            <SelectInputComponent
                               name={"organization"}
                               options={organizations}
                               error={props.errors?.organization}
@@ -197,7 +197,7 @@ function ExitRequestForm({
                             />
                           </Col>
                           <Col md={6}>
-                            <SelectComponent
+                            <SelectInputComponent
                               name={"direct_report"}
                               options={reportingManagers}
                               error={props.errors?.direct_report}
@@ -259,7 +259,7 @@ function ExitRequestForm({
                           </Col>
 
                           <Col md={6}>
-                            <SelectComponent
+                            <SelectInputComponent
                               name={"notice_period"}
                               options={NoticePeriod}
                               error={props.errors.notice_period}
@@ -272,7 +272,7 @@ function ExitRequestForm({
                             />
                           </Col>
                           <Col md={12} className="z-0">
-                            <SelectComponent
+                            <SelectInputComponent
                               name={"reason_for_leaving"}
                               options={ResignationReasons}
                               error={props.errors.reason_for_leaving}

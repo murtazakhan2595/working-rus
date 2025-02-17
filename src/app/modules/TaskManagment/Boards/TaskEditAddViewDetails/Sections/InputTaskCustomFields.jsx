@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, memo } from "react";
 import { TextInput, NumberInput } from "components/FormControl";
 import { createDropdownOptions } from "utils/Lists";
-import { SelectComponent } from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 import { Checkbox } from "src/@/components/ui/checkbox";
 
 const InputTaskCustomFields = ({
@@ -70,7 +70,7 @@ const InputTaskCustomFields = ({
       ? createDropdownOptions(CustomField?.field_data?.value)
       : [];
     return (
-      <SelectComponent
+      <SelectInputComponent
         name={field_name}
         label={field_name}
         value={field_value}

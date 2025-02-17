@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { countriesList, visaOptions } from "../../../../../data/Data.js";
 import {
   DateInput,
-  SelectComponent,
+  SelectInputComponent,
   TextInput,
   CheckBoxInput,
 } from "components/FormControl";
@@ -140,7 +140,7 @@ const IdentificationInformation = ({
                             />
                           </div>
                           <div className="space-y-2">
-                            <SelectComponent
+                            <SelectInputComponent
                               name="place_of_issuance"
                               options={countriesList}
                               value={props.values.place_of_issuance}
@@ -232,7 +232,7 @@ const IdentificationInformation = ({
                                 />
                               </div>
                               <div className="space-y-2">
-                                <SelectComponent
+                                <SelectInputComponent
                                   name={"Passport_Issuance_Country"}
                                   value={props.values.Passport_Issuance_Country}
                                   error={props.errors.Passport_Issuance_Country}
@@ -313,7 +313,7 @@ const IdentificationInformation = ({
                                 />
                               </div>
                               <div className="space-y-2">
-                                <SelectComponent
+                                <SelectInputComponent
                                   name={"country_of_visa_issuance"}
                                   value={props.values.country_of_visa_issuance}
                                   options={countriesList}
@@ -340,7 +340,7 @@ const IdentificationInformation = ({
                                 />
                               </div>
                               <div className="space-y-2">
-                                <SelectComponent
+                                <SelectInputComponent
                                   name={"visa_type"}
                                   options={visaOptions}
                                   error={props.errors.visa_type}

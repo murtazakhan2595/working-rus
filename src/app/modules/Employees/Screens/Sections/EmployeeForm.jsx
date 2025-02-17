@@ -38,7 +38,7 @@ import {
   PhoneNumberInput,
   TextAreaInput,
   TextInput,
-  SelectComponent,
+  SelectInputComponent,
   SelectMultiInputComponent,
   DateInput,
   CheckBoxInput,
@@ -446,7 +446,7 @@ const SheetOnBorading = ({
                       </h3>
                       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
                         <div className="space-y-2">
-                          <SelectComponent
+                          <SelectInputComponent
                             name={"department_name"}
                             options={departments}
                             error={props.errors?.department_name}
@@ -460,7 +460,7 @@ const SheetOnBorading = ({
                           />
                         </div>
                         <div className="space-y-2">
-                          <SelectComponent
+                          <SelectInputComponent
                             name={"employee_location"}
                             options={countriesList}
                             error={props.errors?.employee_location}
@@ -474,7 +474,7 @@ const SheetOnBorading = ({
                           />
                         </div>
                         <div className="space-y-2">
-                          <SelectComponent
+                          <SelectInputComponent
                             name={"department_position"}
                             options={designations}
                             error={props.errors?.department_position}
@@ -488,7 +488,7 @@ const SheetOnBorading = ({
                           />
                         </div>
                         <div className="space-y-2">
-                          <SelectComponent
+                          <SelectInputComponent
                             name={"user_role"}
                             options={UserRoles}
                             error={props.errors?.user_role}
@@ -502,7 +502,7 @@ const SheetOnBorading = ({
                           />
                         </div>
                         <div className="space-y-2">
-                          <SelectComponent
+                          <SelectInputComponent
                             name={"employee_type"}
                             options={jobRoles}
                             error={props.errors?.employee_type}
@@ -516,7 +516,7 @@ const SheetOnBorading = ({
                           />
                         </div>
                         <div className="space-y-2">
-                          <SelectComponent
+                          <SelectInputComponent
                             name={"employee_status"}
                             options={employeeStatus}
                             error={props.errors?.employee_status}
@@ -530,7 +530,7 @@ const SheetOnBorading = ({
                           />
                         </div>
                         <div className="space-y-2">
-                          <SelectComponent
+                          <SelectInputComponent
                             name={"employee_work_type"}
                             options={workplaceTypes}
                             error={props.errors?.employee_work_type}
@@ -544,7 +544,7 @@ const SheetOnBorading = ({
                           />
                         </div>
                         <div className="space-y-2">
-                          <SelectComponent
+                          <SelectInputComponent
                             name={"direct_report"}
                             options={managers}
                             error={props.errors?.direct_report}
@@ -570,7 +570,7 @@ const SheetOnBorading = ({
                           />
                         </div>
                         {/* <div className="space-y-2">
-                          <SelectComponent
+                          <SelectInputComponent
                             name={"department_manager"}
                             options={HeadOfDepartmentOptions}
                             error={props.errors?.department_manager}
@@ -613,7 +613,7 @@ const SheetOnBorading = ({
                         </div>
                         {shiftSelect && (
                           <div className="space-y-2">
-                            <SelectComponent
+                            <SelectInputComponent
                               name={"shift_assignment"}
                               options={shiftList}
                               error={props.errors?.shift_assignment}
@@ -646,7 +646,7 @@ const SheetOnBorading = ({
                         </h3>
                         <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
                           <div className="space-y-2">
-                            <SelectComponent
+                            <SelectInputComponent
                               name={"salary_type"}
                               options={salaryTypeOptions}
                               error={props.errors?.salary_type}

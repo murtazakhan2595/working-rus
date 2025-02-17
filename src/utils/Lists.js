@@ -1,5 +1,4 @@
 import moment from "moment";
-import { getDarkerTextColor } from "app/modules/TaskManagment/Boards/Sections/getTaskStatus";
 import { Badge } from "components/ui/badge";
 import { lightenColor } from "utils/renderValues";
 

@@ -9,7 +9,7 @@ import { OrganizationInformation } from "app/utils/Types/Organization";
 import { validateOrganizationSchema } from "app/utils/FormSchema/organizationFormSchema";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { currencies } from "country-data";
-import { SelectComponent } from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 import { getCurrenciesList } from "app/hooks/general";
 import { dateFormats } from "data/Data";
 import { days } from "data/Data";
@@ -213,7 +213,7 @@ const AddOrganizationForm = ({
                     props.handleChange(field)(value);
                   }}
                 />
-                <SelectComponent
+                <SelectInputComponent
                   name="date_format"
                   options={dateFormats}
                   error={props.errors.date_format}
@@ -228,7 +228,7 @@ const AddOrganizationForm = ({
               </div>
 
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
-                <SelectComponent
+                <SelectInputComponent
                   name="currency"
                   options={currencies}
                   error={props.errors.currency}
@@ -241,7 +241,7 @@ const AddOrganizationForm = ({
                     props.handleChange(field)(value);
                   }}
                 />
-                <SelectComponent
+                <SelectInputComponent
                   name="payroll_start_date"
                   options={days}
                   error={props.errors.payroll_start_date}
@@ -264,7 +264,7 @@ const AddOrganizationForm = ({
             {/* Address Info Section */}
             <SheetCardExtension title="Address Info" className="mt-4">
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
-                <SelectComponent
+                <SelectInputComponent
                   name="country"
                   label="Country"
                   required
@@ -278,7 +278,7 @@ const AddOrganizationForm = ({
                   }}
                 />
 
-                <SelectComponent
+                <SelectInputComponent
                   name="state"
                   label="State"
                   required
@@ -293,7 +293,7 @@ const AddOrganizationForm = ({
                 />
               </div>
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
-                <SelectComponent
+                <SelectInputComponent
                   name="city"
                   label="City"
                   required

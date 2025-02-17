@@ -11,7 +11,7 @@ import PageLoader from "components/PageLoader.jsx";
 import { EmployeeAcademicRecord } from "app/utils/Types/Employee";
 import {
   DateInput,
-  SelectComponent,
+  SelectInputComponent,
   TextInput,
   CoverFileUpload,
 } from "components/FormControl";
@@ -126,7 +126,7 @@ const EducationInformation = ({
                               />
                             </div>
                             <div className="col-span-2 space-y-2">
-                              <SelectComponent
+                              <SelectInputComponent
                                 options={educationTypeOptions}
                                 name={`educations[${index}].education_level`}
                                 value={education.education_level}

@@ -44,7 +44,7 @@ const validationProjectFormSchema = (values) => {
 
   // Validate Description
   if (!values.description) errors.description = "Description is required";
-  if (!values.status) errors.status = "Description is required";
+  if (!values.status) errors.status = "Status is required";
 
   // Validate Assigned Users
   if (values.project_members && values.project_members.length === 0)

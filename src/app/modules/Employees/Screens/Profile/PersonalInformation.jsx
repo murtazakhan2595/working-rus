@@ -6,7 +6,7 @@ import {
   EmailInput,
   ImageInput,
   PhoneNumberInput,
-  SelectComponent,
+  SelectInputComponent,
   TextInput,
 } from "components/FormControl";
 import { PageLoader } from "components";
@@ -237,7 +237,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                             />
                           </div>
                           <div className="space-y-2">
-                            <SelectComponent
+                            <SelectInputComponent
                               name={"nationality"}
                               options={countriesList}
                               error={props.errors.nationality}
@@ -263,7 +263,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                             />
                           </div>
                           <div className="space-y-2">
-                            <SelectComponent
+                            <SelectInputComponent
                               name={"marital_status"}
                               options={maritalStatus}
                               error={props.errors.marital_status}
