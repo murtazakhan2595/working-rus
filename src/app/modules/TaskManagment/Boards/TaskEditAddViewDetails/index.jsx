@@ -51,6 +51,14 @@ import CopyLink from "components/ui/CopyLink";
 import TaskCommentsContainer from "../../Sections/TaskComments";
 import { FormatID } from "utils/getValuesFromTables";
 import { ScrollArea } from "src/@/components/ui/scroll-area";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "src/@/components/ui/tabs";
+import { TaskRelation } from "../../Sections";
+import { Card, CardContent } from "components/ui/card";
 
 const TaskEditAddViewDetails = ({
   taskId,
@@ -79,6 +87,7 @@ const TaskEditAddViewDetails = ({
   const [showActivities, setShowActivities] = useState(true);
   const [editCommentContent, setEditCommentContent] = useState(null);
   const [replyComment, setReplyComment] = useState(null);
+  const [activeTab, setActiveTab] = useState("checklist");
 
   const toggleActivities = () => {
     setShowActivities(!showActivities);
@@ -480,7 +489,7 @@ const TaskEditAddViewDetails = ({
                             touch={props.touched.relation}
                             deleteAttachmentFile={deleteAttachmentFile}
                           />
-                          <div className="grid grid-cols-2 gap-4">
+                          {/* <div className="grid grid-cols-2 gap-4">
                             <DetailBox
                               label="Custom Fields"
                               orientation="horizontal"
@@ -516,8 +525,8 @@ const TaskEditAddViewDetails = ({
                                 }
                               />
                             )}
-                          </div>
-                          {!isSubtask && subTasksDetails.length > 0 && (
+                          </div> */}
+                          {/* {!isSubtask && subTasksDetails.length > 0 && (
                             <DetailBox
                               label={"Subtasks"}
                               orientation="horizontal"
@@ -549,20 +558,156 @@ const TaskEditAddViewDetails = ({
                                 </>
                               }
                             />
-                          )}
+                          )} */}
                         </div>
                         <div className="flex flex-col col-span-3 gap-3 p-3">
                           <div>
-                            <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
-                              {"Checklist"}
-                            </div>
-                            <CheckList
-                              items={props.values.task_checklist || []}
-                              onChange={(items) => {
-                                props.setFieldValue("task_checklist", items);
-                                setIsEditMode(true);
-                              }}
-                            />
+                            <Tabs
+                              value={activeTab}
+                              onValueChange={setActiveTab}
+                              defaultValue="checklist"
+                            >
+                              <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
+                                <TabsList className="flex justify-center mb-4">
+                                  {[
+                                    { value: "checklist", label: "checklist" },
+                                    { value: "relation", label: "Relation" },
+                                    { value: "subtasks", label: "Subtasks" },
+                                    {
+                                      value: "customFields",
+                                      label: "CustomFields",
+                                    },
+                                  ].map((tab) => (
+                                    <TabsTrigger
+                                      key={tab.value}
+                                      value={tab.value}
+                                      className="data-[state=active]:bg-primary-200 w-fit data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                                    >
+                                      {tab.label}
+                                    </TabsTrigger>
+                                  ))}
+                                </TabsList>
+                              </div>
+                              <TabsContent value="checklist">
+                                <CheckList
+                                  items={props.values.task_checklist || []}
+                                  onChange={(items) => {
+                                    props.setFieldValue(
+                                      "task_checklist",
+                                      items
+                                    );
+                                    setIsEditMode(true);
+                                  }}
+                                />
+                              </TabsContent>
+                              <TabsContent value="relation">
+                                {" "}
+                                 <DetailCard
+                                  detailCardTitle=""
+                                  classNames="mt-0"
+                                >
+                                
+                                <TaskRelation
+                                  relationsList={props.values.relation || []}
+                                  // onChange={(value) => {
+                                  //   onChange("relation", value);
+                                  // }}
+                                  projectId={props.values.project_id}
+                                  taskId={taskId}
+                                  editMode={true}
+                                  error={props.errors.relation}
+                                  touch={props.touched.relation}
+                                />
+                                </DetailCard>
+                              </TabsContent>
+                              <TabsContent value="subtasks">
+                                <DetailCard
+                                  detailCardTitle=""
+                                  classNames="mt-0"
+                                >
+                                  <DetailBox
+                                    // label={"Subtasks"}
+                                    orientation="horizontal"
+                                    value={
+                                      <Subtasks
+                                        items={props.values.subtasks || []}
+                                        onChange={(items) => {
+                                          props.setFieldValue(
+                                            "subtasks",
+                                            items
+                                          );
+                                        }}
+                                        projectId={projectId}
+                                        taskId={taskId}
+                                        boardId={boardId}
+                                        fetchTaskData={fetchTaskData}
+                                      />
+                                    }
+                                  />
+                                  <DetailBox
+                                    // label={"Subtasks"}
+                                    orientation="horizontal"
+                                    value={
+                                      <>
+                                        <div className="flex justify-between gap-3 mb-4 flex-4 items-center">
+                                          <Progress
+                                            value={
+                                              (countCompletedTasks(
+                                                subTasksDetails
+                                              ) /
+                                                subTasksDetails?.length) *
+                                              100
+                                            }
+                                            className="mt-1 h-2 bg-gray-400"
+                                          />
+                                          <span>{`${
+                                            (
+                                              (countCompletedTasks(
+                                                subTasksDetails
+                                              ) /
+                                                subTasksDetails?.length) *
+                                              100
+                                            )?.toFixed(0) || 0
+                                          }%`}</span>
+                                        </div>
+
+                                        <SubtaskList
+                                          items={props?.values?.sub_task || []}
+                                          projectId={projectId}
+                                          taskId={taskId}
+                                          boardId={boardId}
+                                          //subTasksDetails={subTasksDetails}
+                                        />
+                                      </>
+                                    }
+                                  />
+                                </DetailCard>
+                              </TabsContent>
+                              <TabsContent value="customFields">
+                                <DetailCard
+                                  detailCardTitle=""
+                                  classNames="mt-0"
+                                >
+                                  <DetailBox
+                                    label="Custom Fields"
+                                    orientation="horizontal"
+                                    value={
+                                      <Button
+                                        variant="continue"
+                                        size="sm"
+                                        className="w-full"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          setOpenProjectCustomFields(true);
+                                        }}
+                                      >
+                                        <Plus className="w-4 h-4 mr-2" /> Add
+                                      </Button>
+                                    }
+                                  />
+                                </DetailCard>
+                              </TabsContent>
+                            </Tabs>
                           </div>
                           <DetailBox
                             label={
