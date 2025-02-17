@@ -46,7 +46,6 @@ function TaskComments({
       ]);
 
 
-      console.log(commentsData, "COMMENTS DATA")
       if (isMounted) {
         const combined = [
           ...commentsData.map((comment) => ({

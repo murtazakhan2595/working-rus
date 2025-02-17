@@ -440,7 +440,10 @@ const TaskEditAddViewDetails = ({
                                 setIsEditMode(true);
                               }}
                               setAttachment={async (attachment) => {
-                                await props.setFieldValue("attachment", attachment);
+                                await props.setFieldValue(
+                                  "attachment",
+                                  attachment
+                                );
                                 setIsEditMode(true);
                               }}
                               attachments={props.values.attachment || []}
@@ -454,13 +457,20 @@ const TaskEditAddViewDetails = ({
                             />
                           </div>
 
-                          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
+                          <Tabs
+                            value={activeTab}
+                            onValueChange={setActiveTab}
+                            className="mt-4"
+                          >
                             <TabsList className="grid grid-cols-4 gap-4 mb-6">
                               {[
                                 { value: "checklist", label: "Checklist" },
                                 { value: "relation", label: "Relation" },
                                 { value: "subtasks", label: "Subtasks" },
-                                { value: "customFields", label: "Custom Fields" },
+                                {
+                                  value: "customFields",
+                                  label: "Custom Fields",
+                                },
                               ].map((tab) => (
                                 <TabsTrigger
                                   key={tab.value}
@@ -477,14 +487,20 @@ const TaskEditAddViewDetails = ({
                                 <CheckList
                                   items={props.values.task_checklist || []}
                                   onChange={(items) => {
-                                    props.setFieldValue("task_checklist", items);
+                                    props.setFieldValue(
+                                      "task_checklist",
+                                      items
+                                    );
                                     setIsEditMode(true);
                                   }}
                                 />
                               </TabsContent>
 
                               <TabsContent value="relation">
-                                <DetailCard detailCardTitle="" classNames="mt-0">
+                                <DetailCard
+                                  detailCardTitle=""
+                                  classNames="mt-0"
+                                >
                                   <TaskRelation
                                     relationsList={props.values.relation || []}
                                     projectId={props.values.project_id}
@@ -526,23 +542,27 @@ const TaskEditAddViewDetails = ({
                                         <div className="flex justify-between gap-3 mb-4 flex-4 items-center">
                                           <Progress
                                             value={
-                                              (countCompletedTasks(
-                                                subTasksDetails
-                                              ) /
-                                                subTasksDetails?.length) *
-                                              100
+                                              subTasksDetails?.length > 0
+                                                ? (countCompletedTasks(
+                                                    subTasksDetails
+                                                  ) /
+                                                    subTasksDetails.length) *
+                                                  100
+                                                : 0
                                             }
                                             className="mt-1 h-2 bg-gray-400"
                                           />
-                                          <span>{`${
-                                            (
-                                              (countCompletedTasks(
-                                                subTasksDetails
-                                              ) /
-                                                subTasksDetails?.length) *
-                                              100
-                                            )?.toFixed(0) || 0
-                                          }%`}</span>
+                                          <span>
+                                            {subTasksDetails?.length > 0
+                                              ? `${Math.round(
+                                                  (countCompletedTasks(
+                                                    subTasksDetails
+                                                  ) /
+                                                    subTasksDetails.length) *
+                                                    100
+                                                )}%`
+                                              : "0%"}
+                                          </span>
                                         </div>
 
                                         <SubtaskList
@@ -575,7 +595,7 @@ const TaskEditAddViewDetails = ({
                                           setOpenProjectCustomFields(true);
                                         }}
                                       >
-                                        <Plus className="w-4 h-4 mr-2" /> Add
+                                        <Plus className="w-4 h-4 mr-2" /> Add Custom Fields
                                       </Button>
                                     }
                                   />
@@ -586,48 +606,55 @@ const TaskEditAddViewDetails = ({
                         </div>
                         <div className="flex flex-col gap-6">
                           {/* <Card className="p-6"> */}
-                            <InputTaskDetailFields
-                              errors={props.errors}
-                              touched={props.touched}
-                              taskData={props.values}
-                              isSubtask={isSubtask}
-                              taskId={taskId}
-                              projectDetail={projectDetail}
-                              onChange={(field, value) => {
-                                props.setFieldValue(field, value);
+                          <InputTaskDetailFields
+                            errors={props.errors}
+                            touched={props.touched}
+                            taskData={props.values}
+                            isSubtask={isSubtask}
+                            taskId={taskId}
+                            projectDetail={projectDetail}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                              setIsEditMode(true);
+                            }}
+                            employees={employees}
+                            CustomFields={CustomFields || []}
+                            boardList={BoardList}
+                          />
+
+                          <div className="mt-6">
+                            <Attachments
+                              attachmentSelected={props.values.attachment || []}
+                              onChange={async (attachment) => {
+                                await props.setFieldValue(
+                                  "attachment",
+                                  attachment
+                                );
                                 setIsEditMode(true);
                               }}
-                              employees={employees}
-                              CustomFields={CustomFields || []}
-                              boardList={BoardList}
+                              acceptedFileTypes=".pdf,.png,.jpg,.jpeg"
+                              error={props.errors.relation}
+                              touch={props.touched.relation}
+                              deleteAttachmentFile={deleteAttachmentFile}
                             />
-
-                            <div className="mt-6">
-                              <Attachments
-                                attachmentSelected={props.values.attachment || []}
-                                onChange={async (attachment) => {
-                                  await props.setFieldValue("attachment", attachment);
-                                  setIsEditMode(true);
-                                }}
-                                acceptedFileTypes=".pdf,.png,.jpg,.jpeg"
-                                error={props.errors.relation}
-                                touch={props.touched.relation}
-                                deleteAttachmentFile={deleteAttachmentFile}
-                              />
-                            </div>
+                          </div>
                           {/* </Card> */}
 
                           <Card className="p-6">
                             <DetailBox
                               label={
                                 <div className="flex justify-between items-center w-full mb-4">
-                                  <span className="text-neutral-1200 text-sm font-semibold">Activity</span>
+                                  <span className="text-neutral-1200 text-sm font-semibold">
+                                    Activity
+                                  </span>
                                   <button
-                                    className="text-sm text-primary-600 hover:text-primary-700"
+                                    className="text-sm text-primary-1100 hover:text-primary-700"
                                     type="button"
                                     onClick={toggleActivities}
                                   >
-                                    {showActivities ? "Hide Details" : "Show Details"}
+                                    {showActivities
+                                      ? "Hide Details"
+                                      : "Show Details"}
                                   </button>
                                 </div>
                               }
@@ -637,7 +664,9 @@ const TaskEditAddViewDetails = ({
                                   <CommentsInputField
                                     fetchData={setRefreshComments}
                                     editCommentContent={editCommentContent}
-                                    setEditCommentContent={setEditCommentContent}
+                                    setEditCommentContent={
+                                      setEditCommentContent
+                                    }
                                     replyComment={replyComment}
                                     setReplyComment={setReplyComment}
                                     employees={employees}
@@ -645,8 +674,10 @@ const TaskEditAddViewDetails = ({
                                     userId={userId}
                                     projectDetail={projectDetail}
                                     addAttachment={async (attachment) => {
-                                      const uploadedAttachment = await uploadAttachmentFile(attachment);
-                                      const attachmentSelected = props.values.attachment || [];
+                                      const uploadedAttachment =
+                                        await uploadAttachmentFile(attachment);
+                                      const attachmentSelected =
+                                        props.values.attachment || [];
                                       props.setFieldValue("attachment", [
                                         ...attachmentSelected,
                                         uploadedAttachment,
