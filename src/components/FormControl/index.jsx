@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, forwardRef, memo } from "react";
 // import Select from "react-select";
 import { Label } from "src/@/components/ui/label";
 import DatePicker from "react-datepicker";
-import { getFileNameFromURL } from "utils/downUtils";
+import { cn } from "src/@/lib/utils";
 import moment from "moment";
 import { Card } from "components/ui/card";
 import ReactQuill from "react-quill";
@@ -34,7 +34,6 @@ import {
   CommandItem,
   CommandList,
 } from "src/@/components/ui/command";
-import { cn } from "src/@/lib/utils";
 import { format, parse, isValid } from "date-fns";
 import { Calendar } from "src/@/components/ui/calendar";
 import { PatternFormat } from "react-number-format";
@@ -43,13 +42,114 @@ import CommentsInputField from "./CommentsInputField";
 import DateRangeFilter from "./DateRangeFilter";
 import SortingFilters from "./SortingFilters";
 import TimePicker from "./TimePicker";
-import { SelectMultiInputComponent } from "components/FormControl/InputSelect";
+import {
+  SelectMultiInputComponent,
+  SelectInputComponent,
+} from "components/FormControl/InputSelect";
 import ImageInput from "components/FormControl/UploadFiles/ImageInput";
 import ColorInput from "./ColorInput";
 
 const errorClassName = "text-red-800 text-sm font-[inter] font-normal ml-1";
 export const inputButtonClassName =
   "inline-flex items-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-white text-primary  dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-fit px-4 py-2 flex-wrap justify-between w-full rounded-sm border-neutral-500 hover:border-primary-200 hover:text-primary-1100 hover:bg-primary-200 hover:shadow-none";
+
+// General FormField Component
+export const FormField = memo(
+  forwardRef(
+    (
+      {
+        name,
+        label,
+        required,
+        error,
+        touched,
+        className = "w-full", // Custom styling
+        children,
+      },
+      ref
+    ) => {
+      return (
+        <div className={`${className} flex flex-col gap-4`}>
+          {label && (
+            <Label htmlFor={name}>
+              {required && <span className="text-red-600">* </span>}
+              {label}
+            </Label>
+          )}
+          <div className="flex-col flex gap-1">
+            {children}
+            {error && touched && <div className={errorClassName}>{error}</div>}
+          </div>
+        </div>
+      );
+    }
+  )
+);
+
+export const FormPopoverButton = memo(
+  forwardRef(
+    (
+      {
+        popoverContent,
+        triggerContent,
+        className = "", // Allows additional styling
+        open,
+        setOpen,
+        disabled = false,
+      },
+      ref
+    ) => {
+      return (
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              ref={ref}
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className={cn(inputButtonClassName, className)}
+              disabled={disabled}
+            >
+              {triggerContent}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[300px] p-0">
+            {popoverContent}
+          </PopoverContent>
+        </Popover>
+      );
+    }
+  )
+);
+
+export const FormPlaceholder = memo(
+  ({
+    placeholder = "Enter Value",
+    className = "", // Allows additional styling
+  }) => {
+    return (
+      <div
+        className={cn(
+          "text-sm font-normal text-neutral-1000 max-w-[90%] overflow-hidden",
+          className
+        )}
+      >
+        {placeholder}
+      </div>
+    );
+  }
+);
+
+export const FormFieldIcon = memo(
+  ({
+    icon = null,
+    className = "", // Allows additional styling
+  }) => {
+    if (!icon) return null;
+    return <div className={cn("w-4", className)}>{icon}</div>;
+  }
+);
+
 const SelectComponent = ({
   name,
   value,
@@ -281,130 +381,6 @@ const DateInput = ({
           </div>
         </PopoverContent>
       </Popover>
-      {error && touch && <div className={errorClassName}>{error}</div>}
-    </div>
-  );
-};
-
-const DateRangeInput = ({
-  name,
-  value,
-  error,
-  touch,
-  onChange,
-  label,
-  disabled,
-  required,
-  minDate,
-  className,
-  placeholder,
-}) => {
-  const [date, setDate] = useState(
-    value && isValid(parse(value, "yyyy-MM-dd", new Date()))
-      ? parse(value, "yyyy-MM-dd", new Date())
-      : null
-  );
-  const [inputValue, setInputValue] = useState(
-    value && isValid(parse(value, "yyyy-MM-dd", new Date()))
-      ? format(parse(value, "yyyy-MM-dd", new Date()), "dd/MM/yyyy")
-      : ""
-  );
-  const [calendarDate, setCalendarDate] = useState(date || new Date());
-
-  // Sync the input field and calendar when the value changes externally
-  useEffect(() => {
-    if (value) {
-      const parsedDate = parse(value, "yyyy-MM-dd", new Date());
-      if (isValid(parsedDate)) {
-        setDate(parsedDate);
-        setInputValue(format(parsedDate, "dd/MM/yyyy"));
-        setCalendarDate(parsedDate);
-      } else {
-        resetFields();
-      }
-    } else {
-      resetFields();
-    }
-  }, [value]);
-
-  const resetFields = () => {
-    setDate(null);
-    setInputValue("");
-    setCalendarDate(new Date());
-    // onChange(name, ""); // Reset the form value
-  };
-
-  // Handle manual input changes and sync with calendar
-  const handleInputChange = (values) => {
-    const { formattedValue } = values;
-    setInputValue(formattedValue);
-
-    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
-    if (dateRegex.test(formattedValue)) {
-      const parsedDate = parse(formattedValue, "dd/MM/yyyy", new Date());
-      if (isValid(parsedDate)) {
-        setDate(parsedDate);
-        setCalendarDate(parsedDate); // Sync with the calendar
-        // onChange(name, format(parsedDate, "yyyy-MM-dd"));
-      }
-    }
-  };
-
-  // Handle date selection from the calendar and sync with input
-  const handleCalendarSelect = (selectedDate) => {
-    if (selectedDate) {
-      setDate(selectedDate);
-      setInputValue(format(selectedDate, "dd/MM/yyyy"));
-      setCalendarDate(selectedDate);
-      // onChange(name, format(selectedDate, "yyyy-MM-dd"));
-    }
-  };
-
-  return (
-    <div className={`flex flex-col gap-4 ${className}`}>
-      {label && (
-        <Label htmlFor={name}>
-          {required && <span className="text-red-600">* </span>} {label}
-        </Label>
-      )}
-      <div className={cn("grid gap-2", className)}>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              id="date"
-              variant={"outline"}
-              className={cn(
-                "w-[300px] justify-start text-left font-normal",
-                !date && "text-muted-foreground"
-              )}
-            >
-              {/* <CalendarIcon /> */}
-              {date?.from ? (
-                date.to ? (
-                  <>
-                    {format(date.from, "LLL dd, y")} -{" "}
-                    {format(date.to, "LLL dd, y")}
-                  </>
-                ) : (
-                  format(date.from, "LLL dd, y")
-                )
-              ) : (
-                <span>Pick a date</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={date?.from}
-              selected={date}
-              onSelect={setDate}
-              numberOfMonths={2}
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
       {error && touch && <div className={errorClassName}>{error}</div>}
     </div>
   );
@@ -809,106 +785,6 @@ const EmailInput = ({
     </div>
   );
 };
-const CustomButton = ({ label, onClick, disabled }) => {
-  return (
-    <div className="flex flex-col gap-4">
-      <Button
-        className="bg-[#323333] text-[#F7F8FA] w-40 h-12  text-base font-semibold"
-        onClick={onClick}
-        disabled={disabled}
-      >
-        {label}
-      </Button>
-    </div>
-  );
-};
-
-const CustomDarkButton = ({ label, onClick, disabled, style, className }) => {
-  return (
-    <Button
-      className={`btn btn-dark ${className ?? ""}`}
-      onClick={onClick}
-      disabled={disabled}
-      style={style}
-    >
-      {label}
-    </Button>
-  );
-};
-
-const CustomLightOutlineButton = ({ label, onClick, disabled, style }) => {
-  return (
-    <Button
-      type="button"
-      className="btn btn-outline-dark btn-light"
-      style={style}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {label}
-    </Button>
-  );
-};
-
-const FileInput = ({
-  value,
-  error,
-  onChange,
-  touch,
-  name,
-  label,
-  acceptType,
-}) => {
-  return (
-    <>
-      <div className="w-full justify-start gap-1.5 mb-4 relative">
-        <Label htmlFor={name} className="flex flex-row gap-4">
-          <FileUp className="" />
-          {`Upload Your ${label || "file"}`}
-        </Label>
-        <Input
-          id={name}
-          className="w-full"
-          type="file"
-          name={name}
-          accept={acceptType || "*/*"}
-          max-size="104857600"
-          onChange={(e) => {
-            let selectedFile = e.target.files[0];
-            const fileData = { name: selectedFile?.name };
-            if (selectedFile) {
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                const newDocument = {
-                  name: fileData.name,
-                  file: e.target.result,
-                };
-                if (value && value.id) {
-                  value.document = newDocument;
-                  value.name = fileData.name;
-                } else {
-                  value = newDocument;
-                }
-                onChange(name, value);
-              };
-
-              reader.readAsDataURL(selectedFile);
-            }
-          }}
-        />
-        <div style={{ position: "absolute", bottom: ".61rem", left: "6rem" }}>
-          <div
-            style={{ minWidth: "7rem", whiteSpace: "pre" }}
-            className="w-full px-1 text-sm bg-white"
-          >
-            {value?.document?.name || value?.name}
-          </div>
-        </div>
-      </div>
-      {error && touch && <div className="text-red-500 ">{error}</div>}
-    </>
-  );
-};
 
 const TextAreaInput = ({
   name,
@@ -968,101 +844,6 @@ const TextAreaInput = ({
     </>
   );
 };
-const TextAreaEditorInput = ({
-  name,
-  value,
-  error,
-  touch,
-  onChange,
-  label,
-  disabled,
-  required,
-  regEx,
-  maxLength,
-}) => {
-  return (
-    <>
-      <div className="flex flex-col gap-4">
-        <Label className="pt-4 mt-1 text-baseGray" htmlFor={name}>
-          {required && <span className="text-red-600">* </span>}
-          {label}
-        </Label>
-
-        {error && touch && <div className={errorClassName}>{error}</div>}
-        <ReactQuill
-          type="textarea"
-          id={name}
-          name={name}
-          autoComplete="Off"
-          placeholder={"Enter " + label}
-          value={value}
-          modules={{
-            toolbar: {
-              container: [
-                ["bold", "italic", "underline"],
-                [{ list: "ordered" }, { list: "bullet" }],
-                ["link"],
-                [{ align: "" }, { align: "center" }, { align: "right" }],
-              ],
-            },
-          }}
-          formats={[
-            "bold",
-            "italic",
-            "underline",
-            "list",
-            "bullet",
-            "link",
-            "align",
-          ]}
-          readOnly={disabled}
-          className={`rounded ${error && touch ? "is-invalid" : ""}`}
-          onChange={(option) => {
-            onChange(name, option);
-          }}
-        />
-      </div>
-    </>
-  );
-};
-
-function dropdownStyles(backgrounddivor, fontSize, height) {
-  return {
-    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-    control: (provided, state) => ({
-      ...provided,
-      backgrounddivor: backgrounddivor,
-      border: "none",
-      boxShadow: "none",
-      minWidth: "8rem",
-      fontSize: fontSize,
-      minHeight: height,
-      maxHeight: height,
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      fontSize: fontSize,
-      fontWeight: state.isSelected ? "bold" : "normal",
-      divor: state.isSelected ? "#000" : "#777",
-      padding: "8px 12px",
-      backgrounddivor: state.isSelected ? "#FAFBFC" : "#FAFBFC",
-    }),
-    menu: (provided) => ({
-      ...provided,
-      borderRadius: "8px",
-      overflow: "hidden",
-    }),
-    scrollbarWidth: (base) => ({
-      ...base,
-      borderRadius: "8px",
-      backgrounddivor: "#FAFBFC",
-    }),
-    dropdownIndicator: (provided) => ({
-      ...provided,
-      divor: "#555",
-    }),
-  };
-}
 
 const FilterInput = ({
   filters,
@@ -1306,20 +1087,15 @@ export {
   TimePicker,
   SelectComponent,
   SelectMultiInputComponent,
+  SelectInputComponent,
   DateInput,
-  DateRangeInput,
   TextInput,
   PhoneNumberInput,
   EmailInput,
   ImageInput,
-  CustomButton,
   TextAreaInput,
-  CustomDarkButton,
-  FileInput,
   FilterInput,
-  CustomLightOutlineButton,
   CheckBoxInput,
-  TextAreaEditorInput,
   PasswordInput,
   RadioGroupInput,
   NumberInput,

@@ -8,7 +8,7 @@ import {
 } from "app/modules/TaskManagment/Sections";
 import { TextInput } from "components/FormControl";
 import { DateInput } from "components/FormControl";
-import { SelectComponent, CoverFileUpload } from "components/FormControl";
+import { SelectInputComponent, CoverFileUpload } from "components/FormControl";
 import TaskShare from "app/modules/TaskManagment/Sections/TaskShare";
 import { DetailBox } from "components/SheetCardExtension";
 
@@ -36,7 +36,7 @@ const InputTaskDetailFields = React.memo(
             onChange(field, value);
           }}
         />
-        <SelectComponent
+        <SelectInputComponent
           name="priority"
           options={PriorityList}
           label={"Priority"}
@@ -46,25 +46,6 @@ const InputTaskDetailFields = React.memo(
           onChange={(field, value) => {
             onChange(field, value);
           }}
-        />
-        <Labels
-          labelsSelected={taskData.label || []}
-          onSelectedLabelsChange={(value) => {
-            onChange("label", value);
-          }}
-          editMode={true} // Always in edit mode
-        />
-        <Assignee
-          assigneeSelected={taskData.assigned_to || []}
-          employees={employees}
-          onChange={(value) => {
-            onChange("assigned_to", value);
-          }}
-          editMode={true} // Always in edit mode
-          projectMembers={projectDetail?.project_members || []}
-          error={errors.assigned_to}
-          touch={touched.assigned_to}
-          value={taskData.assigned_to}
         />
         <div className="grid grid-cols-2 gap-2">
           <TextInput
@@ -88,6 +69,37 @@ const InputTaskDetailFields = React.memo(
             }}
           />
         </div>
+        <SelectInputComponent
+            name="status"
+            options={TaskStatus}
+            label={"Status"}
+            error={errors.status}
+            touch={touched.status}
+            value={taskData.status}
+            onChange={(field, value) => {
+              onChange(field, value);
+            }}
+          />
+        <Labels
+          labelsSelected={taskData.label || []}
+          onSelectedLabelsChange={(value) => {
+            onChange("label", value);
+          }}
+          editMode={true} // Always in edit mode
+        />
+        <Assignee
+          assigneeSelected={taskData.assigned_to || []}
+          employees={employees}
+          onChange={(value) => {
+            onChange("assigned_to", value);
+          }}
+          editMode={true} // Always in edit mode
+          projectMembers={projectDetail?.project_members || []}
+          error={errors.assigned_to}
+          touch={touched.assigned_to}
+          value={taskData.assigned_to}
+        />
+{/*         
         {!isSubtask && (
           <TaskRelation
             relationsList={taskData.relation || []}
@@ -100,18 +112,8 @@ const InputTaskDetailFields = React.memo(
             error={errors.relation}
             touch={touched.relation}
           />
-        )}
-          <SelectComponent
-            name="status"
-            options={TaskStatus}
-            label={"Status"}
-            error={errors.status}
-            touch={touched.status}
-            value={taskData.status}
-            onChange={(field, value) => {
-              onChange(field, value);
-            }}
-          />
+        )} */}
+          
 
         {/* <DetailBox
           label="Share Task"

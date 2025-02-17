@@ -232,7 +232,12 @@ export default function TableCustom({
                   </TableRow>
                   {/* Expanded Row Content */}
                   {expandedRowId === row.id && renderExpandedContent && (
-                    <TableRow>
+                    <TableRow className={`transition-all duration-500 ease-in-out transform ${
+                      expandedRowId === row.id ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0"
+                    }`}
+                    style={{
+                      transformOrigin: "top",
+                    }}>
                       <TableCell
                         colSpan={columns.length}
                         className="text-neutral-1200 pt-0"
