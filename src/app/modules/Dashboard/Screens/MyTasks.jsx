@@ -39,7 +39,7 @@ import {
 import { TaskStatus } from "data/Data";
 
 import CustomTable from "components/CustomTable";
-import { SelectComponent } from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 
 export default function MyTasks() {
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -179,7 +179,7 @@ export default function MyTasks() {
             </div>
 
             <div className="flex items-center gap-3">
-              <SelectComponent
+              <SelectInputComponent
                 name="status"
                 options={TaskStatus}
                 value={filterData.status?.[0]}
@@ -190,7 +190,7 @@ export default function MyTasks() {
                 }}
                 className="w-fit"
               />
-              <SelectComponent
+              <SelectInputComponent
                 name="project_id"
                 options={AllProjects}
                 value={filterData.project_id?.[0] || "All Projects"}

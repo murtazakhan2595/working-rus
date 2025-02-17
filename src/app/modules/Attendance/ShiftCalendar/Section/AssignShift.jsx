@@ -3,7 +3,7 @@ import SheetComponent from "components/ui/SheetComponent";
 import React, { useEffect, useState } from "react";
 import { Formik } from "formik";
 import { Button } from "components/ui/button";
-import { SelectComponent } from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 import { saveShiftAssignment } from "app/hooks/attendance";
 import { toast } from "react-toastify";
 import { connect } from "react-redux";
@@ -141,7 +141,7 @@ const AssignShiftForm = ({
         {(props) => (
           <form onSubmit={props.handleSubmit}>
             <div className="space-y-2 pb-2">
-              <SelectComponent
+              <SelectInputComponent
                 name="employee"
                 options={usersList}
                 error={props.errors.employee}
@@ -177,7 +177,7 @@ const AssignShiftForm = ({
                   </Card>
                 ))}
 
-              <SelectComponent
+              <SelectInputComponent
                 name="shift"
                 options={shiftsList}
                 error={props.errors.shift}

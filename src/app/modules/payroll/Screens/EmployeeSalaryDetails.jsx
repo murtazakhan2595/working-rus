@@ -70,7 +70,7 @@ import {
 } from "../../../../data/Data";
 import {
   FilterInput,
-  SelectComponent,
+  SelectInputComponent,
 } from "../../../../components/FormControl";
 import {
   getEarnAndDeduction,

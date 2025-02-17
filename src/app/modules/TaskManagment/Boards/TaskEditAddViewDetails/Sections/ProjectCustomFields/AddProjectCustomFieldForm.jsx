@@ -8,7 +8,7 @@ import {
 } from "src/@/components/ui/dialog.jsx";
 import { Button } from "components/ui/button";
 import { Formik, Form } from "formik";
-import { TextInput, SelectComponent } from "components/FormControl";
+import { TextInput, SelectInputComponent } from "components/FormControl";
 import { CustomFieldData } from "app/utils/Types/TaskManagment";
 import { mapCustomFieldPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
 import { CustomeFieldTypeOption } from "data/Data";
@@ -143,7 +143,7 @@ const AddProjectCustomFieldForm = ({
                   required={true}
                   onChange={(field, value) => props.setFieldValue(field, value)}
                 />
-                <SelectComponent
+                <SelectInputComponent
                   name="field_type"
                   options={CustomeFieldTypeOption}
                   error={props.errors.field_type}

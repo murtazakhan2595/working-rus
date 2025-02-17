@@ -44,7 +44,7 @@ import {
 } from "../../../../data/Data";
 import {
   FilterInput,
-  SelectComponent,
+  SelectInputComponent,
   TextInput,
 } from "../../../../components/FormControl";
 import {

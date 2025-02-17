@@ -5,7 +5,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Formik } from "formik";
 import {
   TextInput,
-  SelectComponent,
+  SelectInputComponent,
   PhoneNumberInput,
   EmailInput,
   CoverFileUpload,
@@ -204,7 +204,7 @@ const JobApplicationForm = () => {
                       placeholder="Enter Expected salary"
                     />
 
-                    <SelectComponent
+                    <SelectInputComponent
                       name="Education"
                       options={educationTypeOptions}
                       error={props.errors.Education}
@@ -243,7 +243,7 @@ const JobApplicationForm = () => {
                       required={true}
                       regEx={/^[0-9.]+$/}
                     />
-                    <SelectComponent
+                    <SelectInputComponent
                       name="location"
                       options={countriesList}
                       error={props.errors.location}

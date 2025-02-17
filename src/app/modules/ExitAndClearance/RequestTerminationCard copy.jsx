@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Formik } from "formik";
 import { Col, Form, Row } from "reactstrap";
 import { DateInput } from "components/FormControl";
-import { SelectComponent } from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 import { connect } from "react-redux";
 import { getEmployeeData } from "app/hooks/employee";
 import { DesignationName } from "utils/getValuesFromTables";
@@ -188,7 +188,7 @@ const RequestTerminationCard = ({
                           key={index}
                           className="grid w-full gap-4 sm:grid-cols-1 lg:grid-cols-2"
                         >
-                          <SelectComponent
+                          <SelectInputComponent
                             name="terminate_employee"
                             options={filterEmployees}
                             error={props.errors.terminate_employee}
@@ -245,7 +245,7 @@ const RequestTerminationCard = ({
                       />
                     </Col>
                     <Col md={6}>
-                      <SelectComponent
+                      <SelectInputComponent
                         name={"notice_period"}
                         options={NoticePeriod}
                         error={props.errors.notice_period}
@@ -270,7 +270,7 @@ const RequestTerminationCard = ({
                       />
                     </Col>
                     <Col md={6} className="z-0">
-                      <SelectComponent
+                      <SelectInputComponent
                         name={"reason_for_terminating"}
                         options={terminationReasonsOptions}
                         error={props.errors.reason_for_terminating}

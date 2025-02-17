@@ -6,7 +6,7 @@ import {
     Col,
     FormGroup,
 } from 'reactstrap';
-import { SelectComponent, SelectMultiInputComponent, DateInput } from 'components/form-control'
+import { SelectInputComponent, SelectMultiInputComponent, DateInput } from 'components/form-control'
 import { getDepartmentList, getManagersList, getDesignationList,getOrganizationList } from 'app/hooks/general';
 import {getManagerSelected,countryOptions} from 'data/Data'
 
@@ -58,7 +58,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
     return (
         <>
             <Col md="6" className="z-0">
-                <SelectComponent
+                <SelectInputComponent
                     name={'department_name'}
                     options={departments}
                     error={errors.department_name}
@@ -72,7 +72,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                 />
             </Col>
             <Col md="6">
-                <SelectComponent
+                <SelectInputComponent
                     name={'organization'}
                     options={organization}
                     error={errors.organization}
@@ -86,7 +86,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                 />
             </Col>
             <Col md={6}>
-                <SelectComponent
+                <SelectInputComponent
                     name={'employee_location'}
                     options={countriesList}
                     error={errors.employee_location}
@@ -100,7 +100,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                 />
             </Col>
             <Col md={6} className="z-0">
-                <SelectComponent
+                <SelectInputComponent
                     name={'department_position'}
                     options={designations}
                     error={errors.department_position}
@@ -114,7 +114,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                 />
             </Col>
             <Col md={6}>
-                <SelectComponent
+                <SelectInputComponent
                     name={'user_role'}
                     options={UserRoles}
                     error={errors.user_role}
@@ -129,7 +129,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
             </Col>
             <Col md="6" className="z-0">
                 <FormGroup>
-                    <SelectComponent
+                    <SelectInputComponent
                         name={'employee_type'}
                         options={jobRoles}
                         error={errors.employee_type}
@@ -146,7 +146,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
             </Col>
             <Col md="6">
                 <FormGroup>
-                    <SelectComponent
+                    <SelectInputComponent
                         name={'employee_status'}
                         options={employeeStatus}
                         error={errors.employee_status}
@@ -161,7 +161,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                 </FormGroup>
             </Col>
             <Col md={6} className="z-0">
-                <SelectComponent
+                <SelectInputComponent
                     name={'employee_work_type'}
                     options={workplaceTypes}
                     error={errors.employee_work_type}
@@ -176,7 +176,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
             </Col>
 
             <Col md={6}>
-                <SelectComponent
+                <SelectInputComponent
                     name={'direct_report'}
                     options={managers}
                     error={errors.direct_report}
@@ -205,7 +205,7 @@ const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) 
                 />
             </Col>
             <Col md={6} className='z-0'>
-                <SelectComponent
+                <SelectInputComponent
                     name={'department_manager'}
                     options={HeadOfDepartmentOptions}
                     error={errors.department_manager}

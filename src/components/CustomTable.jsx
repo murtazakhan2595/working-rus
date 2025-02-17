@@ -15,7 +15,7 @@ import {
   PaginationLink,
   PaginationNext,
 } from "../src/@/components/ui/pagination";
-import { SelectComponent } from "./FormControl";
+import { SelectInputComponent } from "./FormControl";
 
 export default function TableCustom({
   columns,
@@ -308,7 +308,7 @@ const CustomPageSizePagination = ({ sizePerPage, onPageChange }) => {
   };
   return (
     <div>
-      <SelectComponent
+      <SelectInputComponent
         value={size}
         options={[
           { value: 10, label: 10 },

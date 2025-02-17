@@ -2,7 +2,7 @@ import { getDepartmentList } from "app/hooks/general";
 import { saveDesignation } from "app/hooks/general";
 import { getOrganizationList } from "app/hooks/general";
 import { DesignationInfo } from "app/utils/Types/Designation";
-import { SelectComponent } from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 import { TextAreaInput } from "components/FormControl";
 import { TextInput } from "components/FormControl";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
@@ -66,7 +66,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
         {(props) => (
           <form onSubmit={props?.handleSubmit}>
             <SheetCardExtension title="Designation Details">
-              <SelectComponent
+              <SelectInputComponent
                 name={"organization"}
                 options={organization}
                 error={props.errors.organization}

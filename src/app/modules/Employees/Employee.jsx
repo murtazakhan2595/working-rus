@@ -3,7 +3,7 @@ import { Card, CardContent } from "../../../components/ui/card";
 import { EmployeeColumns } from "app/utils/Types/TableColumns";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
 import Header from "../../../components/Header";
-import { FilterInput, SelectComponent } from "components/FormControl";
+import { FilterInput, SelectInputComponent } from "components/FormControl";
 import { UserRoles, employeeStatus } from "data/Data";
 import {
   getDepartmentList,
@@ -113,7 +113,7 @@ export default function EmployeeManagement() {
       <Stats stats={statsData} />
       <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row gap-2">
         <div className="flex">
-        <SelectComponent
+        <SelectInputComponent
           name="Employee Status"
           value={selectedStatus}
           options={employeeStatus}

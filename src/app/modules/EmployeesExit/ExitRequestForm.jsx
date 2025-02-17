@@ -4,7 +4,7 @@ import { PageLoader } from "components";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { CiEdit } from "react-icons/ci";
-import { SelectComponent } from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 import { DateInput } from "components/FormControl";
 import { Formik } from "formik";
 import { DesignationName } from "utils/getValuesFromTables";
@@ -144,7 +144,7 @@ const PersonalInformation = ({
                       props.setFieldValue(field, value);
                     }}
                   />
-                  <SelectComponent
+                  <SelectInputComponent
                     name={"notice_period"}
                     options={NoticePeriod}
                     error={props.errors.notice_period}
@@ -155,7 +155,7 @@ const PersonalInformation = ({
                       props.setFieldValue(field, value);
                     }}
                   />
-                  <SelectComponent
+                  <SelectInputComponent
                     name={"reason_for_leaving"}
                     options={ReasonForLeaving}
                     error={props.errors.reason_for_leaving}
