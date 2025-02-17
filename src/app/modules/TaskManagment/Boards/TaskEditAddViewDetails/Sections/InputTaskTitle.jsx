@@ -24,6 +24,7 @@ const InputTaskTitle = React.memo(({
             onChange={(field, value) => {
               onChange(field, value);
             }}
+            placeholder="Enter Title"
             onBlur={async (e) => {
               // await props.setFieldTouched("name", true);
               // setEditingField(null);
