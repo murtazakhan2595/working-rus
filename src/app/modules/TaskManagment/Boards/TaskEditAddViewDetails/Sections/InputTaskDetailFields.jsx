@@ -8,7 +8,11 @@ import {
 } from "app/modules/TaskManagment/Sections";
 import { TextInput } from "components/FormControl";
 import { DateInput } from "components/FormControl";
-import { SelectInputComponent, CoverFileUpload } from "components/FormControl";
+import {
+  SelectInputComponent,
+  CoverFileUpload,
+  SelectComponent,
+} from "components/FormControl";
 import TaskShare from "app/modules/TaskManagment/Sections/TaskShare";
 import { DetailBox } from "components/SheetCardExtension";
 
@@ -23,31 +27,33 @@ const InputTaskDetailFields = React.memo(
     projectDetail,
     employees,
     CustomFields = [],
+    boardList,
   }) => {
     return (
-      <div className="grid grid-cols-2 gap-5 my-8">
-        <DateInput
-          name="end_date"
-          label="Due Date"
-          error={errors.end_date}
-          touch={touched.end_date}
-          value={taskData.end_date}
-          onChange={(field, value) => {
-            onChange(field, value);
-          }}
-        />
-        <SelectInputComponent
-          name="priority"
-          options={PriorityList}
-          label={"Priority"}
-          error={errors.priority}
-          touch={touched.priority}
-          value={taskData.priority}
-          onChange={(field, value) => {
-            onChange(field, value);
-          }}
-        />
-        <div className="grid grid-cols-2 gap-2">
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-5 my-8">
+          <DateInput
+            name="end_date"
+            label="Due Date"
+            error={errors.end_date}
+            touch={touched.end_date}
+            value={taskData.end_date}
+            onChange={(field, value) => {
+              onChange(field, value);
+            }}
+          />
+          <SelectInputComponent
+            name="priority"
+            options={PriorityList}
+            label={"Priority"}
+            error={errors.priority}
+            touch={touched.priority}
+            value={taskData.priority}
+            onChange={(field, value) => {
+              onChange(field, value);
+            }}
+          />
+          {/* <div className="grid grid-cols-2 gap-2"> */}
           <TextInput
             name="estimated_time"
             error={errors.estimated_time}
@@ -68,8 +74,7 @@ const InputTaskDetailFields = React.memo(
               onChange(field, value);
             }}
           />
-        </div>
-        <SelectInputComponent
+          <SelectInputComponent
             name="status"
             options={TaskStatus}
             label={"Status"}
@@ -80,61 +85,74 @@ const InputTaskDetailFields = React.memo(
               onChange(field, value);
             }}
           />
-        <Labels
-          labelsSelected={taskData.label || []}
-          onSelectedLabelsChange={(value) => {
-            onChange("label", value);
-          }}
-          editMode={true} // Always in edit mode
-        />
-        <Assignee
-          assigneeSelected={taskData.assigned_to || []}
-          employees={employees}
-          onChange={(value) => {
-            onChange("assigned_to", value);
-          }}
-          editMode={true} // Always in edit mode
-          projectMembers={projectDetail?.project_members || []}
-          error={errors.assigned_to}
-          touch={touched.assigned_to}
-          value={taskData.assigned_to}
-        />
-{/*         
-        {!isSubtask && (
-          <TaskRelation
-            relationsList={taskData.relation || []}
-            onChange={(value) => {
-              onChange("relation", value);
-            }}
-            projectId={taskData.project_id}
-            taskId={taskId}
-            editMode={true}
-            error={errors.relation}
-            touch={touched.relation}
-          />
-        )} */}
-          
 
-        {/* <DetailBox
-          label="Share Task"
-          orientation="horizontal"
-          value={<TaskShare projectId={taskData.project_id} taskId={taskId} />}
-        /> */}
-        {CustomFields &&
-          CustomFields.map((CustomField) => {
-            return (
-              <div key={CustomField.id}>
-                <InputTaskCustomFields
-                  CustomField={CustomField}
-                  onChange={(field, value) => {
-                    onChange(field, value);
-                  }}
-                  customFieldValues={taskData.custom_fields || []}
-                  name={"custom_fields"}
-                />
-              </div>
-            );
-          })}
+          <SelectComponent
+            name="board_id"
+            label="List"
+            options={boardList}
+            error={errors.board_id}
+            touch={touched.board_id}
+            value={taskData.board_id}
+            placeholder="Select List"
+            onChange={onChange}
+          />
+
+          <Labels
+            labelsSelected={taskData.label || []}
+            onSelectedLabelsChange={(value) => {
+              onChange("label", value);
+            }}
+            editMode={true} // Always in edit mode
+          />
+          <Assignee
+            assigneeSelected={taskData.assigned_to || []}
+            employees={employees}
+            onChange={(value) => {
+              onChange("assigned_to", value);
+            }}
+            editMode={true} // Always in edit mode
+            projectMembers={projectDetail?.project_members || []}
+            error={errors.assigned_to}
+            touch={touched.assigned_to}
+            value={taskData.assigned_to}
+          />
+
+          {/*         
+          {!isSubtask && (
+            <TaskRelation
+              relationsList={taskData.relation || []}
+              onChange={(value) => {
+                onChange("relation", value);
+              }}
+              projectId={taskData.project_id}
+              taskId={taskId}
+              editMode={true}
+              error={errors.relation}
+              touch={touched.relation}
+            />
+          )} */}
+
+          {/* <DetailBox
+            label="Share Task"
+            orientation="horizontal"
+            value={<TaskShare projectId={taskData.project_id} taskId={taskId} />}
+          /> */}
+          {CustomFields &&
+            CustomFields.map((CustomField) => {
+              return (
+                <div key={CustomField.id}>
+                  <InputTaskCustomFields
+                    CustomField={CustomField}
+                    onChange={(field, value) => {
+                      onChange(field, value);
+                    }}
+                    customFieldValues={taskData.custom_fields || []}
+                    name={"custom_fields"}
+                  />
+                </div>
+              );
+            })}
+        </div>
       </div>
     );
   }
