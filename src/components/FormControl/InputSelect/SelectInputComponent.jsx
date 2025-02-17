@@ -17,7 +17,7 @@ const SelectInputComponent = React.memo(
     options, // List of selectable options
     error,
     touch,
-    value = [], // Current selected values
+    value = null, // Current selected values
     label = null, // Label for the select field
     onChange, // Function to handle selection change
     required = false, // Whether the field is required

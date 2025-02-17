@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Label } from "src/@/components/ui/label";
 import { getFileNameFromURL } from "utils/downUtils";
 import { FileUp } from "lucide-react";
+import { FormField } from "components/FormControl";
 import { errorClassName } from "app/utils/Types/General";
 import { CoverFileInput } from "./CoverFileInput";
 import AttachmentFileInput from "./AttachmentFileInput";
@@ -21,6 +22,7 @@ const CoverFileUpload = ({
   multiple = true,
   deleteAttachment = () => {},
   allowUpdate = true,
+  className = "w-full", // Custom styling
 }) => {
   const [files, setFiles] = useState([]); // Store multiple files
   // Initialize files from value
@@ -52,9 +54,9 @@ const CoverFileUpload = ({
   const handleFile = (file, attachmentId = null) => {
     if (validateFile(file)) {
       const reader = new FileReader();
-      reader.onload = () => {  
+      reader.onload = () => {
         setFiles((prevFiles) => {
-          debugger
+          debugger;
           let updatedFiles;
           if (attachmentId) {
             // Replace existing file with the same attachmentId
@@ -108,13 +110,14 @@ const CoverFileUpload = ({
   };
 
   return (
-    <div className={`flex flex-col gap-4 mb-4`}>
-      {showLabel && (
-        <Label className="text-normal " htmlFor={name}>
-          {required && <span className="text-red-600">* </span>}
-          {label || "Attachments"}
-        </Label>
-      )}
+    <FormField
+      name={name}
+      label={label}
+      required={required}
+      error={error}
+      touched={touch}
+      className={className}
+    >
       {variant === "CoverFileUpload" && (
         <CoverFileInput
           files={files}
@@ -137,8 +140,7 @@ const CoverFileUpload = ({
           allowUpdate={allowUpdate}
         />
       )}
-      {error && touch && <div className={errorClassName}>{error}</div>}
-    </div>
+    </FormField>
   );
 };
 export default CoverFileUpload;
