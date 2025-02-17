@@ -308,7 +308,7 @@ const TaskEditAddViewDetails = ({
         //  setShowSuccessMessage(true);
         // Track activities
         await trackTaskActivities(
-          values,
+          response?.data,
           taskId ? initialValues : null,
           taskId || response?.data.id,
           userId,

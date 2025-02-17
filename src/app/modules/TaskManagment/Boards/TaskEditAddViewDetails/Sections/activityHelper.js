@@ -1,6 +1,8 @@
 // utils/activityHelper.js
 
 import moment from "moment";
+import { TaskStatus, PriorityList } from "data/Data";
+import { EmployeeNameList,GetUser } from "utils/getValuesFromTables";
 
 export const ActivityTypes = {
   TASK_CREATED: "TASK_CREATED",
@@ -24,7 +26,7 @@ export const ActivityTypes = {
   SUBTASK_COMPLETED: "SUBTASK_COMPLETED",
   RELATION_ADDED: "RELATION_ADDED",
   RELATION_REMOVED: "RELATION_REMOVED",
-   ESTIMATED_TIME_CHANGED: "ESTIMATED_TIME_CHANGED",
+  ESTIMATED_TIME_CHANGED: "ESTIMATED_TIME_CHANGED",
 };
 
 const generateActivityContent = (
@@ -121,7 +123,7 @@ export const trackTaskActivities = async (
   userId,
   createActivityFn
 ) => {
-  console.log("task id in tracktraskactivities", taskId)
+  console.log("task id in tracktraskactivities", taskId);
   console.log("task id in oldValues", oldValues?.id);
   const activities = [];
 
@@ -165,8 +167,10 @@ export const trackTaskActivities = async (
         action_type: ActivityTypes.STATUS_CHANGED,
         content: generateActivityContent(
           ActivityTypes.STATUS_CHANGED,
-          newValues.status,
-          oldValues.status
+          TaskStatus.find((obj) => obj.value === newValues.status)?.status ||
+            newValues.status,
+          TaskStatus.find((obj) => obj.value === oldValues.status)?.status ||
+            oldValues.status
         ),
         user_id: userId,
       });
@@ -178,8 +182,10 @@ export const trackTaskActivities = async (
         action_type: ActivityTypes.PRIORITY_CHANGED,
         content: generateActivityContent(
           ActivityTypes.PRIORITY_CHANGED,
-          newValues.priority,
-          oldValues.priority
+          PriorityList.find((option) => option.value === newValues.priority)
+            ?.name,
+          PriorityList.find((option) => option.value === oldValues.priority)
+            ?.name
         ),
         user_id: userId,
       });
@@ -190,11 +196,12 @@ export const trackTaskActivities = async (
       JSON.stringify(newValues.assigned_to) !==
       JSON.stringify(oldValues.assigned_to)
     ) {
-      const added = newValues.assigned_to.filter(
-        (x) => !oldValues.assigned_to.includes(x)
+      debugger
+      const added = newValues.assigned_to_names.filter(
+        (x) => !oldValues.assigned_to_names.includes(x)
       );
-      const removed = oldValues.assigned_to.filter(
-        (x) => !newValues.assigned_to.includes(x)
+      const removed = oldValues.assigned_to_names.filter(
+        (x) => !newValues.assigned_to_names.includes(x)
       );
 
       if (added.length) {
@@ -241,46 +248,6 @@ export const trackTaskActivities = async (
           task_id: taskId,
           action_type: ActivityTypes.DUE_DATE_CHANGED,
           content: `Changed due date from ${formattedOldDate} to ${formattedNewDate}`,
-          user_id: userId,
-        });
-      }
-    }
-    // Track member changes
-    if (
-      JSON.stringify(newValues.assigned_to || []) !==
-      JSON.stringify(oldValues.assigned_to || [])
-    ) {
-      // Add null checks and default to empty array if null/undefined
-      const oldMembers = oldValues.assigned_to || [];
-      const newMembers = newValues.assigned_to || [];
-
-      // Find added members
-      const added = newMembers.filter((x) => !oldMembers.includes(x));
-      // Find removed members
-      const removed = oldMembers.filter((x) => !newMembers.includes(x));
-
-      // Track additions
-      if (added.length > 0) {
-        activities.push({
-          task_id: taskId,
-          action_type: ActivityTypes.MEMBERS_ADDED,
-          content: generateActivityContent(
-            ActivityTypes.MEMBERS_ADDED,
-            added // Just pass the IDs array
-          ),
-          user_id: userId,
-        });
-      }
-
-      // Track removals
-      if (removed.length > 0) {
-        activities.push({
-          task_id: taskId,
-          action_type: ActivityTypes.MEMBERS_REMOVED,
-          content: generateActivityContent(
-            ActivityTypes.MEMBERS_REMOVED,
-            removed // Just pass the IDs array
-          ),
           user_id: userId,
         });
       }
