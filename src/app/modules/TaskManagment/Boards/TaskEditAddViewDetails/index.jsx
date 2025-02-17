@@ -337,6 +337,13 @@ const TaskEditAddViewDetails = ({
     }
   };
 
+  const getSubtaskCount = () => {
+    if (!subTasksDetails?.length) return 0;
+    const total = subTasksDetails.length;
+    const completed = countCompletedTasks(subTasksDetails);
+    return `${completed}/${total}`;
+  };
+
   return (
     <>
       {handleCloseWithConfirmation({
@@ -466,7 +473,15 @@ const TaskEditAddViewDetails = ({
                               {[
                                 { value: "checklist", label: "Checklist" },
                                 { value: "relation", label: "Relation" },
-                                { value: "subtasks", label: "Subtasks" },
+                                { 
+                                  value: "subtasks", 
+                                  label: (
+                                    <div className="flex items-center gap-2">
+                                      <span>Subtasks</span>
+                                      <span className="text-plum-1100">({subTasksDetails?.length})</span>
+                                    </div>
+                                  )
+                                },
                                 {
                                   value: "customFields",
                                   label: "Custom Fields",
