@@ -8,11 +8,7 @@ import {
 } from "app/modules/TaskManagment/Sections";
 import { TextInput } from "components/FormControl";
 import { DateInput } from "components/FormControl";
-import {
-  SelectInputComponent,
-  CoverFileUpload,
-  SelectComponent,
-} from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 import TaskShare from "app/modules/TaskManagment/Sections/TaskShare";
 import { DetailBox } from "components/SheetCardExtension";
 
@@ -86,7 +82,7 @@ const InputTaskDetailFields = React.memo(
             }}
           />
 
-          <SelectComponent
+          <SelectInputComponent
             name="board_id"
             label="List"
             options={boardList}
