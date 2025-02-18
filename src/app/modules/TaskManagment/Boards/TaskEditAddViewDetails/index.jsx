@@ -444,7 +444,7 @@ const TaskEditAddViewDetails = ({
                             />
                           )}
                           <Button type="submit">
-                            {`${taskId ? "Save Changes" : "Add Task"}`}
+                            {`${taskId ? "Save Changes" : isSubtask ? "Add Subtask" : "Add Task"}`}
                           </Button>
                           <AdditionalActionOption
                             projectId={props.values.project_id}
