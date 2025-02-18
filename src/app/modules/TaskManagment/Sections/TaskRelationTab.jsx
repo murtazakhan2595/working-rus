@@ -11,6 +11,7 @@ import { ScrollArea } from "src/@/components/ui/scroll-area";
 import { MdClose } from "react-icons/md";
 import { Badge } from "components/ui/badge";
 import { getTaskByprojectId } from "app/hooks/taskManagment";
+import { useNavigate } from "react-router-dom";
 
 // Constants for relation types
 const RELATION_TYPES = {
@@ -60,6 +61,7 @@ const TaskRelationTab = ({
     [RELATION_TYPES.WAITING_ON]: [], // Changed from WAITING to WAITING_ON
   });
 
+  const navigate = useNavigate();
   // Fetch tasks from API
   const fetchTasks = async (isMounted) => {
     try {
@@ -195,13 +197,21 @@ const handleRemoveRelation = (type, taskId) => {
               key={relatedTaskId}
               className="flex items-center justify-between p-2 bg-gray-100 rounded-lg shadow-sm w-fit gap-2 group"
             >
-              <span className="text-sm text-zinc-600">
+              <span
+                className="text-sm text-zinc-600 cursor-pointer hover:text-primary-600"
+                onClick={() =>
+                  navigate(`/project-board/${projectId}/${task.id}`)
+                }
+              >
                 {task.name || "Task Title (N/A)"}
               </span>
               {editMode && (
                 <MdClose
                   className="w-4 h-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => handleRemoveRelation(type, relatedTaskId)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent navigation when clicking close
+                    handleRemoveRelation(type, relatedTaskId);
+                  }}
                 />
               )}
             </div>

@@ -548,7 +548,6 @@ const TaskEditAddViewDetails = ({
 
                               <TabsContent value="relation">
                                 <DetailCard
-                                <DetailCard
                                   detailCardTitle=""
                                   classNames="mt-0"
                                 >
