@@ -269,7 +269,7 @@ const RenderProject = ({
             </CardTitle>
             <div className="flex justify-center">
               <img
-                src={project?.profile || logo}
+                src={project?.profile_img || logo}
                 alt={project.name}
                 className="h-12 mb-3 transition-transform duration-300 hover:scale-105"
               />
