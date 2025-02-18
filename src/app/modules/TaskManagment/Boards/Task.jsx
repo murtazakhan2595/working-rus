@@ -3,42 +3,105 @@ import React, { useEffect, useState } from "react";
 import { deleteTask } from "app/hooks/taskManagment";
 import { PriorityList } from "data/Data";
 import { BiComment } from "react-icons/bi";
-import { getStatus, getStatusIconColor } from "./Sections";
 import { MembersList, Labels } from "../Sections";
 import { ImAttachment } from "react-icons/im";
-import TimeIcon from "assets/images/timeIcon";
-import moment from "moment";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import { Card, CardContent, CardFooter } from "components/ui/card";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { TextUI, TooltipText } from "components";
 import { toast } from "react-toastify";
-import { addTask } from "app/hooks/taskManagment";
-import { ListChecks, Trash2, RotateCcw, ExternalLink } from "lucide-react";
-import { Input } from "components/ui/input";
+import { addTask, getAllTasks } from "app/hooks/taskManagment";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "src/@/components/ui/tooltip";
-import TaskStatusLabel from "app/modules/TaskManagment/Sections/TaskStatus";
+  Trash2,
+  RotateCcw,
+  ExternalLink,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
+
+import {
+  TaskStatusLabel,
+  RenderTaskTitle,
+  TaskEndDate,
+} from "app/modules/TaskManagment/Sections";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 const TaskCard = ({
-  projectId,
   task,
-  reloadData,
+  reloadData = () => {},
   onDragStart = () => {},
-  onUpdate = () => {},
   showMembers = true,
   showDueDate = true,
 }) => {
-   const navigate = useNavigate();
-  const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
-  const [isSubtask, setIsSubtask] = useState(false);
   const [subTasksDetails, setSubTasksDetails] = useState([]);
+  const [openSubtaskDetails, setOpenSubtaskDetails] = useState(false);
+
+  const fetchSubTaskDetails = async (isMounted) => {
+    try {
+      const subtaskDetails = await getAllTasks({
+        filterData: { id: task?.sub_task },
+      });
+
+      if (isMounted) {
+        setSubTasksDetails(subtaskDetails.results);
+      }
+    } catch (error) {
+      console.error("Error fetching subtasks:", error);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (task?.sub_task?.length) fetchSubTaskDetails(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  return (
+    <div
+      className="flex flex-col gap-1 rounded-lg cursor-default"
+      draggable
+      onDragStart={(e) => {
+        onDragStart(e, task.id);
+      }}
+      key={task.id}
+    >
+      <TaskDetails
+        task={task}
+        reloadData={reloadData}
+        showMembers={showMembers}
+        showDueDate={showDueDate}
+        setOpenSubtaskDetails={setOpenSubtaskDetails}
+        openSubtaskDetails={openSubtaskDetails}
+      />
+
+      {openSubtaskDetails &&
+        subTasksDetails.map((subtask) => (
+          <div className="pl-5" key={subtask.id}>
+            <TaskDetails
+              task={subtask}
+              reloadData={fetchSubTaskDetails}
+              showMembers={showMembers}
+              showDueDate={showDueDate}
+            />
+          </div>
+        ))}
+    </div>
+  );
+};
+
+const TaskDetails = ({
+  task,
+  showMembers = true,
+  showDueDate = true,
+  reloadData = () => {},
+  setOpenSubtaskDetails = () => {},
+  openSubtaskDetails = false,
+}) => {
+  const navigate = useNavigate();
+  const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
 
@@ -67,16 +130,9 @@ const TaskCard = ({
       console.error("Error updating task status:", error);
     }
   };
-
   return (
-    <Card
-      className="w-full p-3 bg-white rounded-lg border-2 border-gray-300"
-      draggable
-      onDragStart={(e) => {
-        onDragStart(e, task.id);
-      }}
-    >
-      <CardContent className="p-0 w-full cursor-pointer">
+    <Card className="w-full p-3 bg-white rounded-lg border-2 border-gray-300">
+      <CardContent className="p-0 w-full cursor-pointer border-b border-solid border-zinc-300 pb-4 ">
         <div
           className="flex flex-col"
           onClick={(e) => {
@@ -108,22 +164,49 @@ const TaskCard = ({
               }
             </span>
           </div>
-          <div className="flex flex-col gap-2 pb-4 mt-3 border-b border-solid border-zinc-300 text-zinc-800">
-            <h3 className="text-base font-bold text-capitalize">
+          <div className="flex flex-col gap-2 mt-3 text-zinc-800">
+            {/* <h3 className="text-base font-bold text-capitalize">
               {task?.name}
-            </h3>
+            </h3> */}
+            <RenderTaskTitle
+              title={task.name}
+              taskId={task.id}
+              isChecked={task.status?.toUpperCase() === "COMPLETED"}
+              className="text-base font-bold text-capitalize pl-3"
+              reload={reloadData}
+            />
             {/* <TextUI text={task?.description} maxLength={130} /> */}
             <div className="flex flex-row justify-start flex-wrap overflow-hidden max-w-[100%]">
-              <TooltipText
-                tooltipTriggerText={<TaskStatusLabel status={task.status} />}
-                content={`Task Status`}
-              />
+              <TaskStatusLabel status={task.status} />
               {task?.end_date && showDueDate && (
-                <TimeStatusIcon task={task} onUpdate={onUpdate} />
+                <TaskEndDate dueDate={task.end_date} taskStatus={task.status} />
               )}
             </div>
           </div>
         </div>
+        {!task.is_subtask && (
+          <div className="mt-2">
+            <TooltipText
+              tooltipTriggerText={
+                <div
+                  className="flex items-center text-xs font-medium gap-0.5 my-auto whitespace-nowrap bg-plum-300 text-plum-1100 px-2 py-1 rounded w-fit"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setOpenSubtaskDetails(!openSubtaskDetails);
+                  }}
+                >
+                  {openSubtaskDetails ? (
+                    <ChevronDown size={16} />
+                  ) : (
+                    <ChevronRight size={16} />
+                  )}
+                  <div>{task?.sub_task?.length || 0} Subtask</div>
+                </div>
+              }
+              content={`${task?.sub_task?.length || 0} Subtasks`}
+            />
+          </div>
+        )}
       </CardContent>
       <CardFooter className="w-full justify-between py-2 px-0">
         <div className="flex items-center gap-1">
@@ -134,7 +217,10 @@ const TaskCard = ({
                 members={task?.assigned_to}
                 onMemberClick={(event, user) => {
                   event.preventDefault();
-                  navigate(`/project-board/${projectId}/user/${user.id}`);
+                  if (task.project_id && user.id)
+                    navigate(
+                      `/project-board/${task.project_id}/user/${user.id}`
+                    );
                 }}
               />
             </div>
@@ -174,15 +260,7 @@ const TaskCard = ({
             }
             content={`${task?.attachment_count || 0} Attachment`}
           />
-          <TooltipText
-            tooltipTriggerText={
-              <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
-                <ListChecks size={16} />
-                <div>{task?.sub_task?.length || 0}</div>
-              </div>
-            }
-            content={`${task?.sub_task?.length || 0} Subtasks`}
-          />
+
           <TooltipText
             tooltipTriggerText={
               <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
@@ -218,133 +296,15 @@ const TaskCard = ({
             setViewTaskDetail(task.id);
           }}
           reloadData={reloadData}
-          projectId={projectId}
+          projectId={task.project_id}
           boardId={task.board_id}
-          isSubtask={isSubtask}
+          isSubtask={task.is_subtask}
         />
       )}
     </Card>
   );
 };
 
-const TimeStatusIcon = ({ task, onUpdate }) => {
-  const [showCheckbox, setShowCheckbox] = useState(false);
-  const [isChecked, setIsChecked] = useState(task.status === "COMPLETED");
-
-  const handleStatusChange = async (value) => {
-    try {
-      const newStatus = value ? "COMPLETED" : "INPROGRESS";
-      const response = await addTask({
-        ...task,
-        status: newStatus,
-      });
-      setIsChecked(value);
-      onUpdate(task.id, { status: newStatus });
-      toast.success("Task status updated successfully");
-
-      if (response) {
-      }
-    } catch (error) {
-      console.error("Error updating task status:", error);
-      toast.error("Failed to update task status");
-    }
-  };
-
-  const handleContainerClick = (e) => {
-    e.stopPropagation();
-    handleStatusChange(!isChecked);
-  };
-
-  const getBackgroundClass = (date) => {
-    if (isChecked) {
-      return "bg-[#ECFDF3]";
-    }
-
-    const status = getStatus(date);
-    if (status === "Due Today") {
-      return "bg-amber-100";
-    } else if (status === "Overdue") {
-      return "bg-[#ffe2e2]";
-    } else {
-      return "bg-gray-50";
-    }
-  };
-
-  const getIconColor = () => {
-    if (isChecked) {
-      return "#12B76A";
-    }
-    return getStatusIconColor(task?.end_date);
-  };
-
-  const getTooltipMessage = () => {
-    if (isChecked) {
-      return "The card is complete.";
-    }
-
-    const status = getStatus(task?.end_date);
-    if (status === "Overdue") {
-      return "The card is past due.";
-    } else if (status === "Due Today") {
-      return "The card is due today.";
-    } else {
-      return "The card is due later.";
-    }
-  };
-
-  const textStyle = {
-    color: getIconColor(),
-  };
-
-  return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div
-            className={`flex items-center text-xs rounded px-1 py-1 ${getBackgroundClass(
-              task?.end_date
-            )} cursor-pointer`}
-            onMouseEnter={() => setShowCheckbox(true)}
-            onMouseLeave={() => setShowCheckbox(false)}
-            onClick={handleContainerClick}
-          >
-            <div className="relative w-5 h-5">
-              <div
-                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
-                  showCheckbox ? "opacity-100 z-10" : "opacity-0 z-0"
-                }`}
-              >
-                <Input
-                  type="checkbox"
-                  checked={isChecked}
-                  value={isChecked}
-                  className="w-4 h-4"
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    handleStatusChange(!isChecked);
-                  }}
-                />
-              </div>
-              <div
-                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
-                  showCheckbox ? "opacity-0 z-0" : "opacity-100 z-10"
-                }`}
-              >
-                <TimeIcon color={getIconColor()} />
-              </div>
-            </div>
-            <div style={textStyle} className="select-none">
-              {moment(task?.end_date).format("MMMM DD")}
-            </div>
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{getTooltipMessage()}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
-};
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,

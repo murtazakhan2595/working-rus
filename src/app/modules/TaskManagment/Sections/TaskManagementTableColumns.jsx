@@ -71,7 +71,17 @@ export const ProjectBoardColumn = [
     headerStyle: { padding: "0px" },
     formatter: (cell, row, data, index, isExpanded) =>
       !row.is_subtask &&
-      (isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />),
+      (isExpanded ? (
+        <ChevronDown
+          size={16}
+          className={`${!row.sub_task.length ? "opacity-50" : ""}`}
+        />
+      ) : (
+        <ChevronRight
+          size={16}
+          className={`${!row.sub_task.length ? "opacity-50" : ""}`}
+        />
+      )),
   },
   {
     text: "Tasks",

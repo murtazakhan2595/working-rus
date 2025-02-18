@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { getTaskById, addTask } from "app/hooks/taskManagment";
-import { Input } from "components/ui/input";
-import { cn } from "src/@/lib/utils";
 import { Checkbox } from "src/@/components/ui/checkbox";
 
 const RenderTaskTitle = ({
@@ -12,16 +10,19 @@ const RenderTaskTitle = ({
   reload = () => {},
   onClick = () => {},
 }) => {
-  const [checked, setChecked] = useState(isChecked);
-
+  console.log(isChecked);
+  const checked = isChecked;
+  const handleContainerClick = (e) => {
+    e.stopPropagation();
+    handleStatusChange(!checked);
+  };
   const handleStatusChange = async (newChecked) => {
+    debugger;
     if (newChecked === checked) return; // Prevent duplicate API calls
-
     try {
       const newStatus = newChecked ? "COMPLETED" : "INPROGRESS";
       const response = await addTask({ status: newStatus }, taskId);
       if (response) {
-        setChecked(newChecked);
         reload(true);
       }
     } catch (error) {
@@ -32,13 +33,14 @@ const RenderTaskTitle = ({
   return (
     <div
       className={`group flex items-center gap-2 text-base font-bold capitalize transition-all duration-200 transform -translate-x-2 group-hover:translate-x-0 ${className}`}
+      onClick={handleContainerClick}
     >
       {/* Checkbox only appears on hover */}
       <div className="hidden group-hover:block transition-opacity duration-200">
         <Checkbox
           checked={checked}
           className=""
-          onCheckedChange={(e) => handleStatusChange(e)}
+          onCheckedChange={(e) => {}}
         />
       </div>
 

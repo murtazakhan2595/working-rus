@@ -151,9 +151,11 @@ const ListTasks = ({
                 dataTotalSize={AllBoardTasks?.count || 0}
                 tableOptions={tableOptions}
                 dataStyle={{ backgroundColor: "white" }}
-                renderExpandedContent={(row) => (
-                  <RenderTaskSubTasks subtaskIdList={row.sub_task} />
-                )}
+                renderExpandedContent={(row) => {
+                  if (row.sub_task.length)
+                    return <RenderTaskSubTasks subtaskIdList={row.sub_task} />;
+                  else return null;
+                }}
               />
             </CardContent>
           </Card>
@@ -198,8 +200,8 @@ const RenderTaskSubTasks = ({ subtaskIdList = [] }) => {
     },
   };
   const fetchSubTaskDetails = async (isMounted) => {
-    setIsLoading(true);
     if (subtaskIdList.length > 0) {
+      setIsLoading(true);
       try {
         const subtaskDetails = await getAllTasks({
           filterData: { id: subtaskIdList },
