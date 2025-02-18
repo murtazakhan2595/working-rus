@@ -8,7 +8,7 @@ import { Paperclip } from "lucide-react";
 
 import {
   TextInput,
-  SelectComponent,
+  SelectInputComponent,
   TextAreaInput,
 } from "components/FormControl";
 import { DateInput } from "components/FormControl";
@@ -211,7 +211,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                   <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                     <div className="text-zinc-950">Details</div>
                   </div>
-                  <SelectComponent
+                  <SelectInputComponent
                     name={"component_type"}
                     error={props.errors?.component_type}
                     touch={props.touched?.component_type}

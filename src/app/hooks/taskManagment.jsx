@@ -17,7 +17,7 @@ const formDataHeader = () => ({
   // Don't explicitly set 'Content-Type' for FormData
 });
 
-const getAllProjects = async (payload, userProfile) => {
+export const getAllProjects = async (payload, userProfile) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -32,25 +32,24 @@ const getAllProjects = async (payload, userProfile) => {
     });
     if (response.status === 200) {
       const data = response.data;
-      if (userProfile.role === 4 || userProfile.role === 2) {
-        const filteredResults = data?.results?.filter(
-          (project) =>
-            project.project_members.includes(userProfile.id) ||
-            project.created_by === userProfile.id
-        );
-
-        const ProjectsData = {
-          count: filteredResults.length,
-          results: filteredResults,
-        };
-        return ProjectsData;
-      } else {
-        const ProjectsData = {
-          count: data?.results?.length,
-          results: data?.results,
-        };
-        return ProjectsData;
-      }
+      const projects = await Promise.all(
+        data?.results &&
+          data?.results?.length &&
+          data?.results.map(async (project) => {
+            const profileResponse = await getAttachmentById(
+              project.profile_picture
+            );
+            return {
+              ...project,
+              profile_img: profileResponse?.attachment || null,
+            };
+          })
+      );
+      const ProjectsData = {
+        count: data?.count,
+        results: projects,
+      };
+      return ProjectsData;
     } else {
       return [];
     }
@@ -149,7 +148,6 @@ const getAllBoards = async (payload) => {
       headers: headers(),
     });
 
-
     if (response.status === 200) {
       let data = response.data?.results;
 
@@ -234,7 +232,17 @@ const addBoard = async (payload) => {
   }
 };
 const addProject = async (payload, projectID) => {
-  const formData = mapProjectPayloadData(payload);
+  const profilePictureResponse =
+    payload.profile_img instanceof File
+      ? await addAttachments(
+          { attachment: payload.profile_img },
+          payload.profile_picture
+        )
+      : null;
+  const formData = mapProjectPayloadData({
+    ...payload,
+    profile_picture: profilePictureResponse?.id || payload.profile_picture,
+  });
   try {
     if (projectID) {
       const response = await axios.patch(
@@ -723,7 +731,7 @@ const postComment = async (payload) => {
           headers: headers(),
         }
       );
-      return response
+      return response;
     } else {
       const response = await axios.post(`${baseUrl}/comments/`, payload, {
         headers: headers(),
@@ -740,7 +748,7 @@ const postComment = async (payload) => {
 };
 export const getAllTasks = async (payload) => {
   const filterData = payload?.filterData ?? {};
-  const ordering = payload?.ordering ?? '-start_date';
+  const ordering = payload?.ordering ?? "-start_date";
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const URL = `/task/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""}${
@@ -1083,7 +1091,7 @@ const deleteComment = async (commentId) => {
 };
 
 const updateBoardPosition = async (boardId, ordering) => {
-  console.log(boardId, ordering, "HELLO KASHIF")
+  console.log(boardId, ordering, "HELLO KASHIF");
   try {
     const response = await axios.patch(
       `${baseUrl}/board/${boardId}`,
@@ -1121,7 +1129,6 @@ export {
   getActivities,
   addSubtask,
   getSubtaskById,
-  getAllProjects,
   addProject,
   getAllBoards,
   getProjectById,

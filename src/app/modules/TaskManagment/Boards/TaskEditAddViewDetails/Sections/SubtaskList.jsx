@@ -51,7 +51,7 @@ const RenderSubTask = ({ taskId }) => {
       key={taskId}
       className="w-full max-w-full gap-4 flex items-center justify-between py-1 px-3 rounded-lg bg-white border border-gray-500 hover:border-primary hover:shadow-sm transition-all cursor-pointer"
     >
-      <div className="flex items-center space-x-3 w-fit">
+      <div className="flex items-center space-x-3 w-fit pl-3">
         <RenderTaskTitle
           title={subTaskDetails.name}
           taskId={subTaskDetails.id}
@@ -67,10 +67,10 @@ const RenderSubTask = ({ taskId }) => {
       </div>
 
       <div className="flex items-center space-x-3 justify-end">
-        <TaskEndDate
+        {/* <TaskEndDate
           dueDate={subTaskDetails.end_date}
           taskStatus={subTaskDetails.status}
-        />
+        /> */}
         <TaskStatusLabel status={subTaskDetails.status} />
         <MembersList members={subTaskDetails.assigned_to || []} />
         <ChevronRight
@@ -83,7 +83,6 @@ const RenderSubTask = ({ taskId }) => {
           taskId={viewSubtasks.id}
           isOpen={isAddSubtaskOpen}
           setIsOpen={(value) => {
-            debugger;
             setViewSubtasks(null);
             setIsAddSubtaskOpen(false);
           }}

@@ -73,70 +73,22 @@ const TaskEndDate = ({
   };
 
   return (
-    <>
-      <TooltipText
-        tooltipTriggerText={
-          <div
-            className={`${getBackgroundClass(
-              taskDateStatus,
-              taskCompleted
-            )} w-fit flex flex-row gap-1 rounded px-2 py-1 items-center`}
-          >
-            <TimeIcon color={getIconColor()} />
-            <div style={textStyle} className="select-none">
-              {renderDate(dueDate)}
-            </div>
+    <TooltipText
+      tooltipTriggerText={
+        <div
+          className={`${getBackgroundClass(
+            taskDateStatus,
+            taskCompleted
+          )} w-fit flex flex-row gap-1 rounded px-2 py-1 items-center text-xs`}
+        >
+          <TimeIcon color={getIconColor()} />
+          <div style={textStyle} className="select-none">
+            {renderDate(dueDate)}
           </div>
-        }
-        content={getTooltipMessage()}
-      />
-      {/* <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div
-              className={`flex items-center text-xs rounded px-1 py-1 ${getBackgroundClass(
-                task?.end_date
-              )} cursor-pointer`}
-              onMouseEnter={() => setShowCheckbox(true)}
-              onMouseLeave={() => setShowCheckbox(false)}
-              onClick={handleContainerClick}
-            >
-              <div className="relative w-5 h-5">
-                <div
-                  className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
-                    showCheckbox ? "opacity-100 z-10" : "opacity-0 z-0"
-                  }`}
-                >
-                  <Input
-                    type="checkbox"
-                    checked={isChecked}
-                    value={isChecked}
-                    className="w-4 h-4"
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      handleStatusChange(!isChecked);
-                    }}
-                  />
-                </div>
-                <div
-                  className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
-                    showCheckbox ? "opacity-0 z-0" : "opacity-100 z-10"
-                  }`}
-                >
-                  <TimeIcon color={getIconColor()} />
-                </div>
-              </div>
-              <div style={textStyle} className="select-none">
-                {moment(task?.end_date).format("MMMM DD")}
-              </div>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{getTooltipMessage()}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider> */}
-    </>
+        </div>
+      }
+      content={getTooltipMessage()}
+    />
   );
 };
 

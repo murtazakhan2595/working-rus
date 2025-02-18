@@ -4,7 +4,7 @@ import { Button } from "components/ui/button";
 import { Formik } from "formik";
 import {
   NumberInput,
-  SelectComponent,
+  SelectInputComponent,
   TextAreaInput,
 } from "components/FormControl";
 import { addLogTime, getDtr, addUpdateDTR } from "app/hooks/dtr";
@@ -157,7 +157,7 @@ const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
           {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
               <SheetCardExtension title="Task Details">
-                <SelectComponent
+                <SelectInputComponent
                   name={"task_id"}
                   error={props.errors?.task_id}
                   touch={props.touched?.task_id}
@@ -187,7 +187,7 @@ const SaveUpdateLogTime = ({ userProfile, reload, isOpen, setIsOpen }) => {
                     />
                   </div>
                   <div className="flex-1 space-y-2">
-                    <SelectComponent
+                    <SelectInputComponent
                       name={"status"}
                       error={props.errors?.status}
                       touch={props.touched?.status}

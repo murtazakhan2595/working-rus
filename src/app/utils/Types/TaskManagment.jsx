@@ -6,7 +6,8 @@ const Project = {
   end_date: moment(new Date()).format("YYYY-MM-DD"),
   project_members: [],
   color: "", // Add color field
-  profile: null,
+  profile_picture: null, // Store the primary key of Task Managment attachment
+  profile_img: null, // Stores the File Object/ URL of image
   joining_request: [],
   status: "on_going",
 };

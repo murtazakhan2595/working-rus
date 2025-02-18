@@ -5,7 +5,7 @@ import { SheetCardExtension } from "components/SheetCardExtension";
 import { Button } from "components/ui/button";
 import { Formik } from "formik";
 import React, { useState } from "react";
-import { SelectComponent } from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 import { shiftType } from "data/Data";
 import { toast } from "react-toastify";
 import moment from "moment";
@@ -112,7 +112,7 @@ const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
                 }}
               />
 
-              <SelectComponent
+              <SelectInputComponent
                 name={"type"}
                 options={shiftType}
                 error={props.errors.type}

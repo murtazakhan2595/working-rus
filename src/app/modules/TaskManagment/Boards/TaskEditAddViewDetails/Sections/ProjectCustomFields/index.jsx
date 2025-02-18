@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "src/@/components/ui/dialog.jsx";
 import { Button } from "components/ui/button";
-import { TextInput, SelectComponent } from "components/FormControl";
+import { TextInput, SelectInputComponent } from "components/FormControl";
 import AddProjectCustomFieldForm from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails/Sections/ProjectCustomFields/AddProjectCustomFieldForm";
 import { Trash, GripHorizontal, ArrowRight } from "lucide-react";
 import { getAllCustomFields } from "app/hooks/taskManagment";

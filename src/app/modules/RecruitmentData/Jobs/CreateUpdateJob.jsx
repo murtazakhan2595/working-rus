@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import {
   TextInput,
-  SelectComponent,
+  SelectInputComponent,
   DateInput,
   TextAreaInput,
 } from "components/FormControl";
@@ -123,7 +123,7 @@ const JobForm = forwardRef(
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                    <SelectComponent
+                    <SelectInputComponent
                       name="Job_Type"
                       options={jobTypeOptions}
                       error={props.errors.Job_Type}
@@ -135,7 +135,7 @@ const JobForm = forwardRef(
                         props.handleChange(field)(value);
                       }}
                     />
-                      <SelectComponent
+                      <SelectInputComponent
                         name="Work_type"
                         options={workTypeOptions}
                         error={props.errors.Work_type}
@@ -149,7 +149,7 @@ const JobForm = forwardRef(
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      <SelectComponent
+                      <SelectInputComponent
                         name="Employee_Type"
                         options={employeeTypeOptions}
                         error={props.errors.Employee_Type}
@@ -161,7 +161,7 @@ const JobForm = forwardRef(
                           props.handleChange(field)(value);
                         }}
                       />
-                      <SelectComponent
+                      <SelectInputComponent
                         name="Education"
                         options={educationTypeOptions}
                         error={props.errors.Education}
@@ -174,7 +174,7 @@ const JobForm = forwardRef(
                         }}
                       />
                     </div>
-                    <SelectComponent
+                    <SelectInputComponent
                       name="location"
                       options={countriesList}
                       error={props.errors.location}
@@ -195,7 +195,7 @@ const JobForm = forwardRef(
                       }}
                     />
 
-                    <SelectComponent
+                    <SelectInputComponent
                       name="currency"
                       options={currencies}
                       error={props.errors.currency}

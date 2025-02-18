@@ -11,7 +11,7 @@ import { Formik } from "formik";
 import { addProject, deleteProject } from "app/hooks/taskManagment";
 import {
   TextInput,
-  SelectComponent,
+  SelectInputComponent,
   SelectMultiInputComponent,
 } from "components/FormControl";
 import { Project } from "app/utils/Types/TaskManagment";
@@ -34,7 +34,7 @@ const ProjectForm = ({
   employees,
   reload = () => {},
   isEditMode,
-  projectId,
+  // projectId,
   isOpen = false,
   setIsOpen = () => {},
   editProject = Project,
@@ -47,22 +47,22 @@ const ProjectForm = ({
   const [isLoading, setIsLoading] = useState(false);
   const [openAlertDialogue, setOpenAlertDialogue] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
-  const [selectedMembers, setSelectedMembers] = useState(
-    initialValues.project_members || []
-  );
 
   const handleClose = () => {
     // setIsOpen(false)
     setCloseSheet(true);
   };
 
-  useEffect(() => {
-    let isMounted = true;
-    if (projectId && isEditMode) reload(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [projectId]);
+  // useEffect(async () => {
+  //   let isMounted = true;
+  //   if (projectId && isEditMode) {
+  //     const response = await getAttachmentById(isMounted);
+
+  //   }
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, [projectId]);
 
   const handleSubmit = async (payload) => {
     setIsLoading(true);
@@ -139,21 +139,21 @@ const ProjectForm = ({
                   validate={(values) => {
                     const errors = { ...validationProjectFormSchema(values) };
                     if (profilePictureError)
-                      errors.profile = profilePictureError;
+                      errors.profile_img = profilePictureError;
                     return errors;
                   }}
                 >
                   {(props) => (
                     <form onSubmit={props.handleSubmit}>
                       <div
-                        className={`flex w-full flex-col rounded-lg pt-2.5 gap-8`}
+                        className={`flex w-full flex-col rounded-lg pt-2.5 px-2 gap-8`}
                       >
                         <div className="space-y-2">
                           <ImageInput
-                            name={"profile"}
-                            error={props.errors.profile}
-                            touch={props.touched.profile}
-                            value={props.values.profile}
+                            name={"profile_img"}
+                            error={props.errors.profile_img}
+                            touch={props.touched.profile_img}
+                            value={props.values.profile_img}
                             required={true}
                             onChange={(field, value, error) => {
                               props.setFieldValue(field, value);
@@ -204,7 +204,7 @@ const ProjectForm = ({
                               props.handleChange(field)(value);
                             }}
                           />
-                          <SelectComponent
+                          <SelectInputComponent
                             name="status"
                             options={ProjectStatusList}
                             error={props.errors.status}
@@ -229,7 +229,9 @@ const ProjectForm = ({
                               error={props.errors.project_members}
                               touch={props.touched.project_members}
                               placeholder="Select Project Members"
-                              selectedOptionListClassName={"z-[2] mt-3 w-[80vw] max-w-[700px]"}
+                              selectedOptionListClassName={
+                                "z-[2] mt-3 w-[80vw] max-w-[700px]"
+                              }
                             />
                           </div>
                           <ColorInput
@@ -245,20 +247,22 @@ const ProjectForm = ({
                             variant="preset-custom"
                           />
                         </div>
-                        <div className="grid grid-cols-2 grid-cols-[100px_auto] gap-x-1 gap-y-1 text-sm">
-                          <div className="text-neutral-1100">Project Id:</div>
-                          <div className="text-plum-1100 font-semibold">
-                            <FormatID value={editProject.id} prefix={"PI-"} />
+                        {editProject.id && (
+                          <div className="grid grid-cols-2 grid-cols-[100px_auto] gap-x-1 gap-y-1 text-sm">
+                            <div className="text-neutral-1100">Project Id:</div>
+                            <div className="text-plum-1100 font-semibold">
+                              <FormatID value={editProject.id} prefix={"PI-"} />
+                            </div>
+                            <div className="text-neutral-1100">Created On:</div>
+                            <div className="text-plum-1100 font-semibold">
+                              {renderDate(editProject.created_at)}
+                            </div>
+                            <div className="text-neutral-1100">Created By:</div>
+                            <div className="text-plum-1100 font-semibold">
+                              <EmployeeName value={editProject.created_by} />
+                            </div>
                           </div>
-                          <div className="text-neutral-1100">Created On:</div>
-                          <div className="text-plum-1100 font-semibold">
-                            {renderDate(editProject.created_at)}
-                          </div>
-                          <div className="text-neutral-1100">Created By:</div>
-                          <div className="text-plum-1100 font-semibold">
-                            <EmployeeName value={editProject.created_by} />
-                          </div>
-                        </div>
+                        )}
                       </div>
 
                       <div className="p-6 pl-0 border-t border-gray-200 flex flex-row justify-between w-full">

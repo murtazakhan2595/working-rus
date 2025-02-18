@@ -88,6 +88,16 @@ function EmployeeName({ value, length }) {
 
   return <>{displayedName}</>;
 }
+
+export function EmployeeNameList(employeeIdList) {
+  const employees = useSelector((state) => state.emp.employees);
+  const employeesNameList = employees
+    .filter((employee) => employeeIdList.includes(employee.value))
+    .map((employee) => employee.name);
+
+  return employeesNameList;
+}
+
 function GetUser(id) {
   const employees = useSelector((state) => state.emp.employees_detail);
   const employee = employees.find((option) => option.value === parseInt(id));

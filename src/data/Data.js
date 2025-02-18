@@ -317,6 +317,7 @@ export const PriorityList = [
         <ArrowDown size={16} /> Low
       </div>
     ),
+    name:"Low",
   },
   {
     value: 2,
@@ -325,6 +326,7 @@ export const PriorityList = [
         <ArrowRight size={16} /> Medium
       </div>
     ),
+    name:"Medium"
   },
   {
     value: 1,
@@ -333,22 +335,30 @@ export const PriorityList = [
         <ArrowUp size={16} /> High
       </div>
     ),
+    name:"High"
   },
 ];
 
 export const TaskStatus = [
-  { value: "TODO", label: <span style={{ color: "#FBBF24" }}>Todo</span> },
+  {
+    value: "TODO",
+    label: <span style={{ color: "#FBBF24" }}>Todo</span>,
+    status: "Todo",
+  },
   {
     value: "INPROGRESS",
     label: <span style={{ color: "#2e86c1" }}>In Progress</span>,
+    status: "In Progress",
   },
   {
     value: "COMPLETED",
     label: <span style={{ color: "#12B76A" }}>Completed</span>,
+    status: "Completed",
   },
   {
     value: "Onhold",
     label: <span style={{ color: "#B00D1B" }}>On Hold</span>,
+    status: "On Hold",
   },
 ];
 export const PriorityListIcons = [

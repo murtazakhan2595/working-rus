@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { getAllBoards, deleteBoard, moveTask, updateBoardPosition } from "app/hooks/taskManagment";
+import { moveTask, updateBoardPosition } from "app/hooks/taskManagment";
 import { RxPlus } from "react-icons/rx";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import { ScrollArea, ScrollBar } from "src/@/components/ui/scroll-area";
@@ -150,15 +150,6 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
   const [tasks, setTasks] = useState([]);
   const [ordering, setOrdering] = useState("-start_date");
 
-  const updateTaskLocally = (taskId, updatedData) => {
-    setTasks((prevTasks) => ({
-      ...prevTasks,
-      results: prevTasks.results.map((task) =>
-        task.id === taskId ? { ...task, ...updatedData } : task
-      ),
-    }));
-  };
-
   const fetchData = async (isMounted) => {
     try {
       const taskData = await getAllTasks({ ordering, filterData });
@@ -237,11 +228,8 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
                 tasks?.results.map((task) => (
                   <TaskCard
                     task={task}
-                    projectId={projectId}
-                    boardId={board.id}
                     reloadData={() => fetchData(true)}
                     onDragStart={handleDragStart}
-                    onUpdate={updateTaskLocally}
                   />
                 ))}
             </div>

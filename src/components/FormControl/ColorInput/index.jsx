@@ -6,7 +6,12 @@ import { errorClassName } from "components/FormControl";
 import { CircleX } from "lucide-react";
 import PresetCustom from "./PresetCustom";
 import { DEFAULT_LIST_COLOR_OPTIONS } from "app/utils/Types/TaskManagment";
-
+import {
+  FormField,
+  FormPopoverButton,
+  FormPlaceholder,
+  FormFieldIcon,
+} from "components/FormControl";
 /**
  * ColorPicker Component
  *
@@ -18,7 +23,7 @@ import { DEFAULT_LIST_COLOR_OPTIONS } from "app/utils/Types/TaskManagment";
  * @param {string} props.name - Unique name for the input field
  * @param {boolean} props.required - Whether the field is required
  * @param {string} props.error - Validation error message
- * @param {boolean} props.touched - Indicates if the field has been touched
+ * @param {boolean} props.touch - Indicates if the field has been touched
  * @param {string} props.selectedColor - Currently selected color value
  * @param {Function} props.onChange - Callback function for color selection
  * @param {"palette" | "dropdown" | "text-input" | "preset-custom"} props.variant - UI variant of the color picker
@@ -30,11 +35,12 @@ const ColorPicker = React.memo(
     name = null,
     required = false,
     error = null,
-    touched = false,
+    touch = false,
     selectedColor = "",
     onChange = () => {},
     variant = "palette", // Available variants: "palette", "dropdown", "text-input"
     allowCustomInput = false,
+    className = "w-full", // Custom styling
   }) => {
     /**
      * Memoized color options list, allowing dynamic updates when custom colors are added.
@@ -58,14 +64,14 @@ const ColorPicker = React.memo(
      * Renders different UI variants for the color picker.
      */
     return (
-      <div className="flex flex-col gap-4">
-        {/* Label */}
-        {label && (
-          <Label htmlFor={name}>
-            {required && <span className="text-red-600">*</span>} {label}
-          </Label>
-        )}
-
+      <FormField
+        name={name}
+        label={label}
+        required={required}
+        error={error}
+        touched={touch}
+        className={className}
+      >
         {/* Color Picker UI Variants */}
         <div className="space-y-4">
           {/* Color Palette (Grid Selection) */}
@@ -133,7 +139,7 @@ const ColorPicker = React.memo(
               autoComplete="off"
               placeholder="Enter Custom Color (#RRGGBB)"
               value={selectedColor}
-              className={error && touched ? "is-invalid" : "text-neutral-1000"}
+              className={error && touch ? "is-invalid" : "text-neutral-1000"}
               onChange={(e) => {
                 const value = e.target.value;
                 onChange(name, value);
@@ -141,10 +147,7 @@ const ColorPicker = React.memo(
             />
           )}
         </div>
-
-        {/* Error Message */}
-        {error && touched && <div className={errorClassName}>{error}</div>}
-      </div>
+      </FormField>
     );
   }
 );

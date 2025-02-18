@@ -56,7 +56,7 @@ function Login() {
       return;
     }
 
-    setIsLoading(true); // Set loading state to true
+    setIsLoading(true);
 
     try {
       const response = await axios.post(`${baseUrl}/token/`, {
@@ -67,7 +67,7 @@ function Login() {
       if (response.status === 200) {
         const token = response.data.access;
 
-        // Save the token in cookies
+        // Save the token in localStorage
         window.localStorage.setItem("token", token);
 
         // Fetch user profile with the obtained token
@@ -97,9 +97,12 @@ function Login() {
           });
 
           if (userProfileResponse.data.is_filled) {
+            // Perform hard refresh after setting the destination
             navigate("/");
+            window.location.reload();
           } else {
             navigate("/create-profile");
+            window.location.reload();
           }
           return;
         }
@@ -114,7 +117,7 @@ function Login() {
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
-      setIsLoading(false); // Reset loading state
+      setIsLoading(false);
     }
   };
 

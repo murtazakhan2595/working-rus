@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Formik, Form } from "formik";
 import {
   TextInput,
-  SelectComponent,
+  SelectInputComponent,
   DateInput,
   errorClassName,
 } from "components/FormControl";
@@ -284,7 +284,7 @@ const CreateAndEditCardForm = ({
                     className={`flex w-full gap-6 flex-col rounded-lg pt-2.5`}
                   >
                     <div className="flex justify-between">
-                      <SelectComponent
+                      <SelectInputComponent
                         name="project_id"
                         options={Projects}
                         error={props.errors.project_id}
@@ -298,7 +298,7 @@ const CreateAndEditCardForm = ({
                           fetchBoardListByProjectId(true, value);
                         }}
                       />
-                      <SelectComponent
+                      <SelectInputComponent
                         name="board_id"
                         options={BoardList}
                         showLabel={false}
@@ -410,7 +410,7 @@ const CreateAndEditCardForm = ({
                       <TaskInputDetails
                         title={"Priority"}
                         content={
-                          <SelectComponent
+                          <SelectInputComponent
                             name="priority"
                             options={PriorityList}
                             showLabel={false}
@@ -426,7 +426,7 @@ const CreateAndEditCardForm = ({
                       <TaskInputDetails
                         title={"Status"}
                         content={
-                          <SelectComponent
+                          <SelectInputComponent
                             name="status"
                             options={TaskStatus}
                             showLabel={false}

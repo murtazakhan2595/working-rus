@@ -6,7 +6,7 @@ import { Button } from "components/ui/button";
 import { TextInput } from "components/FormControl";
 
 import { DateInput } from "components/FormControl";
-import { SelectComponent } from "components/FormControl";
+import { SelectInputComponent } from "components/FormControl";
 import { terminationReasonsOptions } from "data/Data";
 import { getEmployeeData } from "app/hooks/employee";
 
@@ -178,7 +178,7 @@ const RequestTerminationForm = ({
                           className="grid w-full gap-4 sm:grid-cols-1 lg:grid-cols-2"
                         >
                           <div className="space-y-2">
-                            <SelectComponent
+                            <SelectInputComponent
                               name={"terminate_employee"}
                               options={filterEmployees}
                               error={props.errors.terminate_employee}
@@ -230,7 +230,7 @@ const RequestTerminationForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                        <SelectComponent
+                        <SelectInputComponent
                           name={"notice_period"}
                           options={NoticePeriod}
                           error={props.errors.notice_period}
@@ -253,7 +253,7 @@ const RequestTerminationForm = ({
                             props.setFieldValue(field, value);
                           }}
                         />
-                        <SelectComponent
+                        <SelectInputComponent
                           name={"reason_for_terminating"}
                           options={terminationReasonsOptions}
                           error={props.errors.reason_for_terminating}
