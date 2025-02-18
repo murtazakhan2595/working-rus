@@ -41,7 +41,7 @@ const Task = {
   name: null,
   priority: null,
   project_id: null,
-  relation: [],
+  relation_ship: [],
   start_date: null,
   task_checklist: [],
   status: "TODO",

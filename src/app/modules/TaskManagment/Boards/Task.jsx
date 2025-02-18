@@ -265,10 +265,10 @@ const TaskDetails = ({
             tooltipTriggerText={
               <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
                 <ExternalLink size={16} />
-                <div>{task?.relation?.length || 0}</div>
+                <div>{task?.relation_ship?.length || 0}</div>
               </div>
             }
-            content={`${task?.relation?.length || 0} Task Related`}
+            content={`${task?.relation_ship?.length || 0} Task Related`}
           />
         </div>
       </CardFooter>

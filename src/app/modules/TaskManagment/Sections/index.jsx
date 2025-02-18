@@ -14,6 +14,7 @@ import {
 import TaskEndDate from "./TaskEndDate";
 import TaskStatusLabel from "./TaskStatus";
 import RenderTaskTitle from "./RenderTaskTitle";
+import TaskRelationTab from './TaskRelationTab';
 export {
   Members,
   MembersList,
@@ -29,4 +30,5 @@ export {
   TaskEndDate,
   RenderTaskTitle,
   TaskStatusLabel,
+  TaskRelationTab,
 };
