@@ -25,7 +25,7 @@ const Header = ({ content, userProfile }) => {
       profile: "Profile",
       "profile-management": "Profile Management",
       "exit-clearance": "Exit Requests",
-      payroll: "Employees Payrolls",
+      payroll: "Employees Payrolls Testing",
       "pay-run": "Pay Run",
       "salary-setup": "Salary Setup",
       "exit-employee": "Employee Offboarding",
