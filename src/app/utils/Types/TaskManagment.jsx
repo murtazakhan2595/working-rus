@@ -48,6 +48,7 @@ const Task = {
   is_archive: false,
   custom_fields: [],
   cover_photo: null,
+  actual_time:null,
 };
 const AddList = {
   name: "",

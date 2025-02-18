@@ -70,6 +70,7 @@ export function getLabelDropdownList(list, label = "name", value = "id") {
             background: lightenColor(obj?.color, 85),
             color: obj.color,
           }}
+          size="sm"
         >
           {obj[label]}
         </Badge>

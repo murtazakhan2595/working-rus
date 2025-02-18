@@ -30,6 +30,7 @@ export const TaskLabelBadge = React.memo(({ label }) => {
         background: lightenColor(label?.color, 85),
         color: label.color,
       }}
+      size="sm"
     >
       {label?.name}
     </Badge>

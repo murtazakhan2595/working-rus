@@ -4,7 +4,7 @@ import { cva } from "class-variance-authority";
 import { cn } from "../../src/@/lib/utils.js";
 
 const badgeVariants = cva(
-  "inline-flex items-center w-fit text-nowrap rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 dark:border-slate-800 dark:focus:ring-slate-300",
+  "inline-flex items-center w-fit h-fit text-nowrap rounded-full border border-slate-200 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 dark:border-slate-800 dark:focus:ring-slate-300",
   {
     variants: {
       variant: {
@@ -27,18 +27,25 @@ const badgeVariants = cva(
         "dot-emerald": "bg-white border-neutral-300 flex items-center gap-2",
         "dot-neutral": "bg-white border-neutral-300 flex items-center gap-2",
       },
+      size: {
+        default: "text-sm px-4 py-2",
+        sm: "text-xs px-2 py-1",
+        lg: "h-11 text-sm px-8",
+        xl: "h-12 text-sm px-9",
+      },
     },
     defaultVariants: {
       variant: "default",
+      size: "default",
     },
   }
 );
 
-function Badge({ key, className, variant, dot, ...props }) {
+function Badge({ key, size, className, variant, dot, ...props }) {
   return (
     <div
       key={key}
-      className={cn(badgeVariants({ variant }), className)}
+      className={cn(badgeVariants({ variant, size }), className)}
       {...props}
     >
       {dot && <span className={`w-3 h-3 rounded-full ${dot}`} />}

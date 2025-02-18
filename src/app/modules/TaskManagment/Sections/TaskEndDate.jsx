@@ -3,6 +3,7 @@ import TimeIcon from "assets/images/timeIcon";
 import moment from "moment";
 import { TooltipText } from "components";
 import { renderDate } from "utils/renderValues";
+import { Badge } from "components/ui/badge";
 
 export const getTaskDateStatus = (date) => {
   const currentDate = moment(new Date()).format("YYYY-MM-DD");
@@ -75,17 +76,18 @@ const TaskEndDate = ({
   return (
     <TooltipText
       tooltipTriggerText={
-        <div
+        <Badge
           className={`${getBackgroundClass(
             taskDateStatus,
             taskCompleted
-          )} w-fit flex flex-row gap-1 rounded px-2 py-1 items-center text-xs`}
+          )} w-fit flex flex-row gap-1 rounded`}
+          size="sm"
         >
           <TimeIcon color={getIconColor()} />
           <div style={textStyle} className="select-none">
             {renderDate(dueDate)}
           </div>
-        </div>
+        </Badge>
       }
       content={getTooltipMessage()}
     />

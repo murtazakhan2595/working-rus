@@ -30,7 +30,7 @@ const RenderTaskTitle = ({
   };
 
   return (
-    <div className={`text-base font-bold capitalize ${className}`}>
+    <div className={`w-fit text-base font-bold capitalize ${className}`}>
       <div
         className={`group flex items-center transition-all duration-200 transform -translate-x-2 group-hover:translate-x-0`}
         onClick={handleContainerClick}

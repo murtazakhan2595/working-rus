@@ -58,19 +58,15 @@ const RenderSubTask = ({ taskId }) => {
           isChecked={subTaskDetails.status?.toUpperCase() === "COMPLETED"}
           className="text-sm font-medium text-neutral-1100"
           reload={fetchTaskData}
-          onClick={(e) => {
-            e.preventDefault();
-            setViewSubtasks(subTaskDetails);
-            setIsAddSubtaskOpen(true);
-          }}
+          // onClick={(e) => {
+          //   e.preventDefault();
+          //   setViewSubtasks(subTaskDetails);
+          //   setIsAddSubtaskOpen(true);
+          // }}
         />
       </div>
 
       <div className="flex items-center space-x-3 justify-end">
-        {/* <TaskEndDate
-          dueDate={subTaskDetails.end_date}
-          taskStatus={subTaskDetails.status}
-        /> */}
         <TaskStatusLabel status={subTaskDetails.status} />
         <MembersList members={subTaskDetails.assigned_to || []} />
         <ChevronRight
