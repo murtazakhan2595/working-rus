@@ -3,7 +3,10 @@ import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { PageLoader, TableCustom } from "components";
 import { getTaskByprojectId, getAllTasks } from "app/hooks/taskManagment";
-import { ProjectBoardColumn } from "app/modules/TaskManagment/Sections";
+import {
+  ProjectBoardColumn,
+  ProjectBoardSubtaskColumn,
+} from "app/modules/TaskManagment/Sections";
 import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { RxPlus } from "react-icons/rx";
@@ -63,7 +66,6 @@ const ListTasks = ({
   isEditMode = true,
   accordionItemValue,
 }) => {
-  console.log(accordionItemValue, "accordionItemValue");
   const [AllBoardTasks, setAllBoardTasks] = useState({ results: [], count: 0 });
   const [viewTask, setViewTask] = useState(null);
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
@@ -149,7 +151,9 @@ const ListTasks = ({
                 dataTotalSize={AllBoardTasks?.count || 0}
                 tableOptions={tableOptions}
                 dataStyle={{ backgroundColor: "white" }}
-                renderExpandedContent={renderTaskSubTasks}
+                renderExpandedContent={(row) => (
+                  <RenderTaskSubTasks subtaskIdList={row.sub_task} />
+                )}
               />
             </CardContent>
           </Card>
@@ -174,17 +178,87 @@ const ListTasks = ({
   );
 };
 
-const renderTaskSubTasks = (row) => {
-  console.log(row, "subTasksDetails");
+const RenderTaskSubTasks = ({ subtaskIdList = [] }) => {
+  const [subTasksDetails, setSubTasksDetails] = useState({
+    results: [],
+    count: 0,
+  });
+  const [viewSubTask, setViewSubTask] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubTaskDetailOpen, setIsSubTaskDetailOpen] = useState(false);
+  const [ordering, setOrdering] = useState("-start_date");
+
+  const tableOptions = {
+    onRowClick: (row) => {
+      setIsSubTaskDetailOpen(true);
+      setViewSubTask(row);
+    },
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
+  };
+  const fetchSubTaskDetails = async (isMounted) => {
+    setIsLoading(true);
+    if (subtaskIdList.length > 0) {
+      try {
+        const subtaskDetails = await getAllTasks({
+          filterData: { id: subtaskIdList },
+          ordering: ordering,
+        });
+
+        if (isMounted) {
+          setSubTasksDetails(subtaskDetails);
+        }
+      } catch (error) {
+        console.error("Error fetching subtasks:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchSubTaskDetails(isMounted);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [subtaskIdList, ordering]);
+
   return (
-    <div>
-      <div className="font-semibold text-sm mb-3 ml-1">Subtasks</div>
-      <SubtaskList
-        items={row.sub_task || []}
-        projectId={row.project_id}
-        taskId={row.id}
-        boardId={row.board_id}
-      />
+    <div className="pl-8">
+      {isLoading ? (
+        <PageLoader />
+      ) : (
+        <TableCustom
+          columns={ProjectBoardSubtaskColumn}
+          data={subTasksDetails.results || []}
+          pagination={false}
+          dataTotalSize={subTasksDetails?.count || 0}
+          tableOptions={tableOptions}
+          dataStyle={{
+            paddingTop: "5px",
+            paddingBottom: "5px",
+            backgroundColor: "",
+          }}
+          showHeader={false}
+        />
+      )}
+      {isSubTaskDetailOpen && (
+        <TaskEditAddViewDetails
+          taskId={viewSubTask?.id}
+          isOpen={isSubTaskDetailOpen}
+          projectId={viewSubTask?.project_id}
+          boardId={viewSubTask?.board_id}
+          setIsOpen={() => {
+            setIsSubTaskDetailOpen(false);
+            setViewSubTask(null);
+          }}
+          reloadData={() => fetchSubTaskDetails()}
+        />
+      )}
     </div>
   );
 };

@@ -139,8 +139,15 @@ export default function TableCustom({
                       column.dataSort ? "cursor-pointer" : ""
                     }`}
                     style={{
-                      ...(column.width ? { width: column.width } : {}),
+                      ...(column.width
+                        ? {
+                            width: column.width,
+                            minWidth: column.width,
+                            maxWidth: column.width,
+                          }
+                        : {}),
                       ...(column.minWidth ? { minWidth: column.minWidth } : {}),
+                      ...(column.headerStyle ? column.headerStyle : {}),
                       ...(column.headerAlign
                         ? { textAlign: column.headerAlign }
                         : {}),
@@ -173,12 +180,10 @@ export default function TableCustom({
                           : tableOptions?.onRowClick?.(row));
                     }}
                     className={`${
-                      expandedRowId === row.id && renderExpandedContent
-                        ? "border-none"
-                        : ""
-                    } ${tableOptions?.onRowClick ? "cursor-pointer" : ""} ${
-                      selectedRows?.includes(row.id) ? "bg-[#fdf7fd]" : ""
-                    } ${disabledRows?.includes(row.id) ? "opacity-50" : ""}`}
+                      tableOptions?.onRowClick ? "cursor-pointer" : ""
+                    } ${selectedRows?.includes(row.id) ? "bg-[#fdf7fd]" : ""} ${
+                      disabledRows?.includes(row.id) ? "opacity-50" : ""
+                    }`}
                   >
                     {/* Select Row Checkbox */}
                     {selectable && (
@@ -202,13 +207,20 @@ export default function TableCustom({
                               : ""
                           }`}
                           style={{
-                            ...(column.width ? { width: column.width } : {}),
+                            ...(column.width
+                              ? {
+                                  width: column.width,
+                                  minWidth: column.width,
+                                  maxWidth: column.width,
+                                }
+                              : {}),
                             ...(column.minWidth
                               ? { minWidth: column.minWidth }
                               : {}),
                             ...(column.dataAlign
                               ? { textAlign: column.dataAlign }
                               : {}),
+                            ...(column.dataStyle ? column.dataStyle : {}),
                             ...dataStyle,
                           }}
                           onClick={(e) => {
@@ -224,7 +236,8 @@ export default function TableCustom({
                                 row[column.dataField],
                                 row,
                                 data,
-                                index
+                                index,
+                                expandedRowId === row.id
                               )
                             : row[column.dataField]}
                         </TableCell>
@@ -232,15 +245,19 @@ export default function TableCustom({
                   </TableRow>
                   {/* Expanded Row Content */}
                   {expandedRowId === row.id && renderExpandedContent && (
-                    <TableRow className={`transition-all duration-500 ease-in-out transform ${
-                      expandedRowId === row.id ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0"
-                    }`}
-                    style={{
-                      transformOrigin: "top",
-                    }}>
+                    <TableRow
+                      className={`transition-all duration-500 ease-in-out transform ${
+                        expandedRowId === row.id
+                          ? "scale-y-100 opacity-100"
+                          : "scale-y-0 opacity-0"
+                      }`}
+                      style={{
+                        transformOrigin: "top",
+                      }}
+                    >
                       <TableCell
                         colSpan={columns.length}
-                        className="text-neutral-1200 pt-0"
+                        className="text-neutral-1200 p-0"
                       >
                         {renderExpandedContent(row)}
                       </TableCell>
