@@ -88,7 +88,7 @@ const InputTaskDetailFields = React.memo(
             }}
           />
         </div>
-        {!isSubtask && (
+        {/* {!isSubtask && (
           <TaskRelation
             relationsList={taskData.relation || []}
             onChange={(value) => {
@@ -100,7 +100,7 @@ const InputTaskDetailFields = React.memo(
             error={errors.relation}
             touch={touched.relation}
           />
-        )}
+        )} */}
           <SelectComponent
             name="status"
             options={TaskStatus}

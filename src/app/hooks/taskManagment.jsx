@@ -1100,7 +1100,23 @@ const updateBoardPosition = async (boardId, ordering) => {
   }
 };
 
+const addRelationship = async (payload) => {
+  try {
+    const response = await axios.post(`${baseUrl}/relationship/`, payload, {
+      headers: headers(),
+    });
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error adding relationship:", error);
+    return false;
+  }
+}
+
 export {
+  addRelationship,
   createActivity,
   getActivities,
   addSubtask,
