@@ -263,12 +263,12 @@ export const RenderTaskSubTasks = ({
   }, [subtaskIdList, ordering]);
 
   return (
-    <div className={`${showAsSubDetail ? "pl-8" : ""}`}>
+    <div className={`${showAsSubDetail ? "pl-8 py-3" : ""}`}>
       {isLoading ? (
         <PageLoader />
       ) : (
         <TableCustom
-          columns={TaskColumns(fetchSubTaskDetails)}
+          columns={TaskColumns}
           data={subTasksDetails.results || []}
           pagination={false}
           dataTotalSize={subTasksDetails?.count || 0}

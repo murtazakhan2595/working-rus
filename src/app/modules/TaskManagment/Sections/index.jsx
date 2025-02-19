@@ -10,7 +10,6 @@ import TaskDetailBox from "./TaskDetailsBox";
 import {
   ProjectBoardColumn,
   ProjectBoardSubtaskColumn,
-  SubtaskColumn,
 } from "./TaskManagementTableColumns";
 import TaskEndDate from "./TaskEndDate";
 import TaskStatusLabel from "./TaskStatus";
@@ -29,7 +28,6 @@ export {
   TaskDetailBox,
   ProjectBoardColumn,
   ProjectBoardSubtaskColumn,
-  SubtaskColumn,
   TaskEndDate,
   RenderTaskTitle,
   TaskStatusLabel,

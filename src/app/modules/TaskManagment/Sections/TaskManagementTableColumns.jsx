@@ -1,13 +1,12 @@
 import { PriorityList, ProjectStatusList } from "data/Data";
-import { TextUI, TooltipText } from "components";
+import { TooltipText } from "components";
 import {
   MembersList,
   TaskEndDate,
   TaskStatusLabel,
-  RenderTaskTitle,
 } from "app/modules/TaskManagment/Sections";
 import { Button } from "components/ui/button";
-import { ListChecks, ChevronDown, RotateCcw, ChevronRight } from "lucide-react";
+import { ListChecks, ChevronDown, ChevronRight } from "lucide-react";
 
 export const ProjectColumn = [
   {
@@ -191,30 +190,3 @@ export const ProjectBoardSubtaskColumn = [
   },
 ];
 
-export const SubtaskColumn = (reloadData)=>[
-  {
-    text: "Tasks",
-    dataField: "name",
-    dataSort: true,
-    formatter: (cell, row) => (
-      <div className="inline-flex justify-start">
-        <RenderTaskTitle
-          title={cell}
-          taskId={row.id}
-          isChecked={row.status?.toUpperCase() === "COMPLETED"}
-          className="text-sm font-medium text-neutral-1100"
-          reload={reloadData}
-        />
-        <TaskStatusLabel status={row.status} />
-      </div>
-    ),
-  },
-  {
-    text: "Members",
-    dataField: "assigned_to",
-    width: "fit-content",
-    formatter: (cell) => <MembersList members={cell} />,
-    dataStyle: { display: "flex", justifyContent: "end" },
-    headerAlign: "right",
-  },
-];
