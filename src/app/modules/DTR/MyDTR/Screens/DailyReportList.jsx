@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import CustomTable from "components/CustomTable";
-import CreateCard from "app/modules/TaskManagment/Boards/CreateCardModal";
+import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import { Badge } from "components/ui/badge";
 import {
   handleCloseWithConfirmation,
@@ -276,7 +276,7 @@ const DTRDetailsBox = ({
         )}
       </div>
       {openCreateCard && (
-        <CreateCard
+        <TaskEditAddViewDetails
           onClose={() => {
             setOpenCreateCard(false);
           }}

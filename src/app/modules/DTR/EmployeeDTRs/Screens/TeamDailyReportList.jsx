@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import CustomTable from "components/CustomTable";
-import CreateCard from "app/modules/TaskManagment/Boards/CreateCardModal";
 import { Badge } from "components/ui/badge";
 import {
   handleCloseWithConfirmation,

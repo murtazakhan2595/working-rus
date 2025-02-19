@@ -4,7 +4,7 @@ import { Button } from "components/ui/button";
 import { PageLoader, TableCustom, TextUI } from "components";
 import { getTaskById, addTask, getAllTasks } from "app/hooks/taskManagment";
 import { toast } from "react-toastify";
-import TaskEditAddViewDetails from "../Boards/TaskEditAddViewDetails";
+import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import { calculateTotalCount, calculatePercentage } from "utils/renderValues";
 import { Checkbox } from "src/@/components/ui/checkbox";
 import { TaskStatus } from "data/Data";
