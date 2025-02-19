@@ -182,11 +182,18 @@ const WebSocketNotifications = () => {
   };
 
   const handleNotificationClick = (notification) => {
+    console.log(notification, "NOTIFICATION IS DONE")
     if (!notification.isRead) {
       markRead(notification.id);
     }
 
-    if (notification.project_id && notification.task_id) {
+    if(notification?.type === "PROJECT"){
+      navigate(
+        `/project-board/${notification.project_id}`
+      );
+    }
+
+    if (notification.type === "MENTION" || notification.type === "TASK") {
       navigate(
         `/project-board/${notification.project_id}/${notification.task_id}`
       );
