@@ -6,6 +6,7 @@ import { Project } from "app/utils/Types/TaskManagment";
 import { mapProjectPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
 import { convertStringsArrayToJsonArray } from "utils/Lists";
 import { getFileNameFromURL } from "utils/downUtils";
+import { trackTaskActivities } from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails/Sections/activityHelper";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -139,7 +140,7 @@ const getAllBoards = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/board/?order=-id&${pageNo ? `page=${pageNo}&` : ""}${
+  const URL = `/board/?ordering=-ordering&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
 
@@ -269,34 +270,38 @@ const addProject = async (payload, projectID) => {
     return false;
   }
 };
-const addTask = async (payload, id) => {
+const addTask = async (payload, id, userId, initialValues) => {
   const taskId = payload.id || id;
+  const url = taskId ? `${baseUrl}/task/${taskId}/` : `${baseUrl}/task/`;
+  const method = taskId ? "patch" : "post";
+
   try {
-    if (taskId) {
-      const response = await axios.patch(
-        `${baseUrl}/task/${taskId}/`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
-      if (response.status === 200 || response.status === 201) return response;
-      else return false;
-    } else {
-      const response = await axios.post(`${baseUrl}/task/`, payload, {
-        headers: headers(),
-      });
-      if (response.status === 201) return response;
-      else return false;
+    const response = await axios[method](url, payload, { headers: headers() });
+
+    if ([200, 201].includes(response.status)) {
+      if (userId) {
+        await trackTaskActivities(
+          response.data,
+          taskId ? initialValues : null,
+          taskId || response?.data.id,
+          userId,
+          createActivity,
+          Object.keys(payload) // Pass only keys from payload
+        );
+      }
+      return response.data; // Return only data instead of full response
     }
+
+    return false;
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    console.error("Error adding task:", error);
+    console.error(`Error ${taskId ? "updating" : "creating"} task:`, error);
     return false;
   }
 };
+
 const moveTask = async (payload) => {
   try {
     if (payload?.id) {
@@ -1121,7 +1126,7 @@ const addRelationship = async (payload) => {
     console.error("Error adding relationship:", error);
     return false;
   }
-}
+};
 
 export {
   addRelationship,

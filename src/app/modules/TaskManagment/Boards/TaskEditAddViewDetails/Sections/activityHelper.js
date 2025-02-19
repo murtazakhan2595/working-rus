@@ -2,7 +2,7 @@
 
 import moment from "moment";
 import { TaskStatus, PriorityList } from "data/Data";
-import { EmployeeNameList,GetUser } from "utils/getValuesFromTables";
+import ReactDOMServer from "react-dom/server";
 
 export const ActivityTypes = {
   TASK_CREATED: "TASK_CREATED",
@@ -21,20 +21,25 @@ export const ActivityTypes = {
   ATTACHMENT_ADDED: "ATTACHMENT_ADDED",
   ATTACHMENT_REMOVED: "ATTACHMENT_REMOVED",
   TASK_ARCHIVED: "TASK_ARCHIVED",
+  TASK_ARCHIVED_REMOVED: "TASK_ARCHIVED_REMOVED",
   TASK_DELETED: "TASK_DELETED",
   SUBTASK_CREATED: "SUBTASK_CREATED",
   SUBTASK_COMPLETED: "SUBTASK_COMPLETED",
   RELATION_ADDED: "RELATION_ADDED",
   RELATION_REMOVED: "RELATION_REMOVED",
   ESTIMATED_TIME_CHANGED: "ESTIMATED_TIME_CHANGED",
+  CHANGED_LIST: "CHANGED_LIST",
 };
 
-const generateActivityContent = (
-  type,
-  newValue,
-  oldValue = null,
-  additionalInfo = {}
-) => {
+const getRenderedValue = (value) => {
+  return ReactDOMServer.renderToStaticMarkup(
+    <span className="text-plum-1100 font-medium">{value}</span>
+  );
+};
+
+const generateActivityContent = (type, newValueHTML, oldValueHTML = null) => {
+  const newValue = newValueHTML || null;
+  const oldValue = oldValueHTML || null;
   switch (type) {
     case ActivityTypes.TASK_CREATED:
       return "Created the task";
@@ -46,35 +51,36 @@ const generateActivityContent = (
       return "Updated task description";
 
     case ActivityTypes.STATUS_CHANGED:
-      return `Changed status from "${oldValue}" to "${newValue}"`;
-
+      return `Changed status from ${ReactDOMServer.renderToStaticMarkup(oldValue)} to ${ReactDOMServer.renderToStaticMarkup(newValue)}`;
     case ActivityTypes.PRIORITY_CHANGED:
-      return `Changed priority from "${oldValue}" to "${newValue}"`;
+      return `Changed priority from ${ReactDOMServer.renderToStaticMarkup(oldValue)} to ${ReactDOMServer.renderToStaticMarkup(newValue)}`;
 
     case ActivityTypes.DUE_DATE_CHANGED:
       return oldValue
-        ? `Updated due date from ${oldValue} to ${newValue}`
-        : `Set due date to ${newValue}`;
+        ? `Updated due date from ${getRenderedValue(
+            oldValue
+          )} to ${getRenderedValue(newValue)}`
+        : `Set due date to ${getRenderedValue(newValue)}`;
 
     case ActivityTypes.MEMBERS_ADDED:
       const addedMembers = Array.isArray(newValue)
         ? newValue.join(", ")
         : newValue;
-      return `Added ${addedMembers} to the task`;
+      return `Added ${getRenderedValue(addedMembers)} to the task`;
 
     case ActivityTypes.MEMBERS_REMOVED:
       const removedMembers = Array.isArray(newValue)
         ? newValue.join(", ")
         : newValue;
-      return `Removed ${removedMembers} from the task`;
+      return `Removed ${getRenderedValue(removedMembers)} from the task`;
 
     case ActivityTypes.LABELS_ADDED:
-      return `Added label${newValue.length > 1 ? "s" : ""}: ${newValue.join(
+      return `Added label${newValue?.length > 1 ? "s" : ""}: ${newValue.join(
         ", "
       )}`;
 
     case ActivityTypes.LABELS_REMOVED:
-      return `Removed label${newValue.length > 1 ? "s" : ""}: ${newValue.join(
+      return `Removed label${newValue?.length > 1 ? "s" : ""}: ${newValue.join(
         ", "
       )}`;
 
@@ -95,9 +101,14 @@ const generateActivityContent = (
 
     case ActivityTypes.TASK_ARCHIVED:
       return "Archived the task";
-
+    case ActivityTypes.TASK_ARCHIVED_REMOVED:
+      return `Restored the task from archive`;
     case ActivityTypes.TASK_DELETED:
       return "Deleted the task";
+    case ActivityTypes.CHANGED_LIST:
+      return `Moved card from ${getRenderedValue(
+        oldValue
+      )} to ${getRenderedValue(newValue)}`;
 
     case ActivityTypes.SUBTASK_CREATED:
       return `Created subtask: "${newValue}"`;
@@ -117,192 +128,251 @@ const generateActivityContent = (
 };
 
 export const trackTaskActivities = async (
-  newValues,
-  oldValues,
-  taskId,
-  userId,
-  createActivityFn
+  updatedTaskData, // New task data after update
+  previousTaskData, // Old task data before update
+  taskId, // Task identifier
+  userId, // User performing the update
+  logActivity, // Function to create activity logs
+  fieldsToTrack // List of fields to track changes
 ) => {
-  console.log("task id in tracktraskactivities", taskId);
-  console.log("task id in oldValues", oldValues?.id);
-  const activities = [];
+  console.log("Task ID in trackTaskActivities:", taskId);
+  console.log("Previous Task Data ID:", previousTaskData?.id);
 
-  // If no oldValues, it's a new task
-  if (!oldValues && !oldValues?.id) {
-    activities.push({
+  const activityLog = []; // Stores all detected changes for logging
+
+  /**
+   * Function to normalize dates for accurate comparison
+   * Ensures all dates are converted to "YYYY-MM-DD" format
+   */
+  const formatDateForComparison = (date) =>
+    date ? moment(date).startOf("day").format("YYYY-MM-DD") : null;
+
+  // If no previous data exists, it means the task was newly created
+  if (!previousTaskData || !previousTaskData?.id) {
+    activityLog.push({
       task_id: taskId,
       action_type: ActivityTypes.TASK_CREATED,
       content: generateActivityContent(ActivityTypes.TASK_CREATED),
       user_id: userId,
     });
   } else {
-    // Compare and track changes
-    if (newValues.name !== oldValues.name) {
-      activities.push({
-        task_id: taskId,
-        action_type: ActivityTypes.TASK_TITLE_UPDATED,
-        content: generateActivityContent(
-          ActivityTypes.TASK_TITLE_UPDATED,
-          newValues.name,
-          oldValues.name
-        ),
-        user_id: userId,
-      });
-    }
+    // Iterate through fieldsToTrack to log only relevant changes
+    fieldsToTrack.forEach((field) => {
+      switch (field) {
+        case "name":
+          if (updatedTaskData.name !== previousTaskData.name) {
+            activityLog.push({
+              task_id: taskId,
+              action_type: ActivityTypes.TASK_TITLE_UPDATED,
+              content: generateActivityContent(
+                ActivityTypes.TASK_TITLE_UPDATED,
+                updatedTaskData.name,
+                previousTaskData.name
+              ),
+              user_id: userId,
+            });
+          }
+          break;
 
-    if (newValues.description !== oldValues.description) {
-      activities.push({
-        task_id: taskId,
-        action_type: ActivityTypes.TASK_DESCRIPTION_UPDATED,
-        content: generateActivityContent(
-          ActivityTypes.TASK_DESCRIPTION_UPDATED
-        ),
-        user_id: userId,
-      });
-    }
+        case "description":
+          if (updatedTaskData.description !== previousTaskData.description) {
+            activityLog.push({
+              task_id: taskId,
+              action_type: ActivityTypes.TASK_DESCRIPTION_UPDATED,
+              content: generateActivityContent(
+                ActivityTypes.TASK_DESCRIPTION_UPDATED
+              ),
+              user_id: userId,
+            });
+          }
+          break;
 
-    if (newValues.status !== oldValues.status) {
-      activities.push({
-        task_id: taskId,
-        action_type: ActivityTypes.STATUS_CHANGED,
-        content: generateActivityContent(
-          ActivityTypes.STATUS_CHANGED,
-          TaskStatus.find((obj) => obj.value === newValues.status)?.status ||
-            newValues.status,
-          TaskStatus.find((obj) => obj.value === oldValues.status)?.status ||
-            oldValues.status
-        ),
-        user_id: userId,
-      });
-    }
+        case "status":
+          if (updatedTaskData.status !== previousTaskData.status) {
+            activityLog.push({
+              task_id: taskId,
+              action_type: ActivityTypes.STATUS_CHANGED,
+              content: generateActivityContent(
+                ActivityTypes.STATUS_CHANGED,
+                TaskStatus.find((obj) => obj.value === updatedTaskData.status)
+                  ?.label || updatedTaskData.status,
+                TaskStatus.find((obj) => obj.value === previousTaskData.status)
+                  ?.label || previousTaskData.status
+              ),
+              user_id: userId,
+            });
+          }
+          break;
 
-    if (newValues.priority !== oldValues.priority) {
-      activities.push({
-        task_id: taskId,
-        action_type: ActivityTypes.PRIORITY_CHANGED,
-        content: generateActivityContent(
-          ActivityTypes.PRIORITY_CHANGED,
-          PriorityList.find((option) => option.value === newValues.priority)
-            ?.name,
-          PriorityList.find((option) => option.value === oldValues.priority)
-            ?.name
-        ),
-        user_id: userId,
-      });
-    }
+        case "priority":
+          if (updatedTaskData.priority !== previousTaskData.priority) {
+            activityLog.push({
+              task_id: taskId,
+              action_type: ActivityTypes.PRIORITY_CHANGED,
+              content: generateActivityContent(
+                ActivityTypes.PRIORITY_CHANGED,
+                PriorityList.find(
+                  (option) => option.value === updatedTaskData.priority
+                )?.name,
+                PriorityList.find(
+                  (option) => option.value === previousTaskData.priority
+                )?.name
+              ),
+              user_id: userId,
+            });
+          }
+          break;
 
-    // Compare arrays (for members, labels, etc.)
-    if (
-      JSON.stringify(newValues.assigned_to) !==
-      JSON.stringify(oldValues.assigned_to)
-    ) {
-      debugger
-      const added = newValues.assigned_to_names.filter(
-        (x) => !oldValues.assigned_to_names.includes(x)
-      );
-      const removed = oldValues.assigned_to_names.filter(
-        (x) => !newValues.assigned_to_names.includes(x)
-      );
+        case "assigned_to":
+          if (
+            JSON.stringify(updatedTaskData.assigned_to) !==
+            JSON.stringify(previousTaskData.assigned_to)
+          ) {
+            const newMembers = updatedTaskData.assigned_to_names?.filter(
+              (member) => !previousTaskData.assigned_to_names?.includes(member)
+            );
+            const removedMembers = previousTaskData.assigned_to_names?.filter(
+              (member) => !updatedTaskData.assigned_to_names?.includes(member)
+            );
 
-      if (added.length) {
-        activities.push({
-          task_id: taskId,
-          action_type: ActivityTypes.MEMBERS_ADDED,
-          content: generateActivityContent(ActivityTypes.MEMBERS_ADDED, added),
-          user_id: userId,
-        });
+            if (newMembers?.length) {
+              activityLog.push({
+                task_id: taskId,
+                action_type: ActivityTypes.MEMBERS_ADDED,
+                content: generateActivityContent(
+                  ActivityTypes.MEMBERS_ADDED,
+                  newMembers
+                ),
+                user_id: userId,
+              });
+            }
+
+            if (removedMembers?.length) {
+              activityLog.push({
+                task_id: taskId,
+                action_type: ActivityTypes.MEMBERS_REMOVED,
+                content: generateActivityContent(
+                  ActivityTypes.MEMBERS_REMOVED,
+                  removedMembers
+                ),
+                user_id: userId,
+              });
+            }
+          }
+          break;
+
+        case "end_date":
+          const previousDueDate = formatDateForComparison(
+            previousTaskData.end_date
+          );
+          const updatedDueDate = formatDateForComparison(
+            updatedTaskData.end_date
+          );
+
+          if (updatedDueDate !== previousDueDate) {
+            const formattedUpdatedDueDate = updatedDueDate
+              ? moment(updatedDueDate).format("DD MMM YYYY")
+              : null;
+            const formattedPreviousDueDate = previousDueDate
+              ? moment(previousDueDate).format("DD MMM YYYY")
+              : null;
+
+            activityLog.push({
+              task_id: taskId,
+              action_type: ActivityTypes.DUE_DATE_CHANGED,
+              content: generateActivityContent(
+                ActivityTypes.DUE_DATE_CHANGED,
+                formattedUpdatedDueDate,
+                formattedPreviousDueDate
+              ),
+              user_id: userId,
+            });
+          }
+          break;
+
+        case "labels":
+          if (
+            JSON.stringify(updatedTaskData.labels || []) !==
+            JSON.stringify(previousTaskData.labels || [])
+          ) {
+            const previousLabels = previousTaskData.labels || [];
+            const updatedLabels = updatedTaskData.labels || [];
+
+            const addedLabels = updatedLabels?.filter(
+              (label) => !previousLabels?.includes(label)
+            );
+            const removedLabels = previousLabels?.filter(
+              (label) => !updatedLabels?.includes(label)
+            );
+
+            if (addedLabels?.length > 0) {
+              activityLog.push({
+                task_id: taskId,
+                action_type: ActivityTypes.LABELS_ADDED,
+                content: generateActivityContent(
+                  ActivityTypes.LABELS_ADDED,
+                  addedLabels
+                ),
+                user_id: userId,
+              });
+            }
+
+            if (removedLabels?.length > 0) {
+              activityLog.push({
+                task_id: taskId,
+                action_type: ActivityTypes.LABELS_REMOVED,
+                content: generateActivityContent(
+                  ActivityTypes.LABELS_REMOVED,
+                  removedLabels
+                ),
+                user_id: userId,
+              });
+            }
+          }
+          break;
+
+        case "is_archive":
+          if (updatedTaskData.is_archive !== previousTaskData.is_archive) {
+            activityLog.push({
+              task_id: taskId,
+              action_type: updatedTaskData.is_archive
+                ? ActivityTypes.TASK_ARCHIVED
+                : ActivityTypes.TASK_ARCHIVED_REMOVED,
+              content: generateActivityContent(
+                updatedTaskData.is_archive
+                  ? ActivityTypes.TASK_ARCHIVED
+                  : ActivityTypes.TASK_ARCHIVED_REMOVED
+              ),
+              user_id: userId,
+            });
+          }
+          break;
+
+        case "board_id":
+          if (updatedTaskData.board_id !== previousTaskData.board_id) {
+            activityLog.push({
+              task_id: taskId,
+              action_type: ActivityTypes.CHANGED_LIST,
+              content: generateActivityContent(
+                ActivityTypes.CHANGED_LIST,
+                updatedTaskData.board_name,
+                previousTaskData.board_name
+              ),
+              user_id: userId,
+            });
+          }
+          break;
+
+        default:
+          console.warn(`Unhandled field: ${field}`);
       }
-
-      if (removed.length) {
-        activities.push({
-          task_id: taskId,
-          action_type: ActivityTypes.MEMBERS_REMOVED,
-          content: generateActivityContent(
-            ActivityTypes.MEMBERS_REMOVED,
-            removed
-          ),
-          user_id: userId,
-        });
-      }
-    }
-    // Track due date changes
-    const normalizeDate = (date) => {
-      if (!date) return null;
-      return moment(date).startOf("day").format("YYYY-MM-DD");
-    };
-
-    const oldDate = normalizeDate(oldValues.end_date);
-    const newDate = normalizeDate(newValues.end_date);
-
-    if (newDate !== oldDate) {
-      // Only create activity if there's an actual change (including setting or removing a date)
-      if (newDate || oldDate) {
-        const formattedNewDate = newDate
-          ? moment(newDate).format("DD MMM YYYY")
-          : "no due date";
-        const formattedOldDate = oldDate
-          ? moment(oldDate).format("DD MMM YYYY")
-          : "no due date";
-
-        activities.push({
-          task_id: taskId,
-          action_type: ActivityTypes.DUE_DATE_CHANGED,
-          content: `Changed due date from ${formattedOldDate} to ${formattedNewDate}`,
-          user_id: userId,
-        });
-      }
-    }
-    // Compare label arrays (track added and removed labels)
-    console.log(
-      JSON.stringify(newValues.labels || []) !==
-        JSON.stringify(oldValues.labels || [])
-    );
-    if (
-      JSON.stringify(newValues.labels || []) !==
-      JSON.stringify(oldValues.labels || [])
-    ) {
-      const oldLabels = oldValues.labels || [];
-      const newLabels = newValues.labels || [];
-
-      // Find added labels
-      const addedLabels = newLabels.filter((x) => !oldLabels.includes(x));
-      // Find removed labels
-      const removedLabels = oldLabels.filter((x) => !newLabels.includes(x));
-
-      // Track label additions
-      if (addedLabels.length > 0) {
-        activities.push({
-          task_id: taskId,
-          action_type: ActivityTypes.LABELS_ADDED,
-          content: generateActivityContent(
-            ActivityTypes.LABELS_ADDED,
-            addedLabels // Just pass the IDs/names array
-          ),
-          user_id: userId,
-        });
-      }
-
-      // Track label removals
-      if (removedLabels.length > 0) {
-        activities.push({
-          task_id: taskId,
-          action_type: ActivityTypes.LABELS_REMOVED,
-          content: generateActivityContent(
-            ActivityTypes.LABELS_REMOVED,
-            removedLabels // Just pass the IDs/names array
-          ),
-          user_id: userId,
-        });
-      }
-    }
-
-    // Add more comparisons as needed
+    });
   }
 
-  // Create all activities
+  // Log all activities asynchronously
   try {
-    await Promise.all(activities.map((activity) => createActivityFn(activity)));
+    await Promise.all(activityLog.map((activity) => logActivity(activity)));
   } catch (error) {
-    console.error("Error creating activities:", error);
+    console.error("Error creating activity logs:", error);
   }
 };

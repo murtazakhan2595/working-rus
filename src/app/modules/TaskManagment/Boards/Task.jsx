@@ -25,6 +25,7 @@ import {
   TaskEndDate,
 } from "app/modules/TaskManagment/Sections";
 import { Button } from "components/ui/button";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const TaskCard = ({
@@ -104,6 +105,7 @@ const TaskDetails = ({
   const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
+  const userId = useSelector((state) => state.user.userProfile.id);
 
   const confirmDelete = async () => {
     const response = await deleteTask(task.id);
@@ -121,7 +123,9 @@ const TaskDetails = ({
   const handleRestore = async (e) => {
     e.preventDefault();
     try {
-      const response = await addTask({ is_archive: false }, task.id);
+      const response = await addTask({ is_archive: false }, task.id, userId, {
+        is_archive: true,
+      });
       if (response) {
         reloadData();
         toast.success("Task Restored successfully");

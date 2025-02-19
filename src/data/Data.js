@@ -313,29 +313,29 @@ export const PriorityList = [
   {
     value: 3,
     label: (
-      <div className="flex justify-center gap-x-1 text-mauve-900 items-center">
+      <span className="inline-flex whitespace-nowrap w-fit justify-center gap-x-1 text-mauve-900 items-center">
         <ArrowDown size={16} /> Low
-      </div>
+      </span>
     ),
-    name:"Low",
+    name: <span className="text-mauve-900">Low</span>,
   },
   {
     value: 2,
     label: (
-      <div className="flex justify-center text-yellow-500 gap-x-1 items-center">
+      <span className="inline-flex whitespace-nowrap w-fit justify-center text-yellow-500 gap-x-1 items-center">
         <ArrowRight size={16} /> Medium
-      </div>
+      </span>
     ),
-    name:"Medium"
+    name: <span className="text-yellow-500">Medium</span>,
   },
   {
     value: 1,
     label: (
-      <div className="flex justify-center text-red-500 gap-x-1 items-center">
+      <span className="inline-flex whitespace-nowrap w-fit justify-center text-red-500 gap-x-1 items-center">
         <ArrowUp size={16} /> High
-      </div>
+      </span>
     ),
-    name:"High"
+    name: <span className="text-red-500">High</span>,
   },
 ];
 
@@ -365,27 +365,27 @@ export const PriorityListIcons = [
   {
     value: 3,
     label: (
-      <div className="flex justify-center gap-x-2 text-mauve-900 ">
+      <span className="inline-flex items-center whitespace-nowrap w-fit justify-center gap-x-2 text-mauve-900 ">
         <ArrowDown className="text-2xl " /> Low
-      </div>
+      </span>
     ),
   },
   {
     value: 2,
     label: (
-      <div className="flex justify-center text-yellow-500 gap-x-2 items-center">
+      <span className="inline-flex items-center whitespace-nowrap w-fit justify-center text-yellow-500 gap-x-2 items-center">
         <ArrowRight className="text-xl" />
         Medium
-      </div>
+      </span>
     ),
   },
   {
     value: 1,
     label: (
-      <div className="flex justify-center text-red-500 gap-x-2">
+      <span className="inline-flex items-center whitespace-nowrap w-fit justify-center text-red-500 gap-x-2">
         <ArrowUp className="text-2xl" />
         High
-      </div>
+      </span>
     ),
   },
 ];

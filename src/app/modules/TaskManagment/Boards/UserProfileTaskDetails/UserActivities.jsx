@@ -1,4 +1,3 @@
-import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { EmployeeName, FormatID } from "utils/getValuesFromTables";
@@ -6,19 +5,11 @@ import { getActivities, getAllTasks } from "app/hooks/taskManagment";
 import { MembersList } from "app/modules/TaskManagment/Sections";
 import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
-import { RxPlus } from "react-icons/rx";
-import CreateAndEditCardForm from "app/modules/TaskManagment/Boards/Sections/CreateAndEditCardForm";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "src/@/components/ui/accordion";
-import { ListActionOptions } from "app/modules/TaskManagment/Boards/Sections";
+import { TextUI } from "components";
 import moment from "moment";
 
-const UserActivities =({ userId = null }) => {
+const UserActivities = ({ userId = null }) => {
   const [AllActivityDetails, setAllActivityDetails] = useState([]);
   const fetchAllActivityDetails = async (isMounted) => {
     try {
@@ -44,10 +35,15 @@ const UserActivities =({ userId = null }) => {
   return (
     <Card>
       <CardContent className="mt-4 flex flex-col gap-3">
-        {AllActivityDetails.count > 0 ?
+        {AllActivityDetails.count > 0 ? (
           AllActivityDetails.results.map((activity) => (
             <ListActivities activity={activity} />
-          )):<div className="w-full text-neutral-1100 flex justify-center items-center">No Recent Activities</div>}
+          ))
+        ) : (
+          <div className="w-full text-neutral-1100 flex justify-center items-center">
+            No Recent Activities
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -72,7 +68,7 @@ const ListActivities = ({ activity }) => {
         <div className=" rounded-md">
           {/* User Name & Timestamp */}
           <div className="flex items-center gap-2">
-            <p className="text-neutral-1100">
+            <p className="text-neutral-1200">
               <span className="font-semibold">
                 <EmployeeName value={activity.user_id} />
               </span>{" "}
@@ -92,8 +88,8 @@ const ListActivities = ({ activity }) => {
 
           {/* Comment Text */}
           <div className="mt-1">
-            <div className="text-neutral-1000 text-sm">
-              <span>{activity.content}</span>
+            <div className="text-neutral-1200 text-sm">
+              <TextUI text={activity.content} isHTMLText={true} />
             </div>
           </div>
         </div>

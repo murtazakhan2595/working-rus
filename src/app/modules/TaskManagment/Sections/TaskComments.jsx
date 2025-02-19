@@ -45,7 +45,6 @@ function TaskComments({
         getActivities({ filterData: { task_id: [taskId] } }),
       ]);
 
-
       if (isMounted) {
         const combined = [
           ...commentsData.map((comment) => ({
@@ -96,7 +95,7 @@ function TaskComments({
   const renderActivityContent = (activity) => {
     return (
       <div className="text-neutral-1000 text-sm">
-        <span>{activity.content}</span>
+        <TextUI text={activity.content} isHTMLText={true} />
       </div>
     );
   };
@@ -141,7 +140,7 @@ function TaskComments({
               <div className=" rounded-md">
                 {/* User Name & Timestamp */}
                 <div className="flex items-center gap-2">
-                  <p className="font-semibold">
+                  <p className="font-semibold text-neutral-1200">
                     <EmployeeName value={item.user_id} />
                   </p>
                   <time className="text-sm mt-1 text-neutral-1000 flex items-center gap-1">
@@ -152,7 +151,10 @@ function TaskComments({
                 {/* Comment Text */}
                 <div className="mt-1">
                   {item.type === "comment" ? (
-                    <TextUI text={item.comment.replace(/@/g, '')} isHTMLText={true} />
+                    <TextUI
+                      text={item.comment.replace(/@/g, "")}
+                      isHTMLText={true}
+                    />
                   ) : (
                     <span>{renderActivityContent(item)}</span>
                   )}

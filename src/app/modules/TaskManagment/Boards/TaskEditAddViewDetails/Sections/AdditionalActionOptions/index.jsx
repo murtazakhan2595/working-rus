@@ -23,8 +23,6 @@ import { addTask, deleteTask } from "app/hooks/taskManagment";
 import { useSelector } from "react-redux";
 import AlertDialogue from "components/ui/AlertDialogue";
 
-const frontendURL = initialState.frontendURL;
-
 const AdditionalActionOption = React.memo(
   ({
     projectId = null,
@@ -33,10 +31,15 @@ const AdditionalActionOption = React.memo(
     isArchive = false,
   }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
+    const userId = useSelector((state) => state.user.userProfile.id);
     const archeiveTask = async (archeived = true) => {
       try {
-        const response = await addTask({ is_archive: archeived }, taskId);
+        const response = await addTask(
+          { is_archive: archeived },
+          taskId,
+          userId,
+          { is_archive: !archeived }
+        );
         if (response) {
           reloadData();
           toast.success("Task Archeived updated successfully");

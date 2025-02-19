@@ -12,12 +12,10 @@ const RenderTaskTitle = ({
 }) => {
   const checked = isChecked;
   const handleContainerClick = (e) => {
-    debugger
     e.stopPropagation();
     handleStatusChange(!checked);
   };
   const handleStatusChange = async (newChecked) => {
-    debugger
     if (newChecked === checked) return; // Prevent duplicate API calls
     try {
       const newStatus = newChecked ? "COMPLETED" : "INPROGRESS";

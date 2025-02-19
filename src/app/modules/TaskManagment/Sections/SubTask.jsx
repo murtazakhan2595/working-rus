@@ -69,17 +69,10 @@ export default function Subtasks({
   const handleSubtaskCreated = async (newTask) => {
     try {
       if (newTask) {
-        // Get current parent task
-        const parentTask = await getTaskById(taskId);
         // Update parent task's sub_task array
-        const updatedSubTasks = [...(parentTask.sub_task || []), newTask.id];
+        const updatedSubTasks = [...(items || []), newTask.id];
         // Update the parent task
-        await addTask(
-          {
-            sub_task: updatedSubTasks,
-          },
-          taskId
-        );
+        await addTask({ sub_task: updatedSubTasks }, taskId);
         // Refresh the subtasks list
         fetchTaskData(true);
         // Close the dialog and clean up
@@ -175,7 +168,7 @@ const RenderSubtaskList = ({ subtaskList = [], reloadData = () => {} }) => {
                   handleStatusChange(task.status, task.id);
                 }}
               />
-              <div className=" w-full w-[calc(100%_-_25px)]">
+              <div className=" w-full">
                 <TextUI
                   text={task.name}
                   className={`${
@@ -187,7 +180,7 @@ const RenderSubtaskList = ({ subtaskList = [], reloadData = () => {} }) => {
               </div>
               <TaskStatusLabel status={task.status} />
             </div>
-            <div className="flex justify-end w-fit min-w-[160px]">
+            <div className="flex justify-end w-fit">
               <MembersList members={task.assigned_to} />
             </div>
           </div>

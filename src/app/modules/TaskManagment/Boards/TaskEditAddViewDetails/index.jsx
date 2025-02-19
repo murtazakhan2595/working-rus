@@ -316,7 +316,7 @@ const TaskEditAddViewDetails = ({
 
         finalData.relation_ship = relationshipIds;
       }
-      const response = await addTask(finalData, taskId);
+      const response = await addTask(finalData, taskId , userId , initialValues);
       if (response) {
         // Notify parent component of the new task
         if (onTaskCreated && isSubtask) {
@@ -324,13 +324,13 @@ const TaskEditAddViewDetails = ({
         }
         //  setShowSuccessMessage(true);
         // Track activities
-        await trackTaskActivities(
-          response?.data,
-          taskId ? initialValues : null,
-          taskId || response?.data.id,
-          userId,
-          createActivity
-        );
+        // await trackTaskActivities(
+        //   response?.data,
+        //   taskId ? initialValues : null,
+        //   taskId || response?.data.id,
+        //   userId,
+        //   createActivity
+        // );
         toast.success(
           isSubtask
             ? "Subtask Created Successfully!"
