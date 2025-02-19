@@ -99,10 +99,10 @@ function Login() {
           if (userProfileResponse.data.is_filled) {
             // Perform hard refresh after setting the destination
             navigate("/");
-            window.location.reload();
+            // window.location.reload();
           } else {
             navigate("/create-profile");
-            window.location.reload();
+            // window.location.reload();
           }
           return;
         }

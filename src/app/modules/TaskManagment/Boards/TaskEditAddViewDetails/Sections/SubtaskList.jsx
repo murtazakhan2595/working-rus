@@ -16,7 +16,7 @@ import {
 const SubtaskList = ({ taskId, projectId, boardId, items, projectDetail }) => {
   return (
     <div className="space-y-2">
-      {items?.map((task, index) => (
+      {items?.length>0 && items?.map((task, index) => (
         <RenderSubTask taskId={task} />
       ))}
     </div>
@@ -45,7 +45,7 @@ const RenderSubTask = ({ taskId }) => {
     };
   }, [taskId]);
 
-  if (!taskId || !subTaskDetails) return null;
+  if (!taskId || !subTaskDetails || !subTaskDetails?.id) return null;
   return (
     <div
       key={taskId}

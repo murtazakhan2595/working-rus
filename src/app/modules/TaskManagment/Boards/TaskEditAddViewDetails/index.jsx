@@ -57,8 +57,9 @@ import {
   TabsTrigger,
   TabsContent,
 } from "src/@/components/ui/tabs";
-import { TaskRelation } from "../../Sections";
+import { TaskRelation, TaskRelationTab } from "../../Sections";
 import { Card, CardContent } from "components/ui/card";
+import { addRelationship } from "app/hooks/taskManagment";
 
 const TaskEditAddViewDetails = ({
   taskId,
@@ -165,9 +166,19 @@ const TaskEditAddViewDetails = ({
         throw new Error("Card details not found.");
       }
       if (isMounted) {
+        const formattedRelationships =
+          cardDetails.relationship?.map((rel) => ({
+            id: rel.relation,
+            relation_type:
+              rel.relation_choices === "WAITING ON"
+                ? "WAITING_ON"
+                : rel.relation_choices,
+          })) || [];
+
         setInitialValues({
           ...cardDetails,
-          project_id: projectId || cardDetails.project_id, //
+          project_id: projectId || cardDetails.project_id,
+          relation_ship: formattedRelationships,
         });
         setIsLoading(false);
       }
@@ -254,6 +265,7 @@ const TaskEditAddViewDetails = ({
   };
 
   const handleSubmit = async (values) => {
+    console.log("values", values);
     setIsLoading(true);
     try {
       const getAttachmentFileIds = async (files) => {
@@ -299,6 +311,28 @@ const TaskEditAddViewDetails = ({
       }
       finalData.cover_photo =
         values?.attachment?.length > 0 ? values.cover_photo : null;
+
+      if (values?.relation_ship?.length > 0) {
+        const relationshipIds = await Promise.all(
+          values.relation_ship.map((relation) =>
+            addRelationship({
+              relation_choices:
+                relation.relation_type === "WAITING_ON"
+                  ? "WAITING ON"
+                  : relation.relation_type,
+              relation: relation.id,
+            })
+          )
+        )
+          .then((responses) => responses.map((response) => response.id))
+          .catch((error) => {
+            console.error("Error creating relationships:", error);
+            return [];
+          });
+
+        finalData.relation_ship = relationshipIds;
+      }
+      console.log("finalData", finalData);
       const response = await addTask(finalData, taskId);
       if (response) {
         // Notify parent component of the new task
@@ -365,6 +399,7 @@ const TaskEditAddViewDetails = ({
             >
               {(props) => (
                 <Form className="overflow-x-hidden">
+                  {console.log("props", props)}
                   <ScrollArea className="[&>div>div[style]]:!block">
                     <div className="h-[85vh] pr-3">
                       <div className="flex justify-between mb-6 px-6 mt-3">
@@ -409,7 +444,7 @@ const TaskEditAddViewDetails = ({
                             />
                           )}
                           <Button type="submit">
-                            {`${taskId ? "Save Changes" : "Add Task"}`}
+                            {`${taskId ? "Save Changes" : isSubtask ? "Add Subtask" : "Add Task"}`}
                           </Button>
                           <AdditionalActionOption
                             projectId={props.values.project_id}
@@ -516,13 +551,21 @@ const TaskEditAddViewDetails = ({
                                   detailCardTitle=""
                                   classNames="mt-0"
                                 >
-                                  <TaskRelation
-                                    relationsList={props.values.relation || []}
+                                  <TaskRelationTab
+                                    relationsList={
+                                      props.values.relation_ship || []
+                                    } // Changed from relation to relation_ship
                                     projectId={props.values.project_id}
                                     taskId={taskId}
                                     editMode={true}
-                                    error={props.errors.relation}
-                                    touch={props.touched.relation}
+                                    error={props.errors.relation_ship} // Changed from relation to relation_ship
+                                    touch={props.touched.relation_ship} // Changed from relation to relation_ship
+                                    onChange={(updatedRelations) => {
+                                      props.setFieldValue(
+                                        "relation_ship",
+                                        updatedRelations
+                                      ); 
+                                    }}
                                   />
                                 </DetailCard>
                               </TabsContent>
@@ -532,24 +575,6 @@ const TaskEditAddViewDetails = ({
                                   detailCardTitle=""
                                   classNames="mt-0"
                                 >
-                                  <DetailBox
-                                    orientation="horizontal"
-                                    value={
-                                      <Subtasks
-                                        items={props.values.subtasks || []}
-                                        onChange={(items) => {
-                                          props.setFieldValue(
-                                            "subtasks",
-                                            items
-                                          );
-                                        }}
-                                        projectId={projectId}
-                                        taskId={taskId}
-                                        boardId={boardId}
-                                        fetchTaskData={fetchTaskData}
-                                      />
-                                    }
-                                  />
                                   <DetailBox
                                     orientation="horizontal"
                                     value={
@@ -587,6 +612,25 @@ const TaskEditAddViewDetails = ({
                                           boardId={boardId}
                                         />
                                       </>
+                                    }
+                                  />
+                                  <DetailBox
+                                    // label={"Subtasks"}
+                                    orientation="horizontal"
+                                    value={
+                                      <Subtasks
+                                        items={props.values.subtasks || []}
+                                        onChange={(items) => {
+                                          props.setFieldValue(
+                                            "subtasks",
+                                            items
+                                          );
+                                        }}
+                                        projectId={projectId}
+                                        taskId={taskId}
+                                        boardId={boardId}
+                                        fetchTaskData={fetchTaskData}
+                                      />
                                     }
                                   />
                                 </DetailCard>
