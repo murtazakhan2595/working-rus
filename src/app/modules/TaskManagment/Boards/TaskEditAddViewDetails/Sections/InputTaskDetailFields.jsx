@@ -54,6 +54,7 @@ const InputTaskDetailFields = React.memo(
             name="estimated_time"
             error={errors.estimated_time}
             label={"Estimated Time"}
+            placeholder="Estimated Time (hr)"
             touch={touched.estimated_time}
             value={taskData.estimated_time}
             onChange={(field, value) => {
@@ -63,6 +64,7 @@ const InputTaskDetailFields = React.memo(
           <TextInput
             label={"Time Spent"}
             name="consumed_time"
+            placeholder="Time Spent (hr)"
             error={errors.consumed_time}
             touch={touched.consumed_time}
             value={taskData.consumed_time}
