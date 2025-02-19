@@ -51,7 +51,7 @@ const generateActivityContent = (type, newValueHTML, oldValueHTML = null) => {
       return "Updated task description";
 
     case ActivityTypes.STATUS_CHANGED:
-      return `Changed status from ${ReactDOMServer.renderToStaticMarkup(oldValue)} to ${ReactDOMServer.renderToStaticMarkup(newValue)}`;
+      return `Marked the card as ${ReactDOMServer.renderToStaticMarkup(newValue)}`;
     case ActivityTypes.PRIORITY_CHANGED:
       return `Changed priority from ${ReactDOMServer.renderToStaticMarkup(oldValue)} to ${ReactDOMServer.renderToStaticMarkup(newValue)}`;
 
@@ -148,7 +148,7 @@ export const trackTaskActivities = async (
     date ? moment(date).startOf("day").format("YYYY-MM-DD") : null;
 
   // If no previous data exists, it means the task was newly created
-  if (!previousTaskData || !previousTaskData?.id) {
+  if (!taskId) {
     activityLog.push({
       task_id: taskId,
       action_type: ActivityTypes.TASK_CREATED,

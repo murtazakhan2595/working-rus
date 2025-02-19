@@ -7,16 +7,14 @@ import { toast } from "react-toastify";
 import TaskEditAddViewDetails from "../Boards/TaskEditAddViewDetails";
 import { calculateTotalCount, calculatePercentage } from "utils/renderValues";
 import { Checkbox } from "src/@/components/ui/checkbox";
-import { URLS } from "constants/config";
+import { TaskStatus } from "data/Data";
 import { Progress } from "src/@/components/ui/progress";
 import {
   ProjectBoardSubtaskColumn,
-  SubtaskColumn,
   MembersList,
-  TaskEndDate,
-  TaskStatusLabel,
-  RenderTaskTitle,
 } from "app/modules/TaskManagment/Sections";
+import { useSelector } from "react-redux";
+
 export default function Subtasks({
   taskId,
   projectId,
@@ -134,11 +132,15 @@ export default function Subtasks({
 const RenderSubtaskList = ({ subtaskList = [], reloadData = () => {} }) => {
   const [isAddSubtaskOpen, setIsAddSubtaskOpen] = useState(false);
   const [viewSubtasks, setViewSubtasks] = useState(null);
+  const userId = useSelector((state) => state.user.userProfile.id);
   const handleStatusChange = async (status, taskId) => {
     try {
       const newStatus =
         status?.toUpperCase() !== "COMPLETED" ? "COMPLETED" : "INPROGRESS";
-      const response = await addTask({ status: newStatus }, taskId);
+      const response = await addTask({ status: newStatus }, taskId, userId, {
+        status,
+        status,
+      });
       if (response) {
         reloadData(true);
       }
@@ -149,42 +151,46 @@ const RenderSubtaskList = ({ subtaskList = [], reloadData = () => {} }) => {
   return (
     <div className="space-y-2">
       {subtaskList?.length > 0 &&
-        subtaskList?.map((task) => (
-          <div
-            key={task.id}
-            className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-gray-100"
-            onClick={(e) => {
-              e.preventDefault();
-              setIsAddSubtaskOpen(true);
-              setViewSubtasks(task);
-            }}
-          >
-            <div className="inline-flex justify-start items-center gap-2">
-              <Checkbox
-                checked={task.status?.toUpperCase() === "COMPLETED"}
-                className=""
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleStatusChange(task.status, task.id);
-                }}
-              />
-              <div className=" w-full">
-                <TextUI
-                  text={task.name}
-                  className={`${
-                    task.status?.toUpperCase() === "COMPLETED"
-                      ? "line-through text-muted-foreground"
-                      : ""
-                  }`}
+        subtaskList?.map((task) => {
+          const status = TaskStatus.find((obj) => obj.value === task.status);
+          return (
+            <div
+              key={task.id}
+              className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-gray-100 cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsAddSubtaskOpen(true);
+                setViewSubtasks(task);
+              }}
+            >
+              <div className="inline-flex justify-start items-center gap-2">
+                <Checkbox
+                  checked={task.status?.toUpperCase() === "COMPLETED"}
+                  className=""
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleStatusChange(task.status, task.id);
+                  }}
                 />
+                <div className=" w-full">
+                  <TextUI
+                    text={task.name}
+                    // className={`${
+                    //   task.status?.toUpperCase() === "COMPLETED"
+                    //     ? "line-through text-muted-foreground"
+                    //     : ""
+                    // }`}
+                    style={{ color: status.color }}
+                  />
+                </div>
+                {/* <TaskStatusLabel status={task.status} /> */}
               </div>
-              <TaskStatusLabel status={task.status} />
+              <div className="flex justify-end w-fit">
+                <MembersList members={task.assigned_to} />
+              </div>
             </div>
-            <div className="flex justify-end w-fit">
-              <MembersList members={task.assigned_to} />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       {isAddSubtaskOpen && (
         <TaskEditAddViewDetails
           taskId={viewSubtasks.id}

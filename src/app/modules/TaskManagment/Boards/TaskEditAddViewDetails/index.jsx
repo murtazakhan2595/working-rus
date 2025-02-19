@@ -320,7 +320,7 @@ const TaskEditAddViewDetails = ({
       if (response) {
         // Notify parent component of the new task
         if (onTaskCreated && isSubtask) {
-          onTaskCreated(response.data);
+          onTaskCreated(response);
         }
         //  setShowSuccessMessage(true);
         // Track activities

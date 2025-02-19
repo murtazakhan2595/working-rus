@@ -1,6 +1,5 @@
 import { CiViewBoard } from "react-icons/ci";
 import { countries } from "country-data";
-
 import { getAllCountries } from "countries-and-timezones";
 import {
   fetchDepartments,
@@ -24,6 +23,7 @@ import {
   ArrowUp,
   Timer,
 } from "lucide-react";
+import { lightenColor } from "utils/renderValues";
 
 export const countryOptions = Object.keys(getAllCountries()).map(
   (countryCode) => ({
@@ -343,22 +343,26 @@ export const TaskStatus = [
   {
     value: "TODO",
     label: <span style={{ color: "#FBBF24" }}>Todo</span>,
-    status: "Todo",
+    color: "#FBBF24",
+    backgroundColor: lightenColor("#FBBF24", 85),
   },
   {
     value: "INPROGRESS",
     label: <span style={{ color: "#2e86c1" }}>In Progress</span>,
-    status: "In Progress",
+    color: "#2e86c1",
+    backgroundColor: lightenColor("#2e86c1", 85),
   },
   {
     value: "COMPLETED",
     label: <span style={{ color: "#12B76A" }}>Completed</span>,
-    status: "Completed",
+    color: "#12B76A",
+    backgroundColor: lightenColor("#12B76A", 85),
   },
   {
     value: "Onhold",
     label: <span style={{ color: "#B00D1B" }}>On Hold</span>,
-    status: "On Hold",
+    color: "#B00D1B",
+    backgroundColor: lightenColor("#B00D1B", 85),
   },
 ];
 export const PriorityListIcons = [

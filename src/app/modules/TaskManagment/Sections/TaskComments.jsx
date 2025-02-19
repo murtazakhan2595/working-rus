@@ -34,7 +34,6 @@ function TaskComments({
   setEditCommentContent,
   setReplyComment,
 }) {
-  const employees = useSelector((state) => state.emp.employees);
   const userId = useSelector((state) => state.user.userProfile.id);
   const [combinedActivities, setCombinedActivities] = useState([]);
 

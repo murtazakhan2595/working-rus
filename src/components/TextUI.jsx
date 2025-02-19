@@ -6,10 +6,12 @@ const TextUI = React.memo(
     maxLength = null,
     isHTMLText = false,
     className = "text-neutral-1000 text-sm",
+    style={}
   }) => {
     return text ? (
       <p
         className={`${className} leading-5 truncate-text break-words overflow-hiddden max-w-[100%]`}
+        style={style}
       >
         {isHTMLText ? (
           <span
