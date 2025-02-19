@@ -22,7 +22,7 @@ const ViewOptions = React.memo(
       {
         icon: LayoutGrid,
         isActive: activeView === VIEW_TYPES.GRID,
-        tooltipText: "Grid View",
+        tooltipText: "Board View",
         onClick: () => setActiveView(VIEW_TYPES.GRID),
       },
     ];
