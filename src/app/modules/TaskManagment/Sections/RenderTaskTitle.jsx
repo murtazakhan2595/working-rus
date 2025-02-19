@@ -10,13 +10,14 @@ const RenderTaskTitle = ({
   reload = () => {},
   onClick = () => {},
 }) => {
-  console.log(isChecked);
   const checked = isChecked;
   const handleContainerClick = (e) => {
+    debugger
     e.stopPropagation();
     handleStatusChange(!checked);
   };
   const handleStatusChange = async (newChecked) => {
+    debugger
     if (newChecked === checked) return; // Prevent duplicate API calls
     try {
       const newStatus = newChecked ? "COMPLETED" : "INPROGRESS";
@@ -33,10 +34,12 @@ const RenderTaskTitle = ({
     <div className={`w-fit text-base font-bold capitalize ${className}`}>
       <div
         className={`group flex items-center transition-all duration-200 transform -translate-x-2 group-hover:translate-x-0`}
-        onClick={handleContainerClick}
       >
         {/* Checkbox only appears on hover */}
-        <div className="hidden group-hover:flex transition-opacity duration-200">
+        <div
+          className="hidden group-hover:flex transition-opacity duration-200"
+          onClick={handleContainerClick}
+        >
           <Checkbox
             checked={checked}
             className=""

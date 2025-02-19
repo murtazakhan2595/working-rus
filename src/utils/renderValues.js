@@ -236,21 +236,16 @@ export const calculateTotal = (data, label) => {
 };
 export const calculateTotalCount = (data, label, value) => {
   if (!Array.isArray(data)) return 0;
-
   return data.reduce((count, item) => {
     return count + (item[label] === value ? 1 : 0);
   }, 0);
 };
 
 export const calculateTaskCount = (data, statusType) => {
-  console.log(data);
   if (!Array.isArray(data)) return 0;
-
   return data.filter((task) => {
     const taskStatus = task.task_status?.toLowerCase() || "";
     const requestedStatus = statusType?.toLowerCase();
-    console.log(taskStatus, requestedStatus);
-
     if (requestedStatus === "completed") {
       return taskStatus === "completed";
     }

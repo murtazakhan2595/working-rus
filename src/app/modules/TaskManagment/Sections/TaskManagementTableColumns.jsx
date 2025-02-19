@@ -190,3 +190,31 @@ export const ProjectBoardSubtaskColumn = [
     width: "160px",
   },
 ];
+
+export const SubtaskColumn = (reloadData)=>[
+  {
+    text: "Tasks",
+    dataField: "name",
+    dataSort: true,
+    formatter: (cell, row) => (
+      <div className="inline-flex justify-start">
+        <RenderTaskTitle
+          title={cell}
+          taskId={row.id}
+          isChecked={row.status?.toUpperCase() === "COMPLETED"}
+          className="text-sm font-medium text-neutral-1100"
+          reload={reloadData}
+        />
+        <TaskStatusLabel status={row.status} />
+      </div>
+    ),
+  },
+  {
+    text: "Members",
+    dataField: "assigned_to",
+    width: "fit-content",
+    formatter: (cell) => <MembersList members={cell} />,
+    dataStyle: { display: "flex", justifyContent: "end" },
+    headerAlign: "right",
+  },
+];

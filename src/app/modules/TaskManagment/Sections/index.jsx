@@ -10,11 +10,13 @@ import TaskDetailBox from "./TaskDetailsBox";
 import {
   ProjectBoardColumn,
   ProjectBoardSubtaskColumn,
+  SubtaskColumn,
 } from "./TaskManagementTableColumns";
 import TaskEndDate from "./TaskEndDate";
 import TaskStatusLabel from "./TaskStatus";
 import RenderTaskTitle from "./RenderTaskTitle";
 import TaskRelationTab from './TaskRelationTab';
+import {RenderTaskSubTasks} from './SubTask';
 export {
   Members,
   MembersList,
@@ -27,8 +29,10 @@ export {
   TaskDetailBox,
   ProjectBoardColumn,
   ProjectBoardSubtaskColumn,
+  SubtaskColumn,
   TaskEndDate,
   RenderTaskTitle,
   TaskStatusLabel,
   TaskRelationTab,
+  RenderTaskSubTasks
 };

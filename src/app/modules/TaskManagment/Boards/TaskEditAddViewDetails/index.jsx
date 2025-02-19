@@ -35,8 +35,6 @@ import { Task } from "app/utils/Types/TaskManagment";
 import { SelectInputComponent, CoverFileUpload } from "components/FormControl";
 import { getProjectById, deleteAttachment } from "app/hooks/taskManagment";
 import { addAttachments } from "app/hooks/taskManagment";
-import { Progress } from "src/@/components/ui/progress";
-
 import {
   addTaskCheckListItem,
   getAllCustomFields,
@@ -386,7 +384,7 @@ const TaskEditAddViewDetails = ({
         setIsOpen,
       })}
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="max-w-[70vw] w-[70vw] h-[auto] pr-2">
+        <DialogContent className="max-w-[1600px] w-[80vw] h-[auto] pr-2">
           {isLoading ? (
             <PageLoader />
           ) : (
@@ -399,7 +397,6 @@ const TaskEditAddViewDetails = ({
             >
               {(props) => (
                 <Form className="overflow-x-hidden">
-                  {console.log("props", props)}
                   <ScrollArea className="[&>div>div[style]]:!block">
                     <div className="h-[85vh] pr-3">
                       <div className="flex justify-between mb-6 px-6 mt-3">
@@ -444,7 +441,13 @@ const TaskEditAddViewDetails = ({
                             />
                           )}
                           <Button type="submit">
-                            {`${taskId ? "Save Changes" : isSubtask ? "Add Subtask" : "Add Task"}`}
+                            {`${
+                              taskId
+                                ? "Save Changes"
+                                : isSubtask
+                                ? "Add Subtask"
+                                : "Add Task"
+                            }`}
                           </Button>
                           <AdditionalActionOption
                             projectId={props.values.project_id}
@@ -508,15 +511,21 @@ const TaskEditAddViewDetails = ({
                               {[
                                 { value: "checklist", label: "Checklist" },
                                 { value: "relation", label: "Relation" },
-                                { 
-                                  value: "subtasks", 
-                                  label: (
-                                    <div className="flex items-center gap-2">
-                                      <span>Subtasks</span>
-                                      <span className="text-plum-1100">({subTasksDetails?.length})</span>
-                                    </div>
-                                  )
-                                },
+                                ...(!isSubtask
+                                  ? [
+                                      {
+                                        value: "subtasks",
+                                        label: (
+                                          <div className="flex items-center gap-2">
+                                            <span>Subtasks</span>
+                                            <span className="text-plum-1100">
+                                              ({subTasksDetails?.length})
+                                            </span>
+                                          </div>
+                                        ),
+                                      },
+                                    ]
+                                  : []),
                                 {
                                   value: "customFields",
                                   label: "Custom Fields",
@@ -564,7 +573,7 @@ const TaskEditAddViewDetails = ({
                                       props.setFieldValue(
                                         "relation_ship",
                                         updatedRelations
-                                      ); 
+                                      );
                                     }}
                                   />
                                 </DetailCard>
@@ -576,50 +585,11 @@ const TaskEditAddViewDetails = ({
                                   classNames="mt-0"
                                 >
                                   <DetailBox
-                                    orientation="horizontal"
-                                    value={
-                                      <>
-                                        <div className="flex justify-between gap-3 mb-4 flex-4 items-center">
-                                          <Progress
-                                            value={
-                                              subTasksDetails?.length > 0
-                                                ? (countCompletedTasks(
-                                                    subTasksDetails
-                                                  ) /
-                                                    subTasksDetails.length) *
-                                                  100
-                                                : 0
-                                            }
-                                            className="mt-1 h-2 bg-gray-400"
-                                          />
-                                          <span>
-                                            {subTasksDetails?.length > 0
-                                              ? `${Math.round(
-                                                  (countCompletedTasks(
-                                                    subTasksDetails
-                                                  ) /
-                                                    subTasksDetails.length) *
-                                                    100
-                                                )}%`
-                                              : "0%"}
-                                          </span>
-                                        </div>
-
-                                        <SubtaskList
-                                          items={props?.values?.sub_task || []}
-                                          projectId={projectId}
-                                          taskId={taskId}
-                                          boardId={boardId}
-                                        />
-                                      </>
-                                    }
-                                  />
-                                  <DetailBox
                                     // label={"Subtasks"}
                                     orientation="horizontal"
                                     value={
                                       <Subtasks
-                                        items={props.values.subtasks || []}
+                                        items={props.values.sub_task || []}
                                         onChange={(items) => {
                                           props.setFieldValue(
                                             "subtasks",
@@ -654,7 +624,8 @@ const TaskEditAddViewDetails = ({
                                           setOpenProjectCustomFields(true);
                                         }}
                                       >
-                                        <Plus className="w-4 h-4 mr-2" /> Add Custom Fields
+                                        <Plus className="w-4 h-4 mr-2" /> Add
+                                        Custom Fields
                                       </Button>
                                     }
                                   />

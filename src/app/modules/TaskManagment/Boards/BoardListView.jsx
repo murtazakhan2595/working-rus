@@ -1,16 +1,14 @@
-import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { PageLoader, TableCustom } from "components";
-import { getTaskByprojectId, getAllTasks } from "app/hooks/taskManagment";
+import { TableCustom } from "components";
+import { getAllTasks } from "app/hooks/taskManagment";
 import {
   ProjectBoardColumn,
-  ProjectBoardSubtaskColumn,
+  RenderTaskSubTasks,
 } from "app/modules/TaskManagment/Sections";
 import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { RxPlus } from "react-icons/rx";
-import { SubtaskList } from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails/Sections";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import {
   Accordion,
@@ -177,91 +175,6 @@ const ListTasks = ({
         </div>
       </AccordionContent>
     </AccordionItem>
-  );
-};
-
-const RenderTaskSubTasks = ({ subtaskIdList = [] }) => {
-  const [subTasksDetails, setSubTasksDetails] = useState({
-    results: [],
-    count: 0,
-  });
-  const [viewSubTask, setViewSubTask] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSubTaskDetailOpen, setIsSubTaskDetailOpen] = useState(false);
-  const [ordering, setOrdering] = useState("-start_date");
-
-  const tableOptions = {
-    onRowClick: (row) => {
-      setIsSubTaskDetailOpen(true);
-      setViewSubTask(row);
-    },
-    onSortChange: (sortName) => {
-      setOrdering(sortName);
-    },
-  };
-  const fetchSubTaskDetails = async (isMounted) => {
-    if (subtaskIdList.length > 0) {
-      setIsLoading(true);
-      try {
-        const subtaskDetails = await getAllTasks({
-          filterData: { id: subtaskIdList },
-          ordering: ordering,
-        });
-
-        if (isMounted) {
-          setSubTasksDetails(subtaskDetails);
-        }
-      } catch (error) {
-        console.error("Error fetching subtasks:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-
-    fetchSubTaskDetails(isMounted);
-
-    return () => {
-      isMounted = false;
-    };
-  }, [subtaskIdList, ordering]);
-
-  return (
-    <div className="pl-8">
-      {isLoading ? (
-        <PageLoader />
-      ) : (
-        <TableCustom
-          columns={ProjectBoardSubtaskColumn}
-          data={subTasksDetails.results || []}
-          pagination={false}
-          dataTotalSize={subTasksDetails?.count || 0}
-          tableOptions={tableOptions}
-          dataStyle={{
-            paddingTop: "5px",
-            paddingBottom: "5px",
-            backgroundColor: "",
-          }}
-          showHeader={false}
-        />
-      )}
-      {isSubTaskDetailOpen && (
-        <TaskEditAddViewDetails
-          taskId={viewSubTask?.id}
-          isOpen={isSubTaskDetailOpen}
-          projectId={viewSubTask?.project_id}
-          boardId={viewSubTask?.board_id}
-          setIsOpen={() => {
-            setIsSubTaskDetailOpen(false);
-            setViewSubTask(null);
-          }}
-          reloadData={() => fetchSubTaskDetails()}
-        />
-      )}
-    </div>
   );
 };
 
