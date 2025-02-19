@@ -16,6 +16,7 @@ import TaskStatusLabel from "./TaskStatus";
 import RenderTaskTitle from "./RenderTaskTitle";
 import TaskRelationTab from './TaskRelationTab';
 import {RenderTaskSubTasks} from './SubTask';
+import Subtasks from './SubTask';
 export {
   Members,
   MembersList,
@@ -32,5 +33,6 @@ export {
   RenderTaskTitle,
   TaskStatusLabel,
   TaskRelationTab,
-  RenderTaskSubTasks
+  RenderTaskSubTasks,
+  Subtasks
 };

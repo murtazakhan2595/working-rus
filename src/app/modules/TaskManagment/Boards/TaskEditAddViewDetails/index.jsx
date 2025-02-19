@@ -11,7 +11,7 @@ import {
 } from "src/@/components/ui/dialog.jsx";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import {
-  TaskComments,
+  Subtasks,
   CheckList,
   Attachments,
 } from "app/modules/TaskManagment/Sections";
@@ -41,10 +41,8 @@ import {
 } from "app/hooks/taskManagment";
 import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
 import { getDropdownList, convertJSONArrayToStringsArray } from "utils/Lists";
-import Subtasks from "../../Sections/SubTask";
 import { createActivity } from "app/hooks/taskManagment";
 import { trackTaskActivities } from "./Sections/activityHelper";
-import SubtaskList from "./Sections/SubtaskList";
 import CopyLink from "components/ui/CopyLink";
 import TaskCommentsContainer from "../../Sections/TaskComments";
 import { FormatID } from "utils/getValuesFromTables";
@@ -80,7 +78,6 @@ const TaskEditAddViewDetails = ({
   const [isEditMode, setIsEditMode] = useState(false);
   const [projectDetail, setProjectDetail] = useState(null);
   const [refreshComments, setRefreshComments] = useState(false);
-  const [subTasksDetails, setSubTasksDetails] = useState([]);
   const [closeSheet, setCloseSheet] = useState(false);
   const employees = useSelector((state) => state.emp.employees);
   const [showActivities, setShowActivities] = useState(true);
@@ -112,10 +109,6 @@ const TaskEditAddViewDetails = ({
         console.error("Error fetching board list:", error);
       }
     }
-  };
-
-  const countCompletedTasks = (tasks) => {
-    return tasks.filter((task) => task.status === "COMPLETED").length;
   };
 
   useEffect(() => {
@@ -179,12 +172,6 @@ const TaskEditAddViewDetails = ({
           relation_ship: formattedRelationships,
         });
         setIsLoading(false);
-      }
-      if (cardDetails.sub_task && cardDetails.sub_task.length > 0) {
-        const subtaskDetails = await Promise.all(
-          cardDetails.sub_task.map((subtaskId) => getTaskById(subtaskId))
-        );
-        setSubTasksDetails(subtaskDetails);
       }
     } catch (error) {
       console.error("Error fetching task data:", error);
@@ -263,7 +250,6 @@ const TaskEditAddViewDetails = ({
   };
 
   const handleSubmit = async (values) => {
-    console.log("values", values);
     setIsLoading(true);
     try {
       const getAttachmentFileIds = async (files) => {
@@ -330,7 +316,6 @@ const TaskEditAddViewDetails = ({
 
         finalData.relation_ship = relationshipIds;
       }
-      console.log("finalData", finalData);
       const response = await addTask(finalData, taskId);
       if (response) {
         // Notify parent component of the new task
@@ -367,13 +352,6 @@ const TaskEditAddViewDetails = ({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const getSubtaskCount = () => {
-    if (!subTasksDetails?.length) return 0;
-    const total = subTasksDetails.length;
-    const completed = countCompletedTasks(subTasksDetails);
-    return `${completed}/${total}`;
   };
 
   return (
@@ -512,19 +490,7 @@ const TaskEditAddViewDetails = ({
                                 { value: "checklist", label: "Checklist" },
                                 { value: "relation", label: "Relation" },
                                 ...(!isSubtask
-                                  ? [
-                                      {
-                                        value: "subtasks",
-                                        label: (
-                                          <div className="flex items-center gap-2">
-                                            <span>Subtasks</span>
-                                            <span className="text-plum-1100">
-                                              ({subTasksDetails?.length})
-                                            </span>
-                                          </div>
-                                        ),
-                                      },
-                                    ]
+                                  ? [{ value: "subtasks", label: "Subtasks" }]
                                   : []),
                                 {
                                   value: "customFields",
