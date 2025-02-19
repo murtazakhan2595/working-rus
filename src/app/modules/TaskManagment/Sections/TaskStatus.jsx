@@ -20,7 +20,6 @@ const TaskStatusLabel = React.memo(({ status }) => {
   return (
     <Badge
       className="me-2 rounded"
-      size="sm"
       style={{
         background: getStatusLabelBackground(status),
       }}

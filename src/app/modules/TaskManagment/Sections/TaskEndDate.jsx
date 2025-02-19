@@ -80,8 +80,7 @@ const TaskEndDate = ({
           className={`${getBackgroundClass(
             taskDateStatus,
             taskCompleted
-          )} w-fit flex flex-row gap-1 rounded`}
-          size="sm"
+          )} flex-row gap-1 rounded`}
         >
           <TimeIcon color={getIconColor()} />
           <div style={textStyle} className="select-none">

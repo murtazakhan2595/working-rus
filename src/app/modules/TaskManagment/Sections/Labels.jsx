@@ -25,12 +25,10 @@ export const TaskLabelBadge = React.memo(({ label }) => {
   return (
     <Badge
       key={label.id}
-      className={`mr-1`}
       style={{
         background: lightenColor(label?.color, 85),
         color: label.color,
       }}
-      size="sm"
     >
       {label?.name}
     </Badge>
@@ -227,7 +225,7 @@ const Labels = React.memo(
         ) : (
           labelsSelected &&
           labelsSelected.length > 0 && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 flex-row">
               {labelsSelected?.map((labelId) => {
                 const label = labelsList?.find((label) => label.id === labelId);
                 return <TaskLabelBadge label={label} />;

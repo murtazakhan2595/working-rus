@@ -18,7 +18,7 @@ import {
   ChevronDown,
   ChevronRight,
 } from "lucide-react";
-
+import { Badge } from "components/ui/badge";
 import {
   TaskStatusLabel,
   RenderTaskTitle,
@@ -188,12 +188,13 @@ const TaskDetails = ({
           <div className="mt-2">
             <TooltipText
               tooltipTriggerText={
-                <div
-                  className="flex items-center text-xs font-medium gap-0.5 my-auto whitespace-nowrap bg-plum-300 text-plum-1100 px-2 py-1 rounded w-fit"
+                <Badge
+                  className="rounded"
                   onClick={(e) => {
                     e.preventDefault();
                     setOpenSubtaskDetails(!openSubtaskDetails);
                   }}
+                  variant="plum"
                 >
                   {openSubtaskDetails ? (
                     <ChevronDown size={16} />
@@ -201,7 +202,7 @@ const TaskDetails = ({
                     <ChevronRight size={16} />
                   )}
                   <div>{task?.sub_task?.length || 0} Subtask</div>
-                </div>
+                </Badge>
               }
               content={`${task?.sub_task?.length || 0} Subtasks`}
             />
