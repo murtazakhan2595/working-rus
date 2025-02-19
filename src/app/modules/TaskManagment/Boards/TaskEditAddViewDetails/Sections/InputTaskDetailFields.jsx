@@ -63,11 +63,11 @@ const InputTaskDetailFields = React.memo(
           />
           <TextInput
             label={"Time Spent"}
-            name="consumed_time"
+            name="actual_time"
             placeholder="Time Spent (hr)"
-            error={errors.consumed_time}
-            touch={touched.consumed_time}
-            value={taskData.consumed_time}
+            error={errors.actual_time}
+            touch={touched.actual_time}
+            value={taskData.actual_time}
             onChange={(field, value) => {
               onChange(field, value);
             }}
