@@ -124,11 +124,41 @@ const TaskRelationTab = ({
 
   useEffect(() => {
     const allSelectedIds = Object.values(relationsByType).flat();
-    const filtered = taskList.filter(
-      (task) =>
-        task.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !allSelectedIds.includes(task.id)
-    );
+
+    const filtered = taskList.filter((task) => {
+      if (!searchTerm) return !allSelectedIds.includes(task.id);
+
+      const lowercaseSearch = searchTerm.toLowerCase();
+
+      // Check if task name contains the search term
+      const nameMatch = task.name.toLowerCase().includes(lowercaseSearch);
+
+      // Check for ID-based search
+      let idMatch = false;
+
+      // Handle raw ID search (e.g. "481")
+      if (/^\d+$/.test(searchTerm)) {
+        idMatch = task.id.toString() === searchTerm;
+      }
+
+      // Handle prefixed ID search (e.g. "T-000481")
+      else if (
+        /^[A-Za-z]-\d+$/.test(searchTerm) ||
+        /^[A-Za-z]{1,2}-\d+$/.test(searchTerm)
+      ) {
+        const idPart = searchTerm.split("-")[1];
+        idMatch = task.id.toString() === idPart;
+      }
+
+      // Format with asterisks (e.g. **T-000481**)
+      else if (/\*\*[A-Za-z]-\d+\*\*/.test(searchTerm)) {
+        const idPart = searchTerm.replace(/\*/g, "").split("-")[1];
+        idMatch = task.id.toString() === idPart;
+      }
+
+      return (nameMatch || idMatch) && !allSelectedIds.includes(task.id);
+    });
+
     setFilteredTasks(filtered);
   }, [searchTerm, taskList, relationsByType]);
 
@@ -181,6 +211,8 @@ const handleRemoveRelation = (type, taskId) => {
 
   onChange(formattedRelations);
 };
+
+console.log("filtered task", filteredTasks);
 
   // Render related tasks for a specific type
   const renderRelatedTasks = (type) => {
@@ -271,7 +303,7 @@ const handleRemoveRelation = (type, taskId) => {
           </DialogHeader>
           <div className="space-y-4">
             <Input
-              placeholder="Search tasks..."
+              placeholder="Search by task name or ID"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full"
