@@ -11,7 +11,7 @@ const TaskStatusLabel = React.memo(({ status }) => {
     <Badge
       className="me-2 rounded"
       style={{
-        background: statusObj.backgroundColor,
+        background: statusObj?.backgroundColor,
       }}
     >
       {statusObj?.label || status}
