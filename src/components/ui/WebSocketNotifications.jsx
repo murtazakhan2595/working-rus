@@ -193,7 +193,12 @@ const WebSocketNotifications = () => {
       );
     }
 
-    if (notification.type === "MENTION" || notification.type === "TASK") {
+    if (notification.type === "MENTION") {
+      navigate(
+        `/project-board/${notification.project_id}/${notification.task_id}`
+      );
+    }
+    if(notification.type === "TASK"){
       navigate(
         `/project-board/${notification.project_id}/${notification.task_id}`
       );
