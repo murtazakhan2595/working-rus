@@ -13,11 +13,7 @@ import AddProjectCustomFieldForm from "app/modules/TaskManagment/Boards/TaskEdit
 import { Trash, GripHorizontal, ArrowRight } from "lucide-react";
 import { getAllCustomFields } from "app/hooks/taskManagment";
 
-const ProjectCustomFields = ({
-  setIsOpen,
-  isOpen,
-  projectId,
-}) => {
+const ProjectCustomFields = ({ reloadData = () => {}, projectId }) => {
   const [editCustomField, setEditCustomField] = useState(null);
   const [CustomFields, setCustomFields] = useState([]);
   const [draggedItem, setDraggedItem] = useState(null);
@@ -77,77 +73,68 @@ const ProjectCustomFields = ({
     setDraggedItem(null);
   };
   return (
-    <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
-      <DialogContent className="max-w-[450px] max-h-[95vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-plum-900">Custom Fields</DialogTitle>
-          <DialogDescription className="text-gray-900">
-            Add/modify custom fields
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 mb-6">
-          {CustomFields &&
-            CustomFields.map((customField, index) => (
-              <div
-                key={index}
-                // draggable
-                // onDragStart={(e) => handleDragStart(e, customField)}
-                // onDragOver={(e) => handleDragOver(e, customField)}
-                // onDragEnd={handleDragEnd}
-                className="flex items-center justify-start space-x-2 bg-white"
-              >
-                {/* <GripHorizontal className="cursor-move" /> */}
-                <div className="min-w-[calc(100%_-_80px)]">
-                  <TextInput
-                    name={`options[${index}].value`}
-                    value={customField.field_data.field_name}
-                    onChange={() => {}}
-                  />
-                </div>
-                <ArrowRight
-                  size={16}
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setEditCustomField(customField);
-                    setOpenProjectCustomFieldsForm(true);
-                  }}
-                />
-                {/* <Trash
+    <div className="space-y-4 my-3">
+      {CustomFields &&
+        CustomFields.map((customField, index) => (
+          <div
+            key={index}
+            // draggable
+            // onDragStart={(e) => handleDragStart(e, customField)}
+            // onDragOver={(e) => handleDragOver(e, customField)}
+            // onDragEnd={handleDragEnd}
+            className="flex items-center justify-start space-x-2 bg-white"
+          >
+            {/* <GripHorizontal className="cursor-move" /> */}
+            <div className="min-w-[calc(100%_-_80px)]">
+              <TextInput
+                name={`options[${index}].value`}
+                value={customField.field_data.field_name}
+                onChange={() => {}}
+              />
+            </div>
+            <ArrowRight
+              size={16}
+              className="cursor-pointer"
+              onClick={() => {
+                setEditCustomField(customField);
+                setOpenProjectCustomFieldsForm(true);
+              }}
+            />
+            {/* <Trash
                   size={16}
                   className="text-red-300 cursor-pointer"
                   // onClick={() =>
                   //   //deleteOption(option, props.values.options, props)
                   // }
                 /> */}
-              </div>
-            ))}
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-            onClick={(event) => {
-              event.preventDefault();
-              setOpenProjectCustomFieldsForm(true);
-            }}
-          >
-            Add New Field
-          </Button>
-          {openProjectCustomFieldsForm && (
-            <AddProjectCustomFieldForm
-              customFieldData={editCustomField?.field_data}
-              customFieldId={editCustomField?.id}
-              projectId={projectId}
-              isOpen={openProjectCustomFieldsForm}
-              setIsOpen={setOpenProjectCustomFieldsForm}
-              reloadData={() => {
-                fetchAllCustomFields(true, projectId);
-                setEditCustomField(null);
-              }}
-            />
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+          </div>
+        ))}
+      <Button
+        variant="outline"
+        size="sm"
+        // className="w-full"
+        onClick={(event) => {
+          event.preventDefault();
+          setOpenProjectCustomFieldsForm(true);
+        }}
+      >
+        Add New Field
+      </Button>
+      {openProjectCustomFieldsForm && (
+        <AddProjectCustomFieldForm
+          customFieldData={editCustomField?.field_data}
+          customFieldId={editCustomField?.id}
+          projectId={projectId}
+          isOpen={openProjectCustomFieldsForm}
+          setIsOpen={setOpenProjectCustomFieldsForm}
+          reloadData={() => {
+            fetchAllCustomFields(true, projectId);
+            setEditCustomField(null);
+            reloadData();
+          }}
+        />
+      )}
+    </div>
   );
 };
 

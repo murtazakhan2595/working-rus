@@ -28,7 +28,9 @@ export const ActivityTypes = {
   RELATION_ADDED: "RELATION_ADDED",
   RELATION_REMOVED: "RELATION_REMOVED",
   ESTIMATED_TIME_CHANGED: "ESTIMATED_TIME_CHANGED",
+  ACTUAL_TIME_CHANGED: "ACTUAL_TIME_CHANGED",
   CHANGED_LIST: "CHANGED_LIST",
+  CUSTOM_FIELD_CHANGED: "CUSTOM_FIELD_CHANGED",
 };
 
 const getRenderedValue = (value) => {
@@ -37,7 +39,12 @@ const getRenderedValue = (value) => {
   );
 };
 
-const generateActivityContent = (type, newValueHTML, oldValueHTML = null) => {
+const generateActivityContent = (
+  type,
+  newValueHTML,
+  oldValueHTML = null,
+  additionalInfo = null
+) => {
   const newValue = newValueHTML || null;
   const oldValue = oldValueHTML || null;
   switch (type) {
@@ -51,9 +58,13 @@ const generateActivityContent = (type, newValueHTML, oldValueHTML = null) => {
       return "Updated task description";
 
     case ActivityTypes.STATUS_CHANGED:
-      return `Marked the card as ${ReactDOMServer.renderToStaticMarkup(newValue)}`;
+      return `Marked the card as ${ReactDOMServer.renderToStaticMarkup(
+        newValue
+      )}`;
     case ActivityTypes.PRIORITY_CHANGED:
-      return `Changed priority from ${ReactDOMServer.renderToStaticMarkup(oldValue)} to ${ReactDOMServer.renderToStaticMarkup(newValue)}`;
+      return `Changed priority from ${ReactDOMServer.renderToStaticMarkup(
+        oldValue
+      )} to ${ReactDOMServer.renderToStaticMarkup(newValue)}`;
 
     case ActivityTypes.DUE_DATE_CHANGED:
       return oldValue
@@ -75,14 +86,14 @@ const generateActivityContent = (type, newValueHTML, oldValueHTML = null) => {
       return `Removed ${getRenderedValue(removedMembers)} from the task`;
 
     case ActivityTypes.LABELS_ADDED:
-      return `Added label${newValue?.length > 1 ? "s" : ""}: ${newValue.join(
-        ", "
-      )}`;
+      return `Added new label${
+        newValue?.length > 1 ? "s" : ""
+      } ${getRenderedValue(newValue.join(", "))}`;
 
     case ActivityTypes.LABELS_REMOVED:
-      return `Removed label${newValue?.length > 1 ? "s" : ""}: ${newValue.join(
-        ", "
-      )}`;
+      return `Removed label${
+        newValue?.length > 1 ? "s" : ""
+      } ${getRenderedValue(newValue.join(", "))}`;
 
     case ActivityTypes.CHECKLIST_ITEM_ADDED:
       return `Added checklist item: "${newValue}"`;
@@ -110,6 +121,13 @@ const generateActivityContent = (type, newValueHTML, oldValueHTML = null) => {
         oldValue
       )} to ${getRenderedValue(newValue)}`;
 
+    case ActivityTypes.ESTIMATED_TIME_CHANGED:
+      return `Updated the estimated time to ${getRenderedValue(
+        newValue + "hr"
+      )}`;
+    case ActivityTypes.ACTUAL_TIME_CHANGED:
+      return `Updated the time spent to ${getRenderedValue(newValue + "hr")}`;
+
     case ActivityTypes.SUBTASK_CREATED:
       return `Created subtask: "${newValue}"`;
 
@@ -121,6 +139,13 @@ const generateActivityContent = (type, newValueHTML, oldValueHTML = null) => {
 
     case ActivityTypes.RELATION_REMOVED:
       return `Removed relation: ${newValue}`;
+
+    case ActivityTypes.CUSTOM_FIELD_CHANGED:
+      return `Updated ${getRenderedValue(
+        additionalInfo
+      )} custom field to ${getRenderedValue(newValue)} ${
+        oldValue ? `from ${oldValue}` : ""
+      }`;
 
     default:
       return "Updated the task";
@@ -135,8 +160,8 @@ export const trackTaskActivities = async (
   logActivity, // Function to create activity logs
   fieldsToTrack // List of fields to track changes
 ) => {
-  console.log("Task ID in trackTaskActivities:", taskId);
-  console.log("Previous Task Data ID:", previousTaskData?.id);
+  console.log("Task ID in trackTaskActivities:", updatedTaskData);
+  console.log("Previous Task Data ID:", previousTaskData);
 
   const activityLog = []; // Stores all detected changes for logging
 
@@ -290,13 +315,14 @@ export const trackTaskActivities = async (
           }
           break;
 
-        case "labels":
+        case "label":
           if (
-            JSON.stringify(updatedTaskData.labels || []) !==
-            JSON.stringify(previousTaskData.labels || [])
+            JSON.stringify(updatedTaskData.label || []) !==
+            JSON.stringify(previousTaskData.label || [])
           ) {
-            const previousLabels = previousTaskData.labels || [];
-            const updatedLabels = updatedTaskData.labels || [];
+            debugger;
+            const previousLabels = previousTaskData.label_name || [];
+            const updatedLabels = updatedTaskData.label_name || [];
 
             const addedLabels = updatedLabels?.filter(
               (label) => !previousLabels?.includes(label)
@@ -361,6 +387,74 @@ export const trackTaskActivities = async (
               user_id: userId,
             });
           }
+          break;
+
+        case "estimated_time":
+          if (
+            updatedTaskData.estimated_time !== previousTaskData.estimated_time
+          ) {
+            activityLog.push({
+              task_id: taskId,
+              action_type: ActivityTypes.ESTIMATED_TIME_CHANGED,
+              content: generateActivityContent(
+                ActivityTypes.ESTIMATED_TIME_CHANGED,
+                updatedTaskData.estimated_time,
+                previousTaskData.estimated_time
+              ),
+              user_id: userId,
+            });
+          }
+          break;
+
+        case "actual_time":
+          if (updatedTaskData.actual_time !== previousTaskData.actual_time) {
+            activityLog.push({
+              task_id: taskId,
+              action_type: ActivityTypes.ESTIMATED_TIME_CHANGED,
+              content: generateActivityContent(
+                ActivityTypes.ACTUAL_TIME_CHANGED,
+                updatedTaskData.actual_time,
+                previousTaskData.actual_time
+              ),
+              user_id: userId,
+            });
+          }
+          break;
+        case "custom_fields":
+          // Convert previous custom fields (Array of "field:value" strings) into an object
+          const updatedCustomFields = Object.fromEntries(
+            (updatedTaskData.custom_fields || [])
+              .filter((item) => typeof item === "string" && item.includes(":"))
+              .map((item) => item.split(":")) // Convert "field:value" to [field, value]
+          );
+
+          // Convert updated custom fields (Array of { field, value } objects) into an object
+          const previousCustomFields = Object.fromEntries(
+            (previousTaskData.custom_fields || [])
+              .filter((item) => typeof item === "object" && item.field) // Ensure valid object format
+              .map(({ field, value }) => [field, value]) // Convert to key-value pairs
+          );
+
+          // Compare changes and track updates
+          Object.keys(updatedCustomFields).forEach((fieldKey) => {
+            const newValue = updatedCustomFields[fieldKey]; // New value
+            const oldValue = previousCustomFields[fieldKey] || null; // Old value (default to null if missing)
+
+            if (newValue !== oldValue) {
+              activityLog.push({
+                task_id: taskId,
+                action_type: ActivityTypes.CUSTOM_FIELD_CHANGED,
+                content: generateActivityContent(
+                  ActivityTypes.CUSTOM_FIELD_CHANGED,
+                  newValue, // New value
+                  oldValue, // Old value (if exists)
+                  fieldKey // Field name
+                ),
+                user_id: userId,
+              });
+            }
+          });
+
           break;
 
         default:

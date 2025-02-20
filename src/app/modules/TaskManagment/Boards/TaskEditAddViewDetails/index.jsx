@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
+  DialogDescription,
   DialogTitle,
 } from "src/@/components/ui/dialog.jsx";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
@@ -72,7 +72,6 @@ const TaskEditAddViewDetails = ({
   const [isLoading, setIsLoading] = useState(false);
   const [BoardList, setBoardList] = useState([]);
   const [CustomFields, setCustomFields] = useState([]);
-  const [openProjectCustomFields, setOpenProjectCustomFields] = useState(false);
   const formRef = useRef();
   const [initialValues, setInitialValues] = useState(Task);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -316,21 +315,13 @@ const TaskEditAddViewDetails = ({
 
         finalData.relation_ship = relationshipIds;
       }
-      const response = await addTask(finalData, taskId , userId , initialValues);
+      const response = await addTask(finalData, taskId, userId, initialValues);
       if (response) {
         // Notify parent component of the new task
         if (onTaskCreated && isSubtask) {
           onTaskCreated(response);
         }
-        //  setShowSuccessMessage(true);
-        // Track activities
-        // await trackTaskActivities(
-        //   response?.data,
-        //   taskId ? initialValues : null,
-        //   taskId || response?.data.id,
-        //   userId,
-        //   createActivity
-        // );
+
         toast.success(
           isSubtask
             ? "Subtask Created Successfully!"
@@ -341,7 +332,7 @@ const TaskEditAddViewDetails = ({
         );
         taskId && fetchTaskData(true);
         !isSubtask && reloadData();
-        setIsOpen(false);
+        // setIsOpen(false);
       }
     } catch (error) {
       console.error("Error updating task:", error);
@@ -362,7 +353,9 @@ const TaskEditAddViewDetails = ({
         setIsOpen,
       })}
       <Dialog open={isOpen} onOpenChange={handleClose}>
+        <DialogTitle></DialogTitle>
         <DialogContent className="max-w-[1600px] w-[80vw] h-[auto] pr-2">
+          <DialogDescription></DialogDescription>
           {isLoading ? (
             <PageLoader />
           ) : (
@@ -577,23 +570,14 @@ const TaskEditAddViewDetails = ({
                                   detailCardTitle=""
                                   classNames="mt-0"
                                 >
-                                  <DetailBox
-                                    label="Custom Fields"
-                                    orientation="horizontal"
-                                    value={
-                                      <Button
-                                        variant="continue"
-                                        size="sm"
-                                        className="w-full"
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          setOpenProjectCustomFields(true);
-                                        }}
-                                      >
-                                        <Plus className="w-4 h-4 mr-2" /> Add
-                                        Custom Fields
-                                      </Button>
-                                    }
+                                  <ProjectCustomFields
+                                    projectId={props.values.project_id}
+                                    reloadData={() => {
+                                      fetchCustomFieldsByProjectId(
+                                        true,
+                                        props.values.project_id
+                                      );
+                                    }}
                                   />
                                 </DetailCard>
                               </TabsContent>
@@ -718,17 +702,6 @@ const TaskEditAddViewDetails = ({
           )}
         </DialogContent>
       </Dialog>
-      {openProjectCustomFields && projectDetail && (
-        <ProjectCustomFields
-          projectId={projectId}
-          projectData={projectDetail}
-          isOpen={openProjectCustomFields}
-          setIsOpen={() => {
-            setOpenProjectCustomFields();
-            fetchCustomFieldsByProjectId(true, projectId);
-          }}
-        />
-      )}
     </>
   );
 };

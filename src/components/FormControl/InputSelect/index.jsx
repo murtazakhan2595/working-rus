@@ -32,10 +32,10 @@ const SelectedOptionsList = ({
         selectedOptionListClassName
       )}
     >
-      {selectedValues.map((val) =>
+      {selectedValues.map((val , index) =>
         useValueAsIdentifier ? (
           <div
-            key={val}
+            key={index}
             className={cn(
               "bg-neutral-300 text-neutral-1200 text-xs font-semibold px-2 py-1 rounded-lg flex items-center max-w-[100%] min-w-fit overflow-hidden",
               selectedOptionClassName

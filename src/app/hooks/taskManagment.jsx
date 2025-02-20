@@ -270,14 +270,13 @@ const addProject = async (payload, projectID) => {
     return false;
   }
 };
-const addTask = async (payload, id, userId, initialValues) => {
+export const addTask = async (payload, id, userId, initialValues) => {
   const taskId = payload.id || id;
   const url = taskId ? `${baseUrl}/task/${taskId}/` : `${baseUrl}/task/`;
   const method = taskId ? "patch" : "post";
 
   try {
     const response = await axios[method](url, payload, { headers: headers() });
-
     if ([200, 201].includes(response.status)) {
       if (userId) {
         await trackTaskActivities(
@@ -404,7 +403,6 @@ const addAttachments = async (payload, id = null) => {
     // Create FormData object
     const formData = new FormData();
     formData.append("attachment", payload.attachment);
-
     const url = id
       ? `${baseUrl}/TaskmanagementAttachment/${id}` // Use id if updating
       : `${baseUrl}/TaskmanagementAttachment`; // No id means create new
@@ -1141,7 +1139,6 @@ export {
   deleteProject,
   addBoard,
   getTaskByBoardId,
-  addTask,
   getTaskById,
   deleteTask,
   deleteBoard,
