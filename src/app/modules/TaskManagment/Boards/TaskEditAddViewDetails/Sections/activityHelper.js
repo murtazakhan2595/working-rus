@@ -100,12 +100,12 @@ const generateActivityContent = (
       return `Added checklist item: ${getRenderedValue(newValue)}`;
 
     case ActivityTypes.CHECKLIST_ITEM_DESCRIPTION_UPDATED:
-      return `Updated checklist item description to ${getRenderedValue(
+      return `Updated checklist item to ${getRenderedValue(
         newValue
       )} from ${getRenderedValue(oldValue)}`;
 
     case ActivityTypes.CHECKLIST_ITEM_COMPLETED:
-      return `Marked checklist item ${newValue} as ${getRenderedValue(
+      return `Marked checklist item "${newValue}" as ${getRenderedValue(
         additionalInfo
       )}`;
 
@@ -193,14 +193,14 @@ export const trackTaskActivities = async (
     fieldsToTrack.forEach((field) => {
       switch (field) {
         case "name":
-          if (updatedTaskData.name !== previousTaskData.name) {
+          if (updatedTaskData.name !== previousTaskData?.name) {
             activityLog.push({
               task_id: taskId,
               action_type: ActivityTypes.TASK_TITLE_UPDATED,
               content: generateActivityContent(
                 ActivityTypes.TASK_TITLE_UPDATED,
                 updatedTaskData.name,
-                previousTaskData.name
+                previousTaskData?.name
               ),
               user_id: userId,
             });
@@ -208,7 +208,7 @@ export const trackTaskActivities = async (
           break;
 
         case "description":
-          if (updatedTaskData.description !== previousTaskData.description) {
+          if (updatedTaskData.description !== previousTaskData?.description) {
             activityLog.push({
               task_id: taskId,
               action_type: ActivityTypes.TASK_DESCRIPTION_UPDATED,
@@ -221,7 +221,7 @@ export const trackTaskActivities = async (
           break;
 
         case "status":
-          if (updatedTaskData.status !== previousTaskData.status) {
+          if (updatedTaskData.status !== previousTaskData?.status) {
             activityLog.push({
               task_id: taskId,
               action_type: ActivityTypes.STATUS_CHANGED,
@@ -229,8 +229,8 @@ export const trackTaskActivities = async (
                 ActivityTypes.STATUS_CHANGED,
                 TaskStatus.find((obj) => obj.value === updatedTaskData.status)
                   ?.label || updatedTaskData.status,
-                TaskStatus.find((obj) => obj.value === previousTaskData.status)
-                  ?.label || previousTaskData.status
+                TaskStatus.find((obj) => obj.value === previousTaskData?.status)
+                  ?.label || previousTaskData?.status
               ),
               user_id: userId,
             });
@@ -238,7 +238,7 @@ export const trackTaskActivities = async (
           break;
 
         case "priority":
-          if (updatedTaskData.priority !== previousTaskData.priority) {
+          if (updatedTaskData.priority !== previousTaskData?.priority) {
             activityLog.push({
               task_id: taskId,
               action_type: ActivityTypes.PRIORITY_CHANGED,
@@ -248,7 +248,7 @@ export const trackTaskActivities = async (
                   (option) => option.value === updatedTaskData.priority
                 )?.name,
                 PriorityList.find(
-                  (option) => option.value === previousTaskData.priority
+                  (option) => option.value === previousTaskData?.priority
                 )?.name
               ),
               user_id: userId,
@@ -259,12 +259,12 @@ export const trackTaskActivities = async (
         case "assigned_to":
           if (
             JSON.stringify(updatedTaskData.assigned_to) !==
-            JSON.stringify(previousTaskData.assigned_to)
+            JSON.stringify(previousTaskData?.assigned_to)
           ) {
             const newMembers = updatedTaskData.assigned_to_names?.filter(
-              (member) => !previousTaskData.assigned_to_names?.includes(member)
+              (member) => !previousTaskData?.assigned_to_names?.includes(member)
             );
-            const removedMembers = previousTaskData.assigned_to_names?.filter(
+            const removedMembers = previousTaskData?.assigned_to_names?.filter(
               (member) => !updatedTaskData.assigned_to_names?.includes(member)
             );
 
@@ -296,7 +296,7 @@ export const trackTaskActivities = async (
 
         case "end_date":
           const previousDueDate = formatDateForComparison(
-            previousTaskData.end_date
+            previousTaskData?.end_date
           );
           const updatedDueDate = formatDateForComparison(
             updatedTaskData.end_date
@@ -326,10 +326,10 @@ export const trackTaskActivities = async (
         case "label":
           if (
             JSON.stringify(updatedTaskData.label || []) !==
-            JSON.stringify(previousTaskData.label || [])
+            JSON.stringify(previousTaskData?.label || [])
           ) {
             debugger;
-            const previousLabels = previousTaskData.label_name || [];
+            const previousLabels = previousTaskData?.label_name || [];
             const updatedLabels = updatedTaskData.label_name || [];
 
             const addedLabels = updatedLabels?.filter(
@@ -366,7 +366,7 @@ export const trackTaskActivities = async (
           break;
 
         case "is_archive":
-          if (updatedTaskData.is_archive !== previousTaskData.is_archive) {
+          if (updatedTaskData.is_archive !== previousTaskData?.is_archive) {
             activityLog.push({
               task_id: taskId,
               action_type: updatedTaskData.is_archive
@@ -383,14 +383,14 @@ export const trackTaskActivities = async (
           break;
 
         case "board_id":
-          if (updatedTaskData.board_id !== previousTaskData.board_id) {
+          if (updatedTaskData.board_id !== previousTaskData?.board_id) {
             activityLog.push({
               task_id: taskId,
               action_type: ActivityTypes.CHANGED_LIST,
               content: generateActivityContent(
                 ActivityTypes.CHANGED_LIST,
                 updatedTaskData.board_name,
-                previousTaskData.board_name
+                previousTaskData?.board_name
               ),
               user_id: userId,
             });
@@ -399,7 +399,7 @@ export const trackTaskActivities = async (
 
         case "estimated_time":
           if (
-            updatedTaskData.estimated_time !== previousTaskData.estimated_time
+            updatedTaskData.estimated_time !== previousTaskData?.estimated_time
           ) {
             activityLog.push({
               task_id: taskId,
@@ -407,7 +407,7 @@ export const trackTaskActivities = async (
               content: generateActivityContent(
                 ActivityTypes.ESTIMATED_TIME_CHANGED,
                 updatedTaskData.estimated_time,
-                previousTaskData.estimated_time
+                previousTaskData?.estimated_time
               ),
               user_id: userId,
             });
@@ -415,14 +415,14 @@ export const trackTaskActivities = async (
           break;
 
         case "actual_time":
-          if (updatedTaskData.actual_time !== previousTaskData.actual_time) {
+          if (updatedTaskData.actual_time !== previousTaskData?.actual_time) {
             activityLog.push({
               task_id: taskId,
               action_type: ActivityTypes.ESTIMATED_TIME_CHANGED,
               content: generateActivityContent(
                 ActivityTypes.ACTUAL_TIME_CHANGED,
                 updatedTaskData.actual_time,
-                previousTaskData.actual_time
+                previousTaskData?.actual_time
               ),
               user_id: userId,
             });
@@ -439,7 +439,7 @@ export const trackTaskActivities = async (
 
           // Convert updated custom fields (Array of { field, value } objects) into an object
           const previousCustomFields = Object.fromEntries(
-            (previousTaskData.custom_fields || [])
+            (previousTaskData?.custom_fields || [])
               .filter((item) => typeof item === "object" && item.field) // Ensure valid object format
               .map(({ field, value }) => [field, value]) // Convert to key-value pairs
           );
@@ -505,44 +505,6 @@ export const trackTaskActivities = async (
               user_id: userId,
             });
           }
-          // if (
-          //   JSON.stringify(updatedTaskData.task_checklist || []) !==
-          //   JSON.stringify(previousTaskData.task_checklist || [])
-          // ) {
-          //   const previousLabels = previousTaskData.label_name || [];
-          //   const updatedLabels = updatedTaskData.label_name || [];
-
-          //   const addedLabels = updatedLabels?.filter(
-          //     (label) => !previousLabels?.includes(label)
-          //   );
-          //   const removedLabels = previousLabels?.filter(
-          //     (label) => !updatedLabels?.includes(label)
-          //   );
-
-          //   if (addedLabels?.length > 0) {
-          //     activityLog.push({
-          //       task_id: taskId,
-          //       action_type: ActivityTypes.LABELS_ADDED,
-          //       content: generateActivityContent(
-          //         ActivityTypes.LABELS_ADDED,
-          //         addedLabels
-          //       ),
-          //       user_id: userId,
-          //     });
-          //   }
-
-          //   if (removedLabels?.length > 0) {
-          //     activityLog.push({
-          //       task_id: taskId,
-          //       action_type: ActivityTypes.LABELS_REMOVED,
-          //       content: generateActivityContent(
-          //         ActivityTypes.LABELS_REMOVED,
-          //         removedLabels
-          //       ),
-          //       user_id: userId,
-          //     });
-          //   }
-          // }
           break;
 
         default:
