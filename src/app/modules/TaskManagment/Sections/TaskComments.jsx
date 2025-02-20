@@ -194,6 +194,7 @@ function TaskComments({
                     Remove
                   </button>
                 )}
+                
                 {item.user_id === userId && item.type === "comment" && (
                   <button
                     className="text-sm text-yellow-600 hover:underline"

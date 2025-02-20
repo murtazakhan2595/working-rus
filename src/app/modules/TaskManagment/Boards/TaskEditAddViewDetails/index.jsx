@@ -269,7 +269,13 @@ const TaskEditAddViewDetails = ({
         return (
           await Promise.all(
             checklist.map(async (item) => {
-              const response = await addTaskCheckListItem(item, item.id);
+              const response = await addTaskCheckListItem(
+                item,
+                item.id,
+                taskId,
+                userId,
+                initialValues.task_checklist.find((obj) => obj.id === item.id)
+              );
               return response.id;
             })
           )
@@ -478,22 +484,60 @@ const TaskEditAddViewDetails = ({
                             onValueChange={setActiveTab}
                             className="mt-4"
                           >
-                            <TabsList className="grid grid-cols-4 gap-4 mb-6">
+                            <TabsList className="gap-6">
                               {[
-                                { value: "checklist", label: "Checklist" },
-                                { value: "relation", label: "Relation" },
+                                {
+                                  value: "checklist",
+                                  label: (
+                                    <span>
+                                      Checklist(
+                                      <span>
+                                        {props.values.task_checklist?.length ||
+                                          0}
+                                      </span>
+                                      )
+                                    </span>
+                                  ),
+                                },
+                                {
+                                  value: "relation",
+                                  label: (
+                                    <span>
+                                      Relation(
+                                      <span>
+                                        {props.values.relation_ship?.length ||
+                                          0}
+                                      </span>
+                                      )
+                                    </span>
+                                  ),
+                                },
                                 ...(!isSubtask
-                                  ? [{ value: "subtasks", label: "Subtasks" }]
+                                  ? [
+                                      {
+                                        value: "subtasks",
+                                        label: (
+                                          <span>
+                                            Subtasks(
+                                            <span>
+                                              {props.values.sub_task?.length ||
+                                                0}
+                                            </span>
+                                            )
+                                          </span>
+                                        ),
+                                      },
+                                    ]
                                   : []),
                                 {
                                   value: "customFields",
-                                  label: "Custom Fields",
+                                  label: <span>Custom Fields</span>,
                                 },
                               ].map((tab) => (
                                 <TabsTrigger
                                   key={tab.value}
                                   value={tab.value}
-                                  className="data-[state=active]:bg-primary-200 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                                  className="inline-flex px-1 w-fit shadow-none rounded-none text-neutral-1200 data-[state=active]:border-b data-[state=active]:shadow-none data-[state=active]:border-primary-1000 data-[state=active]:text-primary-1100"
                                 >
                                   {tab.label}
                                 </TabsTrigger>
@@ -620,63 +664,59 @@ const TaskEditAddViewDetails = ({
                           </div>
                           {/* </Card> */}
 
-                          <Card className="p-6">
-                            <DetailBox
-                              label={
-                                <div className="flex justify-between items-center w-full mb-4">
-                                  <span className="text-neutral-1200 text-sm font-semibold">
-                                    Activity
-                                  </span>
-                                  <button
-                                    className="text-sm text-primary-1100 hover:text-primary-700"
-                                    type="button"
-                                    onClick={toggleActivities}
-                                  >
-                                    {showActivities
-                                      ? "Hide Details"
-                                      : "Show Details"}
-                                  </button>
-                                </div>
-                              }
-                              orientation="horizontal"
-                              value={
-                                !refreshComments && (
-                                  <CommentsInputField
-                                    fetchData={setRefreshComments}
-                                    editCommentContent={editCommentContent}
-                                    setEditCommentContent={
-                                      setEditCommentContent
-                                    }
-                                    replyComment={replyComment}
-                                    setReplyComment={setReplyComment}
-                                    employees={employees}
-                                    taskId={taskId}
-                                    userId={userId}
-                                    projectDetail={projectDetail}
-                                    addAttachment={async (attachment) => {
-                                      const uploadedAttachment =
-                                        await uploadAttachmentFile(attachment);
-                                      const attachmentSelected =
-                                        props.values.attachment || [];
-                                      props.setFieldValue("attachment", [
-                                        ...attachmentSelected,
-                                        uploadedAttachment,
-                                      ]);
-                                      return uploadedAttachment.id || null;
-                                    }}
-                                  />
-                                )
-                              }
-                            />
-                            <TaskCommentsContainer
-                              taskId={taskId}
-                              refreshComments={refreshComments}
-                              setRefreshComments={setRefreshComments}
-                              showActivities={showActivities}
-                              setEditCommentContent={setEditCommentContent}
-                              setReplyComment={setReplyComment}
-                            />
-                          </Card>
+                          <DetailBox
+                            label={
+                              <div className="flex justify-between items-center w-full mb-4">
+                                <span className="text-neutral-1200 text-sm font-semibold">
+                                  Activity
+                                </span>
+                                <button
+                                  className="text-sm text-primary-1100 hover:text-primary-700"
+                                  type="button"
+                                  onClick={toggleActivities}
+                                >
+                                  {showActivities
+                                    ? "Hide Details"
+                                    : "Show Details"}
+                                </button>
+                              </div>
+                            }
+                            orientation="horizontal"
+                            value={
+                              !refreshComments && (
+                                <CommentsInputField
+                                  fetchData={setRefreshComments}
+                                  editCommentContent={editCommentContent}
+                                  setEditCommentContent={setEditCommentContent}
+                                  replyComment={replyComment}
+                                  setReplyComment={setReplyComment}
+                                  employees={employees}
+                                  taskId={taskId}
+                                  userId={userId}
+                                  projectDetail={projectDetail}
+                                  addAttachment={async (attachment) => {
+                                    const uploadedAttachment =
+                                      await uploadAttachmentFile(attachment);
+                                    const attachmentSelected =
+                                      props.values.attachment || [];
+                                    props.setFieldValue("attachment", [
+                                      ...attachmentSelected,
+                                      uploadedAttachment,
+                                    ]);
+                                    return uploadedAttachment.id || null;
+                                  }}
+                                />
+                              )
+                            }
+                          />
+                          <TaskCommentsContainer
+                            taskId={taskId}
+                            refreshComments={refreshComments}
+                            setRefreshComments={setRefreshComments}
+                            showActivities={showActivities}
+                            setEditCommentContent={setEditCommentContent}
+                            setReplyComment={setReplyComment}
+                          />
                         </div>
                       </div>
 

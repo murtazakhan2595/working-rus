@@ -17,6 +17,7 @@ export const ActivityTypes = {
   LABELS_REMOVED: "LABELS_REMOVED",
   CHECKLIST_ITEM_ADDED: "CHECKLIST_ITEM_ADDED",
   CHECKLIST_ITEM_COMPLETED: "CHECKLIST_ITEM_COMPLETED",
+  CHECKLIST_ITEM_DESCRIPTION_UPDATED: "CHECKLIST_ITEM_DESCRIPTION_UPDATED",
   CHECKLIST_ITEM_DELETED: "CHECKLIST_ITEM_DELETED",
   ATTACHMENT_ADDED: "ATTACHMENT_ADDED",
   ATTACHMENT_REMOVED: "ATTACHMENT_REMOVED",
@@ -96,10 +97,17 @@ const generateActivityContent = (
       } ${getRenderedValue(newValue.join(", "))}`;
 
     case ActivityTypes.CHECKLIST_ITEM_ADDED:
-      return `Added checklist item: "${newValue}"`;
+      return `Added checklist item: ${getRenderedValue(newValue)}`;
+
+    case ActivityTypes.CHECKLIST_ITEM_DESCRIPTION_UPDATED:
+      return `Updated checklist item description to ${getRenderedValue(
+        newValue
+      )} from ${getRenderedValue(oldValue)}`;
 
     case ActivityTypes.CHECKLIST_ITEM_COMPLETED:
-      return `Completed checklist item: "${newValue}"`;
+      return `Marked checklist item ${newValue} as ${getRenderedValue(
+        additionalInfo
+      )}`;
 
     case ActivityTypes.CHECKLIST_ITEM_DELETED:
       return `Removed checklist item: "${newValue}"`;
@@ -420,6 +428,7 @@ export const trackTaskActivities = async (
             });
           }
           break;
+
         case "custom_fields":
           // Convert previous custom fields (Array of "field:value" strings) into an object
           const updatedCustomFields = Object.fromEntries(
@@ -455,6 +464,85 @@ export const trackTaskActivities = async (
             }
           });
 
+          break;
+
+        case "task_checklist":
+          const newCheckList = updatedTaskData?.task_checklist || null;
+          const oldCheckList = previousTaskData?.task_checklist || null;
+          if (newCheckList?.id && !oldCheckList) {
+            activityLog.push({
+              task_id: taskId,
+              action_type: ActivityTypes.CHECKLIST_ITEM_ADDED,
+              content: generateActivityContent(
+                ActivityTypes.CHECKLIST_ITEM_ADDED,
+                newCheckList.description
+              ),
+              user_id: userId,
+            });
+          } else if (newCheckList?.description !== oldCheckList?.description) {
+            activityLog.push({
+              task_id: taskId,
+              action_type: ActivityTypes.CHECKLIST_ITEM_DESCRIPTION_UPDATED,
+              content: generateActivityContent(
+                ActivityTypes.CHECKLIST_ITEM_DESCRIPTION_UPDATED,
+                newCheckList.description,
+                oldCheckList.description
+              ),
+              user_id: userId,
+            });
+          } else if (
+            newCheckList?.is_completed !== oldCheckList?.is_completed
+          ) {
+            activityLog.push({
+              task_id: taskId,
+              action_type: ActivityTypes.CHECKLIST_ITEM_COMPLETED,
+              content: generateActivityContent(
+                ActivityTypes.CHECKLIST_ITEM_COMPLETED,
+                newCheckList.description,
+                oldCheckList.description,
+                newCheckList?.is_completed === true ? "completed" : "incomplete"
+              ),
+              user_id: userId,
+            });
+          }
+          // if (
+          //   JSON.stringify(updatedTaskData.task_checklist || []) !==
+          //   JSON.stringify(previousTaskData.task_checklist || [])
+          // ) {
+          //   const previousLabels = previousTaskData.label_name || [];
+          //   const updatedLabels = updatedTaskData.label_name || [];
+
+          //   const addedLabels = updatedLabels?.filter(
+          //     (label) => !previousLabels?.includes(label)
+          //   );
+          //   const removedLabels = previousLabels?.filter(
+          //     (label) => !updatedLabels?.includes(label)
+          //   );
+
+          //   if (addedLabels?.length > 0) {
+          //     activityLog.push({
+          //       task_id: taskId,
+          //       action_type: ActivityTypes.LABELS_ADDED,
+          //       content: generateActivityContent(
+          //         ActivityTypes.LABELS_ADDED,
+          //         addedLabels
+          //       ),
+          //       user_id: userId,
+          //     });
+          //   }
+
+          //   if (removedLabels?.length > 0) {
+          //     activityLog.push({
+          //       task_id: taskId,
+          //       action_type: ActivityTypes.LABELS_REMOVED,
+          //       content: generateActivityContent(
+          //         ActivityTypes.LABELS_REMOVED,
+          //         removedLabels
+          //       ),
+          //       user_id: userId,
+          //     });
+          //   }
+          // }
           break;
 
         default:

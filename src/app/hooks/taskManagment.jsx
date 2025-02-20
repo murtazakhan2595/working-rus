@@ -321,7 +321,13 @@ const moveTask = async (payload) => {
     return false;
   }
 };
-const addTaskCheckListItem = async (payload, id = null) => {
+const addTaskCheckListItem = async (
+  payload,
+  id = null,
+  taskId = null,
+  userId,
+  initialValues = null
+) => {
   try {
     // Create FormData object
     const url = id
@@ -339,6 +345,16 @@ const addTaskCheckListItem = async (payload, id = null) => {
 
     // Check response status
     if (response.status === 201 || response.status === 200) {
+      if (userId && taskId) {
+        await trackTaskActivities(
+          { task_checklist: response.data },
+          id ? { task_checklist: initialValues } : null,
+          taskId,
+          userId,
+          createActivity,
+          ["task_checklist"] // Pass only keys from payload
+        );
+      }
       return response.data;
     }
   } catch (error) {
