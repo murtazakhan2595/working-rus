@@ -332,7 +332,7 @@ const TaskEditAddViewDetails = ({
         );
         taskId && fetchTaskData(true);
         !isSubtask && reloadData();
-        // setIsOpen(false);
+        setIsOpen(false);
       }
     } catch (error) {
       console.error("Error updating task:", error);
