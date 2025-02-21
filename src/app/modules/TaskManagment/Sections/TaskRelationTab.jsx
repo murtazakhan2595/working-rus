@@ -12,6 +12,13 @@ import { MdClose } from "react-icons/md";
 import { Badge } from "components/ui/badge";
 import { getTaskByprojectId } from "app/hooks/taskManagment";
 import { useNavigate } from "react-router-dom";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "src/@/components/ui/tooltip";
+import moment from "moment";
 
 // Constants for relation types
 const RELATION_TYPES = {
@@ -43,11 +50,11 @@ const TYPE_LABELS = {
 
 const TaskRelationTab = ({
   relationsList = [],
+  targetRelationsList = [],
+  setRemovedRelationships,
   onChange,
   projectId,
   taskId,
-  error,
-  touch,
   editMode = true,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -90,37 +97,55 @@ const TaskRelationTab = ({
   }, [projectId]);
 
   // In TaskRelationTab component
-  useEffect(() => {
-    const categorizedRelations = {
-      [RELATION_TYPES.NONE]: [],
-      [RELATION_TYPES.BLOCKER]: [],
-      [RELATION_TYPES.WAITING_ON]: [],
-    };
+useEffect(() => {
+  const categorizedRelations = {
+    [RELATION_TYPES.NONE]: [],
+    [RELATION_TYPES.BLOCKER]: [],
+    [RELATION_TYPES.WAITING_ON]: [],
+  };
 
-    if (relationsList?.length > 0) {
-      relationsList.forEach((relation) => {
-        const taskId = relation.id;
-        // Convert relation type to lowercase for comparison
-        const type = relation.relation_type?.toLowerCase();
+  // Handle source relationships
+  relationsList?.forEach((relation) => {
+    const otherTaskId = relation.target_task_id;
+    const type = relation.relation_choices.toLowerCase().replace(" on", "_on");
 
-        // Map the relation types correctly
-        let mappedType;
-        if (type === "none") {
-          mappedType = "none";
-        } else if (type === "blocker") {
-          mappedType = "blocker";
-        } else if (type === "waiting_on") {
-          mappedType = "waiting"; // This matches our RELATION_TYPES.WAITING_ON
-        }
-
-        if (mappedType && categorizedRelations[mappedType]) {
-          categorizedRelations[mappedType].push(taskId);
-        }
-      });
+    // Map the types to our display categories
+    let mappedType;
+    if (type === "none") {
+      mappedType = "none";
+    } else if (type === "blocker") {
+      mappedType = "blocker";
+    } else if (type === "waiting_on") {
+      mappedType = "waiting";
     }
 
-    setRelationsByType(categorizedRelations);
-  }, [relationsList]);
+    if (mappedType && !categorizedRelations[mappedType].includes(otherTaskId)) {
+      categorizedRelations[mappedType].push(otherTaskId);
+    }
+  });
+
+  // Handle target relationships
+  targetRelationsList?.forEach((relation) => {
+    const otherTaskId = relation.source_task_id;
+    const type = relation.relation_choices.toLowerCase().replace(" on", "_on");
+
+    // For target relationships, we need to show them in the appropriate category
+    let mappedType;
+    if (type === "none") {
+      mappedType = "none";
+    } else if (type === "blocker") {
+      mappedType = "waiting"; // If other task blocks us, we're waiting on it
+    } else if (type === "waiting_on") {
+      mappedType = "blocker"; // If other task is waiting on us, we're blocking it
+    }
+
+    if (mappedType && !categorizedRelations[mappedType].includes(otherTaskId)) {
+      categorizedRelations[mappedType].push(otherTaskId);
+    }
+  });
+
+  setRelationsByType(categorizedRelations);
+}, [relationsList, targetRelationsList]);
 
   useEffect(() => {
     const allSelectedIds = Object.values(relationsByType).flat();
@@ -162,96 +187,159 @@ const TaskRelationTab = ({
     setFilteredTasks(filtered);
   }, [searchTerm, taskList, relationsByType]);
 
-  const handleTaskSelect = (selectedTask) => {
-    if (!selectedType) return;
+const handleTaskSelect = (selectedTask) => {
+  if (!selectedType) return;
 
-    const updatedRelations = {
-      ...relationsByType,
-      [selectedType]: [...relationsByType[selectedType], selectedTask.id],
-    };
-    setRelationsByType(updatedRelations);
-
-    // Format for relation_ship array
-    const formattedRelations = Object.entries(updatedRelations).flatMap(
-      ([type, taskIds]) => {
-        // Map the type to the exact backend enum string
-        const backendType =
-          type === "waiting" ? "WAITING_ON" : type.toUpperCase();
-        return taskIds.map((id) => ({
-          id,
-          relation_type: backendType,
-        }));
-      }
-    );
-
-    onChange(formattedRelations);
-    setIsDialogOpen(false);
-    setSearchTerm("");
-  };
-
-const handleRemoveRelation = (type, taskId) => {
   const updatedRelations = {
     ...relationsByType,
-    [type]: relationsByType[type].filter((id) => id !== taskId),
+    [selectedType]: [...relationsByType[selectedType], selectedTask.id],
   };
   setRelationsByType(updatedRelations);
 
-  // Format for relation_ship array
-  const formattedRelations = Object.entries(updatedRelations).flatMap(
-    ([type, taskIds]) => {
-      // Map the type to the exact backend enum string
-      const backendType =
-        type === "waiting" ? "WAITING_ON" : type.toUpperCase();
-      return taskIds.map((id) => ({
-        id,
-        relation_type: backendType,
-      }));
-    }
+  // Create both source and target formatted relations
+  let sourceRelation = {
+    source_task_id: taskId,
+    target_task_id: selectedTask.id,
+    relation_choices:
+      selectedType === "waiting" ? "WAITING_ON" : selectedType.toUpperCase(),
+  };
+
+  let targetRelation;
+
+  // Handle different types of relationships
+  if (selectedType === "none") {
+    // For NONE (Link), create identical relationship in reverse
+    targetRelation = {
+      source_task_id: selectedTask.id,
+      target_task_id: taskId,
+      relation_choices: "NONE",
+    };
+  } else if (selectedType === "blocker") {
+    // If current task blocks target task, target task is waiting on current task
+    targetRelation = {
+      source_task_id: selectedTask.id,
+      target_task_id: taskId,
+      relation_choices: "WAITING ON",
+    };
+  } else if (selectedType === "waiting") {
+    // If current task is waiting on target task, target task blocks current task
+    targetRelation = {
+      source_task_id: selectedTask.id,
+      target_task_id: taskId,
+      relation_choices: "BLOCKER",
+    };
+  }
+
+  // Call onChange with both source and target relationships
+  onChange(
+    [...relationsList, sourceRelation], // Update source relationships
+    [...targetRelationsList, targetRelation] // Update target relationships
   );
 
-  onChange(formattedRelations);
+  setIsDialogOpen(false);
+  setSearchTerm("");
+};
+const handleRemoveRelation = (type, relatedTaskId) => {
+  // Find the relationship IDs to remove
+  const sourceRel = relationsList.find(
+    (rel) => rel.target_task_id === relatedTaskId
+  );
+  const targetRel = targetRelationsList.find(
+    (rel) => rel.source_task_id === relatedTaskId
+  );
+
+  // Store the IDs of relationships to be removed
+  if (sourceRel?.id || targetRel?.id) {
+    setRemovedRelationships((prev) => [
+      ...prev,
+      ...(sourceRel?.id ? [sourceRel.id] : []),
+      ...(targetRel?.id ? [targetRel.id] : []),
+    ]);
+  }
+  // Update UI
+  const updatedSourceRelations = relationsList.filter(
+    (rel) => rel.target_task_id !== relatedTaskId
+  );
+
+  const updatedTargetRelations = targetRelationsList.filter(
+    (rel) => rel.source_task_id !== relatedTaskId
+  );
+
+  onChange(updatedSourceRelations, updatedTargetRelations);
 };
 
-console.log("filtered task", filteredTasks);
 
   // Render related tasks for a specific type
-  const renderRelatedTasks = (type) => {
-    const tasks = relationsByType[type];
-    if (!tasks?.length) return null;
+const renderRelatedTasks = (type) => {
+  const tasks = relationsByType[type];
+  if (!tasks?.length) return null;
 
-    return (
-      <div className="pl-8 mt-2 space-y-2">
-        {tasks.map((relatedTaskId) => {
-          const task = taskList.find((t) => t.id === relatedTaskId);
-          if (!task) return null;
-          return (
-            <div
-              key={relatedTaskId}
-              className="flex items-center justify-between p-2 bg-gray-100 rounded-lg shadow-sm w-fit gap-2 group"
-            >
-              <span
-                className="text-sm text-zinc-600 cursor-pointer hover:text-primary-600"
-                onClick={() =>
-                  navigate(`/project-board/${projectId}/${task.id}`)
-                }
+  return (
+    <div className="pl-8 mt-2 space-y-2">
+      {tasks.map((relatedTaskId) => {
+        const task = taskList.find((t) => t.id === relatedTaskId);
+        if (!task) return null;
+
+        // Create tooltip content based on relationship type
+        const tooltipContent =
+          type === "none"
+            ? `Linked with ${task.name}`
+            : type === "blocker"
+            ? `This task is Blocking: ${task.name}`
+            : `This task is Waiting on: ${task.name}`;
+
+        return (
+          <TooltipProvider key={relatedTaskId}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center justify-between p-2 bg-gray-300 rounded-lg shadow-sm w-fit gap-2 group">
+                  <span
+                    className="text-sm cursor-pointer hover:text-primary-900"
+                    onClick={() =>
+                      navigate(`/project-board/${projectId}/${task.id}`)
+                    }
+                  >
+                    {task.name || "Task Title (N/A)"}
+                  </span>
+                  {editMode && (
+                    <MdClose
+                      className="w-4 h-4 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveRelation(type, relatedTaskId);
+                      }}
+                    />
+                  )}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent
+                className="bg-black text-white p-2 rounded-md text-xs"
+                side="top"
               >
-                {task.name || "Task Title (N/A)"}
-              </span>
-              {editMode && (
-                <MdClose
-                  className="w-4 h-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent navigation when clicking close
-                    handleRemoveRelation(type, relatedTaskId);
-                  }}
-                />
-              )}
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
+                <div className="flex flex-col gap-1">
+                  <div>{tooltipContent}</div>
+                  {task.start_date && (
+                    <div className="text-gray-300">
+                      Start: {moment(task.start_date).format("MMM DD, YYYY")}
+                    </div>
+                  )}
+                  {task.end_date && (
+                    <div className="text-gray-300">
+                      Due: {moment(task.end_date).format("MMM DD, YYYY")}
+                    </div>
+                  )}
+                  {task.status && (
+                    <div className="text-gray-300">Status: {task.status}</div>
+                  )}
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      })}
+    </div>
+  );
+};
 
   // Rest of the component remains the same...
   return (

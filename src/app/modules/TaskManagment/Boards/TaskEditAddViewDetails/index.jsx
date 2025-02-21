@@ -55,7 +55,8 @@ import {
 } from "src/@/components/ui/tabs";
 import { TaskRelation, TaskRelationTab } from "../../Sections";
 import { Card, CardContent } from "components/ui/card";
-import { addRelationship } from "app/hooks/taskManagment";
+import { addRelationship, deleteRelationship } from "app/hooks/taskManagment";
+import { getRelationship } from "app/hooks/taskManagment";
 
 const TaskEditAddViewDetails = ({
   isOpen = true,
@@ -82,6 +83,11 @@ const TaskEditAddViewDetails = ({
   const [editCommentContent, setEditCommentContent] = useState(null);
   const [replyComment, setReplyComment] = useState(null);
   const [activeTab, setActiveTab] = useState("checklist");
+  const [taskRelationship, setTaskRelationship] = useState([]);
+  const [targetRelationship, setTargetRelationship] = useState([]);
+  const [removedRelationships, setRemovedRelationships] = useState([]);
+
+
 
   const toggleActivities = () => {
     setShowActivities(!showActivities);
@@ -145,6 +151,21 @@ const TaskEditAddViewDetails = ({
     }
   };
 
+  const fetchTaskRelationship = async (isMounted, taskId) => {
+    try {
+      const [sourceRelations, targetRelations] = await Promise.all([
+        getRelationship({ filterData: { source_task_id: [taskId] } }),
+        getRelationship({ filterData: { target_task_id: [taskId] } }),
+      ]);
+      if (isMounted) {
+        setTaskRelationship(sourceRelations.results);
+        setTargetRelationship(targetRelations.results);
+      }
+    } catch (error) {
+      console.error("Error fetching task relation:", error);
+    }
+  }
+
   useEffect(() => {
     let isMounted = true;
     if (initialValues.project_id)
@@ -159,23 +180,14 @@ const TaskEditAddViewDetails = ({
     setIsLoading(true);
     try {
       const cardDetails = await getTaskById(currentTaskId);
+      fetchTaskRelationship(isMounted, currentTaskId);
       if (!cardDetails) {
         throw new Error("Card details not found.");
       }
       if (isMounted) {
-        const formattedRelationships =
-          cardDetails.relationship?.map((rel) => ({
-            id: rel.relation,
-            relation_type:
-              rel.relation_choices === "WAITING ON"
-                ? "WAITING_ON"
-                : rel.relation_choices,
-          })) || [];
-
         setInitialValues({
           ...cardDetails,
           project_id: projectId || cardDetails.project_id,
-          relation_ship: formattedRelationships,
         });
         setIsLoading(false);
       }
@@ -188,6 +200,7 @@ const TaskEditAddViewDetails = ({
       }
     }
   };
+
 
   useEffect(() => {
     let isMounted = true;
@@ -305,33 +318,97 @@ const TaskEditAddViewDetails = ({
       finalData.cover_photo =
         values?.attachment?.length > 0 ? values.cover_photo : null;
 
-      if (values?.relation_ship?.length > 0) {
-        const relationshipIds = await Promise.all(
-          values.relation_ship.map((relation) =>
-            addRelationship({
-              relation_choices:
-                relation.relation_type === "WAITING_ON"
-                  ? "WAITING ON"
-                  : relation.relation_type,
-              relation: relation.id,
-            })
-          )
-        )
-          .then((responses) => responses.map((response) => response.id))
-          .catch((error) => {
-            console.error("Error creating relationships:", error);
-            return [];
-          });
-
-        finalData.relation_ship = relationshipIds;
-      }
       const response = await addTask(
         finalData,
         currentTaskId,
         userId,
         initialValues
       );
-      if (response) {
+      if (response) {           
+        if (removedRelationships.length > 0) {
+          await Promise.all(
+            removedRelationships.map(async (id) => {
+              try {
+                // Delete the relationship by its ID
+                await deleteRelationship(id);
+              } catch (error) {
+                // Ignore errors where the relationship doesn't exist
+              }
+            })
+          );
+        }
+        if (taskRelationship?.length > 0 || targetRelationship?.length > 0) {
+          try {
+            // For existing task updates, we need to filter out existing relationships
+            if (currentTaskId) {
+              // Filter source relationships to only include new ones
+              const newSourceRelations = taskRelationship.filter((relation) => {
+                // If the relation has no ID, it's new
+                return !relation.id;
+              });
+
+              // Filter target relationships to only include new ones
+              const newTargetRelations = targetRelationship.filter(
+                (relation) => {
+                  // If the relation has no ID, it's new
+                  return !relation.id;
+                }
+              );
+
+              // Only create new source relationships
+              if (newSourceRelations.length > 0) {
+                await Promise.all(
+                  newSourceRelations.map((relation) =>
+                    addRelationship({
+                      source_task_id: currentTaskId,
+                      target_task_id: relation.target_task_id,
+                      relation_choices: relation.relation_choices,
+                    })
+                  )
+                );
+              }
+
+              // Only create new target relationships
+              if (newTargetRelations.length > 0) {
+                await Promise.all(
+                  newTargetRelations.map((relation) =>
+                    addRelationship({
+                      source_task_id: relation.source_task_id,
+                      target_task_id: currentTaskId,
+                      relation_choices: relation.relation_choices,
+                    })
+                  )
+                );
+              }
+            } else {
+              // For new tasks, create all relationships since none exist yet
+              const taskId = response.id;
+
+              await Promise.all([
+                // Create all source relationships
+                ...taskRelationship.map((relation) =>
+                  addRelationship({
+                    source_task_id: taskId,
+                    target_task_id: relation.target_task_id,
+                    relation_choices: relation.relation_choices,
+                  })
+                ),
+                // Create all target relationships
+                ...targetRelationship.map((relation) =>
+                  addRelationship({
+                    source_task_id: relation.source_task_id,
+                    target_task_id: taskId,
+                    relation_choices: relation.relation_choices,
+                  })
+                ),
+              ]);
+            }
+          } catch (error) {
+            console.error("Error creating relationships:", error);
+            toast.error("Failed to create some relationships");
+          }
+        }
+
         // Notify parent component of the new task
         if (onTaskCreated && isSubtask) {
           onTaskCreated(response);
@@ -514,7 +591,7 @@ const TaskEditAddViewDetails = ({
                                     <span>
                                       Relation(
                                       <span>
-                                        {props.values.relation_ship?.length ||
+                                        {Math.max(taskRelationship?.length , targetRelationship.length) ||
                                           0}
                                       </span>
                                       )
@@ -573,18 +650,23 @@ const TaskEditAddViewDetails = ({
                                   classNames="mt-0"
                                 >
                                   <TaskRelationTab
-                                    relationsList={
-                                      props.values.relation_ship || []
-                                    } // Changed from relation to relation_ship
+                                    relationsList={taskRelationship || []}
+                                    targetRelationsList={
+                                      targetRelationship || []
+                                    }
+                                    setRemovedRelationships={
+                                      setRemovedRelationships
+                                    }
                                     projectId={props.values.project_id}
                                     taskId={currentTaskId}
                                     editMode={true}
-                                    error={props.errors.relation_ship} // Changed from relation to relation_ship
-                                    touch={props.touched.relation_ship} // Changed from relation to relation_ship
-                                    onChange={(updatedRelations) => {
-                                      props.setFieldValue(
-                                        "relation_ship",
-                                        updatedRelations
+                                    onChange={(
+                                      updatedRelations,
+                                      updateTargetRelations
+                                    ) => {
+                                      setTaskRelationship(updatedRelations);
+                                      setTargetRelationship(
+                                        updateTargetRelations
                                       );
                                     }}
                                   />
