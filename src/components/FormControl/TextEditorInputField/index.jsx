@@ -55,13 +55,27 @@ function TextEditorInputField({
     const editor = editorRef.current;
     if (editor) {
       editor.innerHTML = content;
-      const inputEvent = new Event("input", {
-        bubbles: true,
-        cancelable: true,
-      });
-      editor.dispatchEvent(inputEvent);
+
+      // Move focus to editor
+      editor.focus();
+
+      // Create a range and selection
+      const selection = window.getSelection();
+      const range = document.createRange();
+
+      // Move range to the end of content
+      range.selectNodeContents(editor);
+      range.collapse(false); // Collapse to end
+
+      // Clear any existing selection and apply the new range
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      // Save caret position
+      setLastCaretPosition(range);
     }
   }, [editMode]);
+
   // Effect to handle reply initialization
   useEffect(() => {
     if (replyToUser && editorRef.current) {
@@ -112,37 +126,51 @@ function TextEditorInputField({
     }
   };
 
-  const insertImageAtCaret = (imageUrl) => {
-    if (!lastCaretPosition) return;
-
+  const restoreCaretPosition = (editor) => {
     const selection = window.getSelection();
+    const range = document.createRange();
+
+    // If lastCaretPosition is valid and inside the editor, restore it
+    if (
+      lastCaretPosition &&
+      editor.contains(lastCaretPosition.commonAncestorContainer)
+    ) {
+      selection.removeAllRanges();
+      selection.addRange(lastCaretPosition);
+      return lastCaretPosition;
+    }
+
+    // Otherwise, move the caret to the end of the editor
+    range.selectNodeContents(editor);
+    range.collapse(false); // Move to the end
     selection.removeAllRanges();
-    selection.addRange(lastCaretPosition);
+    selection.addRange(range);
+
+    return range;
+  };
+
+  const insertImageAtCaret = (imageUrl) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const caretPosition = restoreCaretPosition(editor);
 
     const img = document.createElement("img");
     img.src = imageUrl;
-    img.style.maxWidth = "100%";
-    img.style.display = "block";
+    img.alt = "Inserted Image";
+    img.style.maxWidth = "100%"; // Prevent oversized images
 
-    lastCaretPosition.insertNode(img);
-
-    // Move cursor after the inserted image
-    const newRange = document.createRange();
-    newRange.setStartAfter(img);
-    newRange.collapse(true);
-    selection.removeAllRanges();
-    selection.addRange(newRange);
-
+    caretPosition.insertNode(img); // Insert image at the restored position
+    caretPosition.collapse(false); // Move cursor after image
     // Update content state
     setContent(editorRef.current.innerHTML);
-
-    // Save new caret position after inserting the image
-    saveCaretPosition();
+    // Save updated caret position
+    setLastCaretPosition(caretPosition);
   };
-
 
   const handleImageUpload = useCallback(
     async (e) => {
+      e.stopPropagation();
       e.preventDefault();
       const file = e.target.files[0];
       if (upload) {
@@ -334,7 +362,7 @@ function TextEditorInputField({
           if (file && upload) {
             const uploadedImage = await upload(file);
             if (uploadedImage?.attachment) {
-             // execCommand("insertImage", uploadedImage.attachment);
+              // execCommand("insertImage", uploadedImage.attachment);
               handleFileChange(uploadedImage);
             }
           }
@@ -426,7 +454,6 @@ function TextEditorInputField({
               type="file"
               className="hidden"
               ref={fileInputRef}
-              onClick={(event) => event.stopPropagation()}
               accept="image/*"
               onChange={handleImageUpload}
             />
@@ -436,6 +463,7 @@ function TextEditorInputField({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                saveCaretPosition(); // Save caret position before opening file picker
                 fileInputRef.current.click();
               }}
             />
@@ -457,15 +485,15 @@ function TextEditorInputField({
         )}
 
         <ScrollArea className="[&>div>div[style]]:!block">
-        <div
-          ref={editorRef}
-          id={name}
-          className="w-full h-[300px] p-4 focus:outline-none rounded-b-lg textEditorText"
-          contentEditable
-          onInput={handleInput}
-          onPaste={handlePaste}
-          onKeyDown={handleKeyDown}
-        />
+          <div
+            ref={editorRef}
+            id={name}
+            className="w-full h-[300px] p-4 focus:outline-none rounded-b-lg textEditorText"
+            contentEditable
+            onInput={handleInput}
+            onPaste={handlePaste}
+            onKeyDown={handleKeyDown}
+          />
         </ScrollArea>
 
         {allowMentions && showMentionPopover && (

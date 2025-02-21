@@ -34,7 +34,7 @@ const InputTaskDescription = React.memo(
             }}
           />
         ) : (
-            <div className="border border-neutral-500 p-2 pr-0 rounded-sm block textEditorText">
+            <div className="border border-neutral-500 p-2 pr-0 rounded-sm block textEditorText min-h-[150px]">
               <TextUI
                 text={value}
                 isHTMLText={true}
