@@ -34,18 +34,14 @@ const InputTaskDescription = React.memo(
             }}
           />
         ) : (
-          <div
-            className="border border-neutral-500 p-2 rounded-sm block min-h-[150px] max-h-[350px] overflow-y-scroll textEditorText"
-            // dangerouslySetInnerHTML={{
-            //   __html: value,
-            // }}
-          >
-            <TextUI
-              text={value}
-              isHTMLText={true}
-              className={"text-neutral-1200"}
-            />
-          </div>
+            <div className="border border-neutral-500 p-2 pr-0 rounded-sm block textEditorText">
+              <TextUI
+                text={value}
+                isHTMLText={true}
+                className={"text-neutral-1200"}
+                height={"300px"}
+              />
+            </div>
         )}
       </div>
     );

@@ -223,7 +223,7 @@ export default function TaskCommentsContainer({
 }) {
   return (
     <>
-      <div className="flex justify-end items-center mt-2">
+      {/* <div className="flex justify-end items-center mt-2">
         {/* <div className="text-neutral-1200 text-sm font-semibold whitespace-nowrap mb-3">
           {"Activity"}
         </div> */}
@@ -234,7 +234,7 @@ export default function TaskCommentsContainer({
         >
           {showActivities ? "Hide Details" : "Show Details"}
         </button> */}
-      </div>
+      {/* </div> */}
       {/* <DetailCard detailCardTitle="" classNames="mt-0"> */}
       <TaskComments
         taskId={taskId}

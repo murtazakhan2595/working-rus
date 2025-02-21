@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { TextEditorInputField } from "components/FormControl";
-import { addCommentAttachment,addTask } from "app/hooks/taskManagment";
+import { addCommentAttachment, addTask } from "app/hooks/taskManagment";
 import { toast } from "react-toastify";
 import { postComment } from "app/hooks/taskManagment";
+import {
+  FormPlaceholder,
+  inputButtonClassName,
+  FormField,
+} from "components/FormControl";
 
 const CommentsInputField = ({
   addAttachment = () => {}, //Add the comments attchment to include in task attachments
@@ -15,12 +20,19 @@ const CommentsInputField = ({
   replyComment,
   setReplyComment,
   fetchData = () => {},
+  name = "comments",
+  label = "Comments",
+  required = false,
+  error = null,
+  touched = null,
+  className = "",
 }) => {
   const [newComment, setNewComment] = useState("");
   const [commentAttachments, setCommentAttachment] = useState([]);
   const [taskAttachment, setTaskAttachment] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [replyTo, setReplyTo] = useState(null);
+  const [editingMode, setEditingMode] = useState(false);
 
   // Reset states when editCommentContent changes
   useEffect(() => {
@@ -145,23 +157,45 @@ const CommentsInputField = ({
   };
 
   return (
-    <>
-      <TextEditorInputField
-        content={newComment}
-        setContent={setNewComment}
-        handleSubmitContent={handleSubmitComment}
-        setAttachments={setCommentAttachment}
-        attachments={commentAttachments}
-        removeAttachment={removeFile}
-        users={filteredUsers}
-        allowMentions={true}
-        upload={async (file) => {
-          return await handleAddCommentAttachment(file);
+    <FormField
+      name={name}
+      label={label}
+      required={required}
+      error={error}
+      touched={touched}
+      className={className}
+    >
+      <div
+        onClick={(e) => {
+          e.preventDefault();
+          setEditingMode(true);
         }}
-        editMode={editMode}
-        replyToUser={replyTo}
-      />
-    </>
+      >
+        {editingMode || editMode ? (
+          <TextEditorInputField
+            content={newComment}
+            setContent={setNewComment}
+            handleSubmitContent={handleSubmitComment}
+            setAttachments={setCommentAttachment}
+            attachments={commentAttachments}
+            removeAttachment={removeFile}
+            users={filteredUsers}
+            allowMentions={true}
+            upload={async (file) => {
+              return await handleAddCommentAttachment(file);
+            }}
+            editMode={editMode}
+            replyToUser={replyTo}
+          />
+        ) : (
+          <div className={`${inputButtonClassName}`}>
+            <FormPlaceholder
+              placeholder={"Enter Comment Here"}
+            ></FormPlaceholder>
+          </div>
+        )}
+      </div>
+    </FormField>
   );
 };
 export default CommentsInputField;

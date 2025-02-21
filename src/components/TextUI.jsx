@@ -1,4 +1,5 @@
 import React from "react";
+import { ScrollArea } from "src/@/components/ui/scroll-area";
 
 const TextUI = React.memo(
   ({
@@ -6,30 +7,33 @@ const TextUI = React.memo(
     maxLength = null,
     isHTMLText = false,
     className = "text-neutral-1000 text-sm",
-    style={}
+    style = {},
+    height = "100%",
   }) => {
     return text ? (
-      <p
-        className={`${className} leading-5 truncate-text break-words overflow-hiddden max-w-[100%]`}
-        style={style}
-      >
-        {isHTMLText ? (
-          <span
-            className="break-words"
-            dangerouslySetInnerHTML={{
-              __html: text,
-            }}
-          ></span>
-        ) : (
-          <span className="break-words">
-            {maxLength
-              ? `${text.replace(/<[^>]*>/g, "").slice(0, maxLength)}${
-                  text.length > maxLength ? "..." : ""
-                }`
-              : text}
-          </span>
-        )}
-      </p>
+      <ScrollArea className="[&>div>div[style]]:!block">
+        <div
+          className={`${className} leading-5 h-[${height}] break-words max-w-[100%] pr-3`}
+          style={style}
+        >
+          {isHTMLText ? (
+            <div
+              className="break-words"
+              dangerouslySetInnerHTML={{
+                __html: text,
+              }}
+            ></div>
+          ) : (
+            <div className="break-words">
+              {maxLength
+                ? `${text.replace(/<[^>]*>/g, "").slice(0, maxLength)}${
+                    text.length > maxLength ? "..." : ""
+                  }`
+                : text}
+            </div>
+          )}
+        </div>
+      </ScrollArea>
     ) : null;
   }
 );

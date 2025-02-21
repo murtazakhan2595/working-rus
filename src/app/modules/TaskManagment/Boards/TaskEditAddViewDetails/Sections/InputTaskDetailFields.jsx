@@ -27,7 +27,7 @@ const InputTaskDetailFields = React.memo(
   }) => {
     return (
       <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-5 my-8">
+        <div className="grid grid-cols-2 gap-5">
           <DateInput
             name="end_date"
             label="Due Date"

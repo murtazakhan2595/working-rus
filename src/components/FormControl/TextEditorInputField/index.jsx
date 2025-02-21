@@ -113,7 +113,6 @@ function TextEditorInputField({
   };
 
   const insertImageAtCaret = (imageUrl) => {
-    debugger
     if (!lastCaretPosition) return;
 
     const selection = window.getSelection();
@@ -144,11 +143,9 @@ function TextEditorInputField({
 
   const handleImageUpload = useCallback(
     async (e) => {
-      debugger
       e.preventDefault();
       const file = e.target.files[0];
       if (upload) {
-        debugger
         const uploadedImage = await upload(file);
         if (uploadedImage?.attachment) {
           insertImageAtCaret(uploadedImage.attachment);

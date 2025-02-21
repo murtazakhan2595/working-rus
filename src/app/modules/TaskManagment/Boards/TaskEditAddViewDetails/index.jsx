@@ -155,7 +155,7 @@ const TaskEditAddViewDetails = ({
   }, [initialValues.project_id]);
 
   const fetchTaskData = async (isMounted) => {
-    setActiveTab('checklist')
+    setActiveTab("checklist");
     setIsLoading(true);
     try {
       const cardDetails = await getTaskById(currentTaskId);
@@ -655,69 +655,65 @@ const TaskEditAddViewDetails = ({
                             boardList={BoardList}
                           />
 
-                          <div className="mt-6">
-                            <Attachments
-                              attachmentSelected={props.values.attachment || []}
-                              onChange={async (attachment) => {
-                                await props.setFieldValue(
-                                  "attachment",
-                                  attachment
-                                );
-                                setIsEditMode(true);
-                              }}
-                              acceptedFileTypes=".pdf,.png,.jpg,.jpeg"
-                              error={props.errors.relation}
-                              touch={props.touched.relation}
-                              deleteAttachmentFile={deleteAttachmentFile}
-                            />
-                          </div>
+                          {/* <div className="mt-6"> */}
+                          <Attachments
+                            attachmentSelected={props.values.attachment || []}
+                            onChange={async (attachment) => {
+                              await props.setFieldValue(
+                                "attachment",
+                                attachment
+                              );
+                              setIsEditMode(true);
+                            }}
+                            acceptedFileTypes=".pdf,.png,.jpg,.jpeg"
+                            error={props.errors.relation}
+                            touch={props.touched.relation}
+                            deleteAttachmentFile={deleteAttachmentFile}
+                          />
+                          {/* </div> */}
                           {/* </Card> */}
 
-                          <DetailBox
-                            label={
-                              <div className="flex justify-between items-center w-full mb-4">
-                                <span className="text-neutral-1200 text-sm font-semibold">
-                                  Activity
-                                </span>
-                                <button
-                                  className="text-sm text-primary-1100 hover:text-primary-700"
-                                  type="button"
-                                  onClick={toggleActivities}
-                                >
-                                  {showActivities
-                                    ? "Hide Details"
-                                    : "Show Details"}
-                                </button>
-                              </div>
-                            }
-                            orientation="horizontal"
-                            value={
-                              !refreshComments && (
-                                <CommentsInputField
-                                  fetchData={setRefreshComments}
-                                  editCommentContent={editCommentContent}
-                                  setEditCommentContent={setEditCommentContent}
-                                  replyComment={replyComment}
-                                  setReplyComment={setReplyComment}
-                                  employees={employees}
-                                  taskId={currentTaskId}
-                                  userId={userId}
-                                  projectDetail={projectDetail}
-                                  addAttachment={async (attachment) => {
-                                    const uploadedAttachment =
-                                      await uploadAttachmentFile(attachment);
-                                    const attachmentSelected =
-                                      props.values.attachment || [];
-                                    props.setFieldValue("attachment", [
-                                      ...attachmentSelected,
-                                      uploadedAttachment,
-                                    ]);
-                                    return uploadedAttachment.id || null;
-                                  }}
-                                />
-                              )
-                            }
-                          />
+                          {!refreshComments && (
+                            <CommentsInputField
+                              fetchData={setRefreshComments}
+                              editCommentContent={editCommentContent}
+                              setEditCommentContent={setEditCommentContent}
+                              replyComment={replyComment}
+                              setReplyComment={setReplyComment}
+                              employees={employees}
+                              taskId={currentTaskId}
+                              userId={userId}
+                              projectDetail={projectDetail}
+                              addAttachment={async (attachment) => {
+                                const uploadedAttachment =
+                                  await uploadAttachmentFile(attachment);
+                                const attachmentSelected =
+                                  props.values.attachment || [];
+                                props.setFieldValue("attachment", [
+                                  ...attachmentSelected,
+                                  uploadedAttachment,
+                                ]);
+                                return uploadedAttachment.id || null;
+                              }}
+                              label={
+                                <div className="flex justify-between items-center w-full">
+                                  <span className="text-neutral-1200 text-sm font-semibold">
+                                    Activity
+                                  </span>
+                                  <button
+                                    className="text-sm text-primary-1100 hover:text-primary-700"
+                                    type="button"
+                                    onClick={toggleActivities}
+                                  >
+                                    {showActivities
+                                      ? "Hide Details"
+                                      : "Show Details"}
+                                  </button>
+                                </div>
+                              }
+                            />
+                          )}
+
                           <TaskCommentsContainer
                             taskId={currentTaskId}
                             refreshComments={refreshComments}
