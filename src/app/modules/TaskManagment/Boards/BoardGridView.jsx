@@ -10,6 +10,7 @@ import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import { getAllTasks } from "app/hooks/taskManagment";
 import { ListActionOptions } from "app/modules/TaskManagment/Boards/Sections";
+import { useParams, useNavigate } from "react-router-dom";
 
 const BoardGridView = ({
   projectId,
@@ -23,7 +24,6 @@ const BoardGridView = ({
 
   useEffect(() => {
     if (AllBoards?.results) {
-      console.log(AllBoards?.results, "RESULTS")
       setBoards(AllBoards.results);
     }
   }, [AllBoards]);
@@ -44,11 +44,12 @@ const BoardGridView = ({
   const handleDragOver = (e, board) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
-    
+
     // Add visual feedback
     const draggedOverElement = e.currentTarget;
     if (draggedOverElement) {
-      draggedOverElement.style.borderLeft = draggedBoard?.id === board.id ? "" : "3px solid #4f46e5";
+      draggedOverElement.style.borderLeft =
+        draggedBoard?.id === board.id ? "" : "3px solid #4f46e5";
     }
   };
 
@@ -59,12 +60,12 @@ const BoardGridView = ({
   const handleDrop = async (e, targetBoard) => {
     e.preventDefault();
     e.currentTarget.style.borderLeft = "";
-    
+
     if (!draggedBoard || draggedBoard.id === targetBoard.id) return;
 
-    const oldIndex = boards.findIndex(b => b.id === draggedBoard.id);
-    const newIndex = boards.findIndex(b => b.id === targetBoard.id);
-    
+    const oldIndex = boards.findIndex((b) => b.id === draggedBoard.id);
+    const newIndex = boards.findIndex((b) => b.id === targetBoard.id);
+
     if (oldIndex === -1 || newIndex === -1) return;
 
     // Create new array with reordered columns
@@ -77,10 +78,10 @@ const BoardGridView = ({
 
     try {
       // Update the position in backend
-      await Promise.all(newBoards.map((board, index) => 
-        updateBoardPosition(board.id, index)
-      ));
-      
+      await Promise.all(
+        newBoards.map((board, index) => updateBoardPosition(board.id, index))
+      );
+
       // Refresh data from server
       reloadData(true);
     } catch (error) {
@@ -145,8 +146,9 @@ const BoardGridView = ({
   );
 };
 
-const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
-  const [openCreateCard, setOpenCreateCard] = useState(false);
+const TaskColumn = ({ key, reloadData, board, filterData }) => {
+  const { projectId, viewStyle } = useParams();
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [ordering, setOrdering] = useState("-start_date");
 
@@ -215,7 +217,9 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
               variant="outline"
               type="button"
               className="w-full justify-center group mb-3"
-              onClick={() => setOpenCreateCard(true)}
+              onClick={() => {
+                navigate(`/project-board/${projectId}/${viewStyle}/${board.id}`);
+              }}
             >
               <RxPlus className="text-xl" />
               <span className="ml-2">Add Task</span>
@@ -236,19 +240,6 @@ const TaskColumn = ({ key, reloadData, board, projectId, filterData }) => {
           </ScrollArea>
         </div>
       </div>
-
-      {openCreateCard && (
-        <TaskEditAddViewDetails
-          boardId={board.id}
-          isOpen={openCreateCard}
-          projectId={projectId}
-          setIsOpen={() => {
-            setOpenCreateCard(false);
-            fetchData(true);
-          }}
-          reloadData={() => fetchData(true)}
-        />
-      )}
     </div>
   );
 };

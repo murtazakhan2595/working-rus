@@ -69,17 +69,32 @@ const SidebarRoutes = [
     name: "Projects",
   },
   Config.TASK_MANAGMENT && {
+    path: "/project-board/:projectId/:viewStyle",
+    component: <Board />,
+    name: "Project Board",
+  },
+  Config.TASK_MANAGMENT && {
+    path: "/project-board/:projectId/:viewStyle/:boardId",
+    component: <Board />,
+    name: "Project Board",
+  },
+  Config.TASK_MANAGMENT && {
+    path: "/project-board/:projectId/:viewStyle/:boardId/:taskId",
+    component: <Board />,
+    name: "Project Board",
+  },
+  Config.TASK_MANAGMENT && {
+    path: "/project-board/:projectId/:viewStyle/:boardId/:taskId/:subtaskId",
+    component: <Board />,
+    name: "Project Board",
+  },
+  Config.TASK_MANAGMENT && {
     path: "/project-board/:projectId",
     component: <Board />,
     name: "Project Board",
   },
   Config.TASK_MANAGMENT && {
-    path: "/project-board/:projectId/:taskId",
-    component: <Board />,
-    name: "Project Board",
-  },
-  Config.TASK_MANAGMENT && {
-    path: "/project-board/:projectId/user/:userId",
+    path: "/project-board/:projectId/:viewStyle/user/:userId",
     component: <UserProfileTaskDetails />,
     name: "User Profile Details",
   },

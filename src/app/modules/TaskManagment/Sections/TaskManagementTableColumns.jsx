@@ -86,6 +86,7 @@ export const ProjectBoardColumn = [
     text: "Tasks",
     dataField: "name",
     dataSort: true,
+    minWidth:"250px",
     formatter: (cell, row) => (
       <div
         className={`inline-block items-end gap-x-2 transition-all duration-200`}

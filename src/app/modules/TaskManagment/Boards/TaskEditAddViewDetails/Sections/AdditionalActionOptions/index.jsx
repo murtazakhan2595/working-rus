@@ -5,44 +5,39 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuSeparator,
   DropdownMenuItem,
 } from "src/@/components/ui/dropdown-menu";
 import CopyLink from "components/ui/CopyLink";
-import { useNavigate } from "react-router-dom";
-import { initialState } from "state/slices/UserSlice";
-import {
-  MoreHorizontal,
-  Archive,
-  Link,
-  RotateCcw,
-  LogOut,
-  Trash,
-} from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { MoreHorizontal, Archive, RotateCcw, Trash } from "lucide-react";
 import { addTask, deleteTask } from "app/hooks/taskManagment";
 import { useSelector } from "react-redux";
 import AlertDialogue from "components/ui/AlertDialogue";
 
 const AdditionalActionOption = React.memo(
-  ({
-    projectId = null,
-    taskId = null,
-    reloadData = () => {},
-    isArchive = false,
-  }) => {
+  ({ isArchive = false, reloadData = () => {} }) => {
+    const { projectId, taskId, viewStyle, boardId, subtaskId } = useParams();
+    const navigate = useNavigate();
+    const currentTaskId = subtaskId ? subtaskId : taskId;
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const userId = useSelector((state) => state.user.userProfile.id);
-    const archeiveTask = async (archeived = true) => {
+    const archeiveTask = async (archived = true) => {
       try {
         const response = await addTask(
-          { is_archive: archeived },
-          taskId,
+          { is_archive: archived },
+          currentTaskId,
           userId,
-          { is_archive: !archeived }
+          { is_archive: !archived }
         );
         if (response) {
-          reloadData();
           toast.success("Task Archeived updated successfully");
+          if (archived)
+            navigate(
+              `/project-board/${projectId}/${viewStyle}${
+                subtaskId ? `/${boardId}/${taskId}` : ""
+              }`
+            );
+          else reloadData(true);
         }
       } catch (error) {
         console.error("Error updating task status:", error);
@@ -61,9 +56,13 @@ const AdditionalActionOption = React.memo(
       setIsDeleteModalOpen(true);
     };
     const confirmDelete = async () => {
-      const response = await deleteTask(taskId);
+      const response = await deleteTask(currentTaskId);
       if (response && response.status === 200) {
-        reloadData();
+        navigate(
+          `/project-board/${projectId}/${viewStyle}${
+            subtaskId ? `/${boardId}/${taskId}` : ""
+          }`
+        );
       }
       setIsDeleteModalOpen(false);
     };
@@ -79,21 +78,23 @@ const AdditionalActionOption = React.memo(
           <DropdownMenuContent align="end">
             <DropdownMenuItem>
               <CopyLink
-                link={`/project-board/${projectId}/${taskId}`}
+                link={`/project-board/${projectId}/${viewStyle}/${boardId}/${taskId}/${
+                  subtaskId || ""
+                }`}
                 text={"Copy Card Link"}
               />
             </DropdownMenuItem>
-            {taskId && !isArchive && (
+            {currentTaskId && !isArchive && (
               <DropdownMenuItem onClick={handleArchiveCardClick}>
                 <Archive size={14} className="mr-2" /> Archive Card
               </DropdownMenuItem>
             )}
-            {taskId && isArchive && (
+            {currentTaskId && isArchive && (
               <DropdownMenuItem onClick={handleRestoreCardClick}>
                 <RotateCcw size={14} className="mr-2" /> Restore
               </DropdownMenuItem>
             )}
-            {taskId && (
+            {currentTaskId && (
               <DropdownMenuItem onClick={handleDeleteCardClick}>
                 <Trash size={14} className="mr-2" /> Delete Card
               </DropdownMenuItem>

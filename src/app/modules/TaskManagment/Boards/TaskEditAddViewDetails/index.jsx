@@ -41,7 +41,7 @@ import {
 } from "app/hooks/taskManagment";
 import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
 import { getDropdownList, convertJSONArrayToStringsArray } from "utils/Lists";
-import { createActivity } from "app/hooks/taskManagment";
+import { useParams, useNavigate } from "react-router-dom";
 import { trackTaskActivities } from "./Sections/activityHelper";
 import CopyLink from "components/ui/CopyLink";
 import TaskCommentsContainer from "../../Sections/TaskComments";
@@ -58,17 +58,16 @@ import { Card, CardContent } from "components/ui/card";
 import { addRelationship } from "app/hooks/taskManagment";
 
 const TaskEditAddViewDetails = ({
-  taskId,
-  setIsOpen,
-  isOpen,
-  reloadData,
-  projectId,
-  boardId,
+  isOpen = true,
+  reloadData = () => {},
   Projects = [],
-  isSubtask = false, // New prop to indicate if this is a subtask
   onTaskCreated, // New callback for when task/subtask is created
 }) => {
+  const { projectId, taskId, viewStyle, boardId, subtaskId } = useParams();
+  const navigate = useNavigate();
   const userId = useSelector((state) => state.user.userProfile.id);
+  const isSubtask = !!subtaskId;
+  const currentTaskId = isSubtask ? subtaskId : taskId;
   const [isLoading, setIsLoading] = useState(false);
   const [BoardList, setBoardList] = useState([]);
   const [CustomFields, setCustomFields] = useState([]);
@@ -86,6 +85,13 @@ const TaskEditAddViewDetails = ({
 
   const toggleActivities = () => {
     setShowActivities(!showActivities);
+  };
+  const handleCloseTaskEditor = () => {
+    navigate(
+      `/project-board/${projectId}/${viewStyle}${
+        isSubtask ? `/${boardId}/${taskId}` : ""
+      }`
+    );
   };
 
   const handleClose = (e) => {
@@ -149,9 +155,10 @@ const TaskEditAddViewDetails = ({
   }, [initialValues.project_id]);
 
   const fetchTaskData = async (isMounted) => {
+    setActiveTab('checklist')
     setIsLoading(true);
     try {
-      const cardDetails = await getTaskById(taskId);
+      const cardDetails = await getTaskById(currentTaskId);
       if (!cardDetails) {
         throw new Error("Card details not found.");
       }
@@ -184,10 +191,10 @@ const TaskEditAddViewDetails = ({
 
   useEffect(() => {
     let isMounted = true;
-    if (taskId) fetchTaskData(isMounted);
+    if (currentTaskId) fetchTaskData(isMounted);
     else
       setInitialValues({
-        ...initialValues,
+        ...Task,
         assigned_by: userId,
         project_id: projectId || null,
         board_id: boardId || null,
@@ -195,7 +202,7 @@ const TaskEditAddViewDetails = ({
     return () => {
       isMounted = false;
     };
-  }, [taskId]);
+  }, [currentTaskId]);
 
   useEffect(() => {
     let isMounted = true;
@@ -220,9 +227,6 @@ const TaskEditAddViewDetails = ({
     };
   }, [initialValues?.project_id]);
 
-  const additionalActionReload = async () => {
-    setIsOpen(false);
-  };
   const uploadAttachmentFile = async (file) => {
     try {
       if (file.attachment instanceof File) {
@@ -249,7 +253,6 @@ const TaskEditAddViewDetails = ({
   };
 
   const handleSubmit = async (values) => {
-    debugger
     setIsLoading(true);
     try {
       const getAttachmentFileIds = async (files) => {
@@ -273,7 +276,7 @@ const TaskEditAddViewDetails = ({
               const response = await addTaskCheckListItem(
                 item,
                 item.id,
-                taskId,
+                currentTaskId,
                 userId,
                 initialValues.task_checklist.find((obj) => obj.id === item.id)
               );
@@ -322,7 +325,12 @@ const TaskEditAddViewDetails = ({
 
         finalData.relation_ship = relationshipIds;
       }
-      const response = await addTask(finalData, taskId, userId, initialValues);
+      const response = await addTask(
+        finalData,
+        currentTaskId,
+        userId,
+        initialValues
+      );
       if (response) {
         // Notify parent component of the new task
         if (onTaskCreated && isSubtask) {
@@ -332,14 +340,14 @@ const TaskEditAddViewDetails = ({
         toast.success(
           isSubtask
             ? "Subtask Created Successfully!"
-            : `Task ${taskId ? "Updated" : "Added"} Successfully!`,
+            : `Task ${currentTaskId ? "Updated" : "Added"} Successfully!`,
           {
             position: toast.POSITION.TOP_RIGHT,
           }
         );
-        taskId && fetchTaskData(true);
+        currentTaskId && fetchTaskData(true);
         !isSubtask && reloadData();
-        setIsOpen(false);
+        handleCloseTaskEditor(false);
       }
     } catch (error) {
       console.error("Error updating task:", error);
@@ -357,7 +365,7 @@ const TaskEditAddViewDetails = ({
       {handleCloseWithConfirmation({
         isOpen: closeSheet,
         setCloseSheet,
-        setIsOpen,
+        setIsOpen: handleCloseTaskEditor,
       })}
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogTitle></DialogTitle>
@@ -382,20 +390,22 @@ const TaskEditAddViewDetails = ({
                           {isSubtask && (
                             <ArrowLeft
                               className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm cursor-pointer"
-                              onClick={() => setIsOpen(false)}
+                              onClick={() => handleCloseTaskEditor()}
                             />
                           )}
                           {props.values.is_archive ? (
                             <span className="text-amber-400">Archive Card</span>
                           ) : (
-                            `${taskId ? "Edit" : "Add"} ${
+                            `${currentTaskId ? "Edit" : "Add"} ${
                               isSubtask ? "Subtask" : "Task"
                             }`
                           )}
-                          {taskId && (
+                          {currentTaskId && (
                             <CopyLink
-                              link={`${taskId}`}
-                              text={<FormatID prefix={"T-"} value={taskId} />}
+                              link={`${currentTaskId}`}
+                              text={
+                                <FormatID prefix={"T-"} value={currentTaskId} />
+                              }
                               directCopy={true}
                             />
                           )}
@@ -420,7 +430,7 @@ const TaskEditAddViewDetails = ({
                           )}
                           <Button type="submit">
                             {`${
-                              taskId
+                              currentTaskId
                                 ? "Save Changes"
                                 : isSubtask
                                 ? "Add Subtask"
@@ -428,9 +438,7 @@ const TaskEditAddViewDetails = ({
                             }`}
                           </Button>
                           <AdditionalActionOption
-                            projectId={props.values.project_id}
-                            taskId={taskId}
-                            reloadData={additionalActionReload}
+                            reloadData={fetchTaskData}
                             isArchive={props.values.is_archive}
                           />
                         </div>
@@ -449,7 +457,7 @@ const TaskEditAddViewDetails = ({
                               error={props.errors.name}
                               touched={props.touched.name}
                               value={props.values.name}
-                              taskId={taskId}
+                              taskId={currentTaskId}
                             />
                           </div>
 
@@ -569,7 +577,7 @@ const TaskEditAddViewDetails = ({
                                       props.values.relation_ship || []
                                     } // Changed from relation to relation_ship
                                     projectId={props.values.project_id}
-                                    taskId={taskId}
+                                    taskId={currentTaskId}
                                     editMode={true}
                                     error={props.errors.relation_ship} // Changed from relation to relation_ship
                                     touch={props.touched.relation_ship} // Changed from relation to relation_ship
@@ -601,7 +609,7 @@ const TaskEditAddViewDetails = ({
                                           );
                                         }}
                                         projectId={projectId}
-                                        taskId={taskId}
+                                        taskId={currentTaskId}
                                         boardId={boardId}
                                         fetchTaskData={fetchTaskData}
                                       />
@@ -636,7 +644,7 @@ const TaskEditAddViewDetails = ({
                             touched={props.touched}
                             taskData={props.values}
                             isSubtask={isSubtask}
-                            taskId={taskId}
+                            taskId={currentTaskId}
                             projectDetail={projectDetail}
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
@@ -692,7 +700,7 @@ const TaskEditAddViewDetails = ({
                                   replyComment={replyComment}
                                   setReplyComment={setReplyComment}
                                   employees={employees}
-                                  taskId={taskId}
+                                  taskId={currentTaskId}
                                   userId={userId}
                                   projectDetail={projectDetail}
                                   addAttachment={async (attachment) => {
@@ -711,7 +719,7 @@ const TaskEditAddViewDetails = ({
                             }
                           />
                           <TaskCommentsContainer
-                            taskId={taskId}
+                            taskId={currentTaskId}
                             refreshComments={refreshComments}
                             setRefreshComments={setRefreshComments}
                             showActivities={showActivities}
@@ -731,7 +739,7 @@ const TaskEditAddViewDetails = ({
                             Cancel
                           </Button>
                           <Button type="submit">
-                            {`${taskId ? "Save Changes" : "Add Task"}`}
+                            {`${currentTaskId ? "Save Changes" : "Add Task"}`}
                           </Button>
                         </div>
                       )} */}

@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import { Button } from "components/ui/button";
 import { PageLoader, TableCustom, TextUI } from "components";
 import { getTaskById, addTask, getAllTasks } from "app/hooks/taskManagment";
-import { toast } from "react-toastify";
+import { useParams, useNavigate } from "react-router-dom";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import { calculateTotalCount, calculatePercentage } from "utils/renderValues";
 import { Checkbox } from "src/@/components/ui/checkbox";
@@ -130,6 +130,8 @@ export default function Subtasks({
 }
 
 const RenderSubtaskList = ({ subtaskList = [], reloadData = () => {} }) => {
+  const { projectId, taskId, viewStyle, boardId } = useParams();
+  const navigate = useNavigate();
   const [isAddSubtaskOpen, setIsAddSubtaskOpen] = useState(false);
   const [viewSubtasks, setViewSubtasks] = useState(null);
   const userId = useSelector((state) => state.user.userProfile.id);
@@ -159,8 +161,9 @@ const RenderSubtaskList = ({ subtaskList = [], reloadData = () => {} }) => {
               className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-gray-100 cursor-pointer"
               onClick={(e) => {
                 e.preventDefault();
-                setIsAddSubtaskOpen(true);
-                setViewSubtasks(task);
+                navigate(
+                  `/project-board/${projectId}/${viewStyle}/${boardId}/${taskId}/${task.id}`
+                );
               }}
             >
               <div className="inline-flex justify-start items-center gap-2">
@@ -214,7 +217,10 @@ export const RenderTaskSubTasks = ({
   TaskColumns = ProjectBoardSubtaskColumn,
   showAsSubDetail = true,
   showHeader = false,
+  parentTaskId=null,
 }) => {
+  const navigate = useNavigate();
+  const { viewStyle } = useParams();
   const [subTasksDetails, setSubTasksDetails] = useState({
     results: [],
     count: 0,
@@ -226,8 +232,11 @@ export const RenderTaskSubTasks = ({
 
   const tableOptions = {
     onRowClick: (row) => {
-      setIsSubTaskDetailOpen(true);
-      setViewSubTask(row);
+      navigate(
+        `/project-board/${row.project_id}/${viewStyle}/${row.board_id}/${
+          row.is_subtask ? `${parentTaskId}/` : ""
+        }${row.id}`
+      );
     },
     onSortChange: (sortName) => {
       setOrdering(sortName);

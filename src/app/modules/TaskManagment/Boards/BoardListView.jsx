@@ -17,6 +17,7 @@ import {
   AccordionContent,
 } from "src/@/components/ui/accordion";
 import { ListActionOptions } from "app/modules/TaskManagment/Boards/Sections";
+import { useNavigate, useParams } from "react-router-dom";
 
 const BoardListView = ({
   filterData,
@@ -58,22 +59,21 @@ const BoardListView = ({
 
 const ListTasks = ({
   filterData,
-  projectId,
   board,
   reloadData = () => {},
   isEditMode = true,
   accordionItemValue,
 }) => {
+  const navigate = useNavigate();
+  const { projectId, viewStyle } = useParams();
   const [AllBoardTasks, setAllBoardTasks] = useState({ results: [], count: 0 });
-  const [viewTask, setViewTask] = useState(null);
-  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
-  const [selectedBoard, setSelectedBoard] = useState(null);
   const [ordering, setOrdering] = useState("-start_date");
 
   const tableOptions = {
     onRowClick: (row) => {
-      setIsTaskDetailOpen(true);
-      setViewTask(row);
+      navigate(
+        `/project-board/${row.project_id}/${viewStyle}/${row.board_id}/${row.id}`
+      );
     },
     onSortChange: (sortName) => {
       setOrdering(sortName);
@@ -128,8 +128,9 @@ const ListTasks = ({
               size="sm"
               onClick={(e) => {
                 e.preventDefault();
-                setSelectedBoard(board.id);
-                setIsTaskDetailOpen(true);
+                navigate(
+                  `/project-board/${projectId}/${viewStyle}/${board.id}`
+                );
               }}
             >
               <RxPlus size={15} />
@@ -151,27 +152,12 @@ const ListTasks = ({
                 dataStyle={{ backgroundColor: "white" }}
                 renderExpandedContent={(row) => {
                   if (row.sub_task.length)
-                    return <RenderTaskSubTasks subtaskIdList={row.sub_task} />;
+                    return <RenderTaskSubTasks subtaskIdList={row.sub_task} parentTaskId={row.id} />;
                   else return null;
                 }}
               />
             </CardContent>
           </Card>
-          {isTaskDetailOpen && (
-            <TaskEditAddViewDetails
-              taskId={viewTask?.id} // Pass task Id as props to TaskDetail
-              isOpen={isTaskDetailOpen}
-              projectId={projectId}
-              boardId={viewTask?.board_id || selectedBoard}
-              setIsOpen={() => {
-                setIsTaskDetailOpen(false);
-                setViewTask(null);
-                setSelectedBoard(null);
-                fetchData(true);
-              }}
-              reloadData={() => fetchData(true)}
-            />
-          )}
         </div>
       </AccordionContent>
     </AccordionItem>

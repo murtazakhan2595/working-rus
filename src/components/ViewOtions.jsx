@@ -11,7 +11,6 @@ const VIEW_TYPES = {
 
 const ViewOptions = React.memo(
   ({ activeView = "list", setActiveView = () => {} }) => {
-    console.log("member list render again");
     const viewButtons = [
       {
         icon: ListTodo,

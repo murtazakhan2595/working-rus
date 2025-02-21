@@ -18,12 +18,12 @@ import Err404 from "app/modules/Error/Err404";
 import { AddNewListModel } from "./Sections";
 
 const Board = () => {
-  const { projectId, taskId } = useParams();
+  const { projectId, taskId, viewStyle, boardId } = useParams();
   const navigate = useNavigate();
   const userId = useSelector((state) => state.user.userProfile).id;
   const userRole = useSelector((state) => state.user.userProfile).role;
   const [AllBoards, setAllBoards] = useState([]);
-  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(!!taskId);
+  const isTaskDetailOpen = !!taskId || !!boardId;
   const [projectData, setProjectData] = useState({});
   const [openSuccessMessage, setOpenSuccessMessage] = useState(false);
   const [openRequestJoinDialogBox, setOpenRequestJoinDialogBox] =
@@ -33,7 +33,7 @@ const Board = () => {
     is_archive: [false],
   });
   const [showAddNewListModel, setShowAddNewListModel] = useState(false);
-  const [activeView, setActiveView] = useState("grid");
+  const activeView = viewStyle || "grid";
 
   useEffect(() => {
     let isMounted = true;
@@ -50,11 +50,6 @@ const Board = () => {
       isMounted = false;
     };
   }, [projectId, taskId]);
-
-  useEffect(() => {
-    // Open the modal when taskId changes
-    setIsTaskDetailOpen(!!taskId);
-  }, [taskId]);
 
   const fetchData = async (isMounted) => {
     try {
@@ -114,14 +109,19 @@ const Board = () => {
   return (
     <>
       {showAddNewListModel && (
-        <AddNewListModel projectId={projectId} setIsOpen={toggleAddBoardModal} />
+        <AddNewListModel
+          projectId={projectId}
+          setIsOpen={toggleAddBoardModal}
+        />
       )}
       <BoardHeader
         setFilterData={setFilterData}
         filterData={filterData}
         projectId={projectId}
         activeView={activeView}
-        setActiveView={setActiveView}
+        setActiveView={(viewStyle) => {
+          navigate(`/project-board/${projectId}/${viewStyle}`);
+        }}
         projectData={projectData}
         fetchData={fetchData}
       />
@@ -143,22 +143,7 @@ const Board = () => {
         />
       )}
       {/* Task Detail Modal */}
-      {isTaskDetailOpen && (
-        <TaskEditAddViewDetails
-          taskId={taskId}
-          isOpen={isTaskDetailOpen}
-          setIsOpen={() => {
-            setIsTaskDetailOpen(false);
-            navigate(`/project-board/${projectId}`);
-            fetchAllBoards(true);
-          }}
-          reloadData={() => {
-            setIsTaskDetailOpen(false);
-            fetchAllBoards(true);
-          }}
-          projectId={projectId}
-        />
-      )}
+      {isTaskDetailOpen && <TaskEditAddViewDetails />}
       {openRequestJoinDialogBox && (
         <AlertDialogue
           isOpen={openRequestJoinDialogBox}

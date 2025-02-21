@@ -26,7 +26,7 @@ import {
 } from "app/modules/TaskManagment/Sections";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const TaskCard = ({
   task,
@@ -86,6 +86,8 @@ const TaskCard = ({
               reloadData={fetchSubTaskDetails}
               showMembers={showMembers}
               showDueDate={showDueDate}
+              isSubtask={true}
+              parentTaskId={task.id}
             />
           </div>
         ))}
@@ -100,8 +102,11 @@ const TaskDetails = ({
   reloadData = () => {},
   setOpenSubtaskDetails = () => {},
   openSubtaskDetails = false,
+  isSubtask = false,
+  parentTaskId = null,
 }) => {
   const navigate = useNavigate();
+  const { projectId, viewStyle } = useParams();
   const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
@@ -141,7 +146,11 @@ const TaskDetails = ({
           className="flex flex-col"
           onClick={(e) => {
             e.preventDefault();
-            setIsTaskDetailOpen(true);
+            navigate(
+              `/project-board/${projectId}/${viewStyle}/${task.board_id}/${
+                isSubtask ? `${parentTaskId}/` : ""
+              }${task.id}`
+            );
           }}
         >
           <div className="my-2">

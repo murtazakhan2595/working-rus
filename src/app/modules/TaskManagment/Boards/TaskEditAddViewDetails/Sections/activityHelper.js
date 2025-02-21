@@ -181,7 +181,7 @@ export const trackTaskActivities = async (
     date ? moment(date).startOf("day").format("YYYY-MM-DD") : null;
 
   // If no previous data exists, it means the task was newly created
-  if (!taskId) {
+  if (!previousTaskData || !previousTaskData.id) {
     activityLog.push({
       task_id: taskId,
       action_type: ActivityTypes.TASK_CREATED,

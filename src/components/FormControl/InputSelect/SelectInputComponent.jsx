@@ -28,6 +28,7 @@ const SelectInputComponent = React.memo(
     showOptionsActions = false, // Show additional actions for options
     optionsActions = [], // List of action buttons for options
     placeholder = null, // Placeholder text when no value is selected
+    disabled = false,
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     // Toggle selection for a given option
@@ -55,6 +56,7 @@ const SelectInputComponent = React.memo(
         <FormPopoverButton
           open={isOpen}
           setOpen={setIsOpen}
+          disabled={disabled}
           triggerContent={
             <div className="flex justify-start w-full gap-2 items-center">
               <FormFieldIcon icon={icon} />
