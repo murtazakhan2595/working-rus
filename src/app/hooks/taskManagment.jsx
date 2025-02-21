@@ -1142,8 +1142,56 @@ const addRelationship = async (payload) => {
   }
 };
 
+const getRelationship = async (payload) => {
+  const filterData = payload?.filterData ?? {};
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const URL = `/relationship/?${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching relationship data :", error);
+  }
+  return [];
+}
+
+const deleteRelationship = async (relationshipId) => {
+  try {
+    const response = await axios.delete(
+      `${baseUrl}/relationship/${relationshipId}`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200 || response.status === 204) {
+      return response;
+    }
+    return false;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error deleting relationship:", error);
+    return false;
+  }
+}
+
 export {
   addRelationship,
+  getRelationship,
+  deleteRelationship,
   createActivity,
   getActivities,
   addSubtask,
