@@ -591,8 +591,10 @@ const TaskEditAddViewDetails = ({
                                     <span>
                                       Relation(
                                       <span>
-                                        {Math.max(taskRelationship?.length , targetRelationship.length) ||
-                                          0}
+                                        {Math.max(
+                                          taskRelationship?.length,
+                                          targetRelationship.length
+                                        ) || 0}
                                       </span>
                                       )
                                     </span>
@@ -659,6 +661,7 @@ const TaskEditAddViewDetails = ({
                                     }
                                     projectId={props.values.project_id}
                                     taskId={currentTaskId}
+                                    boardId={boardId}
                                     editMode={true}
                                     onChange={(
                                       updatedRelations,
