@@ -347,8 +347,8 @@ const addTaskCheckListItem = async (
     if (response.status === 201 || response.status === 200) {
       if (userId && taskId) {
         await trackTaskActivities(
-          { task_checklist: response.data },
-          id ? { task_checklist: initialValues } : null,
+          { id: taskId, task_checklist: response.data },
+          { id: taskId, ...(id ? { task_checklist: initialValues } : {}) },
           taskId,
           userId,
           createActivity,

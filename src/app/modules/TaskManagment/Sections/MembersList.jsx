@@ -50,7 +50,7 @@ const MembersList = ({
           } h-auto items-center flex-wrap cursor-pointer`}
         >
           {displayedMembers?.map((member) => (
-            <MembersAvatar member={member} />
+           <div key={member}> <MembersAvatar member={member} /></div>
           ))}
           {remainingCount > 0 && !displayAll && (
             <span

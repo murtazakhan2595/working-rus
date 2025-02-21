@@ -32,6 +32,7 @@ export const ActivityTypes = {
   ACTUAL_TIME_CHANGED: "ACTUAL_TIME_CHANGED",
   CHANGED_LIST: "CHANGED_LIST",
   CUSTOM_FIELD_CHANGED: "CUSTOM_FIELD_CHANGED",
+  TASK_DESCRIPTION_UPDATED:"TASK_DESCRIPTION_UPDATED",
 };
 
 const getRenderedValue = (value) => {
@@ -57,6 +58,9 @@ const generateActivityContent = (
 
     case ActivityTypes.TASK_DESCRIPTION_UPDATED:
       return "Updated task description";
+
+    case ActivityTypes.TASK_COVER_PHOTO_UPDATED:
+      return "Updated task cover photo";
 
     case ActivityTypes.STATUS_CHANGED:
       return `Marked the card as ${ReactDOMServer.renderToStaticMarkup(
@@ -214,6 +218,18 @@ export const trackTaskActivities = async (
               action_type: ActivityTypes.TASK_DESCRIPTION_UPDATED,
               content: generateActivityContent(
                 ActivityTypes.TASK_DESCRIPTION_UPDATED
+              ),
+              user_id: userId,
+            });
+          }
+          break;
+        case "cover_photo":
+          if (updatedTaskData.cover_photo !== previousTaskData?.cover_photo) {
+            activityLog.push({
+              task_id: taskId,
+              action_type: ActivityTypes.TASK_COVER_PHOTO_UPDATED,
+              content: generateActivityContent(
+                ActivityTypes.TASK_COVER_PHOTO_UPDATED
               ),
               user_id: userId,
             });

@@ -146,7 +146,7 @@ const BoardGridView = ({
   );
 };
 
-const TaskColumn = ({ key, reloadData, board, filterData }) => {
+const TaskColumn = ({ reloadData, board, filterData }) => {
   const { projectId, viewStyle } = useParams();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
@@ -191,7 +191,7 @@ const TaskColumn = ({ key, reloadData, board, filterData }) => {
       className="flex flex-col min-w-[320px] max-w-[320px]"
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
-      key={key}
+      key={board.id}
     >
       <div className="flex flex-col">
         <div
