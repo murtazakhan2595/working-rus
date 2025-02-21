@@ -19,7 +19,7 @@ const InputTaskDescription = React.memo(
           setEditingMode(true);
         }}
       >
-        {editingMode || !value ? (
+        {editingMode ? (
           <TextEditorInputField
             content={value}
             setContent={(value) => {

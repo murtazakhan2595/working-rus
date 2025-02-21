@@ -666,7 +666,7 @@ const getTaskById = async (taskId) => {
         }
         // Fetch attachment and checklist details if they exist
         const attachments = cardDetails.attachment?.length
-          ? await getAttachmentDetails([cardDetails.attachment])
+          ? await getAttachmentDetails(cardDetails.attachment)
           : [];
         const checklistItems = cardDetails.task_checklist?.length
           ? await getCheckListItemDetails(cardDetails.task_checklist)
@@ -696,7 +696,7 @@ const getTaskById = async (taskId) => {
     return {};
   }
 };
-const getAttachmentById = async (attachmentId) => {
+export const getAttachmentById = async (attachmentId) => {
   try {
     if (attachmentId) {
       const response = await axios.get(
@@ -1164,7 +1164,6 @@ export {
   addTaskCheckListItem,
   getTaskCheckListItem,
   deleteTaskCheckListItem,
-  getAttachmentById,
   deleteAttachment,
   fetchComments,
   postComment,

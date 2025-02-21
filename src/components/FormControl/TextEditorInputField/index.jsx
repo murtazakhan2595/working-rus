@@ -105,24 +105,64 @@ function TextEditorInputField({
     execCommand(command);
   };
 
+  const saveCaretPosition = () => {
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+      setLastCaretPosition(selection.getRangeAt(0).cloneRange());
+    }
+  };
+
+  const insertImageAtCaret = (imageUrl) => {
+    debugger
+    if (!lastCaretPosition) return;
+
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(lastCaretPosition);
+
+    const img = document.createElement("img");
+    img.src = imageUrl;
+    img.style.maxWidth = "100%";
+    img.style.display = "block";
+
+    lastCaretPosition.insertNode(img);
+
+    // Move cursor after the inserted image
+    const newRange = document.createRange();
+    newRange.setStartAfter(img);
+    newRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+
+    // Update content state
+    setContent(editorRef.current.innerHTML);
+
+    // Save new caret position after inserting the image
+    saveCaretPosition();
+  };
+
+
   const handleImageUpload = useCallback(
     async (e) => {
+      debugger
       e.preventDefault();
       const file = e.target.files[0];
       if (upload) {
+        debugger
         const uploadedImage = await upload(file);
         if (uploadedImage?.attachment) {
-          execCommand("insertImage", uploadedImage.attachment);
+          insertImageAtCaret(uploadedImage.attachment);
           handleFileChange(uploadedImage);
         } else {
           console.error("Image upload failed");
         }
       } else {
-        execCommand("insertImage", URL.createObjectURL(file));
+        const localUrl = URL.createObjectURL(file);
+        insertImageAtCaret(localUrl);
         handleFileChange({ attachment: file, name: file.name });
       }
     },
-    [execCommand, upload]
+    [upload]
   );
 
   const handleFileChange = (fileEvent) => {
@@ -208,6 +248,7 @@ function TextEditorInputField({
     (e) => {
       const text = e.target.innerHTML;
       setContent(text);
+      saveCaretPosition();
 
       if (!allowMentions) return;
 
@@ -296,7 +337,7 @@ function TextEditorInputField({
           if (file && upload) {
             const uploadedImage = await upload(file);
             if (uploadedImage?.attachment) {
-              execCommand("insertImage", uploadedImage.attachment);
+             // execCommand("insertImage", uploadedImage.attachment);
               handleFileChange(uploadedImage);
             }
           }
@@ -418,17 +459,17 @@ function TextEditorInputField({
           </div>
         )}
 
-        {/* <ScrollArea className="[&>div>div[style]]:!block"> */}
+        <ScrollArea className="[&>div>div[style]]:!block">
         <div
           ref={editorRef}
           id={name}
-          className="w-full min-h-20 p-4 focus:outline-none rounded-b-lg max-h-[200px] textEditorText overflow-y-scroll"
+          className="w-full h-[300px] p-4 focus:outline-none rounded-b-lg textEditorText"
           contentEditable
           onInput={handleInput}
           onPaste={handlePaste}
           onKeyDown={handleKeyDown}
         />
-        {/* </ScrollArea> */}
+        </ScrollArea>
 
         {allowMentions && showMentionPopover && (
           <div

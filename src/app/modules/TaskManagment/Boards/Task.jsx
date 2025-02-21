@@ -107,9 +107,7 @@ const TaskDetails = ({
 }) => {
   const navigate = useNavigate();
   const { projectId, viewStyle } = useParams();
-  const [viewTaskDetail, setViewTaskDetail] = useState(task.id);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
   const userId = useSelector((state) => state.user.userProfile.id);
 
   const confirmDelete = async () => {
@@ -296,23 +294,6 @@ const TaskDetails = ({
           handleContinue={confirmDelete}
           title="Are you sure?"
           description="Are you sure you want to delete this Card? This action is irreversible and will delete all card details"
-        />
-      )}
-
-      {/* Render TaskDetail component if isTaskDetailOpen is true */}
-      {isTaskDetailOpen && (
-        <TaskEditAddViewDetails
-          taskId={viewTaskDetail} // Pass task Id as props to TaskDetail
-          isOpen={isTaskDetailOpen}
-          setIsOpen={() => {
-            setIsTaskDetailOpen(false);
-            reloadData();
-            setViewTaskDetail(task.id);
-          }}
-          reloadData={reloadData}
-          projectId={task.project_id}
-          boardId={task.board_id}
-          isSubtask={task.is_subtask}
         />
       )}
     </Card>
