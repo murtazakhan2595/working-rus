@@ -11,7 +11,7 @@ import { ScrollArea } from "src/@/components/ui/scroll-area";
 import { MdClose } from "react-icons/md";
 import { Badge } from "components/ui/badge";
 import { getTaskByprojectId } from "app/hooks/taskManagment";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Tooltip,
   TooltipContent,
@@ -55,6 +55,7 @@ const TaskRelationTab = ({
   onChange,
   projectId,
   taskId,
+  boardId,
   editMode = true,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -68,6 +69,7 @@ const TaskRelationTab = ({
     [RELATION_TYPES.WAITING_ON]: [], // Changed from WAITING to WAITING_ON
   });
 
+  const { viewStyle } = useParams();
   const navigate = useNavigate();
   // Fetch tasks from API
   const fetchTasks = async (isMounted) => {
@@ -301,11 +303,18 @@ const TaskRelationTab = ({
             <TooltipProvider key={relatedTaskId}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center justify-between p-2 bg-gray-300 rounded-lg shadow-sm w-fit gap-2 group">
+                  <div
+                    className={`flex items-center justify-between px-3 py-2 rounded-lg w-fit gap-2 group transition-colors ${
+                      type === "none"
+                        ? "bg-[#f4f4f5] hover:bg-[#e4e4e7]"
+                        : type === "blocker"
+                        ? "bg-[#fee2e2] hover:bg-[#fecaca]"
+                        : "bg-[#fef9c3] hover:bg-[#fef08a]"
+                    }`}
+                  >
                     <span
-                      className="text-sm cursor-pointer hover:text-primary-900"
+                      className="text-sm cursor-pointer text-zinc-700 hover:text-zinc-900"
                       onClick={() =>
-                        //  navigate(`/project-board/${projectId}/${task.id}`)
                         navigate(`/project-board/card/${task.id}`, {
                           state: {
                             GOTO_URLS: `/project-board/card/${taskId}/`,
@@ -317,7 +326,7 @@ const TaskRelationTab = ({
                     </span>
                     {editMode && (
                       <MdClose
-                        className="w-4 h-4 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="w-4 h-4 cursor-pointer text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity hover:text-zinc-600"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleRemoveRelation(type, relatedTaskId);
@@ -327,23 +336,23 @@ const TaskRelationTab = ({
                   </div>
                 </TooltipTrigger>
                 <TooltipContent
-                  className="bg-black text-white p-2 rounded-md text-xs"
+                  className="bg-zinc-900 text-white p-2 rounded-md text-xs"
                   side="top"
                 >
                   <div className="flex flex-col gap-1">
                     <div>{tooltipContent}</div>
                     {task.start_date && (
-                      <div className="text-gray-300">
+                      <div className="text-zinc-300">
                         Start: {moment(task.start_date).format("MMM DD, YYYY")}
                       </div>
                     )}
                     {task.end_date && (
-                      <div className="text-gray-300">
+                      <div className="text-zinc-300">
                         Due: {moment(task.end_date).format("MMM DD, YYYY")}
                       </div>
                     )}
                     {task.status && (
-                      <div className="text-gray-300">Status: {task.status}</div>
+                      <div className="text-zinc-300">Status: {task.status}</div>
                     )}
                   </div>
                 </TooltipContent>
