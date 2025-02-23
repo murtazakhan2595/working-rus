@@ -94,6 +94,7 @@ const TaskEditAddViewDetails = ({
     setShowActivities(!showActivities);
   };
   const handleCloseTaskEditor = () => {
+    console.log(taskProjectId)
     if (GOTO_URLS)
       navigate(GOTO_URLS, {
         state: {

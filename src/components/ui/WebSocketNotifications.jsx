@@ -187,19 +187,19 @@ const WebSocketNotifications = () => {
       markRead(notification.id);
     }
 
-    if (notification?.type === "PROJECT") {
+    if (notification?.type === "PROJECT" && notification.project_id) {
       navigate(`/project-board/${notification.project_id}`);
     }
 
-    if (notification.type === "MENTION") {
-      navigate(
-        `/project-board/card/${notification.task_id}`
-      );
+    if (notification.type === "MENTION" && notification.task_id) {
+      navigate(`/project-board/card/${notification.task_id}`, {
+        state: { projectId: notification.project_id },
+      });
     }
-    if (notification.type === "TASK") {
-      navigate(
-        `/project-board/card/${notification.task_id}`
-      );
+    if (notification.type === "TASK" && notification.task_id) {
+      navigate(`/project-board/card/${notification.task_id}`, {
+        state: { projectId: notification.project_id },
+      });
     }
   };
 
