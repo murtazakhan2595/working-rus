@@ -93,7 +93,7 @@ const InputTaskDetailFields = React.memo(
             value={taskData.board_id}
             placeholder="Select List"
             onChange={onChange}
-            disabled={taskData.is_subtask }
+            disabled={taskData.is_subtask ||isSubtask}
           />
 
           <Labels

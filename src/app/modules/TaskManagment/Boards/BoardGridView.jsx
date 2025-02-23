@@ -218,8 +218,15 @@ const TaskColumn = ({ reloadData, board, filterData }) => {
               type="button"
               className="w-full justify-center group mb-3"
               onClick={() => {
-                navigate(`/project-board/${projectId}/${viewStyle}/${board.id}`);
-              }}
+                navigate(`/project-board/card/add`, {
+                  state: {
+                    GOTO_URLS: `/project-board/${projectId}`,
+                    activeView: "grid",
+                    projectId: projectId,
+                    boardId: board.id,
+                  },
+                });
+               }}
             >
               <RxPlus className="text-xl" />
               <span className="ml-2">Add Task</span>

@@ -238,7 +238,7 @@ const RenderProject = ({
   const navigate = useNavigate();
   const [isEditMode, setIsEditMode] = useState(false);
   const navigateToBoard = () => {
-    navigate(`/project-board/${project.id}/grid`);
+    navigate(`/project-board/${project.id}`);
   };
 
   const handleProjectClick = (event) => {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { UserActivities, UserCards } from "app/modules/TaskManagment/Boards";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import Err404 from "app/modules/Error/Err404";
 import { ArrowLeft } from "lucide-react";
 import { EmployeeOverview } from "components";
@@ -19,9 +19,11 @@ const TabsData = [
   { value: "cards", label: "Cards" },
 ];
 const UserProfileTaskDetails = ({}) => {
-  const projectId = useParams()?.projectId || null;
-  const userId = useParams()?.userId || null;
-  const [activeTab, setActiveTab] = useState("cards");
+  const location = useLocation();
+  const { activeView, projectId } = location.state || {};
+  const { userId } = useParams();
+
+  const [activeTab, setActiveTab] = useState(activeView || "cards");
 
   if (projectId === -1 || !userId) {
     return <Err404 />;
@@ -31,7 +33,7 @@ const UserProfileTaskDetails = ({}) => {
       <div className="mb-4 flex flex-row gap-2 justify-start items-center">
         <Button
           variant="ghost"
-          to={`/project-board/${projectId}`}
+          to={`${projectId ? `/project-board/${projectId}` : "/projects"}`}
           className="p-0 text-xl text-balance hover:bg-transparent"
         >
           <ArrowLeft className="w-6 h-6 shadow-none" />

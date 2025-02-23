@@ -15,8 +15,14 @@ import { useSelector } from "react-redux";
 import AlertDialogue from "components/ui/AlertDialogue";
 
 const AdditionalActionOption = React.memo(
-  ({ isArchive = false, reloadData = () => {} }) => {
-    const { projectId, taskId, viewStyle, boardId, subtaskId } = useParams();
+  ({
+    isArchive = false,
+    reloadData = () => {},
+    projectId = null,
+    activeView = null,
+    taskId = null,
+  }) => {
+    const { parentTaskId, subtaskId } = useParams();
     const navigate = useNavigate();
     const currentTaskId = subtaskId ? subtaskId : taskId;
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -31,13 +37,7 @@ const AdditionalActionOption = React.memo(
         );
         if (response) {
           toast.success("Task Archeived updated successfully");
-          if (archived)
-            navigate(
-              `/project-board/${projectId}/${viewStyle}${
-                subtaskId ? `/${boardId}/${taskId}` : ""
-              }`
-            );
-          else reloadData(true);
+          reloadData(true);
         }
       } catch (error) {
         console.error("Error updating task status:", error);
@@ -55,14 +55,18 @@ const AdditionalActionOption = React.memo(
       e.preventDefault();
       setIsDeleteModalOpen(true);
     };
+    const handleNavigate = () => {
+      navigate(
+        `/project-board/${subtaskId ? `card/${parentTaskId}` : projectId}`,
+        {
+          state: { activeView: activeView },
+        }
+      );
+    };
     const confirmDelete = async () => {
       const response = await deleteTask(currentTaskId);
       if (response && response.status === 200) {
-        navigate(
-          `/project-board/${projectId}/${viewStyle}${
-            subtaskId ? `/${boardId}/${taskId}` : ""
-          }`
-        );
+        handleNavigate();
       }
       setIsDeleteModalOpen(false);
     };
@@ -76,14 +80,14 @@ const AdditionalActionOption = React.memo(
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <CopyLink
-                link={`/project-board/${projectId}/${viewStyle}/${boardId}/${taskId}/${
-                  subtaskId || ""
-                }`}
-                text={"Copy Card Link"}
-              />
-            </DropdownMenuItem>
+            {taskId && (
+              <DropdownMenuItem>
+                <CopyLink
+                  link={`/project-board/card/${taskId}`}
+                  text={"Copy Card Link"}
+                />
+              </DropdownMenuItem>
+            )}
             {currentTaskId && !isArchive && (
               <DropdownMenuItem onClick={handleArchiveCardClick}>
                 <Archive size={14} className="mr-2" /> Archive Card

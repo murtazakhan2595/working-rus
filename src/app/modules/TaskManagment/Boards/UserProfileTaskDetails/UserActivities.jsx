@@ -8,6 +8,7 @@ import { Button } from "components/ui/button";
 import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import { TextUI } from "components";
 import moment from "moment";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 const UserActivities = ({ userId = null }) => {
   const [AllActivityDetails, setAllActivityDetails] = useState([]);
@@ -50,10 +51,20 @@ const UserActivities = ({ userId = null }) => {
 };
 
 const ListActivities = ({ activity }) => {
-  const [viewTaskId, setViewTaskId] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { projectId } = location.state || {};
+  const { userId } = useParams();
   const [isTaskDetailOpen, setIsTaskDetailOpen] = useState(false);
   const handleClick = (event) => {
-    setIsTaskDetailOpen(true);
+    event.preventDefault();
+    navigate(`/project-board/card/${activity.task_id}`, {
+      state: {
+        GOTO_URLS: `/project-board/user/${userId}`,
+        activeView: "activity",
+        projectId: projectId,
+      },
+    });
   };
   if (!activity) return null;
   return (

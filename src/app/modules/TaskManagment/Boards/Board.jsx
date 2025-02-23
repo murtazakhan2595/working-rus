@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import BoardListView from "app/modules/TaskManagment/Boards/BoardListView";
 import BoardGridView from "app/modules/TaskManagment/Boards/BoardGridView";
 import BoardHeader from "app/modules/TaskManagment/Boards/BoardHeader";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   getProjectById,
   addProject,
@@ -19,6 +19,8 @@ import { AddNewListModel } from "./Sections";
 
 const Board = () => {
   const { projectId, taskId, viewStyle, boardId } = useParams();
+  const location = useLocation();
+  const { activeView } = location.state || {};
   const navigate = useNavigate();
   const userId = useSelector((state) => state.user.userProfile).id;
   const userRole = useSelector((state) => state.user.userProfile).role;
@@ -33,7 +35,7 @@ const Board = () => {
     is_archive: [false],
   });
   const [showAddNewListModel, setShowAddNewListModel] = useState(false);
-  const activeView = viewStyle || "grid";
+  //const activeView = viewStyle || "grid";
 
   useEffect(() => {
     let isMounted = true;
@@ -120,13 +122,18 @@ const Board = () => {
         projectId={projectId}
         activeView={activeView}
         setActiveView={(viewStyle) => {
-          navigate(`/project-board/${projectId}/${viewStyle}`);
+          navigate(`/project-board/${projectId}`, {
+            state: {
+              GOTO_URLS: `/project-board/${projectId}`,
+              activeView: viewStyle,
+            },
+          });
         }}
         projectData={projectData}
         fetchData={fetchData}
       />
-      {activeView === "grid" ? (
-        <BoardGridView
+      {activeView === "list" ? (
+        <BoardListView
           filterData={filterData}
           projectId={projectId}
           AllBoards={AllBoards}
@@ -134,7 +141,7 @@ const Board = () => {
           toggleAddBoardModal={toggleAddBoardModal}
         />
       ) : (
-        <BoardListView
+        <BoardGridView
           filterData={filterData}
           projectId={projectId}
           AllBoards={AllBoards}

@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ViewOptions } from "components";
 import { getLabelDropdownList } from "utils/Lists";
 import { MembersList } from "app/modules/TaskManagment/Sections";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   RenderProject,
   AdditionalOption,
@@ -23,13 +23,13 @@ import { useSelector } from "react-redux";
 const BoardHeader = ({
   setFilterData = () => {},
   filterData,
-  projectId = null,
   activeView = "grid",
   setActiveView = () => {},
   projectData = {},
   fetchData = () => {},
 }) => {
   const navigate = useNavigate();
+  const { projectId, viewStyle } = useParams();
   const [isDelete, setIsDelete] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const TaskLabelList = getLabelDropdownList(
@@ -185,7 +185,11 @@ const BoardHeader = ({
           removeMember={removeMember}
           onMemberClick={(event, user) => {
             event.preventDefault();
-            navigate(`/project-board/${projectId}/user/${user.id}`)
+            navigate(`/project-board/user/${user.id}`, {
+              state: {
+                projectId: projectId,
+              },
+            });
           }}
         />
         {isDelete && (

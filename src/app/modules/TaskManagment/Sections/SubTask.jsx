@@ -23,6 +23,7 @@ export default function Subtasks({
   projectDetail,
   fetchTaskData,
 }) {
+  const navigate = useNavigate();
   const [isAddSubtaskOpen, setIsAddSubtaskOpen] = useState(false);
   const [subTaskCompletedPercentage, setSubTaskCompletedPercentage] =
     useState(0);
@@ -61,7 +62,15 @@ export default function Subtasks({
   }, [items]);
 
   const handleAddSubtask = async () => {
-    setIsAddSubtaskOpen(true);
+    navigate(`/project-board/card/add`, {
+      state: {
+        GOTO_URLS: `/project-board/card/${taskId}/`,
+        projectId: projectId,
+        boardId: boardId,
+        subtask: true,
+        parentTaskId:taskId
+      },
+    });
   };
 
   const handleSubtaskCreated = async (newTask) => {
@@ -93,6 +102,8 @@ export default function Subtasks({
       <RenderSubtaskList
         subtaskList={subTasksDetails}
         reloadData={fetchSubTaskProgress}
+        projectId={projectId}
+        taskId={taskId}
       />
 
       {/* Add Subtask Button */}
@@ -129,8 +140,13 @@ export default function Subtasks({
   );
 }
 
-const RenderSubtaskList = ({ subtaskList = [], reloadData = () => {} }) => {
-  const { projectId, taskId, viewStyle, boardId } = useParams();
+const RenderSubtaskList = ({
+  subtaskList = [],
+  reloadData = () => {},
+  projectId,
+  taskId,
+}) => {
+  const { viewStyle, boardId } = useParams();
   const navigate = useNavigate();
   const [isAddSubtaskOpen, setIsAddSubtaskOpen] = useState(false);
   const [viewSubtasks, setViewSubtasks] = useState(null);
@@ -161,9 +177,14 @@ const RenderSubtaskList = ({ subtaskList = [], reloadData = () => {} }) => {
               className="flex items-center justify-between gap-2 p-2 rounded-lg hover:bg-gray-100 cursor-pointer"
               onClick={(e) => {
                 e.preventDefault();
-                navigate(
-                  `/project-board/${projectId}/${viewStyle}/${boardId}/${taskId}/${task.id}`
-                );
+                // navigate(
+                //   `/project-board/${viewStyle}/card/${taskId}/subtask/${task.id}`
+                // );
+                navigate(`/project-board/card/${taskId}/subtask/${task.id}`, {
+                  state: {
+                    GOTO_URLS: `/project-board/card/${taskId}/`,
+                  },
+                });
               }}
             >
               <div className="inline-flex justify-start items-center gap-2">
@@ -217,10 +238,12 @@ export const RenderTaskSubTasks = ({
   TaskColumns = ProjectBoardSubtaskColumn,
   showAsSubDetail = true,
   showHeader = false,
-  parentTaskId=null,
+  GOTO_URLS = "",
+  activeView,
+  projectId,
 }) => {
   const navigate = useNavigate();
-  const { viewStyle } = useParams();
+  const { viewStyle, userId } = useParams();
   const [subTasksDetails, setSubTasksDetails] = useState({
     results: [],
     count: 0,
@@ -232,11 +255,13 @@ export const RenderTaskSubTasks = ({
 
   const tableOptions = {
     onRowClick: (row) => {
-      navigate(
-        `/project-board/${row.project_id}/${viewStyle}/${row.board_id}/${
-          row.is_subtask ? `${parentTaskId}/` : ""
-        }${row.id}`
-      );
+      navigate(`/project-board/card/${row.id}`, {
+        state: {
+          GOTO_URLS: GOTO_URLS,
+          activeView: activeView,
+          projectId: projectId,
+        },
+      });
     },
     onSortChange: (sortName) => {
       setOrdering(sortName);

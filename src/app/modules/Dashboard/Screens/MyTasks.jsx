@@ -9,7 +9,7 @@ import {
   getStatusIconColor,
 } from "app/modules/TaskManagment/Boards/Sections";
 import moment from "moment";
-import { PriorityListIcons } from "data/Data";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -218,6 +218,7 @@ export default function MyTasks() {
 }
 
 function RenderTask({ tasks }) {
+   const navigate = useNavigate();
   return (
     <CustomTable
       showHeader={false}
@@ -250,10 +251,17 @@ function RenderTask({ tasks }) {
               variant="outline"
               size="sm"
               className="rounded-sm font-semidbold"
+              onClick={() =>
+                navigate(`/project-board/card/${render.id}`, {
+                  state: {
+                    GOTO_URLS: `/`,
+                  },
+                })
+              }
             >
-              <Link to={`project-board/${render?.project_id}/${render.id}`}>
+              {/* <Link to={`project-board/${render?.project_id}/${render.id}`}> */}
                 View Task
-              </Link>
+              {/* </Link> */}
             </Button>
           ),
         },

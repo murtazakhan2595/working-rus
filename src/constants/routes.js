@@ -17,6 +17,7 @@ import {
   Projects,
   Board,
   UserProfileTaskDetails,
+  TaskEditAddViewDetails,
 } from "app/modules/TaskManagment";
 import ViewEmployee from "app/modules/Employees/Screens/View";
 import "react-toastify/dist/ReactToastify.css";
@@ -69,23 +70,18 @@ const SidebarRoutes = [
     name: "Projects",
   },
   Config.TASK_MANAGMENT && {
-    path: "/project-board/:projectId/:viewStyle",
-    component: <Board />,
+    path: "/project-board/card/add",
+    component: <TaskEditAddViewDetails />,
     name: "Project Board",
   },
   Config.TASK_MANAGMENT && {
-    path: "/project-board/:projectId/:viewStyle/:boardId",
-    component: <Board />,
+    path: "/project-board/card/:taskId",
+    component: <TaskEditAddViewDetails />,
     name: "Project Board",
   },
   Config.TASK_MANAGMENT && {
-    path: "/project-board/:projectId/:viewStyle/:boardId/:taskId",
-    component: <Board />,
-    name: "Project Board",
-  },
-  Config.TASK_MANAGMENT && {
-    path: "/project-board/:projectId/:viewStyle/:boardId/:taskId/:subtaskId",
-    component: <Board />,
+    path: "/project-board/card/:parentTaskId/subtask/:subtaskId",
+    component: <TaskEditAddViewDetails />,
     name: "Project Board",
   },
   Config.TASK_MANAGMENT && {
@@ -94,10 +90,11 @@ const SidebarRoutes = [
     name: "Project Board",
   },
   Config.TASK_MANAGMENT && {
-    path: "/project-board/:projectId/:viewStyle/user/:userId",
+    path: "/project-board/user/:userId",
     component: <UserProfileTaskDetails />,
     name: "User Profile Details",
   },
+  
   Config.SELF_SERVICE_HUB &&
     Config.PROFIL_MANAGMENT && {
       path: "/my-profile",

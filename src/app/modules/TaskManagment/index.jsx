@@ -1,3 +1,7 @@
 import { Projects } from "./Projects";
-import { Board, UserProfileTaskDetails } from "./Boards";
-export { Projects, Board, UserProfileTaskDetails };
+import {
+  Board,
+  UserProfileTaskDetails,
+  TaskEditAddViewDetails,
+} from "./Boards";
+export { Projects, Board, UserProfileTaskDetails, TaskEditAddViewDetails };

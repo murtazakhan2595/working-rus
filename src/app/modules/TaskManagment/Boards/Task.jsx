@@ -58,7 +58,7 @@ const TaskCard = ({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [task?.sub_task]);
 
   return (
     <div
@@ -144,11 +144,12 @@ const TaskDetails = ({
           className="flex flex-col"
           onClick={(e) => {
             e.preventDefault();
-            navigate(
-              `/project-board/${projectId}/${viewStyle}/${task.board_id}/${
-                isSubtask ? `${parentTaskId}/` : ""
-              }${task.id}`
-            );
+            navigate(`/project-board/card/${task.id}`, {
+              state: {
+                GOTO_URLS: `/project-board/${projectId}`,
+                activeView: "grid",
+              },
+            });
           }}
         >
           <div className="my-2">
@@ -230,9 +231,11 @@ const TaskDetails = ({
                 onMemberClick={(event, user) => {
                   event.preventDefault();
                   if (task.project_id && user.id)
-                    navigate(
-                      `/project-board/${task.project_id}/user/${user.id}`
-                    );
+                    navigate(`/project-board/user/${user.id}`, {
+                      state: {
+                        projectId: projectId,
+                      },
+                    });
                 }}
               />
             </div>

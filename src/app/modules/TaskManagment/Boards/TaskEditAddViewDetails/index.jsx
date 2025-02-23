@@ -41,8 +41,7 @@ import {
 } from "app/hooks/taskManagment";
 import { mapTaskPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
 import { getDropdownList, convertJSONArrayToStringsArray } from "utils/Lists";
-import { useParams, useNavigate } from "react-router-dom";
-import { trackTaskActivities } from "./Sections/activityHelper";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import CopyLink from "components/ui/CopyLink";
 import TaskCommentsContainer from "../../Sections/TaskComments";
 import { FormatID } from "utils/getValuesFromTables";
@@ -64,11 +63,13 @@ const TaskEditAddViewDetails = ({
   Projects = [],
   onTaskCreated, // New callback for when task/subtask is created
 }) => {
-  const { projectId, taskId, viewStyle, boardId, subtaskId } = useParams();
+  const location = useLocation();
+  const { GOTO_URLS, activeView, projectId, boardId, subtask, parentTaskId } =
+    location.state || {};
+  const { taskId, subtaskId } = useParams();
   const navigate = useNavigate();
-  const userId = useSelector((state) => state.user.userProfile.id);
-  const isSubtask = !!subtaskId;
-  const currentTaskId = isSubtask ? subtaskId : taskId;
+  const loggedInUserId = useSelector((state) => state.user.userProfile.id);
+  const currentTaskId = subtaskId ? subtaskId : taskId;
   const [isLoading, setIsLoading] = useState(false);
   const [BoardList, setBoardList] = useState([]);
   const [CustomFields, setCustomFields] = useState([]);
@@ -86,18 +87,28 @@ const TaskEditAddViewDetails = ({
   const [taskRelationship, setTaskRelationship] = useState([]);
   const [targetRelationship, setTargetRelationship] = useState([]);
   const [removedRelationships, setRemovedRelationships] = useState([]);
-
-
+  const isSubtask = subtask || initialValues.is_subtask;
+  const taskProjectId = projectId ?? initialValues.project_id;
 
   const toggleActivities = () => {
     setShowActivities(!showActivities);
   };
   const handleCloseTaskEditor = () => {
-    navigate(
-      `/project-board/${projectId}/${viewStyle}${
-        isSubtask ? `/${boardId}/${taskId}` : ""
-      }`
-    );
+    if (GOTO_URLS)
+      navigate(GOTO_URLS, {
+        state: {
+          activeView: activeView,
+          projectId: taskProjectId,
+        },
+      });
+    else {
+      navigate(`/project-board/${projectId}`, {
+        state: {
+          activeView: activeView,
+          projectId: taskProjectId,
+        },
+      });
+    }
   };
 
   const handleClose = (e) => {
@@ -164,7 +175,7 @@ const TaskEditAddViewDetails = ({
     } catch (error) {
       console.error("Error fetching task relation:", error);
     }
-  }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -176,7 +187,6 @@ const TaskEditAddViewDetails = ({
   }, [initialValues.project_id]);
 
   const fetchTaskData = async (isMounted) => {
-    setActiveTab("checklist");
     setIsLoading(true);
     try {
       const cardDetails = await getTaskById(currentTaskId);
@@ -187,7 +197,7 @@ const TaskEditAddViewDetails = ({
       if (isMounted) {
         setInitialValues({
           ...cardDetails,
-          project_id: projectId || cardDetails.project_id,
+          project_id: cardDetails.project_id,
         });
         setIsLoading(false);
       }
@@ -201,17 +211,18 @@ const TaskEditAddViewDetails = ({
     }
   };
 
-
   useEffect(() => {
     let isMounted = true;
     if (currentTaskId) fetchTaskData(isMounted);
     else
       setInitialValues({
         ...Task,
-        assigned_by: userId,
+        assigned_by: loggedInUserId,
         project_id: projectId || null,
         board_id: boardId || null,
       });
+    setActiveTab("checklist");
+
     return () => {
       isMounted = false;
     };
@@ -290,7 +301,7 @@ const TaskEditAddViewDetails = ({
                 item,
                 item.id,
                 currentTaskId,
-                userId,
+                loggedInUserId,
                 initialValues.task_checklist.find((obj) => obj.id === item.id)
               );
               return response.id;
@@ -321,10 +332,10 @@ const TaskEditAddViewDetails = ({
       const response = await addTask(
         finalData,
         currentTaskId,
-        userId,
+        loggedInUserId,
         initialValues
       );
-      if (response) {           
+      if (response) {
         if (removedRelationships.length > 0) {
           await Promise.all(
             removedRelationships.map(async (id) => {
@@ -410,8 +421,19 @@ const TaskEditAddViewDetails = ({
         }
 
         // Notify parent component of the new task
-        if (onTaskCreated && isSubtask) {
-          onTaskCreated(response);
+        if (parentTaskId && isSubtask) {
+          debugger;
+          // Get current parent task
+          const parentTask = await getTaskById(parentTaskId);
+          // Update parent task's sub_task array
+          const updatedSubTasks = [...(parentTask.sub_task || []), response.id];
+          // Update the parent task
+          await addTask(
+            {
+              sub_task: updatedSubTasks,
+            },
+            parentTaskId
+          );
         }
 
         toast.success(
@@ -514,10 +536,15 @@ const TaskEditAddViewDetails = ({
                                 : "Add Task"
                             }`}
                           </Button>
-                          <AdditionalActionOption
-                            reloadData={fetchTaskData}
-                            isArchive={props.values.is_archive}
-                          />
+                          {currentTaskId && (
+                            <AdditionalActionOption
+                              reloadData={fetchTaskData}
+                              isArchive={props.values.is_archive}
+                              projectId={props.values.project_id}
+                              taskId={currentTaskId}
+                              activeView={activeView}
+                            />
+                          )}
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-8 px-6">
@@ -591,8 +618,10 @@ const TaskEditAddViewDetails = ({
                                     <span>
                                       Relation(
                                       <span>
-                                        {Math.max(taskRelationship?.length , targetRelationship.length) ||
-                                          0}
+                                        {Math.max(
+                                          taskRelationship?.length,
+                                          targetRelationship?.length || 0
+                                        ) || 0}
                                       </span>
                                       )
                                     </span>
@@ -679,7 +708,6 @@ const TaskEditAddViewDetails = ({
                                   classNames="mt-0"
                                 >
                                   <DetailBox
-                                    // label={"Subtasks"}
                                     orientation="horizontal"
                                     value={
                                       <Subtasks
@@ -690,9 +718,9 @@ const TaskEditAddViewDetails = ({
                                             items
                                           );
                                         }}
-                                        projectId={projectId}
+                                        projectId={props.values.project_id}
                                         taskId={currentTaskId}
-                                        boardId={boardId}
+                                        boardId={props.values.board_id}
                                         fetchTaskData={fetchTaskData}
                                       />
                                     }
@@ -764,7 +792,7 @@ const TaskEditAddViewDetails = ({
                               setReplyComment={setReplyComment}
                               employees={employees}
                               taskId={currentTaskId}
-                              userId={userId}
+                              userId={loggedInUserId}
                               projectDetail={projectDetail}
                               addAttachment={async (attachment) => {
                                 const uploadedAttachment =

@@ -9,7 +9,6 @@ import {
 import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { RxPlus } from "react-icons/rx";
-import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import {
   Accordion,
   AccordionItem,
@@ -71,9 +70,7 @@ const ListTasks = ({
 
   const tableOptions = {
     onRowClick: (row) => {
-      navigate(
-        `/project-board/${row.project_id}/${viewStyle}/${row.board_id}/${row.id}`
-      );
+      handleNavigation(row.id);
     },
     onSortChange: (sortName) => {
       setOrdering(sortName);
@@ -98,6 +95,16 @@ const ListTasks = ({
       isMounted = false;
     };
   }, [ordering, filterData]);
+
+  const handleNavigation = (taskId) => {
+    navigate(`/project-board/card/${taskId}`, {
+      state: {
+        GOTO_URLS: `/project-board/${projectId}`,
+        activeView: "list",
+      },
+    });
+  };
+
   if (!isEditMode && AllBoardTasks.count === 0) return null;
   return (
     <AccordionItem value={accordionItemValue} className="mb-3">
@@ -128,9 +135,14 @@ const ListTasks = ({
               size="sm"
               onClick={(e) => {
                 e.preventDefault();
-                navigate(
-                  `/project-board/${projectId}/${viewStyle}/${board.id}`
-                );
+                navigate(`/project-board/card/add`, {
+                  state: {
+                    GOTO_URLS: `/project-board/${projectId}`,
+                    activeView: "list",
+                    projectId: projectId,
+                    boardId: board.id,
+                  },
+                });
               }}
             >
               <RxPlus size={15} />
@@ -152,7 +164,14 @@ const ListTasks = ({
                 dataStyle={{ backgroundColor: "white" }}
                 renderExpandedContent={(row) => {
                   if (row.sub_task.length)
-                    return <RenderTaskSubTasks subtaskIdList={row.sub_task} parentTaskId={row.id} />;
+                    return (
+                      <RenderTaskSubTasks
+                        subtaskIdList={row.sub_task}
+                        parentTaskId={row.id}
+                        GOTO_URLS={`/project-board/${projectId}`}
+                        activeView="list"
+                      />
+                    );
                   else return null;
                 }}
               />
