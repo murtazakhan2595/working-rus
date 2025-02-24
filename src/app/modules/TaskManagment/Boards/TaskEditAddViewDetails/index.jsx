@@ -166,8 +166,8 @@ const TaskEditAddViewDetails = ({
   const fetchTaskRelationship = async (isMounted, taskId) => {
     try {
       const [sourceRelations, targetRelations] = await Promise.all([
-        getRelationship({ filterData: { source_task_id: [taskId] } }),
-        getRelationship({ filterData: { target_task_id: [taskId] } }),
+        getRelationship({ filterData: { source_task_id: [Number(taskId)] } }),
+        getRelationship({ filterData: { target_task_id: [Number(taskId)] } }),
       ]);
       if (isMounted) {
         setTaskRelationship(sourceRelations.results);
