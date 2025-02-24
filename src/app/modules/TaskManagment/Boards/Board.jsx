@@ -59,7 +59,7 @@ const Board = () => {
       if (isMounted) {
         setProjectData(projectDetails);
         const members = projectDetails?.project_members || [];
-        if (userRole === 4 || userRole === 3) {
+        if (userRole === 4 || userRole === 3 || userRole === 2) {
           if (!Array.isArray(members) || !members.includes(userId)) {
             setOpenRequestJoinDialogBox(true);
           }
@@ -104,6 +104,8 @@ const Board = () => {
     setShowAddNewListModel(!showAddNewListModel);
   };
 
+
+  console.log(openRequestJoinDialogBox, "OPEN BOX")
   if (projectData === -1) {
     return <Err404 />;
   }
@@ -171,7 +173,7 @@ const Board = () => {
           isOpen={openSuccessMessage}
           onClose={() => {
             setOpenSuccessMessage(false);
-            navigate("/project-board");
+            navigate("/projects");
           }}
           title={"Request Submitted!"}
           description={
