@@ -173,7 +173,7 @@ const Board = () => {
           isOpen={openSuccessMessage}
           onClose={() => {
             setOpenSuccessMessage(false);
-            navigate("/project-board");
+            navigate("/projects");
           }}
           title={"Request Submitted!"}
           description={
