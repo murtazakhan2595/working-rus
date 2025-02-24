@@ -501,13 +501,17 @@ const TaskEditAddViewDetails = ({
                             }`
                           )}
                           {currentTaskId && (
-                            <CopyLink
-                              link={`${currentTaskId}`}
-                              text={
-                                <FormatID prefix={"T-"} value={currentTaskId} />
-                              }
-                              directCopy={true}
-                            />
+                            <div className="flex gap-2">
+                              <CopyLink
+                                link={`/project-board/card/${currentTaskId}`}
+                                text="Copy Task URL"
+                              />
+                              <CopyLink
+                                link={`${currentTaskId}`}
+                                text={<FormatID prefix={"T-"} value={currentTaskId} />}
+                                directCopy={true}
+                              />
+                            </div>
                           )}
                         </div>
                         <div className="flex justify-end gap-2">
