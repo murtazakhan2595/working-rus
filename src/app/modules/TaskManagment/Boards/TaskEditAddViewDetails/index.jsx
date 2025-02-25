@@ -89,6 +89,8 @@ const TaskEditAddViewDetails = ({
   const [removedRelationships, setRemovedRelationships] = useState([]);
   const isSubtask = subtask || initialValues.is_subtask;
   const taskProjectId = projectId ?? initialValues.project_id;  
+  const [uniqueRelationCount, setUniqueRelationCount] = useState(0);
+
   
   const toggleActivities = () => {
     setShowActivities(!showActivities);
@@ -177,6 +179,23 @@ const TaskEditAddViewDetails = ({
       console.error("Error fetching task relation:", error);
     }
   };
+
+  useEffect(() => {
+    if (taskRelationship && targetRelationship) {
+      // Get unique task IDs from source relationships
+      const sourceTaskIds = new Set(
+        taskRelationship.map((rel) => rel.target_task_id)
+      );
+
+      // Get unique task IDs from target relationships
+      const targetTaskIds = new Set(
+        targetRelationship.map((rel) => rel.source_task_id)
+      );
+
+      // Count the total unique IDs
+      setUniqueRelationCount(Math.max(sourceTaskIds.size, targetTaskIds.size));
+    }
+  }, [taskRelationship, targetRelationship]);
 
   useEffect(() => {
     let isMounted = true;
@@ -513,7 +532,12 @@ const TaskEditAddViewDetails = ({
                               />
                               <CopyLink
                                 link={`${currentTaskId}`}
-                                text={<FormatID prefix={"T-"} value={currentTaskId} />}
+                                text={
+                                  <FormatID
+                                    prefix={"T-"}
+                                    value={currentTaskId}
+                                  />
+                                }
                                 directCopy={true}
                               />
                             </div>
@@ -627,13 +651,7 @@ const TaskEditAddViewDetails = ({
                                   label: (
                                     <span>
                                       Relation(
-                                      <span>
-                                        {Math.max(
-                                          taskRelationship?.length,
-                                          targetRelationship?.length || 0
-                                        ) || 0}
-                                      </span>
-                                      )
+                                      <span>{uniqueRelationCount}</span>)
                                     </span>
                                   ),
                                 },
