@@ -88,8 +88,8 @@ const TaskEditAddViewDetails = ({
   const [targetRelationship, setTargetRelationship] = useState([]);
   const [removedRelationships, setRemovedRelationships] = useState([]);
   const isSubtask = subtask || initialValues.is_subtask;
-  const taskProjectId = projectId ?? initialValues.project_id;
-
+  const taskProjectId = projectId ?? initialValues.project_id;  
+  
   const toggleActivities = () => {
     setShowActivities(!showActivities);
   };
@@ -214,16 +214,21 @@ const TaskEditAddViewDetails = ({
 
   useEffect(() => {
     let isMounted = true;
-    if (currentTaskId) fetchTaskData(isMounted);
-    else
+    if(currentTaskId){
+      fetchTaskData(isMounted);
+    }
+    else{
       setInitialValues({
         ...Task,
         assigned_by: loggedInUserId,
         project_id: projectId || null,
         board_id: boardId || null,
       });
-    setActiveTab("checklist");
-
+      setActiveTab("checklist");
+      setRemovedRelationships([])
+      setTargetRelationship([])
+      setTaskRelationship([])
+    }
     return () => {
       isMounted = false;
     };
