@@ -186,6 +186,7 @@ const CommentsInputField = ({
             }}
             editMode={editMode}
             replyToUser={replyTo}
+            commentHeight="h-[100px]"
           />
         ) : (
           <div className={`${inputButtonClassName}`}>
