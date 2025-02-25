@@ -305,17 +305,72 @@ const TaskEditAddViewDetails = ({
     setIsLoading(true);
     try {
       const getAttachmentFileIds = async (files) => {
-        return (
-          await Promise.all(
-            files.map(async (file, index) => {
+        console.log("files", files);
+
+        const isImageFile = (file) => {
+          const imageExtensions = [
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".webp",
+            ".bmp",
+          ];
+          return imageExtensions.some((ext) =>
+            file.name.toLowerCase().endsWith(ext)
+          );
+        };
+
+        const existingFiles = files.filter((file) => file.id);
+        let shouldSelectNewCover =
+          !values.cover_photo ||
+          (values.cover_photo &&
+            !files.some(
+              (file) =>
+                file.id === values.cover_photo?.id ||
+                (file.attachment &&
+                  typeof file.attachment === "string" &&
+                  file.attachment === values.cover_photo)
+            ));
+
+        let selectedCoverPhotoId = null;
+        if (shouldSelectNewCover) {
+          const firstExistingImage = existingFiles.find((file) =>
+            isImageFile(file)
+          );
+          if (firstExistingImage) {
+            selectedCoverPhotoId = firstExistingImage.id;
+            values.cover_photo = firstExistingImage.attachment;
+          }
+        }
+
+        const uploadedFileIds = await Promise.all(
+          files.map(async (file) => {
+            if (file.id) return file.id;
+
+            try {
               const response = await uploadAttachmentFile(file);
-              if (index === 0) {
+              if (
+                shouldSelectNewCover &&
+                !selectedCoverPhotoId &&
+                isImageFile(file)
+              ) {
                 values.cover_photo = response.attachment;
+                selectedCoverPhotoId = response.id;
               }
               return response.id;
-            })
-          )
-        ).filter(Boolean); // Remove null values;
+            } catch (error) {
+              console.error("Error uploading file:", error);
+              return null;
+            }
+          })
+        );
+
+        if (shouldSelectNewCover && !selectedCoverPhotoId) {
+          values.cover_photo = null;
+        }
+
+        return uploadedFileIds.filter(Boolean);
       };
 
       const getCheckListIds = async (checklist) => {
@@ -351,6 +406,7 @@ const TaskEditAddViewDetails = ({
       if (isSubtask) {
         finalData.is_subtask = true;
       }
+      console.log("cover photo ", values.cover_photo);
       finalData.cover_photo =
         values?.attachment?.length > 0 ? values.cover_photo : null;
 
