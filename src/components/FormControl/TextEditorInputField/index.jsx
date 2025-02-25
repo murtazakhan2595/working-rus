@@ -449,7 +449,7 @@ function TextEditorInputField({
             }
             handleCommand={handleCommand}
           />
-          <div className="h-2 w-[1px] bg-neutral-500 mx-2"></div>
+          <div className="h-4 w-[1px] bg-neutral-500 mx-2"></div>
           <label className="hover:bg-white hover:text-primary p-1">
             <input
               type="file"
