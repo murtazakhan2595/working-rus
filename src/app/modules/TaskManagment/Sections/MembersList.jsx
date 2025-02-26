@@ -50,7 +50,10 @@ const MembersList = ({
           } h-auto items-center flex-wrap cursor-pointer`}
         >
           {displayedMembers?.map((member) => (
-           <div key={member}> <MembersAvatar member={member} /></div>
+            <div key={member}>
+              {" "}
+              <MembersAvatar member={member} />
+            </div>
           ))}
           {remainingCount > 0 && !displayAll && (
             <span
@@ -84,13 +87,14 @@ const MembersList = ({
                     <div
                       key={member.id}
                       className="flex justify-between w-full items-center cursor-pointer"
-                      onClick={(e) => onMemberClick(e, member)}
                     >
-                      <EmployeeOverview
-                        id={member.id}
-                        showEmail={true}
-                        showPosition={true}
-                      />
+                      <div onClick={(e) => onMemberClick(e, member)}>
+                        <EmployeeOverview
+                          id={member.id}
+                          showEmail={true}
+                          showPosition={true}
+                        />
+                      </div>
                       {removeMember && userProfile?.role !== 4 && (
                         <MdClose
                           className="w-5 h-5 text-gray-700 cursor-pointer"

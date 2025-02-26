@@ -175,8 +175,16 @@ const getAllBoards = async (payload) => {
   return [];
 };
 
-const getAllLabels = async () => {
+export const getAllLabels = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
   const URL = `/TaskLabel`;
+  // /?ordering=-name&${
+  //   pageNo ? `page=${pageNo}&` : ""
+  // }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+  //   JSON.stringify(filterData)
+  // )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -1165,7 +1173,7 @@ const getRelationship = async (payload) => {
     console.error("Error fetching relationship data :", error);
   }
   return [];
-}
+};
 
 const deleteRelationship = async (relationshipId) => {
   try {
@@ -1186,7 +1194,7 @@ const deleteRelationship = async (relationshipId) => {
     console.error("Error deleting relationship:", error);
     return false;
   }
-}
+};
 
 export {
   addRelationship,
@@ -1215,7 +1223,6 @@ export {
   deleteAttachment,
   fetchComments,
   postComment,
-  getAllLabels,
   deleteComment,
   getCommentsWithAttachments,
   getAllCustomFields,

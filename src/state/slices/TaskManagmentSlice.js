@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-import {
-    getAllLabels,
-} from "app/hooks/taskManagment";
+import { getAllLabels } from "app/hooks/taskManagment";
 
 // Define the initial state
 const initialState = {

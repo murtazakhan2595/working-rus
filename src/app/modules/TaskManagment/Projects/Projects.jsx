@@ -7,9 +7,8 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { MembersList } from "../Sections";
 import { LuFolderX } from "react-icons/lu";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { fetchProjects } from "state/slices/CommonSlice";
-import { useDispatch } from "react-redux";
 import CreateEditProject from "./CreateEditProject";
 import { Badge } from "components/ui/badge";
 import logo from "assets/images/tecbrix-logo.png";
@@ -20,12 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "components/ui/card";
-import {
-  LayoutGrid,
-  ListTodo,
-  TableOfContents,
-  Clock,
-} from "lucide-react";
+import { LayoutGrid, ListTodo, TableOfContents, Clock } from "lucide-react";
 import TableCustom from "components/CustomTable";
 import { ProjectColumn } from "app/modules/TaskManagment/Sections/TaskManagementTableColumns";
 import { Button } from "components/ui/button";
@@ -197,7 +191,6 @@ const Projects = ({ userProfile }) => {
                   toggleAddProject={toggleAddProject}
                   fetchData={fetchData}
                   userRole={userRole}
-
                 />
               ))}
             </div>

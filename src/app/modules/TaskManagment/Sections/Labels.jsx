@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Plus,Trash, Edit } from "lucide-react";
+import { Plus, Trash, Edit } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -22,6 +22,7 @@ import { SelectMultiInputComponent } from "components/FormControl";
 import { Badge } from "components/ui/badge";
 
 export const TaskLabelBadge = React.memo(({ label }) => {
+  if (!label) return null;
   return (
     <Badge
       key={label.id}
@@ -165,7 +166,11 @@ export const AddNewLabel = React.memo(
 );
 
 const Labels = React.memo(
-  ({ labelsSelected = [], onSelectedLabelsChange = () => {}, editMode = true }) => {
+  ({
+    labelsSelected = [],
+    onSelectedLabelsChange = () => {},
+    editMode = true,
+  }) => {
     const dispatch = useDispatch();
     const [showNewLabel, setShowNewLabel] = useState(false);
     const [LabelID, setLabelID] = useState(null);

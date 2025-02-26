@@ -254,7 +254,8 @@ export const calculateTaskCount = (data, statusType) => {
   }).length;
 };
 
-export const lightenColor = (hex, percent) => {
+export const lightenColor = (hex, percent = 85) => {
+  if (!hex) return hex;
   // Remove '#' if present
   hex = hex.replace(/^#/, "");
 
