@@ -30,6 +30,7 @@ const CopyLink = React.memo(
     linkIcon = <Link size={14} className="mr-2" />,
     directCopy = false,
     textClassName = "text-neutral-1100",
+    showIcon= true
   }) => {
     const [tooltipVisible, setTooltipVisible] = useState(false);
     /**
@@ -58,7 +59,7 @@ const CopyLink = React.memo(
           <Tooltip open={tooltipVisible}>
             <TooltipTrigger asChild>
               <span className={`${textClassName} flex items-center`}>
-                {linkIcon}
+                {showIcon && linkIcon}
                 {text}
               </span>
             </TooltipTrigger>
