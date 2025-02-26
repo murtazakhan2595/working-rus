@@ -14,6 +14,7 @@ export default function ImageDocPreview({
   name,
   isOpen = false,
   setIsOpen = () => {},
+  
 }) {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -44,6 +45,7 @@ export default function ImageDocPreview({
   };
 
   const fileType = getFileType(attachment);
+  console.log(fileType, "FILE TYPE")
   const fileURL =
     attachment instanceof File ? URL.createObjectURL(attachment) : attachment;
 
@@ -83,30 +85,32 @@ export default function ImageDocPreview({
       open={isOpen}
       onOpenChange={(open) => {
         setIsOpen(open);
-        if (!open) resetZoom();
+        if (!open && fileType !== "PDF") resetZoom();
       }}
     >
       <DialogContent className="w-[90vw] min-w-[90vw] min-h-[90%] h-[90vh] flex flex-col gap-1 pb-2">
         <div className="flex flex-row w-full max-w-full overflow-hidden justify-between">
           <h6>{name || "Attachment"}</h6>
-          <div className="flex gap-x-2 justify-center">
-            <Button
-              onClick={handleZoomIn}
-              variant="ghost"
-              size="sm"
-              className="py-0"
-            >
-              <AiOutlineZoomIn className="w-5 h-5" />
-            </Button>
-            <Button
-              onClick={handleZoomOut}
-              variant="ghost"
-              size="sm"
-              className="py-0"
-            >
-              <AiOutlineZoomOut className="w-5 h-5" />
-            </Button>
-          </div>
+          {fileType !== "PDF" && (
+            <div className="flex gap-x-2 justify-center">
+              <Button
+                onClick={handleZoomIn}
+                variant="ghost"
+                size="sm"
+                className="py-0"
+              >
+                <AiOutlineZoomIn className="w-5 h-5" />
+              </Button>
+              <Button
+                onClick={handleZoomOut}
+                variant="ghost"
+                size="sm"
+                className="py-0"
+              >
+                <AiOutlineZoomOut className="w-5 h-5" />
+              </Button>
+            </div>
+          )}
           <Button
             onClick={() => downloadFile(attachment, name)}
             className="mr-3"

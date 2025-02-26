@@ -94,15 +94,14 @@ const TaskEditAddViewDetails = ({
   const [targetRelationship, setTargetRelationship] = useState([]);
   const [removedRelationships, setRemovedRelationships] = useState([]);
   const isSubtask = subtask || initialValues.is_subtask;
-  const taskProjectId = projectId ?? initialValues.project_id;  
+  const taskProjectId = projectId ?? initialValues.project_id;
   const [uniqueRelationCount, setUniqueRelationCount] = useState(0);
 
-  
   const toggleActivities = () => {
     setShowActivities(!showActivities);
   };
   const handleCloseTaskEditor = () => {
-    console.log(taskProjectId)
+    console.log(taskProjectId);
     if (GOTO_URLS)
       navigate(GOTO_URLS, {
         state: {
@@ -239,10 +238,9 @@ const TaskEditAddViewDetails = ({
 
   useEffect(() => {
     let isMounted = true;
-    if(currentTaskId){
+    if (currentTaskId) {
       fetchTaskData(isMounted);
-    }
-    else{
+    } else {
       setInitialValues({
         ...Task,
         assigned_by: loggedInUserId,
@@ -250,9 +248,9 @@ const TaskEditAddViewDetails = ({
         board_id: boardId || null,
       });
       setActiveTab("checklist");
-      setRemovedRelationships([])
-      setTargetRelationship([])
-      setTaskRelationship([])
+      setRemovedRelationships([]);
+      setTargetRelationship([]);
+      setTaskRelationship([]);
     }
     return () => {
       isMounted = false;
@@ -587,41 +585,46 @@ const TaskEditAddViewDetails = ({
                             }`
                           )}
                           {currentTaskId && (
-  <TooltipProvider>
-    <div className="flex gap-2 items-center">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div>
-            <CopyLink
-              link={`/project-board/card/${currentTaskId}`}
-              text={<Link className="h-4 w-4" />}
-              showIcon={false}
-            />
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Copy Task URL</p>
-        </TooltipContent>
-      </Tooltip>
+                            <TooltipProvider>
+                              <div className="flex gap-2 items-center">
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div>
+                                      <CopyLink
+                                        link={`/project-board/card/${currentTaskId}`}
+                                        text={<Link className="h-4 w-4" />}
+                                        showIcon={false}
+                                      />
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Copy Task URL</p>
+                                  </TooltipContent>
+                                </Tooltip>
 
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div>
-            <CopyLink
-              link={`${currentTaskId}`}
-              text={<FormatID prefix={"T-"} value={currentTaskId} />}
-              directCopy={true}
-              showIcon={false}
-            />
-          </div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Copy Task ID</p>
-        </TooltipContent>
-      </Tooltip>
-    </div>
-  </TooltipProvider>
-)}
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div>
+                                      <CopyLink
+                                        link={`${currentTaskId}`}
+                                        text={
+                                          <FormatID
+                                            prefix={"T-"}
+                                            value={currentTaskId}
+                                          />
+                                        }
+                                        directCopy={true}
+                                        showIcon={false}
+                                      />
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Copy Task ID</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                            </TooltipProvider>
+                          )}
                         </div>
                         <div className="flex justify-end gap-2">
                           {!props.values.project_id && (
