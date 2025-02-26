@@ -38,6 +38,7 @@ function TextEditorInputField({
   allowMentions = false, // New prop to control mention functionality
   editMode = false,
   replyToUser = null,
+  commentHeight="h-[300px]"
 }) {
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
@@ -488,7 +489,7 @@ function TextEditorInputField({
           <div
             ref={editorRef}
             id={name}
-            className="w-full h-[300px] p-4 focus:outline-none rounded-b-lg textEditorText"
+            className={`w-full ${commentHeight} p-4 focus:outline-none rounded-b-lg textEditorText`}
             contentEditable
             onInput={handleInput}
             onPaste={handlePaste}
