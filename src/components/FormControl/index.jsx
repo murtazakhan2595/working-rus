@@ -65,6 +65,7 @@ export const FormField = memo(
         error,
         touched,
         className = "w-full", // Custom styling
+        disabled = false,
         children,
       },
       ref
@@ -77,7 +78,11 @@ export const FormField = memo(
               {label}
             </Label>
           )}
-          <div className="flex-col flex gap-1">
+          <div
+            className={`flex-col flex gap-1 ${
+              disabled ? "cursor-not-allowed" : ""
+            }`}
+          >
             {children}
             {error && touched && <div className={errorClassName}>{error}</div>}
           </div>

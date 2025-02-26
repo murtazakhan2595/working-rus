@@ -52,6 +52,7 @@ const SelectInputComponent = React.memo(
         error={error}
         touched={touch}
         className={className}
+        disabled={disabled}
       >
         <FormPopoverButton
           open={isOpen}

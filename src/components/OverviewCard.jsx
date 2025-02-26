@@ -33,13 +33,14 @@ const OverviewCard = React.memo(
         {/* Avatar Section */}
         {showAvatar && (
           <Avatar
-            className={`h-${avatarProps.size ?? "10"} w-${
+            className={`border border-neutral-500 h-${avatarProps.size ?? "10"} w-${
               avatarProps.size ?? "10"
             }`}
             src={avatarProps.src || ""}
             fallbackText={avatarProps.fallbackText || ""}
             text={avatarProps.text || "Unknown User"}
             alt="Avatar"
+
           />
         )}
 

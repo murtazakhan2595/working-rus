@@ -33,6 +33,7 @@ const SelectMultiInputComponent = React.memo(
     selectedOptionClassName = "", // Add custom style to value labels
     selectedOptionListClassName = "", // Add custom style to value labels List
     showSelectedValuesBelow = false, // Show selected values below the dropdown (Generalized name)
+    disabled=false,
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectedValues = value && Array.isArray(value) ? value : [];
@@ -66,10 +67,13 @@ const SelectMultiInputComponent = React.memo(
         error={error}
         touched={touch}
         className={className}
+        disabled={disabled}
+
       >
         <FormPopoverButton
           open={isOpen}
           setOpen={setIsOpen}
+          disabled={disabled}
           triggerContent={
             <div className="flex justify-start w-full gap-2 items-center">
               <FormFieldIcon icon={icon} />
