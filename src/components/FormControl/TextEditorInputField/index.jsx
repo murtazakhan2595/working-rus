@@ -470,7 +470,7 @@ function TextEditorInputField({
             />
           </label>
         </div>
-
+{/* 
         {attachments.length > 0 && displayAttachments && (
           <div className="p-1">
             {attachments.map((file, index) => (
@@ -483,7 +483,7 @@ function TextEditorInputField({
               </div>
             ))}
           </div>
-        )}
+        )} */}
 
         <ScrollArea className="[&>div>div[style]]:!block">
           <div
