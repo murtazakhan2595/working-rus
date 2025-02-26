@@ -16,7 +16,7 @@ import {
   Attachments,
 } from "app/modules/TaskManagment/Sections";
 import { Button } from "components/ui/button";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, Link, Copy } from "lucide-react";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { PageLoader } from "components";
 import { addTask } from "app/hooks/taskManagment";
@@ -56,6 +56,12 @@ import { TaskRelation, TaskRelationTab } from "../../Sections";
 import { Card, CardContent } from "components/ui/card";
 import { addRelationship, deleteRelationship } from "app/hooks/taskManagment";
 import { getRelationship } from "app/hooks/taskManagment";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "src/@/components/ui/tooltip";
 
 const TaskEditAddViewDetails = ({
   isOpen = true,
@@ -581,23 +587,41 @@ const TaskEditAddViewDetails = ({
                             }`
                           )}
                           {currentTaskId && (
-                            <div className="flex gap-2">
-                              <CopyLink
-                                link={`/project-board/card/${currentTaskId}`}
-                                text="Copy Task URL"
-                              />
-                              <CopyLink
-                                link={`${currentTaskId}`}
-                                text={
-                                  <FormatID
-                                    prefix={"T-"}
-                                    value={currentTaskId}
-                                  />
-                                }
-                                directCopy={true}
-                              />
-                            </div>
-                          )}
+  <TooltipProvider>
+    <div className="flex gap-2 items-center">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <CopyLink
+              link={`/project-board/card/${currentTaskId}`}
+              text={<Link className="h-4 w-4" />}
+              showIcon={false}
+            />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Copy Task URL</p>
+        </TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <CopyLink
+              link={`${currentTaskId}`}
+              text={<FormatID prefix={"T-"} value={currentTaskId} />}
+              directCopy={true}
+              showIcon={false}
+            />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Copy Task ID</p>
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  </TooltipProvider>
+)}
                         </div>
                         <div className="flex justify-end gap-2">
                           {!props.values.project_id && (
