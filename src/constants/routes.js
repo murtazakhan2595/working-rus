@@ -52,6 +52,7 @@ import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import AttendanceReport from "app/modules/Attendance/Sections/AttendenceFile";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
+import OrganizationalChart from "app/modules/OfficeSetting/Screens/OrganizationalChart";
 
 const SidebarRoutes = [
   {
@@ -359,6 +360,11 @@ const GeneralRoutes = [
     path: "/confirm-password",
     component: <ResetPassword />,
     name: "Reset Password",
+  },
+  {
+    path: "/organizational-chart",
+    component: <OrganizationalChart />,
+    name: "Organizational Chart",
   },
 ].filter(Boolean); // Filter out undefined routes
 
