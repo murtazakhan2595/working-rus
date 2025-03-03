@@ -83,6 +83,12 @@ export const dateFormats = [
   { label: "MM-DD-YYYY", value: "%m-%d-%Y" },
 ];
 
+export const probationPeriodOptions = [
+  { value: "3 month", label: "3 Month" },
+  { value: "6 month", label: "6 Month" },
+];
+
+
 export const days = Array?.from({ length: 31 }, (_, index) => {
   const day = index + 1;
   return { label: day, value: `${day}` };

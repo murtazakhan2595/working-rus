@@ -921,7 +921,59 @@ const updateExitData = async (payload) => {
   }
 };
 
+const saveDocumentChecklist = async (payload) => {
+  try{
+    if(payload?.id){
+      const response = await axios.patch(`${baseUrl}/documentchecklist/${payload.id}`, payload, {
+        headers: headers(),
+      });
+      if(response.status === 200){
+        return response.data;
+      }
+    }
+    else{
+      const response = await axios.post(
+        `${baseUrl}/documentchecklist/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if(response.status === 201){
+        return response.data;
+      }
+    }
+  }catch(error){
+    if(error?.response?.status === 401){
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return false
+  }
+}
+
+const getDocumentChecklist = async (employeeid) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/documentchecklist/?search={"employee_id":${employeeid}}`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+}
+
 export {
+  getDocumentChecklist,
+  saveDocumentChecklist,
   getEmployeeData,
   getEmployeePersonalInfoData,
   saveEmployeePersonalInfoData,
