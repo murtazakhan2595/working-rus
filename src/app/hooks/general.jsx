@@ -185,7 +185,7 @@ const getManagersList = async () => {
         value: manager.id,
         label: `${manager.first_name} ${manager.last_name}`,
         id: manager.id,
-        name:`${manager.first_name} ${manager.last_name}`,
+        name: `${manager.first_name} ${manager.last_name}`,
         username: manager.username,
       }));
       return managersList;
@@ -283,31 +283,53 @@ const getOrganizationList = async (allData = false) => {
 };
 
 const getProjectsList = async (userProfile) => {
-  const URL = `/project/`;
+  const userID = userProfile?.id ?? userProfile;
+  const userRole = userProfile?.role;
+  const filterData = {
+    ...((userRole === 4 || userRole === 2) && userID
+      ? { project_members: [userID] }
+      : {}),
+  };
+  const URL = `/project/?ordering=-created_at&search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const projectResponse = response?.data?.results;
-      if (userProfile.role === 4 || userProfile.role === 2) {
-        const filteredResults = projectResponse.filter(
-          (project) =>
-            project.project_members.includes(userProfile.id) ||
-            project.created_by === userProfile.id
-        );
-        const projectList = filteredResults.map((project) => ({
-          value: project.id,
-          label: project.name,
-        }));
-        return projectList;
-      } else {
-        const projectList = projectResponse.map((project) => ({
-          value: project.id,
-          label: project.name,
-        }));
-        return projectList;
-      }
+      // if (userProfile.role === 4 || userProfile.role === 2) {
+      //   const filteredResults = projectResponse.filter(
+      //     (project) =>
+      //       project.project_members.includes(userProfile.id) ||
+      //       project.created_by === userProfile.id
+      //   );
+      //   const projectList = filteredResults.map((project) => ({
+      //     value: project.id,
+      //     label: project.name,
+      //   }));
+      //   return projectList;
+      // } else {
+      const projectList = projectResponse.map((project) => ({
+        value: project.id,
+        id: project.id,
+        label: project.name,
+        name: project.name,
+        color: project.color,
+        created_at: project.created_at,
+        created_by: project.created_by,
+        description: project.description,
+        end_date: project.end_date,
+        joining_request: project.joining_request,
+        profile_picture: project.profile_picture,
+        project_members: project.project_members,
+        start_date: project.start_date,
+        status: project.status,
+        task_count: project.task_count,
+      }));
+      return projectList;
+      // }
     } else {
       return [];
     }
