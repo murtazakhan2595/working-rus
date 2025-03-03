@@ -114,6 +114,7 @@ const EmployeeInformation = {
     direct_report: null,
     indirect_report: null,
     // department_manager: null,
+    probation_period: null,
     employee_type: null,
     employee_work_type: null,
     employee_location: null,
