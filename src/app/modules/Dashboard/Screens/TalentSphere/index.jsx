@@ -1,25 +1,40 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { DashboardJobApplicationColumns, DashboardOnGoingColumns } from "../../../../../app/modules/Dashboard/Screens/Sections/TableColumns";
+import {
+  DashboardJobApplicationColumns,
+  DashboardOnGoingColumns,
+} from "../../../../../app/modules/Dashboard/Screens/Sections/TableColumns";
 
 import { fetchJobPosts, getJobApplicants } from "app/hooks/recruitment";
 import { PageLoader } from "components";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
-import { Button } from 'components/ui/button';
-import CustomTable from '../../../../../components/CustomTable';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../../../../components/ui/card";
+import { Button } from "components/ui/button";
+import CustomTable from "../../../../../components/CustomTable";
 import { Briefcase, UserPlus, UserCheck, Users } from "lucide-react";
 import Stats from "./../../../../../components/ui/Stats";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "../../../../../src/@/components/ui/table";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "../../../../../src/@/components/ui/table";
 import { Badge } from "../../../../../components/ui/badge";
 import { CreateUpdateJob } from "app/modules/RecruitmentData";
 
 /**
  * TalentSphere component
- * 
+ *
  * This component displays a dashboard for talent management, showing job openings, applications, shortlisted, and interviewed candidates.
- * 
+ *
  * @returns {JSX.Element} The TalentSphere component
  */
 const TalentSphere = () => {
@@ -31,11 +46,11 @@ const TalentSphere = () => {
 
   /**
    * Fetches job posts and updates the state
-   * 
+   *
    * @async
    * @returns {Promise<void>}
    */
-  
+
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -61,39 +76,40 @@ const TalentSphere = () => {
   //   { icon: Users, label: "Interviewed", value: interviewed },
   // ];
   return (
-      <Card className="col-span-2">
-        <CardHeader className="items-start p-6">
-          <CardTitle className="flex flex-row justify-between w-full">
-            <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">Talent Sphere</div>
-            <div className="flex flex-row gap-4">
-              <Button variant="outline">
-                <Link to="/jobs">View Detail</Link>
-              </Button>
-              <CreateUpdateJob fetchJobPosts={fetchData} isDashboard={true}/>
-              {/* <Button variant="secondary">
+    <>
+      <CardHeader className="items-start p-6">
+        <CardTitle className="flex flex-row justify-between w-full">
+          <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
+            Talent Sphere
+          </div>
+          <div className="flex flex-row gap-4">
+            <Button variant="outline">
+              <Link to="/jobs">View Detail</Link>
+            </Button>
+            <CreateUpdateJob fetchJobPosts={fetchData} isDashboard={true} />
+            {/* <Button variant="secondary">
                 <Link to="/job-post">Add New Job</Link>
               </Button> */}
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* <StatsTalent jobOpenings={jobOpenings} applications={applications} shortlisted={shortlisted} /> */}
-          {/* <Stats stats= {statsData}  /> */}
-          {isLoading ? (
-            <PageLoader />
-          ) : (
-            <CustomTable
-              showHeader={true}
-              columns={DashboardJobApplicationColumns(navigate)}
-              data={posts.slice(0, 5)}
-              pagination={false}
-              rowExpand={false}
-              tableOptions={{ onRowClick: false }}
-            />
-          )}
-        </CardContent>
-      </Card>
-      
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {/* <StatsTalent jobOpenings={jobOpenings} applications={applications} shortlisted={shortlisted} /> */}
+        {/* <Stats stats= {statsData}  /> */}
+        {isLoading ? (
+          <PageLoader />
+        ) : (
+          <CustomTable
+            showHeader={true}
+            columns={DashboardJobApplicationColumns(navigate)}
+            data={posts.slice(0, 5)}
+            pagination={false}
+            rowExpand={false}
+            tableOptions={{ onRowClick: false }}
+          />
+        )}
+      </CardContent>
+    </>
   );
 };
 

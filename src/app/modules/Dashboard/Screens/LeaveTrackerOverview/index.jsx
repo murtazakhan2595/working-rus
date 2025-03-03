@@ -87,7 +87,7 @@ const LeaveTrackerOverview = ({ userProfile }) => {
   };
 
   return (
-      <Card className="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-1 ">
+      <>
         <CardHeader className="items-start p-6">
           <CardTitle className="flex flex-row justify-between w-full">
             <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg ">
@@ -137,7 +137,7 @@ const LeaveTrackerOverview = ({ userProfile }) => {
             />
           )}
         </CardContent>
-      </Card>
+      </>
   );
 };
 

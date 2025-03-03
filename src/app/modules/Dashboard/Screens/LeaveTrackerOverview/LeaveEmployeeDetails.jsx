@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 
 const LeaveEmployeeDetails = ({ userProfile }) => {
   return (
-      <Card className="w-full h-full xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-1">
+      <>
         <CardHeader>
           <CardTitle>
             <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
@@ -33,7 +33,7 @@ const LeaveEmployeeDetails = ({ userProfile }) => {
             </div>
           ))}
         </CardContent> */}
-      </Card>
+      </>
   );
 };
 

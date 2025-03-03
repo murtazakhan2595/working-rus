@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 const ProfileManagement = () => {
   const [profileData, setProfileData] = useState({});
   const userProfile = useSelector((state) => state.user.userProfile);
-  console.log(userProfile);
 
   const fetchData = async () => {
     try {

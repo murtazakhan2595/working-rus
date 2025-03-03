@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import { useEffect, useState } from "react";
 import { getDashboard } from "./Sections";
 import { Header } from "components";
-
+import { Card } from "components/ui/card";
 const filters = {
   TalentSphere: "TalentSphere",
   EmployeeOverview: "EmployeeOverview",
@@ -57,8 +57,6 @@ const Dashboard = ({ userProfile }) => {
     });
   };
 
-  console.log("filterData", filterData);
-
   return (
     <>
       <div className="dashboard ">
@@ -67,7 +65,9 @@ const Dashboard = ({ userProfile }) => {
           {DashBoardSections.map((section, index) => {
             return (
               <div key={index} className={section.className}>
-                {section.content}
+                <Card className="w-full h-auto min-h-[27rem]">
+                  {section.content}
+                </Card>
               </div>
             );
             // else if (section.children && section.children.length > 0)

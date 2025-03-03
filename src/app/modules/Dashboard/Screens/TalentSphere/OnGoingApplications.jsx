@@ -44,29 +44,27 @@ const OnGoingApplications = () => {
   }, []);
   return (
     <>
-      <Card className="w-full h-full xl:col-span-1 lg:col-span-1 md:col-span-2 sm:col-span-1">
-        <CardHeader>
-          <CardTitle>
-            <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
-              Ongoing Process
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isApplicantsLoading ? (
-            <PageLoader />
-          ) : (
-            <div className="h-full overflow-y-auto hideScroll">
-              <CustomTable
-                showHeader={false}
-                columns={DashboardOnGoingColumns(navigate)}
-                data={applicantsData.slice(0, 5)}
-                pagination={false}
-              />
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <CardHeader>
+        <CardTitle>
+          <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
+            Ongoing Process
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {isApplicantsLoading ? (
+          <PageLoader />
+        ) : (
+          <div className="h-full overflow-y-auto hideScroll">
+            <CustomTable
+              showHeader={false}
+              columns={DashboardOnGoingColumns(navigate)}
+              data={applicantsData.slice(0, 5)}
+              pagination={false}
+            />
+          </div>
+        )}
+      </CardContent>
     </>
   );
 };

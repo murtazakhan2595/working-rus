@@ -73,7 +73,6 @@ export default function MyTasks() {
 
   return (
     <>
-      <Card className="h-auto">
         <CardHeader className="items-start pb-0">
           <CardTitle className="flex flex-row justify-between w-full">
             <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
@@ -107,7 +106,7 @@ export default function MyTasks() {
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="min-h-[25rem]">
           {tasks?.count > 0 ? (
             <CustomTable
               showHeader={false}
@@ -176,7 +175,6 @@ export default function MyTasks() {
             </div>
           )}
         </CardContent>
-      </Card>
     </>
   );
 }
