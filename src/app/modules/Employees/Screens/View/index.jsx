@@ -23,6 +23,7 @@ import Certifications from "./Certifications";
 import IdentificationDetails from "./IdentificationDetails";
 import { DepartmentName } from "utils/getValuesFromTables";
 import { Header } from "components";
+import OnboardingChecklist from "./OnboardingChecklist";
 const ViewEmployee = ({ userProfile, profileView }) => {
   const [employeeData, setEmployeeData] = React.useState({});
   const [loading, setLoading] = useState(true);
@@ -53,6 +54,9 @@ const ViewEmployee = ({ userProfile, profileView }) => {
     { value: "job", label: "Job" },
     { value: "security", label: "Security" },
     { value: "qualification", label: "Qualification" },
+    ...((userProfile?.role === 3 || userProfile?.role === 1)
+      ? [{ value: "onboardingChecklist", label: "Onboarding Checklist" }]
+      : []),
   ];
 
   return (
@@ -115,7 +119,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
                     <TabsTrigger
                       key={tab.value}
                       value={tab.value}
-                      className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                      className="data-[state=active]:bg-primary-200 w-40 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
                     >
                       {tab.label}
                     </TabsTrigger>
@@ -160,6 +164,9 @@ const ViewEmployee = ({ userProfile, profileView }) => {
                     employeeId={employeeData.id}
                   />
                 </div>
+              </TabsContent>
+              <TabsContent value="onboardingChecklist">
+                <OnboardingChecklist employeeId={employeeData.id} />
               </TabsContent>
             </Tabs>
           </div>
