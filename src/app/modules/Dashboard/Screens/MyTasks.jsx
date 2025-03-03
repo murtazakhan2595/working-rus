@@ -69,7 +69,7 @@ export default function MyTasks() {
     setFilterData(updatedFilters);
     return;
   };
-  const taskData = showAll ? tasks?.results : tasks?.results.slice(0, 5);
+  const taskData = showAll ? tasks?.results : tasks?.results?.slice(0, 5);
 
   return (
     <>
