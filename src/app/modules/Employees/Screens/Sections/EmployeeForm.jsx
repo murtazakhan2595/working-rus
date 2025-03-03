@@ -52,6 +52,7 @@ import { getShift } from "app/hooks/attendance";
 import AddShiftForm from "app/modules/OfficeSetting/sections/Shift/AddShiftForm";
 import SheetComponent from "components/ui/CustomSheet";
 import moment from "moment";
+import { probationPeriodOptions } from "data/Data";
 
 async function getManagersStringSelected(managers) {
   if (managers) {
@@ -591,6 +592,20 @@ const SheetOnBorading = ({
                             value={props.values?.joining_date}
                             required={true}
                             label={"Joining Date"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectInputComponent
+                            name={"probation_period"}
+                            options={probationPeriodOptions}
+                            error={props.errors?.probation_period}
+                            touch={props.touched.probation_period}
+                            value={props.values.prbation_period}
+                            required={true}
+                            label={"Probation Period"}
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
                             }}
