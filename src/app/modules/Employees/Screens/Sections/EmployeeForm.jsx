@@ -32,7 +32,6 @@ import {
   countriesCallingCodes,
   countriesList,
   salaryTypeOptions,
-  probationPeriodOptions,
 } from "data/Data";
 import { format } from "date-fns";
 
@@ -63,8 +62,6 @@ import { getShift } from "app/hooks/attendance";
 import AddShiftForm from "app/modules/OfficeSetting/sections/Shift/AddShiftForm";
 import SheetComponent from "components/ui/CustomSheet";
 import moment from "moment";
-import { probationPeriodOptions } from "data/Data";
-import { DateRangeFilter } from "components/FormControl";
 import { cn } from "src/@/lib/utils";
 import { CalendarDays } from "lucide-react";
 
