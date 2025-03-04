@@ -35,7 +35,7 @@ export const fetchDepartments = createAsyncThunk(
   async () => {
     try {
       const response = await getDepartmentList();
-      return response;
+      return response?.results || [];
     } catch (error) {
       throw error;
     }
@@ -60,7 +60,7 @@ export const fetchDesignations = createAsyncThunk(
   async () => {
     try {
       const response = await getDesignationList();
-      return response;
+      return response?.results || [];
     } catch (error) {
       throw error;
     }

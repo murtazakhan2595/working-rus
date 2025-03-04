@@ -40,7 +40,7 @@ const getDepartmentList = async (payload) => {
           parent_department: department.parent_department,
         })
       );
-      return departmentList;
+      return { results: departmentList, count: departmentResponse.count };
     } else return [];
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -136,7 +136,7 @@ const getDesignationList = async (payload) => {
           updated_at: designation.updated_at,
         })
       );
-      return designationList;
+      return { results: designationList, count: designationResponse.count };
     } else return [];
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);

@@ -11,8 +11,8 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     if (!values.mobile_no) errors.mobile_no = "Phone number is required";
     if (!values.username) errors.username = "Username is required";
     if (!values.work_email) errors.work_email = "Email is required";
-    if (values.work_email && EMAIL_REGEX.test(values.work_email))
-      errors.work_email = "Invalid email address";
+    // if (values.work_email && EMAIL_REGEX.test(values.work_email))
+    //   errors.work_email = "Invalid email address";
     if (!values.password) errors.password = "Password is required";
     if (!values.residential_address)
       errors.residential_address = "Address is required";
