@@ -32,8 +32,15 @@ import {
   countriesCallingCodes,
   countriesList,
   salaryTypeOptions,
-  probationPeriodOptions,
 } from "data/Data";
+import { format } from "date-fns";
+
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "src/@/components/ui/popover";
+import { Calendar } from "src/@/components/ui/calendar";
 
 import {
   EmailInput,
@@ -55,6 +62,8 @@ import { getShift } from "app/hooks/attendance";
 import AddShiftForm from "app/modules/OfficeSetting/sections/Shift/AddShiftForm";
 import SheetComponent from "components/ui/CustomSheet";
 import moment from "moment";
+import { cn } from "src/@/lib/utils";
+import { CalendarDays } from "lucide-react";
 
 async function getManagersStringSelected(managers) {
   if (managers) {
@@ -593,20 +602,8 @@ const SheetOnBorading = ({
                             }}
                           />
                         </div>
-
-                        <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"probation_period"}
-                            options={probationPeriodOptions}
-                            error={props.errors?.probation_period}
-                            touch={props.touched.probation_period}
-                            value={props.values.prbation_period}
-                            required={true}
-                            label={"Probation Period"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
+                        <div className="col-span-1 xl:col-span-2 lg:col-span-1 md:col-span-1">
+                          <ProbationDateRange formikProps={props} />
                         </div>
                       </div>
                     </div>
@@ -805,3 +802,146 @@ const mapStateToProps = (state) => {
   };
 };
 export default connect(mapStateToProps)(SheetOnBorading);
+
+
+
+const ProbationDateRange = ({ formikProps }) => {
+  const [dateRange, setDateRange] = useState({
+    from: formikProps.values?.probation_start_date
+      ? new Date(formikProps.values.probation_start_date)
+      : null,
+    to: formikProps.values?.probation_end_date
+      ? new Date(formikProps.values.probation_end_date)
+      : null,
+  });
+
+  // Calculate probation period whenever date range changes
+  useEffect(() => {
+    if (dateRange.from && dateRange.to) {
+      const start = moment(dateRange.from);
+      const end = moment(dateRange.to);
+
+      if (end.isBefore(start)) {
+        formikProps.setFieldValue("probation_period", "Invalid date range");
+        return;
+      }
+
+      // Calculate the difference in a human-readable format
+      const duration = moment.duration(end.diff(start));
+      const years = duration.years();
+      const months = duration.months();
+      const days = duration.days();
+
+      // Format the duration
+      let periodText = "";
+      if (years > 0) {
+        periodText += `${years} ${years === 1 ? "Year" : "Years"}`;
+      }
+
+      if (months > 0) {
+        periodText += periodText ? " and " : "";
+        periodText += `${months} ${months === 1 ? "Month" : "Months"}`;
+      }
+
+      if (days > 0) {
+        periodText += periodText ? " and " : "";
+        periodText += `${days} ${days === 1 ? "Day" : "Days"}`;
+      }
+
+      if (!periodText) {
+        periodText = "Same day (0 days)";
+      }
+
+      formikProps.setFieldValue("probation_period", periodText);
+    } else {
+      formikProps.setFieldValue("probation_period", "");
+    }
+  }, [dateRange]);
+
+  const handleDateRangeSelect = (selectedRange) => {
+    if (selectedRange?.from) {
+      formikProps.setFieldValue(
+        "probation_start_date",
+        moment(selectedRange.from).format("YYYY-MM-DD")
+      );
+    }
+
+    if (selectedRange?.to) {
+      formikProps.setFieldValue(
+        "probation_end_date",
+        moment(selectedRange.to).format("YYYY-MM-DD")
+      );
+    }
+
+    setDateRange(selectedRange);
+  };
+
+  const handlePeriodChange = (field, value) => {
+    formikProps.setFieldValue("probation_period", value);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
+        <div className="flex flex-col gap-4">
+          <Label htmlFor="probation-date-range">
+            <span className="text-red-600">* </span>Probation Period Range
+          </Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                id="probation-date-range"
+                variant="ghost"
+                className={cn(
+                  "inline-flex items-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-white text-primary dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-fit px-4 py-2 flex-wrap justify-between w-full rounded-sm border-neutral-500 hover:border-primary-200 hover:text-primary-1100 hover:bg-primary-200 hover:shadow-none",
+                  dateRange.from && "text-primary-1100 bg-fuchsia-50"
+                )}
+              >
+                {dateRange.from && dateRange.to ? (
+                  <>
+                    {format(dateRange.from, "LLL dd, y")} -{" "}
+                    {format(dateRange.to, "LLL dd, y")}
+                  </>
+                ) : (
+                  <span className="flex items-center">
+                    <CalendarDays className="h-5 mr-1" /> Select Probation Date
+                    Range
+                  </span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={dateRange.from}
+                selected={dateRange}
+                onSelect={handleDateRangeSelect}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+          {(formikProps.errors?.probation_start_date &&
+            formikProps.touched?.probation_start_date) ||
+          (formikProps.errors?.probation_end_date &&
+            formikProps.touched?.probation_end_date) ? (
+            <div className="text-red-600 invalid-feedback">
+              Please select a valid date range
+            </div>
+          ) : null}
+        </div>
+        <div className="space-y-2">
+          <TextInput
+            name="probation_period"
+            error={formikProps.errors?.probation_period}
+            touch={formikProps.touched?.probation_period}
+            value={formikProps.values?.probation_period}
+            label="Probation Period"
+            onChange={handlePeriodChange}
+            required={true}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};

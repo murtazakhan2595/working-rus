@@ -114,6 +114,8 @@ const EmployeeInformation = {
   direct_report: null,
   indirect_report: null,
   probation_period: null,
+  probation_start_date: null,
+  probation_end_date: null,
   employee_type: null,
   employee_work_type: null,
   employee_location: null,
@@ -122,10 +124,10 @@ const EmployeeInformation = {
   salary: null,
   salary_type: null,
   shift_assignment: null,
-  blood_group:null,
-  gender:null,
-  contract_start_date :null,
-  contract_end_date :null
+  blood_group: null,
+  gender: null,
+  contract_start_date: null,
+  contract_end_date: null,
 };
 const EmployeeProfessionalExperiance = {
   id: null,
