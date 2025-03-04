@@ -146,6 +146,31 @@ const SheetOnBorading = ({
           setFormData(employeeData);
           // setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
           setEmpId(response.serial_number);
+          // Call the actual API to get document checklist
+          const checklist = await getDocumentChecklist(id);
+
+          // Check if we got data back and there are results
+          if (checklist && checklist.results && checklist.results.length > 0) {
+            // Use the first result as our checklist data
+            setChecklistData(checklist.results[0]);
+          } else {
+            // No existing checklist found, set to null to create new
+            setChecklistData({
+              is_resume: false,
+              is_signed_offer_letter: false,
+              is_educational_documents: false,
+              is_professional_certificates: false,
+              is_picture: false,
+              is_id_card: false,
+              is_passport_copy: false,
+              is_visa_copy: false,
+              is_leave_application: false,
+              is_increment_letter: false,
+              is_confirmation_letter: false,
+              is_others: false,
+            });
+          }
+
           validateEmail(employeeData.work_email);
           validateUsername(employeeData.username);
           getShiftList();
@@ -190,7 +215,7 @@ const SheetOnBorading = ({
   };
   const handleSubmit = async (data) => {
     setIsLoading(true);
-    const employeePayload = mapEmployeePayloadData(data,formData);
+    const employeePayload = mapEmployeePayloadData(data, formData);
     try {
       // Format indirect report if it exists
       if (data?.indirect_report)
@@ -204,7 +229,7 @@ const SheetOnBorading = ({
       );
       // return
       if (response) {
-        const employeeId = response.id; 
+        const employeeId = response.id;
         // Save document checklist
         await saveDocumentChecklist({
           employee_id: employeeId,
@@ -329,7 +354,7 @@ const SheetOnBorading = ({
                     className="mt-6 space-y-6"
                   >
                     <div className="space-y-4">
-                    {console.log("props",props)}
+                      {console.log("props", props)}
                       <h3 className="text-lg font-semibold">
                         Employee Details
                       </h3>
@@ -762,7 +787,7 @@ const SheetOnBorading = ({
                         <div className="flex items-center">
                           <CheckBoxInput
                             name="is_resume"
-                            value={checklistData.is_resume}
+                            value={checklistData?.is_resume}
                             onChange={(field, value) => {
                               setChecklistData({
                                 ...checklistData,
@@ -775,7 +800,7 @@ const SheetOnBorading = ({
                         <div className="flex items-center">
                           <CheckBoxInput
                             name="is_signed_offer_letter"
-                            value={checklistData.is_signed_offer_letter}
+                            value={checklistData?.is_signed_offer_letter}
                             onChange={(field, value) => {
                               setChecklistData({
                                 ...checklistData,
@@ -788,7 +813,7 @@ const SheetOnBorading = ({
                         <div className="flex items-center">
                           <CheckBoxInput
                             name="is_educational_documents"
-                            value={checklistData.is_educational_documents}
+                            value={checklistData?.is_educational_documents}
                             onChange={(field, value) => {
                               setChecklistData({
                                 ...checklistData,
@@ -801,7 +826,7 @@ const SheetOnBorading = ({
                         <div className="flex items-center">
                           <CheckBoxInput
                             name="is_professional_certificates"
-                            value={checklistData.is_professional_certificates}
+                            value={checklistData?.is_professional_certificates}
                             onChange={(field, value) => {
                               setChecklistData({
                                 ...checklistData,
@@ -814,7 +839,7 @@ const SheetOnBorading = ({
                         <div className="flex items-center">
                           <CheckBoxInput
                             name="is_picture"
-                            value={checklistData.is_picture}
+                            value={checklistData?.is_picture}
                             onChange={(field, value) => {
                               setChecklistData({
                                 ...checklistData,
@@ -827,7 +852,7 @@ const SheetOnBorading = ({
                         <div className="flex items-center">
                           <CheckBoxInput
                             name="is_id_card"
-                            value={checklistData.is_id_card}
+                            value={checklistData?.is_id_card}
                             onChange={(field, value) => {
                               setChecklistData({
                                 ...checklistData,
@@ -987,8 +1012,6 @@ const mapStateToProps = (state) => {
   };
 };
 export default connect(mapStateToProps)(SheetOnBorading);
-
-
 
 const ProbationDateRange = ({ formikProps }) => {
   const [dateRange, setDateRange] = useState({

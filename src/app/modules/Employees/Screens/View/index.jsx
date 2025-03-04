@@ -24,6 +24,7 @@ import IdentificationDetails from "./IdentificationDetails";
 import { DepartmentName } from "utils/getValuesFromTables";
 import { Header } from "components";
 import OnboardingChecklist from "./OnboardingChecklist";
+import ReadOnlyOnboardingChecklist from "./OnboardingChecklist";
 const ViewEmployee = ({ userProfile, profileView }) => {
   const [employeeData, setEmployeeData] = React.useState({});
   const [loading, setLoading] = useState(true);
@@ -49,16 +50,15 @@ const ViewEmployee = ({ userProfile, profileView }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  const tabsData = [
-    { value: "personal", label: "Personal" },
-    { value: "job", label: "Job" },
-    { value: "security", label: "Security" },
-    { value: "qualification", label: "Qualification" },
-    ...((userProfile?.role === 3 || userProfile?.role === 1)
-      ? [{ value: "onboardingChecklist", label: "Onboarding Checklist" }]
-      : []),
-  ];
-
+const tabsData = [
+  { value: "personal", label: "Personal" },
+  { value: "job", label: "Job" },
+  { value: "security", label: "Security" },
+  { value: "qualification", label: "Qualification" },
+  ...(userProfile?.role === 3 || userProfile?.role === 1
+    ? [{ value: "onboardingChecklist", label: "Onboarding Checklist" }]
+    : []),
+];
   return (
     <>
       {loading ? (
@@ -166,7 +166,10 @@ const ViewEmployee = ({ userProfile, profileView }) => {
                 </div>
               </TabsContent>
               <TabsContent value="onboardingChecklist">
-                <OnboardingChecklist employeeId={employeeData.id} />
+                <TabsContent value="onboardingChecklist">
+                  {/* Using the read-only version of the checklist component */}
+                  <ReadOnlyOnboardingChecklist employeeId={employeeData.id} />
+                </TabsContent>
               </TabsContent>
             </Tabs>
           </div>
