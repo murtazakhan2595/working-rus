@@ -3,10 +3,13 @@ import { Form } from "reactstrap";
 import { Formik } from "formik";
 import { connect } from "react-redux";
 import {
-  getEmployeeBankDetailsData,
+  getEmployeeData,
   saveEmployeeBankDetailsData,
 } from "app/hooks/employee.jsx";
-import { mapEmployeeBankDetailPayloadData } from "app/utils/MappingObjects/mapEmployeeData.jsx";
+import {
+  mapEmployeeBankDetailPayloadData,
+  getBankDetails,
+} from "app/utils/MappingObjects/mapEmployeeData.jsx";
 import { TextInput } from "components/FormControl";
 import PageLoader from "components/PageLoader.jsx";
 import { Button } from "components/ui/button.jsx";
@@ -24,17 +27,28 @@ const BankInformation = ({
   const formRef = React.createRef();
   const [bankInfo, setBankInfo] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const fetchData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      if (isMounted) {
+        const response = await getEmployeeData(employeeId);
+        const employeeData = await getBankDetails(response);
+        setBankInfo(employeeData);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      if (isMounted) setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    getEmployeeBankDetailsData(baseUrl, employeeId, token)
-      .then((response) => {
-        setBankInfo(response);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [baseUrl, employeeId, token]); // Empty dependency array ensures this effect runs only once after the initial render
+    let isMounted = true;
+    if (employeeId) fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [employeeId]);
 
   const handleSubmit = (data) => {
     const bandetails = mapEmployeeBankDetailPayloadData(data);
@@ -69,129 +83,129 @@ const BankInformation = ({
               <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
                 <Card className="p-6">
                   <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <TextInput
-                        name={"account_iban"}
-                        error={props.errors.account_iban}
-                        touch={props.touched.account_iban}
-                        value={props.values.account_iban}
-                        label={"IBAN Number"}
-                        required={true}
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <TextInput
-                        name={"bank_name"}
-                        error={props.errors.bank_name}
-                        touch={props.touched.bank_name}
-                        value={props.values.bank_name}
-                        label={"Bank Name"}
-                        required={true}
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <TextInput
-                        name={"account_title"}
-                        error={props.errors.account_title}
-                        touch={props.touched.account_title}
-                        value={props.values.account_title}
-                        label={"Account Title"}
-                        required={true}
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <TextInput
-                        name={"branch_code"}
-                        error={props.errors.branch_code}
-                        touch={props.touched.branch_code}
-                        value={props.values.branch_code}
-                        label={"Branch Code"}
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                        regEx={/^[0-9]+$/}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <TextInput
-                        name={"account_number"}
-                        error={props.errors.account_number}
-                        touch={props.touched.account_number}
-                        value={props.values.account_number}
-                        label={"Account Number"}
-                        required={true}
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                        regEx={/^[0-9]+$/}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <TextInput
-                        name={"swift_code"}
-                        error={props.errors.swift_code}
-                        touch={props.touched.swift_code}
-                        value={props.values.swift_code}
-                        label={"Routing Code"}
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                        maxLength={10}
-                        regEx={/^[a-zA-Z0-9]*$/}
-                      />
-                    </div>
-                    <div className="col-span-2 space-y-2">
-                      <TextInput
-                        name={"branch_address"}
-                        error={props.errors.branch_address}
-                        touch={props.touched.branch_address}
-                        value={props.values.branch_address}
-                        label={"Branch Address"}
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                      />
-                    </div>
-                  </div>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <TextInput
+                            name={"account_iban"}
+                            error={props.errors.account_iban}
+                            touch={props.touched.account_iban}
+                            value={props.values.account_iban}
+                            label={"IBAN Number"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
+                            name={"bank_name"}
+                            error={props.errors.bank_name}
+                            touch={props.touched.bank_name}
+                            value={props.values.bank_name}
+                            label={"Bank Name"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
+                            name={"account_title"}
+                            error={props.errors.account_title}
+                            touch={props.touched.account_title}
+                            value={props.values.account_title}
+                            label={"Account Title"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
+                            name={"branch_code"}
+                            error={props.errors.branch_code}
+                            touch={props.touched.branch_code}
+                            value={props.values.branch_code}
+                            label={"Branch Code"}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                            regEx={/^[0-9]+$/}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
+                            name={"account_number"}
+                            error={props.errors.account_number}
+                            touch={props.touched.account_number}
+                            value={props.values.account_number}
+                            label={"Account Number"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                            regEx={/^[0-9]+$/}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
+                            name={"swift_code"}
+                            error={props.errors.swift_code}
+                            touch={props.touched.swift_code}
+                            value={props.values.swift_code}
+                            label={"Routing Code"}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                            maxLength={10}
+                            regEx={/^[a-zA-Z0-9]*$/}
+                          />
+                        </div>
+                        <div className="col-span-2 space-y-2">
+                          <TextInput
+                            name={"branch_address"}
+                            error={props.errors.branch_address}
+                            touch={props.touched.branch_address}
+                            value={props.values.branch_address}
+                            label={"Branch Address"}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                        </div>
+                      </div>
 
-                  <div className="p-6 border-t border-gray-200 div-span-2 bg-gray-50">
-                    <div className="flex justify-end space-x-4">
-                      {!isEditMode && (
-                        <Button
-                          variant="outline"
-                          size="lg"
-                          onClick={() => {
-                            prevStep();
-                          }}
-                        >
-                          Back
-                        </Button>
-                      )}
-                      <Button
-                        type="submit"
-                        size="lg"
-                        variant="default"
-                        onClick={() => {
-                          props.handleSubmit();
-                        }}
-                      >
-                        {isEditMode ? "Save" : "Next"}
-                      </Button>
+                      <div className="p-6 border-t border-gray-200 div-span-2 bg-gray-50">
+                        <div className="flex justify-end space-x-4">
+                          {!isEditMode && (
+                            <Button
+                              variant="outline"
+                              size="lg"
+                              onClick={() => {
+                                prevStep();
+                              }}
+                            >
+                              Back
+                            </Button>
+                          )}
+                          <Button
+                            type="submit"
+                            size="lg"
+                            variant="default"
+                            onClick={() => {
+                              props.handleSubmit();
+                            }}
+                          >
+                            {isEditMode ? "Save" : "Next"}
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  </div>
-                </CardContent>
+                  </CardContent>
                 </Card>
               </form>
             )}

@@ -245,14 +245,15 @@ function getWorkInformation(data) {
 }
 
 function getBankDetails(data) {
-  const bankDetail = EmployeeBankDetails;
-  bankDetail.bank_name = data?.bank_name ?? "";
-  bankDetail.account_title = data?.account_title ?? "";
-  bankDetail.account_number = data?.account_number ?? "";
-  bankDetail.account_iban = data?.account_iban ?? "";
-  bankDetail.branch_address = data?.branch_address ?? "";
-  bankDetail.branch_code = data?.branch_code ?? "";
-  bankDetail.swift_code = data?.swift_code ?? "";
+  const bankDetail = Object.keys(EmployeeBankDetails).reduce(
+    (acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
 
   return bankDetail;
 }
