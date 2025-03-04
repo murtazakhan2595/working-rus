@@ -354,7 +354,6 @@ const SheetOnBorading = ({
                     className="mt-6 space-y-6"
                   >
                     <div className="space-y-4">
-                      {console.log("props", props)}
                       <h3 className="text-lg font-semibold">
                         Employee Details
                       </h3>
