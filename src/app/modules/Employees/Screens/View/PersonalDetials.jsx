@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { CiEdit } from "react-icons/ci";
 import { EmployeeDetailModal } from "../../../Employees/Screens/Modals";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-import { getCountryFullName } from "utils/getValuesFromTables";
+import {
+  getCountryFullName,
+  getBloodGroup,
+  getGender,
+} from "utils/getValuesFromTables";
 import moment from "moment";
 import { renderDate } from "utils/renderValues";
 import { PageLoader } from "components";
@@ -26,12 +30,17 @@ const PersonalInformation = ({ userId, isEditable }) => {
         { title: "Last Name", data: userData?.last_name },
         { title: "Email Address", data: userData?.other_email },
         { title: "Marital Status", data: userData?.marital_status },
+        { title: "Gender", data: getGender(userData?.gender) },
+        { title: "Blood Group", data: getBloodGroup(userData?.blood_group) },
         { title: "Mother Name", data: userData?.mother_name },
         {
           title: "Date of Birth",
           data: renderDate(userData?.date_of_birth),
         },
-        { title: "Contact No", data: `+${userData?.country_code}${userData?.mobile_no}` },
+        {
+          title: "Contact No",
+          data: `+${userData?.country_code}${userData?.mobile_no}`,
+        },
       ]);
     } catch (error) {
       console.error("Error fetching data:", error);

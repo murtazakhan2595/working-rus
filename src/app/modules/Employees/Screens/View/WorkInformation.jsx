@@ -45,6 +45,15 @@ const WorkInformation = ({
       title: "Joining Date",
       data: renderDate(userData?.joining_date),
     },
+    ...(userData?.contract_start_date && [{
+      title: "Contract Start Date",
+      data: renderDate(userData?.contract_start_date),
+    }]),
+    ...(userData?.contract_end_date && [{
+      title: "Contract End Date",
+      data: renderDate(userData?.contract_end_date),
+    }]),
+    
   ];
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (

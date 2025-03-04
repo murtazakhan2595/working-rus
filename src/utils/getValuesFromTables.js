@@ -10,6 +10,8 @@ import {
   countryOptions,
   UserRoles,
   workplaceTypes,
+  GenderOptions,
+  BloodGroupOptions,
 } from "data/Data";
 import { useSelector } from "react-redux";
 import moment from "moment";
@@ -40,6 +42,18 @@ function getWorkPlaceType(workPlaceType) {
     (option) => option.value === workPlaceType
   );
   return response ? response.label : workPlaceType;
+}
+export function getBloodGroup(bloodGroup) {
+  const response = BloodGroupOptions.find(
+    (option) => option.value === bloodGroup
+  );
+  return response ? response.label : bloodGroup;
+}
+export function getGender(gender) {
+  const response = GenderOptions.find(
+    (option) => option.value === gender
+  );
+  return response ? response.label : gender;
 }
 function getJobType(jobType, includeAllOption = false) {
   const response = jobTypeOptions.find((option) => option.value === jobType);
