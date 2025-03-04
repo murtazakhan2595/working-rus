@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Formik } from "formik";
 import { connect } from "react-redux";
 import {
-  getEmployeeContactInfo,
+  getEmployeeData,
   saveEmployeeContactInfoData,
 } from "../../../../../app/hooks/employee";
 
@@ -12,7 +12,7 @@ import {
   TextAreaInput,
 } from "../../../../../components/FormControl/index.jsx";
 import { PageLoader } from "components";
-import { getContactInfo } from "../../../../../app/utils/MappingObjects/mapEmployeeData.jsx";
+import { getContactInfo } from "app/utils/MappingObjects/mapEmployeeData";
 import { validationEmployeeContactInfoFormSchema } from "../../../../../app/utils/FormSchema/employeeFormSchema";
 import { Button } from "../../../../../components/ui/button";
 import countries from "country-data";
@@ -24,23 +24,29 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
   const [contactInfo, setContactInfo] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-  // const countryOptions = countries.all
-  // .filter((country) => country.countryCallingCodes && country.countryCallingCodes.length > 0)
-  // .map((country) => ({
-  //   value: country.countryCallingCodes[0].replace("+", ""), // Remove any existing plus signs
-  //   label: `${country.name} (+${country.countryCallingCodes[0].replace("+", "")})`,
-  // }));
+  const fetchData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      if (isMounted) {
+        const response = await getEmployeeData(employeeId);
+        const employeeData = await getContactInfo(response);
+        setContactInfo(employeeData);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      if (isMounted) setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    getEmployeeContactInfo(employeeId)
-      .then((response) => {
-        setContactInfo(response);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [employeeId]); // Empty dependency array ensures this effect runs only once after the initial render
+    let isMounted = true;
+    if (employeeId) fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [employeeId]);
+
 
   const handleSubmit = (data) => {
     const ContactInformation = getContactInfo(data);
@@ -125,7 +131,7 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
                           />
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="col-span-2 space-y-2">
                           <TextAreaInput
                             name="residential_address"
                             error={props.errors.residential_address}

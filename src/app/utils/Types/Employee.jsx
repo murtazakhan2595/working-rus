@@ -21,6 +21,7 @@ const EmployeeContactInformation = {
   emergency_relation: null,
   current_address: null,
   residential_address: null,
+  emergency_country_code:null,
 };
 
 const EmployeeVisaDetails = {

@@ -9,9 +9,8 @@ import {
   EmployeeCertifiation,
   EmployeeInformation,
   EmployeePersonalInformation,
+  EmployeeContactInformation,
 } from "app/utils/Types/Employee";
-import moment from "moment";
-import { getManagerSelected } from "data/Data";
 
 export function mapEmployeePayloadData(data, id) {
   // Initialize an empty payload object
@@ -96,14 +95,16 @@ function getPersonalInfo(data) {
   return personalInfo;
 }
 function getContactInfo(data) {
-  const contactInfo = {
-    emergency_country_code: data?.emergency_country_code,
-    emergency_phone_no: data.emergency_phone_no,
-    emergency_first_name: data.emergency_first_name,
-    emergency_relation: data.emergency_relation,
-    current_address: data.current_address,
-    residential_address: data.residential_address,
-  };
+  const contactInfo = Object.keys(EmployeeContactInformation).reduce(
+    (acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
+
   return contactInfo;
 }
 

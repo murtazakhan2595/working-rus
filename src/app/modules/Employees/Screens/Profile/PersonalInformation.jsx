@@ -42,17 +42,27 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
   const [imageError, setImageError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(async () => {
+  const fetchData = async (isMounted) => {
     try {
       setIsLoading(true);
-      const response = await getEmployeeData(employeeId);
-      const employeeData = await getPersonalInfo(response);
-      setPersonalInfo(employeeData);
+      if (isMounted) {
+        const response = await getEmployeeData(employeeId);
+        const employeeData = await getPersonalInfo(response);
+        setPersonalInfo(employeeData);
+      }
     } catch (error) {
       console.error(error);
     } finally {
-      setIsLoading(false);
+      if (isMounted) setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (employeeId) fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
   }, [employeeId]);
 
   const handleSubmit = async (data) => {
