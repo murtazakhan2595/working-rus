@@ -128,6 +128,7 @@ const EmployeeInformation = {
   gender: null,
   contract_start_date: null,
   contract_end_date: null,
+  active_contract:false,
 };
 const EmployeeProfessionalExperiance = {
   id: null,

@@ -173,7 +173,7 @@ const SheetOnBorading = ({
   };
   const handleSubmit = async (data) => {
     setIsLoading(true);
-    const employeePayload = mapEmployeePayloadData(data);
+    const employeePayload = mapEmployeePayloadData(data,formData);
     try {
       // Format indirect report if it exists
       if (data?.indirect_report)
@@ -182,7 +182,7 @@ const SheetOnBorading = ({
         );
       // Save employee work information
       const response = await saveEmployeeWorkInformationData(
-        data.id,
+        id,
         employeePayload
       );
       // return
@@ -191,7 +191,7 @@ const SheetOnBorading = ({
         // Dispatch fetch actions to update the state
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
-        if (data.id) {
+        if (id) {
           // Employee update flow
           toast.success("Employee Updated Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
@@ -298,6 +298,7 @@ const SheetOnBorading = ({
                   if (!id && values.username && usernameAlreadyExist) {
                     errors.username = "Username already exist";
                   }
+                  console.log(errors,values);
                   return errors;
                 }}
               >
@@ -623,7 +624,7 @@ const SheetOnBorading = ({
                           <>
                             <div className="space-y-2">
                               <DateInput
-                                name={"contract_start_date "}
+                                name={"contract_start_date"}
                                 error={props.errors?.contract_start_date}
                                 touch={props.touched?.contract_start_date}
                                 value={props.values?.contract_start_date}
@@ -636,7 +637,7 @@ const SheetOnBorading = ({
                             </div>
                             <div className="space-y-2">
                               <DateInput
-                                name={"contract_end_date "}
+                                name={"contract_end_date"}
                                 error={props.errors?.contract_end_date}
                                 touch={props.touched?.contract_end_date}
                                 value={props.values?.contract_end_date}

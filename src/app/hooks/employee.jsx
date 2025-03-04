@@ -36,9 +36,9 @@ const formDataHeader = () => ({
   // Don't explicitly set 'Content-Type' for FormData
 });
 
-const getEmployeeData = async (employeeid) => {
+const getEmployeeData = async (employeeId) => {
   try {
-    const response = await axios.get(`${baseUrl}/emp/${employeeid}`, {
+    const response = await axios.get(`${baseUrl}/emp/${employeeId}`, {
       headers: headers(),
     });
     return response.data;

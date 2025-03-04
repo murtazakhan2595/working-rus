@@ -13,7 +13,7 @@ import {
 import moment from "moment";
 import { getManagerSelected } from "data/Data";
 
-export function mapEmployeePayloadData(data) {
+export function mapEmployeePayloadData(data, id) {
   // Initialize an empty payload object
   const payload = {};
   // Iterate over the keys in the Task object
@@ -263,35 +263,18 @@ function getBankDetails(data) {
 }
 
 async function getEmployeeInformation(data) {
-  const employeeInformation = {
-    id: data?.id ?? null,
-    username: data.username,
-    first_name: data.first_name,
-    last_name: data.last_name,
-    work_email: data.work_email,
-    organization: data?.organization ?? "",
-    user_role: data.user_role,
-    department_name: data?.department_name ?? "",
-    residential_address: data?.residential_address ?? "",
-    mobile_no: data?.mobile_no ?? "",
-    country_code: data?.country_code ?? "",
-    department_position: data?.department_position
-      ? parseInt(data?.department_position)
-      : "",
-    direct_report: data?.direct_report ? parseInt(data?.direct_report) : "",
-    indirect_report: data?.indirect_report
-      ? getManagerSelected(data.indirect_report)
-      : "",
-    department_manager: data?.department_manager ?? "",
-    employee_type: data?.employee_type ?? "",
-    employee_status: data?.employee_status ?? "",
-    employee_work_type: data?.employee_work_type ?? "",
-    employee_location: data?.employee_location ?? "",
-    joining_date: data?.joining_date ?? "",
-    is_indirect_report_applicable: data.indirect_report ? true : false,
-    // password: data?.password ?? "",
-    shift_assignment: data?.shift_assignment ?? null,
-  };
+  // Filter the input data to include only keys that exist in EmployeeInformation
+  const employeeInformation = Object.keys(EmployeeInformation).reduce(
+    (acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        if (key === "contract_start_date") acc["active_contract"] = !!data[key];
+        if (key !== "password") acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
+
   return employeeInformation;
 }
 
