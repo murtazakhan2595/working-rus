@@ -11,6 +11,8 @@ const EmployeePersonalInformation = {
   profile_picture: null,
   blood_group:null,
   gender:null,
+  father_name:null,
+  country_code:null,
 };
 const EmployeeContactInformation = {
   emergency_phone_no: null,

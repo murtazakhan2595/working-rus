@@ -298,7 +298,6 @@ const SheetOnBorading = ({
                   if (!id && values.username && usernameAlreadyExist) {
                     errors.username = "Username already exist";
                   }
-                  console.log(errors,values);
                   return errors;
                 }}
               >

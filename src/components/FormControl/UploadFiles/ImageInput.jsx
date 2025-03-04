@@ -5,7 +5,7 @@ import { Input } from "components/ui/input";
 import { getFileNameFromURL } from "utils/downUtils";
 import upload from "assets/images/upload.png";
 
-import { errorClassName } from "app/utils/Types/General";
+import { errorClassName } from "components/FormControl";
 
 const ImageInput = React.memo(
   ({
@@ -95,11 +95,12 @@ const ImageInput = React.memo(
                   {`Remove`}
                 </Button>
               )}
-              {error && touch && <div className={errorClassName}>{error}</div>}
+              
             </div>
             <span className="text-neutral-800 text-xs font-normal">
               JPEG or PNG. Max size of 100KB
             </span>
+            {error && touch && <span className={errorClassName}>{error}</span>}
           </div>
         </div>
         {viewImage && (

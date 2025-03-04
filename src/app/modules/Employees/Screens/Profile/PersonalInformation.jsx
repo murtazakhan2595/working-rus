@@ -18,11 +18,14 @@ import {
   BloodGroupOptions,
 } from "data/Data.js";
 import {
-  getEmployeePersonalInfoData,
+  getEmployeeData,
   saveEmployeePersonalInfoData,
 } from "../../../../hooks/employee";
 import { validateEmployeePersonalInfoForm } from "app/utils/FormSchema/employeeFormSchema";
-import { mapEmployeePersonalInformationPayloadData } from "app/utils/MappingObjects/mapEmployeeData.jsx";
+import {
+  mapEmployeePersonalInformationPayloadData,
+  getPersonalInfo,
+} from "app/utils/MappingObjects/mapEmployeeData";
 import { Button } from "../../../../../components/ui/button";
 import { Card, CardContent, CardFooter } from "components/ui/card";
 
@@ -33,22 +36,24 @@ import { Card, CardContent, CardFooter } from "components/ui/card";
 //   label: countries[countryCode].name,
 // }));
 
-const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
+const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
   const formRef = React.createRef();
   const [personalInfo, setPersonalInfo] = useState({});
   const [imageError, setImageError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    getEmployeePersonalInfoData(employeeId)
-      .then((response) => {
-        setPersonalInfo(response);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [baseUrl, employeeId, token]);
+  useEffect(async () => {
+    try {
+      setIsLoading(true);
+      const response = await getEmployeeData(employeeId);
+      const employeeData = await getPersonalInfo(response);
+      setPersonalInfo(employeeData);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [employeeId]);
 
   const handleSubmit = async (data) => {
     // Prepare personal information from data

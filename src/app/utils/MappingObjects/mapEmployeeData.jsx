@@ -83,22 +83,16 @@ function mapEmployeeData(data) {
 }
 
 function getPersonalInfo(data) {
-  const personalInfo = {
-    first_name: data.first_name,
-    last_name: data.last_name,
-    country_code: data?.country_code ?? "",
-    mobile_no: data.mobile_no,
-    date_of_birth: data.date_of_birth
-      ? moment(data.date_of_birth).format("YYYY-MM-DD")
-      : "",
-    marital_status: data.marital_status,
-    nationality: data.nationality,
-    other_email: data.other_email,
-    nic: data.nic,
-    mother_name: data.mother_name,
-    father_name: data.father_name,
-    profile_picture: data.profile_picture,
-  };
+  const personalInfo = Object.keys(EmployeePersonalInformation).reduce(
+    (acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
+
   return personalInfo;
 }
 function getContactInfo(data) {
