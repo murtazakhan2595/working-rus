@@ -10,7 +10,7 @@ import {
   mapEmployeeBankDetailPayloadData,
   getBankDetails,
 } from "app/utils/MappingObjects/mapEmployeeData.jsx";
-import { TextInput } from "components/FormControl";
+import { TextInput, TextAreaInput } from "components/FormControl";
 import PageLoader from "components/PageLoader.jsx";
 import { Button } from "components/ui/button.jsx";
 import { validateEmployeeBankInformationForm } from "app/utils/FormSchema/employeeFormSchema.jsx";
@@ -18,8 +18,6 @@ import { Card, CardContent } from "components/ui/card.jsx";
 
 const BankInformation = ({
   nextstep,
-  baseUrl,
-  token,
   employeeId,
   isEditMode,
   prevStep,
@@ -27,6 +25,7 @@ const BankInformation = ({
   const formRef = React.createRef();
   const [bankInfo, setBankInfo] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isEdited, setIsEdited] = useState(false);
   const fetchData = async (isMounted) => {
     try {
       setIsLoading(true);
@@ -52,12 +51,7 @@ const BankInformation = ({
 
   const handleSubmit = (data) => {
     const bandetails = mapEmployeeBankDetailPayloadData(data);
-    const response = saveEmployeeBankDetailsData(
-      baseUrl,
-      employeeId,
-      token,
-      bandetails
-    );
+    const response = saveEmployeeBankDetailsData(bandetails, employeeId);
     if (response) nextstep();
   };
 
@@ -94,6 +88,7 @@ const BankInformation = ({
                             label={"IBAN Number"}
                             required={true}
                             onChange={(field, value) => {
+                              setIsEdited(true);
                               props.handleChange(field)(value);
                             }}
                           />
@@ -107,6 +102,7 @@ const BankInformation = ({
                             label={"Bank Name"}
                             required={true}
                             onChange={(field, value) => {
+                              setIsEdited(true);
                               props.handleChange(field)(value);
                             }}
                           />
@@ -120,6 +116,7 @@ const BankInformation = ({
                             label={"Account Title"}
                             required={true}
                             onChange={(field, value) => {
+                              setIsEdited(true);
                               props.handleChange(field)(value);
                             }}
                           />
@@ -132,6 +129,7 @@ const BankInformation = ({
                             value={props.values.branch_code}
                             label={"Branch Code"}
                             onChange={(field, value) => {
+                              setIsEdited(true);
                               props.handleChange(field)(value);
                             }}
                             regEx={/^[0-9]+$/}
@@ -146,6 +144,7 @@ const BankInformation = ({
                             label={"Account Number"}
                             required={true}
                             onChange={(field, value) => {
+                              setIsEdited(true);
                               props.handleChange(field)(value);
                             }}
                             regEx={/^[0-9]+$/}
@@ -159,6 +158,7 @@ const BankInformation = ({
                             value={props.values.swift_code}
                             label={"Routing Code"}
                             onChange={(field, value) => {
+                              setIsEdited(true);
                               props.handleChange(field)(value);
                             }}
                             maxLength={10}
@@ -166,13 +166,14 @@ const BankInformation = ({
                           />
                         </div>
                         <div className="col-span-2 space-y-2">
-                          <TextInput
+                          <TextAreaInput
                             name={"branch_address"}
                             error={props.errors.branch_address}
                             touch={props.touched.branch_address}
                             value={props.values.branch_address}
                             label={"Branch Address"}
                             onChange={(field, value) => {
+                              setIsEdited(true);
                               props.handleChange(field)(value);
                             }}
                           />
@@ -192,16 +193,29 @@ const BankInformation = ({
                               Back
                             </Button>
                           )}
-                          <Button
-                            type="submit"
-                            size="lg"
-                            variant="default"
-                            onClick={() => {
-                              props.handleSubmit();
-                            }}
-                          >
-                            {isEditMode ? "Save" : "Next"}
-                          </Button>
+                          {isEdited || isEditMode ? (
+                            <Button
+                              type="submit"
+                              size="lg"
+                              variant="default"
+                              onClick={() => {
+                                props.handleSubmit();
+                              }}
+                            >
+                              Save
+                            </Button>
+                          ) : (
+                            <Button
+                              size="lg"
+                              variant="default"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                nextstep();
+                              }}
+                            >
+                              Next
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>

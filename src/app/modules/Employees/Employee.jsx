@@ -5,31 +5,28 @@ import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
 import Header from "../../../components/Header";
 import { FilterInput, SelectInputComponent } from "components/FormControl";
 import { UserRoles, employeeStatus } from "data/Data";
-import {
-  getDepartmentList,
-  getDesignationList,
-  getEmployeeCustomList,
-} from "app/hooks/general";
+import { getEmployeeCustomList } from "app/hooks/general";
 import { PageLoader } from "components";
 import SheetOnBoarding from "components/ui/OnBoardingSheet";
 import Stats from "../../../components/ui/Stats";
 import TableCustom from "components/CustomTable";
+import { useSelector } from "react-redux";
 
 export default function EmployeeManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState({ results: [], count: 0 });
-  const [departments, setDepartments] = useState([]);
-  const [designations, setDesignations] = useState([]);
   const [filterData, setFilterData] = useState({});
   const [totalEmployee, setTotalEmployee] = useState(0);
   const [activeEmployee, setActiveEmployee] = useState(0);
-  const [totalOffboard, setTotalOffboard] = useState(0)
+  const [totalOffboard, setTotalOffboard] = useState(0);
   const [totalManagers, setTotalManagers] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedDesignation, setSelectedDesignation] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
+  const Departments = useSelector((state) => state.common.departments);
+  const Designations = useSelector((state) => state.common.designations);
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -41,47 +38,39 @@ export default function EmployeeManagement() {
     onPageChange: onPageChange,
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const data = await getEmployeeCustomList({ options, filterData });
+  const fetchData = async (isMounted) => {
+    setIsLoading(true);
+    try {
+      const data = await getEmployeeCustomList({ options, filterData });
+      if (isMounted) {
         setEmployeeData(data);
         setActiveEmployee(data.ActiveEmployee || 0);
         setTotalEmployee(data.TotalEmployee || 0);
         setTotalManagers(data.TotalManager || 0);
-        setTotalOffboard(data?.TotalEmployee - data?.ActiveEmployee || 0)
-      } catch (error) {
-        console.error("Error fetching employees:", error);
-      } finally {
-        setIsLoading(false);
+        setTotalOffboard(data?.TotalEmployee - data?.ActiveEmployee || 0);
       }
-    };
-    fetchData();
-  }, [options, filterData, selectedStatus]); 
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    } finally {
+      if (isMounted) setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        const [departmentResponse, designationResponse] = await Promise.all([
-          getDepartmentList(),
-          getDesignationList(),
-        ]);
-        setDepartments(departmentResponse);
-        setDesignations(designationResponse);
-      } catch (error) {
-        console.error("Error fetching lists:", error);
-      }
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
     };
-    fetchLists();
-  }, []);
+  }, [options, filterData]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
     if (filterName === "department_name") setSelectedDepartment(filterValue);
-    if (filterName === "department_position") setSelectedDesignation(filterValue);
+    if (filterName === "department_position")
+      setSelectedDesignation(filterValue);
     if (filterName === "user_role") setSelectedRole(filterValue);
-    
+
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -98,8 +87,14 @@ export default function EmployeeManagement() {
     { label: "Managers", value: totalManagers, icon: Contact },
     { label: "Active Employees", value: activeEmployee, icon: UserRoundCheck },
     ...(Object.keys(filterData).length === 0
-    ? [{ label: "Offboarded Employees", value: totalOffboard, icon: UserRoundCheck }]
-    : []),
+      ? [
+          {
+            label: "Offboarded Employees",
+            value: totalOffboard,
+            icon: UserRoundCheck,
+          },
+        ]
+      : []),
   ];
 
   const onEmpStatusChange = (newStatus) => {
@@ -108,18 +103,20 @@ export default function EmployeeManagement() {
   };
 
   return (
-    <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}>
+    <div
+      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
+    >
       <Header content={<SheetOnBoarding />} />
       <Stats stats={statsData} />
       <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row gap-2">
         <div className="flex">
-        <SelectInputComponent
-          name="Employee Status"
-          value={selectedStatus}
-          options={employeeStatus}
-          onChange={(name, newStatus) => onEmpStatusChange(newStatus)}
-          classes="flex-row"
-        />
+          <SelectInputComponent
+            name="Employee Status"
+            value={selectedStatus}
+            options={employeeStatus}
+            onChange={(name, newStatus) => onEmpStatusChange(newStatus)}
+            classes="flex-row"
+          />
         </div>
         <FilterInput
           filters={[
@@ -130,14 +127,14 @@ export default function EmployeeManagement() {
             },
             {
               type: "select-one",
-              option: departments,
+              option: Departments,
               name: "department_name",
               placeholder: "Department",
               values: selectedDepartment,
             },
             {
               type: "select-two",
-              option: designations,
+              option: Designations,
               name: "department_position",
               placeholder: "Designation",
               values: selectedDesignation,

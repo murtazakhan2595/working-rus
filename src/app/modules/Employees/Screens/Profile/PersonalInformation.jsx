@@ -28,6 +28,7 @@ import {
 } from "app/utils/MappingObjects/mapEmployeeData";
 import { Button } from "../../../../../components/ui/button";
 import { Card, CardContent, CardFooter } from "components/ui/card";
+import ProfileFormFooter from "app/modules/Employees/Screens/Sections/ProfileFormFooter";
 
 // Get country options for Select component but do not showing country calling code
 
@@ -39,6 +40,7 @@ import { Card, CardContent, CardFooter } from "components/ui/card";
 const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
   const formRef = React.createRef();
   const [personalInfo, setPersonalInfo] = useState({});
+  const [isEdited, setIsEdited] = useState(false);
   const [imageError, setImageError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -121,6 +123,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                             label={"Your Photo"}
                             required={true}
                             onChange={(field, value, error) => {
+                              setIsEdited(true);
                               props.setFieldValue(field, value);
                               setImageError(error);
                             }}
@@ -152,6 +155,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               label={"First Name"}
                               required={true}
                               onChange={(field, value) => {
+                                setIsEdited(true);
                                 props.handleChange(field)(value);
                               }}
                             />
@@ -167,6 +171,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               countryCode={props.values?.country_code}
                               countryCodeName={"country_code"}
                               onChange={(field, value) => {
+                                setIsEdited(true);
                                 props.setFieldValue(field, value);
                               }}
                               countryOptions={countriesCallingCodes} // Pass the country options here
@@ -181,6 +186,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               label={"Last Name"}
                               required={true}
                               onChange={(field, value) => {
+                                setIsEdited(true);
                                 props.handleChange(field)(value);
                               }}
                             />
@@ -194,6 +200,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               label={"Email"}
                               required={true}
                               onChange={(field, value) => {
+                                setIsEdited(true);
                                 props.handleChange(field)(value);
                               }}
                             />
@@ -207,6 +214,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               label={"ID Card no"}
                               required={true}
                               onChange={(field, value) => {
+                                setIsEdited(true);
                                 props.handleChange(field)(value);
                               }}
                               regEx={/^[0-9]+$/}
@@ -221,6 +229,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               label={"Father Name"}
                               required={true}
                               onChange={(field, value) => {
+                                setIsEdited(true);
                                 props.handleChange(field)(value);
                               }}
                             />
@@ -234,6 +243,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               label={"Mother Name"}
                               required={true}
                               onChange={(field, value) => {
+                                setIsEdited(true);
                                 props.handleChange(field)(value);
                               }}
                             />
@@ -248,6 +258,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               required={true}
                               label={"Nationality"}
                               onChange={(field, value) => {
+                                setIsEdited(true);
                                 props.setFieldValue(field, value);
                               }}
                             />
@@ -260,6 +271,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               value={props.values.date_of_birth}
                               label={"Date of Birth"}
                               onChange={(field, value) => {
+                                setIsEdited(true);
                                 props.setFieldValue(field, value);
                               }}
                             />
@@ -273,6 +285,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               value={props.values.marital_status}
                               label={"Martial Status"}
                               onChange={(field, value) => {
+                                setIsEdited(true);
                                 props.setFieldValue(field, value);
                               }}
                             />
@@ -287,6 +300,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               required={true}
                               label={"Blood Group"}
                               onChange={(field, value) => {
+                                setIsEdited(true);
                                 props.setFieldValue(field, value);
                               }}
                             />
@@ -301,6 +315,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               required={true}
                               label={"Gender"}
                               onChange={(field, value) => {
+                                setIsEdited(true);
                                 props.setFieldValue(field, value);
                               }}
                             />
@@ -308,20 +323,15 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                         </div>
                       </CardContent>
                       <CardFooter>
-                        <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50 w-full">
-                          <div className="flex justify-end space-x-4">
-                            <Button
-                              type="submit"
-                              size="lg"
-                              variant="default"
-                              onClick={() => {
-                                props.handleSubmit();
-                              }}
-                            >
-                              {isEditMode ? "Save" : "Next"}
-                            </Button>
-                          </div>
-                        </div>
+                        <ProfileFormFooter
+                          nextstep={nextstep}
+                          handleSubmit={() => {
+                            props.handleSubmit();
+                          }}
+                          isEditMode={isEditMode}
+                          isEdited={isEdited}
+                        />
+                       
                       </CardFooter>
                     </Card>
                   </div>

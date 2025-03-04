@@ -15,14 +15,15 @@ import { PageLoader } from "components";
 import { getContactInfo } from "app/utils/MappingObjects/mapEmployeeData";
 import { validationEmployeeContactInfoFormSchema } from "../../../../../app/utils/FormSchema/employeeFormSchema";
 import { Button } from "../../../../../components/ui/button";
-import countries from "country-data";
 import { countriesCallingCodes } from "data/Data";
-import { Card, CardContent } from "components/ui/card";
+import { Card, CardContent, CardFooter } from "components/ui/card";
+import ProfileFormFooter from "app/modules/Employees/Screens/Sections/ProfileFormFooter";
 
 const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
   const formRef = React.createRef();
   const [contactInfo, setContactInfo] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isEdited, setIsEdited] = useState(false);
 
   const fetchData = async (isMounted) => {
     try {
@@ -46,7 +47,6 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
       isMounted = false;
     };
   }, [employeeId]);
-
 
   const handleSubmit = (data) => {
     const ContactInformation = getContactInfo(data);
@@ -99,6 +99,7 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
                             countryCodeName={"emergency_country_code"}
                             required={true}
                             onChange={(field, value) => {
+                              setIsEdited(true);
                               props.setFieldValue(field, value);
                             }}
                             countryOptions={countriesCallingCodes} // Pass the country options here
@@ -113,6 +114,7 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
                             label="Full Name"
                             required
                             onChange={(field, value) => {
+                              setIsEdited(true);
                               props.handleChange(field)(value);
                             }}
                           />
@@ -126,6 +128,7 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
                             label="Relation"
                             required
                             onChange={(field, value) => {
+                              setIsEdited(true);
                               props.handleChange(field)(value);
                             }}
                           />
@@ -140,6 +143,7 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
                             label="Permanent Address"
                             required
                             onChange={(field, value) => {
+                              setIsEdited(true);
                               props.handleChange(field)(value);
                             }}
                           />
@@ -153,38 +157,26 @@ const ContactInformation = ({ nextstep, employeeId, isEditMode, prevStep }) => {
                             label="Current Address"
                             required
                             onChange={(field, value) => {
+                              setIsEdited(true);
                               props.handleChange(field)(value);
                             }}
                           />
                         </div>
-                        <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50">
-                          <div className="flex justify-end space-x-4">
-                            {!isEditMode && (
-                              <Button
-                                variant="outline"
-                                size="lg"
-                                onClick={() => {
-                                  prevStep();
-                                }}
-                              >
-                                Back
-                              </Button>
-                            )}
-                            <Button
-                              type="submit"
-                              size="lg"
-                              variant="default"
-                              onClick={() => {
-                                props.handleSubmit();
-                              }}
-                            >
-                              {isEditMode ? "Save" : "Next"}
-                            </Button>
-                          </div>
-                        </div>
                       </div>
                     </div>
                   </CardContent>
+                  <CardFooter>
+                    <ProfileFormFooter
+                      nextstep={nextstep}
+                      handleSubmit={() => {
+                        props.handleSubmit();
+                      }}
+                      prevStep={prevStep}
+                      isEditMode={isEditMode}
+                      isEdited={isEdited}
+                      enableBackButton={true}
+                    />
+                  </CardFooter>
                 </Card>
               </form>
             )}

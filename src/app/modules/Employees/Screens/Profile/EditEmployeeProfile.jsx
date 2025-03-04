@@ -1,18 +1,17 @@
 import React, { useState } from "react";
-import {
-  CardHeader,
-  CardBody,
-  Row,
-  Col,
-} from 'reactstrap';
+import { CardHeader, CardBody, Row, Col } from "reactstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   BankInformation,
   PersonalInformation,
   ExperienceInformation,
-  ContactInformation, EducationInformation, CertificationsInformation, IdentificationInformation,
+  ContactInformation,
+  EducationInformation,
+  CertificationsInformation,
+  IdentificationInformation,
 } from "./index";
-import { toast, } from "react-toastify";
+import { toast } from "react-toastify";
+import { ArrowLeft } from "lucide-react";
 
 const EditEmployeeProfile = () => {
   const { id } = useParams();
@@ -20,22 +19,14 @@ const EditEmployeeProfile = () => {
   //   const [currentTab, setCurrentTab] = useState(4);
   const [currentTab, setCurrentTab] = useState(1);
   const getTitle = () => {
-    if (currentTab === 1)
-      return 'Personal Details';
-    else if (currentTab === 2)
-      return 'Contact Information';
-    else if (currentTab === 3)
-      return 'Banking Details';
-    else if (currentTab === 4)
-      return 'Experience';
-    else if (currentTab === 5)
-      return 'Academics';
-    else if (currentTab === 6)
-      return 'Certification and Licences';
-    else if (currentTab === 7)
-      return 'Identification Details';
-
-  }
+    if (currentTab === 1) return "Personal Details";
+    else if (currentTab === 2) return "Contact Information";
+    else if (currentTab === 3) return "Banking Details";
+    else if (currentTab === 4) return "Experience";
+    else if (currentTab === 5) return "Academics";
+    else if (currentTab === 6) return "Certification and Licences";
+    else if (currentTab === 7) return "Identification Details";
+  };
 
   return (
     <>
@@ -43,11 +34,13 @@ const EditEmployeeProfile = () => {
         <Row>
           <Col lg={8} className="mx-auto">
             <CardHeader>
-              <Row>
-                <Col lg={12}>
-                  <h4 className="">{getTitle()}</h4>
-                </Col>
-              </Row>
+              <div className="flex items-center">
+                <ArrowLeft
+                  className="w-6 h-6 mr-2 bg-transparent rounded-lg shadow-sm cursor-pointer"
+                  onClick={() => navigate("/profile-management")}
+                />
+                <span className="text-neutral-1200 text-2xl font-bold">{getTitle()}</span>
+              </div>
             </CardHeader>
             <CardBody>
               {currentTab === 1 && (
@@ -126,7 +119,7 @@ const EditEmployeeProfile = () => {
                     toast.success("Employee Profile Updated Successfully!", {
                       position: toast.POSITION.TOP_RIGHT,
                     });
-                    navigate('/profile-management')
+                    navigate("/profile-management");
                   }}
                   isEditMode={false}
                   prevStep={() => {

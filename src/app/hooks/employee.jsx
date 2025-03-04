@@ -24,7 +24,7 @@ import {
 } from "../utils/Types/Employee";
 import { initialState } from "state/slices/UserSlice";
 import { toast } from "react-toastify";
-import { HandleLogout} from "./general";
+import { HandleLogout } from "./general";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -813,12 +813,7 @@ const getEmployeeBankDetailsData = async (baseUrl, employeeid, token) => {
   return EmployeeBankDetails;
 };
 
-const saveEmployeeBankDetailsData = async (
-  baseUrl,
-  employeeid,
-  token,
-  payload
-) => {
+const saveEmployeeBankDetailsData = async (payload, employeeid) => {
   if (employeeid) {
     try {
       await axios
@@ -840,11 +835,9 @@ const saveEmployeeBankDetailsData = async (
 
 const employeeExit = async (payload) => {
   try {
-    const response = await axios.post(`${baseUrl}/employeeExit`, payload, 
-      {
-        headers: formDataHeader(),
-      }
-    );
+    const response = await axios.post(`${baseUrl}/employeeExit`, payload, {
+      headers: formDataHeader(),
+    });
     if (response.status === 201) {
       return true;
     }
@@ -922,16 +915,19 @@ const updateExitData = async (payload) => {
 };
 
 const saveDocumentChecklist = async (payload) => {
-  try{
-    if(payload?.id){
-      const response = await axios.patch(`${baseUrl}/documentchecklist/${payload.id}`, payload, {
-        headers: headers(),
-      });
-      if(response.status === 200){
+  try {
+    if (payload?.id) {
+      const response = await axios.patch(
+        `${baseUrl}/documentchecklist/${payload.id}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
         return response.data;
       }
-    }
-    else{
+    } else {
       const response = await axios.post(
         `${baseUrl}/documentchecklist/`,
         payload,
@@ -939,18 +935,18 @@ const saveDocumentChecklist = async (payload) => {
           headers: headers(),
         }
       );
-      if(response.status === 201){
+      if (response.status === 201) {
         return response.data;
       }
     }
-  }catch(error){
-    if(error?.response?.status === 401){
+  } catch (error) {
+    if (error?.response?.status === 401) {
       HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
-    return false
+    return false;
   }
-}
+};
 
 const getDocumentChecklist = async (employeeid) => {
   try {
@@ -969,7 +965,7 @@ const getDocumentChecklist = async (employeeid) => {
     }
     console.error("Error fetching Personal Info data :", error);
   }
-}
+};
 
 export {
   getDocumentChecklist,
