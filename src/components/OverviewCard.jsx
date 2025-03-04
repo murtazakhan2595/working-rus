@@ -45,7 +45,7 @@ const OverviewCard = React.memo(
         )}
 
         {/* Text Content Section */}
-        <div className="flex flex-col flex-wrap ml-2 whitespace-break-spaces self-center">
+        <div className="flex flex-col flex-wrap ml-2 whitespace-break-spaces self-center justify-start items-start">
           {subtitle && (
             <div className="sm:inline text-xs text-neutral-1100">
               {subtitle}

@@ -12,24 +12,22 @@ import {
   OnGoingApplications,
 } from "../Screens";
 
-const sectionClass =
-  "grid gap-4 grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-2";
 const DashboardHR = [
   {
     type: "div",
-    className: "w-full",
+    className: `w-full`,
     content: <EmployeeOverview />,
     value: "EmployeeOverview",
   },
   {
     type: "div",
-    className: "w-full",
+    className: `w-full`,
     content: <TaskProgress />,
     value: "TaskProgress",
   },
   {
     type: "div",
-    className: "w-full",
+    className: `w-full`,
     content: <RecentActivity />,
     value: "RecentActivity",
   },
@@ -61,26 +59,26 @@ const DashboardHR = [
 
   {
     type: "div",
-    className: "col-span-2",
+    className: `col-span-2`,
     content: <MyTasks />,
     value: "MyTasks",
   },
   {
     type: "div",
-    className: "w-full",
+    className: `w-full`,
     content: <AllProjects />,
     value: "AllProjects",
   },
 
   {
     type: "div",
-    className: "col-span-2",
+    className: `col-span-2`,
     content: <MyLeaves />,
     value: "MyLeaves",
   },
   {
     type: "div",
-    className: "w-full",
+    className: `w-full`,
     content: <MyTeams />,
     value: "MyTeam",
   },
@@ -89,19 +87,19 @@ const DashboardHR = [
 const DashboardManager = [
   {
     type: "div",
-    className: "w-full",
+    className: `w-full`,
     content: <EmployeeOverview />,
     value: "EmployeeOverview",
   },
   {
     type: "div",
-    className: "w-full",
+    className: `w-full`,
     content: <TaskProgress />,
     value: "TaskProgress",
   },
   {
     type: "div",
-    className: "w-full",
+    className: `w-full`,
     content: <RecentActivity />,
     value: "RecentActivity",
   },
@@ -120,7 +118,7 @@ const DashboardManager = [
   },
   {
     type: "div",
-    className: "col-span-2",
+    className: `col-span-2`,
     content: <MyTasks />,
     value: "MyTasks",
   },
@@ -128,13 +126,13 @@ const DashboardManager = [
 const DashboardEmployee = [
   {
     type: "div",
-    className: "col-span-2",
+    className: `col-span-2`,
     content: <MyTasks />,
     value: "MyTasks",
   },
   {
     type: "div",
-    className: "w-full",
+    className: `w-full`,
     content: <AllProjects />,
     value: "AllProjects",
   },
@@ -147,7 +145,7 @@ const DashboardEmployee = [
   },
   {
     type: "div",
-    className: "w-full",
+    className: `w-full`,
     content: <MyTeams />,
     value: "MyTeam",
   },

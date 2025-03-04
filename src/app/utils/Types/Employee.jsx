@@ -9,6 +9,8 @@ const EmployeePersonalInformation = {
   nic: null,
   mother_name: null,
   profile_picture: null,
+  blood_group:null,
+  gender:null,
 };
 const EmployeeContactInformation = {
   emergency_phone_no: null,
@@ -111,10 +113,6 @@ const EmployeeInformation = {
   department_position: null,
   direct_report: null,
   indirect_report: null,
-  // department_manager: null,
-  probation_period: null,
-  probation_start_date: null,
-  probation_end_date: null,
   probation_period: null,
   employee_type: null,
   employee_work_type: null,
@@ -124,6 +122,10 @@ const EmployeeInformation = {
   salary: null,
   salary_type: null,
   shift_assignment: null,
+  blood_group:null,
+  gender:null,
+  contract_start_date :null,
+  contract_end_date :null
 };
 const EmployeeProfessionalExperiance = {
   id: null,

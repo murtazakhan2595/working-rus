@@ -31,6 +31,11 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   if (!values.salary_type && !isEditMode)
     errors.salary_type = "Salary type is required";
   if (!values.salary && !isEditMode) errors.salary = "Salary is required";
+  if(values.active_contract){
+  if (!values.contract_start_date) errors.contract_start_date = "Start date is required";
+  if (!values.contract_end_date) errors.contract_end_date = "End date is required";
+
+  }
   return errors;
 };
 
@@ -67,6 +72,8 @@ const validateEmployeePersonalInfoForm = (values) => {
   if (!values.nic) errors.nic = "ID Card no is required";
   if (!values.father_name) errors.father_name = "Father Name is required";
   if (!values.mother_name) errors.mother_name = "Mother Name is required";
+  if (!values.blood_group) errors.blood_group = "Blood Group is required";
+  if (!values.gender) errors.gender = "Gender is required";
 
   return errors;
 };

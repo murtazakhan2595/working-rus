@@ -70,7 +70,7 @@ const MyLeaves = ({ userProfile }) => {
   useEffect(() => {
     fetchData();
   }, []);
-  
+
   const handleFilterChange = (filterName, filterValue) => {
     setPage(1);
     if (filterName === "status") setSelectedStatus(filterValue);
@@ -101,109 +101,105 @@ const MyLeaves = ({ userProfile }) => {
       return updatedFilters;
     });
   };
- 
-
 
   return (
     <>
-      <Card className="w-full h-full col-span-2">
-        <CardHeader className="items-start pb-0">
-          <CardTitle className="flex flex-row justify-between w-full">
-            <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
-              My Leaves
-            </div>
-            <div className="flex items-center gap-3">
-              <FilterInput
-                filters={[
-                  {
-                    type: "select-one",
-                    option: LeaveTrackerOptions,
-                    name: "status",
-                    width: "max-w-[130px]",
-                    placeholder: "Status",
-                    values: selectedStatus,
-                    value: selectedStatus
-                  },
-                  {
-                    type: "select-two",
-                    width: "max-w-[145px]",
-                    option: leaveTypesData.map((leave) => ({
-                      value: leave.id,
-                      label: leave.name,
-                    })),
-                    name: "leave_component_id",
-                    placeholder: "Leave Type",
-                    values: selectedLeaveType,
-                    value: selectedLeaveType
-                  },
-                ]}
-                onChange={handleFilterChange}
-              />
-              <ApplyLeaveSheet reload={fetchLeaveTransaction} />
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
+      <CardHeader className="items-start pb-0">
+        <CardTitle className="flex flex-row justify-between w-full">
+          <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
+            My Leaves
+          </div>
+          <div className="flex items-center gap-3">
+            <FilterInput
+              filters={[
+                {
+                  type: "select-one",
+                  option: LeaveTrackerOptions,
+                  name: "status",
+                  width: "max-w-[130px]",
+                  placeholder: "Status",
+                  values: selectedStatus,
+                  value: selectedStatus,
+                },
+                {
+                  type: "select-two",
+                  width: "max-w-[145px]",
+                  option: leaveTypesData.map((leave) => ({
+                    value: leave.id,
+                    label: leave.name,
+                  })),
+                  name: "leave_component_id",
+                  placeholder: "Leave Type",
+                  values: selectedLeaveType,
+                  value: selectedLeaveType,
+                },
+              ]}
+              onChange={handleFilterChange}
+            />
+            <ApplyLeaveSheet reload={fetchLeaveTransaction} />
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Leave Type</TableHead>
+              <TableHead>Days</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          {isLeaveTransactionLoading ? (
+            <TableBody>
               <TableRow>
-                <TableHead>Leave Type</TableHead>
-                <TableHead>Days</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Status</TableHead>
+                <TableCell colSpan={4}>
+                  <div className="flex items-center justify-center w-full">
+                    <PageLoader />
+                  </div>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            {isLeaveTransactionLoading ? (
-              <TableBody>
-                <TableRow>
-                  <TableCell colSpan={4}>
-                    <div className="flex items-center justify-center w-full">
-                      <PageLoader />
-                    </div>
+            </TableBody>
+          ) : (
+            <TableBody>
+              {leaveTransaction?.results?.map((leave, index) => (
+                <TableRow key={index} className="cursor-pointer">
+                  <TableCell>{leave?.component_name}</TableCell>
+                  <TableCell>{leave?.leave_request?.no_of_days}</TableCell>
+                  <TableCell>
+                    {`${moment(leave?.leave_request?.start_date).format(
+                      "MMM D"
+                    )} - ${moment(leave?.leave_request?.end_date).format(
+                      "MMM D"
+                    )}`}
                   </TableCell>
-                </TableRow>
-              </TableBody>
-            ) : (
-              <TableBody>
-                {leaveTransaction?.results?.map((leave, index) => (
-                  <TableRow key={index} className="cursor-pointer">
-                    <TableCell>{leave?.component_name}</TableCell>
-                    <TableCell>{leave?.leave_request?.no_of_days}</TableCell>
-                    <TableCell>
-                      {`${moment(leave?.leave_request?.start_date).format(
-                        "MMM D"
-                      )} - ${moment(leave?.leave_request?.end_date).format(
-                        "MMM D"
-                      )}`}
-                    </TableCell>
-                    <TableCell>
-                      <span
-                        className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
-                          leave?.action_hr === "Approved" &&
-                          leave?.action_manager === "Approved"
-                            ? "bg-emerald-50 text-teal-700"
-                            : leave?.action_hr === "Declined" ||
-                              leave?.action_manager === "Declined"
-                            ? "bg-red-50 text-red-700"
-                            : "bg-[#f0f0f3] text-[#7f838d]"
-                        }`}
-                      >
-                        {leave?.action_hr === "Approved" &&
+                  <TableCell>
+                    <span
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
+                        leave?.action_hr === "Approved" &&
                         leave?.action_manager === "Approved"
-                          ? "Approved"
+                          ? "bg-emerald-50 text-teal-700"
                           : leave?.action_hr === "Declined" ||
                             leave?.action_manager === "Declined"
-                          ? "Declined"
-                          : "Pending"}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            )}
-          </Table>
-        </CardContent>
-      </Card>
+                          ? "bg-red-50 text-red-700"
+                          : "bg-[#f0f0f3] text-[#7f838d]"
+                      }`}
+                    >
+                      {leave?.action_hr === "Approved" &&
+                      leave?.action_manager === "Approved"
+                        ? "Approved"
+                        : leave?.action_hr === "Declined" ||
+                          leave?.action_manager === "Declined"
+                        ? "Declined"
+                        : "Pending"}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          )}
+        </Table>
+      </CardContent>
     </>
   );
 };

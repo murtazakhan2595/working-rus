@@ -6,7 +6,13 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "../../../../src/@/components/ui/chart";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../../../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../../../../components/ui/card";
 import { Button } from "components/ui/button";
 import { getAllProjects } from "app/hooks/taskManagment";
 
@@ -61,7 +67,9 @@ export default function Component() {
   };
 
   const statusCounts = data?.reduce((acc, project) => {
-    const statusKey = project?.status ? project?.status.toLowerCase() : "on_going";
+    const statusKey = project?.status
+      ? project?.status.toLowerCase()
+      : "on_going";
     if (!acc[statusKey]) {
       acc[statusKey] = 1;
     } else {
@@ -92,7 +100,7 @@ export default function Component() {
   };
 
   return (
-    <Card className="flex flex-col min-h-[442px]">
+    <>
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
           <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg ">
@@ -103,13 +111,20 @@ export default function Component() {
           </Button>
         </CardTitle>
       </CardHeader>
-      <CardContent className={`flex-1 pb-0 ${data?.length === 0 && 'flex justify-center items-center'}`}>
+      <CardContent
+        className={`flex-1 pb-0 ${
+          data?.length === 0 && "flex justify-center items-center"
+        }`}
+      >
         {loading ? (
           <div className="flex items-center justify-center h-full text-gray-600">
             Loading...
           </div>
         ) : data.length > 0 ? (
-          <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-[250px]"
+          >
             <PieChart>
               <ChartTooltip
                 cursor={false}
@@ -142,7 +157,13 @@ export default function Component() {
                   <Cell
                     key={`cell-${index}`}
                     fill={entry.fill}
-                    opacity={activeStatus ? (entry.status === activeStatus ? 1 : 0.5) : 1}
+                    opacity={
+                      activeStatus
+                        ? entry.status === activeStatus
+                          ? 1
+                          : 0.5
+                        : 1
+                    }
                   />
                 ))}
                 <Label
@@ -155,10 +176,18 @@ export default function Component() {
                           textAnchor="middle"
                           dominantBaseline="middle"
                         >
-                          <tspan x={viewBox.cx} y={viewBox.cy} className="text-3xl font-bold fill-foreground">
+                          <tspan
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            className="text-3xl font-bold fill-foreground"
+                          >
                             {data?.length}
                           </tspan>
-                          <tspan x={viewBox.cx} y={(viewBox.cy || 0) + 24} className="fill-muted-foreground">
+                          <tspan
+                            x={viewBox.cx}
+                            y={(viewBox.cy || 0) + 24}
+                            className="fill-muted-foreground"
+                          >
                             Total
                           </tspan>
                         </text>
@@ -179,7 +208,8 @@ export default function Component() {
         <div className="space-x-4 xl:flex">
           {Object.values(chartConfig).map((item, index) => {
             const statusData = chartData.find(
-              (data) => data.status === item.label.toLowerCase().replace(" ", "_")
+              (data) =>
+                data.status === item.label.toLowerCase().replace(" ", "_")
             );
             const count = statusData?.count || 0;
             const status = item.label.toLowerCase().replace(" ", "_");
@@ -204,6 +234,6 @@ export default function Component() {
           })}
         </div>
       </CardFooter>
-    </Card>
+    </>
   );
 }

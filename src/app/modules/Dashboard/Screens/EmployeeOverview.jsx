@@ -80,9 +80,8 @@ export default function Component() {
   ];
 
   const totalEmployees = Number(chartData[0].active + chartData[0].offboarding);
-console.log(userProfile);
   return (
-    <Card className="flex flex-col min-h-[442px]">
+    <>
       <CardHeader className="items-start pb-0">
         <CardTitle className="flex flex-row justify-between w-full">
           <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
@@ -196,6 +195,6 @@ console.log(userProfile);
           ))}
         </div>
       </CardFooter>
-    </Card>
+    </>
   );
 }

@@ -4,26 +4,20 @@ import { Label } from "src/@/components/ui/label";
 import DatePicker from "react-datepicker";
 import { cn } from "src/@/lib/utils";
 import moment from "moment";
-import { Card } from "components/ui/card";
-import ReactQuill from "react-quill";
 import { Input } from "components/ui/input";
 import { Button } from "components/ui/button";
-import { useSelector } from "react-redux";
-import { Calendar as LucideCalendar } from "lucide-react";
-import { AiOutlinePaperClip } from "react-icons/ai";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "src/@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "src/@/components/ui/radio-group";
-import AttachmentUI from "components/ui/AttachmentUI";
+import TextInput from "components/FormControl/TextInput";
+import PasswordInput from "components/FormControl/PasswordInput";
 import CoverFileUpload from "components/FormControl/UploadFiles";
 import {
   ChevronsUpDown,
   Check,
-  FileUp,
-  CircleX,
   SearchIcon,
 } from "lucide-react";
 import {
@@ -36,7 +30,6 @@ import {
 } from "src/@/components/ui/command";
 import { format, parse, isValid } from "date-fns";
 import { Calendar } from "src/@/components/ui/calendar";
-import { PatternFormat } from "react-number-format";
 import TextEditorInputField from "./TextEditorInputField";
 import CommentsInputField from "./CommentsInputField";
 import DateRangeFilter from "./DateRangeFilter";
@@ -195,59 +188,6 @@ const RadioGroupInput = ({
     </div>
   );
 };
-const TextInput = ({
-  name,
-  value,
-  error,
-  touch,
-  onChange,
-  label,
-  disabled,
-  onBlur,
-  required,
-  regEx,
-  maxLength,
-  placeholder,
-  autoComplete = "off",
-}) => {
-  return (
-    <div className="flex flex-col gap-4">
-      {label && (
-        <Label htmlFor={name}>
-          {required && <span className="text-red-600">* </span>}
-          {label}
-        </Label>
-      )}
-      <Input
-        type="text"
-        maxLength={maxLength ?? "100"}
-        id={name}
-        name={name}
-        autoComplete={autoComplete} // Use "off" for no autocomplete or specify a valid autocomplete token like "name", "email", etc.
-        placeholder={placeholder || (label ? `Enter ${label}` : "Enter value")}
-        value={value ?? ""}
-        disabled={disabled}
-        className={error && touch ? "is-invalid" : "text-neutral-1000"}
-        onChange={(event) => {
-          const inputValue = event.target.value;
-          if (regEx) {
-            if (!inputValue || regEx.test(inputValue)) {
-              onChange(name, inputValue);
-            }
-          } else {
-            onChange(name, inputValue);
-          }
-        }}
-        onBlur={(event) => {
-          if (onBlur) {
-            onBlur(event);
-          }
-        }}
-      />
-      {error && touch && <div className={errorClassName}>{error}</div>}
-    </div>
-  );
-};
 
 const NumberInput = ({
   name,
@@ -314,41 +254,6 @@ const NumberInput = ({
         {error && touch && <div className={errorClassName}>{error}</div>}
       </div>
     </>
-  );
-};
-
-const PasswordInput = ({
-  name,
-  value,
-  error,
-  touch,
-  onChange,
-  label,
-  disabled,
-  required,
-  maxLength,
-}) => {
-  return (
-    <div className="flex flex-col gap-4">
-      <Label htmlFor={name}>
-        {label}
-        {label}
-        {required && <span className="text-red-600">* </span>}
-      </Label>
-      <Input
-        type="password"
-        maxLength={maxLength || 20}
-        id={name}
-        name={name}
-        autoComplete="off"
-        placeholder={`Enter ${label}`}
-        value={value ?? ""}
-        disabled={disabled}
-        className={error && touch ? "is-invalid" : ""}
-        onChange={onChange}
-      />
-      {error && touch && <div className={errorClassName}>{error}</div>}
-    </div>
   );
 };
 

@@ -23,7 +23,8 @@ import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
 import { validationEmployeeInfoFormSchema } from "app/utils/FormSchema/employeeFormSchema";
 
 import {
-  // HeadOfDepartmentOptions,
+  GenderOptions,
+  BloodGroupOptions,
   employeeStatus,
   jobRoles,
   workplaceTypes,
@@ -31,6 +32,7 @@ import {
   countriesCallingCodes,
   countriesList,
   salaryTypeOptions,
+  probationPeriodOptions,
 } from "data/Data";
 import { format } from "date-fns";
 
@@ -50,6 +52,7 @@ import {
   SelectMultiInputComponent,
   DateInput,
   CheckBoxInput,
+  PasswordInput,
 } from "components/FormControl";
 
 import { getEmployeeid } from "utils/getValuesFromTables";
@@ -382,42 +385,20 @@ const SheetOnBorading = ({
                           />
                         </div>
                         <div className="space-y-2">
-                          <div className="flex flex-col gap-4">
-                            <Label
-                              htmlFor="password"
-                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-baseGray"
-                            >
-                              <span className="text-red-600">* </span>Password
-                            </Label>
-                            <Input
-                              type="password"
-                              maxLength="20"
-                              id="password"
-                              name="password"
-                              autoComplete="new-password"
-                              placeholder={"Enter Password"}
-                              onChange={(option) => {
-                                props.handleChange("password")(option);
-                              }}
-                              value={
-                                props.values?.password?.length <= 20
-                                  ? props.values?.password
-                                  : ""
-                              }
-                              className={
-                                props.errors?.password &&
-                                props.touched?.password
-                                  ? "is-invalid"
-                                  : ""
-                              }
-                            />
-                            {props.errors?.password &&
-                              props.touched?.password && (
-                                <div className="text-red-600 invalid-feedback">
-                                  {props.errors?.password}
-                                </div>
-                              )}
-                          </div>
+                          <PasswordInput
+                            name={"password"}
+                            error={props.errors?.password}
+                            touch={props.touched?.password}
+                            value={props.values?.password}
+                            placeholder={"Enter Password"}
+                            label={"Password"}
+                            maxLength="20"
+                            required={true}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                          
                         </div>
                         <div className="space-y-2">
                           <PhoneNumberInput
@@ -435,6 +416,35 @@ const SheetOnBorading = ({
                             countryOptions={countriesCallingCodes} // Pass the country options here
                           />
                         </div>
+                        <div className="space-y-2">
+                          <SelectInputComponent
+                            name={"blood_group"}
+                            options={BloodGroupOptions}
+                            error={props.errors?.blood_group}
+                            touch={props.touched.blood_group}
+                            value={props.values.blood_group}
+                            required={false}
+                            label={"Blood Group"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectInputComponent
+                            name={"gender"}
+                            options={GenderOptions}
+                            error={props.errors?.gender}
+                            touch={props.touched.gender}
+                            value={props.values.gender}
+                            required={false}
+                            label={"Gender"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </div>
+
                         <div className="col-span-1 space-y-2 xl:col-span-3 lg:col-span-2 md:col-span-2">
                           <TextAreaInput
                             name={"residential_address"}
@@ -581,20 +591,7 @@ const SheetOnBorading = ({
                             }}
                           />
                         </div>
-                        {/* <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"department_manager"}
-                            options={HeadOfDepartmentOptions}
-                            error={props.errors?.department_manager}
-                            touch={props.touched.department_manager}
-                            value={props.values.department_manager}
-                            required={true}
-                            label={"Department Head"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div> */}
+
                         <div className="space-y-2">
                           <DateInput
                             name={"joining_date"}
@@ -611,6 +608,50 @@ const SheetOnBorading = ({
                         <div className="col-span-1 xl:col-span-2 lg:col-span-1 md:col-span-1">
                           <ProbationDateRange formikProps={props} />
                         </div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
+                        <div className="space-y-2">
+                          <CheckBoxInput
+                            label="Contract Employment"
+                            name="active_contract"
+                            value={props.values.active_contract}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </div>
+                        {props.values.active_contract && (
+                          <>
+                            <div className="space-y-2">
+                              <DateInput
+                                name={"contract_start_date "}
+                                error={props.errors?.contract_start_date}
+                                touch={props.touched?.contract_start_date}
+                                value={props.values?.contract_start_date}
+                                required={true}
+                                label={"Contract Start Date"}
+                                onChange={(field, value) => {
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <DateInput
+                                name={"contract_end_date "}
+                                error={props.errors?.contract_end_date}
+                                touch={props.touched?.contract_end_date}
+                                value={props.values?.contract_end_date}
+                                required={true}
+                                label={"Contract End Date"}
+                                onChange={(field, value) => {
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                     <div className="space-y-4">
