@@ -14,13 +14,15 @@ import {
   countriesCallingCodes,
   countriesList,
   maritalStatus,
-} from "../../../../../data/Data.js";
+  GenderOptions,
+  BloodGroupOptions,
+} from "data/Data.js";
 import {
   getEmployeePersonalInfoData,
   saveEmployeePersonalInfoData,
 } from "../../../../hooks/employee";
-import { validateEmployeePersonalInfoForm } from "../../../../utils/FormSchema/employeeFormSchema";
-import { getPersonalInfo } from "../../../../utils/MappingObjects/mapEmployeeData.jsx";
+import { validateEmployeePersonalInfoForm } from "app/utils/FormSchema/employeeFormSchema";
+import { mapEmployeePersonalInformationPayloadData } from "app/utils/MappingObjects/mapEmployeeData.jsx";
 import { Button } from "../../../../../components/ui/button";
 import { Card, CardContent, CardFooter } from "components/ui/card";
 
@@ -50,25 +52,10 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
 
   const handleSubmit = async (data) => {
     // Prepare personal information from data
-    const personalInformation = getPersonalInfo(data);
-
-    // Create a FormData object
-    const formData = new FormData();
-
-    // Append each field in personalInformation to FormData
-    Object.entries(personalInformation).forEach(([key, value]) => {
-      if (key === "profile_picture") {
-        if (value instanceof File)
-          // Handle file fields
-          formData.append(key, value);
-      } else {
-        // Handle non-file fields
-        formData.append(key, value);
-      }
-    });
+    const payload = mapEmployeePersonalInformationPayloadData(data);
     try {
       // Call the API with FormData
-      const response = await saveEmployeePersonalInfoData(employeeId, formData);
+      const response = await saveEmployeePersonalInfoData(employeeId, payload);
       if (response) {
         // Proceed to the next step
         nextstep();
@@ -118,7 +105,7 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                             value={props.values.profile_picture}
                             label={"Your Photo"}
                             required={true}
-                            onChange={(field, value,error) => {
+                            onChange={(field, value, error) => {
                               props.setFieldValue(field, value);
                               setImageError(error);
                             }}
@@ -270,6 +257,34 @@ const PersonalInfo = ({ nextstep, baseUrl, token, employeeId, isEditMode }) => {
                               touch={props.touched.marital_status}
                               value={props.values.marital_status}
                               label={"Martial Status"}
+                              onChange={(field, value) => {
+                                props.setFieldValue(field, value);
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <SelectInputComponent
+                              name={"blood_group"}
+                              options={BloodGroupOptions}
+                              error={props.errors?.blood_group}
+                              touch={props.touched.blood_group}
+                              value={props.values.blood_group}
+                              required={true}
+                              label={"Blood Group"}
+                              onChange={(field, value) => {
+                                props.setFieldValue(field, value);
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <SelectInputComponent
+                              name={"gender"}
+                              options={GenderOptions}
+                              error={props.errors?.gender}
+                              touch={props.touched.gender}
+                              value={props.values.gender}
+                              required={true}
+                              label={"Gender"}
                               onChange={(field, value) => {
                                 props.setFieldValue(field, value);
                               }}

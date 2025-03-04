@@ -8,9 +8,9 @@ import {
   EmployeeBankDetails,
   EmployeeCertifiation,
   EmployeeInformation,
-} from "../Types/Employee";
+  EmployeePersonalInformation,
+} from "app/utils/Types/Employee";
 import moment from "moment";
-import { getManagersList } from "app/hooks/general";
 import { getManagerSelected } from "data/Data";
 
 export function mapEmployeePayloadData(data) {
@@ -28,6 +28,30 @@ export function mapEmployeePayloadData(data) {
   // Return the constructed payload
   return payload;
 }
+
+export function mapEmployeePersonalInformationPayloadData(data) {
+  // Initialize an empty payload object
+  const formData = new FormData();
+  // Iterate over the keys in the Task object
+  for (const key in EmployeePersonalInformation) {
+    // Check if the key exists in the data object
+    if (data.hasOwnProperty(key) && data[key]) {
+      // Add the key and its value to the payload
+      if (key === "profile_picture") {
+        if (data[key] instanceof File)
+          // Handle file fields
+          formData.append(key, data[key]);
+      } else {
+        // Handle non-file fields
+        formData.append(key, data[key]);
+      }
+    }
+  }
+
+  // Return the constructed payload
+  return formData;
+}
+
 export function mapEmployeeBankDetailPayloadData(data) {
   // Initialize an empty payload object
   const payload = {};
@@ -83,7 +107,6 @@ function getContactInfo(data) {
     emergency_phone_no: data.emergency_phone_no,
     emergency_first_name: data.emergency_first_name,
     emergency_relation: data.emergency_relation,
-    emergency_country_code: data.emergency_country_code,
     current_address: data.current_address,
     residential_address: data.residential_address,
   };

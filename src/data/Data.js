@@ -130,7 +130,21 @@ export const workTypeOptions = [
   { value: "Mid_Senior", label: "Mid Senior Level" },
   { value: "Senior_Level", label: "Senior Level" },
 ];
+export const GenderOptions = [
+  { value: "MALE", label: "Male" },
+  { value: "FEMALE", label: "Female" },
+];
 
+export const BloodGroupOptions = [
+  { value: "A+", label: "A+" },
+  { value: "A-", label: "A-" },
+  { value: "B+", label: "B+" },
+  { value: "B-", label: "B-" },
+  { value: "AB+", label: "AB+" },
+  { value: "AB-", label: "AB-" },
+  { value: "O+", label: "O+" },
+  { value: "O-", label: "O-" },
+];
 export const employeeTypeOptions = [
   { value: "Internees", label: "Intern" },
   { value: "Part_Tiime", label: "Part Time" },
