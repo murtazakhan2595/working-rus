@@ -13,7 +13,8 @@ import Experience from "../Sections/ExperianceForm.jsx";
 import { validationEmployeeExperienceFormSchema } from "app/utils/FormSchema/employeeFormSchema.jsx";
 import { CircleX, X } from "lucide-react";
 import { Button } from "../../../../../components/ui/button.jsx";
-import { Card, CardContent } from "components/ui/card.jsx";
+import { Card, CardContent, CardFooter } from "components/ui/card.jsx";
+import ProfileFormFooter from "app/modules/Employees/Screens/Sections/ProfileFormFooter";
 
 const ExperienceInformation = ({
   nextstep,
@@ -26,6 +27,7 @@ const ExperienceInformation = ({
   const formRef = React.createRef();
   const [experiences, setExperiences] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isEdited, setIsEdited] = useState(false);
 
   useEffect(() => {
     getEmployeeProfessionalExperianceData(employeeId)
@@ -91,106 +93,103 @@ const ExperienceInformation = ({
                   <CardContent>
                     <div>
                       {props.values?.experiences &&
-                    props.values.experiences.length > 0 &&
-                    props.values.experiences.map((experience, index) => (
-                      <React.Fragment key={index}>
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <h5 className="text-base mb-2">
-                               {index===0?`Current Experience`:`Add Experience ${index + 1}`}
-                              </h5>
+                        props.values.experiences.length > 0 &&
+                        props.values.experiences.map((experience, index) => (
+                          <React.Fragment key={index} >
+                            <div className="space-y-4 my-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <h5 className="text-base mb-2">
+                                    {index === 0
+                                      ? `Current Experience`
+                                      : `Add Experience ${index + 1}`}
+                                  </h5>
+                                </div>
+                                <div className="flex justify-end space-y-2">
+                                  {index !== 0 && (
+                                    <CircleX
+                                      className="justify-end text-red-600 cursor-pointer "
+                                      onClick={() =>
+                                        handleDelete(
+                                          experience.id,
+                                          index,
+                                          props
+                                        )
+                                      }
+                                    />
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                            <div className="flex justify-end space-y-2">
-                              {index!==0&&<CircleX
-                                className="justify-end text-red-600 cursor-pointer "
-                                onClick={() =>
-                                  handleDelete(experience.id, index, props)
+
+                            <Experience
+                              values={experience}
+                              errors={
+                                props.errors?.experiences
+                                  ? props.errors?.experiences[index]
+                                  : {}
+                              }
+                              isCurrentExperience={index === 0}
+                              touched={
+                                props.touched?.experiences
+                                  ? props.touched?.experiences[index]
+                                  : {}
+                              }
+                              onChange={(field, value) => {
+                                experience[field] = value;
+                                if (field === "disableEndDate" && value) {
+                                  experience.exp_end_date = null;
                                 }
-                              />}
-                            </div>
-                          </div>
+                                props.setFieldValue(
+                                  `experiences[${index}]`,
+                                  experience
+                                );
+                                setIsEdited(true);
+                              }}
+                            />
+                          </React.Fragment>
+                        ))}
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="my-4 space-y-2">
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              const length = props.values?.experiences?.length;
+                              const index = length ? length : 0;
+                              props.setFieldValue(`experiences[${index}]`, {
+                                employee_id: null,
+                                exp_organization: null,
+                                exp_designation: null,
+                                exp_discription: null,
+                                exp_letter: null,
+                                exp_start_date: null,
+                                exp_end_date: null,
+                                disableEndDate: false,
+                              });
+                              setIsEdited(true);
+
+                            }}
+                          >
+                            + Add Another Experience
+                          </Button>
                         </div>
-
-                        <Experience
-                          values={experience}
-                          errors={
-                            props.errors?.experiences
-                              ? props.errors?.experiences[index]
-                              : {}
-                          }
-                          isCurrentExperience={index===0}
-                          touched={
-                            props.touched?.experiences
-                              ? props.touched?.experiences[index]
-                              : {}
-                          }
-                          onChange={(field, value) => {
-                            experience[field] = value;
-                            if (field === "disableEndDate" && value) {
-                              experience.exp_end_date = null;
-                            }
-                            props.setFieldValue(
-                              `experiences[${index}]`,
-                              experience
-                            );
-                          }}
-                        />
-                      </React.Fragment>
-                    ))}
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="mb-4 space-y-2 ">
-                      <Button>
-                        <Link
-                          onClick={() => {
-                            const length = props.values?.experiences?.length;
-                            const index = length ? length : 0;
-                            props.setFieldValue(`experiences[${index}]`, {
-                              employee_id: null,
-                              exp_organization: null,
-                              exp_designation: null,
-                              exp_discription: null,
-                              exp_letter: null,
-                              exp_start_date: null,
-                              exp_end_date: null,
-                              disableEndDate: false,
-                            });
-                          }}
-                        >
-                          + Add Another Experience
-                        </Link>
-                      </Button>
+                      </div>
                     </div>
-                  </div>
-                </div>
-
-                <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50">
-                  <div className="flex justify-end space-x-4">
-                    {!isEditMode && (
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={() => {
-                          prevStep();
-                        }}
-                      >
-                        Back
-                      </Button>
-                    )}
-                    <Button
-                      type="submit"
-                      size="lg"
-                      variant="default"
-                      onClick={() => {
+                  </CardContent>
+                  <CardFooter>
+                    <ProfileFormFooter
+                      nextstep={nextstep}
+                      handleSubmit={() => {
                         props.handleSubmit();
                       }}
-                    >
-                      {isEditMode ? "Save" : "Next"}
-                    </Button>
-                  </div>
-                  </div>
-                </CardContent>
-              </Card>
+                      prevStep={prevStep}
+                      isEditMode={isEditMode}
+                      isEdited={isEdited}
+                      enableBackButton={true}
+                    />
+                  </CardFooter>
+                </Card>
               </form>
             )}
           </Formik>

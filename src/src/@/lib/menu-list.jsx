@@ -44,7 +44,7 @@ import Config from "constants/config";
 export function getMenuList(pathname, userRole) {
   const userRolesMap = {
     isPeopleTeam: userRole === 1 || userRole === 3 || userRole === 2,
-    isOfficeSetting: userRole === 1,
+    isOfficeSetting: userRole === 1 || userRole === 3,
     isSelfServiceHub:
       userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
     isPayroll: userRole === 1 || userRole === 2 || userRole === 3,
