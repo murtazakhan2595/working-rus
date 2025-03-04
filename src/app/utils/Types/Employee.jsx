@@ -51,8 +51,6 @@ const EmployeeCVDetails = {
   existingCVId: null,
 };
 
-
-
 const EmployeeAcademicRecord = {
   id: null,
   employee_id: null,
@@ -98,32 +96,35 @@ const EmployeeBankDetails = {
   swift_code: null,
 };
 const EmployeeInformation = {
-  serial_number:null,
-    username: null,
-    first_name: null,
-    last_name: null,
-    work_email: null,
-    password: null,
-    mobile_no: null,
-    user_role: null,
-    residential_address:null,
-    department_name: null,
-    country_code:null,
-    organization:null,
-    department_position: null,
-    direct_report: null,
-    indirect_report: null,
-    // department_manager: null,
-    probation_period: null,
-    employee_type: null,
-    employee_work_type: null,
-    employee_location: null,
-    employee_status: null,
-    joining_date: null,
-    salary: null,
-    salary_type: null,
-    shift_assignment: null,
-}
+  serial_number: null,
+  username: null,
+  first_name: null,
+  last_name: null,
+  work_email: null,
+  password: null,
+  mobile_no: null,
+  user_role: null,
+  residential_address: null,
+  department_name: null,
+  country_code: null,
+  organization: null,
+  department_position: null,
+  direct_report: null,
+  indirect_report: null,
+  // department_manager: null,
+  probation_period: null,
+  probation_start_date: null,
+  probation_end_date: null,
+  probation_period: null,
+  employee_type: null,
+  employee_work_type: null,
+  employee_location: null,
+  employee_status: null,
+  joining_date: null,
+  salary: null,
+  salary_type: null,
+  shift_assignment: null,
+};
 const EmployeeProfessionalExperiance = {
   id: null,
   employee_id: null,
@@ -134,7 +135,7 @@ const EmployeeProfessionalExperiance = {
   exp_start_date: null,
   exp_end_date: null,
   disableEndDate: false,
-  resume:null,
+  resume: null,
 };
 const Employee = {
   id: null,
@@ -160,7 +161,6 @@ const Employee = {
   certifications: EmployeeCertifiation,
 };
 
-
 export {
   Employee,
   EmployeePersonalInformation,
@@ -172,5 +172,5 @@ export {
   EmployeeBankDetails,
   EmployeeCertifiation,
   EmployeeInformation,
-  EmployeeContactInformation
+  EmployeeContactInformation,
 };
