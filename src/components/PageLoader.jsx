@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../index.css"; // Ensure this path is correct and necessary
 
-const PageLoader = () => {
+const PageLoader = ({ height = "full" }) => {
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
@@ -14,7 +14,9 @@ const PageLoader = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-center h-auto">
+    <div
+      className={`flex items-center justify-center h-full max-h-[${height}]`}
+    >
       <div className="text-center">
         <svg
           className={isActive ? "active" : ""}

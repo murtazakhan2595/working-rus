@@ -1,6 +1,6 @@
 import React from "react";
 import { Input } from "components/ui/input";
-import { FormField } from "components/FormControl";
+import { FormField, InvalidInput } from "components/FormControl";
 const PasswordInput = React.memo(
   ({
     name,
@@ -36,7 +36,7 @@ const PasswordInput = React.memo(
           placeholder={placeholder || `Enter ${label || "value"}`}
           value={value ?? ""}
           disabled={disabled}
-          className={error && touch ? "is-invalid" : ""}
+          className={error && touch ? InvalidInput : ""}
           onChange={onChange}
           onBlur={(event) => {
             if (onBlur) {

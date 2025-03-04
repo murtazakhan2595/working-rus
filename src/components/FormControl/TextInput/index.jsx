@@ -1,6 +1,6 @@
 import React from "react";
 import { Input } from "components/ui/input";
-import { FormField } from "components/FormControl";
+import { FormField,InvalidInput } from "components/FormControl";
 
 const TextInput = React.memo(
   ({
@@ -38,7 +38,7 @@ const TextInput = React.memo(
           placeholder={placeholder || `Enter ${label || "value"}`}
           value={value ?? ""}
           disabled={disabled}
-          className={error && touch ? "is-invalid" : "text-neutral-1000"}
+          className={error && touch ? InvalidInput : "text-neutral-1000"}
           onChange={(event) => {
             const inputValue = event.target.value;
             if (regEx) {

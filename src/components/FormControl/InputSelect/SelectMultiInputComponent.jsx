@@ -74,6 +74,7 @@ const SelectMultiInputComponent = React.memo(
           open={isOpen}
           setOpen={setIsOpen}
           disabled={disabled}
+          invalidField={!!(error && touch)}
           triggerContent={
             <div className="flex justify-start w-full gap-2 items-center">
               <FormFieldIcon icon={icon} />

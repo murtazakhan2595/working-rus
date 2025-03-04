@@ -15,11 +15,7 @@ import { RadioGroup, RadioGroupItem } from "src/@/components/ui/radio-group";
 import TextInput from "components/FormControl/TextInput";
 import PasswordInput from "components/FormControl/PasswordInput";
 import CoverFileUpload from "components/FormControl/UploadFiles";
-import {
-  ChevronsUpDown,
-  Check,
-  SearchIcon,
-} from "lucide-react";
+import { ChevronsUpDown, Check, SearchIcon } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -43,10 +39,11 @@ import ImageInput from "components/FormControl/UploadFiles/ImageInput";
 import ColorInput from "./ColorInput";
 import DateInput from "./DateInput";
 
-const errorClassName = "text-red-800 text-sm font-[inter] font-normal ml-1";
+const errorClassName = "text-red-800 text-xs font-[inter] font-normal ml-1";
 export const inputButtonClassName =
   "inline-flex items-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-white text-primary  dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-fit px-4 py-2 flex-wrap justify-between w-full rounded-sm border-neutral-500 hover:border-primary-200 hover:text-primary-1100 hover:bg-primary-200 hover:shadow-none";
 
+export const InvalidInput = "border-red-800";
 // General FormField Component
 export const FormField = memo(
   forwardRef(
@@ -95,6 +92,7 @@ export const FormPopoverButton = memo(
         open,
         setOpen,
         disabled = false,
+        invalidField = false,
       },
       ref
     ) => {
@@ -106,7 +104,11 @@ export const FormPopoverButton = memo(
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className={cn(inputButtonClassName, className)}
+              className={cn(
+                inputButtonClassName,
+                className,
+                invalidField ? InvalidInput : ""
+              )}
               disabled={disabled}
             >
               {triggerContent}
