@@ -19,42 +19,19 @@ const WorkInformation = ({
   getDataByHooks,
 }) => {
   const workInformation = [
-    {
-      title: "Department",
-      data: <DepartmentName value={userData?.department_name} />,
-    },
-
-    {
-      title: "Position",
-      data: <DesignationName value={userData?.department_position} />,
-    },
+    { title: "Department", data: <DepartmentName value={userData?.department_name} /> },
+    { title: "Position", data: <DesignationName value={userData?.department_position} /> },
     { title: "Work Email", data: userData?.work_email },
     { title: "Employee Type", data: userData?.employee_type },
-
     { title: "Employee Status", data: userData?.employee_status },
     { title: "Work Type", data: getWorkPlaceType(userData?.employee_work_type) },
-    {
-      title: "Work Location",
-      data: getCountryFullName(userData?.employee_location),
-    },
-    {
-      title: "Direct Report To",
-      data: <ManagerName value={userData?.direct_report} />,
-    },
-    {
-      title: "Joining Date",
-      data: renderDate(userData?.joining_date),
-    },
-    ...(userData?.contract_start_date && [{
-      title: "Contract Start Date",
-      data: renderDate(userData?.contract_start_date),
-    }]),
-    ...(userData?.contract_end_date && [{
-      title: "Contract End Date",
-      data: renderDate(userData?.contract_end_date),
-    }]),
-    
-  ];
+    { title: "Work Location", data: getCountryFullName(userData?.employee_location) },
+    { title: "Direct Report To", data: <ManagerName value={userData?.direct_report} /> },
+    { title: "Joining Date", data: renderDate(userData?.joining_date) },
+    ...(userData?.contract_start_date ? [{ title: "Contract Start Date", data: renderDate(userData?.contract_start_date) }] : []),
+    ...(userData?.contract_end_date ? [{ title: "Contract End Date", data: renderDate(userData?.contract_end_date) }] : []),
+  ].filter(Boolean); // Removes any undefined or falsy values
+  
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <>
