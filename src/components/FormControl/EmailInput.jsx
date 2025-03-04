@@ -1,7 +1,10 @@
 import React from "react";
 import { Input } from "components/ui/input";
 import { FormField, InvalidInput } from "components/FormControl";
-const PasswordInput = React.memo(
+
+
+const RegExEmail = /^[A-Za-z0-9.@]+$/;
+const EmailInput = React.memo(
   ({
     name,
     value,
@@ -9,12 +12,9 @@ const PasswordInput = React.memo(
     touch,
     onChange,
     label,
-    disabled,
-    onBlur,
-    required,
-    regEx,
-    maxLength,
     placeholder,
+    disabled,
+    required,
     className = "w-full", // Custom styling
   }) => {
     return (
@@ -28,33 +28,22 @@ const PasswordInput = React.memo(
         disabled={disabled}
       >
         <Input
-          type="password"
-          maxLength={maxLength || 20}
+          type="email"
+          maxLength="100"
           id={name}
           name={name}
           autoComplete="new-password"
           placeholder={placeholder || `Enter ${label || "value"}`}
-          value={value ?? ""}
+          value={value || ""}
           disabled={disabled}
           className={error && touch ? InvalidInput : ""}
-          onChange={(event) => {
-            const inputValue = event.target.value;
-            if (regEx) {
-              if (!inputValue || regEx.test(inputValue)) {
-                onChange(name, inputValue);
-              }
-            } else {
-              onChange(name, inputValue);
-            }
-          }}
-          onBlur={(event) => {
-            if (onBlur) {
-              onBlur(event);
-            }
+          onChange={(option) => {
+            const value = option.target.value;
+            if (!value || RegExEmail.test(value)) onChange(name, value);
           }}
         />
       </FormField>
     );
   }
 );
-export default PasswordInput;
+export default EmailInput;

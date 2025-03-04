@@ -36,6 +36,7 @@ import {
   SelectInputComponent,
 } from "components/FormControl/InputSelect";
 import ImageInput from "components/FormControl/UploadFiles/ImageInput";
+import EmailInput from "components/FormControl/EmailInput";
 import ColorInput from "./ColorInput";
 import DateInput from "./DateInput";
 
@@ -421,43 +422,6 @@ const PhoneNumberInput = ({
           />
         </div>
       </div>
-      {error && touch && <div className={errorClassName}>{error}</div>}
-    </div>
-  );
-};
-
-const EmailInput = ({
-  name,
-  value,
-  error,
-  touch,
-  onChange,
-  label,
-  disabled,
-  required,
-}) => {
-  return (
-    <div className="flex flex-col gap-4">
-      <Label className="text-baseGray" htmlFor={name}>
-        {required && <span className="text-red-600">* </span>}
-        {label}
-      </Label>
-      <Input
-        type="email"
-        maxLength="100"
-        id={name}
-        name={name}
-        autoComplete="Off"
-        placeholder={"Enter " + label}
-        value={value}
-        className={error && touch ? "is-invalid" : ""}
-        onChange={(option) => {
-          const regExTelephone = /^[A-Za-z0-9.@]+$/;
-          const value = option.target.value;
-          if (!value || regExTelephone.test(value)) onChange(name, value);
-        }}
-      />
-
       {error && touch && <div className={errorClassName}>{error}</div>}
     </div>
   );

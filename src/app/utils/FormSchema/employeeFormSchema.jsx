@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { EMAIL_REGEX } from "app/utils/Types/ValidationPattern";
 
 const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   const errors = {};
@@ -10,6 +11,8 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     if (!values.mobile_no) errors.mobile_no = "Phone number is required";
     if (!values.username) errors.username = "Username is required";
     if (!values.work_email) errors.work_email = "Email is required";
+    if (values.work_email && EMAIL_REGEX.test(values.work_email))
+      errors.work_email = "Invalid email address";
     if (!values.password) errors.password = "Password is required";
     if (!values.residential_address)
       errors.residential_address = "Address is required";
@@ -31,10 +34,11 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   if (!values.salary_type && !isEditMode)
     errors.salary_type = "Salary type is required";
   if (!values.salary && !isEditMode) errors.salary = "Salary is required";
-  if(values.active_contract){
-  if (!values.contract_start_date) errors.contract_start_date = "Start date is required";
-  if (!values.contract_end_date) errors.contract_end_date = "End date is required";
-
+  if (values.active_contract) {
+    if (!values.contract_start_date)
+      errors.contract_start_date = "Start date is required";
+    if (!values.contract_end_date)
+      errors.contract_end_date = "End date is required";
   }
   return errors;
 };
@@ -221,14 +225,17 @@ const validationAcademicRecordSchema = Joi.object({
     .label("Education Body"),
 });
 
-const validateExitRequestForm = (values)=>{
+const validateExitRequestForm = (values) => {
   const errors = {};
-  if(!values?.exit_date) errors.exit_date = "Exit Date is required";
-  if(!values?.notice_period) errors.notice_period = "Notice Period is required";
-  if(!values?.reason_for_leaving) errors.reason_for_leaving = "Reason for Leaving is required";
-  if(!values?.resignation_Letter) errors.resignation_Letter = "Resignation letter is required"
-  return errors
-}
+  if (!values?.exit_date) errors.exit_date = "Exit Date is required";
+  if (!values?.notice_period)
+    errors.notice_period = "Notice Period is required";
+  if (!values?.reason_for_leaving)
+    errors.reason_for_leaving = "Reason for Leaving is required";
+  if (!values?.resignation_Letter)
+    errors.resignation_Letter = "Resignation letter is required";
+  return errors;
+};
 
 const validationDepartmentInfoFormSchema = Joi.object({
   department_name: Joi.string().required().label("Department Name").messages({
@@ -342,7 +349,5 @@ export {
   validateEmployeeBankInformationForm,
   validateEmployeeEducationForm,
   validateEmployeeIdentificationForm,
-  validateExitRequestForm
+  validateExitRequestForm,
 };
-
-
