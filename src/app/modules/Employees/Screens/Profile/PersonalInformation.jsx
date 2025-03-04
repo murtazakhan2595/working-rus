@@ -43,6 +43,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
   const [isEdited, setIsEdited] = useState(false);
   const [imageError, setImageError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  console.log(isEdited,"isEditMode")
 
   const fetchData = async (isMounted) => {
     try {

@@ -34,8 +34,7 @@ const DateInput = React.memo(
         ? format(parse(value, "yyyy-MM-dd", new Date()), "dd/MM/yyyy")
         : ""
     );
-    const [calendarDate, setCalendarDate] = useState(date || new Date());
-
+    const [calendarDate, setCalendarDate] = useState(date);
     const handleReset = (e) => {
       e.stopPropagation(); // Prevent the popover from opening
       resetFields();
@@ -50,17 +49,21 @@ const DateInput = React.memo(
           setInputValue(format(parsedDate, "dd/MM/yyyy"));
           setCalendarDate(parsedDate);
         } else {
-          resetFields();
+          setDate(null);
+          setInputValue("");
+          setCalendarDate(null);
         }
       } else {
-        resetFields();
+        setDate(null);
+        setInputValue("");
+        setCalendarDate(null);
       }
     }, [value]);
 
     const resetFields = () => {
       setDate(null);
       setInputValue("");
-      setCalendarDate(new Date());
+      setCalendarDate(null);
       onChange(name, ""); // Reset the form value
       setIsOpen(false);
     };
@@ -144,7 +147,7 @@ const DateInput = React.memo(
                 mode="single"
                 selected={calendarDate} // Ensure calendar is synced with input
                 onSelect={handleCalendarSelect}
-                month={calendarDate}
+                month={calendarDate || new Date()}
                 onMonthChange={setCalendarDate}
                 // disabled={(date) =>
                 //   date > new Date() || date < new Date("1900-01-01")
