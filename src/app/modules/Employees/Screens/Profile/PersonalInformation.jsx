@@ -141,7 +141,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                             </h6>
                             <span className="opacity-65 fs-12">
                               ID:{" "}
-                              {`TXB-${employeeId.toString().padStart(4, "0")}`}
+                              {props.values.serial_number}
                             </span>
                           </div>
                         )}

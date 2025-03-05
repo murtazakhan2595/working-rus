@@ -2,6 +2,7 @@ const EmployeePersonalInformation = {
   first_name: null,
   last_name: null,
   mobile_no: null,
+  serial_number:null,
   date_of_birth: null,
   marital_status: null,
   nationality: null,
@@ -132,6 +133,7 @@ const EmployeeInformation = {
   contract_start_date: null,
   contract_end_date: null,
   active_contract:false,
+  confirmation_date:null,
 };
 const EmployeeProfessionalExperiance = {
   id: null,

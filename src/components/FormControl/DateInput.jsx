@@ -22,6 +22,7 @@ const DateInput = React.memo(
     className = "w-full", // Custom styling
     placeholder = null, // Placeholder text when no value is selected
     showReset = false,
+    disabled=false,
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [date, setDate] = useState(
@@ -104,11 +105,13 @@ const DateInput = React.memo(
         error={error}
         touched={touch}
         className={className}
+        disabled={disabled}
       >
         <FormPopoverButton
           open={isOpen}
           setOpen={setIsOpen}
           className={!date ? "text-neutral-1000" : ""}
+          disabled={disabled}
           triggerContent={
             <div className="flex justify-start w-full gap-2 items-center">
               <FormFieldIcon icon={<LucideCalendar size={16} />} />

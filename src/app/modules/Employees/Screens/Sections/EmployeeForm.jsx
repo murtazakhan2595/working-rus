@@ -173,7 +173,7 @@ const SheetOnBorading = ({
   };
   const handleSubmit = async (data) => {
     setIsLoading(true);
-    const employeePayload = mapEmployeePayloadData(data,formData);
+    const employeePayload = mapEmployeePayloadData(data, formData);
     try {
       // Format indirect report if it exists
       if (data?.indirect_report)
@@ -395,7 +395,6 @@ const SheetOnBorading = ({
                               props.setFieldValue(field, value);
                             }}
                           />
-                          
                         </div>
                         <div className="space-y-2">
                           <PhoneNumberInput
@@ -602,8 +601,20 @@ const SheetOnBorading = ({
                             }}
                           />
                         </div>
-                        <div className="col-span-1 xl:col-span-2 lg:col-span-1 md:col-span-1">
-                          <ProbationDateRange formikProps={props} />
+                        <ProbationDateRange formikProps={props} />
+                        <div className="space-y-2">
+                          <DateInput
+                            name={"confirmation_date"}
+                            error={props.errors?.confirmation_date}
+                            touch={props.touched?.confirmation_date}
+                            value={props.values?.confirmation_date}
+                            required={true}
+                            label={"Confirmation Date"}
+                            disabled={true}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
                         </div>
                       </div>
                     </div>
@@ -803,8 +814,6 @@ const mapStateToProps = (state) => {
 };
 export default connect(mapStateToProps)(SheetOnBorading);
 
-
-
 const ProbationDateRange = ({ formikProps }) => {
   const [dateRange, setDateRange] = useState({
     from: formikProps.values?.probation_start_date
@@ -871,6 +880,10 @@ const ProbationDateRange = ({ formikProps }) => {
         "probation_end_date",
         moment(selectedRange.to).format("YYYY-MM-DD")
       );
+      formikProps.setFieldValue(
+        "confirmation_date",
+        moment(selectedRange.to).add(1, "days").format("YYYY-MM-DD")
+      );
     }
 
     setDateRange(selectedRange);
@@ -881,8 +894,8 @@ const ProbationDateRange = ({ formikProps }) => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
+    <>
+      <div className="space-y-2">
         <div className="flex flex-col gap-4">
           <Label htmlFor="probation-date-range">
             <span className="text-red-600">* </span>Probation Period Range
@@ -930,18 +943,18 @@ const ProbationDateRange = ({ formikProps }) => {
             </div>
           ) : null}
         </div>
-        <div className="space-y-2">
-          <TextInput
-            name="probation_period"
-            error={formikProps.errors?.probation_period}
-            touch={formikProps.touched?.probation_period}
-            value={formikProps.values?.probation_period}
-            label="Probation Period"
-            onChange={handlePeriodChange}
-            required={true}
-          />
-        </div>
       </div>
-    </div>
+      <div className="space-y-2">
+        <TextInput
+          name="probation_period"
+          error={formikProps.errors?.probation_period}
+          touch={formikProps.touched?.probation_period}
+          value={formikProps.values?.probation_period}
+          label="Probation Period"
+          onChange={handlePeriodChange}
+          required={true}
+        />
+      </div>
+    </>
   );
 };
