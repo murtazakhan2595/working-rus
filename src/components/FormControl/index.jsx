@@ -409,7 +409,7 @@ const PhoneNumberInput = ({
             autoComplete="off"
             placeholder={
               !selectedCountryCode
-                ? "Select country code first"
+                ? "Select country code"
                 : `Enter ${label}`
             }
             value={inputValue}
