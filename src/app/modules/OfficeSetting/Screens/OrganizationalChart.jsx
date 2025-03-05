@@ -1,124 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { PageLoader } from "components";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "src/@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
+import { getOrganizationTree } from "app/hooks/officeSetting";
+import Avatar from "components/ui/Avatar";
 
-// Define role IDs as constants
-const ROLE_SUPERADMIN = 1;
-const ROLE_MANAGER = 2;
-const ROLE_HR = 3;
-const ROLE_EMPLOYEE = 4;
-
-const OrganizationalChart = ({
-  userRole = ROLE_EMPLOYEE,
-  currentUserId = null,
-  initialData = null,
-}) => {
+const OrganizationalChart = ({ initialData = null }) => {
   const [direction, setDirection] = useState("top-to-bottom");
   const [organizationData, setOrganizationData] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Default organization data in case no data is provided
-  const defaultOrgData = {
-    id: "ms",
-    data: {
-      imageURL: "https://i.pravatar.cc/300?img=68",
-      name: "Margret Swanson",
-      role: "CEO",
-      roleId: ROLE_SUPERADMIN,
-    },
-    options: {
-      nodeBorderColor: "#953EA3",
-    },
-    children: [
-      {
-        id: "mh",
-        data: {
-          imageURL: "https://i.pravatar.cc/300?img=69",
-          name: "Mark Hudson",
-          role: "CTO",
-          roleId: ROLE_MANAGER,
-          managerId: "ms",
-        },
-        options: {
-          nodeBorderColor: "#953EA3",
-        },
-        children: [
-          {
-            id: "kb",
-            data: {
-              imageURL: "https://i.pravatar.cc/300?img=65",
-              name: "Karyn Borbas",
-              role: "Product Manager",
-              roleId: ROLE_EMPLOYEE,
-              managerId: "mh",
-            },
-            options: {
-              nodeBorderColor: "#953EA3",
-            },
-          },
-          {
-            id: "cr",
-            data: {
-              imageURL: "https://i.pravatar.cc/300?img=60",
-              name: "Chris Rup",
-              role: "UX Designer",
-              roleId: ROLE_EMPLOYEE,
-              managerId: "mh",
-            },
-            options: {
-              nodeBorderColor: "#953EA3",
-            },
-          },
-        ],
-      },
-      {
-        id: "cs",
-        data: {
-          imageURL: "https://i.pravatar.cc/300?img=59",
-          name: "Chris Lysack",
-          role: "CFO",
-          roleId: ROLE_MANAGER,
-          managerId: "ms",
-        },
-        options: {
-          nodeBorderColor: "#953EA3",
-        },
-        children: [
-          {
-            id: "nc",
-            data: {
-              imageURL: "https://i.pravatar.cc/300?img=57",
-              name: "Noah Chandler",
-              role: "Financial Analyst",
-              roleId: ROLE_EMPLOYEE,
-              managerId: "cs",
-            },
-            options: {
-              nodeBorderColor: "#953EA3",
-            },
-          },
-          {
-            id: "fw",
-            data: {
-              imageURL: "https://i.pravatar.cc/300?img=52",
-              name: "Felix Wagner",
-              role: "Accountant",
-              roleId: ROLE_EMPLOYEE,
-              managerId: "cs",
-            },
-            options: {
-              nodeBorderColor: "#953EA3",
-            },
-          },
-        ],
-      },
-    ],
-  };
+  const userProfile = useSelector((state) => state.user.userProfile);
 
   // Define tabs data for the chart directions
   const directionTabsData = [
@@ -128,16 +19,75 @@ const OrganizationalChart = ({
     { value: "right-to-left", label: "Right to Left" },
   ];
 
+  // Helper function to transform API data to chart format
+  const transformApiData = (apiNode, managerId = null) => {
+    // Generate a node border color based on department
+    const getDepartmentColor = (department) => {
+      const colors = {
+        Sales: "#4CAF50",
+        HR: "#2196F3",
+        Development: "#9C27B0",
+        "Project Management": "#FF9800",
+        Operations: "#F44336",
+      };
+      return colors[department] || "#953EA3"; // Default purple for unknown departments
+    };
+
+    // Generate initials for avatar fallback
+    const getInitials = (firstName, lastName) => {
+      return `${firstName.charAt(0)}${lastName.charAt(0)}`;
+    };
+
+    return {
+      id: apiNode.id.toString(),
+      data: {
+        // Use the profile picture from the API data
+        imageURL: apiNode.profile_picture,
+        name: `${apiNode.first_name} ${apiNode.last_name}`,
+        role: apiNode.emp_designation,
+        department: apiNode.department_name,
+        managerId: managerId,
+        initials: getInitials(apiNode.first_name, apiNode.last_name),
+      },
+      options: {
+        nodeBorderColor: getDepartmentColor(apiNode.department_name),
+      },
+      children: apiNode.subordinates.map((subordinate) =>
+        transformApiData(subordinate, apiNode.id.toString())
+      ),
+    };
+  };
+
   // Initialize data
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         if (initialData) {
-          setOrganizationData(initialData);
+          // If initial data is provided, use it
+          const transformedData = transformApiData(initialData.results[0]);
+          setOrganizationData(transformedData);
         } else {
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          setOrganizationData(defaultOrgData);
+          // Otherwise fetch from API
+          const organizationTree = await getOrganizationTree();
+          console.log(organizationTree, "organizationTree");
+
+          // Transform the first result (assuming structure matches what we expect)
+          if (
+            organizationTree &&
+            organizationTree.results &&
+            organizationTree.results.length > 0
+          ) {
+            const transformedData = transformApiData(
+              organizationTree.results[0]
+            );
+            setOrganizationData(transformedData);
+          } else {
+            console.error(
+              "Invalid organization tree data structure",
+              organizationTree
+            );
+          }
         }
       } catch (error) {
         console.error("Error fetching organization data:", error);
@@ -149,124 +99,6 @@ const OrganizationalChart = ({
     fetchData();
   }, [initialData]);
 
-  // Filter data based on user role and ID
-  const getFilteredData = (data, role, userId) => {
-    if (!data) return null;
-
-    // Clone the data to avoid modifying the original
-    const cloneData = (node) => {
-      if (!node) return null;
-      const clonedNode = { ...node };
-
-      if (node.children) {
-        clonedNode.children = node.children.map((child) => cloneData(child));
-      }
-
-      return clonedNode;
-    };
-
-    const orgData = cloneData(data);
-
-    // SuperAdmin (role 1) sees everything
-    if (role === ROLE_SUPERADMIN) {
-      return orgData;
-    }
-
-    // HR (role 3) sees everything like SuperAdmin
-    if (role === ROLE_HR) {
-      return orgData;
-    }
-
-    // Manager (role 2) sees only their team
-    if (role === ROLE_MANAGER) {
-      if (!userId) return orgData; // Default to full org if no userId
-
-      // Find the manager's node
-      const findManagerNode = (node) => {
-        if (node.id === userId) {
-          return node;
-        }
-
-        if (node.children) {
-          for (const child of node.children) {
-            const result = findManagerNode(child);
-            if (result) return result;
-          }
-        }
-
-        return null;
-      };
-
-      // Find manager's manager to provide context
-      const findManagersManager = (node, managerId) => {
-        if (node.id === managerId) {
-          // Create a simplified view with just this manager and the target manager
-          const simplifiedNode = { ...node };
-          simplifiedNode.children = node.children.filter(
-            (child) => child.id === userId
-          );
-          return simplifiedNode;
-        }
-
-        if (node.children) {
-          for (const child of node.children) {
-            const result = findManagersManager(child, managerId);
-            if (result) return result;
-          }
-        }
-
-        return null;
-      };
-
-      const managerNode = findManagerNode(orgData);
-      if (managerNode) {
-        // If manager has a manager, include that for context
-        if (managerNode.data.managerId) {
-          const contextNode = findManagersManager(
-            orgData,
-            managerNode.data.managerId
-          );
-          return contextNode || managerNode;
-        }
-        return managerNode;
-      }
-
-      return orgData; // Fallback
-    }
-
-    // Employee (role 4) sees only their manager and peers
-    if (role === ROLE_EMPLOYEE) {
-      if (!userId) return orgData; // Default to full org if no userId
-
-      // Find employee's manager
-      const findEmployeeManager = (node) => {
-        if (node.children) {
-          const hasEmployee = node.children.some(
-            (child) => child.id === userId
-          );
-
-          if (hasEmployee) {
-            // Create a modified version with only the manager and this employee + peers
-            const simplifiedNode = { ...node };
-            return simplifiedNode;
-          }
-
-          for (const child of node.children) {
-            const result = findEmployeeManager(child);
-            if (result) return result;
-          }
-        }
-
-        return null;
-      };
-
-      const managerNode = findEmployeeManager(orgData);
-      return managerNode || orgData; // Fallback to full org
-    }
-
-    // Default fallback
-    return orgData;
-  };
 
   // Function to render org chart nodes recursively
   const renderOrganizationNode = (node) => {
@@ -282,21 +114,26 @@ const OrganizationalChart = ({
           }}
         >
           <div className="org-node-content">
-            <img
-              src={node.data.imageURL}
-              alt={node.data.name}
-              className="org-node-image"
+            <Avatar
+              className="border border-neutral-500 h-10 w-10"
+              src={node.data.imageURL || ""}
+              fallbackText={node.data.initials || ""}
+              text={node.data.name || "Unknown User"}
+              alt="Avatar"
             />
             <div className="org-node-name">{node.data.name}</div>
             {node.data.role && (
               <div className="org-node-role">{node.data.role}</div>
+            )}
+            {node.data.department && (
+              <div className="org-node-department">{node.data.department}</div>
             )}
           </div>
         </div>
 
         {node.children && node.children.length > 0 && (
           <>
-            {/* Connector stem - vertical line from parent to children */}
+            {/* Connector stem from parent to children */}
             <div className="connector-stem"></div>
 
             {/* Container for children with connector lines */}
@@ -328,29 +165,6 @@ const OrganizationalChart = ({
     return <PageLoader />;
   }
 
-  // Get filtered data based on role and user ID
-  const filteredData = getFilteredData(
-    organizationData,
-    userRole,
-    currentUserId
-  );
-
-  // Role label for display
-  const getRoleLabel = (roleId) => {
-    switch (roleId) {
-      case ROLE_SUPERADMIN:
-        return "SuperAdmin";
-      case ROLE_MANAGER:
-        return "Manager";
-      case ROLE_HR:
-        return "HR";
-      case ROLE_EMPLOYEE:
-        return "Employee";
-      default:
-        return "User";
-    }
-  };
-
   return (
     <div className="p-4">
       <div className="mb-4">
@@ -375,29 +189,30 @@ const OrganizationalChart = ({
               </TabsList>
             </div>
           </Tabs>
-          <div className="text-sm self-center">
-            Viewing as:{" "}
-            <span className="font-semibold">{getRoleLabel(userRole)}</span>
-          </div>
         </div>
       </div>
 
       <div
-        className={`org-chart-container bg-white p-4 rounded-lg shadow ${direction}`}
+        className="bg-white p-4 rounded-lg shadow overflow-auto"
+        style={{ minHeight: "600px" }}
       >
-        {filteredData ? (
-          renderOrganizationNode(filteredData)
-        ) : (
-          <div className="text-center">No organizational data available</div>
-        )}
+        <div className={`org-chart-container ${direction}`}>
+          {organizationData ? (
+            renderOrganizationNode(organizationData)
+          ) : (
+            <div className="text-center">No organizational data available</div>
+          )}
+        </div>
       </div>
 
-      <style jsx>{`
+      {/* Styling for the organization chart */}
+      <style jsx global>{`
         .org-chart-container {
           width: 100%;
-          overflow: auto;
+          min-width: max-content;
           padding: 20px;
-          min-height: 600px;
+          display: flex;
+          justify-content: center;
         }
 
         /* ===== Top to Bottom Layout ===== */
@@ -405,6 +220,7 @@ const OrganizationalChart = ({
           display: flex;
           flex-direction: column;
           align-items: center;
+          min-width: max-content;
         }
 
         .org-chart-container.top-to-bottom .children-container {
@@ -412,13 +228,14 @@ const OrganizationalChart = ({
           flex-direction: column;
           align-items: center;
           position: relative;
+          width: 100%;
         }
 
         .org-chart-container.top-to-bottom .org-node-children {
           display: flex;
           flex-direction: row;
           margin-top: 10px;
-          gap: 30px;
+          gap: 60px;
           position: relative;
           z-index: 1;
         }
@@ -457,6 +274,7 @@ const OrganizationalChart = ({
           display: flex;
           flex-direction: column-reverse;
           align-items: center;
+          min-width: max-content;
         }
 
         .org-chart-container.bottom-to-top .children-container {
@@ -464,13 +282,14 @@ const OrganizationalChart = ({
           flex-direction: column-reverse;
           align-items: center;
           position: relative;
+          width: 100%;
         }
 
         .org-chart-container.bottom-to-top .org-node-children {
           display: flex;
           flex-direction: row;
           margin-bottom: 10px;
-          gap: 30px;
+          gap: 60px;
           position: relative;
           z-index: 1;
         }
@@ -509,6 +328,7 @@ const OrganizationalChart = ({
           display: flex;
           flex-direction: row;
           align-items: center;
+          min-width: max-content;
         }
 
         .org-chart-container.left-to-right .children-container {
@@ -516,13 +336,14 @@ const OrganizationalChart = ({
           flex-direction: row;
           align-items: center;
           position: relative;
+          height: 100%;
         }
 
         .org-chart-container.left-to-right .org-node-children {
           display: flex;
           flex-direction: column;
           margin-left: 10px;
-          gap: 30px;
+          gap: 40px;
           position: relative;
           z-index: 1;
         }
@@ -561,6 +382,7 @@ const OrganizationalChart = ({
           display: flex;
           flex-direction: row-reverse;
           align-items: center;
+          min-width: max-content;
         }
 
         .org-chart-container.right-to-left .children-container {
@@ -568,13 +390,14 @@ const OrganizationalChart = ({
           flex-direction: row-reverse;
           align-items: center;
           position: relative;
+          height: 100%;
         }
 
         .org-chart-container.right-to-left .org-node-children {
           display: flex;
           flex-direction: column;
           margin-right: 10px;
-          gap: 30px;
+          gap: 40px;
           position: relative;
           z-index: 1;
         }
@@ -638,24 +461,24 @@ const OrganizationalChart = ({
           text-align: center;
         }
 
-        .org-node-image {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          margin-bottom: 8px;
-          border: 2px solid #f0f0f0;
-        }
-
         .org-node-name {
           color: #333;
           font-weight: 600;
           font-size: 14px;
+          margin-top: 8px;
         }
 
         .org-node-role {
           color: #666;
           font-size: 12px;
           margin-top: 4px;
+        }
+
+        .org-node-department {
+          color: #777;
+          font-size: 11px;
+          margin-top: 2px;
+          font-style: italic;
         }
       `}</style>
     </div>
