@@ -181,6 +181,23 @@ const getCountryById = async (id) => {
     return [];
   }
 }
+
+const getOrganizationTree = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/organizationtree`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting organization tree:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+}
 export {
   saveOrganization,
   deleteOrganization,
@@ -190,4 +207,5 @@ export {
   getRegionById,
   getCityById,
   getCountryById,
+  getOrganizationTree,
 };
