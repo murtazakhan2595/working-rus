@@ -27,6 +27,7 @@ export default function EmployeeManagement() {
   const [selectedRole, setSelectedRole] = useState("");
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
+  const [ordering, setOrdering] = useState("-id");
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -36,12 +37,19 @@ export default function EmployeeManagement() {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
   };
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
-      const data = await getEmployeeCustomList({ options, filterData });
+      const data = await getEmployeeCustomList({
+        options,
+        filterData,
+        ordering,
+      });
       if (isMounted) {
         setEmployeeData(data);
         setActiveEmployee(data.ActiveEmployee || 0);
@@ -62,7 +70,7 @@ export default function EmployeeManagement() {
     return () => {
       isMounted = false;
     };
-  }, [options, filterData]);
+  }, [options, filterData, ordering]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);

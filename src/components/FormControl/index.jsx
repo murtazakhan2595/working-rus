@@ -39,6 +39,7 @@ import ImageInput from "components/FormControl/UploadFiles/ImageInput";
 import EmailInput from "components/FormControl/EmailInput";
 import ColorInput from "./ColorInput";
 import DateInput from "./DateInput";
+import CheckBoxInput from "./CheckBoxInput";
 
 const errorClassName = "text-red-800 text-xs font-[inter] font-normal ml-1";
 export const inputButtonClassName =
@@ -62,9 +63,9 @@ export const FormField = memo(
       ref
     ) => {
       return (
-        <div className={`${className} flex flex-col gap-4`}>
+        <div className={cn(`flex flex-col gap-4`, className)}>
           {label && (
-            <Label htmlFor={name}>
+            <Label htmlFor={name} className="items-center flex">
               {required && <span className="text-red-600">* </span>}
               {label}
             </Label>
@@ -260,28 +261,6 @@ const NumberInput = ({
   );
 };
 
-const CheckBoxInput = ({ name, value, onChange, label, disabled }) => {
-  return (
-    <>
-      <div className="flex flex-row items-center gap-4">
-        <Input
-          id={name}
-          type="checkbox"
-          checked={value}
-          value={value}
-          className="w-4"
-          disabled={disabled}
-          onChange={() => {
-            console.log("value onchange", value);
-            onChange(name, !value);
-          }}
-        />
-        <Label check>{label}</Label>
-      </div>
-    </>
-  );
-};
-
 const PhoneNumberInput = ({
   name,
   disabled,
@@ -408,9 +387,7 @@ const PhoneNumberInput = ({
             disabled={!selectedCountryCode || disabled}
             autoComplete="off"
             placeholder={
-              !selectedCountryCode
-                ? "Select country code"
-                : `Enter ${label}`
+              !selectedCountryCode ? "Select country code" : `Enter ${label}`
             }
             value={inputValue}
             className={`

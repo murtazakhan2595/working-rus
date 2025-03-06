@@ -196,6 +196,10 @@ const getEmployeeVisaDetailsFiles = async (id) => {
       `${baseUrl}/attachment/?search={"employee_id":${id},"name":"insurance_card"}`,
       { headers: headers() }
     ),
+    axios.get(
+      `${baseUrl}/attachment/?search={"employee_id":${id},"name":"license_copy"}`,
+      { headers: headers() }
+    ),
   ]);
 
   // Construct an object mapping document names to their responses
@@ -208,12 +212,13 @@ const getEmployeeVisaDetailsFiles = async (id) => {
     id_front: responseArray[5].data?.results[0],
     id_back: responseArray[6].data?.results[0],
     insurance_card: responseArray[7].data?.results[0],
+    license_copy: responseArray[8].data?.results[0],
   };
 
   return documents;
 };
 
-const getEmployeeVisaDetailData = async (employeeid) => {
+export const getEmployeeVisaDetailData = async (employeeid) => {
   if (employeeid) {
     try {
       const documents = await getEmployeeVisaDetailsFiles(employeeid);
@@ -968,7 +973,6 @@ export {
   getEmployeeData,
   getEmployeePersonalInfoData,
   saveEmployeePersonalInfoData,
-  getEmployeeVisaDetailData,
   saveEmployeeVisaDetailData,
   saveEmployeeCVDetailData,
   getEmployeeCVDetailData,

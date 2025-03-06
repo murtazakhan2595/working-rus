@@ -344,9 +344,10 @@ const getProjectsList = async (userProfile) => {
 
 const getEmployeeCustomList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
+  const ordering = payload?.ordering ?? "-id";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/customemp/?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
+  const URL = `/customemp/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {

@@ -56,27 +56,33 @@ export const EmployeeColumns = [
     dataField: "serial_number",
     text: "ID",
     formatter: (cell, row) => <EmployeeID value={cell || row?.id} />,
+    dataSort:true,
+    minWidth:'101px',
   },
   {
-    dataField: "id",
+    dataField: "first_name",
     text: "Employees",
-
     formatter: (cell, row) => (
-      <EmployeeOverview id={cell} showPosition={true} showDepartment={true} />
+      <EmployeeOverview id={row.id} showPosition={true} showDepartment={true} />
     ),
+    minWidth:'120px',
+    dataSort:true,
   },
 
   {
     dataField: "user_role",
     text: "Role",
     formatter: (cell, row) => <UserRole value={cell} />,
+    dataSort:true,
   },
   {
     dataField: "username",
     text: "Username",
+    minWidth:'105px',
+    dataSort:true,
   },
   {
-    dataField: "phone",
+    dataField: "work_email",
     text: "Phone no/Email",
     formatter: (cell, row) => (
       <>
@@ -88,6 +94,7 @@ export const EmployeeColumns = [
   {
     dataField: "employee_status",
     text: "Status",
+    dataSort:true,
   },
   {
     dataField: "",

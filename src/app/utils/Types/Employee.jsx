@@ -2,7 +2,7 @@ const EmployeePersonalInformation = {
   first_name: null,
   last_name: null,
   mobile_no: null,
-  serial_number:null,
+  serial_number: null,
   date_of_birth: null,
   marital_status: null,
   nationality: null,
@@ -10,10 +10,10 @@ const EmployeePersonalInformation = {
   nic: null,
   mother_name: null,
   profile_picture: null,
-  blood_group:null,
-  gender:null,
-  father_name:null,
-  country_code:null,
+  blood_group: null,
+  gender: null,
+  father_name: null,
+  country_code: null,
 };
 const EmployeeContactInformation = {
   emergency_phone_no: null,
@@ -22,7 +22,7 @@ const EmployeeContactInformation = {
   emergency_relation: null,
   current_address: null,
   residential_address: null,
-  emergency_country_code:null,
+  emergency_country_code: null,
 };
 
 const EmployeeVisaDetails = {
@@ -49,6 +49,13 @@ const EmployeeVisaDetails = {
   insurance_expiry_date: null,
   visa_type: null,
   place_of_issuance: null,
+  is_passport_applicable: false,
+  is_license_applicable: false,
+  license_number: null,
+  license_Issuance_Country: null,
+  license_Issuance_Date: null,
+  license_Expiry_Date: null,
+  license_copy: null,
 };
 
 const EmployeeCVDetails = {
@@ -132,8 +139,8 @@ const EmployeeInformation = {
   gender: null,
   contract_start_date: null,
   contract_end_date: null,
-  active_contract:false,
-  confirmation_date:null,
+  active_contract: false,
+  confirmation_date: null,
 };
 const EmployeeProfessionalExperiance = {
   id: null,
