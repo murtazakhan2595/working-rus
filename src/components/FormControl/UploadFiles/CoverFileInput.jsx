@@ -1,8 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Label } from "src/@/components/ui/label";
-import { getFileNameFromURL } from "utils/downUtils";
+import React, { useState, useRef } from "react";
 import { FileUp } from "lucide-react";
-import { errorClassName } from "app/utils/Types/General";
 
 export const CoverFileInput = ({
   files,
@@ -14,7 +11,6 @@ export const CoverFileInput = ({
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
-
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -37,7 +33,7 @@ export const CoverFileInput = ({
   };
 
   const handleChange = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       handleFile(file);
@@ -147,7 +143,7 @@ export const CoverFileInput = ({
     );
   };
 
-  return files ? (
+  return files && files.length > 0 ? (
     <div className="space-y-3">
       {renderUploadedFiles()} {multiple && renderInputFile()}
     </div>

@@ -167,8 +167,6 @@ const ExperienceInformation = ({
                                 exp_end_date: null,
                                 disableEndDate: false,
                               });
-                              setIsEdited(true);
-
                             }}
                           >
                             + Add Another Experience

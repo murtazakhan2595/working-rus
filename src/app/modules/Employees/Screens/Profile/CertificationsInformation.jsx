@@ -10,18 +10,13 @@ import {
 } from "app/hooks/employee.jsx";
 import PageLoader from "components/PageLoader.jsx";
 import { EmployeeCertifiation } from "app/utils/Types/Employee";
-import {
-  DateInput,
-  TextInput,
-  CoverFileUpload
-} from "components/FormControl";
+import { DateInput, TextInput, CoverFileUpload } from "components/FormControl";
 import { Link } from "react-router-dom";
-
-
+import ProfileFormFooter from "app/modules/Employees/Screens/Sections/ProfileFormFooter";
 import { Button } from "../../../../../components/ui/button";
-
 import { CircleX } from "lucide-react";
-import { Card, CardContent } from "components/ui/card";
+import { Card, CardContent, CardFooter } from "components/ui/card";
+import AlertDialogue from "components/ui/AlertDialogue";
 
 const CertificationsInformation = ({
   nextstep,
@@ -35,10 +30,10 @@ const CertificationsInformation = ({
   const [certifications, setCertifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [date, setDate] = useState(new Date());
-  const [selectedValue, setSelectedValue] = useState('');
+  const [openAlertDialogue, setOpenAlertDialogue] = useState(false);
+  const [isEdited, setIsEdited] = useState(false);
 
   useEffect(() => {
-    console.log("Fetching certification data...");
     getEmployeeCerficationData(employeeId)
       .then((response) => {
         console.log("Certification data fetched:", response);
@@ -65,33 +60,26 @@ const CertificationsInformation = ({
 
   const handleDelete = async (certificationId, index, props) => {
     try {
-      await deleteEmployeeCertificateData(baseUrl, employeeId, token, [certificationId]);
+      await deleteEmployeeCertificateData(employeeId, [certificationId]);
       const newCertifications = [...props.values.certifications];
       newCertifications.splice(index, 1);
-      props.setFieldValue('certifications', newCertifications);
+      props.setFieldValue("certifications", newCertifications);
     } catch (error) {
       console.error("Error deleting certification:", error);
     }
   };
-  const handleChange = (name, value) => {
-    console.log(`Selected ${name}: ${value}`)
-    setSelectedValue(value)
-  }
+
   return (
     <>
-     {isLoading ?
-        (
-          <div>
-            <div className="space-y-4">
-              <PageLoader />
-            </div>
+      {isLoading ? (
+        <div>
+          <div className="space-y-4">
+            <PageLoader />
           </div>
-        ) :
-        (
-          <>
-          <Card>
-            <CardContent>
-            <div className="space-y-4">
+        </div>
+      ) : (
+        <>
+          <div className="space-y-4">
             <Formik
               initialValues={{ certifications: certifications }}
               innerRef={formRef}
@@ -103,65 +91,75 @@ const CertificationsInformation = ({
                 const errors = {};
                 return errors;
               }}
-              >
+            >
               {(props) => (
                 <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
-                  {props.values?.certifications &&
-                      props.values.certifications.length > 0 &&
-                      props.values.certifications.map
-                      (
-                        (certification, index) =>
-                        (
-                          <React.Fragment key={index}>
-                            <div className="space-y-4">
-                              <div className="grid grid-cols-2 gap-4">
+                  <Card>
+                    <CardContent>
+                      {" "}
+                      {props.values?.certifications &&
+                        props.values.certifications.length > 0 &&
+                        props.values.certifications.map(
+                          (certification, index) => (
+                            <React.Fragment key={index}>
+                              <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4 my-4">
                                   <div className="space-y-2">
-                                        <h5 className="text-base">
+                                    <h5 className="text-base">
                                       Certification {index + 1}
-                                      </h5>
+                                    </h5>
                                   </div>
                                   <div className="flex justify-end space-y-2">
-                                        <CircleX
-                                          className="justify-end text-red-600 cursor-pointer "
-                                          onClick={() =>
-                                            handleDelete(certification.id, index, props)}
+                                    <CircleX
+                                      className="justify-end text-red-600 cursor-pointer "
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        setOpenAlertDialogue(true);
+                                      }}
                                     />
                                   </div>
+
                                   <div className="col-span-2 space-y-2">
                                     <TextInput
                                       name={`certifications[${index}].certification_name`}
                                       value={certification.certification_name}
                                       label={"Certification Name"}
                                       onChange={(field, value) => {
+                                        setIsEdited(true);
                                         props.setFieldValue(field, value);
                                       }}
                                     />
                                   </div>
                                   <div className="space-y-2">
-                                  <DateInput
-                                  name={`certifications[${index}].completion_date`}
-                                  value={certification.completion_date}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                  label={"Completion Date"}
-                                />
+                                    <DateInput
+                                      name={`certifications[${index}].completion_date`}
+                                      value={certification.completion_date}
+                                      onChange={(field, value) => {
+                                        setIsEdited(true);
+                                        props.setFieldValue(field, value);
+                                      }}
+                                      label={"Completion Date"}
+                                    />
                                   </div>
                                   <div className="space-y-2">
-                                  <DateInput
-                                  name={`certifications[${index}].expiry_date`}
-                                  value={certification.expiry_date}
-                                  onChange={(field, value) => {
-                                    props.setFieldValue(field, value);
-                                  }}
-                                  label={"Expiry Date"}
-                                />
+                                    <DateInput
+                                      name={`certifications[${index}].expiry_date`}
+                                      value={certification.expiry_date}
+                                      onChange={(field, value) => {
+                                        setIsEdited(true);
+                                        props.setFieldValue(field, value);
+                                      }}
+                                      label={"Expiry Date"}
+                                    />
                                   </div>
                                   <div className="col-span-2 space-y-2">
                                     <TextInput
                                       name={`certifications[${index}].certification_institute`}
-                                      value={certification.certification_institute}
+                                      value={
+                                        certification.certification_institute
+                                      }
                                       onChange={(field, value) => {
+                                        setIsEdited(true);
                                         props.setFieldValue(field, value);
                                       }}
                                       label={"Certification Institute"}
@@ -173,6 +171,7 @@ const CertificationsInformation = ({
                                       name={`certifications[${index}].certification_body`}
                                       value={certification.certification_body}
                                       onChange={(field, value) => {
+                                        setIsEdited(true);
                                         props.setFieldValue(field, value);
                                       }}
                                       label={"Certification or drag it here"}
@@ -189,20 +188,36 @@ const CertificationsInformation = ({
                                       }
                                     />
                                   </div>
+                                </div>
+                                {openAlertDialogue && (
+                                  <AlertDialogue
+                                    isOpen={openAlertDialogue}
+                                    setIsOpen={setOpenAlertDialogue}
+                                    handleContinue={() => {
+                                      handleDelete(
+                                        certification.id,
+                                        index,
+                                        props
+                                      );
+                                    }}
+                                    continueText="Delete"
+                                    title="Are you Sure?"
+                                    description={`Are you sure you want to delete your certification/licences details? This action is irreversible and will delete all information related ${certification.certification_name}.`}
+                                  />
+                                )}
                               </div>
-                            </div>
-                          </React.Fragment>
-                        )
-                      )
-                  }
+                            </React.Fragment>
+                          )
+                        )}
                       <div className="grid grid-cols-1 gap-4">
-                        <div className="mb-4 space-y-2 ">
+                        <div className="my-4 space-y-2 ">
                           <Button>
                             <Link
                               type="button"
                               className="btn btn-outline-dark"
                               onClick={() => {
-                                const length = props.values?.certifications?.length;
+                                const length =
+                                  props.values?.certifications?.length;
                                 const index = length ? length : 0;
                                 props.setFieldValue(
                                   `certifications[${index}]`,
@@ -211,43 +226,33 @@ const CertificationsInformation = ({
                               }}
                             >
                               + Add Another Certification
-
                             </Link>
                           </Button>
                         </div>
                       </div>
-                      <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50">
-                          <div className="flex justify-end space-x-4">
-                            {!isEditMode &&
-                              <Button variant="outline" size="lg" onClick={() => {
-                                prevStep()
-                              }}
-                              >Back</Button>
-                            }
-                            <Button
-                              type="submit"
-                              size="lg"
-                              variant="default"
-                              onClick={() => {
-                                props.handleSubmit();
-                              }}
-                            >
-                              {isEditMode ? 'Save' : 'Next'}
-                            </Button>
-                          </div>
-                      </div>
+                    </CardContent>
+                    <CardFooter>
+                      <ProfileFormFooter
+                        nextstep={nextstep}
+                        handleSubmit={() => {
+                          props.handleSubmit();
+                        }}
+                        prevStep={prevStep}
+                        isEditMode={isEditMode}
+                        isEdited={isEdited}
+                        enableBackButton={true}
+                      />
+                    </CardFooter>
+                  </Card>
                 </form>
               )}
             </Formik>
-            </div>
-            </CardContent>
-            </Card>
-          </>
-        )
-      }
+          </div>
+        </>
+      )}
     </>
-      )
-}
+  );
+};
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,

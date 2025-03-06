@@ -7,7 +7,7 @@ import {
   employeeTypeOptions,
   jobTypeOptions,
   locationTypeOptions,
-  countryOptions,
+  countriesList,
   UserRoles,
   workplaceTypes,
   GenderOptions,
@@ -19,7 +19,7 @@ import { ClaimExpenseTypeOptions } from "data/Data";
 import { ReasonForLeaving } from "data/Data";
 
 function getCountryFullName(countryCode) {
-  const country = countryOptions.find((option) => option.value === countryCode);
+  const country = countriesList.find((option) => option.value === countryCode);
   return country ? country.label : countryCode;
 }
 

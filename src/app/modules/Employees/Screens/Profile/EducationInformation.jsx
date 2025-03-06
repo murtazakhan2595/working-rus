@@ -21,7 +21,8 @@ import { Link } from "react-router-dom";
 import { Button } from "../../../../../components/ui/button";
 import { CircleX } from "lucide-react";
 import { validateEmployeeEducationForm } from "app/utils/FormSchema/employeeFormSchema";
-import { Card, CardContent } from "components/ui/card";
+import { Card, CardContent, CardFooter } from "components/ui/card";
+import ProfileFormFooter from "app/modules/Employees/Screens/Sections/ProfileFormFooter";
 
 const EducationInformation = ({
   nextstep,
@@ -34,6 +35,7 @@ const EducationInformation = ({
   const formRef = React.createRef();
   const [educations, setEducations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEdited, setIsEdited] = useState(false);
 
   useEffect(() => {
     getEmployeeAcademicRecordData(employeeId)
@@ -62,7 +64,7 @@ const EducationInformation = ({
   const handleDelete = async (educationId, index, props) => {
     try {
       console.log("educationId", educationId);
-      if(educationId){
+      if (educationId) {
         await deleteEmployeeAcademicRecordData(baseUrl, employeeId, token, [
           educationId,
         ]);
@@ -85,213 +87,215 @@ const EducationInformation = ({
         </div>
       ) : (
         <>
-          <Card className="p-6">
-            <CardContent>
-              <div className="space-y-4">
-                <Formik
-              initialValues={{ educations: educations }}
-              ref={formRef}
-              onSubmit={(values, { resetForm }) => {
-                console.log("submit in formik")
-                handleSubmit(values);
-              }}
-              validate={(values) => {
-                const errors = validateEmployeeEducationForm(values)
-                console.log("errors", errors?.educations?.length)
-                if(errors?.educations?.length ===0){
-                  return {}
-                }
-                return errors
-              }}
-            >
-              {(props) => (
-                <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
-                  {props.values?.educations &&
-                    props.values.educations.length > 0 &&
-                    props.values.educations.map((education, index) => (
-                      <React.Fragment key={index}>
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <h5 className="text-base">
-                                Education {index + 1}
-                              </h5>
-                            </div>
-                            <div className="flex justify-end space-y-2">
-                              <CircleX
-                                className="justify-end text-red-600 cursor-pointer "
-                                onClick={() =>
-                                  handleDelete(education.id, index, props)
-                                }
-                              />
-                            </div>
-                            <div className="col-span-2 space-y-2">
-                              <SelectInputComponent
-                                options={educationTypeOptions}
-                                name={`educations[${index}].education_level`}
-                                value={education.education_level}
-                                label={"Educational Level"}
-                                required
-                                error={
-                                  props.errors.educations &&
-                                  props.errors.educations[index]
-                                    ?.education_level
-                                }
-                                touch={
-                                  props.touched.educations &&
-                                  props.touched.educations[index]
-                                    ?.education_level
-                                }
-                                onChange={(field, value) => {
-                                  props.setFieldValue(field, value);
-                                }}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <TextInput
-                                name={`educations[${index}].program`}
-                                value={education.program}
-                                onChange={(field, value) => {
-                                  props.setFieldValue(field, value);
-                                }}
-                                label={"Program"}
-                                required
-                                error={
-                                  props.errors.educations &&
-                                  props.errors.educations[index]?.program
-                                }
-                                touch={
-                                  props.touched.educations &&
-                                  props.touched.educations[index]?.program
-                                }
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <TextInput
-                                name={`educations[${index}].institute_name`}
-                                value={education.institute_name}
-                                onChange={(field, value) => {
-                                  props.setFieldValue(field, value);
-                                }}
-                                label={"Institute"}
-                                required
-                                error={
-                                  props.errors.educations &&
-                                  props.errors.educations[index]?.institute_name
-                                }
-                                touch={
-                                  props.touched.educations &&
-                                  props.touched.educations[index]
-                                    ?.institute_name
-                                }
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <DateInput
-                                name={`educations[${index}].edu_start_date`}
-                                value={education.edu_start_date}
-                                onChange={(field, value) => {
-                                  props.setFieldValue(field, value);
-                                }}
-                                label={"Start Date"}
-                                required
-                                error={
-                                  props.errors.educations &&
-                                  props.errors.educations[index]?.edu_start_date
-                                }
-                                touch={
-                                  props.touched.educations &&
-                                  props.touched.educations[index]
-                                    ?.edu_start_date
-                                }
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <DateInput
-                                name={`educations[${index}].edu_end_date`}
-                                value={education.edu_end_date}
-                                onChange={(field, value) => {
-                                  props.setFieldValue(field, value);
-                                }}
-                                label={"End Date"}
-                                required
-                                error={
-                                  props.errors.educations &&
-                                  props.errors.educations[index]?.edu_end_date
-                                }
-                                touch={
-                                  props.touched.educations &&
-                                  props.touched.educations[index]?.edu_end_date
-                                }
-                              />
-                            </div>
-                            <div className="col-span-2 space-y-2">
-                              <CoverFileUpload
-                                acceptType=".pdf"
-                                name={`educations[${index}].education_body`}
-                                value={education.education_body}
-                                onChange={(field, value) => {
-                                  props.setFieldValue(field, value);
-                                }}
-                                label={"Certification or drag it here"}
-                                required
-                                error={
-                                  props.errors.educations &&
-                                  props.errors.educations[index]?.education_body
-                                }
-                                touch={
-                                  props.touched.educations &&
-                                  props.touched.educations[index]
-                                    ?.education_body
-                                }
-                              />
+          <Formik
+            initialValues={{ educations: educations }}
+            ref={formRef}
+            onSubmit={(values, { resetForm }) => {
+              console.log("submit in formik");
+              handleSubmit(values);
+            }}
+            validate={(values) => {
+              const errors = validateEmployeeEducationForm(values);
+              console.log("errors", errors?.educations?.length);
+              if (errors?.educations?.length === 0) {
+                return {};
+              }
+              return errors;
+            }}
+          >
+            {(props) => (
+              <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                <Card className="p-6">
+                  <CardContent>
+                    {props.values?.educations &&
+                      props.values.educations.length > 0 &&
+                      props.values.educations.map((education, index) => (
+                        <React.Fragment key={index}>
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4  my-4">
+                              <div className="space-y-2">
+                                <h5 className="text-base">
+                                  Education {index + 1}
+                                </h5>
+                              </div>
+                              <div className="flex justify-end space-y-2">
+                                <CircleX
+                                  className="justify-end text-red-600 cursor-pointer "
+                                  onClick={() =>
+                                    handleDelete(education.id, index, props)
+                                  }
+                                />
+                              </div>
+                              <div className="col-span-2 space-y-2">
+                                <SelectInputComponent
+                                  options={educationTypeOptions}
+                                  name={`educations[${index}].education_level`}
+                                  value={education.education_level}
+                                  label={"Educational Level"}
+                                  required
+                                  error={
+                                    props.errors.educations &&
+                                    props.errors.educations[index]
+                                      ?.education_level
+                                  }
+                                  touch={
+                                    props.touched.educations &&
+                                    props.touched.educations[index]
+                                      ?.education_level
+                                  }
+                                  onChange={(field, value) => {
+                                    setIsEdited(true);
+                                    props.setFieldValue(field, value);
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <TextInput
+                                  name={`educations[${index}].program`}
+                                  value={education.program}
+                                  onChange={(field, value) => {
+                                    setIsEdited(true);
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  label={"Program"}
+                                  required
+                                  error={
+                                    props.errors.educations &&
+                                    props.errors.educations[index]?.program
+                                  }
+                                  touch={
+                                    props.touched.educations &&
+                                    props.touched.educations[index]?.program
+                                  }
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <TextInput
+                                  name={`educations[${index}].institute_name`}
+                                  value={education.institute_name}
+                                  onChange={(field, value) => {
+                                    setIsEdited(true);
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  label={"Institute"}
+                                  required
+                                  error={
+                                    props.errors.educations &&
+                                    props.errors.educations[index]
+                                      ?.institute_name
+                                  }
+                                  touch={
+                                    props.touched.educations &&
+                                    props.touched.educations[index]
+                                      ?.institute_name
+                                  }
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <DateInput
+                                  name={`educations[${index}].edu_start_date`}
+                                  value={education.edu_start_date}
+                                  onChange={(field, value) => {
+                                    setIsEdited(true);
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  label={"Start Date"}
+                                  required
+                                  error={
+                                    props.errors.educations &&
+                                    props.errors.educations[index]
+                                      ?.edu_start_date
+                                  }
+                                  touch={
+                                    props.touched.educations &&
+                                    props.touched.educations[index]
+                                      ?.edu_start_date
+                                  }
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <DateInput
+                                  name={`educations[${index}].edu_end_date`}
+                                  value={education.edu_end_date}
+                                  onChange={(field, value) => {
+                                    setIsEdited(true);
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  label={"End Date"}
+                                  required
+                                  error={
+                                    props.errors.educations &&
+                                    props.errors.educations[index]?.edu_end_date
+                                  }
+                                  touch={
+                                    props.touched.educations &&
+                                    props.touched.educations[index]
+                                      ?.edu_end_date
+                                  }
+                                />
+                              </div>
+                              <div className="col-span-2 space-y-2">
+                                <CoverFileUpload
+                                  acceptType=".pdf"
+                                  name={`educations[${index}].education_body`}
+                                  value={education.education_body}
+                                  onChange={(field, value) => {
+                                    setIsEdited(true);
+                                    props.setFieldValue(field, value);
+                                  }}
+                                  label={"Certification or drag it here"}
+                                  required
+                                  error={
+                                    props.errors.educations &&
+                                    props.errors.educations[index]
+                                      ?.education_body
+                                  }
+                                  touch={
+                                    props.touched.educations &&
+                                    props.touched.educations[index]
+                                      ?.education_body
+                                  }
+                                />
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </React.Fragment>
-                    ))}
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="mb-4 space-y-2 ">
-                      <Button>
-                        <Link
-                          onClick={() => {
-                            const length = props.values?.educations?.length;
-                            const index = length ? length : 0;
-                            props.setFieldValue(
-                              `educations[${index}]`,
-                              EmployeeAcademicRecord
-                            );
-                          }}
-                        >
-                          + Add Another
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="col-span-2 p-6 border-t border-gray-200 bg-gray-50">
-                    <div className="flex justify-end space-x-4">
-                      {!isEditMode && (
-                        <Button
-                          variant="outline"
-                          size="lg"
-                          onClick={() => {
-                            prevStep();
-                          }}
-                        >
-                          Back
+                        </React.Fragment>
+                      ))}
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="my-4 space-y-2 ">
+                        <Button>
+                          <Link
+                            onClick={() => {
+                              const length = props.values?.educations?.length;
+                              const index = length ? length : 0;
+                              props.setFieldValue(
+                                `educations[${index}]`,
+                                EmployeeAcademicRecord
+                              );
+                            }}
+                          >
+                            + Add Another
+                          </Link>
                         </Button>
-                      )}
-                      <Button size="lg" variant="default" type="submit">
-                        {isEditMode ? "Save" : "Next"}
-                      </Button>
+                      </div>
                     </div>
-                  </div>
-                </form>
-              )}
-            </Formik>
-              </div>
-            </CardContent>
-          </Card>
+                  </CardContent>
+                  <CardFooter>
+                    <ProfileFormFooter
+                      nextstep={nextstep}
+                      handleSubmit={() => {
+                        props.handleSubmit();
+                      }}
+                      prevStep={prevStep}
+                      isEditMode={isEditMode}
+                      isEdited={isEdited}
+                      enableBackButton={true}
+                    />
+                  </CardFooter>
+                </Card>
+              </form>
+            )}
+          </Formik>
         </>
       )}
     </div>

@@ -25,12 +25,7 @@ import {
 } from "lucide-react";
 import { lightenColor } from "utils/renderValues";
 
-export const countryOptions = Object.keys(getAllCountries()).map(
-  (countryCode) => ({
-    value: countryCode,
-    label: getAllCountries()[countryCode].name,
-  })
-);
+
 
 export const countriesCallingCodes = countries.all
   .filter(
@@ -45,7 +40,6 @@ export const countriesCallingCodes = countries.all
     )})`,
     alpha2: country.alpha2,
   }));
-
 export const countriesList = countries.all.map((country) => {
   return {
     value: country.name,

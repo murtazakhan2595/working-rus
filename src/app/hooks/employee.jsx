@@ -518,20 +518,15 @@ const deleteEmployeeProfessionalExperianceData = async (
   return false;
 };
 
-const deleteEmployeeCertificateData = async (
-  baseUrl,
+export const deleteEmployeeCertificateData = async (
   employeeid,
-  token,
   payload
 ) => {
   if (employeeid && payload && payload.length > 0) {
     try {
       payload.map(async (certification) => {
         await axios.delete(`${baseUrl}/certification/${certification}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          headers: formDataHeader(),
         });
       });
     } catch (error) {
@@ -993,7 +988,6 @@ export {
   getEmployeeContactInfo,
   saveEmployeeContactInfoData,
   getNewEmployeeCode,
-  deleteEmployeeCertificateData,
   employeeExit,
   getEmployeeExitData,
   updateExitData,

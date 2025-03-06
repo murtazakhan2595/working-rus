@@ -1,9 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Label } from "src/@/components/ui/label";
+import React, { useState, useEffect } from "react";
 import { getFileNameFromURL } from "utils/downUtils";
-import { FileUp } from "lucide-react";
 import { FormField } from "components/FormControl";
-import { errorClassName } from "app/utils/Types/General";
 import { CoverFileInput } from "./CoverFileInput";
 import AttachmentFileInput from "./AttachmentFileInput";
 
@@ -16,10 +13,9 @@ const CoverFileUpload = ({
   label,
   acceptType,
   required,
-  showLabel = true,
   maxSize = 10,
   variant = "CoverFileUpload",
-  multiple = true,
+  multiple = false,
   deleteAttachment = () => {},
   allowUpdate = true,
   className = "w-full", // Custom styling
