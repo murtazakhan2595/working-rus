@@ -18,7 +18,7 @@ const formDataHeader = () => ({
   // Don't explicitly set 'Content-Type' for FormData
 });
 
-export const getAllProjects = async (payload, userProfile) => {
+export const getAllProjects = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};

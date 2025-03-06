@@ -33,8 +33,8 @@ import {
 
 const Projects = ({ userProfile }) => {
   const dispatch = useDispatch();
-  const userRole = useSelector((state) => state.user.userProfile)?.role;
-  const userId = useSelector((state) => state.user.userProfile)?.id;
+  const userRole = userProfile?.role;
+  const userId = userProfile?.id;
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState(
     userRole === 2 || userRole === 4 ? { project_members: [userId] } : {}
@@ -70,7 +70,7 @@ const Projects = ({ userProfile }) => {
     setViewProject(null);
     setIsLoading(true);
     try {
-      const projectsData = await getAllProjects({ filterData }, userProfile);
+      const projectsData = await getAllProjects({ filterData });
       if (isMounted) {
         setAllProjects(projectsData);
       }
@@ -119,7 +119,7 @@ const Projects = ({ userProfile }) => {
     <div>
       <Header
         content={
-          userProfile.role !== 4 ? (
+          userRole !== 4 ? (
             <Button
               onClick={(e) => {
                 e.preventDefault();
@@ -152,7 +152,7 @@ const Projects = ({ userProfile }) => {
             </button>
           </div>
 
-          {viewMode === "table" && userProfile.role !== 4 && (
+          {viewMode === "table" && userRole !== 4 && (
             <RenderProject
               toggleAddProject={toggleAddProject}
               fetchData={fetchData}
@@ -223,9 +223,7 @@ const getStatusDotColor = (status) => {
 
 const RenderProject = ({
   project,
-  // toggleAddProject,
   fetchData = () => {},
-  // userProfile,
   userRole,
 }) => {
   const navigate = useNavigate();
@@ -320,91 +318,6 @@ const RenderProject = ({
     </Card>
   );
 };
-
-// const ProjectActions = React.memo(
-//   ({ project = null, fetchData = () => {} }) => {
-//     const [openAlertDialogue, setOpenAlertDialogue] = useState(false);
-//     const [isEditMode, setIsEditMode] = useState(false);
-//     const [isViewBoardDetails, setIsViewBoardDetails] = useState(false);
-//     const userRole = useSelector((state) => state.user.userProfile)?.role;
-
-//     const handleViewClick = (e) => {
-//       e.preventDefault();
-//       setIsViewBoardDetails(true);
-//     };
-//     const handleEditClick = (e) => {
-//       e.preventDefault();
-//       setIsEditMode(true);
-//     };
-//     const handleDeleteProjectClick = (e) => {
-//       e.preventDefault();
-//       setOpenAlertDialogue(true);
-//     };
-//     const closeModal = () => {
-//       setIsViewBoardDetails(false);
-//       setIsEditMode(false);
-//     };
-//     const confirmDelete = async () => {
-//       const response = await deleteProject(project.id);
-//       if (response) fetchData(true);
-//       setOpenAlertDialogue(false);
-//     };
-//     return (
-//       <>
-//         <DropdownMenu>
-//           <DropdownMenuTrigger asChild>
-//             <MoreVertical className="w-4 h-4 text-neutral-1100" />
-//           </DropdownMenuTrigger>
-//           <DropdownMenuContent align="end">
-//             <DropdownMenuItem onClick={handleViewClick}>
-//               <Eye size={14} className="mr-2" /> View
-//             </DropdownMenuItem>
-//             {userRole !== 4 && (
-//               <DropdownMenuItem onClick={handleEditClick}>
-//                 <Edit size={14} className="mr-2" /> Edit
-//               </DropdownMenuItem>
-//             )}
-//             {userRole !== 4 && (
-//               <DropdownMenuItem onClick={handleDeleteProjectClick}>
-//                 <Trash size={14} className="mr-2" /> Delete
-//               </DropdownMenuItem>
-//             )}
-//           </DropdownMenuContent>
-//         </DropdownMenu>
-//         {isViewBoardDetails && project && (
-//           <ViewBoardDetails
-//             project={project}
-//             onClose={closeModal}
-//             setIsEditMode={setIsEditMode}
-//             isOpen={isViewBoardDetails}
-//             setIsOpen={setIsViewBoardDetails}
-//             fetchData={fetchData}
-//             role={userRole}
-//           />
-//         )}
-//         {isEditMode && project && (
-//           <CreateEditProject
-//             project={project}
-//             isEditMode={true}
-//             isOpen={isEditMode}
-//             setIsOpen={setIsEditMode}
-//             reload={fetchData}
-//           />
-//         )}
-//         {openAlertDialogue && (
-//           <AlertDialogue
-//             isOpen={openAlertDialogue}
-//             setIsOpen={setOpenAlertDialogue}
-//             handleContinue={confirmDelete}
-//             continueText="Delete"
-//             title="Are you Sure?"
-//             description="Are you sure you want to delete this Project? This action is irreversible and will delete all tasks within."
-//           />
-//         )}
-//       </>
-//     );
-//   }
-// );
 
 const mapStateToProps = (state) => {
   return {

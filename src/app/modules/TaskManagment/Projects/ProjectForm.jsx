@@ -34,7 +34,6 @@ const ProjectForm = ({
   employees,
   reload = () => {},
   isEditMode,
-  // projectId,
   isOpen = false,
   setIsOpen = () => {},
   editProject = Project,
@@ -53,20 +52,12 @@ const ProjectForm = ({
     setCloseSheet(true);
   };
 
-  // useEffect(async () => {
-  //   let isMounted = true;
-  //   if (projectId && isEditMode) {
-  //     const response = await getAttachmentById(isMounted);
-
-  //   }
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, [projectId]);
-
   const handleSubmit = async (payload) => {
     setIsLoading(true);
     try {
+      if (userProfile.role === 2) {
+        payload.project_members = [...payload.project_members, userProfile.id];
+      }
       const response = await addProject(
         payload,
         isEditMode ? editProject.id : null
