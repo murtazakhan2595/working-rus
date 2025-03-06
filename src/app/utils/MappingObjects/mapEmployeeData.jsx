@@ -109,36 +109,16 @@ function getContactInfo(data) {
 }
 
 function getVisaDetails(data) {
-  const visaDetails = EmployeeVisaDetails;
-  visaDetails.id = data.id ?? null;
-  visaDetails.is_passport_applicable = data.is_passport_applicable ?? false;
-  visaDetails.is_insurance_applicable = data.is_insurance_applicable ?? false;
-  visaDetails.is_visa_applicable = data.is_visa_applicable ?? false;
-  visaDetails.employee_id = data.employee_id ?? null;
-  visaDetails.passport_number = data.passport_number ?? null;
-  visaDetails.Passport_Issuance_Country =
-    data.Passport_Issuance_Country ?? null;
-  visaDetails.Passport_Issuance_Date = data.Passport_Issuance_Date ?? null;
-  visaDetails.Passport_Expiry_Date = data.Passport_Expiry_Date ?? null;
-  visaDetails.entry_permit_number = data.entry_permit_number ?? null;
-  visaDetails.country_of_visa_issuance = data.country_of_visa_issuance ?? null;
-  visaDetails.visa_duration = data.visa_duration ?? null;
-  visaDetails.uid_number = data.uid_number ?? null;
-  visaDetails.living_country_id_no = data.living_country_id_no ?? null;
-  visaDetails.dha_id = data.dha_id ?? null;
-  visaDetails.card_number = data.card_number ?? null;
-  visaDetails.insurance_policy = data.insurance_policy ?? null;
-  visaDetails.insurance_company = data.insurance_company ?? null;
-  visaDetails.visa_expiry_date = data.visa_expiry_date ?? null;
-  visaDetails.visa_issuance_date = data.visa_issuance_date ?? null;
-  visaDetails.visa_country_entry_date = data.visa_country_entry_date ?? null;
-  visaDetails.visa_country_exit_date = data.visa_country_exit_date ?? null;
-  visaDetails.id_issuance_date = data.id_issuance_date ?? null;
-  visaDetails.id_expiry_date = data.id_expiry_date ?? null;
-  visaDetails.insurance_active_date = data.insurance_active_date ?? null;
-  visaDetails.insurance_expiry_date = data.insurance_expiry_date ?? null;
-  visaDetails.visa_type = data.visa_type ?? null;
-  visaDetails.place_of_issuance = data.place_of_issuance ?? null;
+  const visaDetails = Object.keys(EmployeeVisaDetails).reduce(
+    (acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
+  console.log(data,visaDetails)
 
   return visaDetails;
 }

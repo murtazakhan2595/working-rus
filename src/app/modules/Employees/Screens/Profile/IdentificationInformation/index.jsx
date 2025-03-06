@@ -83,7 +83,8 @@ const IdentificationInformation = ({
       const response = await saveEmployeeVisaDetailData(
         employeeId,
         payLoad,
-        documents
+        documents,
+        visaDetails.id
       );
 
       if (response) {
@@ -99,7 +100,6 @@ const IdentificationInformation = ({
     }
   };
   const addUpdateFile = (field, value, props) => {
-    debugger
     const file = props.values[field] || File;
     file.document = value;
     file.description = `${value?.name} file`;

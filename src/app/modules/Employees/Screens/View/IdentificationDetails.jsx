@@ -67,6 +67,46 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
             ],
           },
         ],
+        ...(visaData.is_license_applicable
+          ? [
+              {
+                title: "License Details",
+                fields: [
+                  {
+                    title: "License Number",
+                    data: visaData.license_number,
+                  },
+                  {
+                    title: "Issuance Country",
+                    data: getCountryFullName(
+                      visaData.license_Issuance_Country
+                    ),
+                  },
+                  {
+                    title: "Issuance Date",
+                    data: renderDate(visaData?.license_Issuance_Date),
+                  },
+                  {
+                    title: "Expiry Date",
+                    data: renderDate(visaData?.license_Expiry_Date),
+                  },
+                  {
+                    title: "License Copy",
+                    data: visaData?.license_copy?.document && (
+                      <a
+                        href={visaData.license_copy.document}
+                        target="_blank"
+                        download={visaData.license_copy.document.name}
+                        className="flex items-center text-plum-900 no-underline"
+                      >
+                        Download <FiDownload />
+                      </a>
+                    ),
+                  },
+                ],
+              },
+            ]
+          : []),
         ...(visaData.is_passport_applicable
           ? [
               {

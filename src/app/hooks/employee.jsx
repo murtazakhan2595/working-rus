@@ -251,16 +251,17 @@ export const getEmployeeVisaDetailData = async (employeeid) => {
 const saveEmployeeVisaDetailData = async (
   employeeId,
   visaDetail,
-  visaDetailsFiles
+  visaDetailsFiles,
+  id=null,
 ) => {
   if (employeeId) {
     visaDetail.employee_id = employeeId;
 
     try {
       // Save or update visa details
-      if (visaDetail.id) {
+      if (id) {
         await axios.patch(
-          `${baseUrl}/employeevisadetail/${visaDetail.id}`,
+          `${baseUrl}/employeevisadetail/${id}`,
           visaDetail,
           { headers: headers() }
         );
