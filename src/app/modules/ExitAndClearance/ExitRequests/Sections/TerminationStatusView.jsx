@@ -6,16 +6,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
-} from "../../../../src/@/components/ui/dropdown-menu";
-import { Button } from "../../../../src/@/components/ui/button";
-import { Status } from "./index";
-import { StatusViewIcon } from "components/StatusLabel";
+} from "src/@/components/ui/dropdown-menu";
+import { Button } from "src/@/components/ui/button";
+import { Status } from "app/modules/ExitAndClearance/Sections";
+import { StatusViewIcon, StatusLabel } from "components/StatusLabel";
+import { TerminationStatus } from "utils/getValuesFromTables";
 
-const TerminationStatusView = ({ row, buttonTitle = "View" }) => {
+const TerminationStatusView = ({ status = "viewed by manager", row, buttonTitle = "View" }) => {
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
   const spanClassName = "text-[14px] flex justify-start items-center";
   const itemClassName = "custom-dropdown-item py-2";
-  const status = row.status_termination || "pending";
   const toggleDropdown = (index) => {
     setOpenDropdownRow(index === openDropdownRow ? null : index);
   };
@@ -25,13 +25,13 @@ const TerminationStatusView = ({ row, buttonTitle = "View" }) => {
     else return "Approval";
   };
   const employeeApproval = Status(status, 0);
-
+console.log(status,'status123');
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button aria-haspopup="true" variant="outline" className="">
-          {buttonTitle}
-        </Button>
+        <StatusLabel className="rounded cursor-pointer" status={status}>
+          {TerminationStatus(status || "pending")}
+        </StatusLabel>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="p-3 ml-2 shadow">
         <DropdownMenuLabel className={`${itemClassName} fw-bold`}>

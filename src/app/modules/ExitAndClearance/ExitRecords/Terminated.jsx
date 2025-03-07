@@ -1,18 +1,17 @@
 import { connect } from "react-redux";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { Table, PageLoader } from "components";
-import { FilterInput } from "components/FormControl";
-import { Row, Col } from "reactstrap";
-import { ExitResignedColumns } from "app/utils/Types/TableColumns";
+import { PageLoader } from "components";
+
+import { ExitTerminatedColumns } from "app/utils/Types/TableColumns";
+
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
-import { Card, CardContent } from "../../../components/ui/card.jsx";
 import TableCustom from "components/CustomTable";
+import { Card, CardContent } from "components/ui/card.jsx";
 
-const Resigned = React.memo(({ userProfile, departments, filterData }) => {
+const Terminated = ({ userProfile, departments, filterData }) => {
   const [loading, setLoading] = useState(true);
-  const [Resigned, setResigned] = useState(null);
-
+  const [Terminated, setTerminated] = useState(null);
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -24,18 +23,16 @@ const Resigned = React.memo(({ userProfile, departments, filterData }) => {
       setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
     }
   };
-
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
   };
-
   const fetchData = async () => {
     try {
       setLoading(true);
       const response = await getEmployeesResignations({ filterData, options });
-      setResigned(response);
+      setTerminated(response);
     } catch (e) {
       console.error(e);
     } finally {
@@ -45,7 +42,6 @@ const Resigned = React.memo(({ userProfile, departments, filterData }) => {
   useEffect(() => {
     fetchData();
   }, [options, filterData]);
-
   return (
     <>
       {loading ? (
@@ -54,11 +50,11 @@ const Resigned = React.memo(({ userProfile, departments, filterData }) => {
         <Card>
           <CardContent>
             <TableCustom
-              data={Resigned?.results || []}
-              columns={ExitResignedColumns}
+              data={Terminated?.results || []}
+              columns={ExitTerminatedColumns}
               hideTableHeader={true}
               pagination={true}
-              dataTotalSize={Resigned?.count || 0}
+              dataTotalSize={Terminated?.count || 0}
               tableOptions={tableOptions}
               dataStyle={{ backgroundColor: "white" }}
             />
@@ -67,7 +63,7 @@ const Resigned = React.memo(({ userProfile, departments, filterData }) => {
       )}
     </>
   );
-});
+};
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
@@ -75,4 +71,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(Resigned);
+export default connect(mapStateToProps)(Terminated);

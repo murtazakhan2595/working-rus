@@ -24,7 +24,7 @@ const RequestTerminationForm = ({
   isOpen,
   setIsOpen,
   userProfile,
-
+  TerminationReasons,
   organizations,
   designations,
   departments,
@@ -255,7 +255,7 @@ const RequestTerminationForm = ({
                         />
                         <SelectInputComponent
                           name={"reason_for_terminating"}
-                          options={terminationReasonsOptions}
+                          options={TerminationReasons}
                           error={props.errors.reason_for_terminating}
                           touch={props.touched.reason_for_terminating}
                           value={props.values.reason_for_terminating}
@@ -313,6 +313,7 @@ const mapStateToProps = (state) => {
     designations: state.common.designations,
     departments: state.common.departments,
     managers: state.emp.reportingManagers,
+    TerminationReasons: state.exit_emp.TerminationReasons,
   };
 };
 export default connect(mapStateToProps)(RequestTerminationForm);

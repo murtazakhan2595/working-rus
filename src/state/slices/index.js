@@ -12,6 +12,7 @@ import FilterSlice from "./FilterSlice";
 import GetTeamDtrSlice from "./GetTeamDtrSlice";
 import CommonSlice from "./CommonSlice";
 import taskManagmentSlice from "./TaskManagmentSlice";
+import exitEmployeeSlice from "./ExitEmployeeSlice";
 
 const rootReducer = combineReducers({
   user: userSlice,
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   teamDtr: GetTeamDtrSlice,
   common: CommonSlice,
   task_managment: taskManagmentSlice,
+  exit_emp:exitEmployeeSlice,
 });
 
 export default rootReducer;

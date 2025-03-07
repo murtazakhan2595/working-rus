@@ -41,18 +41,6 @@ const badgeVariants = cva(
   }
 );
 
-// function Badge({ key, size, className, variant, dot, ...props }) {
-//   return (
-//     <div
-//       key={key}
-//       className={cn(badgeVariants({ variant, size }), className)}
-//       {...props}
-//     >
-//       {dot && <span className={`w-3 h-3 rounded-full ${dot}`} />}
-//       {props.children}
-//     </div>
-//   );
-// }
 const Badge = React.forwardRef(
   ({ key, className, variant, size, dot, ...props }, ref) => {
     return (

@@ -4,8 +4,59 @@ import { FaCheck } from "react-icons/fa6";
 import { BsCircleFill } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import { FaRegCircle } from "react-icons/fa";
-import { Badge } from "../components/ui/badge";
+import { Badge } from "components/ui/badge";
 import { CircleCheck, CircleDot, X } from "lucide-react";
+import { cn } from "src/@/lib/utils.js";
+import { cva } from "class-variance-authority";
+
+const statusVariants = cva(
+  "inline-flex items-center w-fit h-fit text-nowrap rounded-full border border-slate-200 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 dark:border-slate-800 dark:focus:ring-slate-300",
+  {
+    variants: {
+      variant: {
+        default:
+          "border-transparent bg-neutral-300 text-neutral-1100",
+        secondary:
+          "border-transparent bg-slate-100 text-slate-900  dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-slate-800/80",
+        destructive:
+          "border-transparent bg-red-500 text-slate-50  dark:bg-red-900 dark:text-slate-50 dark:hover:bg-red-900/80",
+        outline: "text-slate-900 dark:text-slate-50",
+        plum: "bg-plum-300 text-plum-1100",
+        error: "bg-red-50 text-red-400",
+        warning: "bg-amber-100 text-amber-500",
+        success: "bg-emerald-50 text-emerald-700",
+        neutral: "bg-neutral-300 text-neutral-1100",
+        "dot-plum":
+          "bg-white border-neutral-300 flex items-center gap-2 text-neutral-1100",
+        "dot-error": "bg-white border-neutral-300 flex items-center gap-2",
+        "dot-warning": "bg-white border-neutral-300 flex items-center gap-2",
+        "dot-emerald": "bg-white border-neutral-300 flex items-center gap-2",
+        "dot-neutral": "bg-white border-neutral-300 flex items-center gap-2",
+      },
+      size: {
+        sm: "text-sm px-4 py-2",
+        default: "text-xs px-2 py-1",
+        lg: "h-11 text-sm px-8",
+        xl: "h-12 text-sm px-9",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
+
+export const getStatusVariant = (Status) => {
+  if (!Status) return "default";
+  const status = Status.toLowerCase();
+  if (status.includes("approved")) return "success";
+  else if (status.includes("accepted")) return "success";
+  else if (status.includes("declined")) return "error";
+  else if (status.includes("rejected")) return "error";
+  else if (status.includes("pending")) return "default";
+  else return "default";
+};
 
 export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
   if (!label) return "";
@@ -41,7 +92,25 @@ export const jobsLabel = (value) => {
   return newLabel;
 };
 
-export const StatusLabel = ({ status, value }) => {
+const StatusLabel = React.forwardRef(
+  ({ status ,key, className, size, ...props }, ref) => {
+    const variant= getStatusVariant(status);
+    return (
+      <Badge
+        className={cn(statusVariants({ variant, size }), className)}
+        ref={ref}
+        key={key}
+        {...props}
+      >
+        {props.children}
+      </Badge>
+    );
+  }
+);
+
+StatusLabel.displayName = "StatusLabel";
+
+export const StatusLabel1 = ({ status, value }) => {
   if (!status) {
     return "";
   }
@@ -80,11 +149,7 @@ export const StatusLabel = ({ status, value }) => {
   }
 
   // Render the badge with the appropriate label and style
-  return (
-    <Badge className={className}>
-      {jobsLabel(value ?? status)}
-    </Badge>
-  );
+  return <Badge className={className}>{jobsLabel(value ?? status)}</Badge>;
 };
 
 export const StatusLabelAttendance = ({ status, value }) => {
@@ -112,8 +177,6 @@ export const StatusLabelAttendance = ({ status, value }) => {
   // Render the badge with the appropriate label and style
   return <Badge className={className}>{status}</Badge>;
 };
-
-
 
 export const StatusCircleLabel = ({ label, status }) => {
   const normalizedStatus = status.toLowerCase();
@@ -213,47 +276,53 @@ export const StatusIcon = ({ status }) => {
   else return <></>;
 };
 
-
 export const JobStatusLabel = ({ label, type }) => {
   if (!label) return "";
 
   const getStylesByType = () => {
     switch (type) {
-      case 'status':
+      case "status":
         return {
-          bgColor: label.toLowerCase() === "open" ? "bg-green-100/50" : "bg-red-100/50",
-          dotColor: label.toLowerCase() === "open" ? "before:bg-green-500" : "before:bg-red-500",
-          textColor: label.toLowerCase() === "open" ? "text-green-700" : "text-red-700"
+          bgColor:
+            label.toLowerCase() === "open"
+              ? "bg-green-100/50"
+              : "bg-red-100/50",
+          dotColor:
+            label.toLowerCase() === "open"
+              ? "before:bg-green-500"
+              : "before:bg-red-500",
+          textColor:
+            label.toLowerCase() === "open" ? "text-green-700" : "text-red-700",
         };
-      case 'employeeType':
+      case "employeeType":
         return {
           bgColor: "bg-blue-100/50",
           dotColor: "before:bg-blue-500",
-          textColor: "text-blue-700"
+          textColor: "text-blue-700",
         };
-      case 'workType':
+      case "workType":
         return {
           bgColor: "bg-purple-100/50",
           dotColor: "before:bg-purple-500",
-          textColor: "text-purple-700"
+          textColor: "text-purple-700",
         };
-      case 'workLocation':
+      case "workLocation":
         return {
           bgColor: "bg-orange-100/50",
           dotColor: "before:bg-orange-500",
-          textColor: "text-orange-700"
+          textColor: "text-orange-700",
         };
-      case 'jobType':
+      case "jobType":
         return {
           bgColor: "bg-emerald-100/50",
           dotColor: "before:bg-emerald-500",
-          textColor: "text-emerald-700"
+          textColor: "text-emerald-700",
         };
       default:
         return {
           bgColor: "bg-gray-100/50",
           dotColor: "before:bg-gray-500",
-          textColor: "text-gray-700"
+          textColor: "text-gray-700",
         };
     }
   };
@@ -269,3 +338,6 @@ export const JobStatusLabel = ({ label, type }) => {
     </Badge>
   );
 };
+
+export { StatusLabel, statusVariants };
+

@@ -6,18 +6,21 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
-} from "../../../../src/@/components/ui/dropdown-menu";
-import { Button } from "../../../../src/@/components/ui/button";
+} from "src/@/components/ui/dropdown-menu";
+import { Button } from "src/@/components/ui/button";
 import { useSelector } from "react-redux";
 import { saveEmployeeWorkInformationData } from "app/hooks/employee";
 import { IoMdArrowDropdown } from "react-icons/io";
-import { RiArrowDropDownLine } from "react-icons/ri";
+import { Check, ChevronsUpDown, MoreHorizontal } from "lucide-react";
 import { ResignationStatus } from "utils/getValuesFromTables";
-import { Status, ExitStatusCurrentStep } from "./index";
 import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 import { toast } from "react-toastify";
 import { StatusCircleLabel } from "components/StatusLabel";
-import ClearanceSheet from "./ClearanceSheet";
+import {
+  ClearanceSheet,
+  Status,
+  ExitStatusCurrentStep,
+} from "app/modules/ExitAndClearance/Sections";
 
 const RenderResignationAction = ({ row, reload, viewMode }) => {
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
@@ -38,12 +41,12 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
       if (row) {
         // Create a new FormData object
         const formData = new FormData();
-        
+
         // Append values to the FormData object
         formData.append("id", row.id);
         formData.append("status_resignation", status);
-  
-        const response = await saveEmployeeExitDetail(formData);
+
+        const response = await saveEmployeeExitDetail(formData, row.id);
         if (response && reload) {
           // Check the status and perform additional actions if required
           if (status === "accepted by hr") {
@@ -59,7 +62,7 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
       console.error("Error updating application status:", error);
     }
   };
-  
+
   return (
     <div>
       {open && (
@@ -90,21 +93,10 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
                 </span>
               </Button>
             ) : (
-              <Button
-                className="text-sm font-normal text-zinc-600"
-                variant="outline"
-              >
-                <div className="flex items-center">
-                  <StatusCircleLabel
-                    label={ResignationStatus(status)}
-                    status={status}
-                  />
-                  <RiArrowDropDownLine className="text-xl text-zinc-600" />
-                </div>
-              </Button>
+              <MoreHorizontal className="w-4 h-4" />
             )}
           </DropdownMenuTrigger>
-          <DropdownMenuContent start className="p-6">
+          <DropdownMenuContent start className="p-6 pt-3">
             {loggedInUser.role === 2 && (
               <>
                 {managerApproval !== "Approved" && (
@@ -174,7 +166,6 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
                       label={"Exit Interview"}
                       status={"exit"}
                     />{" "}
-                  
                   </DropdownMenuLabel>
                 )}
               </>

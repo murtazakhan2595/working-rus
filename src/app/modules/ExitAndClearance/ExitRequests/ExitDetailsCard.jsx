@@ -1,6 +1,6 @@
 import moment from "moment";
 import React, { useState, useRef } from "react";
-import { RenderResignationAction, RenderTerminationAction } from "./Sections";
+import { RenderResignationAction,RenderTerminationAction } from "app/modules/ExitAndClearance/ExitRequests";
 import {
   DepartmentName,
   DesignationName,
@@ -14,20 +14,20 @@ import {
 import { Formik } from "formik";
 
 import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
-import { ExitStatusCurrentStep } from "./Sections";
+import { ExitStatusCurrentStep } from "app/modules/ExitAndClearance/Sections";
 import { TerminationReason } from "utils/getValuesFromTables";
 import { Labels } from "components/StatusLabel";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
-} from "../../../src/@/components/ui/sheet";
+} from "src/@/components/ui/sheet";
 import {
   ViewDetailHeader,
   ViewDetailBox,
   ViewAttachmentDetail,
-} from "./Sections/DetailViewPanel";
-import { Button } from "../../../components/ui/button";
+} from "app/modules/ExitAndClearance/Sections/DetailViewPanel";
+import { Button } from "components/ui/button";
 import { CoverFileUpload } from "components/FormControl";
 const ExitDetailsCard = ({
   onClose,

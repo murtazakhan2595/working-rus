@@ -21,10 +21,9 @@ const EmployeeExit = ({
   userDetails,
 }) => {
   const [activeTab, setActiveTab] = useState("exit-request");
-    const [resignation, setResignation] = useState({});
-    const [termination, setTermination] = useState({});
+  const [resignation, setResignation] = useState({});
+  const [termination, setTermination] = useState({});
   const [loading, setLoading] = useState(false);
-console.log("termination", termination);
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -62,13 +61,13 @@ console.log("termination", termination);
               <TabsTrigger
                 value="exit-request"
                 className="data-[state=active]:bg-primary-200 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-                >
+              >
                 Exit Request
               </TabsTrigger>
               <TabsTrigger
                 value="termination-letter"
                 className="data-[state=active]:bg-primary-200 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-                 >
+              >
                 Termination Letter
               </TabsTrigger>
             </TabsList>

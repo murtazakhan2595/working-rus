@@ -40,6 +40,33 @@ export function getDropdownList(
     : dropdownOptions;
 }
 
+export function getFormattedDropdownItems(
+  items,
+  labelKey = "name",
+  valueKey = "id",
+  prefixKey = null,
+  separator = null,
+  additionalOption = null
+) {
+  // If the input array is empty or not an array, return only the additional option if provided
+  if (!Array.isArray(items) || items.length === 0)
+    return additionalOption ? [additionalOption] : [];
+
+  // Map items to dropdown-friendly format
+  const dropdownOptions = items.map((item) => ({
+    label: prefixKey
+      ? `${item[prefixKey]} ${separator} ${item[labelKey]}` // Format: "Prefix - Label"
+      : item[labelKey], // If no prefix, use label directly
+    value: item[valueKey],
+    ...items,
+  }));
+
+  // If additionalOption exists, append it to the dropdown options
+  return additionalOption
+    ? [additionalOption, ...dropdownOptions]
+    : dropdownOptions;
+}
+
 /**
  * Converts an array of strings into an array of objects
  * with `label` and `value` properties having the same value.

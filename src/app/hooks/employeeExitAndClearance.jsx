@@ -1,11 +1,11 @@
 import axios from "axios";
-import { toast } from "react-toastify";
+import { getFormattedDropdownItems } from "utils/Lists";
 import { initialState } from "state/slices/UserSlice";
 import {
   ExitStatusCurrentStep,
   Status,
 } from "app/modules/ExitAndClearance/Sections";
-import { HandleLogout} from "./general";
+import { HandleLogout } from "./general";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -83,12 +83,12 @@ const getEmployeesExitCount = async (payload) => {
 };
 
 const getEmployeesResignations = async (payload) => {
-  console.log("getEmployeesResignations", payload);
   const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-exit_date";
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   try {
-    const URL = `/employeeExit?order=-created_at&${
+    const URL = `/employeeExit?order=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -114,10 +114,11 @@ const getEmployeesResignations = async (payload) => {
     return null;
   }
 };
-const saveEmployeeExitDetail = async (payload) => {
+
+const saveEmployeeExitDetail = async (payload, id) => {
   try {
-    if (payload?.id) {
-      const URL = `${baseUrl}/employeeExit/${payload?.id}`;
+    if (id) {
+      const URL = `${baseUrl}/employeeExit/${id}`;
       const response = await axios.patch(URL, payload, {
         headers: formDataHeader(),
       });
@@ -140,6 +141,44 @@ const saveEmployeeExitDetail = async (payload) => {
 
     console.error("Error fetching Personal Info data :", error);
     return false;
+  }
+};
+
+export const getTerminationReason = async (payload) => {
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  try {
+    const URL = `/terminationreason?order=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const terminationReasonData = response.data;
+      return {
+        count: terminationReasonData.count,
+        results: getFormattedDropdownItems(terminationReasonData?.results),
+      };
+    } else {
+      return {
+        count: 0,
+        results: [],
+      };
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return {
+      count: 0,
+      results: [],
+    };
   }
 };
 

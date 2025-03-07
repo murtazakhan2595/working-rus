@@ -3,39 +3,38 @@ import { connect } from "react-redux";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { getEmployeesExitCount } from "app/hooks/employeeExitAndClearance";
-import Resignations from "./Resignations";
-import Terminations from "./Terminations";
 import RequestTerminationCard from "./RequestTerminationCard";
-import Terminated from "./Terminated";
-import Resigned from "./Resigned";
-// import { TerminationStatus } from "utils/getValuesFromTables";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { ImExit } from "react-icons/im";
 import { RxCrossCircled } from "react-icons/rx";
-
+import { Card, CardContent } from "components/ui/card";
 import {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "../../../src/@/components/ui/tabs";
+} from "src/@/components/ui/tabs";
 import { Header } from "components";
 import { StatusList } from "./Sections";
 import { FilterInput } from "components/FormControl";
 import { ResignationStatusOptions } from "data/Data";
 import Stats from "components/ui/Stats";
 import { TerminationStatusOptions } from "data/Data";
+import { ExitRequests } from "app/modules/ExitAndClearance/ExitRequests";
+import { ExitRecords } from "app/modules/ExitAndClearance/ExitRecords";
 
 const ExitAndClearance = ({ userProfile, departments }) => {
-  const [activeTab, setActiveTab] = useState("Resignations");
+  const [activeTab, setActiveTab] = useState("Exit Requests");
+  const [activeInnerTab, setActiveInnerTab] = useState("Resignations");
   const [totalExit, setTotalExit] = useState(0);
   const [approvedResignation, setApprovedResignation] = useState(0);
   const [rejectedResignation, setRejectedResignation] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("");
-  
+  const [ExitData, setExitData] = useState({ count: 0, results: [] });
+
   const [filterData, setFilterData] = useState({
-     exit_category: "resignation",
-     status_resignation: StatusList(),
+    exit_category: "resignation",
+    status_resignation: StatusList(),
     ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
   });
   const fetchData = async () => {
@@ -65,12 +64,15 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   const handleFilterChange = (filterName, filterValue) => {
     if (filterName === "status_resignation") setSelectedStatus(filterValue);
     if (filterName === "status_termination") setSelectedStatus(filterValue);
-    if (filterName === "departments") setSelectedStatus(filterValue);
-    if (
+    if (filterName === "departments_name") {
+      setSelectedStatus(filterValue);
+      filterValue = [filterValue];
+    }
+    else if (
       filterName === "status_resignation" ||
       (filterName === "status_termination" && filterValue)
     ) {
-      filterValue = [filterValue];
+      filterValue = filterValue;
     }
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -83,7 +85,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
     });
   };
   const handleTabChange = (tab) => {
-    if (tab === "Resignations") {
+    if (tab === "Resignations" || tab === "Exit Requests") {
       setFilterData({
         status_resignation: StatusList(),
         ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
@@ -93,25 +95,21 @@ const ExitAndClearance = ({ userProfile, departments }) => {
       setFilterData({
         status_termination: StatusList(false),
         ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
-
         exit_category: "termination",
       });
-    } else if (tab === "Resigned") {
+    } else if (tab === "Resigned" || tab === "Exit Records") {
       setFilterData({
         ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
-
         exit_category: "resignation",
         status_resignation: "exit interview",
       });
     } else if (tab === "Terminated") {
       setFilterData({
         ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
-
         exit_category: "termination",
         status_termination: "exit interview",
       });
     }
-    setActiveTab(tab);
   };
 
   const statsData = [
@@ -141,65 +139,104 @@ const ExitAndClearance = ({ userProfile, departments }) => {
     Terminated: "departments",
   };
   return (
-    <div className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}>
+    <div
+      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
+    >
       <Header
         content={
-          userProfile.role=== 1||userProfile.role=== 3 ? <RequestTerminationCard closeModel={closeRequestTerminationCard} />:null
+          userProfile.role === 1 || userProfile.role === 3 ? (
+            <RequestTerminationCard closeModel={closeRequestTerminationCard} />
+          ) : null
         }
       />
       <Stats stats={statsData} />
       <Tabs
-        defaultValue="Resignations"
+        defaultValue="Exit Requests"
         className="w-full"
-        onValueChange={handleTabChange}
+        onValueChange={(tab) => {
+          handleTabChange(tab);
+          setActiveTab(tab);
+          setActiveInnerTab(
+            tab === "Exit Requests" ? "Resignations" : "Resigned"
+          );
+        }}
         value={activeTab}
       >
         <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
           <TabsList className="flex items-center justify-center mb-4">
-            {["Resignations", "Terminations", "Resigned", "Terminated"].map(
-              (tab) => (
-                <TabsTrigger
-                  key={tab}
-                  value={tab}
-                  className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-                  >
-                  {tab}
-                </TabsTrigger>
-              )
-            )}
+            {["Exit Requests", "Exit Records"].map((tab) => (
+              <TabsTrigger
+                key={tab}
+                value={tab}
+                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+              >
+                {tab}
+              </TabsTrigger>
+            ))}
           </TabsList>
           <FilterInput
             filters={[
               {
                 type: "search",
-                placeholder: "Search by id",
+                placeholder: "Search by ID",
                 name: "employee_id",
               },
-              {
-                type: "select-one",
-                option: getFilterInputOptions(),
-                name: filterNameMapping[activeTab],
-                placeholder: "Status",
-                values: selectedStatus,
-                value: selectedStatus
-              },
+              ...(activeInnerTab === "Resignations"
+                ? [
+                    {
+                      type: "select-one",
+                      option: ResignationStatusOptions,
+                      name: "status_resignation",
+                      placeholder: "Status",
+                      values: selectedStatus,
+                      value: selectedStatus,
+                    },
+                  ]
+                : activeInnerTab === "Terminations"
+                ? [
+                    {
+                      type: "select-one",
+                      option: TerminationStatusOptions,
+                      name: "status_termination",
+                      placeholder: "Status",
+                      values: selectedStatus,
+                      value: selectedStatus,
+                    },
+                  ]
+                : [
+                    {
+                      type: "select-one",
+                      option: departments,
+                      name: "departments_name",
+                      placeholder: "Department",
+                      values: selectedStatus,
+                      value: selectedStatus,
+                    },
+                  ]),
             ]}
             onChange={handleFilterChange}
           />
         </div>
-        <TabsContent value="Resignations">
-          <Resignations filterData={filterData} />
-        </TabsContent>
-
-        <TabsContent value="Terminations">
-          <Terminations filterData={filterData} />
-        </TabsContent>
-        <TabsContent value="Resigned">
-          <Resigned filterData={filterData} />
-        </TabsContent>
-        <TabsContent value="Terminated">
-          <Terminated filterData={filterData} />
-        </TabsContent>
+        <Card>
+          <CardContent>
+            <TabsContent value="Exit Requests">
+              <ExitRequests
+                filterData={filterData}
+                handleTabChange={handleTabChange}
+                activeTab={activeInnerTab}
+                setActiveTab={setActiveInnerTab}
+              />
+            </TabsContent>
+            <TabsContent value="Exit Records">
+              <ExitRecords
+                filterData={filterData}
+                handleTabChange={handleTabChange}
+                activeTab={activeInnerTab}
+                setActiveTab={setActiveInnerTab}
+              />
+            </TabsContent>
+          </CardContent>
+        </Card>
       </Tabs>
     </div>
   );

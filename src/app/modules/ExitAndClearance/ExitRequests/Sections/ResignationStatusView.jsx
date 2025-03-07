@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-import { Status } from "./index";
-import { StatusViewIcon } from "components/StatusLabel";
+import { Status } from 'app/modules/ExitAndClearance/Sections'
+import { StatusViewIcon, StatusLabel } from "components/StatusLabel";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -9,10 +9,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
-} from "../../../../src/@/components/ui/dropdown-menu";
-import { Button } from "../../../../src/@/components/ui/button";
+} from "src/@/components/ui/dropdown-menu";
+import { ResignationStatus } from "utils/getValuesFromTables";
 
-const ResignationStatusView = ({ row, buttonTitle = "View" }) => {
+const ResignationStatusView = ({ status}) => {
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
   const spanClassName = "text-[14px] flex justify-start items-center";
   const itemClassName = "custom-dropdown-item py-2";
@@ -25,15 +25,15 @@ const ResignationStatusView = ({ row, buttonTitle = "View" }) => {
     else if (status === "Rejected") return "Rejected";
     else return "Approval";
   };
-  const managerApproval = Status(row.status_resignation, 1);
-  const HRApproval = Status(row.status_resignation, 2);
+  const managerApproval = Status(status, 1);
+  const HRApproval = Status(status, 2);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button aria-haspopup="true" variant="outline" className="">
-          {buttonTitle}
-        </Button>
+        <StatusLabel className="rounded cursor-pointer" status={status}>
+          {ResignationStatus(status)}
+        </StatusLabel>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="p-3 ml-2 shadow">
         <DropdownMenuLabel className={`${itemClassName} fw-bold`}>
@@ -62,14 +62,14 @@ const ResignationStatusView = ({ row, buttonTitle = "View" }) => {
 
         <DropdownMenuLabel className={`${itemClassName} `}>
           <span className={`${spanClassName}`}>
-            <StatusViewIcon status={Status(row.status_resignation, 3)} />
+            <StatusViewIcon status={Status(status, 3)} />
             Clearance initiated
           </span>
         </DropdownMenuLabel>
 
         <DropdownMenuLabel className={`${itemClassName} `}>
           <span className={`${spanClassName}`}>
-            <StatusViewIcon status={Status(row.status_resignation, 4)} /> Exit
+            <StatusViewIcon status={Status(status, 4)} /> Exit
             Interview
           </span>
         </DropdownMenuLabel>
