@@ -53,6 +53,7 @@ import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import AttendanceReport from "app/modules/Attendance/Sections/AttendenceFile";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 import OrganizationalChart from "app/modules/OfficeSetting/Screens/OrganizationalChart";
+import {TeamProfileMangement} from "app/modules/TeamManagment";
 
 const SidebarRoutes = [
   {
@@ -161,6 +162,11 @@ const SidebarRoutes = [
     path: "/profile-management",
     component: <Employee />,
     name: "Profile Management",
+  },
+  Config.TEAM_MANAGEMENT && {
+    path: "/team-profile-management",
+    component: <TeamProfileMangement />,
+    name: "Team Profile Management",
   },
   Config.PROFIL_MANAGMENT && {
     path: "/create-employee",

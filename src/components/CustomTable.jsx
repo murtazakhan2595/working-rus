@@ -201,7 +201,7 @@ export default function TableCustom({
                       columns.map((column, index) => (
                         <TableCell
                           key={index}
-                          className={`min-w-fit text-neutral-1200 ${
+                          className={`min-w-fit w-fit text-neutral-1200 ${
                             column.onClick || column.rowExpandOnClick
                               ? "cursor-pointer expandable-cell"
                               : ""

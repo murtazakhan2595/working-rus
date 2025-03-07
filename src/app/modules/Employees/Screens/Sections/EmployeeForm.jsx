@@ -20,8 +20,11 @@ import {
   saveDocumentChecklist,
   getDocumentChecklist,
 } from "app/hooks/employee";
-
-import { fetchEmployees, fetchReportingManagers } from "state/slices/EmpSlice";
+import {
+  fetchEmployees,
+  fetchReportingManagers,
+  fetchEmployeesDetail,
+} from "state/slices/EmpSlice";
 import { validationEmployeeInfoFormSchema } from "app/utils/FormSchema/employeeFormSchema";
 
 import {
@@ -238,6 +241,7 @@ const SheetOnBorading = ({
         // Dispatch fetch actions to update the state
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
+        dispatch(fetchEmployeesDetail());
         if (id) {
           // Employee update flow
           toast.success("Employee Updated Successfully!", {
@@ -790,7 +794,35 @@ const SheetOnBorading = ({
                         </div>
                       </div>
                     )}
-                    <div className="space-y-4">
+                    <div className="col-span-2 space-y-2">
+                      <TextAreaInput
+                        name={"jd_file"}
+                        error={props.errors?.jd_file}
+                        touch={props.touched?.jd_file}
+                        value={props.values?.jd_file}
+                        label={"Job Description"}
+                        required={false}
+                        maxRows={5}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
+                    </div>
+                    <div className="col-span-2 space-y-2 ">
+                      <TextAreaInput
+                        name={"kpi_file"}
+                        error={props.errors?.kpi_file}
+                        touch={props.touched?.kpi_file}
+                        value={props.values?.kpi_file}
+                        label={"Job KPIs"}
+                        required={false}
+                        maxRows={5}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
+                    </div>
+                    <div className="space-y-2">
                       <h3 className="text-lg font-semibold">
                         Onboarding Checklist
                       </h3>

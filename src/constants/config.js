@@ -18,7 +18,7 @@ export default {
     PERSONAL_DEVELOPMENT:false,
     DAILY_TASK_REPORT:true,
     OFFICE_SETTING: true,
-
+ORGANIZATIONAL_CHART:true,
 
     TS_PERSONAL_REQUISITION:false,
     TS_REFERRALS:false,

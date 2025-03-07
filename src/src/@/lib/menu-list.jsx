@@ -14,6 +14,7 @@ import {
   UsersRound,
   BadgeDollarSign,
   Settings,
+  Network,
 } from "lucide-react";
 import Config from "constants/config";
 
@@ -43,7 +44,8 @@ import Config from "constants/config";
  */
 export function getMenuList(pathname, userRole) {
   const userRolesMap = {
-    isPeopleTeam: userRole === 1 || userRole === 3 || userRole === 2,
+    isPeopleTeam: userRole === 1 || userRole === 3,
+    isTeamManagement: userRole === 2,
     isOfficeSetting: userRole === 1 || userRole === 3,
     isSelfServiceHub:
       userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
@@ -62,6 +64,7 @@ export function getMenuList(pathname, userRole) {
       userRole === 1 || userRole === 2 || userRole === 3,
     peopleEngagementMenus:
       userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
+    organizationalChart: true,
   };
 
   const createMenu = (
@@ -99,6 +102,26 @@ export function getMenuList(pathname, userRole) {
         Config.PROFIL_MANAGMENT &&
           userRole !== 2 &&
           createMenu("/create-employee", "Employee Creation"),
+        // createMenu("/edit-employee", "Customize Employee"),
+        // createMenu("/relocation", "Relocation"),
+        // createMenu("/internal", "Internal"),
+        // createMenu("/external", "External"),
+      ].filter(Boolean)
+    ),
+  ];
+
+  const teamManagmentMenus = [
+    createMenu(
+      "",
+      "Team Management",
+      Users,
+      [
+        Config.PROFIL_MANAGMENT &&
+          createMenu("/team-profile-management", "Team Profile"),
+        // createMenu("/settings", "Profile Settings"),
+        // createMenu("/travel-details", "Travel Details"),
+        Config.EMPLOYEE_OFFBOARDING &&
+          createMenu("/exit-clearance", "Exit & Clearance"),
         // createMenu("/edit-employee", "Customize Employee"),
         // createMenu("/relocation", "Relocation"),
         // createMenu("/internal", "Internal"),
@@ -248,6 +271,9 @@ export function getMenuList(pathname, userRole) {
     createMenu("/office-settings", "Office Setting", Settings),
     // createMenu("/services", "Services", SquareStack),
   ];
+  const organizationalChartMenu = [
+    createMenu("/organizational-chart", "Organization Chart", Network),
+  ];
 
   const reportsMenus = [
     createMenu(
@@ -261,12 +287,19 @@ export function getMenuList(pathname, userRole) {
 
   const menuList = [
     { groupLabel: "", menus: commonMenus },
-    userRolesMap.isPeopleTeam &&
-      Config.TEAM_MANAGEMENT && { groupLabel: "", menus: peopleTeamMenus },
     userRolesMap.isSelfServiceHub &&
       Config.SELF_SERVICE_HUB && {
         groupLabel: "",
         menus: selfServiceHubMenus,
+      },
+    userRolesMap.isTeamManagement &&
+      Config.TEAM_MANAGEMENT && { groupLabel: "", menus: teamManagmentMenus },
+    userRolesMap.isPeopleTeam &&
+      Config.PROFIL_MANAGMENT && { groupLabel: "", menus: peopleTeamMenus },
+    userRolesMap.isPayrollAttendance &&
+      Config.ATTENDANCE && {
+        groupLabel: "",
+        menus: AndAttendanceMenus,
       },
     userRolesMap.isLeaveTracker &&
       Config.LEAVE_MANAGMENT && {
@@ -285,16 +318,17 @@ export function getMenuList(pathname, userRole) {
       },
     userRolesMap.isTalentSphere &&
       Config.TALENT_SPHERE && { groupLabel: "", menus: talentSphereMenus },
+    userRolesMap.organizationalChart &&
+      Config.ORGANIZATIONAL_CHART && {
+        groupLabel: "",
+        menus: organizationalChartMenu,
+      },
     userRolesMap.performanceManagementMenus &&
       Config.PERFORMANCE_MANAGEMENT && {
         groupLabel: "",
         menus: performanceManagementMenus,
       },
-    userRolesMap.isPayrollAttendance &&
-      Config.ATTENDANCE && {
-        groupLabel: "",
-        menus: AndAttendanceMenus,
-      },
+
     // userRolesMap.dailyTaskReportMenus &&
     //   Config.DAILY_TASK_REPORT && {
     //     groupLabel: "",

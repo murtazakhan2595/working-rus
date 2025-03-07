@@ -11,6 +11,7 @@ const Header = ({ content, userProfile }) => {
     const path = location.pathname.replace(/^\//, "");
     const pathNames = {
       "people-team": "People Team",
+      "team-profile-management": "Team Managment",
       "self-service": "Self Service",
       "talent-sphere": "Talent Sphere",
       "task-management": "Task Management",
