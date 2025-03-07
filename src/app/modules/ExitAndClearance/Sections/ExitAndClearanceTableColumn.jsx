@@ -87,6 +87,8 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
       formatter: (cell, row) => (
         <RenderResignationAction row={row} reload={reload} />
       ),
+      headerAlign:"right",
+      width:'80px',
     },
   ];
   return columns;
@@ -111,7 +113,7 @@ export const ExitRequestColumns = (
     {
       dataField: "employee_id",
       text: "Employees",
-      width: "180px",
+      width: "200px",
       formatter: (cell) => (
         <EmployeeOverview id={cell} showPosition={true} showDepartment={true} />
       ),
@@ -182,6 +184,8 @@ export const ExitRequestColumns = (
       formatter: (cell, row) => (
         <RenderTerminationAction row={row} reload={reload} viewMode={false} />
       ),
+      width:'80px',
+      headerAlign:"right",
     });
   }
   return columns;

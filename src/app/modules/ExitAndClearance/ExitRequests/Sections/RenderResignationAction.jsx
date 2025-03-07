@@ -64,7 +64,7 @@ const RenderResignationAction = ({ row, reload, viewMode }) => {
   };
 
   return (
-    <div>
+    <div className="flex justify-end">
       {open && (
         <ClearanceSheet
           isOpen={open}

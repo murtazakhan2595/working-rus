@@ -55,7 +55,7 @@ const RenderTerminationAction = ({ row, reload, viewMode }) => {
   const isApproved = employeeApproval === "Approved";
 
   return (
-    <div>
+    <div className="flex justify-end">
       {open && (
         <ClearanceSheet
           isOpen={open}
