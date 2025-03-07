@@ -7,8 +7,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
 } from "src/@/components/ui/dropdown-menu";
 import { ResignationStatus } from "utils/getValuesFromTables";
 

@@ -7,7 +7,6 @@ import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 
 import { PageLoader } from "components";
 
-import { Card, CardContent } from "components/ui/card.jsx";
 
 import TableCustom from "components/CustomTable";
 

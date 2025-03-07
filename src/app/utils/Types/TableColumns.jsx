@@ -1,47 +1,21 @@
-import {
-  EmployeeID,
-  ManagerName,
-  GetUser,
-  LeaveTypeOfEmployee,
-  UserRole,
-} from "utils/getValuesFromTables";
-import { Badge } from "components/ui/badge";
+import { EmployeeID, UserRole } from "utils/getValuesFromTables";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions, formatNumber } from "data/Data";
 import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
 import { EmployeeAttendenceHistoryActions } from "app/modules/Attendance/EmployeeAttendance/Section";
-// import {
-//   Status,
-//   RenderStatus,
-//   RenderLeaveType,
-//   RenderLeaveAction,
-// } from "app/modules/LeaveManagment/Sections";
 import moment from "moment";
 import { renderDate } from "utils/renderValues";
-import { downloadCV } from "app/hooks/recruitment";
 import { AiOutlineDownload } from "react-icons/ai";
-import RenderExitTableAction from "app/modules/EmployeesExit/sections/RenderExitTableAction";
-import { filebase64Download } from "utils/fileUtils";
 import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
-import { ResignationStatusView } from "app/modules/ExitAndClearance/Sections";
-import { RenderResignationAction } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
-import { TerminationStatusView } from "app/modules/ExitAndClearance/Sections";
-import { RenderTerminationAction } from "app/modules/ExitAndClearance/Sections";
 import EmployeeDataInfo from "../../modules/payroll/Sections/EmployeeDataInfo";
 import { DesignationName } from "utils/getValuesFromTables";
 import { DepartmentName } from "utils/getValuesFromTables";
 import { Switch } from "../../../src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
-import { Clock, Download } from "lucide-react";
+import { Clock } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
-import {
-  CalculateHoursWorked,
-  EmployeeAttendenceActions,
-} from "app/modules/Attendance/Sections";
-import { MembersList } from "app/modules/TaskManagment/Sections";
-import { calculatePercentage } from "utils/renderValues";
 import { StatusLabelAttendance } from "components/StatusLabel";
 import { formatDuration } from "utils/renderValues";
 /**
@@ -56,8 +30,8 @@ export const EmployeeColumns = [
     dataField: "serial_number",
     text: "ID",
     formatter: (cell, row) => <EmployeeID value={cell || row?.id} />,
-    dataSort:true,
-    minWidth:'101px',
+    dataSort: true,
+    minWidth: "101px",
   },
   {
     dataField: "first_name",
@@ -65,21 +39,21 @@ export const EmployeeColumns = [
     formatter: (cell, row) => (
       <EmployeeOverview id={row.id} showPosition={true} showDepartment={true} />
     ),
-    minWidth:'120px',
-    dataSort:true,
+    minWidth: "120px",
+    dataSort: true,
   },
 
   {
     dataField: "user_role",
     text: "Role",
     formatter: (cell, row) => <UserRole value={cell} />,
-    dataSort:true,
+    dataSort: true,
   },
   {
     dataField: "username",
     text: "Username",
-    minWidth:'105px',
-    dataSort:true,
+    minWidth: "105px",
+    dataSort: true,
   },
   {
     dataField: "work_email",
@@ -94,7 +68,7 @@ export const EmployeeColumns = [
   {
     dataField: "employee_status",
     text: "Status",
-    dataSort:true,
+    dataSort: true,
   },
   {
     dataField: "",
@@ -269,7 +243,6 @@ export const EmployeePayrollColumns = [
     text: "Total cost",
     formatter: (cell) => <>{"AED " + Math.round(cell)}</>,
   },
-  ,
   {
     dataField: "salary_type",
     text: "Salary Type",

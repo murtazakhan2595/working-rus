@@ -11,7 +11,7 @@ import { Button } from "src/@/components/ui/button";
 import { useSelector } from "react-redux";
 import { saveEmployeeWorkInformationData } from "app/hooks/employee";
 import { IoMdArrowDropdown } from "react-icons/io";
-import { Check, ChevronsUpDown, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { ResignationStatus } from "utils/getValuesFromTables";
 import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 import { toast } from "react-toastify";

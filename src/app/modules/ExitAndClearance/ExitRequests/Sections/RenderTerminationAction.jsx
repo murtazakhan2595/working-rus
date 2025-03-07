@@ -8,8 +8,6 @@ import {
 import { Button } from "src/@/components/ui/button"; // Replace with correct path
 import { useSelector } from "react-redux";
 import { IoMdArrowDropdown } from "react-icons/io";
-import { RiArrowDropDownLine } from "react-icons/ri";
-import { TerminationStatus } from "utils/getValuesFromTables";
 import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 import { toast } from "react-toastify";
 import { StatusCircleLabel } from "components/StatusLabel";
@@ -21,7 +19,6 @@ import {
 import { MoreHorizontal } from "lucide-react";
 
 const RenderTerminationAction = ({ row, reload, viewMode }) => {
-  const [openDropdownRow, setOpenDropdownRow] = useState(null);
   const loggedInUser = useSelector((state) => state.user.userProfile);
   const status = row.status_termination;
   const employeeApproval = Status(status, 0);

@@ -30,7 +30,6 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   const [approvedResignation, setApprovedResignation] = useState(0);
   const [rejectedResignation, setRejectedResignation] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [ExitData, setExitData] = useState({ count: 0, results: [] });
 
   const [filterData, setFilterData] = useState({
     exit_category: "resignation",

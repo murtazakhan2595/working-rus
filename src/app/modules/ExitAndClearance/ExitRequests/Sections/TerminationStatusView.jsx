@@ -4,10 +4,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
 } from "src/@/components/ui/dropdown-menu";
-import { Button } from "src/@/components/ui/button";
 import { Status } from "app/modules/ExitAndClearance/Sections";
 import { StatusViewIcon, StatusLabel } from "components/StatusLabel";
 import { TerminationStatus } from "utils/getValuesFromTables";

@@ -10,9 +10,9 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "../../../src/@/components/ui/tabs";
+} from "src/@/components/ui/tabs";
 
-import { Card, CardContent, CardHeader } from "../../../components/ui/card.jsx";
+import { Card, CardContent, CardHeader } from "components/ui/card.jsx";
 const EmployeeExit = ({
   userProfile,
   departments,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Resigned, Terminated } from "app/modules/ExitAndClearance/ExitRecords";
 import {
   Tabs,

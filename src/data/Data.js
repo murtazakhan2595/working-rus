@@ -1,6 +1,5 @@
 import { CiViewBoard } from "react-icons/ci";
 import { countries } from "country-data";
-import { getAllCountries } from "countries-and-timezones";
 import {
   fetchDepartments,
   fetchDesignations,

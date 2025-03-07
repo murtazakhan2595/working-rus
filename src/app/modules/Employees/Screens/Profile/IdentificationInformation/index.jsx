@@ -1,20 +1,13 @@
 import React, { useState, useEffect, forwardRef } from "react";
 
 import { Formik } from "formik";
-import { connect } from "react-redux";
-import { countriesList, visaOptions } from "data/Data.js";
-import {
-  DateInput,
-  SelectInputComponent,
-  TextInput,
-  CheckBoxInput,
-} from "components/FormControl";
+import { CheckBoxInput } from "components/FormControl";
 import PageLoader from "components/PageLoader.jsx";
 import {
   getEmployeeVisaDetailData,
   saveEmployeeVisaDetailData,
   saveEmployeePersonalInfoData,
-} from "../../../../../hooks/employee.jsx";
+} from "app/hooks/employee.jsx";
 import { File } from "app/utils/Types/General.jsx";
 import DrivingLicenseDetails from "./DrivingLicenseDetails";
 import PassportDetails from "./PassportDetails";
@@ -22,7 +15,6 @@ import IDDetails from "./IDDetails";
 import VisaDetails from "./VisaDetails";
 import InsuranceDetails from "./InsuranceDetails";
 import { validateEmployeeIdentificationForm } from "app/utils/FormSchema/employeeFormSchema.jsx";
-import { CoverFileUpload } from "components/FormControl";
 import { Card, CardContent, CardFooter } from "components/ui/card.jsx";
 import ProfileFormFooter from "app/modules/Employees/Screens/Sections/ProfileFormFooter";
 
@@ -64,7 +56,7 @@ const IdentificationInformation = ({
         id_front: data.id_front,
         id_back: data.id_back,
         insurance_card: data.insurance_card,
-        license_copy:data.license_copy,
+        license_copy: data.license_copy,
       };
 
       // Remove document fields from the data

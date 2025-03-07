@@ -9,15 +9,10 @@ import { toast } from "react-toastify";
 import SheetComponent from "components/ui/SheetComponent";
 import RequestTerminationForm from "./Sections/RequestTerminationForm";
 
-const { RxCross2 } = require("react-icons/rx");
 
 const RequestTerminationCard = ({
-  organizations,
   closeModel,
   userProfile,
-  designations,
-  departments,
-  managers,
 }) => {
   const [initialValues, setInitialValues] = React.useState({
     terminate_employee: "",

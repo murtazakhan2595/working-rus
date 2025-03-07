@@ -20,13 +20,12 @@ import {
 import {
   getEmployeeData,
   saveEmployeePersonalInfoData,
-} from "../../../../hooks/employee";
+} from "app/hooks/employee";
 import { validateEmployeePersonalInfoForm } from "app/utils/FormSchema/employeeFormSchema";
 import {
   mapEmployeePersonalInformationPayloadData,
   getPersonalInfo,
 } from "app/utils/MappingObjects/mapEmployeeData";
-import { Button } from "../../../../../components/ui/button";
 import { Card, CardContent, CardFooter } from "components/ui/card";
 import ProfileFormFooter from "app/modules/Employees/Screens/Sections/ProfileFormFooter";
 

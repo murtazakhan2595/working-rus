@@ -10,7 +10,6 @@ import {
   getCertifications,
   getContactInfo,
 } from "../utils/MappingObjects/mapEmployeeData";
-import { getFileNameFromURL } from "utils/downUtils";
 import {
   EmployeeCVDetails,
   EmployeeInformation,
