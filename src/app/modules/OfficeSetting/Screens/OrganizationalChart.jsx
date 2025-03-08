@@ -2,13 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { PageLoader } from "components";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
-import { getOrganizationTree } from "app/hooks/officeSetting";
+import {
+  getOrganizationTree,
+  getEmployeeReportingLine,
+} from "app/hooks/officeSetting";
 import Avatar from "components/ui/Avatar";
 
 const OrganizationalChart = ({ initialData = null }) => {
   const [direction, setDirection] = useState("top-to-bottom");
   const [organizationData, setOrganizationData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState("organization"); // 'organization' or 'reporting'
   const userProfile = useSelector((state) => state.user.userProfile);
 
   // Define tabs data for the chart directions
@@ -19,7 +23,13 @@ const OrganizationalChart = ({ initialData = null }) => {
     { value: "right-to-left", label: "Right to Left" },
   ];
 
-  // Helper function to transform API data to chart format
+  // Define view mode tabs
+  const viewModeTabsData = [
+    { value: "organization", label: "Organization Tree" },
+    { value: "reporting", label: "My Reporting Line" },
+  ];
+
+  // Helper function to transform API data to chart format for the full organization tree
   const transformApiData = (apiNode, managerId = null) => {
     // Generate a node border color based on department
     const getDepartmentColor = (department) => {
@@ -44,7 +54,7 @@ const OrganizationalChart = ({ initialData = null }) => {
         // Use the profile picture from the API data
         imageURL: apiNode.profile_picture,
         name: `${apiNode.first_name} ${apiNode.last_name}`,
-        role: apiNode.emp_designation,
+        role: apiNode.emp_designation || apiNode.designation_name,
         department: apiNode.department_name,
         managerId: managerId,
         initials: getInitials(apiNode.first_name, apiNode.last_name),
@@ -52,10 +62,88 @@ const OrganizationalChart = ({ initialData = null }) => {
       options: {
         nodeBorderColor: getDepartmentColor(apiNode.department_name),
       },
-      children: apiNode.subordinates.map((subordinate) =>
-        transformApiData(subordinate, apiNode.id.toString())
-      ),
+      children: apiNode.subordinates
+        ? apiNode.subordinates.map((subordinate) =>
+            transformApiData(subordinate, apiNode.id.toString())
+          )
+        : [],
     };
+  };
+
+  // Helper function to transform reporting line API data to chart format
+  // Helper function to transform reporting line API data to chart format
+  const transformReportingLineData = (reportingData) => {
+    if (!reportingData) return null;
+
+    // Generate a node border color based on role level
+    const getManagerColor = (designation) => {
+      if (designation && designation.toLowerCase().includes("ceo")) {
+        return "#4CAF50"; // Green for CEO
+      } else if (designation && designation.toLowerCase().includes("manager")) {
+        return "#FF9800"; // Orange for managers
+      } else {
+        return "#2196F3"; // Blue for others
+      }
+    };
+
+    // Generate initials for avatar fallback
+    const getInitials = (firstName, lastName) => {
+      return `${firstName.charAt(0)}${lastName.charAt(0)}`;
+    };
+
+    // The reporting line structure is different from the organization tree
+    // It contains the current employee at the root, then their manager, and so on up to the CEO
+
+    // First, let's create a flattened array of the reporting chain (from employee up to CEO)
+    const reportingChain = [];
+    let currentPerson = reportingData;
+
+    while (currentPerson) {
+      reportingChain.push({
+        id: currentPerson.id.toString(),
+        first_name: currentPerson.first_name,
+        last_name: currentPerson.last_name,
+        designation_name: currentPerson.designation_name,
+        profile_picture: currentPerson.profile_picture,
+      });
+      currentPerson = currentPerson.reporting_manager;
+    }
+
+    // Reverse the array to have CEO at the top (index 0)
+    reportingChain.reverse();
+
+    // Now construct the tree structure (CEO → Manager → Employee)
+    const buildReportingTree = (index) => {
+      if (index >= reportingChain.length) return null;
+
+      const person = reportingChain[index];
+
+      const node = {
+        id: person.id,
+        data: {
+          imageURL: person.profile_picture,
+          name: `${person.first_name} ${person.last_name}`,
+          role: person.designation_name,
+          department: "", // Not included in reporting line data
+          initials: getInitials(person.first_name, person.last_name),
+        },
+        options: {
+          nodeBorderColor: getManagerColor(person.designation_name),
+        },
+        children: [],
+      };
+
+      // Add the next person in the chain as a child, if there is one
+      const childNode = buildReportingTree(index + 1);
+      if (childNode) {
+        node.children.push(childNode);
+      }
+
+      return node;
+    };
+
+    // Build the tree starting from the CEO (index 0)
+    return buildReportingTree(0);
   };
 
   // Initialize data
@@ -63,42 +151,69 @@ const OrganizationalChart = ({ initialData = null }) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        if (initialData) {
-          // If initial data is provided, use it
-          const transformedData = transformApiData(initialData.results[0]);
-          setOrganizationData(transformedData);
-        } else {
-          // Otherwise fetch from API
-          const organizationTree = await getOrganizationTree();
-          console.log(organizationTree, "organizationTree");
+        if (viewMode === "organization") {
+          if (initialData) {
+            // If initial data is provided, use it
+            const transformedData = transformApiData(initialData.results[0]);
+            setOrganizationData(transformedData);
+          } else {
+            // Otherwise fetch from API
+            const organizationTree = await getOrganizationTree();
+            console.log(organizationTree, "organizationTree");
 
-          // Transform the first result (assuming structure matches what we expect)
-          if (
-            organizationTree &&
-            organizationTree.results &&
-            organizationTree.results.length > 0
-          ) {
-            const transformedData = transformApiData(
-              organizationTree.results[0]
-            );
+            // Transform the first result (assuming structure matches what we expect)
+            if (
+              organizationTree &&
+              organizationTree.results &&
+              organizationTree.results.length > 0
+            ) {
+              const transformedData = transformApiData(
+                organizationTree.results[0]
+              );
+              setOrganizationData(transformedData);
+            } else {
+              console.error(
+                "Invalid organization tree data structure",
+                organizationTree
+              );
+            }
+          }
+        } else if (viewMode === "reporting" && userProfile && userProfile.id) {
+          // Fetch reporting line data for the current user
+          const reportingLineData = await getEmployeeReportingLine(
+            userProfile.id
+          );
+          console.log("Reporting line data:", reportingLineData);
+
+          // Transform the reporting line data
+          if (reportingLineData) {
+            // For the reporting line view, we start with the employee and then show their managers
+            // We need to reverse the chain to show the hierarchy from top to bottom
+            const transformedData =
+              transformReportingLineData(reportingLineData);
             setOrganizationData(transformedData);
           } else {
             console.error(
-              "Invalid organization tree data structure",
-              organizationTree
+              "Invalid reporting line data structure",
+              reportingLineData
             );
           }
         }
       } catch (error) {
-        console.error("Error fetching organization data:", error);
+        console.error(`Error fetching ${viewMode} data:`, error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [initialData]);
+  }, [initialData, viewMode, userProfile]);
 
+  // Function to handle view mode change
+  const handleViewModeChange = (newMode) => {
+    setViewMode(newMode);
+    // Data will be fetched by the useEffect
+  };
 
   // Function to render org chart nodes recursively
   const renderOrganizationNode = (node) => {
@@ -169,25 +284,43 @@ const OrganizationalChart = ({ initialData = null }) => {
     <div className="p-4">
       <div className="mb-4">
         <h1 className="text-2xl font-bold mb-4">Organizational Chart</h1>
-        <div className="flex justify-between mb-4">
+        <div className="flex flex-col lg:flex-row md:flex-row xl:flex-row justify-between gap-4 mb-4">
+          {/* View Mode Tabs */}
+          <Tabs
+            value={viewMode}
+            onValueChange={handleViewModeChange}
+            defaultValue="organization"
+          >
+            <TabsList className="flex justify-center mb-4">
+              {viewModeTabsData.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="data-[state=active]:bg-primary-200 w-36 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+
+          {/* Chart Direction Tabs */}
           <Tabs
             value={direction}
             onValueChange={setDirection}
             defaultValue="top-to-bottom"
           >
-            <div className="flex flex-col lg:flex-row md:flex-row xl:flex-row">
-              <TabsList className="flex justify-center mb-4">
-                {directionTabsData.map((tab) => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-                  >
-                    {tab.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
+            <TabsList className="flex justify-center mb-4">
+              {directionTabsData.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
           </Tabs>
         </div>
       </div>
@@ -200,7 +333,11 @@ const OrganizationalChart = ({ initialData = null }) => {
           {organizationData ? (
             renderOrganizationNode(organizationData)
           ) : (
-            <div className="text-center">No organizational data available</div>
+            <div className="text-center">
+              {viewMode === "organization"
+                ? "No organizational data available"
+                : "No reporting line data available for this user"}
+            </div>
           )}
         </div>
       </div>
