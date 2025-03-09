@@ -137,8 +137,8 @@ export function numberToWords(number) {
   return result.trim();
 }
 
-export function renderDate(date) {
-  return date ? moment(date).format("MMM DD, YYYY") : "N/A";
+export function renderDate(date, fallbackValue ='N/A') {
+  return date ? moment(date).format("MMM DD, YYYY") : fallbackValue ;
 }
 
 export const formatDuration = (duration) => {

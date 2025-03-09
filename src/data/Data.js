@@ -428,20 +428,7 @@ export const ProjectStatusList = [
   },
 ];
 
-export const LogTimeStatusList = [
-  {
-    value: "Todo",
-    label: "Todo",
-  },
-  {
-    value: "In-progress",
-    label: "In-progress",
-  },
-  {
-    value: "Completed",
-    label: "Completed",
-  },
-];
+
 export const status2Options = [
   {
     value: "Pending",

@@ -40,6 +40,44 @@ export function getDropdownList(
     : dropdownOptions;
 }
 
+
+export function getDropdownListWithExtraKeys(
+  items,
+  labelKey = "name",
+  valueKey = "id",
+  additionalFields=[],
+  additionalOption = null,
+  prefixKey = null,
+  separator = null,
+) {
+   // If the input array is empty or not an array, return only the additional option if provided
+   if (!Array.isArray(items) || items.length === 0) {
+    return additionalOption ? [additionalOption] : [];
+  }
+
+  // Map items to dropdown-friendly format
+  const dropdownOptions = items.map((item) => {
+    let label = prefixKey ? `${item[prefixKey]} ${separator} ${item[labelKey]}` : item[labelKey];
+
+    // Include additional keys if specified
+    let additionalData = {};
+    additionalFields.forEach((key) => {
+      if (item.hasOwnProperty(key)) {
+        additionalData[key] = item[key];
+      }
+    });
+
+    return {
+      label,
+      value: item[valueKey],
+      ...additionalData,  // Spread additional fields dynamically
+    };
+  });
+
+  // Include the additional option at the start if provided
+  return additionalOption ? [additionalOption, ...dropdownOptions] : dropdownOptions;
+}
+
 /**
  * Converts an array of strings into an array of objects
  * with `label` and `value` properties having the same value.

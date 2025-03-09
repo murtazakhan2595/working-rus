@@ -1,6 +1,6 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
-import { HandleLogout} from "./general";
+import { HandleLogout } from "./general";
 import moment from "moment";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -158,6 +158,30 @@ const addUpdateDTR = async (payload, id = null) => {
 
     // Check response status
     if (response.status === 201 || response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    // Handle errors
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error adding/updating LogTime:", error);
+    return false;
+  }
+};
+const deleteDTR = async (id = null) => {
+  try {
+    const url = `${baseUrl}/dtr/${id}`;
+    const method = "DELETE";
+
+    const response = await axios({
+      method,
+      url,
+      headers: headers(),
+    });
+
+    // Check response status
+    if (response.status === 204 || response.status === 200) {
       return response.data;
     }
   } catch (error) {
