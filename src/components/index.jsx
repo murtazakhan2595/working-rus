@@ -5,7 +5,7 @@ import EmployeeOverview from "./EmployeeOverview";
 import Table from "./CustomTable";
 import BarChart from "./BarChart";
 import ConfirmationModal from "./ConfirmationModal";
-import { StatusLabel } from "./StatusLabel";
+import { StatusLabel,getStatusVariant } from "./StatusLabel";
 import ViewOptions from 'components/ViewOtions';
 import TableCustom from './CustomTable';
 import TextUI from './TextUI';
@@ -25,4 +25,5 @@ export {
   TextUI,
   TooltipText,
   OverviewCard,
+  getStatusVariant,
 };

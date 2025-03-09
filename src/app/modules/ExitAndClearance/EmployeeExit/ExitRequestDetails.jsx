@@ -8,10 +8,10 @@ import { DepartmentName } from "utils/getValuesFromTables";
 import { DesignationName } from "utils/getValuesFromTables";
 import { ManagerName } from "utils/getValuesFromTables";
 
-const ExitRequestDetails = ({ exitData }) => {
+const ExitRequestDetails = ({ exitData, reloadData = () => {} }) => {
   return (
     <div className="flex flex-col gap-5">
-      <PersonalInformation />
+      <PersonalInformation reloadData={reloadData} />
       <ExitDetails exitData={exitData} />
     </div>
   );

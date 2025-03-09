@@ -11,6 +11,7 @@ export default function AttachmentUI({
   id = null,
   displayImageAttachment = true,
   allowUpdate = true,
+  viewOnly = false,
 }) {
   const [viewAttachment, setViewAttachment] = useState(false);
   if (!attachment) return null;
@@ -20,7 +21,7 @@ export default function AttachmentUI({
       file instanceof File
         ? file.name.split(".").pop()?.toUpperCase()
         : file?.split(".").pop()?.toUpperCase();
-    return fileType && fileType.length > 4 ? fileType.slice(0, 4) : fileType;
+    return fileType && fileType.length > 3 ? fileType.slice(0, 3) : fileType;
   };
 
   const fileType = getFileType(attachment);
@@ -31,7 +32,7 @@ export default function AttachmentUI({
 
   return (
     <div key={key || ""}>
-      <div className="flex items-center justify-between w-full gap-2 p-4 my-1 border border-gray-400 rounded-lg">
+      <div className="flex items-center justify-between w-full gap-2 px-4 py-2 my-1 border border-gray-400 rounded-lg">
         <div className="flex items-center w-[85%]">
           <div
             className="flex items-center justify-center w-9 h-9"
@@ -61,27 +62,29 @@ export default function AttachmentUI({
             </span>
           </span>
         </div>
-        <div className="flex items-center gap-4">
-          {allowUpdate && (
+        {!viewOnly && (
+          <div className="flex items-center gap-4">
+            {allowUpdate && (
+              <button
+                type="button"
+                onClick={(e) => handleUpdateFileClick(e, id)}
+                className="text-sm font-medium text-primary hover:text-plum-700"
+              >
+                Update
+              </button>
+            )}
             <button
               type="button"
-              onClick={(e) => handleUpdateFileClick(e, id)}
-              className="text-sm font-medium text-primary hover:text-plum-700"
+              onClick={(e) => {
+                e.preventDefault();
+                removeFile(attachment, id);
+              }}
+              className="text-sm font-medium text-neutral-900 hover:text-neutral-700"
             >
-              Update
+              Remove
             </button>
-          )}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              removeFile(attachment, id);
-            }}
-            className="text-sm font-medium text-neutral-900 hover:text-neutral-700"
-          >
-            Remove
-          </button>
-        </div>
+          </div>
+        )}
       </div>
 
       {viewAttachment && (

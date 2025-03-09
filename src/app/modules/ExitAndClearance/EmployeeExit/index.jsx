@@ -40,7 +40,7 @@ const EmployeeExit = ({ userProfile }) => {
       <Header />
       <div>
         {exitDetails ? (
-          <ExitRequestDetails exitData={exitDetails} />
+          <ExitRequestDetails exitData={exitDetails} reloadData={fetchData} />
         ) : (
           <ExitRequestForm reload={fetchData} />
         )}

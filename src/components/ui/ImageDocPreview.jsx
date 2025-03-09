@@ -97,7 +97,7 @@ export default function ImageDocPreview({
         </div>
 
         {/* Controls */}
-        {fileType !== "PDF" && (
+        {imageFileType.includes(fileType) && (
           <div className="flex gap-x-3 justify-center p-2 bg-gray-100 rounded-lg shadow-sm">
             <TooltipProvider>
               <Tooltip content="Zoom In">
