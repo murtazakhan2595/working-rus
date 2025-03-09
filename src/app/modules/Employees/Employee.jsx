@@ -20,7 +20,7 @@ export default function EmployeeManagement() {
   const [activeEmployee, setActiveEmployee] = useState(0);
   const [totalOffboard, setTotalOffboard] = useState(0);
   const [totalManagers, setTotalManagers] = useState(0);
-  const [selectedStatus, setSelectedStatus] = useState("All");
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedDesignation, setSelectedDesignation] = useState("");
@@ -121,6 +121,7 @@ export default function EmployeeManagement() {
           <SelectInputComponent
             name="Employee Status"
             value={selectedStatus}
+            placeholder="Employee Status"
             options={employeeStatus}
             onChange={(name, newStatus) => onEmpStatusChange(newStatus)}
             classes="flex-row"

@@ -58,6 +58,7 @@ import {
   CheckBoxInput,
   PasswordInput,
 } from "components/FormControl";
+import ImportEmployeesButton from "./ImportEmployeesButton"; // Adjust the path as needed
 
 import { getEmployeeid } from "utils/getValuesFromTables";
 import { saveEmployeePayroll } from "app/hooks/payroll";
@@ -358,9 +359,13 @@ const SheetOnBorading = ({
                     className="mt-6 space-y-6"
                   >
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">
-                        Employee Details
-                      </h3>
+                      <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-semibold">
+                          Employee Details
+                        </h3>
+                        {/* Import button goes here */}
+                        <ImportEmployeesButton />
+                      </div>
                       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
                         <div className="space-y-2">
                           <TextInput

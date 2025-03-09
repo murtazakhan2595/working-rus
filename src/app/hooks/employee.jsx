@@ -967,7 +967,44 @@ const getDocumentChecklist = async (employeeid) => {
   }
 };
 
+const getDownloadTemplate = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/people/download-template/`, {
+      headers: headers(),
+    });
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+}
+
+const uploadEmployeesData = async (formData) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/people/upload-file/`,
+      formData,
+      {
+        headers: {
+          ...headers(),
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error uploading employees data:", error);
+  }
+};
+
 export {
+  getDownloadTemplate,
+  uploadEmployeesData,
   getDocumentChecklist,
   saveDocumentChecklist,
   getEmployeeData,

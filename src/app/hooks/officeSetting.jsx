@@ -198,6 +198,26 @@ const getOrganizationTree = async () => {
     return [];
   }
 }
+
+const getEmployeeReportingLine = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/employee_hierarchy/${id}/`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting employee reporting line:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+}
 export {
   saveOrganization,
   deleteOrganization,
@@ -208,4 +228,5 @@ export {
   getCityById,
   getCountryById,
   getOrganizationTree,
+  getEmployeeReportingLine,
 };
