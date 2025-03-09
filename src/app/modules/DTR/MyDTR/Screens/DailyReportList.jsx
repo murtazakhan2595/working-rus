@@ -21,6 +21,7 @@ import { toast } from "react-toastify";
 import moment from "moment";
 import { MyDtrTasksColumns } from "app/modules/DTR/Sections/DTRTableColumns";
 import { getTaskDetailsFromLogtime, addUpdateDTR } from "app/hooks/dtr";
+import { useNavigate } from "react-router-dom";
 
 const DailyReportList = ({
   dailyReportData,
@@ -176,6 +177,7 @@ const DTRDetailsBox = ({
   isMyDtr,
   approveDtr,
 }) => {
+   const navigate = useNavigate();
   const [openCreateCard, setOpenCreateCard] = useState(false);
   const [tasks, setTasks] = useState([]);
   useEffect(() => {
@@ -251,8 +253,16 @@ const DTRDetailsBox = ({
             )}
             {dtr_status !== "Submitted" && (
               <Button
-                onClick={() => {
-                  setOpenCreateCard(true);
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(`/project-board/card/add`, {
+                    state: {
+                      GOTO_URLS: `/my-dtr`,
+                      // activeView: "grid",
+                      // projectId: projectId,
+                      // boardId: board.id,
+                    },
+                  });
                 }}
               >
                 Add New Task
