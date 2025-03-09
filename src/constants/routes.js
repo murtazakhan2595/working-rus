@@ -322,6 +322,11 @@ const SidebarRoutes = [
     component: <ExitAndClearance />,
     name: "Exit Clearance",
   },
+  {
+    path: "/organizational-chart",
+    component: <OrganizationalChart />,
+    name: "Organizational Chart",
+  },
 ].filter(Boolean); // Filter out undefined routes
 
 const LoginRoutes = [
@@ -367,11 +372,7 @@ const GeneralRoutes = [
     component: <ResetPassword />,
     name: "Reset Password",
   },
-  {
-    path: "/organizational-chart",
-    component: <OrganizationalChart />,
-    name: "Organizational Chart",
-  },
+  
 ].filter(Boolean); // Filter out undefined routes
 
 export { SidebarRoutes, LoginRoutes, GeneralRoutes };

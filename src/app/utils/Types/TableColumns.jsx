@@ -31,7 +31,7 @@ export const EmployeeColumns = [
     text: "ID",
     formatter: (cell, row) => <EmployeeID value={cell || row?.id} />,
     dataSort: true,
-    minWidth: "101px",
+    minWidth: "105px",
   },
   {
     dataField: "first_name",

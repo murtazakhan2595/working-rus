@@ -28,7 +28,7 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
       },
     },
     {
-      dataField: "employee_id",
+      dataField: "serial_number",
       minWidth: "105px",
       text: "ID",
       formatter: (cell) => <EmployeeID value={cell} />,
@@ -123,7 +123,7 @@ export const ExitRequestColumns = (
       dataSort: true,
     },
     {
-      dataField: "employee_id",
+      dataField: "serial_number",
       text: "ID",
       formatter: (cell) => <EmployeeID value={cell} />,
       dataSort: true,
