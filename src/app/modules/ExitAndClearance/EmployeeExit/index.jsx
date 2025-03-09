@@ -23,6 +23,7 @@ const EmployeeExit = ({
   const [activeTab, setActiveTab] = useState("exit-request");
   const [resignation, setResignation] = useState({});
   const [termination, setTermination] = useState({});
+  const [exitDetails, setExitDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const fetchData = async () => {
     try {
@@ -36,7 +37,7 @@ const EmployeeExit = ({
         const terminations = data.filter(
           (item) => item.exit_category === "termination"
         );
-
+        setExitDetails(data[0]);
         setResignation(resignations[0]);
         setTermination(terminations[0]);
       }
@@ -52,10 +53,25 @@ const EmployeeExit = ({
   }, [userProfile]);
 
   return (
-    <div className="flex flex-col gap-4 ">
+    <div className="flex flex-col gap-4">
       <Header />
       <div>
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        {exitDetails ? (
+          <ExitRequestDetails
+            userProfile={userProfile}
+            departments={departments}
+            exitData={exitDetails}
+          />
+        ) : (
+          <ExitRequestForm
+            userProfile={userProfile}
+            reload={fetchData}
+            departments={departments}
+            designations={designations}
+            managers={managers}
+          />
+        )}
+        {/* <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
             <TabsList className="flex justify-center mb-4">
               <TabsTrigger
@@ -110,7 +126,7 @@ const EmployeeExit = ({
               </TabsContent>
             </CardContent>
           </Card>
-        </Tabs>
+        </Tabs> */}
       </div>
     </div>
   );

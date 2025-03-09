@@ -9,7 +9,8 @@ import {
   getBankDetails,
   getCertifications,
   getContactInfo,
-} from "../utils/MappingObjects/mapEmployeeData";
+  mapEmployeeData,
+} from "app/utils/MappingObjects/mapEmployeeData";
 import {
   EmployeeCVDetails,
   EmployeeInformation,
@@ -20,7 +21,7 @@ import {
   EmployeeBankDetails,
   EmployeeCertifiation,
   EmployeeContactInformation,
-} from "../utils/Types/Employee";
+} from "app/utils/Types/Employee";
 import { initialState } from "state/slices/UserSlice";
 import { toast } from "react-toastify";
 import { HandleLogout } from "./general";
@@ -40,7 +41,8 @@ const getEmployeeData = async (employeeId) => {
     const response = await axios.get(`${baseUrl}/emp/${employeeId}`, {
       headers: headers(),
     });
-    return response.data;
+    const employeeData = mapEmployeeData(response.data);
+    return employeeData;
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();
@@ -251,7 +253,7 @@ const saveEmployeeVisaDetailData = async (
   employeeId,
   visaDetail,
   visaDetailsFiles,
-  id=null,
+  id = null
 ) => {
   if (employeeId) {
     visaDetail.employee_id = employeeId;
@@ -259,11 +261,9 @@ const saveEmployeeVisaDetailData = async (
     try {
       // Save or update visa details
       if (id) {
-        await axios.patch(
-          `${baseUrl}/employeevisadetail/${id}`,
-          visaDetail,
-          { headers: headers() }
-        );
+        await axios.patch(`${baseUrl}/employeevisadetail/${id}`, visaDetail, {
+          headers: headers(),
+        });
       } else {
         await axios.post(`${baseUrl}/employeevisadetail/`, visaDetail, {
           headers: headers(),
@@ -523,10 +523,7 @@ const deleteEmployeeProfessionalExperianceData = async (
   return false;
 };
 
-export const deleteEmployeeCertificateData = async (
-  employeeid,
-  payload
-) => {
+export const deleteEmployeeCertificateData = async (employeeid, payload) => {
   if (employeeid && payload && payload.length > 0) {
     try {
       payload.map(async (certification) => {
@@ -979,7 +976,7 @@ const getDownloadTemplate = async () => {
     }
     console.error("Error fetching Personal Info data :", error);
   }
-}
+};
 
 const uploadEmployeesData = async (formData) => {
   try {

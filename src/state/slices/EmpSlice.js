@@ -1,15 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getEmployeeList,getEmployeeListWithDetail,getManagersList } from "app/hooks/general";
 import {
-  getEmployeeData,
-} from "app/hooks/employee";
+  getEmployeeList,
+  getEmployeeListWithDetail,
+  getManagersList,
+} from "app/hooks/general";
+import { getEmployeeData } from "app/hooks/employee";
 
 // Define the initial state
 const initialState = {
   employees: [],
   employees_detail: [],
   reportingManagers: [],
-  user_details:{},
+  user_details: {},
   apiStatus: "idle",
   error: null,
 };
@@ -85,7 +87,7 @@ const employeesSlice = createSlice({
         state.apiStatus = "failed";
         state.error = action.error.message;
       })
-      
+
       // When the fetchEmployeesDetail thunk is pending
       .addCase(fetchEmployeesDetail.pending, (state) => {
         state.apiStatus = "loading";
@@ -100,7 +102,7 @@ const employeesSlice = createSlice({
         state.apiStatus = "failed";
         state.error = action.error.message;
       })
-      
+
       // When the fetchEmployees thunk is pending
       .addCase(fetchEmployees.pending, (state) => {
         state.apiStatus = "loading";

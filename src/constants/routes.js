@@ -30,8 +30,7 @@ import ResetPassword from "app/modules/Login/ResetPassword.jsx";
 import ComingSoon from "app/modules/comingSoon/ComingSoon.jsx";
 import Services from "app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
-import EmployeesExit from "app/modules/EmployeesExit";
-import { ExitAndClearance } from "app/modules/ExitAndClearance";
+import { ExitAndClearance, EmployeeExit } from "app/modules/ExitAndClearance";
 import {
   Payslip,
   EmployeeSalaryDetails,
@@ -53,7 +52,7 @@ import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import AttendanceReport from "app/modules/Attendance/Sections/AttendenceFile";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 import OrganizationalChart from "app/modules/OfficeSetting/Screens/OrganizationalChart";
-import {TeamProfileMangement} from "app/modules/TeamManagment";
+import { TeamProfileMangement } from "app/modules/TeamManagment";
 
 const SidebarRoutes = [
   {
@@ -96,7 +95,7 @@ const SidebarRoutes = [
     component: <UserProfileTaskDetails />,
     name: "User Profile Details",
   },
-  
+
   Config.SELF_SERVICE_HUB &&
     Config.PROFIL_MANAGMENT && {
       path: "/my-profile",
@@ -137,7 +136,7 @@ const SidebarRoutes = [
   Config.SELF_SERVICE_HUB &&
     Config.EMPLOYEE_OFFBOARDING && {
       path: "/exit-employee",
-      component: <EmployeesExit />,
+      component: <EmployeeExit />,
       name: "Exit Employee",
     },
   Config.PAYROLL &&
@@ -372,7 +371,6 @@ const GeneralRoutes = [
     component: <ResetPassword />,
     name: "Reset Password",
   },
-  
 ].filter(Boolean); // Filter out undefined routes
 
 export { SidebarRoutes, LoginRoutes, GeneralRoutes };

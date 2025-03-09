@@ -7,7 +7,6 @@ import ExitDetails from "./sections/ExitDetails";
 import { DepartmentName } from "utils/getValuesFromTables";
 import { DesignationName } from "utils/getValuesFromTables";
 import { ManagerName } from "utils/getValuesFromTables";
-import ApplicationStatus from "./sections/ApplicationStatus";
 
 const ExitRequestDetails = ({ userProfile, exitData, isTermination }) => {
   const [userData, setUserData] = useState({});
@@ -54,13 +53,7 @@ const ExitRequestDetails = ({ userProfile, exitData, isTermination }) => {
   }, [userProfile]);
 
   return (
-    <div>
-      <div className="justify-between items-start inline-flex w-full mb-4">
-        <h4 className="text-xl">
-          Exit Request
-        </h4>
-        <ApplicationStatus row={exitData} />
-      </div>
+    <div className="flex flex-col gap-5">
       {!loading && (
         <PersonalInformation
           isEditable={false}
