@@ -14,8 +14,6 @@ import {
 
 const EmployeeExit = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("exit-request");
-  const [resignation, setResignation] = useState({});
-  const [termination, setTermination] = useState({});
   const [exitDetails, setExitDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const fetchData = async () => {
@@ -24,15 +22,7 @@ const EmployeeExit = ({ userProfile }) => {
       const response = await getEmployeeExitDataById(userProfile.id);
       if (response) {
         const data = response?.data.results.result;
-        const resignations = data.filter(
-          (item) => item.exit_category === "resignation"
-        );
-        const terminations = data.filter(
-          (item) => item.exit_category === "termination"
-        );
         setExitDetails(data[0]);
-        setResignation(resignations[0]);
-        setTermination(terminations[0]);
       }
     } catch (e) {
       console.error(e);
