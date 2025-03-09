@@ -12,14 +12,7 @@ import {
   TabsContent,
 } from "src/@/components/ui/tabs";
 
-import { Card, CardContent, CardHeader } from "components/ui/card.jsx";
-const EmployeeExit = ({
-  userProfile,
-  departments,
-  designations,
-  managers,
-  userDetails,
-}) => {
+const EmployeeExit = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("exit-request");
   const [resignation, setResignation] = useState({});
   const [termination, setTermination] = useState({});
@@ -57,19 +50,9 @@ const EmployeeExit = ({
       <Header />
       <div>
         {exitDetails ? (
-          <ExitRequestDetails
-            userProfile={userProfile}
-            departments={departments}
-            exitData={exitDetails}
-          />
+          <ExitRequestDetails exitData={exitDetails} />
         ) : (
-          <ExitRequestForm
-            userProfile={userProfile}
-            reload={fetchData}
-            departments={departments}
-            designations={designations}
-            managers={managers}
-          />
+          <ExitRequestForm reload={fetchData} />
         )}
         {/* <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
@@ -134,12 +117,7 @@ const EmployeeExit = ({
 
 const mapStateToProps = (state) => {
   return {
-    token: state.user.token,
     userProfile: state.user.userProfile,
-    departments: state.common.departments,
-    designations: state.common.designations,
-    managers: state.emp.reportingManagers,
-    userDetails: state.emp.userDetails,
   };
 };
 
