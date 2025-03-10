@@ -9,7 +9,7 @@ import { useState } from "react";
 import EditJobDetails from "./EditJobDetails";
 import { renderDate } from "utils/renderValues";
 import { PageLoader } from "components";
-import { formatNumber } from "data/Data";
+import { formatNumber } from "utils/renderValues";
 import moment from "moment";
 import SheetComponent from "components/ui/SheetComponent";
 import { DetailBox } from "components/SheetCardExtension";

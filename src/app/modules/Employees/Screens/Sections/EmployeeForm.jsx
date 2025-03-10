@@ -71,18 +71,6 @@ import moment from "moment";
 import { cn } from "src/@/lib/utils";
 import { CalendarDays } from "lucide-react";
 
-async function getManagersStringSelected(managers) {
-  if (managers) {
-    const matchingObjects = await Promise.all(
-      managers.map((obj) => {
-        return obj;
-      })
-    );
-    return matchingObjects.join(", ");
-  }
-  return "";
-}
-
 const SheetOnBorading = ({
   isEditMode,
   nextstep,
@@ -221,11 +209,6 @@ const SheetOnBorading = ({
     setIsLoading(true);
     const employeePayload = mapEmployeePayloadData(data, formData);
     try {
-      // Format indirect report if it exists
-      if (data?.indirect_report)
-        employeePayload.indirect_report = await getManagersStringSelected(
-          data.indirect_report
-        );
       // Save employee work information
       const response = await saveEmployeeWorkInformationData(
         id,
@@ -350,6 +333,7 @@ const SheetOnBorading = ({
                   if (!id && values.username && usernameAlreadyExist) {
                     errors.username = "Username already exist";
                   }
+                  console.error(errors,values,"Errors");
                   return errors;
                 }}
               >

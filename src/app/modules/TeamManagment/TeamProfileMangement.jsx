@@ -18,17 +18,17 @@ export default function TeamProfileMangement() {
   const [employeeData, setEmployeeData] = useState({ results: [], count: 0 });
   const [filterData, setFilterData] = useState({
     department_name: loggedInUserDetails.department_name,
+    direct_report: loggedInUserDetails.id,
   });
   const [totalEmployee, setTotalEmployee] = useState(0);
   const [activeEmployee, setActiveEmployee] = useState(0);
   const [totalOffboard, setTotalOffboard] = useState(0);
   const [totalManagers, setTotalManagers] = useState(0);
-  const [selectedStatus, setSelectedStatus] = useState("All");
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedDesignation, setSelectedDesignation] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
-  const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
   const [ordering, setOrdering] = useState("-id");
 
@@ -117,7 +117,7 @@ export default function TeamProfileMangement() {
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
-      <Header/>
+      <Header />
       <Stats stats={statsData} />
       <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row gap-2">
         <div className="flex">
@@ -127,6 +127,7 @@ export default function TeamProfileMangement() {
             options={employeeStatus}
             onChange={(name, newStatus) => onEmpStatusChange(newStatus)}
             classes="flex-row"
+            placeholder="Employee Status"
           />
         </div>
         <FilterInput

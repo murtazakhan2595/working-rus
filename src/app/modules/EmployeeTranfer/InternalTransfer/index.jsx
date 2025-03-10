@@ -1,0 +1,163 @@
+import React, { useEffect, useState } from "react";
+import { Card, CardContent } from "components/ui/card";
+import {
+  InternalTransferColumns,
+  TransferForm,
+} from "app/modules/EmployeeTranfer/Sections";
+import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
+import { Header } from "components";
+import { FilterInput, SelectInputComponent } from "components/FormControl";
+import { EmployeeTranferStatus } from "data/Data";
+import { getEmployeeTransferList } from "app/hooks/employeeTranfer";
+import { PageLoader } from "components";
+import SheetOnBoarding from "components/ui/OnBoardingSheet";
+import Stats from "components/ui/Stats";
+import TableCustom from "components/CustomTable";
+import { useSelector } from "react-redux";
+import { Button } from "components/ui/button";
+
+export default function EmployeeInternalTranfer() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [employeeTransferData, setEmployeeTransferData] = useState({ results: [], count: 0 });
+  const [filterData, setFilterData] = useState({});
+  const [OpenTransferForm, setOpenTransferForm] = useState(false);
+  const [totalEmployee, setTotalEmployee] = useState(0);
+  const [activeEmployee, setActiveEmployee] = useState(0);
+  const [totalManagers, setTotalManagers] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const Departments = useSelector((state) => state.common.departments);
+  const [ordering, setOrdering] = useState("-id");
+
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
+  };
+
+  const fetchData = async (isMounted) => {
+    setIsLoading(true);
+    try {
+      const data = await getEmployeeTransferList({
+        options,
+        filterData,
+        ordering,
+      });
+      if (isMounted) {
+        setEmployeeTransferData(data);
+        }
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    } finally {
+      if (isMounted) setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [options, filterData, ordering]);
+
+  const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
+    if (filterName === "department_name") setSelectedDepartment(filterValue);
+    if (filterName === "status") setSelectedStatus(filterValue);
+
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
+
+  const statsData = [
+    { label: "Total", value: totalEmployee, icon: UsersRound },
+    { label: "Approved", value: totalManagers, icon: Contact },
+    { label: "Rejected", value: activeEmployee, icon: UserRoundCheck },
+  ];
+
+  return (
+    <div
+      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
+    >
+      <Header
+        content={
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              setOpenTransferForm(true);
+            }}
+          >
+            Request Transfer
+          </Button>
+        }
+      />
+      <Stats stats={statsData} />
+      <div className="flex flex-col justify-end lg:flex-row md:flex-row xl:flex-row gap-2">
+        <FilterInput
+          filters={[
+            {
+              type: "search",
+              placeholder: "Search by ID and Name",
+              name: "id_and_first_name",
+            },
+            {
+              type: "select-one",
+              option: Departments,
+              name: "department_name",
+              placeholder: "Department",
+              values: selectedDepartment,
+            },
+            {
+              type: "select-two",
+              option: EmployeeTranferStatus,
+              name: "status",
+              placeholder: "Status",
+              values: selectedStatus,
+            },
+          ]}
+          onChange={handleFilterChange}
+        />
+      </div>
+      {isLoading ? (
+        <PageLoader />
+      ) : (
+        <Card>
+          <CardContent>
+            <TableCustom
+              data={employeeTransferData.results}
+              columns={InternalTransferColumns}
+              pagination={true}
+              dataTotalSize={employeeTransferData.count || 0}
+              tableOptions={tableOptions}
+            />
+          </CardContent>
+        </Card>
+      )}
+      {OpenTransferForm && (
+        <TransferForm
+          isOpen={OpenTransferForm}
+          setIsOpen={() => {
+            setOpenTransferForm(false);
+          }}
+          transfer_type="INTERNAL"
+        />
+      )}
+    </div>
+  );
+}

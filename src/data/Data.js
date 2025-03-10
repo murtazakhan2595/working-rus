@@ -25,8 +25,6 @@ import {
 } from "lucide-react";
 import { lightenColor } from "utils/renderValues";
 
-
-
 export const countriesCallingCodes = countries.all
   .filter(
     (country) =>
@@ -81,7 +79,6 @@ export const probationPeriodOptions = [
   { value: "3 month", label: "3 Month" },
   { value: "6 month", label: "6 Month" },
 ];
-
 
 export const days = Array?.from({ length: 31 }, (_, index) => {
   const day = index + 1;
@@ -282,46 +279,32 @@ export const department = [
   { label: "Accounts", value: "Accounts" },
 ];
 
-export const typeOptions = [
+export const EmployeeTranferStatus = [
   {
-    value: "Project",
-    label: (
-      <div className="flex justify-center gap-x-2">
-        <CiViewBoard className="text-2xl text-[#FF61C0]" />
-        Project
-      </div>
-    ),
+    value: "PENDING",
+    label: <span style={{ color: "#FBBF24" }}>Pending</span>,
+    color: "#FBBF24",
+    backgroundColor: lightenColor("#FBBF24", 85),
   },
   {
-    value: "Miscellaneous",
-    label: (
-      <div className="flex justify-center gap-x-2">
-        <CircleEllipsis className="text-2xl text-[#935AF2]" />
-        Miscellaneous
-      </div>
-    ),
+    value: "INPROGRESS",
+    label: <span style={{ color: "#2e86c1" }}>In Progress</span>,
+    color: "#2e86c1",
+    backgroundColor: lightenColor("#2e86c1", 85),
+  },
+  {
+    value: "COMPLETED",
+    label: <span style={{ color: "#12B76A" }}>Completed</span>,
+    color: "#12B76A",
+    backgroundColor: lightenColor("#12B76A", 85),
+  },
+  {
+    value: "Onhold",
+    label: <span style={{ color: "#B00D1B" }}>On Hold</span>,
+    color: "#B00D1B",
+    backgroundColor: lightenColor("#B00D1B", 85),
   },
 ];
-
-export const formatNumber = (num) => {
-  // const units = ["", "K", "M", "B", "T", "P", "E", "Z", "Y"];
-  // let unit = 0;
-
-  // while (num >= 1000 && unit < units.length - 1) {
-  //   num /= 1000;
-  //   unit++;
-  // }
-
-  // Use Intl.NumberFormat to format the number with 2 decimal places
-  const formattedNumber = new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(num);
-
-  return formattedNumber;
-
-  // return formattedNumber + units[unit];
-};
 
 export const PriorityList = [
   {
@@ -441,7 +424,6 @@ export const ProjectStatusList = [
     label: <div className="text-mauve-900">Closed</div>,
   },
 ];
-
 
 export const status2Options = [
   {

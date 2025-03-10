@@ -215,7 +215,9 @@ const getEmployeeList = async () => {
         name: `${employee.first_name} ${employee.last_name}`,
         department_name: employee.department_name,
         department_position: employee.department_position,
+        employee_location: employee.employee_location,
         work_email: employee.work_email,
+        employee_status: employee.employee_status,
         name_initials: `${
           employee?.first_name?.charAt(0)?.toUpperCase() || ""
         }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
