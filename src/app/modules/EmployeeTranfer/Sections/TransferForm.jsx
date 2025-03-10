@@ -139,7 +139,7 @@ const TransferForm = ({
           {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 md:grid-cols-2">
-                <div className="space-y-2 col-span-2">
+                <div className="space-y-4 col-span-2">
                   <RadioGroupInput
                     name={"transfer_type"}
                     label={"Tranfer Type"}
@@ -156,7 +156,7 @@ const TransferForm = ({
                     disabled={true}
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <SelectInputComponent
                     name={"employee_id"}
                     options={Employees}
@@ -175,8 +175,8 @@ const TransferForm = ({
                     }}
                   />
                 </div>
-                <div className="space-y-2"></div>
-                <div className="space-y-2">
+                <div className="space-y-4"></div>
+                <div className="space-y-4">
                   <SelectInputComponent
                     name={"old_department"}
                     options={Departments}
@@ -185,13 +185,13 @@ const TransferForm = ({
                     value={selectedEmployee.department_name}
                     required={false}
                     disabled={true}
-                    label={"Department"}
+                    label={"Current Department"}
                     onChange={(field, value) => {
                       props.setFieldValue(field, value);
                     }}
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <SelectInputComponent
                     name={"employee_location"}
                     options={countriesList}
@@ -200,13 +200,13 @@ const TransferForm = ({
                     value={selectedEmployee?.employee_location}
                     required={false}
                     disabled={true}
-                    label={"Employee Location"}
+                    label={"Current Location"}
                     onChange={(field, value) => {
                       props.setFieldValue(field, value);
                     }}
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <SelectInputComponent
                     name={"new_department"}
                     options={Departments}
@@ -221,22 +221,24 @@ const TransferForm = ({
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <SelectInputComponent
-                    name={"new_location"}
-                    options={countriesList}
-                    error={props.errors?.new_location}
-                    touch={props.touched?.new_location}
-                    value={props.values?.new_location}
-                    required={true}
-                    label={"New Location"}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
+                {props.values?.transfer_type === "EXTERNAL" && (
+                  <div className="space-y-4">
+                    <SelectInputComponent
+                      name={"new_location"}
+                      options={countriesList}
+                      error={props.errors?.new_location}
+                      touch={props.touched?.new_location}
+                      value={props.values?.new_location}
+                      required={true}
+                      label={"New Location"}
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                    />
+                  </div>
+                )}
 
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <DateInput
                     name={"effective_transfer_date"}
                     error={props.errors?.effective_transfer_date}
@@ -249,7 +251,7 @@ const TransferForm = ({
                     }}
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-4">
                   <SelectInputComponent
                     name={"reason_of_transfer"}
                     options={countriesList}
@@ -263,7 +265,7 @@ const TransferForm = ({
                     }}
                   />
                 </div>
-                <div className="col-span-2 space-y-2">
+                <div className="col-span-2 space-y-4">
                   <TextAreaInput
                     name={"notes"}
                     error={props.errors?.notes}

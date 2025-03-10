@@ -282,28 +282,25 @@ export const department = [
 export const EmployeeTranferStatus = [
   {
     value: "PENDING",
-    label: <span style={{ color: "#FBBF24" }}>Pending</span>,
-    color: "#FBBF24",
-    backgroundColor: lightenColor("#FBBF24", 85),
+    label: "Pending Approval",
   },
   {
-    value: "INPROGRESS",
-    label: <span style={{ color: "#2e86c1" }}>In Progress</span>,
-    color: "#2e86c1",
-    backgroundColor: lightenColor("#2e86c1", 85),
+    value: "ACCEPTED BY MANAGER",
+    label: "Accepted by manager",
   },
   {
-    value: "COMPLETED",
-    label: <span style={{ color: "#12B76A" }}>Completed</span>,
-    color: "#12B76A",
-    backgroundColor: lightenColor("#12B76A", 85),
+    value: "REJECTED BY MANAGER",
+    label: "Rejected by manager",
   },
   {
-    value: "Onhold",
-    label: <span style={{ color: "#B00D1B" }}>On Hold</span>,
-    color: "#B00D1B",
-    backgroundColor: lightenColor("#B00D1B", 85),
+    value: "APPROVED",
+    label: "Approved",
   },
+  {
+    value: "REJECTED",
+    label: "Rejected",
+  },
+ 
 ];
 
 export const PriorityList = [
