@@ -14,7 +14,7 @@ import { DesignationName } from "utils/getValuesFromTables";
 import { DepartmentName } from "utils/getValuesFromTables";
 import { Switch } from "../../../src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
-import { Clock } from "lucide-react";
+import { Calendar, Clock, MapPin, Tag } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
 import { StatusLabelAttendance } from "components/StatusLabel";
 import { formatDuration } from "utils/renderValues";
@@ -917,3 +917,47 @@ export const myAttendanceColumn = [
     formatter: (cell) => <StatusLabelAttendance status={cell} />,
   },
 ];
+
+export const AssetsColumns = [
+  {
+    dataField: "asset_id",
+    text: "Asset ID",
+    minWidth: "105px",
+  },
+  {
+    dataField: "asset_name",
+    text: "Asset Name",
+    formatter: (cell, row) => (
+      <div className="flex flex-col">
+        <div className="text-base font-medium">{cell}</div>
+        <div className="text-sm text-muted-foreground">
+          {row.specifications}
+        </div>
+      </div>
+    ),
+   
+  },
+  {
+    dataField: "category",
+    text: "Category",
+    formatter: (cell) => (
+      <div className="flex items-center gap-2">
+        <Tag size={16} className="text-muted-foreground" />
+        <span>{cell}</span>
+      </div>
+    ),
+   
+  },
+  {
+    dataField: "location",
+    text: "Location",
+    formatter: (cell) => (
+      <div className="flex items-center gap-2">
+        <MapPin size={16} className="text-muted-foreground" />
+        <span>{cell}</span>
+      </div>
+    ),
+   
+  },
+];
+
