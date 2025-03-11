@@ -31,6 +31,29 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     errors.employee_location = "Work location is required";
   if (!values.employee_status) errors.employee_status = "Status is required";
   if (!values.joining_date) errors.joining_date = "Joining date is required";
+
+  // Validate probation dates in relation to joining date
+  if (values.joining_date && values.probation_start_date) {
+    const joiningDate = new Date(values.joining_date);
+    const probationStartDate = new Date(values.probation_start_date);
+
+    if (probationStartDate < joiningDate) {
+      errors.probation_start_date =
+        "Probation start date cannot be before joining date";
+    }
+  }
+
+  // Validate probation end date is after start date
+  if (values.probation_start_date && values.probation_end_date) {
+    const startDate = new Date(values.probation_start_date);
+    const endDate = new Date(values.probation_end_date);
+
+    if (endDate < startDate) {
+      errors.probation_end_date =
+        "Probation end date must be after the start date";
+    }
+  }
+
   if (!values.salary_type && !isEditMode)
     errors.salary_type = "Salary type is required";
   if (!values.salary && !isEditMode) errors.salary = "Salary is required";
@@ -42,7 +65,6 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   }
   return errors;
 };
-
 const validationEmployeeContactInfoFormSchema = (values) => {
   const errors = {};
   if (!values.emergency_first_name)

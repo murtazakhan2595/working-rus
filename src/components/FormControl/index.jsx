@@ -41,6 +41,7 @@ import ColorInput from "./ColorInput";
 import DateInput from "./DateInput";
 import RadioGroupInput from "./RadioGroupInput";
 import CheckBoxInput from "./CheckBoxInput";
+import DateRangeInput from "./DateRangeInput";
 
 const errorClassName = "text-red-800 text-xs font-[inter] font-normal ml-1";
 export const inputButtonClassName =
@@ -117,7 +118,7 @@ export const FormPopoverButton = memo(
               {triggerContent}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0">
+          <PopoverContent className="min-w-[300px] w-auto p-0">
             {popoverContent}
           </PopoverContent>
         </Popover>
@@ -723,4 +724,6 @@ export {
   SortingFilters,
   DateRangeFilter,
   ColorInput,
+  DateRangeInput,
 };
+
