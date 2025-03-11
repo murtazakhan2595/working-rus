@@ -81,6 +81,7 @@ const Header = ({ content, userProfile }) => {
       "my-attendance": "Attendance History",
       "employee-internal-tranfer": "Internal Tranfer",
       "employee-external-tranfer": "External Tranfer",
+      "assets":"Assets",
     };
     setPathName(pathNames[path] || "Dashboard");
   }, [location]);

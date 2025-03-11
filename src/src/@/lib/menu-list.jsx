@@ -15,6 +15,7 @@ import {
   BadgeDollarSign,
   Settings,
   Network,
+  Laptop,
 } from "lucide-react";
 import Config from "constants/config";
 
@@ -59,6 +60,8 @@ export function getMenuList(pathname, userRole) {
     peopleEngagementMenus:
       userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
     organizationalChart: true,
+    isAssetsManagement:
+      userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
   };
 
   const createMenu = (
@@ -208,6 +211,16 @@ export function getMenuList(pathname, userRole) {
     ),
   ];
 
+  const assetsManagementMenus = [
+    createMenu(
+      "",
+      "Assets Management",
+      Laptop, // Import Laptop icon from lucide-react
+      [createMenu("/assets", "Assets")],
+      pathname === "/assets"
+    ),
+  ];
+
   const dailyTaskReportMenus = [
     createMenu(
       "",
@@ -314,6 +327,12 @@ export function getMenuList(pathname, userRole) {
       },
     userRolesMap.isTalentSphere &&
       Config.TALENT_SPHERE && { groupLabel: "", menus: talentSphereMenus },
+
+    userRolesMap.isAssetsManagement &&
+      Config.ASSETS_MANAGEMENT && {
+        groupLabel: "",
+        menus: assetsManagementMenus
+      },
     userRolesMap.organizationalChart &&
       Config.ORGANIZATIONAL_CHART && {
         groupLabel: "",
