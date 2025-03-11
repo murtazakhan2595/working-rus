@@ -98,10 +98,8 @@ export function getMenuList(pathname, userRole) {
           createMenu("/create-employee", "Employee Creation"),
         // createMenu("/edit-employee", "Customize Employee"),
         // createMenu("/relocation", "Relocation"),
-        Config.TEAM_INTERNALTRANSFER &&
-          createMenu("/employee-internal-tranfer", "Internal Tranfer"),
-        Config.TEAM_EXTERNALTRANSFER &&
-          createMenu("/employee-external-tranfer", "External Tranfer"),
+        Config.EMPLOYEE_MANAGEMENT &&
+          createMenu("/employee-tranfer", "Employee Tranfer"),
       ].filter(Boolean)
     ),
   ];

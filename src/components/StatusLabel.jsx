@@ -15,7 +15,7 @@ const statusVariants = cva(
     variants: {
       variant: {
         default: "border-transparent bg-neutral-300 text-neutral-1100",
-        ghost: "border-transparent bg-transparent text-neitral-1200",
+        ghost: "border-transparent bg-transparent text-neutral-1200",
         outline: "text-slate-900 dark:text-slate-50",
         plum: "bg-plum-300 text-plum-1100",
         error: "bg-red-50 text-red-400",
@@ -48,13 +48,14 @@ export const getStatusVariant = (Status) => {
   const status = Status.toLowerCase();
   if (status.includes("approved")) return "success";
   else if (status.includes("accepted")) return "success";
+  else if (status.includes("success")) return "success";
   else if (status.includes("declined")) return "error";
   else if (status.includes("rejected")) return "error";
   else if (status.includes("pending")) return "default";
   else return "default";
 };
 
-export const StatusIcon = ({ status, iconVariant }) => {
+export const StatusIcon = ({ status }) => {
   const variant = getStatusVariant(status);
   const className =
     "text-[20px] inline-flex items-center justify-center rounded-full mr-2";
@@ -86,11 +87,14 @@ export const StatusIcon = ({ status, iconVariant }) => {
 
 const StatusLabel = React.forwardRef(
   ({ status, key, variant, className, size, iconVariant, ...props }, ref) => {
-    const statusVariant = variant ?? getStatusVariant(status);
+    const StatusVariant = variant ?? getStatusVariant(status);
     return (
       <Badge
         className={cn(
-          statusVariants({ statusVariant, size }),
+          statusVariants({
+            variant: StatusVariant,
+            size: iconVariant ? "sm" : size,
+          }),
           "flex items-center",
           className
         )}
@@ -98,7 +102,9 @@ const StatusLabel = React.forwardRef(
         key={key}
         {...props}
       >
-        {iconVariant && <StatusIcon status={status} iconVariant={iconVariant} />}
+        {iconVariant && (
+          <StatusIcon status={status} iconVariant={iconVariant} />
+        )}
         {props.children}
       </Badge>
     );

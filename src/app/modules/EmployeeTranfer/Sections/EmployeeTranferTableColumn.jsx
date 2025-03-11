@@ -1,5 +1,5 @@
 import { EmployeeID, UserRole } from "utils/getValuesFromTables";
-import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
+import { EmployeeTransferStatusView } from "app/modules/EmployeeTranfer/Sections";
 import { dropdownOptions, formatNumber } from "data/Data";
 import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
@@ -40,11 +40,18 @@ export const InternalTransferColumns = [
     minWidth: "120px",
     // dataSort: true,
   },
-
+  {
+    dataField: "new_department",
+    text: "New Department",
+    formatter: (cell, row) => <DepartmentName value={cell} />,
+    dataSort: true,
+    minWidth: "110px",
+  },
   {
     dataField: "effective_transfer_date",
     text: "Effective Transfer Date",
     formatter: (cell, row) => renderDate(cell),
+    
     dataSort: true,
     minWidth: "110px",
   },
@@ -58,10 +65,6 @@ export const InternalTransferColumns = [
     dataField: "status",
     text: "Status",
     dataSort: true,
-  },
-  {
-    dataField: "",
-    text: "Actions",
-    formatter: (cell, row) => <EmployeeAction row={row} />,
+    formatter: (cell, row) => <EmployeeTransferStatusView status={cell||'PENDING'} />,
   },
 ];
