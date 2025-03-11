@@ -772,6 +772,32 @@ export const salarySummary = {
   "Salary Package": "Mid-level",
 };
 
+export const Locations = [
+  { label: "Headquarters", value: "Headquarters" },
+  { label: "Branch Office - North", value: "Branch Office - North" },
+  { label: "Branch Office - South", value: "Branch Office - South" },
+  { label: "Branch Office - East", value: "Branch Office - East" },
+  { label: "Branch Office - West", value: "Branch Office - West" },
+  { label: "Remote", value: "Remote" },
+];
+
+export const AssetCondition = [
+  { label: "New", value: "New" },
+  { label: "Used", value: "Used" },
+  { label: "Needs Repair", value: "Needs Repair" },
+];
+
+export const AssetCategories = [
+  { label: "Computer", value: "Computer" },
+  { label: "Laptop", value: "Laptop" },
+  { label: "Mobile", value: "Mobile" },
+  { label: "Printer", value: "Printer" },
+  { label: "Networking", value: "Networking" },
+  { label: "Accessory", value: "Accessory" },
+  { label: "Furniture", value: "Furniture" },
+  { label: "Other", value: "Other" },
+];
+
 export const handleUpdateProfile = (dispatch, data) => {
   const userprofile = {
     id: data.id,
