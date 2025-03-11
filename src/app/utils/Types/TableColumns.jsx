@@ -922,8 +922,6 @@ export const AssetsColumns = [
   {
     dataField: "asset_id",
     text: "Asset ID",
-    formatter: (cell) => <EmployeeID value={cell} />,
-    dataSort: true,
     minWidth: "105px",
   },
   {
@@ -932,103 +930,34 @@ export const AssetsColumns = [
     formatter: (cell, row) => (
       <div className="flex flex-col">
         <div className="text-base font-medium">{cell}</div>
-        <div className="text-sm text-gray-500">{row.specifications}</div>
+        <div className="text-sm text-muted-foreground">
+          {row.specifications}
+        </div>
       </div>
     ),
-    dataSort: true,
+   
   },
   {
     dataField: "category",
     text: "Category",
     formatter: (cell) => (
       <div className="flex items-center gap-2">
-        <Tag size={16} className="text-gray-600" />
+        <Tag size={16} className="text-muted-foreground" />
         <span>{cell}</span>
       </div>
     ),
-    dataSort: true,
+   
   },
   {
     dataField: "location",
     text: "Location",
     formatter: (cell) => (
       <div className="flex items-center gap-2">
-        <MapPin size={16} className="text-gray-600" />
+        <MapPin size={16} className="text-muted-foreground" />
         <span>{cell}</span>
       </div>
     ),
-    dataSort: true,
-  },
-  {
-    dataField: "purchase_date",
-    text: "Purchase Date",
-    formatter: (cell) => (
-      <div className="flex items-center gap-2">
-        <Calendar size={16} className="text-gray-600" />
-        <span>{moment(cell).format("MMM D, YYYY")}</span>
-      </div>
-    ),
-    dataSort: true,
-  },
-  {
-    dataField: "purchase_cost",
-    text: "Purchase Cost",
-    formatter: (cell) => <div>AED {formatNumber(cell)}</div>,
-    dataSort: true,
-  },
-  {
-    dataField: "condition",
-    text: "Condition",
-    formatter: (cell) => {
-      let bgColor = "";
-      let textColor = "";
-
-      switch (cell) {
-        case "New":
-          bgColor = "bg-emerald-50";
-          textColor = "text-teal-700";
-          break;
-        case "Used":
-          bgColor = "bg-[#f0f0f3]";
-          textColor = "text-[#7f838d]";
-          break;
-        case "Needs Repair":
-          bgColor = "bg-red-50";
-          textColor = "text-red-700";
-          break;
-        default:
-          bgColor = "bg-[#f0f0f3]";
-          textColor = "text-[#7f838d]";
-      }
-
-      return (
-        <span
-          className={`px-3 py-1.5 text-xs font-semibold rounded-full ${bgColor} ${textColor}`}
-        >
-          {cell}
-        </span>
-      );
-    },
-    dataSort: true,
+   
   },
 ];
 
-// For the CSV export or detailed view
-export const AssetsColumnsDetailed = [
-  ...AssetsColumns,
-  {
-    dataField: "serial_number",
-    text: "Serial Number/IMEI",
-  },
-  {
-    dataField: "warranty_expiry",
-    text: "Warranty Expiry",
-    formatter: (cell) => {
-      return moment(cell).format("MMM D, YYYY");
-    },
-  },
-  {
-    dataField: "notes",
-    text: "Remarks/Notes",
-  },
-];

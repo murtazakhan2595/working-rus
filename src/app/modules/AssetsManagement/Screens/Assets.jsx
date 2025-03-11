@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "components/ui/button";
 import { Header } from "components";
-import Stats from "components/ui/Stats";
+import CustomTable from "components/CustomTable";
+
 import {
   Briefcase,
   ClipboardList,
@@ -21,7 +22,9 @@ import { PageLoader } from "components";
 import { DateRangeFilter } from "components/FormControl";
 import ViewOptions from "components/ViewOtions";
 import AddUpdateAsset from "./AddUpdateAsset";
-import AssetsList from "./AssetsList";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardHeader } from "components/ui/card";
+import { AssetsColumns } from "app/utils/Types/TableColumns";
 
 const dummyAssets = [
   {
@@ -178,13 +181,27 @@ const dummyAssets = [
 
 const Assets = () => {
   const userProfile = useSelector((state) => state.user.userProfile);
-  const [statsData, setStatsData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [assetsList, setAssetsList] = useState(dummyAssets);
   const [openAddAssetModal, setOpenAddAssetModal] = useState(false);
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeView, setActiveView] = useState("list");
   const [filterData, setFilterData] = useState({});
+    const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+    const navigate = useNavigate();
+  
+
+    const onPageChange = (name, value) => {
+      setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+    };
+    const tableOptions = {
+      page: options.page,
+      sizePerPage: options.sizePerPage,
+      onPageChange: onPageChange,
+      onRowClick: (row) => {
+        // navigate(`/payroll/${row.id}?employeeID=${row.employee}`);
+      },
+    };
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
@@ -212,32 +229,6 @@ const Assets = () => {
     };
   }, [filterData]);
 
-  useEffect(() => {
-    if (assetsList) {
-      setStatsData([
-        {
-          label: "Total Assets",
-          value: assetsList.length,
-          icon: Database,
-        },
-        {
-          label: "Computers",
-          value: calculateTotalCount(assetsList, "category", "Computer"),
-          icon: Computer,
-        },
-        {
-          label: "Laptops",
-          value: calculateTotalCount(assetsList, "category", "Laptop"),
-          icon: Laptop,
-        },
-        {
-          label: "Mobile Devices",
-          value: calculateTotalCount(assetsList, "category", "Mobile"),
-          icon: Smartphone,
-        },
-      ]);
-    }
-  }, [assetsList]);
 
   if (isLoading) return <PageLoader />;
 
@@ -256,46 +247,18 @@ const Assets = () => {
           </Button>
         }
       />
-      <Stats stats={statsData} />
-      <div className="flex flex-wrap items-center">
-        <div className="flex flex-col justify-center self-stretch my-auto text-xl font-semibold tracking-normal leading-none text-fuchsia-700 w-[123px]">
-          <div className="self-stretch pb-px w-full min-h-[28px] text-nowrap">
-            Assets
-          </div>
-        </div>
-        <div className="flex flex-1 shrink self-stretch pt-1.5 my-auto basis-0 h-[38px] min-w-[76px] w-[227px]" />
-        <div className="flex flex-wrap gap-4 items-center self-stretch my-auto min-w-[240px] max-md:max-w-full">
-          <DateRangeFilter
-            activeDateRange={activeFilter}
-            setDateRange={(dateRange) => {
-              setFilterData((prevFilters) => {
-                const updatedFilters = {
-                  ...prevFilters,
-                };
-                setActiveFilter(dateRange);
-                return updatedFilters;
-              });
-            }}
+
+      <Card>
+        <CardContent>
+          <CustomTable
+            columns={AssetsColumns}
+            data={assetsList}
+            pagination={true}
+            dataTotalSize={AssetsColumns.count || 0}
+            tableOptions={tableOptions}
           />
-          <ViewOptions activeView={activeView} setActiveView={setActiveView} />
-
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-10 gap-1 rounded-3xl border-gray-100"
-          >
-            <Download size={16} />
-            <span>Download</span>
-          </Button>
-        </div>
-      </div>
-
-      <AssetsList
-        assetsList={assetsList}
-        reload={() => {
-          fetchData(true);
-        }}
-      />
+        </CardContent>
+      </Card>
       {openAddAssetModal && (
         <AddUpdateAsset
           setIsOpen={setOpenAddAssetModal}
