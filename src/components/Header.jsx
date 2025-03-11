@@ -79,8 +79,7 @@ const Header = ({ content, userProfile }) => {
       "job-description": "Job Description",
       "office-settings": "Office Setting",
       "my-attendance": "Attendance History",
-      "employee-internal-tranfer": "Internal Tranfer",
-      "employee-external-tranfer": "External Tranfer",
+      "employee-tranfer": "Employee Tranfer",
       "assets":"Assets",
     };
     setPathName(pathNames[path] || "Dashboard");

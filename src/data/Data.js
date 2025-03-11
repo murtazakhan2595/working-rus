@@ -266,19 +266,6 @@ export const jobRoles = [
   { label: "Freelancer", value: "Freelancer" },
 ];
 
-export const department = [
-  { label: "Project Management", value: "Project_management" },
-  { label: "Sales", value: "Sales" },
-  { label: "Operations", value: "Operations" },
-  { label: "Design", value: "Design" },
-  { label: "Marketing", value: "Marketing" },
-  { label: "Frontend", value: "Frontend" },
-  { label: "Backend", value: "Backend" },
-  { label: "Presales", value: "Presales" },
-  { label: "HR", value: "HR" },
-  { label: "Accounts", value: "Accounts" },
-];
-
 export const EmployeeTranferStatus = [
   {
     value: "PENDING",

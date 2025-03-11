@@ -1,3 +1,4 @@
 import { InternalTransferColumns } from "./EmployeeTranferTableColumn";
 import TransferForm from "./TransferForm";
-export { InternalTransferColumns, TransferForm };
+import EmployeeTransferStatusView from "./EmployeeTransferStatusView";
+export { InternalTransferColumns, TransferForm, EmployeeTransferStatusView };
