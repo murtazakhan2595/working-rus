@@ -41,6 +41,7 @@ import ColorInput from "./ColorInput";
 import DateInput from "./DateInput";
 import RadioGroupInput from "./RadioGroupInput";
 import CheckBoxInput from "./CheckBoxInput";
+import DateRangeInput from "./DateRangeInput";
 
 const errorClassName = "text-red-800 text-xs font-[inter] font-normal ml-1";
 export const inputButtonClassName =
@@ -723,4 +724,5 @@ export {
   SortingFilters,
   DateRangeFilter,
   ColorInput,
+  DateRangeInput,
 };
