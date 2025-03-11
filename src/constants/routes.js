@@ -54,7 +54,7 @@ import AttendanceReport from "app/modules/Attendance/Sections/AttendenceFile";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 import OrganizationalChart from "app/modules/OfficeSetting/Screens/OrganizationalChart";
 import { TeamProfileMangement } from "app/modules/TeamManagment";
-import AssetsManagement from "app/modules/AssetsManagement";
+import { Assets } from "app/modules/AssetsManagement";
 
 const SidebarRoutes = [
   {
@@ -340,7 +340,7 @@ const SidebarRoutes = [
   },
   Config.ASSETS_MANAGEMENT && {
     path: "/assets",
-    component: <AssetsManagement />,
+    component: <Assets />,
     name: "Assets Management",
   },
 ].filter(Boolean); // Filter out undefined routes

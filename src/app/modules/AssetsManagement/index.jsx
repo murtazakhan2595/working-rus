@@ -1,8 +1,5 @@
 
-export default function App() {
-  return (
-    <div className="App">
-      sldfjlsdfkjsldkjf
-    </div>
-  );
-}
+
+import Assets from "./Screens/Assets";
+
+export { Assets };
