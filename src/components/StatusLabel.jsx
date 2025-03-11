@@ -14,12 +14,8 @@ const statusVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "border-transparent bg-neutral-300 text-neutral-1100",
-        secondary:
-          "border-transparent bg-slate-100 text-slate-900  dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-slate-800/80",
-        destructive:
-          "border-transparent bg-red-500 text-slate-50  dark:bg-red-900 dark:text-slate-50 dark:hover:bg-red-900/80",
+        default: "border-transparent bg-neutral-300 text-neutral-1100",
+        ghost: "border-transparent bg-transparent text-neitral-1200",
         outline: "text-slate-900 dark:text-slate-50",
         plum: "bg-plum-300 text-plum-1100",
         error: "bg-red-50 text-red-400",
@@ -58,6 +54,59 @@ export const getStatusVariant = (Status) => {
   else return "default";
 };
 
+export const StatusIcon = ({ status, iconVariant }) => {
+  const variant = getStatusVariant(status);
+  const className =
+    "text-[20px] inline-flex items-center justify-center rounded-full mr-2";
+  const style = { padding: "3px" };
+
+  switch (variant) {
+    case "success":
+      return (
+        <CircleCheck
+          className={`${className} bg-[#00C483] text-white`}
+          style={style}
+        />
+      );
+    case "error":
+      return (
+        <X className={`${className} bg-[#EA4335] text-white`} style={style} />
+      );
+    case "default":
+      return (
+        <CircleDot
+          className={`${className} bg-[#E8E8E8]`}
+          style={{ ...style, color: "#D9D9D9", border: "3px solid #E8E8E8" }}
+        />
+      );
+    default:
+      return null;
+  }
+};
+
+const StatusLabel = React.forwardRef(
+  ({ status, key, variant, className, size, iconVariant, ...props }, ref) => {
+    const statusVariant = variant ?? getStatusVariant(status);
+    return (
+      <Badge
+        className={cn(
+          statusVariants({ statusVariant, size }),
+          "flex items-center",
+          className
+        )}
+        ref={ref}
+        key={key}
+        {...props}
+      >
+        {iconVariant && <StatusIcon status={status} iconVariant={iconVariant} />}
+        {props.children}
+      </Badge>
+    );
+  }
+);
+
+StatusLabel.displayName = "StatusLabel";
+
 export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
   if (!label) return "";
   return (
@@ -78,78 +127,6 @@ export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
          </Badge> */}
     </>
   );
-};
-
-export const jobsLabel = (value) => {
-  if (!value) return "";
-
-  let newLabel = value;
-  if (value === "Schedule 1st Interview") {
-    newLabel = "1st Interview";
-  } else if (value === "Schedule 2nd Interview") {
-    newLabel = "2nd Interview";
-  }
-  return newLabel;
-};
-
-const StatusLabel = React.forwardRef(
-  ({ status ,key, className, size, ...props }, ref) => {
-    const variant= getStatusVariant(status);
-    return (
-      <Badge
-        className={cn(statusVariants({ variant, size }), className)}
-        ref={ref}
-        key={key}
-        {...props}
-      >
-        {props.children}
-      </Badge>
-    );
-  }
-);
-
-StatusLabel.displayName = "StatusLabel";
-
-export const StatusLabel1 = ({ status, value }) => {
-  if (!status) {
-    return "";
-  }
-
-  // Assign the appropriate class name based on the status
-  let className = "";
-  switch (status) {
-    case "Onboard":
-      className = "bg-amber-100 text-amber-500";
-      break;
-    case "Contacted":
-    case "warning-orange":
-      className = "label-warning-FF9900";
-      break;
-    case "warning":
-      className = "label-warning";
-      break;
-    case "Offer Made":
-      className = "label-warning-D5D912";
-      break;
-    case "Reject":
-    case "Declined":
-    case "Denied":
-      className = "bg-red-100 text-red-500";
-      break;
-    case "Selected":
-    case "Approved":
-      className = "label-success";
-      break;
-    case "Shortlisted":
-      className = "bg-emerald-100 text-emerald-500";
-      break;
-    case "Pending":
-    default:
-      className = "bg-neutral-300 text-neutral-1100";
-  }
-
-  // Render the badge with the appropriate label and style
-  return <Badge className={className}>{jobsLabel(value ?? status)}</Badge>;
 };
 
 export const StatusLabelAttendance = ({ status, value }) => {
@@ -247,35 +224,6 @@ export const getDecision = (status) => {
   else return status;
 };
 
-export const StatusIcon = ({ status }) => {
-  if (!status) return <></>;
-  const className = "text-[20px] d-inline rounded-full mr-5";
-  const style = { padding: "3px" };
-  status = Status(status);
-  if (status === "Approved")
-    return (
-      <CircleCheck
-        className={`${className} bg-[#00C483] text-white`}
-        style={style}
-      />
-    );
-  else if (status === "Rejected")
-    return (
-      <X className={`${className} bg-[#EA4335] text-white`} style={style} />
-    );
-  else if (status === "Pending")
-    return (
-      <CircleDot
-        className={`${className} bg-[#E8E8E8]`}
-        style={{
-          ...{ style },
-          ...{ color: "#D9D9D9", border: "3px solid #E8E8E8" },
-        }}
-      />
-    );
-  else return <></>;
-};
-
 export const JobStatusLabel = ({ label, type }) => {
   if (!label) return "";
 
@@ -340,4 +288,3 @@ export const JobStatusLabel = ({ label, type }) => {
 };
 
 export { StatusLabel, statusVariants };
-

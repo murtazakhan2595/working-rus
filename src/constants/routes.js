@@ -23,6 +23,7 @@ import ViewEmployee from "app/modules/Employees/Screens/View";
 import "react-toastify/dist/ReactToastify.css";
 import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
 import Employee from "app/modules/Employees/Employee.jsx";
+import { EmployeeInternalTranfer } from "app/modules/EmployeeTranfer";
 import { EditEmployeeProfile } from "app/modules/Employees/Screens/Profile";
 import { MyDtr } from "app/modules/DTR";
 import ForgotPassword from "app/modules/Login/ForgotPassword.jsx";
@@ -30,8 +31,7 @@ import ResetPassword from "app/modules/Login/ResetPassword.jsx";
 import ComingSoon from "app/modules/comingSoon/ComingSoon.jsx";
 import Services from "app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
-import EmployeesExit from "app/modules/EmployeesExit";
-import { ExitAndClearance } from "app/modules/ExitAndClearance";
+import { ExitAndClearance, EmployeeExit } from "app/modules/ExitAndClearance";
 import {
   Payslip,
   EmployeeSalaryDetails,
@@ -53,7 +53,7 @@ import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import AttendanceReport from "app/modules/Attendance/Sections/AttendenceFile";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 import OrganizationalChart from "app/modules/OfficeSetting/Screens/OrganizationalChart";
-import {TeamProfileMangement} from "app/modules/TeamManagment";
+import { TeamProfileMangement } from "app/modules/TeamManagment";
 
 const SidebarRoutes = [
   {
@@ -96,7 +96,7 @@ const SidebarRoutes = [
     component: <UserProfileTaskDetails />,
     name: "User Profile Details",
   },
-  
+
   Config.SELF_SERVICE_HUB &&
     Config.PROFIL_MANAGMENT && {
       path: "/my-profile",
@@ -137,7 +137,7 @@ const SidebarRoutes = [
   Config.SELF_SERVICE_HUB &&
     Config.EMPLOYEE_OFFBOARDING && {
       path: "/exit-employee",
-      component: <EmployeesExit />,
+      component: <EmployeeExit />,
       name: "Exit Employee",
     },
   Config.PAYROLL &&
@@ -162,6 +162,16 @@ const SidebarRoutes = [
     path: "/profile-management",
     component: <Employee />,
     name: "Profile Management",
+  },
+  Config.TEAM_INTERNALTRANSFER && {
+    path: "/employee-internal-tranfer",
+    component: <EmployeeInternalTranfer />,
+    name: "Internal Tranfer",
+  },
+  Config.TEAM_EXTERNALTRANSFER && {
+    path: "/employee-external-tranfer",
+    component: <Employee />,
+    name: "External Tranfer",
   },
   Config.TEAM_MANAGEMENT && {
     path: "/team-profile-management",
@@ -322,6 +332,11 @@ const SidebarRoutes = [
     component: <ExitAndClearance />,
     name: "Exit Clearance",
   },
+  {
+    path: "/organizational-chart",
+    component: <OrganizationalChart />,
+    name: "Organizational Chart",
+  },
 ].filter(Boolean); // Filter out undefined routes
 
 const LoginRoutes = [
@@ -366,11 +381,6 @@ const GeneralRoutes = [
     path: "/confirm-password",
     component: <ResetPassword />,
     name: "Reset Password",
-  },
-  {
-    path: "/organizational-chart",
-    component: <OrganizationalChart />,
-    name: "Organizational Chart",
   },
 ].filter(Boolean); // Filter out undefined routes
 

@@ -23,12 +23,6 @@ import Config from "constants/config";
  * @property {string} groupLabel - The label for the group.
  * @property {Menu[]} menus - The list of menus in the group.
  */
-// export const UserRoles = [
-//   { value: 1, label: "Super Admin" },
-//   { value: 2, label: "Manager" },
-//   { value: 3, label: "HR" },
-//   { value: 4, label: "Employee" },
-// ];
 /**
  * @typedef {Object} Menu
  * @property {string} to - The URL of the menu item.
@@ -104,8 +98,10 @@ export function getMenuList(pathname, userRole) {
           createMenu("/create-employee", "Employee Creation"),
         // createMenu("/edit-employee", "Customize Employee"),
         // createMenu("/relocation", "Relocation"),
-        // createMenu("/internal", "Internal"),
-        // createMenu("/external", "External"),
+        Config.TEAM_INTERNALTRANSFER &&
+          createMenu("/employee-internal-tranfer", "Internal Tranfer"),
+        Config.TEAM_EXTERNALTRANSFER &&
+          createMenu("/employee-external-tranfer", "External Tranfer"),
       ].filter(Boolean)
     ),
   ];

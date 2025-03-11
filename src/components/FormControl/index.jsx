@@ -39,7 +39,9 @@ import ImageInput from "components/FormControl/UploadFiles/ImageInput";
 import EmailInput from "components/FormControl/EmailInput";
 import ColorInput from "./ColorInput";
 import DateInput from "./DateInput";
+import RadioGroupInput from "./RadioGroupInput";
 import CheckBoxInput from "./CheckBoxInput";
+import DateRangeInput from "./DateRangeInput";
 
 const errorClassName = "text-red-800 text-xs font-[inter] font-normal ml-1";
 export const inputButtonClassName =
@@ -153,45 +155,45 @@ export const FormFieldIcon = memo(
   }
 );
 
-const RadioGroupInput = ({
-  name,
-  value,
-  error,
-  touch,
-  options,
-  label,
-  disabled,
-  required,
-  onChange,
-}) => {
-  const defaultValue = value || (options.length > 0 ? options[0].value : "");
-  return (
-    <div>
-      {label && <label className="font-medium">{label}</label>}
-      <RadioGroup
-        defaultValue={options[0]?.value}
-        value={defaultValue}
-        onValueChange={(value) => {
-          onChange(name, value);
-        }}
-      >
-        <div className="flex items-center justify-around">
-          {options.map((option) => (
-            <div key={option.value} className="flex items-center space-x-2">
-              <RadioGroupItem
-                value={option.value}
-                id={option.value}
-                disabled={disabled}
-              />
-              <Label htmlFor={option.value}>{option.label}</Label>
-            </div>
-          ))}
-        </div>
-      </RadioGroup>
-      {touch && error && <div className="text-sm text-red-500">{error}</div>}
-    </div>
-  );
-};
+// const RadioGroupInput = ({
+//   name,
+//   value,
+//   error,
+//   touch,
+//   options,
+//   label,
+//   disabled,
+//   required,
+//   onChange,
+// }) => {
+//   const defaultValue = value || (options.length > 0 ? options[0].value : "");
+//   return (
+//     <div>
+//       {label && <label className="font-medium">{label}</label>}
+//       <RadioGroup
+//         defaultValue={options[0]?.value}
+//         value={defaultValue}
+//         onValueChange={(value) => {
+//           onChange(name, value);
+//         }}
+//       >
+//         <div className="flex items-center justify-around">
+//           {options.map((option) => (
+//             <div key={option.value} className="flex items-center space-x-2">
+//               <RadioGroupItem
+//                 value={option.value}
+//                 id={option.value}
+//                 disabled={disabled}
+//               />
+//               <Label htmlFor={option.value}>{option.label}</Label>
+//             </div>
+//           ))}
+//         </div>
+//       </RadioGroup>
+//       {touch && error && <div className="text-sm text-red-500">{error}</div>}
+//     </div>
+//   );
+// };
 
 const NumberInput = ({
   name,
@@ -722,5 +724,6 @@ export {
   SortingFilters,
   DateRangeFilter,
   ColorInput,
+  DateRangeInput,
 };
 

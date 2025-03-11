@@ -215,10 +215,11 @@ function getDepartmentName(value, departments) {
   return department ? department.label : "N/A";
 }
 
-function getDesignationName(value, designations) {
-  const designation = designations.find((option) => option.value === value);
-  return designation ? designation.label : "N/A";
+export function getLabelByValue(value, options) {
+  const selectedOption = options.find((option) => option.value === value);
+  return selectedOption ? selectedOption.label : "N/A";
 }
+
 
 function getManagerName(value, managers) {
   const manager = managers.find((option) => option.value === value);
@@ -262,7 +263,6 @@ export {
   getExperience,
   getExpenseType,
   getDepartmentName,
-  getDesignationName,
   getManagerName,
   getOrganizationCountryFullName,
 };

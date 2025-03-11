@@ -1,6 +1,7 @@
 import { Clock, Download } from "lucide-react";
-import { PriorityList } from "data/Data";
-import moment from "moment";
+import { PriorityList, ProjectStatusList } from "data/Data";
+import { renderDate } from "utils/renderValues";
+import { TaskStatusLabel } from "app/modules/TaskManagment/Sections";
 export const MyDtrTasksColumns = [
   {
     dataField: "",
@@ -15,7 +16,7 @@ export const MyDtrTasksColumns = [
   {
     dataField: "end_date",
     text: "Due Date",
-    formatter: (cell) => <span>{moment(cell).format("MMMM DD")}</span>,
+    formatter: (cell) => renderDate(cell, ""),
   },
   {
     dataField: "priority",
@@ -45,21 +46,10 @@ export const MyDtrTasksColumns = [
   {
     dataField: "status",
     text: "Status",
-    formatter: (cell) => {
-      const status = cell?.toLowerCase();
-      let displayText = "In Progress";
-      let className = "bg-blue-100 text-blue-800";
-
-      if (status === "completed") {
-        displayText = "Completed";
-        className = "bg-green-100 text-green-800";
-      }
-
-      return (
-        <span className={`px-2 py-1 rounded-full text-xs ${className}`}>
-          {displayText}
-        </span>
-      );
-    },
+    formatter: (cell) => (
+      <div className="flex justify-start">
+        <TaskStatusLabel status={cell} />
+      </div>
+    ),
   },
 ];

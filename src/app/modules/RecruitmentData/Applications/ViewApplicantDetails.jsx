@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import { formatNumber } from "data/Data";
+import { formatNumber } from "utils/renderValues";
 import moment from "moment";
 import { RenderJobApplicationActions } from "./Sections";
 import { fetchJobById, downloadCV } from "app/hooks/recruitment";

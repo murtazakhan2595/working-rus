@@ -35,7 +35,7 @@ import {
 import { MyDtrTasksColumns } from "app/modules/DTR/Sections/DTRTableColumns";
 import { getTaskDetailsFromLogtime, addUpdateDTR } from "app/hooks/dtr";
 import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
-import { getDesignationName } from "utils/getValuesFromTables";
+import { getLabelByValue } from "utils/getValuesFromTables";
 import { useSelector } from "react-redux";
 import { DailyReportList } from "../../MyDTR/Screens";
 
@@ -126,7 +126,7 @@ const ReportCard = ({
       <div className="flex flex-wrap justify-between gap-6 w-full bg-white rounded-lg">
         <EmployeeDataInfo
           name={full_name}
-          designation={getDesignationName(designation, designations)}
+          designation={getLabelByValue(designation, designations)}
           src={""}
         />
         <div className="flex gap-4 items-center">

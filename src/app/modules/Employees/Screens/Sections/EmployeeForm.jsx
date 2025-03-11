@@ -70,18 +70,7 @@ import SheetComponent from "components/ui/CustomSheet";
 import moment from "moment";
 import { cn } from "src/@/lib/utils";
 import { CalendarDays } from "lucide-react";
-
-async function getManagersStringSelected(managers) {
-  if (managers) {
-    const matchingObjects = await Promise.all(
-      managers.map((obj) => {
-        return obj;
-      })
-    );
-    return matchingObjects.join(", ");
-  }
-  return "";
-}
+import { DateRangeInput } from "components/FormControl";
 
 const SheetOnBorading = ({
   isEditMode,
@@ -221,11 +210,6 @@ const SheetOnBorading = ({
     setIsLoading(true);
     const employeePayload = mapEmployeePayloadData(data, formData);
     try {
-      // Format indirect report if it exists
-      if (data?.indirect_report)
-        employeePayload.indirect_report = await getManagersStringSelected(
-          data.indirect_report
-        );
       // Save employee work information
       const response = await saveEmployeeWorkInformationData(
         id,
@@ -350,6 +334,7 @@ const SheetOnBorading = ({
                   if (!id && values.username && usernameAlreadyExist) {
                     errors.username = "Username already exist";
                   }
+                  console.error(errors,values,"Errors");
                   return errors;
                 }}
               >
@@ -1062,20 +1047,14 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps)(SheetOnBorading);
 
 const ProbationDateRange = ({ formikProps }) => {
-  const [dateRange, setDateRange] = useState({
-    from: formikProps.values?.probation_start_date
-      ? new Date(formikProps.values.probation_start_date)
-      : null,
-    to: formikProps.values?.probation_end_date
-      ? new Date(formikProps.values.probation_end_date)
-      : null,
-  });
-
   // Calculate probation period whenever date range changes
   useEffect(() => {
-    if (dateRange.from && dateRange.to) {
-      const start = moment(dateRange.from);
-      const end = moment(dateRange.to);
+    if (
+      formikProps.values?.probation_start_date &&
+      formikProps.values?.probation_end_date
+    ) {
+      const start = moment(formikProps.values.probation_start_date);
+      const end = moment(formikProps.values.probation_end_date);
 
       if (end.isBefore(start)) {
         formikProps.setFieldValue("probation_period", "Invalid date range");
@@ -1112,84 +1091,88 @@ const ProbationDateRange = ({ formikProps }) => {
     } else {
       formikProps.setFieldValue("probation_period", "");
     }
-  }, [dateRange]);
+  }, [
+    formikProps.values?.probation_start_date,
+    formikProps.values?.probation_end_date,
+  ]);
 
-  const handleDateRangeSelect = (selectedRange) => {
-    if (selectedRange?.from) {
-      formikProps.setFieldValue(
-        "probation_start_date",
-        moment(selectedRange.from).format("YYYY-MM-DD")
-      );
+  // Handle date range selection
+  const handleDateRangeChange = (name, value) => {
+    if (!value) {
+      // Reset all values if date range is cleared
+      formikProps.setFieldValue("probation_start_date", null);
+      formikProps.setFieldValue("probation_end_date", null);
+      formikProps.setFieldValue("confirmation_date", null);
+      return;
     }
 
-    if (selectedRange?.to) {
-      formikProps.setFieldValue(
-        "probation_end_date",
-        moment(selectedRange.to).format("YYYY-MM-DD")
-      );
+    const [startDate, endDate] = value.split(",");
+
+    // Set start date
+    if (startDate) {
+      formikProps.setFieldValue("probation_start_date", startDate);
+    }
+
+    // Set end date and auto-calculate confirmation date
+    if (endDate) {
+      formikProps.setFieldValue("probation_end_date", endDate);
       formikProps.setFieldValue(
         "confirmation_date",
-        moment(selectedRange.to).add(1, "days").format("YYYY-MM-DD")
+        moment(endDate).add(1, "days").format("YYYY-MM-DD")
       );
     }
+  };
 
-    setDateRange(selectedRange);
+  // Get current date range value for component
+  const getDateRangeValue = () => {
+    if (!formikProps.values?.probation_start_date) return null;
+
+    let value = formikProps.values.probation_start_date;
+
+    if (formikProps.values?.probation_end_date) {
+      value += `,${formikProps.values.probation_end_date}`;
+    }
+
+    return value;
   };
 
   const handlePeriodChange = (field, value) => {
     formikProps.setFieldValue("probation_period", value);
   };
 
+  // Get display error message for date range
+  const getDateRangeError = () => {
+    if (formikProps.errors?.probation_start_date) {
+      return formikProps.errors.probation_start_date;
+    } else if (formikProps.errors?.probation_end_date) {
+      return formikProps.errors.probation_end_date;
+    }
+    return null;
+  };
+
+  // Get touched state for date range
+  const getDateRangeTouched = () => {
+    return (
+      formikProps.touched?.probation_start_date ||
+      formikProps.touched?.probation_end_date
+    );
+  };
+
   return (
     <>
       <div className="space-y-2">
-        <div className="flex flex-col gap-4">
-          <Label htmlFor="probation-date-range">
-            <span className="text-red-600">* </span>Probation Period Range
-          </Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="probation-date-range"
-                variant="ghost"
-                className={cn(
-                  "inline-flex items-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-white text-primary dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-fit px-4 py-2 flex-wrap justify-between w-full rounded-sm border-neutral-500 hover:border-primary-200 hover:text-primary-1100 hover:bg-primary-200 hover:shadow-none",
-                  dateRange.from && "text-primary-1100 bg-fuchsia-50"
-                )}
-              >
-                {dateRange.from && dateRange.to ? (
-                  <>
-                    {format(dateRange.from, "LLL dd, y")} -{" "}
-                    {format(dateRange.to, "LLL dd, y")}
-                  </>
-                ) : (
-                  <span className="flex items-center">
-                    <CalendarDays className="h-5 mr-1" /> Select Probation Date
-                    Range
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                initialFocus
-                mode="range"
-                defaultMonth={dateRange.from}
-                selected={dateRange}
-                onSelect={handleDateRangeSelect}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
-          {(formikProps.errors?.probation_start_date &&
-            formikProps.touched?.probation_start_date) ||
-          (formikProps.errors?.probation_end_date &&
-            formikProps.touched?.probation_end_date) ? (
-            <div className="text-red-600 invalid-feedback">
-              Please select a valid date range
-            </div>
-          ) : null}
-        </div>
+        <DateRangeInput
+          name="probation_date_range"
+          label="Probation Period Range"
+          value={getDateRangeValue()}
+          onChange={handleDateRangeChange}
+          error={getDateRangeError()}
+          touch={getDateRangeTouched()}
+          required={true}
+          icon={<CalendarDays className="h-4 w-4" />}
+          placeholder="Select Probation Date Range"
+          minDate={formikProps.values?.joining_date} // Enforce that probation can't start before joining date
+        />
       </div>
       <div className="space-y-2">
         <TextInput
@@ -1200,6 +1183,7 @@ const ProbationDateRange = ({ formikProps }) => {
           label="Probation Period"
           onChange={handlePeriodChange}
           required={true}
+          disabled={true}
         />
       </div>
     </>

@@ -66,7 +66,6 @@ import {
 const TaskEditAddViewDetails = ({
   isOpen = true,
   reloadData = () => {},
-  Projects = [],
   onTaskCreated, // New callback for when task/subtask is created
 }) => {
   const location = useLocation();
@@ -75,6 +74,8 @@ const TaskEditAddViewDetails = ({
   const { taskId, subtaskId } = useParams();
   const navigate = useNavigate();
   const loggedInUserId = useSelector((state) => state.user.userProfile.id);
+  const Projects = useSelector((state) => state.common.projects);
+  console.log(Projects, "stateproject");
   const currentTaskId = subtaskId ? subtaskId : taskId;
   const [isLoading, setIsLoading] = useState(false);
   const [BoardList, setBoardList] = useState([]);
@@ -257,23 +258,23 @@ const TaskEditAddViewDetails = ({
     };
   }, [currentTaskId]);
 
+  const fetchProject = async (isMounted, projectID) => {
+    if (projectID) {
+      try {
+        const projectDetails = await getProjectById(projectID);
+        if (isMounted && projectDetails) {
+          setProjectDetail(projectDetails);
+        }
+      } catch (error) {
+        console.error("Error fetching project details:", error);
+      }
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
-    const fetchProject = async (isMounted) => {
-      if (initialValues?.project_id) {
-        try {
-          const projectDetails = await getProjectById(initialValues.project_id);
-          if (isMounted && projectDetails) {
-            setProjectDetail(projectDetails);
-          }
-        } catch (error) {
-          console.error("Error fetching project details:", error);
-        }
-      }
-    };
-
     if (initialValues?.project_id) {
-      fetchProject(isMounted);
+      fetchProject(isMounted, initialValues?.project_id);
     }
     return () => {
       isMounted = false;
@@ -627,7 +628,7 @@ const TaskEditAddViewDetails = ({
                           )}
                         </div>
                         <div className="flex justify-end gap-2">
-                          {!props.values.project_id && (
+                          {!taskProjectId && (
                             <SelectInputComponent
                               name="project_id"
                               options={Projects}
@@ -641,6 +642,9 @@ const TaskEditAddViewDetails = ({
                                 props.setFieldValue("board_id", null);
                                 setIsEditMode(true);
                                 fetchBoardListByProjectId(true, value);
+                                fetchCustomFieldsByProjectId(true, value);
+                                fetchProject(true, value);
+                                
                               }}
                             />
                           )}

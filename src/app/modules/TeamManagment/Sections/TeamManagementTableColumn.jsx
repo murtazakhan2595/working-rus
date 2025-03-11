@@ -44,7 +44,9 @@ export const TeamColumns = [
     text: "Phone no/Email",
     formatter: (cell, row) => (
       <>
-        <div className="text-base">{row.mobile_no || ""}</div>
+        <div className="text-base">{`+${row.country_code || ""}${
+          row.mobile_no || ""
+        }`}</div>
         <div className="text-base">{row.work_email || ""}</div>
       </>
     ),

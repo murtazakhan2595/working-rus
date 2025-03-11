@@ -5,7 +5,7 @@ import {  useNavigate, useParams } from "react-router-dom";
 import { restart, education, money, proCheck } from "../../../../assets/images";
 import { Header} from "../Sections";
 import { fetchJobById } from "../../../hooks/recruitment";
-import { formatNumber } from "data/Data";
+import { formatNumber } from "utils/renderValues";
 import moment from "moment";
 import {
   getCountryFullName,

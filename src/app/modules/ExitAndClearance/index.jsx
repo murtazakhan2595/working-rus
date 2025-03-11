@@ -1,3 +1,3 @@
 import ExitAndClearance from "./ExitAndClearance";
-import EmployeesExit from "./EmployeesExit";
-export { ExitAndClearance, EmployeesExit };
+import EmployeeExit from "./EmployeeExit";
+export { ExitAndClearance, EmployeeExit };

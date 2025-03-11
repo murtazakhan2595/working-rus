@@ -9,7 +9,7 @@ import { Status } from "app/modules/ExitAndClearance/Sections";
 import { StatusViewIcon, StatusLabel } from "components/StatusLabel";
 import { TerminationStatus } from "utils/getValuesFromTables";
 
-const TerminationStatusView = ({ status = "viewed by manager", row, buttonTitle = "View" }) => {
+const TerminationStatusView = ({ status = "viewed by manager" }) => {
   const [openDropdownRow, setOpenDropdownRow] = useState(null);
   const spanClassName = "text-[14px] flex justify-start items-center";
   const itemClassName = "custom-dropdown-item py-2";
@@ -22,7 +22,6 @@ const TerminationStatusView = ({ status = "viewed by manager", row, buttonTitle 
     else return "Approval";
   };
   const employeeApproval = Status(status, 0);
-console.log(status,'status123');
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

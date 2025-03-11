@@ -68,15 +68,23 @@ export function mapEmployeeBankDetailPayloadData(data) {
 }
 
 function mapEmployeeData(data) {
-  const employee = Employee;
-  employee.id = data.id;
-  employee.personalInformation = getPersonalInfo(data);
-  employee.EmployeeContactInformation = getContactInfo(data);
-  employee.visaDetails = getVisaDetails(data);
-  employee.bankDetails = getBankDetails(data);
-  employee.department = getWorkInformation(data);
-  employee.academicRecord = getAcademicRecord(data);
-  employee.professionalExperiance = getProfessionalExperiance(data);
+  const PersonalInformation = getPersonalInfo(data);
+  const EmployeeContactInformation = getContactInfo(data);
+  const BankDetails = getBankDetails(data);
+  const WorkInformation = getWorkInformation(data);
+  const employee = {
+    id: data.id,
+    name: `${data.first_name} ${data.last_name}`,
+    name_initials: `${data?.first_name?.charAt(0)?.toUpperCase() || ""}${
+      data?.last_name?.charAt(0)?.toUpperCase() || ""
+    }`,
+    ...PersonalInformation,
+    ...EmployeeContactInformation,
+    ...BankDetails,
+    ...WorkInformation,
+  };
+
+  console.log(data, employee, "Employeegetbyiddata");
 
   return employee;
 }
@@ -92,7 +100,10 @@ function getPersonalInfo(data) {
     {}
   );
 
-  return personalInfo;
+  return {
+    ...personalInfo,
+    phone_no: `+${data?.country_code}${data?.mobile_no}`,
+  };
 }
 function getContactInfo(data) {
   const contactInfo = Object.keys(EmployeeContactInformation).reduce(
@@ -109,16 +120,13 @@ function getContactInfo(data) {
 }
 
 function getVisaDetails(data) {
-  const visaDetails = Object.keys(EmployeeVisaDetails).reduce(
-    (acc, key) => {
-      if (data.hasOwnProperty(key)) {
-        acc[key] = data[key];
-      }
-      return acc;
-    },
-    {}
-  );
-  console.log(data,visaDetails)
+  const visaDetails = Object.keys(EmployeeVisaDetails).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      acc[key] = data[key];
+    }
+    return acc;
+  }, {});
+  console.log(data, visaDetails);
 
   return visaDetails;
 }
@@ -225,15 +233,12 @@ function getWorkInformation(data) {
 }
 
 function getBankDetails(data) {
-  const bankDetail = Object.keys(EmployeeBankDetails).reduce(
-    (acc, key) => {
-      if (data.hasOwnProperty(key)) {
-        acc[key] = data[key];
-      }
-      return acc;
-    },
-    {}
-  );
+  const bankDetail = Object.keys(EmployeeBankDetails).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      acc[key] = data[key];
+    }
+    return acc;
+  }, {});
 
   return bankDetail;
 }

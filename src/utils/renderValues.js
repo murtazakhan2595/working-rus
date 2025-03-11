@@ -1,5 +1,25 @@
 import moment from "moment";
 
+export const formatNumber = (num) => {
+  // const units = ["", "K", "M", "B", "T", "P", "E", "Z", "Y"];
+  // let unit = 0;
+
+  // while (num >= 1000 && unit < units.length - 1) {
+  //   num /= 1000;
+  //   unit++;
+  // }
+
+  // Use Intl.NumberFormat to format the number with 2 decimal places
+  const formattedNumber = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(num);
+
+  return formattedNumber;
+
+  // return formattedNumber + units[unit];
+};
+
 export const getRandomColor = (letter) => {
   letter = letter?.toUpperCase();
   const colors = {
@@ -137,8 +157,8 @@ export function numberToWords(number) {
   return result.trim();
 }
 
-export function renderDate(date) {
-  return date ? moment(date).format("MMM DD, YYYY") : "N/A";
+export function renderDate(date, fallbackValue ='N/A') {
+  return date ? moment(date).format("MMM DD, YYYY") : fallbackValue ;
 }
 
 export const formatDuration = (duration) => {

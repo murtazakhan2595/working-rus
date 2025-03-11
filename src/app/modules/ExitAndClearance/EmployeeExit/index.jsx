@@ -12,17 +12,9 @@ import {
   TabsContent,
 } from "src/@/components/ui/tabs";
 
-import { Card, CardContent, CardHeader } from "components/ui/card.jsx";
-const EmployeeExit = ({
-  userProfile,
-  departments,
-  designations,
-  managers,
-  userDetails,
-}) => {
+const EmployeeExit = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("exit-request");
-  const [resignation, setResignation] = useState({});
-  const [termination, setTermination] = useState({});
+  const [exitDetails, setExitDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const fetchData = async () => {
     try {
@@ -30,15 +22,7 @@ const EmployeeExit = ({
       const response = await getEmployeeExitDataById(userProfile.id);
       if (response) {
         const data = response?.data.results.result;
-        const resignations = data.filter(
-          (item) => item.exit_category === "resignation"
-        );
-        const terminations = data.filter(
-          (item) => item.exit_category === "termination"
-        );
-
-        setResignation(resignations[0]);
-        setTermination(terminations[0]);
+        setExitDetails(data[0]);
       }
     } catch (e) {
       console.error(e);
@@ -52,10 +36,15 @@ const EmployeeExit = ({
   }, [userProfile]);
 
   return (
-    <div className="flex flex-col gap-4 ">
+    <div className="flex flex-col gap-4">
       <Header />
       <div>
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        {exitDetails ? (
+          <ExitRequestDetails exitData={exitDetails} reloadData={fetchData} />
+        ) : (
+          <ExitRequestForm reload={fetchData} />
+        )}
+        {/* <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row">
             <TabsList className="flex justify-center mb-4">
               <TabsTrigger
@@ -110,7 +99,7 @@ const EmployeeExit = ({
               </TabsContent>
             </CardContent>
           </Card>
-        </Tabs>
+        </Tabs> */}
       </div>
     </div>
   );
@@ -118,12 +107,7 @@ const EmployeeExit = ({
 
 const mapStateToProps = (state) => {
   return {
-    token: state.user.token,
     userProfile: state.user.userProfile,
-    departments: state.common.departments,
-    designations: state.common.designations,
-    managers: state.emp.reportingManagers,
-    userDetails: state.emp.userDetails,
   };
 };
 

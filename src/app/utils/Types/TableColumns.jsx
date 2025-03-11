@@ -1,11 +1,11 @@
 import { EmployeeID, UserRole } from "utils/getValuesFromTables";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
-import { dropdownOptions, formatNumber } from "data/Data";
+import { dropdownOptions } from "data/Data";
 import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
 import { EmployeeAttendenceHistoryActions } from "app/modules/Attendance/EmployeeAttendance/Section";
 import moment from "moment";
-import { renderDate } from "utils/renderValues";
+import { renderDate,formatNumber } from "utils/renderValues";
 import { AiOutlineDownload } from "react-icons/ai";
 import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
@@ -31,7 +31,7 @@ export const EmployeeColumns = [
     text: "ID",
     formatter: (cell, row) => <EmployeeID value={cell || row?.id} />,
     dataSort: true,
-    minWidth: "101px",
+    minWidth: "105px",
   },
   {
     dataField: "first_name",
@@ -60,7 +60,9 @@ export const EmployeeColumns = [
     text: "Phone no/Email",
     formatter: (cell, row) => (
       <>
-        <div className="text-base">{row.mobile_no || ""}</div>
+        <div className="text-base">{`+${row.country_code || ""}${
+          row.mobile_no || ""
+        }`}</div>
         <div className="text-base">{row.work_email || ""}</div>
       </>
     ),

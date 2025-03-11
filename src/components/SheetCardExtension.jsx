@@ -6,7 +6,9 @@ import AlertDialogue from "./ui/AlertDialogue";
 
 export const SheetCardExtension = ({ title, children, className }) => {
   return (
-    <div className={`font-[inter] ${className} flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900`}>
+    <div
+      className={`font-[inter] ${className} flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900`}
+    >
       <div className="flex h-[7px] flex-shrink-0 items-end px-px">
         <div className="text-plum-900 bg-white">{title}</div>
       </div>
@@ -20,22 +22,28 @@ export const DetailBox = ({
   value,
   className = "mt-3",
   orientation = "vertical",
+  key = "",
 }) => {
   if (orientation === "horizontal") {
     return (
-      <div className={`flex flex-col w-full ${className}`}>
-        <div className="text-sm font-medium text-neutral-1200 mb-2">{label}</div>
-        <div className="leading-5">{value ?? "N/A"}</div>
+      <div className={`flex flex-col w-full ${className}`} key={key || value}>
+        <div className="text-sm font-medium mb-2 text-neutral-900">
+          {label}
+        </div>
+        <div className="leading-5 text-neutral-1200">{value ?? "N/A"}</div>
       </div>
     );
   }
 
   return (
-    <div className={`flex gap-4 items-center max-w-full ${className}`}>
-      <div className="flex flex-col leading-none min-w-[88px] text-neutral-900 w-[132px]">
+    <div
+      className={`flex gap-4 items-center max-w-full ${className}`}
+      key={key || value}
+    >
+      <div className="flex flex-col leading-none min-w-[88px] w-[132px] text-neutral-900">
         <div>{label}</div>
       </div>
-      <div className="flex-1 shrink leading-5 basis-0">{value ?? "N/A"}</div>
+      <div className="flex-1 shrink leading-5 basis-0 text-neutral-1200">{value ?? "N/A"}</div>
     </div>
   );
 };
@@ -101,17 +109,27 @@ export const DisplayFile = ({ firstName, lastName, file, onDownload }) => {
   );
 };
 
-
-export const DisplayButton = ({handlePrevious, handleNext})=>{
-  return(
+export const DisplayButton = ({ handlePrevious, handleNext }) => {
+  return (
     <div className="flex justify-end gap-2">
-    <Button variant="outline"onClick={handlePrevious}> <ChevronLeft/> Previous</Button>
-    <Button variant="outline" onClick={handleNext}>Next <ChevronRight/></Button>
+      <Button variant="outline" onClick={handlePrevious}>
+        {" "}
+        <ChevronLeft /> Previous
+      </Button>
+      <Button variant="outline" onClick={handleNext}>
+        Next <ChevronRight />
+      </Button>
     </div>
-  )
-}
+  );
+};
 
-export const handleCloseWithConfirmation = ({isOpen, setCloseSheet, setIsOpen, setNewAttachment, ...props}) => {
+export const handleCloseWithConfirmation = ({
+  isOpen,
+  setCloseSheet,
+  setIsOpen,
+  setNewAttachment,
+  ...props
+}) => {
   return (
     isOpen && (
       <AlertDialogue
@@ -127,8 +145,8 @@ export const handleCloseWithConfirmation = ({isOpen, setCloseSheet, setIsOpen, s
           if (setNewAttachment) {
             setNewAttachment(null);
           }
-          if(props?.discard && props?.navigate){
-            props?.navigate('/profile-management')
+          if (props?.discard && props?.navigate) {
+            props?.navigate("/profile-management");
           }
         }}
       />

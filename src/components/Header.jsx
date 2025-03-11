@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { connect } from "react-redux";
 
-
 const Header = ({ content, userProfile }) => {
   const location = useLocation();
   const [pathName, setPathName] = useState("");
@@ -32,22 +31,22 @@ const Header = ({ content, userProfile }) => {
       "exit-employee": "Employee Offboarding",
       "claim-request": "Claim Request",
       "my-claims": "My Claims",
-      "projects": `${userProfile.role === 4 ? "My Projects" : "All Projects"}`,
+      projects: `${userProfile.role === 4 ? "My Projects" : "All Projects"}`,
       "leave-records": "Leave Records",
-      "applications": "Applications",
-      "applicants": "Applicants",
+      applications: "Applications",
+      applicants: "Applicants",
       "create-profile": "Create Profile",
       "project-board": "Project Board",
       "my-profile": "My Profile",
-      "test": "Test",
+      test: "Test",
       "my-team": "My Team",
       "my-task": "My Tasks",
-      "calender": "Calendar",
-      "attendance": "Attendance",
+      calender: "Calendar",
+      attendance: "Attendance",
       "shift-calendar": "Shift Calender",
       "files-data": "Files Data",
-      "announcement": "Announcements",
-      "recognition": "Recognition",
+      announcement: "Announcements",
+      recognition: "Recognition",
       "my-travel-details": "My Travel Details",
       "letter-request": "Letter Request",
       "leave-calender": "Leave Calendar",
@@ -55,43 +54,43 @@ const Header = ({ content, userProfile }) => {
       "create-task": "Create Task",
       "my-dtr": "Daily Tasks Report",
       "employee-dtrs": "Daily Tasks Report",
-      "settings": "Settings",
+      settings: "Settings",
       "travel-details": "Travel Details",
       "customise-employees": "Customize Employees",
-      "relocation": "Relocation",
+      relocation: "Relocation",
       "create-employee": "Create Employee",
-      "loans": "Loans",
-      "payslips": "Payslips",
+      loans: "Loans",
+      payslips: "Payslips",
       "development-plan": "Development Plan",
       "personnel-requisition": "Personnel Requisition",
-      "jobs": "Jobs",
+      jobs: "Jobs",
       "job-post": "Job Post",
-      "tests": "Tests",
-      "referals": "Referrals",
-      "learn": "Learning",
+      tests: "Tests",
+      referals: "Referrals",
+      learn: "Learning",
       "career-planning": "Career Planning",
       "on-boarding": "Onboarding",
       "employee-evaluation": "Employee Evaluation",
       "leave-request": "Leave Request",
-      "recruitment": "Recruitment",
+      recruitment: "Recruitment",
       "my-leave-tracker": "My Leave Tracker",
       "job-application": "Job Application",
       "job-application-form": "Job Application Form",
       "job-description": "Job Description",
-      "office-settings":  "Office Setting",
-      "my-attendance":"Attendance History"
-      
+      "office-settings": "Office Setting",
+      "my-attendance": "Attendance History",
+      "employee-internal-tranfer": "Internal Tranfer",
+      "employee-external-tranfer": "External Tranfer",
     };
     setPathName(pathNames[path] || "Dashboard");
   }, [location]);
 
   return (
     <div className="flex flex-row items-center justify-between px-4 py-4">
-      <h3 className="text-lg font-semibold capitalize sm:text-xl md:text-2xl lg:text-3xl">{pathName}</h3>
-      <div className="flex flex-wrap justify-end gap-3">
-       
-        {content}
-      </div>
+      <h3 className="text-lg font-semibold capitalize sm:text-xl md:text-2xl lg:text-3xl">
+        {pathName}
+      </h3>
+      <div className="flex flex-wrap justify-end gap-3">{content}</div>
     </div>
   );
 };
@@ -100,4 +99,4 @@ const mapStateToProps = (state) => {
     userProfile: state.user.userProfile,
   };
 };
-export default connect(mapStateToProps)( Header);
+export default connect(mapStateToProps)(Header);

@@ -6,8 +6,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
-} from "../../../../src/@/components/ui/dropdown-menu";
-import { Button } from "../../../../src/@/components/ui/button";
+} from "src/@/components/ui/dropdown-menu";
+import { Button } from "src/@/components/ui/button";
 import { StatusIcon } from "components/StatusLabel";
 
 const ApplicationStatus = ({ row, isTableViewButton = false }) => {
@@ -83,7 +83,7 @@ const ApplicationStatus = ({ row, isTableViewButton = false }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button aria-haspopup="true" variant="outline" className="">
+        <Button aria-haspopup="true" variant="continue" className="">
           {isTableViewButton ? "View" : "View status"}
         </Button>
       </DropdownMenuTrigger>
