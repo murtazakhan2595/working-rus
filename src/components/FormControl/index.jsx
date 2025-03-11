@@ -118,7 +118,7 @@ export const FormPopoverButton = memo(
               {triggerContent}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0">
+          <PopoverContent className="min-w-[300px] w-auto p-0">
             {popoverContent}
           </PopoverContent>
         </Popover>
