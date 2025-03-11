@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "components/ui/card";
+import { InternalTransferColumns } from "app/modules/EmployeeTranfer/Sections";
 import {
-  InternalTransferColumns,
-  TransferForm,
-} from "app/modules/EmployeeTranfer/Sections";
-import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
-import { Header } from "components";
-import { FilterInput, SelectInputComponent } from "components/FormControl";
-import { EmployeeTranferStatus } from "data/Data";
-import { getEmployeeTransferList } from "app/hooks/employeeTranfer";
-import { PageLoader } from "components";
-import SheetOnBoarding from "components/ui/OnBoardingSheet";
-import Stats from "components/ui/Stats";
-import TableCustom from "components/CustomTable";
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "src/@/components/ui/tabs";
+import { TableCustom } from "components";
 import { useSelector } from "react-redux";
-import { Button } from "components/ui/button";
 
-export default function EmployeeInternalTranfer() {
+const innerTabClassName =
+  "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
+
+const EmployeeInternalTranfer = ({
+  setActiveTab = () => {},
+  activeTab = "Requests",
+  TabList = [],
+  EmployeesTransferData = { results: [], count: 0 },
+}) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [employeeTransferData, setEmployeeTransferData] = useState({ results: [], count: 0 });
   const [filterData, setFilterData] = useState({});
   const [OpenTransferForm, setOpenTransferForm] = useState(false);
   const [totalEmployee, setTotalEmployee] = useState(0);
@@ -43,121 +43,45 @@ export default function EmployeeInternalTranfer() {
     },
   };
 
-  const fetchData = async (isMounted) => {
-    setIsLoading(true);
-    try {
-      const data = await getEmployeeTransferList({
-        options,
-        filterData,
-        ordering,
-      });
-      if (isMounted) {
-        setEmployeeTransferData(data);
-        }
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-    } finally {
-      if (isMounted) setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    fetchData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [options, filterData, ordering]);
-
-  const handleFilterChange = (filterName, filterValue) => {
-    onPageChange("page", 1);
-    if (filterName === "department_name") setSelectedDepartment(filterValue);
-    if (filterName === "status") setSelectedStatus(filterValue);
-
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
-
-  const statsData = [
-    { label: "Total", value: totalEmployee, icon: UsersRound },
-    { label: "Approved", value: totalManagers, icon: Contact },
-    { label: "Rejected", value: activeEmployee, icon: UserRoundCheck },
-  ];
-
   return (
-    <div
-      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
+    <Tabs
+      defaultValue="Requests"
+      className="w-full"
+      onValueChange={(tab) => {
+        setActiveTab(tab);
+      }}
+      value={activeTab}
     >
-      <Header
-        content={
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              setOpenTransferForm(true);
-            }}
-          >
-            Request Transfer
-          </Button>
-        }
-      />
-      <Stats stats={statsData} />
-      <div className="flex flex-col justify-end lg:flex-row md:flex-row xl:flex-row gap-2">
-        <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Search by ID and Name",
-              name: "id_and_first_name",
-            },
-            {
-              type: "select-one",
-              option: Departments,
-              name: "department_name",
-              placeholder: "Department",
-              values: selectedDepartment,
-            },
-            {
-              type: "select-two",
-              option: EmployeeTranferStatus,
-              name: "status",
-              placeholder: "Status",
-              values: selectedStatus,
-            },
-          ]}
-          onChange={handleFilterChange}
-        />
+      <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+        <TabsList className="flex items-center justify-center mb-4">
+          {TabList.map((tab) => (
+            <TabsTrigger key={tab} value={tab} className={innerTabClassName}>
+              {tab}
+            </TabsTrigger>
+          ))}
+        </TabsList>
       </div>
-      {isLoading ? (
-        <PageLoader />
-      ) : (
-        <Card>
-          <CardContent>
-            <TableCustom
-              data={employeeTransferData.results}
-              columns={InternalTransferColumns}
-              pagination={true}
-              dataTotalSize={employeeTransferData.count || 0}
-              tableOptions={tableOptions}
-            />
-          </CardContent>
-        </Card>
-      )}
-      {OpenTransferForm && (
-        <TransferForm
-          isOpen={OpenTransferForm}
-          setIsOpen={() => {
-            setOpenTransferForm(false);
-          }}
-          transfer_type="INTERNAL"
+
+      <TabsContent value="Requests">
+        <TableCustom
+          data={EmployeesTransferData.results}
+          columns={InternalTransferColumns}
+          pagination={true}
+          dataTotalSize={EmployeesTransferData.count || 0}
+          tableOptions={tableOptions}
         />
-      )}
-    </div>
+      </TabsContent>
+      <TabsContent value="Records">
+        <TableCustom
+          data={EmployeesTransferData.results}
+          columns={InternalTransferColumns}
+          pagination={true}
+          dataTotalSize={EmployeesTransferData.count || 0}
+          tableOptions={tableOptions}
+        />
+      </TabsContent>
+    </Tabs>
   );
-}
+};
+
+export default EmployeeInternalTranfer;
