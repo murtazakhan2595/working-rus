@@ -23,7 +23,7 @@ import ViewEmployee from "app/modules/Employees/Screens/View";
 import "react-toastify/dist/ReactToastify.css";
 import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
 import Employee from "app/modules/Employees/Employee.jsx";
-import EmployeeTranfer from "app/modules/EmployeeTranfer";
+import { EmployeeTransfer, MyTransfers } from "app/modules/EmployeeTransfer";
 import { EditEmployeeProfile } from "app/modules/Employees/Screens/Profile";
 import { MyDtr } from "app/modules/DTR";
 import ForgotPassword from "app/modules/Login/ForgotPassword.jsx";
@@ -164,10 +164,15 @@ const SidebarRoutes = [
     component: <Employee />,
     name: "Profile Management",
   },
-  Config.TEAM_INTERNALTRANSFER && {
+  Config.TRANSFER_MANAGEMENT && {
     path: "/employee-tranfer",
-    component: <EmployeeTranfer />,
+    component: <EmployeeTransfer />,
     name: "Employee Tranfer",
+  },
+  Config.TRANSFER_MANAGEMENT && {
+    path: "/my-tranfers",
+    component: <MyTransfers />,
+    name: "My Tranfer",
   },
   Config.TEAM_MANAGEMENT && {
     path: "/team-profile-management",

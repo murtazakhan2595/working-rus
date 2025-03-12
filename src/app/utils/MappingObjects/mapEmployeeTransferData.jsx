@@ -1,21 +1,21 @@
-import { EmployeeTranfer } from "app/utils/Types/EmployeeTranfer";
+import { EmployeeTransfer } from "app/utils/Types/EmployeeTransfer";
 
-export function mapEmployeeTranferData(data) {
-  const employeeTranferDetails = Object.keys(EmployeeTranfer).reduce((acc, key) => {
+export function mapEmployeeTransferData(data) {
+  const employeeTransferDetails = Object.keys(EmployeeTransfer).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
       acc[key] = data[key];
     }
     return acc;
   }, {});
 
-  return employeeTranferDetails;
+  return employeeTransferDetails;
 }
 
-export function mapEmployeeTranferPayloadData(data) {
+export function mapEmployeeTransferPayloadData(data) {
     // Initialize an empty payload object
     const payload = {};
     // Iterate over the keys in the Task object
-    for (const key in EmployeeTranfer) {
+    for (const key in EmployeeTransfer) {
       // Check if the key exists in the data object
       if (data.hasOwnProperty(key) && data[key]) {
         // Add the key and its value to the payload

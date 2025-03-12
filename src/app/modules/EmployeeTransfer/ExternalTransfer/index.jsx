@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   InternalTransferColumns,
   EmployeeTransferDetails,
-} from "app/modules/EmployeeTranfer/Sections";
+} from "app/modules/EmployeeTransfer/Sections";
 import {
   Tabs,
   TabsList,

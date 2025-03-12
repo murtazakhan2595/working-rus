@@ -3,13 +3,10 @@ import { Card, CardContent } from "components/ui/card";
 import {
   InternalTransferColumns,
   TransferForm,
-} from "app/modules/EmployeeTranfer/Sections";
+} from "app/modules/EmployeeTransfer/Sections";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
 import { Header } from "components";
-import { FilterInput, SelectInputComponent } from "components/FormControl";
-import { EmployeeTranferStatus } from "data/Data";
-import { getEmployeeTransferList } from "app/hooks/employeeTranfer";
-import { PageLoader } from "components";
+import { getEmployeeTransferList } from "app/hooks/employeeTransfer";
 import {
   Tabs,
   TabsList,
@@ -20,8 +17,10 @@ import Stats from "components/ui/Stats";
 import TableCustom from "components/CustomTable";
 import { useSelector } from "react-redux";
 import { Button } from "components/ui/button";
-import EmployeeInternalTranfer from "app/modules/EmployeeTranfer/InternalTransfer";
-import EmployeeExternalTranfer from "app/modules/EmployeeTranfer/ExternalTransfer";
+import {
+  EmployeeInternalTranfer,
+  EmployeeExternalTranfer,
+} from "app/modules/EmployeeTransfer";
 import Config from "constants/config";
 
 const ExternalTabs = [
@@ -31,7 +30,8 @@ const ExternalTabs = [
 
 const InternalTabs = ["Requests", "Records"];
 
-export default function EmployeeTranfer() {
+export default function EmployeeTransfer() {
+  const userRole = useSelector((state) => state.user.userProfile.role);
   const [isLoading, setIsLoading] = useState(true);
   const [employeeTransferData, setEmployeeTransferData] = useState({
     results: [],
@@ -86,22 +86,6 @@ export default function EmployeeTranfer() {
     };
   }, [options, filterData, ordering]);
 
-  const handleFilterChange = (filterName, filterValue) => {
-    onPageChange("page", 1);
-    if (filterName === "department_name") setSelectedDepartment(filterValue);
-    if (filterName === "status") setSelectedStatus(filterValue);
-
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
-
   const statsData = [
     { label: "Total", value: 0, icon: UsersRound },
     { label: "Approved", value: 0, icon: Contact },
@@ -110,7 +94,7 @@ export default function EmployeeTranfer() {
   useEffect(() => {
     if (activeExternalTab === "Internal" && activeInternalTab === "Requests") {
       setFilterData({
-        // status: "PENDING,APPROVED BY MANAGER",
+        status: "PENDING,APPROVED BY MANAGER",
         transfer_type: "INTERNAL",
       });
     } else if (
@@ -118,7 +102,7 @@ export default function EmployeeTranfer() {
       activeInternalTab === "Requests"
     ) {
       setFilterData({
-        // status: "PENDING,APPROVED BY MANAGER",
+        status: "PENDING,APPROVED BY MANAGER",
         transfer_type: "EXTERNAL",
       });
     } else if (
@@ -126,7 +110,7 @@ export default function EmployeeTranfer() {
       activeInternalTab === "Records"
     ) {
       setFilterData({
-        // status: "PENDING,APPROVED BY MANAGER",
+        status: "REJECTED,REJECTED BY MANAGER",
         transfer_type: "INTERNAL",
       });
     } else if (
@@ -134,7 +118,7 @@ export default function EmployeeTranfer() {
       activeInternalTab === "Records"
     ) {
       setFilterData({
-        // status: "PENDING,APPROVED BY MANAGER",
+        status: "REJECTED,REJECTED BY MANAGER",
         transfer_type: "EXTERNAL",
       });
     }
@@ -193,7 +177,7 @@ export default function EmployeeTranfer() {
               // },
               {
                 type: "select-one",
-                option: EmployeeTranferStatus,
+                option: EmployeeTransferStatus,
                 name: "status",
                 placeholder: "Status",
                 values: selectedStatus,
@@ -230,7 +214,7 @@ export default function EmployeeTranfer() {
           isOpen={OpenTransferForm}
           setIsOpen={() => {
             setOpenTransferForm(false);
-            fetchData(true)
+            fetchData(true);
           }}
           transfer_type={
             activeExternalTab === "Internal" ? "INTERNAL" : "EXTERNAL"

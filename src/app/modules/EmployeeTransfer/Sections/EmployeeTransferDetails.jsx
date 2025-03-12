@@ -1,6 +1,6 @@
 import moment from "moment";
 import React, { useState, useRef } from "react";
-import { EmployeeTransferStatusView } from "app/modules/EmployeeTranfer/Sections";
+import { EmployeeTransferStatusView } from "app/modules/EmployeeTransfer/Sections";
 import {
   DepartmentName,
   DesignationName,
@@ -13,12 +13,12 @@ import {
 
 import { Button } from "components/ui/button";
 
-import { addUpdateEmpTransferDetails } from "app/hooks/employeeTranfer";
+import { addUpdateEmpTransferDetails } from "app/hooks/employeeTransfer";
 import { ExitStatusCurrentStep } from "app/modules/ExitAndClearance/Sections";
 import { useSelector } from "react-redux";
 import { Labels } from "components/StatusLabel";
 import { Sheet, SheetContent, SheetHeader } from "src/@/components/ui/sheet";
-import { TransferForm } from "app/modules/EmployeeTranfer/Sections";
+import { TransferForm } from "app/modules/EmployeeTransfer/Sections";
 import { DetailBox } from "components/SheetCardExtension";
 import { ViewDetailSheetCardExtension, EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";

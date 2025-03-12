@@ -1,5 +1,5 @@
 import { EmployeeID, UserRole } from "utils/getValuesFromTables";
-import { EmployeeTransferStatusView } from "app/modules/EmployeeTranfer/Sections";
+import { EmployeeTransferStatusView } from "app/modules/EmployeeTransfer/Sections";
 import { dropdownOptions, formatNumber } from "data/Data";
 import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";

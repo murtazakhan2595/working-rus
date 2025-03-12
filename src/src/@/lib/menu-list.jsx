@@ -101,8 +101,8 @@ export function getMenuList(pathname, userRole) {
           createMenu("/create-employee", "Employee Creation"),
         // createMenu("/edit-employee", "Customize Employee"),
         // createMenu("/relocation", "Relocation"),
-        Config.EMPLOYEE_MANAGEMENT &&
-          createMenu("/employee-tranfer", "Employee Tranfer"),
+        Config.TRANSFER_MANAGEMENT &&
+          createMenu("/employee-tranfer", "Employee Transfer"),
       ].filter(Boolean)
     ),
   ];
@@ -145,6 +145,8 @@ export function getMenuList(pathname, userRole) {
         // createMenu("/my-travel-details", "My Travel Details"),
         createMenu("/my-payroll", "My Payroll"),
         createMenu("/my-claims", "My Claims"),
+        Config.TRANSFER_MANAGEMENT &&
+          createMenu("/my-tranfers", "My Transfers"),
         createMenu("/exit-employee", "Exit"),
         // createMenu("/letter1", "Type of Letter 1"),
         // createMenu("/letter2", "Type of Letter 2"),
@@ -329,7 +331,7 @@ export function getMenuList(pathname, userRole) {
     userRolesMap.isAssetsManagement &&
       Config.ASSETS_MANAGEMENT && {
         groupLabel: "",
-        menus: assetsManagementMenus
+        menus: assetsManagementMenus,
       },
     userRolesMap.organizationalChart &&
       Config.ORGANIZATIONAL_CHART && {

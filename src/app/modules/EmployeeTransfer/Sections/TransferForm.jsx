@@ -1,9 +1,8 @@
 import { Button } from "components/ui/button";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
 import { Formik } from "formik";
-import { EmployeeTranfer } from "app/utils/Types/EmployeeTranfer";
+import { EmployeeTransfer } from "app/utils/Types/EmployeeTransfer";
 import { validationEmpTranferFormSchema } from "app/utils/FormSchema/employeeTransferFromSchema";
 import { countriesList } from "data/Data";
 import {
@@ -11,33 +10,34 @@ import {
   TextAreaInput,
   SelectInputComponent,
   DateInput,
-  TextInput
+  TextInput,
 } from "components/FormControl";
 import { PageLoader } from "components";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import {
-  getEmployeeTranferData,
+  getEmployeeTransferData,
   addUpdateEmpTransferDetails,
-} from "app/hooks/employeeTranfer";
+} from "app/hooks/employeeTransfer";
 import { useSelector } from "react-redux";
 import SheetComponent from "components/ui/CustomSheet";
 
 const FormSheetData = {
   triggerText: "Submit",
-  title: "Tranfer Employee Request Form",
+  title: "Employee Tranfer Request Form",
   description: null,
   footer: null,
 };
 
 const TransferForm = ({
-  transfer_type = "INTERNAL",
+  transfer_type = null,
+  isEmployee = false,
   id = null,
   isOpen = true,
   setIsOpen = () => {},
 }) => {
   const formRef = React.createRef();
-  let dispatch = useDispatch();
   const Departments = useSelector((state) => state.common.departments);
+  const UserDetails = useSelector((state) => state.emp.user_details);
   const Mangers = useSelector((state) => state.emp.reportingManagers);
   const AllEmployees = useSelector((state) => state.emp.employees);
   const Employees = React.useMemo(() => {
@@ -46,7 +46,7 @@ const TransferForm = ({
     );
   }, [AllEmployees]);
   const [formData, setFormData] = useState({
-    ...EmployeeTranfer,
+    ...EmployeeTransfer,
     transfer_type: transfer_type,
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -55,7 +55,7 @@ const TransferForm = ({
   const fetchData = async (isMounted) => {
     try {
       setIsLoading(true);
-      const response = await getEmployeeTranferData(id);
+      const response = await getEmployeeTransferData(id);
       if (isMounted && response) {
         setFormData(response);
         setSelectedEmployee(
@@ -78,6 +78,15 @@ const TransferForm = ({
       isMounted = false;
     };
   }, [id]);
+
+  useEffect(() => {
+    if (isEmployee) {
+      setSelectedEmployee(UserDetails);
+      setFormData((prev) => {
+        return { ...prev, employee_id: UserDetails.id };
+      });
+    }
+  }, [isEmployee]);
 
   const handleSubmit = async (data) => {
     setIsLoading(true);
@@ -158,7 +167,6 @@ const TransferForm = ({
                     onChange={(field, value) => {
                       props.handleChange(field)(value);
                     }}
-                    disabled={true}
                   />
                 </div>
                 <div className="space-y-4">
@@ -169,6 +177,7 @@ const TransferForm = ({
                     touch={props.touched?.employee_id}
                     value={props.values?.employee_id}
                     required={true}
+                    disabled={isEmployee}
                     label={"Employee"}
                     onChange={(field, value) => {
                       props.setFieldValue(field, value);
@@ -267,7 +276,7 @@ const TransferForm = ({
                     error={props.errors?.new_reporting_manager}
                     touch={props.touched?.new_reporting_manager}
                     value={props.values?.new_reporting_manager}
-                    required={false}
+                    required={true}
                     label={"New Reporting Manager"}
                     placeholder={"New Reporting Manager"}
                     onChange={(field, value) => {

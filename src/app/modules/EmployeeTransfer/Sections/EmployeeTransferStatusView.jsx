@@ -10,13 +10,13 @@ import {
   DropdownMenuContent,
   DropdownMenuLabel,
 } from "src/@/components/ui/dropdown-menu";
-import { EmployeeTranferStatus } from "data/Data";
+import { EmployeeTransferStatus } from "data/Data";
 
 const EmployeeTransferStatusView = ({ status = "PENDING" }) => {
   const spanClassName = "text-[14px] flex justify-start items-center";
   const itemClassName = "custom-dropdown-item py-0 px-0";
   const Status =
-    EmployeeTranferStatus.find((obj) => obj.value === status)?.label || status;
+    EmployeeTransferStatus.find((obj) => obj.value === status)?.label || status;
 
   const ManagerApproval =
     status === "ACCEPTED BY MANAGER"

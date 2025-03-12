@@ -5,9 +5,9 @@ import { initialState } from "state/slices/UserSlice";
 import { setUserLogout } from "state/actions/UserAction";
 import { EmployeeListData } from "app/utils/Types/General";
 import {
-  mapEmployeeTranferData,
-  mapEmployeeTranferPayloadData,
-} from "app/utils/MappingObjects/mapEmployeeTranferData";
+  mapEmployeeTransferData,
+  mapEmployeeTransferPayloadData,
+} from "app/utils/MappingObjects/mapEmployeeTransferData";
 import { HandleLogout } from "./general";
 
 const baseUrl = initialState.baseUrl;
@@ -31,12 +31,12 @@ export const getEmployeeTransferList = async (payload) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      const employeeTranferDataResponse = response.data;
-      const employeeTranferData = {
-        count: employeeTranferDataResponse.count,
-        results: employeeTranferDataResponse.results,
+      const employeeTransferDataResponse = response.data;
+      const employeeTransferData = {
+        count: employeeTransferDataResponse.count,
+        results: employeeTransferDataResponse.results,
       };
-      return employeeTranferData;
+      return employeeTransferData;
     } else return { results: [], count: 0 };
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -47,13 +47,13 @@ export const getEmployeeTransferList = async (payload) => {
   return { results: [], count: 0 };
 };
 
-export const getEmployeeTranferData = async (id) => {
+export const getEmployeeTransferData = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/employeetranfer/${id}`, {
       headers: headers(),
     });
-    const employeeTranferData = mapEmployeeTranferData(response.data);
-    return employeeTranferData;
+    const employeeTransferData = mapEmployeeTransferData(response.data);
+    return employeeTransferData;
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();
@@ -65,7 +65,7 @@ export const getEmployeeTranferData = async (id) => {
 
 export const addUpdateEmpTransferDetails = async (payload, id = null) => {
   try {
-    const finalPayload = mapEmployeeTranferPayloadData(payload);
+    const finalPayload = mapEmployeeTransferPayloadData(payload);
 
     const url = id
       ? `${baseUrl}/employeetranfer/${id}` // Use id if updating

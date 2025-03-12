@@ -80,6 +80,7 @@ const Header = ({ content, userProfile }) => {
       "office-settings": "Office Setting",
       "my-attendance": "Attendance History",
       "employee-tranfer": "Employee Tranfer",
+      "my-tranfers": "My Tranfers",
       "assets":"Assets",
     };
     setPathName(pathNames[path] || "Dashboard");

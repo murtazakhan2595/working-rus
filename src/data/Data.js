@@ -266,7 +266,7 @@ export const jobRoles = [
   { label: "Freelancer", value: "Freelancer" },
 ];
 
-export const EmployeeTranferStatus = [
+export const EmployeeTransferStatus = [
   {
     value: "PENDING",
     label: "Pending Approval",
