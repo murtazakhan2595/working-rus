@@ -29,6 +29,8 @@ export default {
 
   MY_ATTENDANCE: true,
   MY_DAILY_TASK_REPORT: true,
+
+  ASSETS_MANAGEMENT: true,
 };
 
 export const URLS = [
