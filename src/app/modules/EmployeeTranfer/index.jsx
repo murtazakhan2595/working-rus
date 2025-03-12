@@ -21,14 +21,14 @@ import TableCustom from "components/CustomTable";
 import { useSelector } from "react-redux";
 import { Button } from "components/ui/button";
 import EmployeeInternalTranfer from "app/modules/EmployeeTranfer/InternalTransfer";
-// import EmployeeExternalTranfer from "app/modules/EmployeeTranfer/ExternalTransfer";
+import EmployeeExternalTranfer from "app/modules/EmployeeTranfer/ExternalTransfer";
 import Config from "constants/config";
 
 const ExternalTabs = [
-    Config.TEAM_INTERNALTRANSFER ? "Internal" : null,
-    Config.TEAM_EXTERNALTRANSFER ? "External" : null,
-  ].filter(Boolean);
-  
+  Config.TEAM_INTERNALTRANSFER ? "Internal" : null,
+  Config.TEAM_EXTERNALTRANSFER ? "External" : null,
+].filter(Boolean);
+
 const InternalTabs = ["Requests", "Records"];
 
 export default function EmployeeTranfer() {
@@ -37,7 +37,6 @@ export default function EmployeeTranfer() {
     results: [],
     count: 0,
   });
-  const [filterData, setFilterData] = useState({});
   const [OpenTransferForm, setOpenTransferForm] = useState(false);
   const [activeExternalTab, setActiveExternalTab] = useState("Internal");
   const [activeInternalTab, setActiveInternalTab] = useState("Requests");
@@ -46,6 +45,7 @@ export default function EmployeeTranfer() {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const Departments = useSelector((state) => state.common.departments);
   const [ordering, setOrdering] = useState("-id");
+  const [filterData, setFilterData] = useState({});
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -107,7 +107,38 @@ export default function EmployeeTranfer() {
     { label: "Approved", value: 0, icon: Contact },
     { label: "Rejected", value: 0, icon: UserRoundCheck },
   ];
-  console.log(activeExternalTab, activeInternalTab);
+  useEffect(() => {
+    if (activeExternalTab === "Internal" && activeInternalTab === "Requests") {
+      setFilterData({
+        // status: "PENDING,APPROVED BY MANAGER",
+        transfer_type: "INTERNAL",
+      });
+    } else if (
+      activeExternalTab === "External" &&
+      activeInternalTab === "Requests"
+    ) {
+      setFilterData({
+        // status: "PENDING,APPROVED BY MANAGER",
+        transfer_type: "EXTERNAL",
+      });
+    } else if (
+      activeExternalTab === "Internal" &&
+      activeInternalTab === "Records"
+    ) {
+      setFilterData({
+        // status: "PENDING,APPROVED BY MANAGER",
+        transfer_type: "INTERNAL",
+      });
+    } else if (
+      activeExternalTab === "External" &&
+      activeInternalTab === "Records"
+    ) {
+      setFilterData({
+        // status: "PENDING,APPROVED BY MANAGER",
+        transfer_type: "EXTERNAL",
+      });
+    }
+  }, [activeExternalTab, activeInternalTab]);
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -146,22 +177,22 @@ export default function EmployeeTranfer() {
               </TabsTrigger>
             ))}
           </TabsList>
-          <FilterInput
+          {/* <FilterInput
             filters={[
-              {
-                type: "search",
-                placeholder: "Search by ID and Name",
-                name: "id_and_first_name",
-              },
+              // {
+              //   type: "search",
+              //   placeholder: "Search by ID and Name",
+              //   name: "id_and_first_name",
+              // },
+              // {
+              //   type: "select-one",
+              //   option: Departments,
+              //   name: "department_name",
+              //   placeholder: "Department",
+              //   values: selectedDepartment,
+              // },
               {
                 type: "select-one",
-                option: Departments,
-                name: "department_name",
-                placeholder: "Department",
-                values: selectedDepartment,
-              },
-              {
-                type: "select-two",
                 option: EmployeeTranferStatus,
                 name: "status",
                 placeholder: "Status",
@@ -169,7 +200,7 @@ export default function EmployeeTranfer() {
               },
             ]}
             onChange={handleFilterChange}
-          />
+          /> */}
         </div>
         <Card>
           <CardContent>
@@ -179,16 +210,17 @@ export default function EmployeeTranfer() {
                 activeTab={activeInternalTab}
                 setActiveTab={setActiveInternalTab}
                 EmployeesTransferData={employeeTransferData}
+                reloadData={fetchData}
               />
             </TabsContent>
             <TabsContent value="External">
-              {/* <EmployeeExternalTranfer
-                Tabs={InternalTabs}
-                filterData={filterData}
-                // handleTabChange={handleTabChange}
+              <EmployeeExternalTranfer
+                TabList={InternalTabs}
                 activeTab={activeInternalTab}
                 setActiveTab={setActiveInternalTab}
-              /> */}
+                EmployeesTransferData={employeeTransferData}
+                reloadData={fetchData}
+              />
             </TabsContent>
           </CardContent>
         </Card>
@@ -198,8 +230,11 @@ export default function EmployeeTranfer() {
           isOpen={OpenTransferForm}
           setIsOpen={() => {
             setOpenTransferForm(false);
+            fetchData(true)
           }}
-          transfer_type="INTERNAL"
+          transfer_type={
+            activeExternalTab === "Internal" ? "INTERNAL" : "EXTERNAL"
+          }
         />
       )}
     </div>

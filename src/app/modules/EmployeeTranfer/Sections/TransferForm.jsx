@@ -11,6 +11,7 @@ import {
   TextAreaInput,
   SelectInputComponent,
   DateInput,
+  TextInput
 } from "components/FormControl";
 import { PageLoader } from "components";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
@@ -37,6 +38,7 @@ const TransferForm = ({
   const formRef = React.createRef();
   let dispatch = useDispatch();
   const Departments = useSelector((state) => state.common.departments);
+  const Mangers = useSelector((state) => state.emp.reportingManagers);
   const AllEmployees = useSelector((state) => state.emp.employees);
   const Employees = React.useMemo(() => {
     return AllEmployees?.filter(
@@ -54,8 +56,11 @@ const TransferForm = ({
     try {
       setIsLoading(true);
       const response = await getEmployeeTranferData(id);
-      if (isMounted) {
+      if (isMounted && response) {
         setFormData(response);
+        setSelectedEmployee(
+          Employees.find((obj) => obj.value === response.employee_id)
+        );
       }
     } catch (error) {
       console.error(error);
@@ -120,7 +125,7 @@ const TransferForm = ({
         {...FormSheetData}
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
-        width="568px"
+        width="678px"
         setIsOpen={setIsOpen}
       >
         <Formik
@@ -178,6 +183,22 @@ const TransferForm = ({
                 <div className="space-y-4"></div>
                 <div className="space-y-4">
                   <SelectInputComponent
+                    name={"reporting_manager"}
+                    options={Mangers}
+                    error={props.errors?.reporting_manager}
+                    touch={props.touched?.reporting_manager}
+                    value={selectedEmployee.report_to}
+                    required={false}
+                    disabled={true}
+                    label={"Current Reporting Manager"}
+                    placeholder={"Current Reporting Manager"}
+                    onChange={(field, value) => {
+                      props.setFieldValue(field, value);
+                    }}
+                  />
+                </div>
+                <div className="space-y-4">
+                  <SelectInputComponent
                     name={"old_department"}
                     options={Departments}
                     error={props.errors?.old_department}
@@ -191,21 +212,23 @@ const TransferForm = ({
                     }}
                   />
                 </div>
-                <div className="space-y-4">
-                  <SelectInputComponent
-                    name={"employee_location"}
-                    options={countriesList}
-                    error={props.errors?.employee_location}
-                    touch={props.touched?.employee_location}
-                    value={selectedEmployee?.employee_location}
-                    required={false}
-                    disabled={true}
-                    label={"Current Location"}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
+                {props.values?.transfer_type === "EXTERNAL" && (
+                  <div className="space-y-4">
+                    <SelectInputComponent
+                      name={"employee_location"}
+                      options={countriesList}
+                      error={props.errors?.employee_location}
+                      touch={props.touched?.employee_location}
+                      value={selectedEmployee?.employee_location}
+                      required={false}
+                      disabled={true}
+                      label={"Current Location"}
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                      }}
+                    />
+                  </div>
+                )}
                 <div className="space-y-4">
                   <SelectInputComponent
                     name={"new_department"}
@@ -237,7 +260,21 @@ const TransferForm = ({
                     />
                   </div>
                 )}
-
+                <div className="space-y-4">
+                  <SelectInputComponent
+                    name={"new_reporting_manager"}
+                    options={Mangers}
+                    error={props.errors?.new_reporting_manager}
+                    touch={props.touched?.new_reporting_manager}
+                    value={props.values?.new_reporting_manager}
+                    required={false}
+                    label={"New Reporting Manager"}
+                    placeholder={"New Reporting Manager"}
+                    onChange={(field, value) => {
+                      props.setFieldValue(field, value);
+                    }}
+                  />
+                </div>
                 <div className="space-y-4">
                   <DateInput
                     name={"effective_transfer_date"}
@@ -252,9 +289,8 @@ const TransferForm = ({
                   />
                 </div>
                 <div className="space-y-4">
-                  <SelectInputComponent
+                  <TextInput
                     name={"reason_of_transfer"}
-                    options={countriesList}
                     error={props.errors?.reason_of_transfer}
                     touch={props.touched?.reason_of_transfer}
                     value={props.values?.reason_of_transfer}

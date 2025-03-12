@@ -63,12 +63,15 @@ const SelectInputComponent = React.memo(
             <div className="flex justify-start w-full gap-2 items-center">
               <FormFieldIcon icon={icon} />
               {value ? (
-                options.find((option) => option.value == value)?.label
+                <span className="max-w-[95%] overflow-hidden">
+                  {options.find((option) => option.value == value)?.label}
+                </span>
               ) : (
                 <FormPlaceholder
                   placeholder={placeholder ? placeholder : `Select ${label}`}
                 />
               )}
+
               <DropdownIcon />
             </div>
           }

@@ -3,7 +3,7 @@ export const EmployeeTranfer = {
   effective_transfer_date: null,
   reason_of_transfer: null,
   notes: null,
-  status: 'Pending',
+  status: 'PENDING',
   transfer_type: null,
   employee_id: null,
   new_department: null,

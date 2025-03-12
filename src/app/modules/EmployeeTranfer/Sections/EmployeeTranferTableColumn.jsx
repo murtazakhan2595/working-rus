@@ -11,7 +11,7 @@ import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
 import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
 import { DesignationName } from "utils/getValuesFromTables";
-import { DepartmentName } from "utils/getValuesFromTables";
+import { DepartmentName,ManagerName } from "utils/getValuesFromTables";
 import { Switch } from "src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
 import { Clock } from "lucide-react";
@@ -48,18 +48,19 @@ export const InternalTransferColumns = [
     minWidth: "110px",
   },
   {
+    dataField: "new_reporting_manager",
+    text: "New Reporting Manager",
+    formatter: (cell, row) => <ManagerName value={cell} />,
+    dataSort: true,
+    minWidth: "110px",
+  },
+  {
     dataField: "effective_transfer_date",
     text: "Effective Transfer Date",
     formatter: (cell, row) => renderDate(cell),
     
     dataSort: true,
     minWidth: "110px",
-  },
-  {
-    dataField: "reason_of_transfer",
-    text: "Reason",
-    minWidth: "105px",
-    dataSort: true,
   },
   {
     dataField: "status",

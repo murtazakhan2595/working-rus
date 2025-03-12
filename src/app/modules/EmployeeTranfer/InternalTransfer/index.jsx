@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { InternalTransferColumns } from "app/modules/EmployeeTranfer/Sections";
+import {
+  InternalTransferColumns,
+  EmployeeTransferDetails,
+} from "app/modules/EmployeeTranfer/Sections";
 import {
   Tabs,
   TabsList,
@@ -17,10 +20,11 @@ const EmployeeInternalTranfer = ({
   activeTab = "Requests",
   TabList = [],
   EmployeesTransferData = { results: [], count: 0 },
+  reloadData = () => {},
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState({});
-  const [OpenTransferForm, setOpenTransferForm] = useState(false);
+  const [OpenTransferDetailID, setOpenTransferDetailID] = useState(false);
   const [totalEmployee, setTotalEmployee] = useState(0);
   const [activeEmployee, setActiveEmployee] = useState(0);
   const [totalManagers, setTotalManagers] = useState(0);
@@ -37,6 +41,9 @@ const EmployeeInternalTranfer = ({
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
+    onRowClick: (row) => {
+      setOpenTransferDetailID(row.id);
+    },
     onPageChange: onPageChange,
     onSortChange: (sortName) => {
       setOrdering(sortName);
@@ -44,25 +51,25 @@ const EmployeeInternalTranfer = ({
   };
 
   return (
-    <Tabs
-      defaultValue="Requests"
-      className="w-full"
-      onValueChange={(tab) => {
-        setActiveTab(tab);
-      }}
-      value={activeTab}
-    >
-      <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
-        <TabsList className="flex items-center justify-center mb-4">
-          {TabList.map((tab) => (
-            <TabsTrigger key={tab} value={tab} className={innerTabClassName}>
-              {tab}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </div>
-
-      <TabsContent value="Requests">
+    <>
+      {" "}
+      <Tabs
+        defaultValue="Requests"
+        className="w-full"
+        onValueChange={(tab) => {
+          setActiveTab(tab);
+        }}
+        value={activeTab}
+      >
+        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+          <TabsList className="flex items-center justify-center mb-4">
+            {TabList.map((tab) => (
+              <TabsTrigger key={tab} value={tab} className={innerTabClassName}>
+                {tab}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
         <TableCustom
           data={EmployeesTransferData.results}
           columns={InternalTransferColumns}
@@ -70,17 +77,19 @@ const EmployeeInternalTranfer = ({
           dataTotalSize={EmployeesTransferData.count || 0}
           tableOptions={tableOptions}
         />
-      </TabsContent>
-      <TabsContent value="Records">
-        <TableCustom
-          data={EmployeesTransferData.results}
-          columns={InternalTransferColumns}
-          pagination={true}
-          dataTotalSize={EmployeesTransferData.count || 0}
-          tableOptions={tableOptions}
+      </Tabs>
+      {OpenTransferDetailID && (
+        <EmployeeTransferDetails
+          transferID={OpenTransferDetailID}
+          isOpen={!!OpenTransferDetailID}
+          setIsOpen={() => {
+            setOpenTransferDetailID(null);
+          }}
+          TransferList={EmployeesTransferData.results}
+          reloadData={reloadData}
         />
-      </TabsContent>
-    </Tabs>
+      )}
+    </>
   );
 };
 

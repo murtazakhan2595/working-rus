@@ -11,6 +11,7 @@ import TableCustom from './CustomTable';
 import TextUI from './TextUI';
 import TooltipText from './TooltipText';
 import OverviewCard from './OverviewCard';
+import ViewDetailSheetCardExtension from './ViewDetailSheetCardExtension';
 export {
   Header,
   PageLoader,
@@ -26,4 +27,5 @@ export {
   TooltipText,
   OverviewCard,
   getStatusVariant,
+  ViewDetailSheetCardExtension,
 };
