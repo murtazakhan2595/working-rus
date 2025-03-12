@@ -1,73 +1,17 @@
-const AssetBasicInformation = {
-  id: null,
-  asset_id: null, // This will be auto-generated on the backend
-  asset_name: null,
-  category: null,
-  specifications: null,
-  serial_number: null,
-  condition: "New",
-};
-
-const AssetLocationInformation = {
-  location: null,
-  department_assigned: null,
-  employee_assigned: null,
-  assigned_date: null,
-};
-
-const AssetPurchaseInformation = {
-  purchase_date: null,
-  warranty_expiry: null,
-  purchase_cost: null,
-  vendor_name: null,
-  purchase_order_number: null,
-};
-
-const AssetMaintenanceInformation = {
-  last_maintenance_date: null,
-  next_maintenance_date: null,
-  maintenance_history: [],
-  maintenance_notes: null,
-};
-
-const AssetAttachment = {
-  attachment: null,
-  attachmentName: null,
-  existingAttachmentId: null,
-};
-
-const AssetNotes = {
-  notes: null,
-};
-
+// app/utils/Types/Asset.js
 const Asset = {
   id: null,
-  asset_id: null,
-  asset_name: null,
-  category: null,
-  specifications: null,
-  serial_number: null,
-  location: null,
-  purchase_date: null,
-  warranty_expiry: null,
-  condition: "New",
-  purchase_cost: null,
-  notes: null,
-  attachment: null,
-  basicInformation: AssetBasicInformation,
-  locationInformation: AssetLocationInformation,
-  purchaseInformation: AssetPurchaseInformation,
-  maintenanceInformation: AssetMaintenanceInformation,
-  attachments: AssetAttachment,
-  assetNotes: AssetNotes,
+  asset_name: "",
+  category: "", // Maps to asset_type in API
+  specifications: "", // Maps to asset_description and asset_model in API
+  serial_number: "", // Maps to asset_serial_number in API
+  purchase_date: null, // Maps to asset_purchase_date in API
+  purchase_cost: "", // Maps to asset_purchase_price in API
+  warranty_expiry: null, // Maps to asset_warranty_expiry in API
+  condition: "New", // Maps to asset_initial_condition in API
+  location: null, // Maps to asset_location in API
+  notes: "", // Maps to asset_notes in API
+  attachment: [],
 };
 
-export {
-  Asset,
-  AssetBasicInformation,
-  AssetLocationInformation,
-  AssetPurchaseInformation,
-  AssetMaintenanceInformation,
-  AssetAttachment,
-  AssetNotes,
-};
+export { Asset };
