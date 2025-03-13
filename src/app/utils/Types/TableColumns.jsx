@@ -14,7 +14,7 @@ import { DesignationName } from "utils/getValuesFromTables";
 import { DepartmentName } from "utils/getValuesFromTables";
 import { Switch } from "../../../src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
-import { Calendar, Clock, MapPin, Tag } from "lucide-react";
+import { Badge, Calendar, Clock, FileText, MapPin, Tag } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
 import { StatusLabelAttendance } from "components/StatusLabel";
 import { formatDuration } from "utils/renderValues";
@@ -948,14 +948,75 @@ export const AssetsColumns = [
     ),
   },
   {
-    dataField: "asset_location",
+    dataField: "asset_location_name",
     text: "Location",
     formatter: (cell, row) => (
       <div className="flex items-center gap-2">
         <MapPin size={16} className="text-muted-foreground" />
         <span>
-          {typeof cell === "object" ? cell?.name : `Location ${cell}`}
+          {cell}
         </span>
+      </div>
+    ),
+  },
+];
+
+
+export const MyAssetRequestColumns = [
+  {
+    dataField: "id",
+    text: "Request ID",
+    minWidth: "105px",
+    formatter: (cell) => <span>ASREQ-{String(cell).padStart(4, "0")}</span>,
+  },
+  {
+    dataField: "asset_name",
+    text: "Asset Requested",
+    formatter: (cell, row) => (
+      <div className="flex flex-col">
+        <div className="text-base font-medium">{cell}</div>
+        <div className="text-sm text-muted-foreground">
+          {new Date(row.created_at).toLocaleDateString()}
+        </div>
+      </div>
+    ),
+  },
+  {
+    dataField: "reason",
+    text: "Reason",
+    formatter: (cell) => (
+      <div className="flex items-center gap-2">
+        <FileText size={16} className="text-muted-foreground" />
+        <span>{cell}</span>
+      </div>
+    ),
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell) => (
+      <Badge
+        className={
+          cell?.toLowerCase() === "approved"
+            ? "bg-green-100 text-green-800"
+            : cell?.toLowerCase() === "rejected"
+            ? "bg-red-100 text-red-800"
+            : cell?.toLowerCase() === "pending"
+            ? "bg-yellow-100 text-yellow-800"
+            : "bg-gray-100 text-gray-800"
+        }
+      >
+        {cell || "Pending"}
+      </Badge>
+    ),
+  },
+  {
+    dataField: "notes",
+    text: "Notes",
+    formatter: (cell) => (
+      <div className="flex items-center gap-2">
+        <Tag size={16} className="text-muted-foreground" />
+        <span>{cell || "-"}</span>
       </div>
     ),
   },

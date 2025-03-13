@@ -147,6 +147,7 @@ export function getMenuList(pathname, userRole) {
         createMenu("/my-claims", "My Claims"),
         Config.TRANSFER_MANAGEMENT &&
           createMenu("/my-tranfers", "My Transfers"),
+        Config.ASSETS_MANAGEMENT && createMenu("/my-assets", "My Assets"),
         createMenu("/exit-employee", "Exit"),
         // createMenu("/letter1", "Type of Letter 1"),
         // createMenu("/letter2", "Type of Letter 2"),

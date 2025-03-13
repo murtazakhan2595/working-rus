@@ -54,7 +54,7 @@ import AttendanceReport from "app/modules/Attendance/Sections/AttendenceFile";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 import OrganizationalChart from "app/modules/OfficeSetting/Screens/OrganizationalChart";
 import { TeamProfileMangement } from "app/modules/TeamManagment";
-import { Assets } from "app/modules/AssetsManagement";
+import { Assets, MyAssets } from "app/modules/AssetsManagement";
 
 const SidebarRoutes = [
   {
@@ -173,6 +173,11 @@ const SidebarRoutes = [
     path: "/my-tranfers",
     component: <MyTransfers />,
     name: "My Tranfer",
+  },
+  Config.ASSETS_MANAGEMENT && {
+    path: "/my-assets",
+    component:<MyAssets />,
+    name: "My Assets",
   },
   Config.TEAM_MANAGEMENT && {
     path: "/team-profile-management",
