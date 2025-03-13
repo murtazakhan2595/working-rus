@@ -69,6 +69,23 @@ const AddUpdateAsset = ({
 
   useEffect(() => {
     if (assetToEdit) {
+      console.log("assetToEdit", assetToEdit);
+
+      let processedAttachments = [];
+
+      // Process attachments array if it exists (detailed attachment objects)
+      if (assetToEdit.attachments && Array.isArray(assetToEdit.attachments)) {
+        processedAttachments = assetToEdit.attachments
+          .filter((att) => att.attachment) // Only include attachments with actual URLs
+          .map((att) => ({
+            id: att.id,
+            name: att.attachment
+              ? att.attachment.split("/").pop()
+              : `Attachment ${att.id}`,
+            attachment: att.attachment, // The attachment component likely expects this property
+          }));
+      }
+
       // Map API data to form fields when editing an asset
       setInitialValues({
         ...Asset,
@@ -88,12 +105,7 @@ const AddUpdateAsset = ({
         condition: assetToEdit.asset_initial_condition,
         location: assetToEdit.asset_location,
         // Format attachments as expected by the component
-        attachment: Array.isArray(assetToEdit.attachment)
-          ? assetToEdit.attachment.map((id) => ({
-              id,
-              name: `Attachment ${id}`,
-            }))
-          : [],
+        attachment: processedAttachments,
       });
     } else {
       // Reset to default values when adding a new asset

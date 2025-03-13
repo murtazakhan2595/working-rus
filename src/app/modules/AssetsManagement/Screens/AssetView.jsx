@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "components/ui/button";
 import moment from "moment";
 import { Tag, MapPin, Calendar, Banknote, Info } from "lucide-react";
+import AttachmentUI from "components/ui/AttachmentUI"; // Import the AttachmentUI component
 
 const AssetView = ({ assetData, onEdit, onDelete, onClose }) => {
   // Format currency
@@ -19,47 +20,59 @@ const AssetView = ({ assetData, onEdit, onDelete, onClose }) => {
   ];
 
   const purchaseDetails = [
-    { 
-      label: "Purchase Date", 
-      value: assetData.asset_purchase_date ? moment(assetData.asset_purchase_date).format("MMM D, YYYY") : "N/A",
-      icon: <Calendar size={16} className="text-muted-foreground" />
+    {
+      label: "Purchase Date",
+      value: assetData.asset_purchase_date
+        ? moment(assetData.asset_purchase_date).format("MMM D, YYYY")
+        : "N/A",
+      icon: <Calendar size={16} className="text-muted-foreground" />,
     },
-    { 
-      label: "Purchase Price", 
+    {
+      label: "Purchase Price",
       value: formatCurrency(assetData.asset_purchase_price),
-      icon: <Banknote size={16} className="text-muted-foreground" />
+      icon: <Banknote size={16} className="text-muted-foreground" />,
     },
-    { 
-      label: "Condition", 
+    {
+      label: "Condition",
       value: assetData.asset_initial_condition,
-      icon: <Info size={16} className="text-muted-foreground" />
+      icon: <Info size={16} className="text-muted-foreground" />,
     },
-    { 
-      label: "Warranty", 
+    {
+      label: "Warranty",
       value: assetData.asset_warranty,
-      icon: <Info size={16} className="text-muted-foreground" />
+      icon: <Info size={16} className="text-muted-foreground" />,
     },
-    { 
-      label: "Warranty Expiry", 
-      value: assetData.asset_warranty_expiry ? moment(assetData.asset_warranty_expiry).format("MMM D, YYYY") : "N/A",
-      icon: <Calendar size={16} className="text-muted-foreground" />
+    {
+      label: "Warranty Expiry",
+      value: assetData.asset_warranty_expiry
+        ? moment(assetData.asset_warranty_expiry).format("MMM D, YYYY")
+        : "N/A",
+      icon: <Calendar size={16} className="text-muted-foreground" />,
     },
   ];
 
   const locationDetails = [
-    { 
-      label: "Location", 
-      value: typeof assetData.asset_location === 'object' ? 
-        assetData.asset_location?.name : 
-        `Location ${assetData.asset_location}`,
-      icon: <MapPin size={16} className="text-muted-foreground" />
+    {
+      label: "Location",
+      value:
+        typeof assetData.asset_location === "object"
+          ? assetData.asset_location?.name
+          : `Location ${assetData.asset_location}`,
+      icon: <MapPin size={16} className="text-muted-foreground" />,
     },
-    { 
-      label: "Category", 
+    {
+      label: "Category",
       value: assetData.asset_type,
-      icon: <Tag size={16} className="text-muted-foreground" />
+      icon: <Tag size={16} className="text-muted-foreground" />,
     },
   ];
+
+  // Helper function to extract filename from URL
+  const getFilenameFromUrl = (url) => {
+    if (!url) return "Attachment";
+    const parts = url.split("/");
+    return parts[parts.length - 1];
+  };
 
   return (
     <div className="w-full p-0">
@@ -208,19 +221,24 @@ const AssetView = ({ assetData, onEdit, onDelete, onClose }) => {
               </div>
             )}
 
-            {/* Attachments Section - if applicable */}
-            {assetData.attachment && assetData.attachment.length > 0 && (
+            {/* Attachments Section - Now using AttachmentUI component */}
+            {assetData.attachments && assetData.attachments.length > 0 && (
               <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 text-sm font-medium leading-[1.2] tracking-[0px] ">
                 <section className="flex flex-col justify-center p-6 text-sm bg-white">
                   <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
                     Attachments
                   </div>
                   <div className="flex w-full mt-3">
-                    <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
-                      {assetData.attachment.map((attachment, index) => (
-                        <div key={index} className="mt-2 text-blue-600">
-                          Attachment {index + 1}: ID {attachment}
-                        </div>
+                    <div className="flex flex-col flex-1 shrink justify-center w-full basis-0 min-w-[240px]">
+                      {assetData.attachments.map((attachmentItem, index) => (
+                        <AttachmentUI
+                          key={attachmentItem.id}
+                          id={attachmentItem.id}
+                          attachment={attachmentItem.attachment}
+                          name={getFilenameFromUrl(attachmentItem.attachment)}
+                          viewOnly={true}
+                          removeFile={() => {}} // Empty function since it's view only
+                        />
                       ))}
                     </div>
                   </div>
