@@ -74,12 +74,12 @@ function TerminationStatus(status) {
 }
 
 // Function to get department name from department value
-function DepartmentName({ value }) {
+function DepartmentName({ value , fallBackText="N/A" }) {
   const departments = useSelector((state) => state.common.departments);
   const department = departments.find(
     (option) => option.value === parseInt(value)
   );
-  return department ? department.label : value ?? "N/A";
+  return department ? department.label : value ?? fallBackText;
 }
 function ProjectName({ value }) {
   const projects = useSelector((state) => state.common.projects);
@@ -154,10 +154,10 @@ function getEmployeeid(value) {
   return employee;
 }
 
-function ManagerName({ value }) {
+function ManagerName({ value,fallBackText='N/A' }) {
   const managers = useSelector((state) => state.emp.reportingManagers);
   const manager = managers.find((option) => option.value === parseInt(value));
-  return <>{manager ? manager.label : "N/A"}</>;
+  return <>{manager ? manager.label : fallBackText}</>;
 }
 function ResignationStatus(status) {
   const response = ResignationStatusOptions.find(

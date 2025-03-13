@@ -11,7 +11,7 @@ import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
 import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
 import { DesignationName } from "utils/getValuesFromTables";
-import { DepartmentName,ManagerName } from "utils/getValuesFromTables";
+import { DepartmentName, ManagerName } from "utils/getValuesFromTables";
 import { Switch } from "src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
 import { Clock } from "lucide-react";
@@ -58,7 +58,7 @@ export const InternalTransferColumns = [
     dataField: "effective_transfer_date",
     text: "Effective Transfer Date",
     formatter: (cell, row) => renderDate(cell),
-    
+
     dataSort: true,
     minWidth: "110px",
   },
@@ -66,6 +66,63 @@ export const InternalTransferColumns = [
     dataField: "status",
     text: "Status",
     dataSort: true,
-    formatter: (cell, row) => <EmployeeTransferStatusView status={cell||'PENDING'} />,
+    formatter: (cell, row) => (
+      <EmployeeTransferStatusView status={cell || "PENDING"} />
+    ),
+  },
+];
+
+/**
+ * MyTransfersColumns
+ *
+ * Returns an array of column definitions for the MyTransfers table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const MyTransfersColumns = [
+  {
+    dataField: "transfer_type",
+    text: "Tranfer Type",
+    formatter: (cell, row) => (cell === "INTERNAL" ? "Internal" : "External"),
+    minWidth: "120px",
+    dataSort: true,
+  },
+  {
+    dataField: "new_department",
+    text: "New Department",
+    formatter: (cell, row) => (
+      <DepartmentName value={cell} fallBackText={"-"} />
+    ),
+    dataSort: true,
+    minWidth: "110px",
+  },
+  {
+    dataField: "new_reporting_manager",
+    text: "New Reporting Manager",
+    formatter: (cell, row) => <ManagerName value={cell} fallBackText="-" />,
+    dataSort: true,
+    minWidth: "110px",
+  },
+  {
+    dataField: "new_location",
+    text: "New Location",
+    dataSort: true,
+    minWidth: "110px",
+  },
+  {
+    dataField: "effective_transfer_date",
+    text: "Effective Transfer Date",
+    formatter: (cell, row) => renderDate(cell),
+
+    dataSort: true,
+    minWidth: "110px",
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    dataSort: true,
+    formatter: (cell, row) => (
+      <EmployeeTransferStatusView status={cell || "PENDING"} />
+    ),
   },
 ];

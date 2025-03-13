@@ -111,6 +111,7 @@ const DateInput = React.memo(
           open={isOpen}
           setOpen={setIsOpen}
           className={!date ? "text-neutral-1000" : ""}
+          invalidField={!!(error && touch)}
           disabled={disabled}
           triggerContent={
             <div className="flex justify-start w-full gap-2 items-center">

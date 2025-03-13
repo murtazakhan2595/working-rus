@@ -4,8 +4,12 @@ export const EmployeeTransfer = {
   reason_of_transfer: null,
   notes: null,
   status: "PENDING",
-  transfer_type: null,
+  transfer_type: "INTERNAL",
   employee_id: null,
   new_department: null,
   new_reporting_manager: null,
+  reason_of_rejection:null,
+  old_department:null,
+  old_location:null,
+  reporting_manager:null
 };

@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  StatusViewIcon,
-  StatusLabel,
-  getStatusVariant,
-} from "components/StatusLabel";
+import { StatusLabel } from "components/StatusLabel";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -19,17 +15,23 @@ const EmployeeTransferStatusView = ({ status = "PENDING" }) => {
     EmployeeTransferStatus.find((obj) => obj.value === status)?.label || status;
 
   const ManagerApproval =
-    status === "ACCEPTED BY MANAGER"
-      ? "Approved"
-      : status === "ACCEPTED BY MANAGER"
-      ? "REJECTED"
+    status === "PENDING"
+      ? "pending"
+      : status === "REJECTED"
+      ? "approve"
+      : status;
+
+  const HRApproval =
+    status === "APPROVED"
+      ? "approved"
+      : status === "REJECTED"
+      ? "rejected"
       : "pending";
 
-  
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <StatusLabel className="rounded cursor-pointer" status={status}>
+        <StatusLabel className="cursor-pointer" status={status}>
           {Status}
         </StatusLabel>
       </DropdownMenuTrigger>
@@ -45,16 +47,19 @@ const EmployeeTransferStatusView = ({ status = "PENDING" }) => {
         </DropdownMenuLabel>
 
         <DropdownMenuLabel className={`${itemClassName} `}>
-          <StatusLabel variant={"ghost"} status={ManagerApproval} iconVariant={true}>
+          <StatusLabel
+            variant={"ghost"}
+            status={ManagerApproval}
+            iconVariant={true}
+          >
             Manager Approval
           </StatusLabel>
         </DropdownMenuLabel>
         <DropdownMenuLabel className={`${itemClassName} `}>
-          <StatusLabel variant={"ghost"} status={status} iconVariant={true}>
+          <StatusLabel variant={"ghost"} status={HRApproval} iconVariant={true}>
             HR Approval
           </StatusLabel>
         </DropdownMenuLabel>
-
       </DropdownMenuContent>
     </DropdownMenu>
   );

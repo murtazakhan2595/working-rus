@@ -47,6 +47,30 @@ export const getEmployeeTransferList = async (payload) => {
   return { results: [], count: 0 };
 };
 
+export const getEmployeeTransferStats = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const ordering = payload?.ordering ?? "-id";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/employee-transfer/stats/?search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else return {};
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return {};
+};
+
 export const getEmployeeTransferData = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/employeetranfer/${id}`, {

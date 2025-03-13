@@ -3,7 +3,6 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import { Link } from "react-router-dom"; // Import Link
 
-
 import { cn } from "../../src/@/lib/utils";
 
 const buttonVariants = cva(
@@ -27,13 +26,14 @@ const buttonVariants = cva(
           "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50",
         link: "text-neutral-1000 underline-offset-4 hover:underline dark:text-slate-50",
         destructiveOutline:
-          "bg-red-50 text-red-300 border border-slate-700 hover:shadow-custom",
+          "hover:bg-red-50 text-red-700 border border-red-700",
+        successOutline: "border border-emerald-600 text-emerald-600 hover:bg-emerald-100",
       },
       size: {
         default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-full px-3",
-        lg: "h-11 rounded-full px-8",
-        xl: "h-12 rounded-full px-9",
+        sm: "h-9 px-3",
+        lg: "h-11 px-8",
+        xl: "h-12 px-9",
         icon: "h-10 w-10",
       },
     },

@@ -6,7 +6,10 @@ import {
 } from "app/modules/EmployeeTransfer/Sections";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
 import { Header } from "components";
-import { getEmployeeTransferList } from "app/hooks/employeeTransfer";
+import {
+  getEmployeeTransferList,
+  getEmployeeTransferStats,
+} from "app/hooks/employeeTransfer";
 import {
   Tabs,
   TabsList,
@@ -32,11 +35,13 @@ const InternalTabs = ["Requests", "Records"];
 
 export default function EmployeeTransfer() {
   const userRole = useSelector((state) => state.user.userProfile.role);
+  const userID = useSelector((state) => state.user.userProfile.id);
   const [isLoading, setIsLoading] = useState(true);
   const [employeeTransferData, setEmployeeTransferData] = useState({
     results: [],
     count: 0,
   });
+  const [employeeTransferStat, setEmployeeTransferStat] = useState({});
   const [OpenTransferForm, setOpenTransferForm] = useState(false);
   const [activeExternalTab, setActiveExternalTab] = useState("Internal");
   const [activeInternalTab, setActiveInternalTab] = useState("Requests");
@@ -45,7 +50,9 @@ export default function EmployeeTransfer() {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const Departments = useSelector((state) => state.common.departments);
   const [ordering, setOrdering] = useState("-id");
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState(
+    userRole === 2 ? { new_reporting_manager: userID } : {}
+  );
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -78,6 +85,22 @@ export default function EmployeeTransfer() {
     }
   };
 
+  const fetchStatData = async (isMounted) => {
+    setIsLoading(true);
+    try {
+      const data = await getEmployeeTransferStats({
+        filterData: { transfer_type: filterData.transfer_type },
+      });
+      if (isMounted) {
+        setEmployeeTransferStat(data);
+      }
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    } finally {
+      if (isMounted) setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
     fetchData(isMounted);
@@ -86,42 +109,52 @@ export default function EmployeeTransfer() {
     };
   }, [options, filterData, ordering]);
 
+  useEffect(() => {
+    let isMounted = true;
+    fetchStatData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [filterData.transfer_type]);
+
   const statsData = [
-    { label: "Total", value: 0, icon: UsersRound },
-    { label: "Approved", value: 0, icon: Contact },
-    { label: "Rejected", value: 0, icon: UserRoundCheck },
+    {
+      label: "Total",
+      value: employeeTransferStat.total_transfers || 0,
+      icon: UsersRound,
+    },
+    {
+      label: "Approved",
+      value: employeeTransferStat.approved_transfers || 0,
+      icon: Contact,
+    },
+    {
+      label: "Rejected",
+      value: employeeTransferStat.rejected_transfers || 0,
+      icon: UserRoundCheck,
+    },
+    {
+      label: "Pending",
+      value: employeeTransferStat.pending_transfers || 0,
+      icon: UserRoundCheck,
+    },
   ];
   useEffect(() => {
-    if (activeExternalTab === "Internal" && activeInternalTab === "Requests") {
-      setFilterData({
-        status: "PENDING,APPROVED BY MANAGER",
-        transfer_type: "INTERNAL",
-      });
-    } else if (
-      activeExternalTab === "External" &&
-      activeInternalTab === "Requests"
-    ) {
-      setFilterData({
-        status: "PENDING,APPROVED BY MANAGER",
-        transfer_type: "EXTERNAL",
-      });
-    } else if (
-      activeExternalTab === "Internal" &&
-      activeInternalTab === "Records"
-    ) {
-      setFilterData({
-        status: "REJECTED,REJECTED BY MANAGER",
-        transfer_type: "INTERNAL",
-      });
-    } else if (
-      activeExternalTab === "External" &&
-      activeInternalTab === "Records"
-    ) {
-      setFilterData({
-        status: "REJECTED,REJECTED BY MANAGER",
-        transfer_type: "EXTERNAL",
-      });
-    }
+    setFilterData((prevFilter) => ({
+      ...prevFilter,
+      ...(activeExternalTab === "Internal" && activeInternalTab === "Requests"
+        ? { status: "PENDING,ACCEPTED BY MANAGER", transfer_type: "INTERNAL" }
+        : {}),
+      ...(activeExternalTab === "External" && activeInternalTab === "Requests"
+        ? { status: "PENDING,ACCEPTED BY MANAGER", transfer_type: "EXTERNAL" }
+        : {}),
+      ...(activeExternalTab === "Internal" && activeInternalTab === "Records"
+        ? { status: "REJECTED,REJECTED BY MANAGER", transfer_type: "INTERNAL" }
+        : {}),
+      ...(activeExternalTab === "External" && activeInternalTab === "Records"
+        ? { status: "REJECTED,REJECTED BY MANAGER", transfer_type: "EXTERNAL" }
+        : {}),
+    }));
   }, [activeExternalTab, activeInternalTab]);
   return (
     <div

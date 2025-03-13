@@ -4,7 +4,7 @@ import { cva } from "class-variance-authority";
 import { cn } from "../../src/@/lib/utils.js";
 
 const badgeVariants = cva(
-  "inline-flex items-center w-fit h-fit text-nowrap rounded-full border border-slate-200 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 dark:border-slate-800 dark:focus:ring-slate-300",
+  "inline-flex items-center w-fit h-fit text-xs text-nowrap rounded-full border border-slate-200 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 dark:border-slate-800 dark:focus:ring-slate-300",
   {
     variants: {
       variant: {
@@ -28,10 +28,14 @@ const badgeVariants = cva(
         "dot-neutral": "bg-white border-neutral-300 flex items-center gap-2",
       },
       size: {
-        sm: "text-sm px-4 py-2",
-        default: "text-xs px-2 py-1",
-        lg: "h-11 text-sm px-8",
-        xl: "h-12 text-sm px-9",
+        // sm: "text-sm px-4 py-2",
+        // default: "text-xs px-2 py-1",
+        // lg: "h-11 text-sm px-8",
+        // xl: "h-12 text-sm px-9",
+        default: "h-8 px-4 py-2",
+        sm: "h-9 px-3",
+        lg: "text-sm h-11 px-8",
+        xl: "text-sm h-12 px-9",
       },
     },
     defaultVariants: {

@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { EmployeeTransferStatusView } from "app/modules/EmployeeTransfer/Sections";
 import {
   DepartmentName,
@@ -10,17 +10,24 @@ import {
   ResignationStatus,
   ManagerName,
 } from "utils/getValuesFromTables";
-
+import { PencilLine } from "lucide-react";
 import { Button } from "components/ui/button";
 
-import { addUpdateEmpTransferDetails } from "app/hooks/employeeTransfer";
+import {
+  addUpdateEmpTransferDetails,
+  getEmployeeTransferData,
+} from "app/hooks/employeeTransfer";
 import { ExitStatusCurrentStep } from "app/modules/ExitAndClearance/Sections";
 import { useSelector } from "react-redux";
 import { Labels } from "components/StatusLabel";
 import { Sheet, SheetContent, SheetHeader } from "src/@/components/ui/sheet";
 import { TransferForm } from "app/modules/EmployeeTransfer/Sections";
 import { DetailBox } from "components/SheetCardExtension";
-import { ViewDetailSheetCardExtension, EmployeeOverview } from "components";
+import {
+  ViewDetailSheetCardExtension,
+  EmployeeOverview,
+  DialogBox,
+} from "components";
 import { renderDate } from "utils/renderValues";
 const EmployeeTransferDetails = ({
   transferID = null,
@@ -29,13 +36,35 @@ const EmployeeTransferDetails = ({
   reloadData = () => {},
   isOpen = true,
   setIsOpen = () => {},
+  readOnlyMode = false,
 }) => {
   const userRole = useSelector((state) => state.user.userProfile.role);
-  const [currentTranfer, setCurrentTranfer] = useState(
-    TransferList?.find((item) => item.id === transferID)
-  );
+  const [currentTranfer, setCurrentTranfer] = useState({});
+  const [OpenConfirmRejection, setOpenConfirmRejection] = useState(false);
   const [currentTranferId, setCurrentTranferId] = useState(transferID);
   const [OpenTransferForm, setOpenTransferForm] = useState(false);
+
+  const fetchData = async (isMounted, tranferId) => {
+    try {
+      const response = await getEmployeeTransferData(tranferId);
+      if (isMounted && response) {
+        setCurrentTranfer(response);
+        setCurrentTranferId(tranferId);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (currentTranferId) {
+      fetchData(isMounted, currentTranferId);
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [currentTranferId]);
 
   const handleNext = () => {
     const currentIndex = TransferList.findIndex(
@@ -43,11 +72,9 @@ const EmployeeTransferDetails = ({
     );
     if (currentIndex < TransferList.length - 1) {
       const currentTranfer = TransferList[currentIndex + 1];
-      setCurrentTranfer(currentTranfer);
       setCurrentTranferId(currentTranfer?.id);
     } else {
       const currentTranfer = TransferList[0];
-      setCurrentTranfer(currentTranfer);
       setCurrentTranferId(currentTranfer?.id);
     }
   };
@@ -58,16 +85,14 @@ const EmployeeTransferDetails = ({
     );
     if (currentIndex > 0) {
       const currentTranfer = TransferList[currentIndex - 1];
-      setCurrentTranfer(currentTranfer);
       setCurrentTranferId(currentTranfer?.id);
     } else {
       const currentTranfer = TransferList[TransferList.length - 1];
-      setCurrentTranfer(currentTranfer);
       setCurrentTranferId(currentTranfer?.id);
     }
   };
   const handleSubmit = async (event, status) => {
-    event.preventDefault();
+    if (event) event.preventDefault();
     try {
       const payload = {};
       if (status === "approved") {
@@ -79,9 +104,10 @@ const EmployeeTransferDetails = ({
       }
       const response = await addUpdateEmpTransferDetails(
         payload,
-        currentTranfer?.id
+        currentTranferId
       );
       if (response) {
+        fetchData(true, currentTranferId);
         reloadData(true);
       }
     } catch (error) {
@@ -91,29 +117,39 @@ const EmployeeTransferDetails = ({
 
   const labelList = [
     {
-      label: "Old Department",
+      label: "Current Department",
       value: <DepartmentName value={currentTranfer?.old_department} />,
     },
     {
-      label: "Old Location",
-      value: currentTranfer?.old_location,
-    },
-    {
-      label: "Old Reporting Manager",
+      label: "Current Reporting Manager",
       value: <ManagerName value={currentTranfer?.reporting_manager} />,
     },
+    ...(currentTranfer?.transfer_type === "EXTERNAL"
+      ? [
+          {
+            label: "Current Location",
+            value: currentTranfer?.old_location,
+          },
+        ]
+      : [{}]),
+
     {
       label: "New Department",
       value: <DepartmentName value={currentTranfer?.new_department} />,
     },
     {
-      label: "New Location",
-      value: currentTranfer?.new_location,
-    },
-    {
       label: "New Reporting Manager",
       value: <ManagerName value={currentTranfer?.new_reporting_manager} />,
     },
+    ...(currentTranfer?.transfer_type === "EXTERNAL"
+      ? [
+          {
+            label: "New Location",
+            value: currentTranfer?.new_location,
+          },
+        ]
+      : [{}]),
+
     {
       label: "Effective Date",
       value: renderDate(currentTranfer?.effective_transfer_date),
@@ -122,106 +158,156 @@ const EmployeeTransferDetails = ({
       label: "Reason for Tranfer",
       value: currentTranfer?.reason_of_transfer,
     },
-    {
-      label: "Note",
-      value: currentTranfer?.notes,
-    },
-  ];
+  ].filter(Boolean);
 
   return (
-    <ViewDetailSheetCardExtension
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      title="Internal Tranfer"
-      handlePrevious={handlePrevious}
-      handleNext={handleNext}
-    >
-      <div className="mt-4">
-        <section className="flex flex-col items-start justify-start w-full gap-2 mt-10 max-md:max-w-full">
-          <div className="flex flex-wrap items-center justify-between w-full">
-            <EmployeeOverview
-              id={currentTranfer?.employee_id}
-              showId={true}
-              avatarSize={16}
-            />
-            <div className="flex flex-row flex-wrap max-w-[50%] items-center gap-4">
-              {(((userRole === 3 || userRole === 1) &&
-                currentTranfer?.status === "ACCEPTED BY MANAGER") ||
-                (userRole === 2 && currentTranfer?.status === "PENDING")) && (
-                <>
-                  <Button
-                    variant="success"
-                    onClick={(e) => handleSubmit(e, "approved")}
-                    type="button"
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    // size="lg"
-                    // onClick={handleClose}
-                    type="button"
-                  >
-                    Reject
-                  </Button>
-                </>
-              )}
-              {currentTranfer?.status === "PENDING" && (
-                <Button
-                  variant="continue"
-                  // size="sm"
-                  // className="py-1 rounded"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setOpenTransferForm(true);
-                  }}
-                  type="button"
-                >
-                  Edit
-                </Button>
+    <>
+      <ViewDetailSheetCardExtension
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        title="Internal Tranfer"
+        handlePrevious={handlePrevious}
+        handleNext={handleNext}
+      >
+        <div className="mt-4">
+          <section className="flex flex-col items-start justify-start w-full gap-2 mt-10 max-md:max-w-full">
+            <div className="flex flex-wrap items-center justify-between w-full">
+              <div>
+                <EmployeeOverview
+                  id={currentTranfer?.employee_id}
+                  showId={true}
+                  avatarSize={16}
+                />
+                <div className="ml-[64px]">
+                  <EmployeeTransferStatusView
+                    status={currentTranfer?.status || "PENDING"}
+                  />
+                </div>
+              </div>
+              {!readOnlyMode && (
+                <div className="flex flex-row flex-wrap max-w-[50%] items-center gap-2">
+                  {(((userRole === 3 || userRole === 1) &&
+                    (currentTranfer?.status === "ACCEPTED BY MANAGER" ||
+                      !currentTranfer?.new_reporting_manager)) ||
+                    (userRole === 2 &&
+                      currentTranfer?.status === "PENDING")) && (
+                    <>
+                      <Button
+                        variant="successOutline"
+                        onClick={(e) => handleSubmit(e, "approved")}
+                        type="button"
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        variant="destructiveOutline"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setOpenConfirmRejection(true);
+                        }}
+                        type="button"
+                      >
+                        Reject
+                      </Button>
+                    </>
+                  )}
+                  {currentTranfer?.status === "PENDING" && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setOpenTransferForm(true);
+                      }}
+                      type="button"
+                    >
+                      <PencilLine strokeWidth={1} />
+                    </Button>
+                  )}
+                </div>
               )}
             </div>
-          </div>
-          <div className="flex justify-end w-full">
-            <EmployeeTransferStatusView
-              status={currentTranfer?.status || "PENDING"}
-            />
-          </div>
-        </section>
-        <section>
-          <div className="mt-3">
-            <div class="grid grid-cols-3 gap-8 my-4 border border-gray-400 rounded-lg pr-3 pl-4 py-4">
-              {labelList &&
-                labelList.map((data, index) => {
-                  return (
-                    <DetailBox
-                      orientation="horizontal"
-                      key={index}
-                      className=""
-                      label={data.label}
-                      value={data.value}
-                    />
-                  );
-                })}
+          </section>
+          <section>
+            <div className="mt-3">
+              <div class="grid grid-cols-3 gap-8 my-4 border border-gray-400 rounded-lg pr-3 pl-4 py-4">
+                {labelList &&
+                  labelList.map((data, index) => {
+                    return (
+                      <DetailBox
+                        orientation="horizontal"
+                        key={index}
+                        className=""
+                        label={data.label}
+                        value={data.value}
+                        fallbackText={""}
+                      />
+                    );
+                  })}
+                {currentTranfer?.notes && (
+                  <DetailBox
+                    orientation="horizontal"
+                    key={"notes"}
+                    className="col-span-3"
+                    label={"Notes"}
+                    value={currentTranfer?.notes}
+                  />
+                )}
+                {(currentTranfer?.status === "REJECTED" ||
+                  currentTranfer?.status === "REJECTED BY MANAGER") && (
+                  <DetailBox
+                    orientation="horizontal"
+                    key={"reason_of_rejection"}
+                    className="col-span-3"
+                    label={"Reason of Rejection"}
+                    value={currentTranfer?.reason_of_rejection}
+                  />
+                )}
+              </div>
             </div>
-          </div>
-        </section>
-        <section>
-          <div className="flex flex-row justify-end gap-4 flex-wrap"></div>
-        </section>
-      </div>
+          </section>
+          <section>
+            <div className="flex flex-row justify-end gap-4 flex-wrap"></div>
+          </section>
+        </div>
+      </ViewDetailSheetCardExtension>
       {OpenTransferForm && (
         <TransferForm
-          id={currentTranfer?.id}
+          id={currentTranferId}
           isOpen={OpenTransferForm}
-          setIsOpen={() => {
-            setOpenTransferForm(false);
-            reloadData(true);
+          setIsOpen={(value) => {
+            if (value === "close") setOpenTransferForm(false);
+            else {
+              setOpenTransferForm(false);
+              fetchData(true, currentTranferId);
+            }
           }}
           transfer_type={currentTranfer?.transfer_type}
         />
       )}
-    </ViewDetailSheetCardExtension>
+      {OpenConfirmRejection && (
+        <DialogBox
+          isOpen={OpenConfirmRejection}
+          setIsOpen={setOpenConfirmRejection}
+          title={"Confirm Rejection"}
+          description={
+            "Provide reason for rejection. Once submitted, the action cannot be reverted"
+          }
+        >
+          <TransferForm
+            id={currentTranferId}
+            isOpen={OpenTransferForm}
+            setIsOpen={() => {
+              debugger;
+              setOpenConfirmRejection(false);
+              handleSubmit(null, "rejected");
+            }}
+            transfer_type={currentTranfer?.transfer_type}
+            onlyRejectionForm={true}
+          />
+        </DialogBox>
+      )}
+    </>
   );
 };
 

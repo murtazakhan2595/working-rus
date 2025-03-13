@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "components/ui/card";
 import {
-  InternalTransferColumns,
+  MyTransfersColumns,
   TransferForm,
   EmployeeTransferDetails,
 } from "app/modules/EmployeeTransfer/Sections";
@@ -96,7 +96,7 @@ export default function MyTransfers() {
         <CardContent>
           <TableCustom
             data={MyTransferData.results}
-            columns={InternalTransferColumns}
+            columns={MyTransfersColumns}
             pagination={true}
             dataTotalSize={MyTransferData.count || 0}
             tableOptions={tableOptions}
@@ -112,6 +112,7 @@ export default function MyTransfers() {
           }}
           TransferList={MyTransferData.results}
           reloadData={fetchData}
+          readOnlyMode={true}
         />
       )}
       {OpenTransferForm && (

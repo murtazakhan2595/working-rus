@@ -5,13 +5,14 @@ import EmployeeOverview from "./EmployeeOverview";
 import Table from "./CustomTable";
 import BarChart from "./BarChart";
 import ConfirmationModal from "./ConfirmationModal";
-import { StatusLabel,getStatusVariant } from "./StatusLabel";
-import ViewOptions from 'components/ViewOtions';
-import TableCustom from './CustomTable';
-import TextUI from './TextUI';
-import TooltipText from './TooltipText';
-import OverviewCard from './OverviewCard';
-import ViewDetailSheetCardExtension from './ViewDetailSheetCardExtension';
+import { StatusLabel, getStatusVariant } from "./StatusLabel";
+import ViewOptions from "components/ViewOtions";
+import TableCustom from "./CustomTable";
+import TextUI from "./TextUI";
+import TooltipText from "./TooltipText";
+import OverviewCard from "./OverviewCard";
+import ViewDetailSheetCardExtension from "./ViewDetailSheetCardExtension";
+import DialogBox from "./DialogBox";
 export {
   Header,
   PageLoader,
@@ -28,4 +29,5 @@ export {
   OverviewCard,
   getStatusVariant,
   ViewDetailSheetCardExtension,
+  DialogBox,
 };

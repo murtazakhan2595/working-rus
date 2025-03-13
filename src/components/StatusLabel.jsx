@@ -29,16 +29,9 @@ const statusVariants = cva(
         "dot-emerald": "bg-white border-neutral-300 flex items-center gap-2",
         "dot-neutral": "bg-white border-neutral-300 flex items-center gap-2",
       },
-      size: {
-        sm: "text-sm px-4 py-2",
-        default: "text-xs px-2 py-1",
-        lg: "h-11 text-sm px-8",
-        xl: "h-12 text-sm px-9",
-      },
     },
     defaultVariants: {
       variant: "default",
-      size: "default",
     },
   }
 );
@@ -93,13 +86,13 @@ const StatusLabel = React.forwardRef(
         className={cn(
           statusVariants({
             variant: StatusVariant,
-            size: iconVariant ? "sm" : size,
           }),
           "flex items-center",
           className
         )}
         ref={ref}
         key={key}
+        size={size}
         {...props}
       >
         {iconVariant && (

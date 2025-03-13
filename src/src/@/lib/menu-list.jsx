@@ -121,8 +121,8 @@ export function getMenuList(pathname, userRole) {
           createMenu("/exit-clearance", "Exit & Clearance"),
         // createMenu("/edit-employee", "Customize Employee"),
         // createMenu("/relocation", "Relocation"),
-        // createMenu("/internal", "Internal"),
-        // createMenu("/external", "External"),
+        Config.TRANSFER_MANAGEMENT &&
+          createMenu("/employee-tranfer", "Employee Transfer"),
       ].filter(Boolean)
     ),
   ];

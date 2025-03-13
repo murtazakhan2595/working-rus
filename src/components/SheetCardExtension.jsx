@@ -23,6 +23,7 @@ export const DetailBox = ({
   className = "mt-3",
   orientation = "vertical",
   key = "",
+  fallbackText="N/A",
 }) => {
   if (orientation === "horizontal") {
     return (
@@ -30,7 +31,7 @@ export const DetailBox = ({
         <div className="text-sm font-medium mb-2 text-neutral-900">
           {label}
         </div>
-        <div className="leading-5 text-neutral-1200">{value ?? "N/A"}</div>
+        <div className="leading-5 text-neutral-1200">{value ?? fallbackText}</div>
       </div>
     );
   }
