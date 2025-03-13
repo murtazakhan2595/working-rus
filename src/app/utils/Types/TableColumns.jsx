@@ -948,13 +948,13 @@ export const AssetsColumns = [
     ),
   },
   {
-    dataField: "asset_location",
+    dataField: "asset_location_name",
     text: "Location",
     formatter: (cell, row) => (
       <div className="flex items-center gap-2">
         <MapPin size={16} className="text-muted-foreground" />
         <span>
-          {typeof cell === "object" ? cell?.name : `Location ${cell}`}
+          {cell}
         </span>
       </div>
     ),
