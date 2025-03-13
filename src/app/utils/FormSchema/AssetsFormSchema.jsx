@@ -16,4 +16,20 @@ const validateAssetFormSchema = (values) => {
   return errors;
 };
 
-export { validateAssetFormSchema };
+const validateAssetRequestForm = (values) => {
+  const errors = {};
+
+  if (!values.asset_name) {
+    errors.asset_name = "Asset name is required";
+  }
+
+  if (!values.reason) {
+    errors.reason = "Reason for request is required";
+  } else if (values.reason.length < 10) {
+    errors.reason = "Please provide a more detailed reason";
+  }
+
+  return errors;
+};
+
+export { validateAssetFormSchema, validateAssetRequestForm };

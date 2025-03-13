@@ -210,6 +210,42 @@ const getAssetById = async (assetId) => {
   }
 };
 
+const requestAsset = async (payload) => {
+  try {
+    const response = await axios.post(`${baseUrl}/assets/asset_request/`, payload, {
+      headers: headers(),
+    });
+    return response.status === 201;
+  } catch (error) {
+    console.error("Error requesting asset:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
+
+const getEmployeeAssets = async (payload) => {
+  const filterData = payload?.filterData ?? {};
+  let URL = `/assets/asset_management?search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching employee assets:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
+
 export {
   getAssetList,
   addAsset,
@@ -217,4 +253,6 @@ export {
   getAssetById,
   uploadAttachment,
   getLocations,
+  requestAsset,
+  getEmployeeAssets,
 };
