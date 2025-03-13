@@ -920,9 +920,10 @@ export const myAttendanceColumn = [
 
 export const AssetsColumns = [
   {
-    dataField: "asset_id",
+    dataField: "id",
     text: "Asset ID",
     minWidth: "105px",
+    formatter: (cell) => <span>AST-{String(cell).padStart(4, "0")}</span>,
   },
   {
     dataField: "asset_name",
@@ -931,14 +932,13 @@ export const AssetsColumns = [
       <div className="flex flex-col">
         <div className="text-base font-medium">{cell}</div>
         <div className="text-sm text-muted-foreground">
-          {row.specifications}
+          {row.asset_description || row.asset_model}
         </div>
       </div>
     ),
-   
   },
   {
-    dataField: "category",
+    dataField: "asset_type",
     text: "Category",
     formatter: (cell) => (
       <div className="flex items-center gap-2">
@@ -946,18 +946,17 @@ export const AssetsColumns = [
         <span>{cell}</span>
       </div>
     ),
-   
   },
   {
-    dataField: "location",
+    dataField: "asset_location",
     text: "Location",
-    formatter: (cell) => (
+    formatter: (cell, row) => (
       <div className="flex items-center gap-2">
         <MapPin size={16} className="text-muted-foreground" />
-        <span>{cell}</span>
+        <span>
+          {typeof cell === "object" ? cell?.name : `Location ${cell}`}
+        </span>
       </div>
     ),
-   
   },
 ];
-
