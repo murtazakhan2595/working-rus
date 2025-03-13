@@ -10,7 +10,7 @@ import { cn } from "src/@/lib/utils.js";
 import { cva } from "class-variance-authority";
 
 const statusVariants = cva(
-  "inline-flex items-center w-fit h-fit text-nowrap rounded-full border border-slate-200 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 dark:border-slate-800 dark:focus:ring-slate-300",
+  "",
   {
     variants: {
       variant: {

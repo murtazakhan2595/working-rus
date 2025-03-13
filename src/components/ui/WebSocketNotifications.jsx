@@ -103,20 +103,20 @@ const WebSocketNotifications = () => {
     }
 
     const wsURL = getWebSocketURL() + "?token=" + localStorage.getItem("token");
-    console.log("Connecting to WebSocket:", wsURL);
+    // console.log("Connecting to WebSocket:", wsURL);
 
     const ws = new WebSocket(wsURL);
     socketRef.current = ws;
 
     ws.onopen = () => {
-      console.log("Connected to WebSocket");
+      // console.log("Connected to WebSocket");
       setRetryCount(0);
     };
 
     ws.onmessage = (event) => {
       try {
         const newNotification = JSON.parse(event.data);
-        console.log("New Notification:", newNotification);
+        // console.log("New Notification:", newNotification);
 
         const transformedNotification = {
           id: newNotification.id,
@@ -135,7 +135,7 @@ const WebSocketNotifications = () => {
     };
 
     ws.onclose = () => {
-      console.log("WebSocket disconnected. Attempting to reconnect...");
+      // console.log("WebSocket disconnected. Attempting to reconnect...");
       setTimeout(() => {
         if (retryCount < 5) {
           setRetryCount((prev) => prev + 1);
@@ -182,7 +182,7 @@ const WebSocketNotifications = () => {
   };
 
   const handleNotificationClick = (notification) => {
-    console.log(notification, "NOTIFICATION IS DONE");
+    // console.log(notification, "NOTIFICATION IS DONE");
     if (!notification.isRead) {
       markRead(notification.id);
     }

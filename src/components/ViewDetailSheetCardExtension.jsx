@@ -22,7 +22,7 @@ const ViewDetailSheetCardExtension = React.forwardRef(
               <div className="flex justify-between gap-x-3 items-center border-b border-[#D7E4FF] b-2">
                 <div className="flex flex-wrap">
                   <div className="flex">
-                    <span className="text-xl m-auto">{title}</span>
+                    <span className="text-xl m-auto font-semibold">{title}</span>
                   </div>
                   <div className="flex justify-center ">
                     <button

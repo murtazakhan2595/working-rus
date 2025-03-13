@@ -12,6 +12,7 @@ import {
 } from "utils/getValuesFromTables";
 import { PencilLine } from "lucide-react";
 import { Button } from "components/ui/button";
+import { Badge } from "components/ui/badge";
 
 import {
   addUpdateEmpTransferDetails,
@@ -149,7 +150,6 @@ const EmployeeTransferDetails = ({
           },
         ]
       : [{}]),
-
     {
       label: "Effective Date",
       value: renderDate(currentTranfer?.effective_transfer_date),
@@ -165,7 +165,7 @@ const EmployeeTransferDetails = ({
       <ViewDetailSheetCardExtension
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        title="Internal Tranfer"
+        title="Tranfer Detail"
         handlePrevious={handlePrevious}
         handleNext={handleNext}
       >
@@ -178,7 +178,12 @@ const EmployeeTransferDetails = ({
                   showId={true}
                   avatarSize={16}
                 />
-                <div className="ml-[64px]">
+                <div className="ml-[64px] flex flex-row gap-1 flex-wrap overflow-hidden">
+                  <Badge variant="neutral">
+                    {currentTranfer.transfer_type === "INTERNAL"
+                      ? "Internal"
+                      : "External"}
+                  </Badge>
                   <EmployeeTransferStatusView
                     status={currentTranfer?.status || "PENDING"}
                   />
