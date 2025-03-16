@@ -16,17 +16,34 @@ const validateAssetFormSchema = (values) => {
   return errors;
 };
 
-const validateAssetRequestForm = (values) => {
+// Validation schema for asset request form
+const validateAssetRequestForm = (values, mode = "request") => {
   const errors = {};
 
+  // Common validations for both request and assign modes
   if (!values.asset_name) {
     errors.asset_name = "Asset name is required";
   }
 
   if (!values.reason) {
-    errors.reason = "Reason for request is required";
+    errors.reason = "Reason is required";
   } else if (values.reason.length < 10) {
-    errors.reason = "Please provide a more detailed reason";
+    errors.reason = "Please provide a more detailed reason (at least 10 characters)";
+  }
+
+  // Validations specific to assign mode
+  if (mode === "assign") {
+    if (!values.employee) {
+      errors.employee = "Employee is required";
+    }
+    
+    if (!values.assign_date) {
+      errors.assign_date = "Assign date is required";
+    }
+    
+    if (!values.location) {
+      errors.location = "Location is required";
+    }
   }
 
   return errors;

@@ -226,10 +226,15 @@ const requestAsset = async (payload) => {
 }
 
 const getEmployeeAssets = async (payload) => {
-  const filterData = payload?.filterData ?? {};
-  let URL = `/asset_management?search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+   const pageNo = payload?.options?.page ?? "";
+   const pageSize = payload?.options?.sizePerPage ?? "";
+   const filterData = payload?.filterData ?? {};
+
+   let URL = `/asset_assignment?ordering=-created_at&${
+     pageNo ? `page=${pageNo}&` : ""
+   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+     JSON.stringify(filterData)
+   )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),

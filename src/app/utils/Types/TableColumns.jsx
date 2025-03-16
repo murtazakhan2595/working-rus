@@ -1021,3 +1021,145 @@ export const MyAssetRequestColumns = [
     ),
   },
 ];
+
+
+export const AssignedAssetsColumns = [
+  {
+    dataField: "id",
+    text: "Assignment ID",
+    sort: true,
+    headerStyle: () => {
+      return { width: "120px" };
+    },
+  },
+  {
+    dataField: "employee_name",
+    text: "Employee Name",
+    sort: true,
+  },
+  {
+    dataField: "employee_id",
+    text: "Employee ID",
+    sort: true,
+    headerStyle: () => {
+      return { width: "100px" };
+    },
+  },
+  {
+    dataField: "department",
+    text: "Department",
+    sort: true,
+  },
+  {
+    dataField: "asset_name",
+    text: "Asset Name",
+    sort: true,
+  },
+  {
+    dataField: "asset_assigned_date",
+    text: "Assigned Date",
+    sort: true,
+    formatter: (cell) => {
+      return cell ? new Date(cell).toLocaleDateString() : "N/A";
+    },
+  },
+  {
+    dataField: "asset_return_date",
+    text: "Return Date",
+    sort: true,
+    formatter: (cell) => {
+      return cell ? new Date(cell).toLocaleDateString() : "N/A";
+    },
+  },
+  {
+    dataField: "asset_status",
+    text: "Status",
+    sort: true,
+    formatter: (cell) => {
+      return (
+        <span
+          className={`px-2 py-1 text-xs font-medium rounded-full
+          ${
+            cell === "Accepted"
+              ? "bg-green-100 text-green-700"
+              : cell === "Returned"
+              ? "bg-blue-100 text-blue-700"
+              : "bg-gray-100 text-gray-700"
+          }`}
+        >
+          {cell || "N/A"}
+        </span>
+      );
+    },
+  },
+];
+
+export const AssetRequestColumns = [
+  {
+    dataField: "id",
+    text: "Request ID",
+    sort: true,
+    headerStyle: () => {
+      return { width: "100px" };
+    },
+  },
+  {
+    dataField: "employee_name",
+    text: "Employee Name",
+    sort: true,
+  },
+  {
+    dataField: "employee_id",
+    text: "Employee ID",
+    sort: true,
+    headerStyle: () => {
+      return { width: "100px" };
+    },
+  },
+  {
+    dataField: "designation",
+    text: "Designation",
+    sort: true,
+  },
+  {
+    dataField: "department",
+    text: "Department",
+    sort: true,
+  },
+  {
+    dataField: "asset_name",
+    text: "Asset Name",
+    sort: true,
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    sort: true,
+    formatter: (cell) => {
+      return (
+        <span
+          className={`px-2 py-1 text-xs font-medium rounded-full
+          ${
+            cell === "Pending"
+              ? "bg-yellow-100 text-yellow-700"
+              : cell === "Approved"
+              ? "bg-green-100 text-green-700"
+              : cell === "Rejected"
+              ? "bg-red-100 text-red-700"
+              : "bg-gray-100 text-gray-700"
+          }`}
+        >
+          {cell || "Pending"}
+        </span>
+      );
+    },
+  },
+  {
+    dataField: "created_at",
+    text: "Request Date",
+    sort: true,
+    formatter: (cell) => {
+      return cell ? new Date(cell).toLocaleDateString() : "N/A";
+    },
+  },
+];

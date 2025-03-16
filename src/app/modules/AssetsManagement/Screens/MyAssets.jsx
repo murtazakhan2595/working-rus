@@ -69,24 +69,27 @@ const MyAssetsPage = ({ userProfile }) => {
           <Button onClick={() => setIsOpenRequest(true)}>Request Asset</Button>
         }
       />
-       <Card>
-      <CardContent>
-        <CustomTable
-          data={assets}
-          columns={MyAssetRequestColumns}
-          pagination={true}
-          dataTotalSize={totalCount}
-          tableOptions={tableOptions}
-          loading={loading}
-        />
+      <Card>
+        <CardContent>
+          <CustomTable
+            data={assets}
+            columns={MyAssetRequestColumns}
+            pagination={true}
+            dataTotalSize={totalCount}
+            tableOptions={tableOptions}
+            loading={loading}
+          />
         </CardContent>
       </Card>
-     {isOpenRequest && <AssetRequestSheet
-        isOpen={isOpenRequest}
-        setIsOpen={setIsOpenRequest}
-        reload={fetchData}
-        userProfile={userProfile}
-      />}
+      {isOpenRequest && (
+        <AssetRequestSheet
+          isOpen={isOpenRequest}
+          setIsOpen={setIsOpenRequest}
+          reload={fetchData}
+          userProfile={userProfile}
+          mode="request"
+        />
+      )}
     </div>
   );
 };
