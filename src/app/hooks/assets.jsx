@@ -16,7 +16,7 @@ const getAssetList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  let URL = `/assets/asset_management?ordering=-id&${
+  let URL = `/asset_management?ordering=-id&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
     JSON.stringify(filterData)
@@ -70,7 +70,7 @@ const uploadAttachment = async (file) => {
 
     const response = await axios({
       method: "POST",
-      url: `${baseUrl}/assets/asset_attachment/`,
+      url: `${baseUrl}/asset_attachment/`,
       data: formData,
       headers: formDataHeader(),
     });
@@ -142,7 +142,7 @@ const addAsset = async (formValues) => {
 
     if (formValues.id) {
       const response = await axios.put(
-        `${baseUrl}/assets/asset_management/${formValues.id}/`,
+        `${baseUrl}/asset_management/${formValues.id}/`,
         payload,
         {
           headers: headers(),
@@ -153,7 +153,7 @@ const addAsset = async (formValues) => {
       }
     } else {
       const response = await axios.post(
-        `${baseUrl}/assets/asset_management/`,
+        `${baseUrl}/asset_management/`,
         payload,
         {
           headers: headers(),
@@ -175,7 +175,7 @@ const addAsset = async (formValues) => {
 const deleteAsset = async (assetId) => {
   try {
     const response = await axios.delete(
-      `${baseUrl}/assets/asset_management/${assetId}/`,
+      `${baseUrl}/asset_management/${assetId}/`,
       {
         headers: headers(),
       }
@@ -193,7 +193,7 @@ const deleteAsset = async (assetId) => {
 const getAssetById = async (assetId) => {
   try {
     const response = await axios.get(
-      `${baseUrl}/assets/asset_management/${assetId}/`,
+      `${baseUrl}/asset_management/${assetId}/`,
       {
         headers: headers(),
       }
@@ -212,7 +212,7 @@ const getAssetById = async (assetId) => {
 
 const requestAsset = async (payload) => {
   try {
-    const response = await axios.post(`${baseUrl}/assets/asset_request/`, payload, {
+    const response = await axios.post(`${baseUrl}/asset_assignment/`, payload, {
       headers: headers(),
     });
     return response.status === 201;
@@ -226,10 +226,15 @@ const requestAsset = async (payload) => {
 }
 
 const getEmployeeAssets = async (payload) => {
-  const filterData = payload?.filterData ?? {};
-  let URL = `/assets/asset_management?search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+   const pageNo = payload?.options?.page ?? "";
+   const pageSize = payload?.options?.sizePerPage ?? "";
+   const filterData = payload?.filterData ?? {};
+
+   let URL = `/asset_assignment?ordering=-created_at&${
+     pageNo ? `page=${pageNo}&` : ""
+   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+     JSON.stringify(filterData)
+   )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
