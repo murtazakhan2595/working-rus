@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SheetComponent from "components/ui/SheetComponent";
 import { Button } from "components/ui/button";
 import { Formik } from "formik";
-import { TextInput, TextAreaInput } from "components/FormControl";
+import { TextAreaInput, SelectInputComponent } from "components/FormControl";
 import { connect } from "react-redux";
-import { requestAsset } from "app/hooks/assets"; // You'll need to implement this API hook
+import { getAssetList, requestAsset } from "app/hooks/assets"; // Using existing API hooks
 import { toast } from "react-toastify";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
@@ -13,12 +13,14 @@ import { validateAssetRequestForm } from "app/utils/FormSchema/AssetsFormSchema"
 const AssetRequestSheet = ({ userProfile, reload, isOpen, setIsOpen }) => {
   const [closeSheet, setCloseSheet] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [availableAssets, setAvailableAssets] = useState([]);
+  const [assetsLoading, setAssetsLoading] = useState(true);
 
   // Initial form values
   const initialValues = {
     asset_name: "",
     reason: "",
-    notes: "",
+    additional_notes: "", // Changed from notes to match API schema
   };
 
   const formSheetData = {
@@ -28,14 +30,52 @@ const AssetRequestSheet = ({ userProfile, reload, isOpen, setIsOpen }) => {
     footer: null,
   };
 
+  // Fetch available assets when component mounts
+  useEffect(() => {
+    const fetchAvailableAssets = async () => {
+      setAssetsLoading(true);
+      try {
+        // Use the existing asset list API with a filter for available assets
+        const response = await getAssetList({
+          options: { page: 1, sizePerPage: 100 }, // Fetch a reasonable number of assets
+          filterData: { status: "available" }, // Assuming there's a status field to filter by
+        });
+
+        if (response && response.results) {
+          // Format assets for the select dropdown
+          const formattedAssets = response.results.map((asset) => ({
+            value: asset.id, // Use the asset ID as the value
+            label: asset.asset_name, // Use the asset name as the label
+          }));
+          setAvailableAssets(formattedAssets);
+        }
+      } catch (error) {
+        console.error("Error fetching available assets:", error);
+        toast.error("Failed to load available assets");
+      } finally {
+        setAssetsLoading(false);
+      }
+    };
+
+    if (isOpen) {
+      fetchAvailableAssets();
+    }
+  }, [isOpen]);
+
   const handleFormSubmit = async (values) => {
     setLoading(true);
+    console.log("Form values:", values);
 
     // Add additional fields needed for the API
     const payload = {
-      ...values,
-      status: "pending", // Default status for new requests
-      employee_id: userProfile.id,
+      asset_name:
+        typeof values.asset_name === "object"
+          ? values.asset_name.label
+          : values.asset_name,
+      reason: values.reason,
+      additional_notes: values.additional_notes,
+      asset_status: "Pending", // Match the enum in the API (Pending, Accepted, Rejected)
+      asset_employee_id: userProfile.id,
     };
 
     try {
@@ -84,17 +124,21 @@ const AssetRequestSheet = ({ userProfile, reload, isOpen, setIsOpen }) => {
           {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
               <SheetCardExtension title="Asset Request Details">
-                <TextInput
+                <SelectInputComponent
                   name={"asset_name"}
                   error={props.errors?.asset_name}
                   touch={props.touched?.asset_name}
                   value={props.values?.asset_name}
                   label={"Asset Name"}
                   required={true}
+                  options={availableAssets}
                   onChange={(field, value) => {
-                    props.handleChange(field)(value);
+                    props.setFieldValue(field, value);
                   }}
-                  placeholder="Enter asset name"
+                  placeholder={
+                    assetsLoading ? "Loading assets..." : "Select an asset"
+                  }
+                  isLoading={assetsLoading}
                 />
 
                 <TextAreaInput
@@ -112,10 +156,10 @@ const AssetRequestSheet = ({ userProfile, reload, isOpen, setIsOpen }) => {
                 />
 
                 <TextAreaInput
-                  name={"notes"}
-                  error={props.errors?.notes}
-                  touch={props.touched?.notes}
-                  value={props.values?.notes}
+                  name={"additional_notes"}
+                  error={props.errors?.additional_notes}
+                  touch={props.touched?.additional_notes}
+                  value={props.values?.additional_notes}
                   label={"Additional Notes"}
                   required={false}
                   onChange={(field, value) => {
@@ -140,7 +184,7 @@ const AssetRequestSheet = ({ userProfile, reload, isOpen, setIsOpen }) => {
                   type="submit"
                   size="lg"
                   variant="default"
-                  disabled={loading}
+                  disabled={loading || assetsLoading}
                 >
                   {loading ? "Submitting..." : "Submit Request"}
                 </Button>
