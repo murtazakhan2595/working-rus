@@ -14,7 +14,7 @@ import {
 import { toast } from "react-toastify";
 import AddUpdateAsset from "./AddUpdateAsset";
 import AssetRequestSheet from "./AssetRequestSheet";
-import AssetRequestDetailSheet from "./AssetRequestDetailSheet";
+import AssetRequestViewSheet from "./AssetRequestViewSheet";
 import { getAssetList, getAssetById, deleteAsset } from "app/hooks/assets";
 import {
   AssetsColumns,
@@ -172,17 +172,8 @@ const Assets = ({ userProfile, departments }) => {
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
     onRowClick: (row) => {
-      // Different handling based on whether it's a request or assignment
-      if (row.request_type === "Request") {
-        setSelectedRequest(row);
-        setOpenRequestDetailSheet(true);
-      } else {
-        // For assignments, you could view the asset details or display differently
-        // For now, just show a toast message
-        toast.info(
-          `Viewing assignment for ${row.asset_name} to ${row.employee_name}`
-        );
-      }
+       setSelectedRequest(row);
+       setOpenRequestDetailSheet(true);
     },
   };
 
@@ -207,27 +198,9 @@ const Assets = ({ userProfile, departments }) => {
     { value: "requests", label: "Requests & Assign" },
   ];
 
-  // Enhanced columns for the combined requests and assignments tab
+
+
   const enhancedRequestColumns = [
-    {
-      dataField: "request_type",
-      text: "Type",
-      sort: true,
-      formatter: (cell) => {
-        return (
-          <span
-            className={`px-2 py-1 text-xs font-medium rounded-full 
-            ${
-              cell === "Request"
-                ? "bg-blue-100 text-blue-700"
-                : "bg-green-100 text-green-700"
-            }`}
-          >
-            {cell}
-          </span>
-        );
-      },
-    },
     ...AssetRequestColumns.filter((col) => col.dataField !== "id"), // Remove the ID column as we'll have different IDs
   ];
 
@@ -388,10 +361,10 @@ const Assets = ({ userProfile, departments }) => {
           departments={departments}
         />
       )}
-
+      {console.log("openRequestDetailSheet", openRequestDetailSheet)}
       {/* Asset Request Detail Sheet */}
-      {selectedRequest && openRequestDetailSheet && (
-        <AssetRequestDetailSheet
+      {openRequestDetailSheet && (
+        <AssetRequestViewSheet
           isOpen={openRequestDetailSheet}
           setIsOpen={setOpenRequestDetailSheet}
           request={selectedRequest}
