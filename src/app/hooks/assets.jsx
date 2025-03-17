@@ -210,20 +210,42 @@ const getAssetById = async (assetId) => {
   }
 };
 
-const requestAsset = async (payload) => {
+const requestAsset= async (payload) => {
   try {
-    const response = await axios.post(`${baseUrl}/asset_assignment/`, payload, {
-      headers: headers(),
-    });
-    return response.status === 201;
+    if (payload?.id) {
+      // If there's an ID, use PATCH to update the existing asset request
+      const response = await axios.patch(
+        `${baseUrl}/asset_assignment/${payload.id}/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200 || response.status === 201) {
+        return response.data;
+      }
+    } else {
+      // If no ID, use POST to create a new asset request
+      const response = await axios.post(
+        `${baseUrl}/asset_assignment/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return response.data;
+      }
+    }
+    return false;
   } catch (error) {
-    console.error("Error requesting asset:", error);
+    console.error("Error updating asset request:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
     return false;
   }
-}
+};
 
 const getEmployeeAssets = async (payload) => {
    const pageNo = payload?.options?.page ?? "";
