@@ -966,58 +966,195 @@ export const MyAssetRequestColumns = [
   {
     dataField: "id",
     text: "Request ID",
-    minWidth: "105px",
-    formatter: (cell) => <span>ASREQ-{String(cell).padStart(4, "0")}</span>,
+    formatter: (cell) => <span>ASR-{String(cell).padStart(4, "0")}</span>,
   },
   {
-    dataField: "asset_name",
-    text: "Asset Requested",
-    formatter: (cell, row) => (
-      <div className="flex flex-col">
-        <div className="text-base font-medium">{cell}</div>
-        <div className="text-sm text-muted-foreground">
-          {new Date(row.created_at).toLocaleDateString()}
+    dataField: "asset",
+    text: "Asset",
+    formatter: (cell) => {
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">{cell?.asset_name}</span>
+          <span className="text-sm text-muted-foreground">
+            {cell?.asset_type}
+          </span>
         </div>
-      </div>
-    ),
+      );
+    },
+  },
+  {
+    dataField: "asset",
+    text: "Serial Number",
+    formatter: (cell) => {
+      return cell?.asset_serial_number || "N/A";
+    },
+  },
+  {
+    dataField: "asset_assigned_date",
+    text: "Assigned Date",
+    formatter: (cell) => {
+      return cell ? new Date(cell).toLocaleDateString() : "N/A";
+    },
+  },
+  {
+    dataField: "asset_returned_date",
+    text: "Return Date",
+    formatter: (cell) => {
+      return cell ? new Date(cell).toLocaleDateString() : "N/A";
+    },
   },
   {
     dataField: "reason",
     text: "Reason",
-    formatter: (cell) => (
-      <div className="flex items-center gap-2">
-        <FileText size={16} className="text-muted-foreground" />
-        <span>{cell}</span>
-      </div>
-    ),
+    formatter: (cell) => {
+      return cell || "N/A";
+    },
   },
   {
-    dataField: "status",
+    dataField: "asset_status",
     text: "Status",
-    formatter: (cell) => (
-      <Badge
-        className={
-          cell?.toLowerCase() === "approved"
-            ? "bg-green-100 text-green-800"
-            : cell?.toLowerCase() === "rejected"
-            ? "bg-red-100 text-red-800"
-            : cell?.toLowerCase() === "pending"
-            ? "bg-yellow-100 text-yellow-800"
-            : "bg-gray-100 text-gray-800"
-        }
-      >
-        {cell || "Pending"}
-      </Badge>
+    formatter: (cell) => {
+      return (
+        <span
+          className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
+            cell === "Accepted" || cell === "Approved"
+              ? "bg-emerald-50 text-teal-700"
+              : cell === "Rejected" || cell === "Declined"
+              ? "bg-red-50 text-red-700"
+              : cell === "Returned"
+              ? "bg-blue-50 text-blue-700"
+              : "bg-[#f0f0f3] text-[#7f838d]" // Default for Pending or any other status
+          }`}
+        >
+          {cell || "N/A"}
+        </span>
+      );
+    },
+  },
+];
+
+
+export const AssignedAssetsColumns = [
+  {
+    dataField: "id",
+    text: "Assignment ID",
+    headerStyle: () => {
+      return { width: "120px" };
+    },
+  },
+  {
+    dataField: "employee_name",
+    text: "Employee Name",
+  },
+  {
+    dataField: "employee_id",
+    text: "Employee ID",
+    headerStyle: () => {
+      return { width: "100px" };
+    },
+  },
+  {
+    dataField: "department",
+    text: "Department",
+  },
+  {
+    dataField: "asset_name",
+    text: "Asset Name",
+  },
+  {
+    dataField: "asset_assigned_date",
+    text: "Assigned Date",
+    formatter: (cell) => {
+      return cell ? new Date(cell).toLocaleDateString() : "N/A";
+    },
+  },
+  {
+    dataField: "asset_return_date",
+    text: "Return Date",
+    formatter: (cell) => {
+      return cell ? new Date(cell).toLocaleDateString() : "N/A";
+    },
+  },
+  {
+    dataField: "asset_status",
+    text: "Status",
+    formatter: (cell) => {
+      return (
+        <span
+          className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
+            cell === "Accepted"
+              ? "bg-emerald-50 text-teal-700"
+              : cell === "Rejected"
+              ? "bg-red-50 text-red-700"
+              : "bg-[#f0f0f3] text-[#7f838d]" // Default for Pending or any other status
+          }`}
+        >
+          {cell || "N/A"}
+        </span>
+      );
+    },
+  },
+];
+
+export const AssetRequestColumns = [
+  {
+    dataField: "asset_employee_id",
+    text: "ID",
+    formatter: (cell) => <EmployeeID value={cell} />,
+  },
+  {
+    dataField: "employee",
+    text: "Employees",
+    formatter: (cell, row) => (
+      <>
+        <EmployeeOverview
+          id={row.asset_employee_id}
+          showEmail={true}
+          showDepartment={true}
+          showPosition={true}
+        />
+      </>
     ),
   },
   {
-    dataField: "notes",
-    text: "Notes",
-    formatter: (cell) => (
-      <div className="flex items-center gap-2">
-        <Tag size={16} className="text-muted-foreground" />
-        <span>{cell || "-"}</span>
-      </div>
-    ),
+    dataField: "asset",
+    text: "Asset Name",
+    formatter: (cell) => <>{cell?.asset_name}</>,
+  },
+  {
+    dataField: "asset",
+    text: "Asset Type",
+    formatter: (cell) => <>{cell?.asset_type}</>,
+  },
+  {
+    dataField: "reason",
+    text: "Reason",
+    formatter: (cell) => <>{cell?.asset_type}</>,
+  },
+  {
+    dataField: "asset_status",
+    text: "Status",
+    formatter: (cell) => {
+      return (
+        <span
+          className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
+            cell === "Accepted"
+              ? "bg-emerald-50 text-teal-700"
+              : cell === "Rejected"
+              ? "bg-red-50 text-red-700"
+              : "bg-[#f0f0f3] text-[#7f838d]" // Default for Pending or any other status
+          }`}
+        >
+          {cell || "N/A"}
+        </span>
+      );
+    },
+  },
+  {
+    dataField: "asset_assigned_date",
+    text: "Request Date",
+    formatter: (cell) => {
+      return cell ? new Date(cell).toLocaleDateString() : "N/A";
+    },
   },
 ];
