@@ -10,17 +10,17 @@ import { MoreHorizontal } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
 import SheetComponent from "components/ui/SheetComponent";
-import AddDepartmentForm from "./AddBranchForm";
+import AddBranchForm from "./AddBranchForm";
 import ViewBranch from "app/modules/OfficeSetting/Screens/Branches/ViewBranch";
 
-const DepartmentAction = ({ data, reload }) => {
+const DepartmentAction = ({ data, reload = () => {} }) => {
   const [view, setView] = useState(null);
-  const [deleteDept, setDeleteDept] = useState(null);
-  const [edit, setEdit] = useState(null);
+  const [OpenDeleteAlert, setOpenDeleteAlert] = useState(false);
+  const [EditBranch, setEditBranch] = useState(false);
 
   const formSheetData = {
-    triggerText: null,
-    title: "Update Department",
+    triggerText: 'Update Branch',
+    title: "Update Branch",
     description: null,
     footer: null,
   };
@@ -33,28 +33,19 @@ const DepartmentAction = ({ data, reload }) => {
   };
 
   const handleEdit = (data) => {
-    setEdit({
-      open: true,
-      data: data,
-    });
+    setEditBranch(true);
   };
 
   const handleDelete = (data) => {
-    setDeleteDept({
-      open: true,
-      data: data,
-    });
+    setOpenDeleteAlert(true);
   };
 
   const confirmDelete = async () => {
     try {
-      await deleteRecord(
-        `/branch/${deleteDept?.data?.id}`,
-        deleteDept?.data?.name
-      );
-      reload();
+      await deleteRecord(`/branch/${data?.id}`, data?.branch_name);
+      reload(true);
     } catch (error) {
-      console.log("ERROR", error);
+      console.error("ERROR", error);
     }
   };
 
@@ -80,35 +71,29 @@ const DepartmentAction = ({ data, reload }) => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {deleteDept?.open && (
+      {OpenDeleteAlert && (
         <AlertDialogue
           title="Confirm Delete?"
           description="This action can't be undone. All information associated with this will be lost."
-          isOpen={deleteDept.open}
-          setIsOpen={(isOpen) =>
-            setDeleteDept((prev) => ({ ...prev, open: isOpen }))
-          }
+          isOpen={OpenDeleteAlert}
+          setIsOpen={(isOpen) => setOpenDeleteAlert(false)}
           handleContinue={() => {
             confirmDelete();
-            setDeleteDept(null);
+            setOpenDeleteAlert(false);
           }}
         />
       )}
 
-      {edit?.open && (
+      {EditBranch && (
         <SheetComponent
           {...formSheetData}
-          isOpen={edit?.open}
-          setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
+          isOpen={EditBranch}
+          setIsOpen={setEditBranch}
           width="568px"
         >
-          <AddDepartmentForm
-            isOpen={edit.open}
-            setIsOpen={(isOpen) =>
-              setEdit((prev) => ({ ...prev, open: isOpen }))
-            }
-            editMode={edit}
-            setEdit={setEdit}
+          <AddBranchForm
+            setIsOpen={setEditBranch}
+            editMode={true}
             reload={reload}
             branchData={data}
           />

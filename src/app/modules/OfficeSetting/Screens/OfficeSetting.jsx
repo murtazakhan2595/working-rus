@@ -35,6 +35,7 @@ const OfficeSetting = () => {
   const [loading, setLoading] = useState(true);
   const [depLoading, setDepLoading] = useState(true);
   const [department, setDepartments] = useState(null);
+  const [reloadBranchesData, setReloadBranchesData] = useState(false);
   const [depOptions, setdepOptions] = useState({ page: 1, sizePerPage: 10 });
   const [desigOptions, setDesigOptions] = useState({
     page: 1,
@@ -52,7 +53,7 @@ const OfficeSetting = () => {
       }
       setLoading(false);
     } catch (error) {
-      console.log("ERROR", error);
+      console.error("ERROR", error);
     }
   };
   const fetchShifts = async () => {
@@ -67,7 +68,7 @@ const OfficeSetting = () => {
       }
       setLoading(false);
     } catch (error) {
-      console.log(error, "ERROR");
+      console.error(error, "ERROR");
     }
   };
   const getDepartments = async () => {
@@ -95,9 +96,6 @@ const OfficeSetting = () => {
     } finally {
       setDesignLoading(false);
     }
-  };
-  const handleSubmit = (values) => {
-    console.log(values, "FORM SUBMMTIED VALUES");
   };
 
   useEffect(() => {
@@ -147,8 +145,6 @@ const OfficeSetting = () => {
     { value: "working-hours", label: "Working Hours" },
   ];
 
-  console.log("edit, editData", edit, editData);
-  console.log(fetchShifts, "fetchShifts in parent");
 
   return (
     <div>
@@ -165,7 +161,7 @@ const OfficeSetting = () => {
               ) : activeTab === "designation" ? (
                 <AddDesignation reload={getDesignations} />
               ) : activeTab === "branches" ? (
-                <AddBranch reload={getDesignations} />
+                <AddBranch reload={setReloadBranchesData} />
               ) : (
                 <Shift reload={fetchShifts} />
               )
@@ -217,6 +213,7 @@ const OfficeSetting = () => {
               <Branches
                 loading={depLoading}
                 options={depOptions}
+                reload={reloadBranchesData}
                 setOPtions={setdepOptions}
                 getDepartments={getDepartments}
                 department={department}

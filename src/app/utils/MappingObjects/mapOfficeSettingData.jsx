@@ -10,6 +10,7 @@ export async function mapBranchList(data) {
     }, {});
     return {
       value: branch.id,
+      id: branch.id,
       label: branch.branch_name,
       ...branchDetails,
     };

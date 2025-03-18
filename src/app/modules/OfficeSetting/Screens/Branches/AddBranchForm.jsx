@@ -9,6 +9,8 @@ import { Button } from "components/ui/button";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { fetchBranches } from "state/slices/CommonSlice";
 
 const AddBranchForm = ({
   setIsOpen,
@@ -18,13 +20,13 @@ const AddBranchForm = ({
 }) => {
   const [closeSheet, setCloseSheet] = useState(false);
   const formData = editMode ? branchData : Branch;
+  const dispatch = useDispatch();
 
   const handleClose = () => {
     setCloseSheet(true);
   };
 
   const handleSubmit = async (values) => {
-    debugger
     try {
       const response = await addUpdateBranch(values, branchData.id);
       if (response) {
@@ -35,11 +37,8 @@ const AddBranchForm = ({
           }
         );
         setIsOpen(false);
-        // setEdit({
-        //   open: false,
-        //   data: null,
-        // });
-        reload();
+        reload(true);
+        dispatch(fetchBranches());
       }
     } catch (error) {
       console.error("ERROR", error);
@@ -53,7 +52,13 @@ const AddBranchForm = ({
         setCloseSheet,
         setIsOpen,
       })}
-      <Formik initialValues={formData} onSubmit={handleSubmit}>
+      <Formik
+        initialValues={formData}
+        enableReinitialize
+        onSubmit={(values, { resetForm }) => {
+          handleSubmit(values, resetForm);
+        }}
+      >
         {(props) => (
           <form onSubmit={props?.handleSubmit}>
             <SheetCardExtension title="Branch Details">
@@ -116,7 +121,15 @@ const AddBranchForm = ({
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="lg" variant="default">
+                <Button
+                  type="submit"
+                  size="lg"
+                  variant="default"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    props.handleSubmit();
+                  }}
+                >
                   {editMode ? "Update" : "Add"}
                 </Button>
               </div>
