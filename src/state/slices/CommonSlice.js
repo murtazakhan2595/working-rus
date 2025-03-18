@@ -5,6 +5,7 @@ import {
   getDesignationList,
   getProjectsList,
   getOrganizationList,
+  getBranchList,
 } from "app/hooks/general";
 
 // Define the initial state
@@ -12,6 +13,7 @@ const initialState = {
   departments: [],
   projects: [],
   designations: [],
+  branches: [],
   apiStatus: "idle",
   error: null,
 };
@@ -23,6 +25,19 @@ export const fetchOrganizations = createAsyncThunk(
     try {
       const response = await getOrganizationList();
       return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
+// Define the thunk to fetch branches
+export const fetchBranches = createAsyncThunk(
+  "common/fetchBranches",
+  async () => {
+    try {
+      const response = await getBranchList();
+      return response?.results||[];
     } catch (error) {
       throw error;
     }
@@ -122,6 +137,20 @@ const commonSlice = createSlice({
         state.organizations = action.payload;
       })
       .addCase(fetchOrganizations.rejected, (state, action) => {
+        state.apiStatus = "failed";
+        state.error = action.error.message;
+      });
+
+    // Branches
+    builder
+      .addCase(fetchBranches.pending, (state) => {
+        state.apiStatus = "loading";
+      })
+      .addCase(fetchBranches.fulfilled, (state, action) => {
+        state.apiStatus = "succeeded";
+        state.branches = action.payload;
+      })
+      .addCase(fetchBranches.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
       });

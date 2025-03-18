@@ -41,7 +41,7 @@ const getEmployeeData = async (employeeId) => {
     const response = await axios.get(`${baseUrl}/emp/${employeeId}`, {
       headers: headers(),
     });
-    const employeeData = mapEmployeeData(response.data);
+    const employeeData = await mapEmployeeData(response.data);
     return employeeData;
   } catch (error) {
     if (error?.response?.status === 401) {

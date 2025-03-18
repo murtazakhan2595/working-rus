@@ -67,11 +67,11 @@ export function mapEmployeeBankDetailPayloadData(data) {
   return payload;
 }
 
-function mapEmployeeData(data) {
+async function mapEmployeeData(data) {
   const PersonalInformation = getPersonalInfo(data);
   const EmployeeContactInformation = getContactInfo(data);
   const BankDetails = getBankDetails(data);
-  const WorkInformation = getWorkInformation(data);
+  const WorkInformation = await getEmployeeInformation(data);
   const employee = {
     id: data.id,
     name: `${data.first_name} ${data.last_name}`,

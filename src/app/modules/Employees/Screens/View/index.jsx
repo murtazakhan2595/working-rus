@@ -39,8 +39,10 @@ const ViewEmployee = ({ userProfile, profileView }) => {
   const getDataByHooks = async () => {
     setLoading(true);
     try {
+
       let empData = await getEmployeeData(userId);
       setEmployeeData(empData);
+      console.log(empData,"EMPLDATA")
     } catch (error) {
       console.error("Error fetching data:", error);
     }

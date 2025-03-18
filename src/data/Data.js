@@ -5,6 +5,7 @@ import {
   fetchDesignations,
   fetchProjects,
   fetchOrganizations,
+  fetchBranches,
 } from "state/slices/CommonSlice";
 import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
 import { fetchTerminationReasons } from "state/slices/ExitEmployeeSlice";
@@ -810,6 +811,7 @@ export const handleUpdateProfile = (dispatch, data) => {
   dispatch(fetchEmployeesDetail());
   dispatch(fetchUser(userprofile.id));
   dispatch(fetchEmployees());
+  dispatch(fetchBranches());
   dispatch(fetchDepartments());
   dispatch(fetchDesignations());
   dispatch(fetchOrganizations());

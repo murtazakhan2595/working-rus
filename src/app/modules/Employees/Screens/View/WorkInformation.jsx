@@ -7,6 +7,7 @@ import {
   ManagerName,
   getCountryFullName,
   getWorkPlaceType,
+  BranchName
 } from "utils/getValuesFromTables";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 
@@ -18,8 +19,10 @@ const WorkInformation = ({
   employeeId,
   getDataByHooks,
 }) => {
+  
   const workInformation = [
     { title: "Department", data: <DepartmentName value={userData?.department_name} /> },
+    { title: "Brannch", data: <BranchName value={userData?.branch_id} /> },
     { title: "Position", data: <DesignationName value={userData?.department_position} /> },
     { title: "Work Email", data: userData?.work_email },
     { title: "Employee Type", data: userData?.employee_type },

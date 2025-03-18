@@ -10,6 +10,7 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
       errors.country_code = "Phone Country Code name is required";
     if (!values.mobile_no) errors.mobile_no = "Phone number is required";
     if (!values.username) errors.username = "Username is required";
+    if (!values.branch_id) errors.branch_id = "Branch is required";
     if (!values.work_email) errors.work_email = "Email is required";
     // if (values.work_email && EMAIL_REGEX.test(values.work_email))
     //   errors.work_email = "Invalid email address";

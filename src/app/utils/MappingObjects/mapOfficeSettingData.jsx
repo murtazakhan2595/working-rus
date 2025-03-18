@@ -10,7 +10,7 @@ export async function mapBranchList(data) {
     }, {});
     return {
       value: branch.id,
-      label: branch.name,
+      label: branch.branch_name,
       ...branchDetails,
     };
   });
