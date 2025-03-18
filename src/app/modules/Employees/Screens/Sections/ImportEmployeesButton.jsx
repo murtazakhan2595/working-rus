@@ -251,7 +251,7 @@ const ImportEmployeesButton = () => {
       const response = await uploadEmployeesData(formData);
 
       // Handle successful response
-      if (response && response.status === 200) {
+      if (response && (response.status === 200  || response.status === 201)) {
         toast.success("Employees imported successfully", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -261,10 +261,12 @@ const ImportEmployeesButton = () => {
       // Handle error responses with validation errors
       else if (response && response.errors) {
         // Format validation errors for display
-        const errors = Array.isArray(response.errors) ? response.errors : [response.errors];
+        const errors = Array.isArray(response.errors)
+          ? response.errors
+          : [response.errors];
         const formattedErrors = formatErrorMessages(errors);
         setValidationErrors(formattedErrors);
-        
+
         // Also show a toast notification
         toast.error(
           "Failed to import employees. Please check the validation errors.",
