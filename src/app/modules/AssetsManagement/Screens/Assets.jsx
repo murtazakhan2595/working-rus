@@ -32,6 +32,7 @@ const Assets = ({ userProfile, departments }) => {
   const [openAddAssetModal, setOpenAddAssetModal] = useState(false);
   const [assetToEdit, setAssetToEdit] = useState(null);
   const [filterData, setFilterData] = useState({});
+  const [selectedAssetType, setSelectedAssetType] = useState("");
 
   // Requests & Assignments tab state
   const [requestsData, setRequestsData] = useState([]);
@@ -39,22 +40,48 @@ const Assets = ({ userProfile, departments }) => {
   const [requestsFilterData, setRequestsFilterData] = useState({});
   const [openRequestDetailSheet, setOpenRequestDetailSheet] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedRequestType, setSelectedRequestType] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
 
   // Asset request/assignment sheet state
   const [openAssetRequestSheet, setOpenAssetRequestSheet] = useState(false);
   const [assetSheetMode, setAssetSheetMode] = useState("request"); // "request" or "assign"
 
-  // Pagination options
-  const [options, setOptions] = useState({
+  // Separate pagination options for each tab
+  const [assetsOptions, setAssetsOptions] = useState({
     page: 1,
     sizePerPage: 10,
-    sortField: "created_at",
-    sortOrder: "desc",
   });
 
+  const [requestsOptions, setRequestsOptions] = useState({
+    page: 1,
+    sizePerPage: 10,
+  });
+
+  // Get the current options based on active tab
+  const options = activeTab === "assets" ? assetsOptions : requestsOptions;
+
   const onPageChange = (name, value) => {
-    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+    if (activeTab === "assets") {
+      setAssetsOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+    } else {
+      setRequestsOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+    }
   };
+
+  // Reset filter states when tab changes
+  useEffect(() => {
+    if (activeTab === "assets") {
+      setRequestsFilterData({});
+      setSelectedRequestType("");
+      setSelectedStatus("");
+      setSelectedDepartment("");
+    } else {
+      setFilterData({});
+      setSelectedAssetType("");
+    }
+  }, [activeTab]);
 
   // ASSETS TAB FUNCTIONS
   const fetchAssetsData = async (isMounted = true) => {
@@ -62,7 +89,7 @@ const Assets = ({ userProfile, departments }) => {
     try {
       if (isMounted) {
         const response = await getAssetList({
-          options: options,
+          options: assetsOptions,
           filterData: filterData,
         });
 
@@ -95,7 +122,7 @@ const Assets = ({ userProfile, departments }) => {
     try {
       if (isMounted) {
         const response = await getEmployeeAssets({
-          options: options,
+          options: requestsOptions,
           filterData: requestsFilterData,
         });
 
@@ -117,10 +144,16 @@ const Assets = ({ userProfile, departments }) => {
     setOpenAssetRequestSheet(true);
   };
 
-
   // FILTER HANDLERS FOR EACH TAB
   const handleAssetsFilterChange = (filterName, filterValue) => {
-    onPageChange("page", 1);
+    // Reset to page 1 when filter changes
+    setAssetsOptions((prevOptions) => ({ ...prevOptions, page: 1 }));
+
+    // Update selected values for UI display
+    if (filterName === "asset_type") {
+      setSelectedAssetType(filterValue);
+    }
+
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -133,7 +166,18 @@ const Assets = ({ userProfile, departments }) => {
   };
 
   const handleRequestsFilterChange = (filterName, filterValue) => {
-    onPageChange("page", 1);
+    // Reset to page 1 when filter changes
+    setRequestsOptions((prevOptions) => ({ ...prevOptions, page: 1 }));
+
+    // Update selected values for UI display
+    if (filterName === "request_type") {
+      setSelectedRequestType(filterValue);
+    } else if (filterName === "status") {
+      setSelectedStatus(filterValue);
+    } else if (filterName === "department") {
+      setSelectedDepartment(filterValue);
+    }
+
     setRequestsFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -147,8 +191,8 @@ const Assets = ({ userProfile, departments }) => {
 
   // TABLE OPTIONS FOR EACH TAB
   const assetsTableOptions = {
-    page: options.page,
-    sizePerPage: options.sizePerPage,
+    page: assetsOptions.page,
+    sizePerPage: assetsOptions.sizePerPage,
     onPageChange: onPageChange,
     onRowClick: async (row) => {
       try {
@@ -168,12 +212,12 @@ const Assets = ({ userProfile, departments }) => {
   };
 
   const requestsTableOptions = {
-    page: options.page,
-    sizePerPage: options.sizePerPage,
+    page: requestsOptions.page,
+    sizePerPage: requestsOptions.sizePerPage,
     onPageChange: onPageChange,
     onRowClick: (row) => {
-       setSelectedRequest(row);
-       setOpenRequestDetailSheet(true);
+      setSelectedRequest(row);
+      setOpenRequestDetailSheet(true);
     },
   };
 
@@ -183,22 +227,31 @@ const Assets = ({ userProfile, departments }) => {
 
     if (activeTab === "assets") {
       fetchAssetsData(isMounted);
-    } else if (activeTab === "requests") {
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeTab, assetsOptions, filterData]);
+
+  // Separate effect for requests tab to prevent unnecessary fetches
+  useEffect(() => {
+    let isMounted = true;
+
+    if (activeTab === "requests") {
       fetchRequestsData(isMounted);
     }
 
     return () => {
       isMounted = false;
     };
-  }, [activeTab, options, filterData, requestsFilterData]);
+  }, [activeTab, requestsOptions, requestsFilterData]);
 
   // Tab configuration
   const tabsData = [
     { value: "assets", label: "Assets" },
     { value: "requests", label: "Requests & Assign" },
   ];
-
-
 
   const enhancedRequestColumns = [
     ...AssetRequestColumns.filter((col) => col.dataField !== "id"), // Remove the ID column as we'll have different IDs
@@ -223,18 +276,10 @@ const Assets = ({ userProfile, departments }) => {
             ],
             name: "asset_type",
             placeholder: "Asset Type",
+            values: selectedAssetType,
           },
         ]
       : [
-          {
-            type: "select-one",
-            option: [
-              { value: "Request", label: "Requests" },
-              { value: "Assignment", label: "Assignments" },
-            ],
-            name: "request_type",
-            placeholder: "Type",
-          },
           {
             type: "search",
             placeholder: "Employee Name",
@@ -244,28 +289,23 @@ const Assets = ({ userProfile, departments }) => {
             type: "select-one",
             option: [
               { value: "Pending", label: "Pending" },
-              { value: "Approved", label: "Approved" },
               { value: "Rejected", label: "Rejected" },
               { value: "Accepted", label: "Accepted" },
-              { value: "Returned", label: "Returned" },
             ],
-            name: "status",
+            name: "asset_status",
             placeholder: "Status",
+            values: selectedStatus,
           },
           {
-            type: "select-one",
+            type: "select-two",
             option: departments || [],
-            name: "department",
+            name: "department_name",
             placeholder: "Department",
+            values: selectedDepartment,
           },
         ];
 
-  // Loading state
-  if (
-    (isLoading && activeTab === "assets" && !assetsList.length) ||
-    (isLoading && activeTab === "requests" && !requestsData.length)
-  )
-    return <PageLoader />;
+  // We'll remove the full-page loader and handle loading states in the tables directly
 
   return (
     <div
@@ -285,10 +325,23 @@ const Assets = ({ userProfile, departments }) => {
 
       <Tabs
         value={activeTab}
-        onValueChange={setActiveTab}
+        onValueChange={(newTab) => {
+          // Reset loading state when changing tabs
+          setIsLoading(false);
+          setActiveTab(newTab);
+
+          // Reset pagination when switching tabs
+          if (newTab === "assets") {
+            setAssetsOptions({ page: 1, sizePerPage: 10 });
+          } else {
+            setRequestsOptions({ page: 1, sizePerPage: 10 });
+          }
+
+          // Don't reset filter selections here - this is handled in the useEffect
+        }}
         defaultValue="assets"
       >
-        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row mb-4">
           <TabsList className="flex justify-center mb-4">
             {tabsData?.map((tab) => (
               <TabsTrigger
@@ -300,14 +353,19 @@ const Assets = ({ userProfile, departments }) => {
               </TabsTrigger>
             ))}
           </TabsList>
-          <FilterInput
-            filters={filters}
-            onChange={
-              activeTab === "assets"
-                ? handleAssetsFilterChange
-                : handleRequestsFilterChange
-            }
-          />
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="mt-2 lg:mt-0 md:mt-0 xl:mt-0"
+          >
+            <FilterInput
+              filters={filters}
+              onChange={
+                activeTab === "assets"
+                  ? handleAssetsFilterChange
+                  : handleRequestsFilterChange
+              }
+            />
+          </div>
         </div>
 
         <Card>
@@ -315,22 +373,22 @@ const Assets = ({ userProfile, departments }) => {
             <TabsContent value="assets">
               <CustomTable
                 columns={AssetsColumns}
-                data={assetsList}
+                data={isLoading ? [] : assetsList}
                 pagination={true}
                 dataTotalSize={totalCount}
                 tableOptions={assetsTableOptions}
-                loading={isLoading && activeTab === "assets"}
+                loading={isLoading}
               />
             </TabsContent>
 
             <TabsContent value="requests">
               <CustomTable
                 columns={enhancedRequestColumns}
-                data={requestsData}
+                data={isLoading ? [] : requestsData}
                 pagination={true}
                 dataTotalSize={requestsTotalCount}
                 tableOptions={requestsTableOptions}
-                loading={isLoading && activeTab === "requests"}
+                loading={isLoading}
               />
             </TabsContent>
           </CardContent>
@@ -361,7 +419,7 @@ const Assets = ({ userProfile, departments }) => {
           departments={departments}
         />
       )}
-      {console.log("openRequestDetailSheet", openRequestDetailSheet)}
+
       {/* Asset Request Detail Sheet */}
       {openRequestDetailSheet && (
         <AssetRequestViewSheet
