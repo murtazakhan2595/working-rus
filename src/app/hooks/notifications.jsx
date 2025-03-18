@@ -15,7 +15,7 @@ const formDataHeader = () => ({
 
 const getNotifications = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/notifications/`, {
+    const response = await axios.get(`${baseUrl}/Notificationsystem/`, {
       headers: headers(),
     });
     if (response.status === 200) {

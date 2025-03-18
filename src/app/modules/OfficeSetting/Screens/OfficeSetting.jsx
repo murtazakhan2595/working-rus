@@ -13,8 +13,10 @@ import {
   TabsContent,
 } from "src/@/components/ui/tabs";
 import Departments from "./Departments";
+import Branches from "./Branches";
 import Designations from "./Designations";
 import AddDepartment from "../sections/Departments/AddDepartment";
+import AddBranch from "./Branches/AddBranch";
 import { getOrganizationList } from "app/hooks/general";
 import { CardContent } from "components/ui/card";
 import AddDesignation from "../sections/Designations/AddDesignation";
@@ -71,7 +73,9 @@ const OfficeSetting = () => {
   const getDepartments = async () => {
     try {
       setDepLoading(true);
-      const departmentResponse = await getDepartmentList({options:depOptions});
+      const departmentResponse = await getDepartmentList({
+        options: depOptions,
+      });
       setDepartments(departmentResponse);
     } catch (error) {
       console.error("Error fetching lists:", error);
@@ -139,6 +143,7 @@ const OfficeSetting = () => {
     { value: "offices", label: "Offices" },
     { value: "department", label: "Department" },
     { value: "designation", label: "Designation" },
+    { value: "branches", label: "Branches" },
     { value: "working-hours", label: "Working Hours" },
   ];
 
@@ -159,6 +164,8 @@ const OfficeSetting = () => {
                 <AddDepartment reload={getDepartments} />
               ) : activeTab === "designation" ? (
                 <AddDesignation reload={getDesignations} />
+              ) : activeTab === "branches" ? (
+                <AddBranch reload={getDesignations} />
               ) : (
                 <Shift reload={fetchShifts} />
               )
@@ -199,6 +206,15 @@ const OfficeSetting = () => {
             </TabsContent>
             <TabsContent value="department">
               <Departments
+                loading={depLoading}
+                options={depOptions}
+                setOPtions={setdepOptions}
+                getDepartments={getDepartments}
+                department={department}
+              />
+            </TabsContent>
+            <TabsContent value="branches">
+              <Branches
                 loading={depLoading}
                 options={depOptions}
                 setOPtions={setdepOptions}

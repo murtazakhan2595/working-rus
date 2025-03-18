@@ -26,3 +26,13 @@ export function mapEmployeeTransferPayloadData(data) {
     // Return the constructed payload
     return payload;
   }
+export function mapEmployeeTransferInfo(data) {
+    // Initialize an empty payload object
+    const payload = {};
+    payload.department_name=data.new_department;
+    payload.direct_report=data.new_reporting_manager;
+    payload.employee_location=data.new_location;
+  
+    // Return the constructed payload
+    return payload;
+  }

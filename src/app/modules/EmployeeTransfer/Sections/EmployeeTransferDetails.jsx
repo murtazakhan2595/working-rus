@@ -18,9 +18,9 @@ import {
   addUpdateEmpTransferDetails,
   getEmployeeTransferData,
 } from "app/hooks/employeeTransfer";
-import { ExitStatusCurrentStep } from "app/modules/ExitAndClearance/Sections";
+import { saveEmployeePersonalInfoData } from "app/hooks/employee";
 import { useSelector } from "react-redux";
-import { Labels } from "components/StatusLabel";
+import { mapEmployeeTransferInfo } from "app/utils/MappingObjects/mapEmployeeTransferData";
 import { Sheet, SheetContent, SheetHeader } from "src/@/components/ui/sheet";
 import { TransferForm } from "app/modules/EmployeeTransfer/Sections";
 import { DetailBox } from "components/SheetCardExtension";
@@ -93,21 +93,29 @@ const EmployeeTransferDetails = ({
     }
   };
   const handleSubmit = async (event, status) => {
+    debugger;
     if (event) event.preventDefault();
     try {
       const payload = {};
       if (status === "approved") {
         if (userRole === 2) payload.status = "ACCEPTED BY MANAGER";
-        else if (userRole === 3) payload.status = "APPROVED";
+        else if (userRole === 3 || userRole === 1) payload.status = "APPROVED";
       } else if (status === "rejected") {
         if (userRole === 2) payload.status = "REJECTED BY MANAGER";
-        else if (userRole === 3) payload.status = "REJECTED";
+        else if (userRole === 3 || userRole === 1) payload.status = "REJECTED";
       }
       const response = await addUpdateEmpTransferDetails(
         payload,
         currentTranferId
       );
       if (response) {
+        if (payload.status === "APPROVED") {
+          const empInfo = mapEmployeeTransferInfo(currentTranfer);
+          await saveEmployeePersonalInfoData(
+            currentTranfer.employee_id,
+            empInfo
+          );
+        }
         fetchData(true, currentTranferId);
         reloadData(true);
       }
