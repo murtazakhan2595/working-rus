@@ -571,7 +571,8 @@ const OrganizationalChart = ({ initialData = null }) => {
         /* ===== Node Styling ===== */
         .org-node {
           width: 180px;
-          height: 120px;
+          height: auto;
+          min-height: 120px;
           border-radius: 8px;
           display: flex;
           flex-direction: column;
@@ -616,6 +617,15 @@ const OrganizationalChart = ({ initialData = null }) => {
           font-size: 11px;
           margin-top: 2px;
           font-style: italic;
+        }
+
+        .org-node-name,
+        .org-node-role,
+        .org-node-department {
+          width: 100%;
+          overflow-wrap: break-word;
+          word-wrap: break-word;
+          hyphens: auto;
         }
       `}</style>
     </div>
