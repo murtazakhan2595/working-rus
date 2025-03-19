@@ -3,63 +3,58 @@ import { TextInput } from "components/FormControl";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { Button } from "components/ui/button";
 import { Formik } from "formik";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SelectInputComponent } from "components/FormControl";
 import { toast } from "react-toastify";
 import { Switch } from "src/@/components/ui/switch";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { OnboardingDocumentTemplate } from "app/utils/Types/General";
-// import { saveOnboardingDocument } from "app/hooks/onboardingHooks";
-
-// This would come from your data or API
-const requiredOptions = [
-  { label: "Yes", value: true },
-  { label: "No", value: false },
-];
+import { saveOnboardingDocument } from "app/hooks/officeSetting";
+import SheetComponent from "components/ui/SheetComponent";
 
 const validateOnboardingFormSchema = (values) => {
   const errors = {};
   if (!values.name) errors.name = "Document name is required";
-  if (values.isRequired === undefined)
-    errors.isRequired = "Required status is required";
   return errors;
 };
 
-export { validateOnboardingFormSchema };
-
-const AddOnboardingForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
-  const [formData, setFormData] = useState(() => {
-    if (edit?.data) {
-      return {
-        ...edit.data,
-      };
-    }
-    return OnboardingDocumentTemplate;
-  });
-
+const AddOnboardingForm = ({ isOpen, setIsOpen, reload, onboardingItem=null }) => {
   const [closeSheet, setCloseSheet] = useState(false);
+  const [initialValues, setInitialValues] = useState(
+    onboardingItem || OnboardingDocumentTemplate
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const formSheetData = {
+    triggerText: null,
+    title: onboardingItem ? "Update Document Details" : "Add New Document",
+    description: null,
+    footer: null,
+  };
 
   const handleSubmit = async (values) => {
     try {
-      // const response = await saveOnboardingDocument(values?.id, values);
-      const response = true; // Replace with your actual API call
+      setIsSubmitting(true);
+      console.log("VALUES in handle submit", values);
 
+      const response = await saveOnboardingDocument(values?.id, values);
       if (response) {
-        toast.success(`Document ${edit ? "Updated" : "Added"} Successfully!`, {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        toast.success(
+          `Document ${onboardingItem ? "Updated" : "Added"} Successfully!`,
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
 
         if (reload) reload();
         setIsOpen(false);
-        if (setEdit) {
-          setEdit({
-            open: false,
-            data: null,
-          });
-        }
+
       }
     } catch (error) {
       console.error("Error during submission:", error);
+      toast.error("Error saving document");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -68,65 +63,70 @@ const AddOnboardingForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
   };
 
   return (
-    <>
+    <div>
       {handleCloseWithConfirmation({
         isOpen: closeSheet,
         setCloseSheet,
-        setIsOpen: setIsOpen,
+        setIsOpen,
       })}
-      <Formik
-        initialValues={formData}
-        onSubmit={handleSubmit}
-        validate={validateOnboardingFormSchema}
+      <SheetComponent
+        {...formSheetData}
+        contentClassName="custom-sheet-width"
+        isOpen={isOpen}
+        width="568px"
+        setIsOpen={setIsOpen}
       >
-        {(props) => (
-          <form onSubmit={props?.handleSubmit}>
-            <SheetCardExtension title="Document Details">
-              <TextInput
-                name="name"
-                label="Document Name"
-                required
-                error={props.errors.name}
-                touch={props.touched.name}
-                value={props.values.name}
-                onChange={(field, value) => {
-                  props.handleChange(field)(value);
-                }}
-              />
-
-              <SelectInputComponent
-                name={"isRequired"}
-                options={requiredOptions}
-                error={props.errors.isRequired}
-                touch={props.touched.isRequired}
-                value={props.values.isRequired}
-                label={"Required"}
-                required
-                onChange={(field, value) => {
-                  props.setFieldValue(field, value);
-                }}
-              />
-
-            </SheetCardExtension>
-            <div className="p-6 border-t border-gray-200 bg-gray-50">
-              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
+        <Formik
+          initialValues={initialValues}
+          onSubmit={handleSubmit}
+          validate={validateOnboardingFormSchema}
+          enableReinitialize={true}
+        >
+          {(props) => (
+            <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+              {console.log("FORMIK PROPS:", props.values)}
+              <SheetCardExtension title="Document Details">
+                <TextInput
+                  name="name"
+                  label="Document Name"
+                  required
+                  error={props.errors.name}
+                  touch={props.touched.name}
+                  value={props.values.name}
+                  onChange={(field, value) => {
+                    props.handleChange(field)(value);
+                  }}
+                />
+              </SheetCardExtension>
+              <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
                 <Button
                   variant="outline"
                   size="lg"
                   type="button"
                   onClick={handleClose}
+                  disabled={isSubmitting}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="lg" variant="default">
-                  {edit ? "Update" : "Add"}
+                <Button
+                  type="button"
+                  size="lg"
+                  variant="default"
+                  disabled={isSubmitting}
+                  onClick={()=>{props.handleSubmit()}}
+                >
+                  {isSubmitting
+                    ? "Saving..."
+                    : onboardingItem 
+                    ? "Update"
+                    : "Add"}
                 </Button>
               </div>
-            </div>
-          </form>
-        )}
-      </Formik>
-    </>
+            </form>
+          )}
+        </Formik>
+      </SheetComponent>
+    </div>
   );
 };
 

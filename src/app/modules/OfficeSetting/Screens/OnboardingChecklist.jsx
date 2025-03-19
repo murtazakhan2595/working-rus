@@ -11,11 +11,6 @@ const OnboardingChecklist = ({ data, reload }) => {
       text: "Document Name",
     },
     {
-      dataField: "isRequired",
-      text: "Required",
-      formatter: (cell) => (cell ? "Yes" : "No"),
-    },
-    {
       text: "Action",
       formatter: (cell, row) => (
         <OnboardingActions data={row} reload={reload} />

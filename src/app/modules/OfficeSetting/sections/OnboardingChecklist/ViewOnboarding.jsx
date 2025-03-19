@@ -19,7 +19,6 @@ const ViewOnboarding = ({ isOpen, setIsOpen, data }) => {
     >
       <DetailCard detailCardTitle="Document Details" date={data?.created_at}>
         <DetailBox label="Document Name" value={data?.name} />
-        <DetailBox label="Required" value={data?.isRequired ? "Yes" : "No"} />
       </DetailCard>
     </SheetComponent>
   );

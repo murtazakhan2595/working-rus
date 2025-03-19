@@ -12,11 +12,13 @@ import { deleteRecord } from "app/hooks/general";
 import SheetComponent from "components/ui/SheetComponent";
 import ViewOnboarding from "./ViewOnboarding";
 import AddOnboardingForm from "./AddOnboardingForm";
+import { deleteOnboardingDocument } from "app/hooks/officeSetting";
 
 const OnboardingActions = ({ data, reload }) => {
-  const [view, setView] = useState(null);
+  console.log("DATA", data);
+  const [isEdit, setIsEdit] = useState(false);
+  const [isView, setIsView] = useState(false);
   const [deleteDocument, setDeleteDocument] = useState(null);
-  const [edit, setEdit] = useState(null);
 
   const formSheetData = {
     triggerText: null,
@@ -25,19 +27,9 @@ const OnboardingActions = ({ data, reload }) => {
     footer: null,
   };
 
-  const handleView = (data) => {
-    setView({
-      visible: true,
-      data: data,
-    });
-  };
 
-  const handleEdit = (data) => {
-    setEdit({
-      open: true,
-      data: data,
-    });
-  };
+
+
 
   const handleDelete = (data) => {
     setDeleteDocument({
@@ -49,10 +41,7 @@ const OnboardingActions = ({ data, reload }) => {
   const confirmDelete = async () => {
     try {
       // Replace with your actual API endpoint
-      const response = await deleteRecord(
-        `/onboarding-document/${deleteDocument?.data?.id}`,
-        deleteDocument?.data?.name
-      );
+      const response = await deleteOnboardingDocument(deleteDocument.data.id);
       if (response) {
         reload();
       }
@@ -71,10 +60,10 @@ const OnboardingActions = ({ data, reload }) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => handleEdit(data)}>
+          <DropdownMenuItem onClick={() => setIsEdit(true)}>
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleView(data)}>
+          <DropdownMenuItem onClick={() => setIsView(true)}>
             View
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleDelete(data)}>
@@ -98,32 +87,14 @@ const OnboardingActions = ({ data, reload }) => {
         />
       )}
 
-      {edit?.open && (
-        <SheetComponent
-          {...formSheetData}
-          isOpen={edit?.open}
-          setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
-          width="568px"
-        >
-          <AddOnboardingForm
-            isOpen={edit.open}
-            setIsOpen={(isOpen) =>
-              setEdit((prev) => ({ ...prev, open: isOpen }))
-            }
-            edit={edit}
-            setEdit={setEdit}
-            reload={reload}
-          />
-        </SheetComponent>
-      )}
+      {isEdit && <AddOnboardingForm isOpen={isEdit} setIsOpen={setIsEdit} onboardingItem={data}/>}
 
-      {view?.visible && (
+      {isView && (
         <ViewOnboarding
-          isOpen={view.visible}
-          setIsOpen={(isOpen) =>
-            setView((prev) => ({ ...prev, visible: isOpen }))
+          isOpen={isView}
+          setIsOpen={setIsView
           }
-          data={view.data}
+          data={data}
         />
       )}
     </>

@@ -20,7 +20,6 @@ const errorClassName = "text-red-100 text-sm font-[inter] font-normal ml-1";
  const OnboardingDocumentTemplate = {
   id: null,
   name: "",
-  isRequired: false,
  
 };
 

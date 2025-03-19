@@ -24,6 +24,7 @@ import { getDepartmentList } from "app/hooks/general";
 import { getDesignationList } from "app/hooks/general";
 import OnboardingChecklist from "./OnboardingChecklist";
 import OnboardingTab from "../sections/OnboardingChecklist/OnboardingTab";
+import { getOnboardingDocument } from "app/hooks/officeSetting";
 
 const OfficeSetting = () => {
   const [data, setData] = useState(null);
@@ -41,7 +42,7 @@ const OfficeSetting = () => {
   });
   const [designLoading, setDesignLoading] = useState(true);
   const [designation, setDesignation] = useState(null);
-  const [onboardingDocs, setOnboardingDocs] = useState(null);
+  const [onboardingDocs, setOnboardingDocs] = useState([]);
   const [onboardingLoading, setOnboardingLoading] = useState(true);
 
   const getOrganization = async () => {
@@ -105,34 +106,9 @@ const OfficeSetting = () => {
   const getOnboardingDocuments = async () => {
     setOnboardingLoading(true);
     try {
-      // Replace with your actual API call
-      // const response = await getOnboardingDocumentList();
-      // Simulate API response with sample data
-      const sampleData = [
-        {
-          id: 1,
-          name: "Employee ID Proof",
-          isRequired: true,
-          hasExpiryDate: true,
-          created_at: "2023-05-15",
-        },
-        {
-          id: 2,
-          name: "Address Proof",
-          isRequired: true,
-          hasExpiryDate: false,
-          created_at: "2023-05-15",
-        },
-        {
-          id: 3,
-          name: "Educational Certificates",
-          isRequired: false,
-          hasExpiryDate: false,
-          created_at: "2023-05-15",
-        },
-      ];
+      const response = await getOnboardingDocument();
 
-      setOnboardingDocs(sampleData);
+      setOnboardingDocs(response.results);
     } catch (error) {
       console.error("Error fetching onboarding documents:", error);
     } finally {

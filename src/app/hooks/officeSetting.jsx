@@ -218,6 +218,89 @@ const getEmployeeReportingLine = async (id) => {
     return [];
   }
 }
+
+const saveOnboardingDocument = async (id, payload) => {
+  try {
+    if (id) {
+      const response = await axios.patch(
+        `${baseUrl}/onboardingdoc/${id}`,
+        payload,
+        {
+          headers: formDataHeader()
+        }
+      );
+      if (response.status === 200 || response.status === 201) {
+        return response.data;
+      }
+    } else {
+      const response = await axios.post(
+        `${baseUrl}/onboardingdoc/`,
+        payload,
+        {
+          headers: formDataHeader(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return response.data;
+      }
+    }
+  } catch (error) {
+    console.error("Error saving onboarding document:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+const deleteOnboardingDocument = async (id) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/onboardingdoc/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 204) {
+      return true;
+    }
+  } catch (error) {
+    console.error("Error deleting onboarding document:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
+const getOnboardingDocument = async ()=>{
+  try {
+    const response = await axios.get(`${baseUrl}/onboardingdoc/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+}
+const getOnboardingDocumentById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/onboardingdoc/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+}
 export {
   saveOrganization,
   deleteOrganization,
@@ -229,4 +312,8 @@ export {
   getCountryById,
   getOrganizationTree,
   getEmployeeReportingLine,
+  saveOnboardingDocument,
+  deleteOnboardingDocument,
+  getOnboardingDocument,
+  getOnboardingDocumentById,
 };
