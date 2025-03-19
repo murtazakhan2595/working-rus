@@ -1,7 +1,6 @@
 import { Header } from "components";
 import { Card } from "components/ui/card";
 import React, { useEffect, useState } from "react";
-// import AddOrganizationForm from "../sections/AddOrganizationForm";
 import TableCustom from "components/CustomTable";
 import OrganizationAction from "../sections/Organizations/OrganizationAction";
 import AddOrganization from "../sections/Organizations/AddOrganization";
@@ -23,6 +22,8 @@ import Shift from "../sections/Shift/Shift";
 import { PageLoader } from "components";
 import { getDepartmentList } from "app/hooks/general";
 import { getDesignationList } from "app/hooks/general";
+import OnboardingChecklist from "./OnboardingChecklist";
+import OnboardingTab from "../sections/OnboardingChecklist/OnboardingTab";
 
 const OfficeSetting = () => {
   const [data, setData] = useState(null);
@@ -40,6 +41,8 @@ const OfficeSetting = () => {
   });
   const [designLoading, setDesignLoading] = useState(true);
   const [designation, setDesignation] = useState(null);
+  const [onboardingDocs, setOnboardingDocs] = useState(null);
+  const [onboardingLoading, setOnboardingLoading] = useState(true);
 
   const getOrganization = async () => {
     try {
@@ -53,6 +56,7 @@ const OfficeSetting = () => {
       console.log("ERROR", error);
     }
   };
+
   const fetchShifts = async () => {
     try {
       setLoading(true);
@@ -68,10 +72,13 @@ const OfficeSetting = () => {
       console.log(error, "ERROR");
     }
   };
+
   const getDepartments = async () => {
     try {
       setDepLoading(true);
-      const departmentResponse = await getDepartmentList({options:depOptions});
+      const departmentResponse = await getDepartmentList({
+        options: depOptions,
+      });
       setDepartments(departmentResponse);
     } catch (error) {
       console.error("Error fetching lists:", error);
@@ -79,6 +86,7 @@ const OfficeSetting = () => {
       setDepLoading(false);
     }
   };
+
   const getDesignations = async () => {
     setDesignLoading(true);
     try {
@@ -92,6 +100,46 @@ const OfficeSetting = () => {
       setDesignLoading(false);
     }
   };
+
+  // Function to fetch onboarding documents
+  const getOnboardingDocuments = async () => {
+    setOnboardingLoading(true);
+    try {
+      // Replace with your actual API call
+      // const response = await getOnboardingDocumentList();
+      // Simulate API response with sample data
+      const sampleData = [
+        {
+          id: 1,
+          name: "Employee ID Proof",
+          isRequired: true,
+          hasExpiryDate: true,
+          created_at: "2023-05-15",
+        },
+        {
+          id: 2,
+          name: "Address Proof",
+          isRequired: true,
+          hasExpiryDate: false,
+          created_at: "2023-05-15",
+        },
+        {
+          id: 3,
+          name: "Educational Certificates",
+          isRequired: false,
+          hasExpiryDate: false,
+          created_at: "2023-05-15",
+        },
+      ];
+
+      setOnboardingDocs(sampleData);
+    } catch (error) {
+      console.error("Error fetching onboarding documents:", error);
+    } finally {
+      setOnboardingLoading(false);
+    }
+  };
+
   const handleSubmit = (values) => {
     console.log(values, "FORM SUBMMTIED VALUES");
   };
@@ -101,6 +149,8 @@ const OfficeSetting = () => {
       getOrganization();
       fetchShifts();
       getDepartments();
+      getDesignations();
+      getOnboardingDocuments();
     };
     fetchData();
   }, []);
@@ -140,10 +190,8 @@ const OfficeSetting = () => {
     { value: "department", label: "Department" },
     { value: "designation", label: "Designation" },
     { value: "working-hours", label: "Working Hours" },
+    { value: "onboarding", label: "Onboarding Checklist" },
   ];
-
-  console.log("edit, editData", edit, editData);
-  console.log(fetchShifts, "fetchShifts in parent");
 
   return (
     <div>
@@ -159,8 +207,10 @@ const OfficeSetting = () => {
                 <AddDepartment reload={getDepartments} />
               ) : activeTab === "designation" ? (
                 <AddDesignation reload={getDesignations} />
-              ) : (
+              ) : activeTab === "working-hours" ? (
                 <Shift reload={fetchShifts} />
+              ) : (
+                <OnboardingTab reload={getOnboardingDocuments} />
               )
             }
           />
@@ -175,7 +225,7 @@ const OfficeSetting = () => {
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                    className="data-[state=active]:bg-primary-200 w-40  data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
                   >
                     {tab.label}
                   </TabsTrigger>
@@ -188,7 +238,6 @@ const OfficeSetting = () => {
                   <TableCustom
                     columns={columns}
                     data={data?.results || []}
-                    // tableOptions={tableOptions}
                     dataTotalSize={data?.length || 0}
                     pagination={true}
                     itemsPerPage={10}
@@ -218,6 +267,16 @@ const OfficeSetting = () => {
             </TabsContent>
             <TabsContent value="working-hours">
               <WorkingHours data={dataShift} reload={fetchShifts} />
+            </TabsContent>
+            <TabsContent value="onboarding">
+              {onboardingLoading ? (
+                <PageLoader />
+              ) : (
+                <OnboardingChecklist
+                  data={onboardingDocs}
+                  reload={getOnboardingDocuments}
+                />
+              )}
             </TabsContent>
           </Tabs>
           {activeTab === "offices" && edit && (

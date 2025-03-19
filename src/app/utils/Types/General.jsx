@@ -16,4 +16,33 @@ const EmployeeListData = {
 const imageFileType = ["JPG", "JPEG", "PNG", "GIF", "WEBP"];
 const errorClassName = "text-red-100 text-sm font-[inter] font-normal ml-1";
 
-export { File, EmployeeListData, Attachment,imageFileType ,errorClassName};
+// Default onboarding document template
+ const OnboardingDocumentTemplate = {
+  id: null,
+  name: "",
+  isRequired: false,
+ 
+};
+
+// Default employee document
+ const EmployeeDocument = {
+   id: null,
+   employeeId: null,
+   documentTemplateId: null,
+   fileName: "",
+   fileType: "",
+   fileUrl: "",
+   expiryDate: null,
+   isActive: true,
+   attachment: null,
+   hasExpiryDate: false,
+ };
+
+export {
+  File,
+  EmployeeListData,
+  Attachment,
+  imageFileType,
+  errorClassName,
+  OnboardingDocumentTemplate,
+  EmployeeDocument,};

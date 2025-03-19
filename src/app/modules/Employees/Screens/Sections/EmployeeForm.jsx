@@ -38,6 +38,8 @@ import {
   countriesList,
   salaryTypeOptions,
 } from "data/Data";
+import OnboardingChecklistSection from "./OnboardingChecklistSection";
+
 import { format } from "date-fns";
 
 import {
@@ -71,6 +73,7 @@ import moment from "moment";
 import { cn } from "src/@/lib/utils";
 import { CalendarDays } from "lucide-react";
 import { DateRangeInput } from "components/FormControl";
+import { validateOnboardingDocuments } from "app/utils/FormSchema/employeeFormSchema";
 
 const SheetOnBorading = ({
   isEditMode,
@@ -100,20 +103,7 @@ const SheetOnBorading = ({
   const [closeSheet, setCloseSheet] = useState(false);
   const [shiftSelect, setShiftSelect] = useState(false);
 
-  const [checklistData, setChecklistData] = useState({
-    is_resume: false,
-    is_signed_offer_letter: false,
-    is_educational_documents: false,
-    is_professional_certificates: false,
-    is_picture: false,
-    is_id_card: false,
-    is_passport_copy: false,
-    is_visa_copy: false,
-    is_leave_application: false,
-    is_increment_letter: false,
-    is_confirmation_letter: false,
-    is_others: false,
-  });
+
 
   const getShiftList = async () => {
     const shiftData = await getShift();
@@ -140,29 +130,29 @@ const SheetOnBorading = ({
           // setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
           setEmpId(response.serial_number);
           // Call the actual API to get document checklist
-          const checklist = await getDocumentChecklist(id);
+          // const checklist = await getDocumentChecklist(id);
 
-          // Check if we got data back and there are results
-          if (checklist && checklist.results && checklist.results.length > 0) {
-            // Use the first result as our checklist data
-            setChecklistData(checklist.results[0]);
-          } else {
-            // No existing checklist found, set to null to create new
-            setChecklistData({
-              is_resume: false,
-              is_signed_offer_letter: false,
-              is_educational_documents: false,
-              is_professional_certificates: false,
-              is_picture: false,
-              is_id_card: false,
-              is_passport_copy: false,
-              is_visa_copy: false,
-              is_leave_application: false,
-              is_increment_letter: false,
-              is_confirmation_letter: false,
-              is_others: false,
-            });
-          }
+          // // Check if we got data back and there are results
+          // if (checklist && checklist.results && checklist.results.length > 0) {
+          //   // Use the first result as our checklist data
+          //   setChecklistData(checklist.results[0]);
+          // } else {
+          //   // No existing checklist found, set to null to create new
+          //   setChecklistData({
+          //     is_resume: false,
+          //     is_signed_offer_letter: false,
+          //     is_educational_documents: false,
+          //     is_professional_certificates: false,
+          //     is_picture: false,
+          //     is_id_card: false,
+          //     is_passport_copy: false,
+          //     is_visa_copy: false,
+          //     is_leave_application: false,
+          //     is_increment_letter: false,
+          //     is_confirmation_letter: false,
+          //     is_others: false,
+          //   });
+          // }
 
           validateEmail(employeeData.work_email);
           validateUsername(employeeData.username);
@@ -219,10 +209,10 @@ const SheetOnBorading = ({
       if (response) {
         const employeeId = response.id;
         // Save document checklist
-        await saveDocumentChecklist({
-          employee_id: employeeId,
-          ...checklistData,
-        });
+        // await saveDocumentChecklist({
+        //   employee_id: employeeId,
+        //   ...checklistData,
+        // });
         // Dispatch fetch actions to update the state
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
@@ -328,14 +318,17 @@ const SheetOnBorading = ({
                     values,
                     id ? true : false
                   );
+                  const onboardinChecklistErrors = validateOnboardingDocuments(
+                    values.onboardingDocuments
+                  );
                   if (!id && values.work_email && emailAlreadyExist) {
                     errors.work_email = "Email already exist";
                   }
                   if (!id && values.username && usernameAlreadyExist) {
                     errors.username = "Username already exist";
                   }
-                  console.error(errors,values,"Errors");
-                  return errors;
+                  console.error(errors, values, "Errors");
+                  return { ...errors, ...onboardinChecklistErrors };
                 }}
               >
                 {(props) => (
@@ -812,168 +805,8 @@ const SheetOnBorading = ({
                         }}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-semibold">
-                        Onboarding Checklist
-                      </h3>
-                      <div className="space-y-2">
-                        <div className="flex items-center">
-                          <CheckBoxInput
-                            name="is_resume"
-                            value={checklistData?.is_resume}
-                            onChange={(field, value) => {
-                              setChecklistData({
-                                ...checklistData,
-                                is_resume: value,
-                              });
-                            }}
-                            label="Resume"
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <CheckBoxInput
-                            name="is_signed_offer_letter"
-                            value={checklistData?.is_signed_offer_letter}
-                            onChange={(field, value) => {
-                              setChecklistData({
-                                ...checklistData,
-                                is_signed_offer_letter: value,
-                              });
-                            }}
-                            label="Signed Offer Letter"
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <CheckBoxInput
-                            name="is_educational_documents"
-                            value={checklistData?.is_educational_documents}
-                            onChange={(field, value) => {
-                              setChecklistData({
-                                ...checklistData,
-                                is_educational_documents: value,
-                              });
-                            }}
-                            label="Educational Documents"
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <CheckBoxInput
-                            name="is_professional_certificates"
-                            value={checklistData?.is_professional_certificates}
-                            onChange={(field, value) => {
-                              setChecklistData({
-                                ...checklistData,
-                                is_professional_certificates: value,
-                              });
-                            }}
-                            label="Professional Certificate"
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <CheckBoxInput
-                            name="is_picture"
-                            value={checklistData?.is_picture}
-                            onChange={(field, value) => {
-                              setChecklistData({
-                                ...checklistData,
-                                is_picture: value,
-                              });
-                            }}
-                            label="Picture with White Background"
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <CheckBoxInput
-                            name="is_id_card"
-                            value={checklistData?.is_id_card}
-                            onChange={(field, value) => {
-                              setChecklistData({
-                                ...checklistData,
-                                is_id_card: value,
-                              });
-                            }}
-                            label="Country Residency ID Card"
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <CheckBoxInput
-                            name="is_passport_copy"
-                            value={checklistData.is_passport_copy}
-                            onChange={(field, value) => {
-                              setChecklistData({
-                                ...checklistData,
-                                is_passport_copy: value,
-                              });
-                            }}
-                            label="Passport Copy"
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <CheckBoxInput
-                            name="is_visa_copy"
-                            value={checklistData.is_visa_copy}
-                            onChange={(field, value) => {
-                              setChecklistData({
-                                ...checklistData,
-                                is_visa_copy: value,
-                              });
-                            }}
-                            label="Visa Page Copy"
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <CheckBoxInput
-                            name="is_leave_application"
-                            value={checklistData.is_leave_application}
-                            onChange={(field, value) => {
-                              setChecklistData({
-                                ...checklistData,
-                                is_leave_application: value,
-                              });
-                            }}
-                            label="Leave Applications"
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <CheckBoxInput
-                            name="is_increment_letter"
-                            value={checklistData.is_increment_letter}
-                            onChange={(field, value) => {
-                              setChecklistData({
-                                ...checklistData,
-                                is_increment_letter: value,
-                              });
-                            }}
-                            label="Increment Letters"
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <CheckBoxInput
-                            name="is_confirmation_letter"
-                            value={checklistData.is_confirmation_letter}
-                            onChange={(field, value) => {
-                              setChecklistData({
-                                ...checklistData,
-                                is_confirmation_letter: value,
-                              });
-                            }}
-                            label="Confirmation Letters"
-                          />
-                        </div>
-                        <div className="flex items-center">
-                          <CheckBoxInput
-                            name="is_others"
-                            value={checklistData.is_others}
-                            onChange={(field, value) => {
-                              setChecklistData({
-                                ...checklistData,
-                                is_others: value,
-                              });
-                            }}
-                            label="Others"
-                          />
-                        </div>
-                      </div>
+                    <div className="space-y-4">
+                      <OnboardingChecklistSection formikProps={props} />
                     </div>
                     <div className="p-6 border-t border-gray-200 bg-gray-50">
                       <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
