@@ -61,7 +61,7 @@ export function getMenuList(pathname, userRole) {
       userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
     organizationalChart: true,
     isAssetsManagement:
-      userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
+      userRole === 1  || userRole === 3 ,
   };
 
   const createMenu = (
