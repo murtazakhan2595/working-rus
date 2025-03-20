@@ -83,9 +83,6 @@ const OfficeSetting = () => {
       const departmentResponse = await getDepartmentList({
         options: depOptions,
       });
-      const departmentResponse = await getDepartmentList({
-        options: depOptions,
-      });
       setDepartments(departmentResponse);
     } catch (error) {
       console.error("Error fetching lists:", error);
