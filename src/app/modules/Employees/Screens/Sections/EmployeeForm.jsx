@@ -75,6 +75,8 @@ import { cn } from "src/@/lib/utils";
 import { CalendarDays } from "lucide-react";
 import { DateRangeInput } from "components/FormControl";
 import { validateOnboardingDocuments } from "app/utils/FormSchema/employeeFormSchema";
+import { getEmployeeDocsChecklist } from "app/hooks/employee";
+import { saveEmpoyeeDocBulk } from "app/hooks/employee";
 
 const SheetOnBorading = ({
   isEditMode,
@@ -128,33 +130,16 @@ const SheetOnBorading = ({
         if (id) {
           const response = await getEmployeeData(id);
           const employeeData = await getEmployeeInformation(response);
-          setFormData(employeeData);
+          const checklistData = await getEmployeeDocsChecklist({
+            filterData: { employee_id: id },
+          });
+          setFormData({
+            ...employeeData,
+            onboardingDocuments: checklistData?.results || [],
+          });
           // setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
           setEmpId(response.serial_number);
-          // Call the actual API to get document checklist
-          // const checklist = await getDocumentChecklist(id);
-
-          // // Check if we got data back and there are results
-          // if (checklist && checklist.results && checklist.results.length > 0) {
-          //   // Use the first result as our checklist data
-          //   setChecklistData(checklist.results[0]);
-          // } else {
-          //   // No existing checklist found, set to null to create new
-          //   setChecklistData({
-          //     is_resume: false,
-          //     is_signed_offer_letter: false,
-          //     is_educational_documents: false,
-          //     is_professional_certificates: false,
-          //     is_picture: false,
-          //     is_id_card: false,
-          //     is_passport_copy: false,
-          //     is_visa_copy: false,
-          //     is_leave_application: false,
-          //     is_increment_letter: false,
-          //     is_confirmation_letter: false,
-          //     is_others: false,
-          //   });
-          // }
+        
 
           validateEmail(employeeData.work_email);
           validateUsername(employeeData.username);
@@ -169,7 +154,7 @@ const SheetOnBorading = ({
           getShiftList();
         }
       } catch (error) {
-        console.error(error);
+        console.error("ERROR--",error);
       } finally {
         setIsLoading(false);
       }
@@ -216,7 +201,7 @@ const SheetOnBorading = ({
           employeeId,
         });
         console.log(checklistData, "Checklist Data");
-        await saveEmployeeDocChecklist(checklistData);
+        await saveEmpoyeeDocBulk(checklistData);
         // Dispatch fetch actions to update the state
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
@@ -318,12 +303,13 @@ const SheetOnBorading = ({
                   handleSubmit(values, resetForm);
                 }}
                 validate={(values) => {
-                  const errors = validationEmployeeInfoFormSchema(
+                  try{
+                    const errors = validationEmployeeInfoFormSchema(
                     values,
                     id ? true : false
                   );
                     const documentErrors = validateOnboardingDocuments(
-                      values.onboardingDocuments
+                      values?.onboardingDocuments
                     );
 
                   if (!id && values.work_email && emailAlreadyExist) {
@@ -333,8 +319,14 @@ const SheetOnBorading = ({
                     errors.username = "Username already exist";
                   }
                   console.error(errors, values, "Errors");
-                  console.error(documentErrors,values.onboardingDocuments, "Checklist Errors");
-                  return { ...errors, ...documentErrors };
+                  console.error(documentErrors,values?.onboardingDocuments, "Checklist Errors");
+                  return {
+                    ...errors,
+                    ...(documentErrors ? documentErrors : {}),
+                  };
+                  }catch(error){
+                    console.error(error);
+                  }
                 }}
               >
                 {(props) => (

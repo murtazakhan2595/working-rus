@@ -8,6 +8,7 @@ import { Attachments } from "app/modules/TaskManagment/Sections";
 import { getOnboardingDocument } from "app/hooks/officeSetting";
 
 const OnboardingChecklistSection = ({ formikProps }) => {
+  console.log("formikProps", formikProps);
   const [documentTemplates, setDocumentTemplates] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -41,6 +42,19 @@ const OnboardingChecklistSection = ({ formikProps }) => {
               attachment: [],
             }));
 
+            formikProps.setFieldValue("onboardingDocuments", initialDocuments);
+          }
+          else{
+            const initialDocuments = formikProps.values.onboardingDocuments.map(
+              (doc) => ({
+                templateId: doc.checklist_id,
+                name: doc.checklist_id,
+                isActive: doc.is_Active,
+                hasExpiryDate: doc.has_expiry_date,
+                expiryDate: doc.expiry_date,
+                attachment: doc.attachment,
+              })
+            );
             formikProps.setFieldValue("onboardingDocuments", initialDocuments);
           }
           setDocumentTemplates(response.results);

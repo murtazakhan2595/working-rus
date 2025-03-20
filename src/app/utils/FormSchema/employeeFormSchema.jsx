@@ -366,7 +366,7 @@ const validateOnboardingDocuments = (onboardingDocuments) => {
     return {};
   }
 
-  const errors = {};
+  const errors = { onboardingDocuments: [] }; // Initialize with the array already
   let hasErrors = false;
 
   // Validate each document
@@ -375,18 +375,20 @@ const validateOnboardingDocuments = (onboardingDocuments) => {
     if (doc.isActive) {
       // Check if active documents have attachments
       if (!doc.attachment || doc.attachment.length === 0) {
-        errors.onboardingDocuments = errors.onboardingDocuments || [];
-        errors.onboardingDocuments[index] =
-          errors.onboardingDocuments[index] || {};
+        // Initialize the object at this index if it doesn't exist
+        if (!errors.onboardingDocuments[index]) {
+          errors.onboardingDocuments[index] = {};
+        }
         errors.onboardingDocuments[index].attachment = "Document is required";
         hasErrors = true;
       }
 
       // Check if expiry date is provided when hasExpiryDate is true
       if (doc.hasExpiryDate && !doc.expiryDate) {
-        errors.onboardingDocuments = errors.onboardingDocuments || [];
-        errors.onboardingDocuments[index] =
-          errors.onboardingDocuments[index] || {};
+        // Initialize the object at this index if it doesn't exist
+        if (!errors.onboardingDocuments[index]) {
+          errors.onboardingDocuments[index] = {};
+        }
         errors.onboardingDocuments[index].expiryDate =
           "Expiry date is required";
         hasErrors = true;
