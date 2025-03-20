@@ -1,7 +1,6 @@
 import { Header } from "components";
 import { Card } from "components/ui/card";
 import React, { useEffect, useState } from "react";
-// import AddOrganizationForm from "../sections/AddOrganizationForm";
 import TableCustom from "components/CustomTable";
 import OrganizationAction from "../sections/Organizations/OrganizationAction";
 import AddOrganization from "../sections/Organizations/AddOrganization";
@@ -25,6 +24,9 @@ import Shift from "../sections/Shift/Shift";
 import { PageLoader } from "components";
 import { getDepartmentList } from "app/hooks/general";
 import { getDesignationList } from "app/hooks/general";
+import OnboardingChecklist from "./OnboardingChecklist";
+import OnboardingTab from "../sections/OnboardingChecklist/OnboardingTab";
+import { getOnboardingDocument } from "app/hooks/officeSetting";
 
 const OfficeSetting = () => {
   const [data, setData] = useState(null);
@@ -43,6 +45,8 @@ const OfficeSetting = () => {
   });
   const [designLoading, setDesignLoading] = useState(true);
   const [designation, setDesignation] = useState(null);
+  const [onboardingDocs, setOnboardingDocs] = useState([]);
+  const [onboardingLoading, setOnboardingLoading] = useState(true);
 
   const getOrganization = async () => {
     try {
@@ -56,6 +60,7 @@ const OfficeSetting = () => {
       console.error("ERROR", error);
     }
   };
+
   const fetchShifts = async () => {
     try {
       setLoading(true);
@@ -71,6 +76,7 @@ const OfficeSetting = () => {
       console.error(error, "ERROR");
     }
   };
+
   const getDepartments = async () => {
     try {
       setDepLoading(true);
@@ -84,6 +90,7 @@ const OfficeSetting = () => {
       setDepLoading(false);
     }
   };
+
   const getDesignations = async () => {
     setDesignLoading(true);
     try {
@@ -98,11 +105,31 @@ const OfficeSetting = () => {
     }
   };
 
+  // Function to fetch onboarding documents
+  const getOnboardingDocuments = async () => {
+    setOnboardingLoading(true);
+    try {
+      const response = await getOnboardingDocument();
+
+      setOnboardingDocs(response.results);
+    } catch (error) {
+      console.error("Error fetching onboarding documents:", error);
+    } finally {
+      setOnboardingLoading(false);
+    }
+  };
+
+  const handleSubmit = (values) => {
+    console.log(values, "FORM SUBMMTIED VALUES");
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       getOrganization();
       fetchShifts();
       getDepartments();
+      getDesignations();
+      getOnboardingDocuments();
     };
     fetchData();
   }, []);
@@ -143,8 +170,8 @@ const OfficeSetting = () => {
     { value: "designation", label: "Designation" },
     { value: "branches", label: "Branches" },
     { value: "working-hours", label: "Working Hours" },
+    { value: "onboarding", label: "Onboarding Checklist" },
   ];
-
 
   return (
     <div>
@@ -160,10 +187,10 @@ const OfficeSetting = () => {
                 <AddDepartment reload={getDepartments} />
               ) : activeTab === "designation" ? (
                 <AddDesignation reload={getDesignations} />
-              ) : activeTab === "branches" ? (
-                <AddBranch reload={setReloadBranchesData} />
-              ) : (
+              ) : activeTab === "working-hours" ? (
                 <Shift reload={fetchShifts} />
+              ) : (
+                <OnboardingTab reload={getOnboardingDocuments} />
               )
             }
           />
@@ -178,7 +205,7 @@ const OfficeSetting = () => {
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                    className="data-[state=active]:bg-primary-200 w-40  data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
                   >
                     {tab.label}
                   </TabsTrigger>
@@ -191,7 +218,6 @@ const OfficeSetting = () => {
                   <TableCustom
                     columns={columns}
                     data={data?.results || []}
-                    // tableOptions={tableOptions}
                     dataTotalSize={data?.length || 0}
                     pagination={true}
                     itemsPerPage={10}
@@ -231,6 +257,16 @@ const OfficeSetting = () => {
             </TabsContent>
             <TabsContent value="working-hours">
               <WorkingHours data={dataShift} reload={fetchShifts} />
+            </TabsContent>
+            <TabsContent value="onboarding">
+              {onboardingLoading ? (
+                <PageLoader />
+              ) : (
+                <OnboardingChecklist
+                  data={onboardingDocs}
+                  reload={getOnboardingDocuments}
+                />
+              )}
             </TabsContent>
           </Tabs>
           {activeTab === "offices" && edit && (

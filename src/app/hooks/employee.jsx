@@ -911,26 +911,33 @@ const updateExitData = async (payload) => {
   }
 };
 
-const saveDocumentChecklist = async (payload) => {
+const saveEmployeeDocChecklist = async (payload) => {
+  console.log("payload", payload);
   try {
     if (payload?.id) {
       const response = await axios.patch(
-        `${baseUrl}/documentchecklist/${payload.id}`,
+        `${baseUrl}/employeedoclist/${payload.id}`,
         payload,
         {
-          headers: headers(),
-        }
+        headers: {
+          ...headers(),
+          "Content-Type": "multipart/form-data",
+        },
+      }
       );
       if (response.status === 200) {
         return response.data;
       }
     } else {
       const response = await axios.post(
-        `${baseUrl}/documentchecklist/`,
+        `${baseUrl}/employeedoclist/`,
         payload,
-        {
-          headers: headers(),
-        }
+         {
+        headers: {
+          ...headers(),
+          "Content-Type": "multipart/form-data",
+        },
+      }
       );
       if (response.status === 201) {
         return response.data;
@@ -945,6 +952,37 @@ const saveDocumentChecklist = async (payload) => {
   }
 };
 
+const saveEmpoyeeDocBulk = async (payloadArray) => {
+  try {
+    // Validate input
+    if (!Array.isArray(payloadArray)) {
+      console.error("Expected an array for saveEmpoyeeDocBulk");
+      return false;
+    }
+
+    // Use Promise.all to process all documents in parallel
+    const results = await Promise.all(
+      payloadArray.map((payload) => saveEmployeeDocChecklist(payload))
+    );
+
+    // Filter out failed operations (those that returned false)
+    const successfulResults = results.filter((result) => result !== false);
+
+    // Return the successful results if there are any
+    if (successfulResults.length > 0) {
+      return successfulResults;
+    } else {
+      console.error("No documents were saved successfully");
+      return false;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error in bulk document save operation:", error);
+    return false;
+  }
+};
 const getDocumentChecklist = async (employeeid) => {
   try {
     const response = await axios.get(
@@ -1075,11 +1113,31 @@ const getShifts = async () => {
   return [];
 }
 
+const getEmployeeDocsChecklist = async (payload) => {
+  const filterData = payload?.filterData ?? {};
+  try {
+    let URL = `${baseUrl}/employeedoclist?search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(URL, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+}
+
 export {
   getDownloadTemplate,
   uploadEmployeesData,
   getDocumentChecklist,
-  saveDocumentChecklist,
+  saveEmployeeDocChecklist,
   getEmployeeData,
   getEmployeePersonalInfoData,
   saveEmployeePersonalInfoData,
@@ -1111,4 +1169,6 @@ export {
   getDesignations,
   getManagerList,
   getShifts,
+  getEmployeeDocsChecklist,
+  saveEmpoyeeDocBulk,
 };

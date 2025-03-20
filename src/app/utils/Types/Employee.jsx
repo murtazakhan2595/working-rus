@@ -142,9 +142,10 @@ const EmployeeInformation = {
   contract_end_date: null,
   active_contract: false,
   confirmation_date: null,
-  jd_file:null,
-  kpi_file:null,
-  branch_id:null,
+  jd_file: null,
+  kpi_file: null,
+  branch_id: null,
+  onboardingDocuments: [],
 };
 const EmployeeProfessionalExperiance = {
   id: null,
