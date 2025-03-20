@@ -259,6 +259,39 @@ async function getEmployeeInformation(data) {
   return employeeInformation;
 }
 
+
+function mapEmployeeDocsChecklist(data, employeeId) {
+  console.log("mapEmployeeDocsChecklist", data, employeeId);
+  let arrayData;
+   if (Array.isArray(data)) {
+     // Data is already an array
+     arrayData = data;
+   } else if (
+     data &&
+     typeof data === "object" &&
+     Array.isArray(data.onboardingDocuments)
+   ) {
+     // Data is an object that has onboardingDocuments array
+     arrayData = data.onboardingDocuments;
+   } else {
+     // Handle the case where neither condition is met
+     console.error("Invalid data format for mapEmployeeDocsChecklist");
+     arrayData = [];
+   }
+  const employeeDocsChecklist = arrayData.map((template) => {
+    const doc = {
+      employee_id: employeeId,
+      checklist_id: template.templateId,
+      isActive: template.isActive,
+      has_expiry_date: template.isActive,
+      expiry_date: template.expiryDate,
+      attachment: template?.attachment?.[0]?.attachment ?? null,
+    };
+    return doc;
+  });
+  return employeeDocsChecklist;
+}
+
 export {
   mapEmployeeData,
   getVisaDetails,
@@ -271,4 +304,5 @@ export {
   getBankDetails,
   getCertifications,
   getEmployeeInformation,
+  mapEmployeeDocsChecklist
 };

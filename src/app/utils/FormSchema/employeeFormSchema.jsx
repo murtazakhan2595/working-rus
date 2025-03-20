@@ -66,6 +66,8 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   }
   return errors;
 };
+
+
 const validationEmployeeContactInfoFormSchema = (values) => {
   const errors = {};
   if (!values.emergency_first_name)
@@ -359,7 +361,43 @@ const validationBankDetailsFormSchema = Joi.object({
       "string.alphanum": `Swift Code must contain only letters and numbers`,
     }),
 });
+const validateOnboardingDocuments = (onboardingDocuments) => {
+  if (!onboardingDocuments || !Array.isArray(onboardingDocuments)) {
+    return {};
+  }
 
+  const errors = { onboardingDocuments: [] }; // Initialize with the array already
+  let hasErrors = false;
+
+  // Validate each document
+  onboardingDocuments.forEach((doc, index) => {
+    // Only validate active documents
+    if (doc.isActive) {
+      // Check if active documents have attachments
+      if (!doc.attachment || doc.attachment.length === 0) {
+        // Initialize the object at this index if it doesn't exist
+        if (!errors.onboardingDocuments[index]) {
+          errors.onboardingDocuments[index] = {};
+        }
+        errors.onboardingDocuments[index].attachment = "Document is required";
+        hasErrors = true;
+      }
+
+      // Check if expiry date is provided when hasExpiryDate is true
+      if (doc.hasExpiryDate && !doc.expiryDate) {
+        // Initialize the object at this index if it doesn't exist
+        if (!errors.onboardingDocuments[index]) {
+          errors.onboardingDocuments[index] = {};
+        }
+        errors.onboardingDocuments[index].expiryDate =
+          "Expiry date is required";
+        hasErrors = true;
+      }
+    }
+  });
+
+  return hasErrors ? errors : {};
+};
 export {
   validationPersonalInfoFormSchema,
   validationAcademicRecordSchema,
@@ -373,4 +411,5 @@ export {
   validateEmployeeEducationForm,
   validateEmployeeIdentificationForm,
   validateExitRequestForm,
+  validateOnboardingDocuments,
 };
