@@ -23,7 +23,7 @@ import SheetComponent from "components/ui/CustomSheet";
 
 const FormSheetData = {
   triggerText: "Submit",
-  title: "Employee Tranfer Request Form",
+  title: "Upload New Document",
   description: null,
   footer: null,
 };
@@ -86,11 +86,9 @@ const Form = ({
 }) => {
   const formRef = React.createRef();
   const Departments = useSelector((state) => state.common.departments);
-  const Branches = useSelector((state) => state.common.branches);
   const UserDetails = useSelector((state) => state.emp.user_details);
   const Mangers = useSelector((state) => state.emp.reportingManagers);
-  const AllEmployees = useSelector((state) => state.emp.employees_detail);
-  const EmployeesTransfers = useSelector((state) => state.emp_tranfers.employees_pending_tranfer);
+  const AllEmployees = useSelector((state) => state.emp.employees);
   const Employees = React.useMemo(() => {
     return AllEmployees?.filter(
       (employee) => employee.employee_status === "Active"
@@ -215,39 +213,22 @@ const Form = ({
                 />
               </div>
               <div className="space-y-4"></div>
-              {props.values?.transfer_type === "EXTERNAL" && (
-                <div className="space-y-4">
-                  <SelectInputComponent
-                    name={"employee_location"}
-                    options={Branches}
-                    error={props.errors?.employee_location}
-                    touch={props.touched?.employee_location}
-                    value={selectedEmployee?.employee_location}
-                    required={false}
-                    disabled={true}
-                    label={"Current Branch"}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
-              )}
-               {props.values?.transfer_type === "EXTERNAL" && (
-                <div className="space-y-4">
-                  <SelectInputComponent
-                    name={"new_location"}
-                    options={Branches}
-                    error={props.errors?.new_location}
-                    touch={props.touched?.new_location}
-                    value={props.values?.new_location}
-                    required={true}
-                    label={"New Branch"}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
-              )}
+              <div className="space-y-4">
+                <SelectInputComponent
+                  name={"reporting_manager"}
+                  options={Mangers}
+                  error={props.errors?.reporting_manager}
+                  touch={props.touched?.reporting_manager}
+                  value={selectedEmployee.report_to}
+                  required={false}
+                  disabled={true}
+                  label={"Current Reporting Manager"}
+                  placeholder={"Current Reporting Manager"}
+                  onChange={(field, value) => {
+                    props.setFieldValue(field, value);
+                  }}
+                />
+              </div>
               <div className="space-y-4">
                 <SelectInputComponent
                   name={"old_department"}
@@ -263,6 +244,23 @@ const Form = ({
                   }}
                 />
               </div>
+              {props.values?.transfer_type === "EXTERNAL" && (
+                <div className="space-y-4">
+                  <SelectInputComponent
+                    name={"employee_location"}
+                    options={countriesList}
+                    error={props.errors?.employee_location}
+                    touch={props.touched?.employee_location}
+                    value={selectedEmployee?.employee_location}
+                    required={false}
+                    disabled={true}
+                    label={"Current Location"}
+                    onChange={(field, value) => {
+                      props.setFieldValue(field, value);
+                    }}
+                  />
+                </div>
+              )}
               <div className="space-y-4">
                 <SelectInputComponent
                   name={"new_department"}
@@ -277,22 +275,23 @@ const Form = ({
                   }}
                 />
               </div>
-              <div className="space-y-4">
-                <SelectInputComponent
-                  name={"reporting_manager"}
-                  options={Mangers}
-                  error={props.errors?.reporting_manager}
-                  touch={props.touched?.reporting_manager}
-                  value={selectedEmployee.direct_report}
-                  required={false}
-                  disabled={true}
-                  label={"Current Reporting Manager"}
-                  placeholder={"Current Reporting Manager"}
-                  onChange={(field, value) => {
-                    props.setFieldValue(field, value);
-                  }}
-                />
-              </div>  
+
+              {props.values?.transfer_type === "EXTERNAL" && (
+                <div className="space-y-4">
+                  <SelectInputComponent
+                    name={"new_location"}
+                    options={countriesList}
+                    error={props.errors?.new_location}
+                    touch={props.touched?.new_location}
+                    value={props.values?.new_location}
+                    required={true}
+                    label={"New Location"}
+                    onChange={(field, value) => {
+                      props.setFieldValue(field, value);
+                    }}
+                  />
+                </div>
+              )}
               <div className="space-y-4">
                 <SelectInputComponent
                   name={"new_reporting_manager"}

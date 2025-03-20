@@ -100,7 +100,7 @@ export function getMenuList(pathname, userRole) {
           userRole !== 2 &&
           createMenu("/create-employee", "Employee Creation"),
         // createMenu("/edit-employee", "Customize Employee"),
-        // createMenu("/relocation", "Relocation"),
+        Config.HR_DOCUMENTS && createMenu("/documents", "HR Documents"),
         Config.TRANSFER_MANAGEMENT &&
           createMenu("/employee-tranfer", "Employee Transfer"),
       ].filter(Boolean)

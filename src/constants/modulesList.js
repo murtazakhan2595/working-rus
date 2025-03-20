@@ -335,6 +335,12 @@ const ModuleListByUserRole = [
     parentModuleId: 55,
     userRole: [1, 2, 3, 4],
   },
+  {
+    moduleId: 57,
+    moduleName: "HR Documents",
+    parentModuleId: null,
+    userRole: [1, 3],
+  },
 ];
 
 export { ModuleListByUserRole };

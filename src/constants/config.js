@@ -20,6 +20,7 @@ export default {
   DAILY_TASK_REPORT: true,
   OFFICE_SETTING: true,
   ORGANIZATIONAL_CHART: true,
+  HR_DOCUMENTS:true,
 
   TS_PERSONAL_REQUISITION: false,
   TS_REFERRALS: false,

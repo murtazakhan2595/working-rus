@@ -83,6 +83,7 @@ const Header = ({ content, userProfile }) => {
       "my-tranfers": "My Tranfers",
       "assets":"Assets",
       "my-assets":"My Assets",
+      "documents":"HR Documents",
     };
     setPathName(pathNames[path] || "Dashboard");
   }, [location]);

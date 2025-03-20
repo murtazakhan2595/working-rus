@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
 import userSlice from "./UserSlice";
-import dropdownSlice from "./DropdownSlice";
+import EmployeesTranferSlice from "./EmployeesTranferSlice";
 import ModalSlice from "./ModalSlice";
 import EmpSlice from "./EmpSlice";
 import leaveManagementSlice from "./LeaveManagementSlice";
@@ -16,7 +16,7 @@ import exitEmployeeSlice from "./ExitEmployeeSlice";
 
 const rootReducer = combineReducers({
   user: userSlice,
-  dropdown: dropdownSlice,
+  emp_tranfers: EmployeesTranferSlice,
   modal: ModalSlice,
   emp: EmpSlice,
   getDtr: GetDtrSlice,
