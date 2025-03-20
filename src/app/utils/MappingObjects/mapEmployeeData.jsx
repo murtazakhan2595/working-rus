@@ -259,6 +259,23 @@ async function getEmployeeInformation(data) {
   return employeeInformation;
 }
 
+
+function mapEmployeeDocsChecklist(data, employeeId) {
+  console.log("mapEmployeeDocsChecklist", data, employeeId);
+  const employeeDocsChecklist = data.map((template) => {
+    const doc = {
+      employee_id: template.employeeId,
+      checklist_id: template.templateId,
+      isActive: template.isActive,
+      has_expiry_date: template.isActive,
+      expiry_date: template.expiryDate,
+      attachment: template.attachments[0],
+    };
+    return doc;
+  });
+  return employeeDocsChecklist;
+}
+
 export {
   mapEmployeeData,
   getVisaDetails,
@@ -271,4 +288,5 @@ export {
   getBankDetails,
   getCertifications,
   getEmployeeInformation,
+  mapEmployeeDocsChecklist
 };

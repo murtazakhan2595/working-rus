@@ -5,6 +5,7 @@ import { Label } from "src/@/components/ui/label";
 // import { getOnboardingDocumentList } from "app/hooks/onboardingHooks";
 import { Card, CardContent } from "components/ui/card";
 import { Attachments } from "app/modules/TaskManagment/Sections";
+import { getOnboardingDocument } from "app/hooks/officeSetting";
 
 const OnboardingChecklistSection = ({ formikProps }) => {
   const [documentTemplates, setDocumentTemplates] = useState([]);
@@ -14,7 +15,6 @@ const OnboardingChecklistSection = ({ formikProps }) => {
   // {
   //   templateId: 1,
   //   name: "Employee ID Proof",
-  //   isRequired: true,
   //   isActive: true,
   //   hasExpiryDate: true,
   //   expiryDate: "2025-05-15",
@@ -25,21 +25,7 @@ const OnboardingChecklistSection = ({ formikProps }) => {
     const fetchDocumentTemplates = async () => {
       try {
         setIsLoading(true);
-        // const response = await getOnboardingDocumentList();
-        let response={
-          results:[
-            {
-              id:1,
-              name:"Employee ID Proof",
-              isRequired:true
-            },
-            {
-              id:2,
-              name:"Employee Address Proof",
-              isRequired:false
-            }
-          ]
-        }
+        const response = await getOnboardingDocument();
         if (response?.results) {
           // Initialize the onboarding documents in formik if not already present
           if (
@@ -49,7 +35,6 @@ const OnboardingChecklistSection = ({ formikProps }) => {
             const initialDocuments = response.results.map((template) => ({
               templateId: template.id,
               name: template.name,
-              isRequired: template.isRequired,
               isActive: false,
               hasExpiryDate: false,
               expiryDate: null,
@@ -107,7 +92,6 @@ const OnboardingChecklistSection = ({ formikProps }) => {
     formikProps.setFieldValue("onboardingDocuments", updatedDocs);
   };
 
-  // Get error for a specific document
   const getDocumentError = (index, field) => {
     const errors = formikProps.errors?.onboardingDocuments;
     if (errors && errors[index] && errors[index][field]) {
@@ -152,8 +136,7 @@ const OnboardingChecklistSection = ({ formikProps }) => {
                 </Label>
                 <Switch
                   id={`active-${index}`}
-                  checked={doc.isActive || doc.isRequired}
-                  disabled={doc.isRequired}
+                  checked={doc.isActive }
                   onCheckedChange={(checked) =>
                     handleActiveToggle(index, checked)
                   }
@@ -161,7 +144,7 @@ const OnboardingChecklistSection = ({ formikProps }) => {
               </div>
             </div>
 
-            {(doc.isActive || doc.isRequired)  && (
+            {(doc.isActive)  && (
               <>
                 <div className="my-4">
                   <Attachments
@@ -173,11 +156,6 @@ const OnboardingChecklistSection = ({ formikProps }) => {
                     error={getDocumentError(index, "attachment")}
                     touch={getDocumentTouched(index, "attachment")}
                   />
-                  {doc.isRequired && doc.attachment?.length === 0 && (
-                    <p className="text-sm text-red-500 mt-1">
-                      Document is required
-                    </p>
-                  )}
                 </div>
 
                 <div className="flex items-center space-x-4 mt-4">

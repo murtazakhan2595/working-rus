@@ -911,11 +911,12 @@ const updateExitData = async (payload) => {
   }
 };
 
-const saveDocumentChecklist = async (payload) => {
+const saveEmployeeDocChecklist = async (payload) => {
+  console.log("payload", payload);
   try {
     if (payload?.id) {
       const response = await axios.patch(
-        `${baseUrl}/documentchecklist/${payload.id}`,
+        `${baseUrl}/employeedoclist/${payload.id}`,
         payload,
         {
           headers: headers(),
@@ -926,7 +927,7 @@ const saveDocumentChecklist = async (payload) => {
       }
     } else {
       const response = await axios.post(
-        `${baseUrl}/documentchecklist/`,
+        `${baseUrl}/employeedoclist/`,
         payload,
         {
           headers: headers(),
@@ -1079,7 +1080,7 @@ export {
   getDownloadTemplate,
   uploadEmployeesData,
   getDocumentChecklist,
-  saveDocumentChecklist,
+  saveEmployeeDocChecklist,
   getEmployeeData,
   getEmployeePersonalInfoData,
   saveEmployeePersonalInfoData,

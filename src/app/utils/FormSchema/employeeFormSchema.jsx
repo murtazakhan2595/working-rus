@@ -360,47 +360,41 @@ const validationBankDetailsFormSchema = Joi.object({
       "string.alphanum": `Swift Code must contain only letters and numbers`,
     }),
 });
- const validateOnboardingDocuments = (onboardingDocuments) => {
-  // Return undefined if no documents to validate
+const validateOnboardingDocuments = (onboardingDocuments) => {
   if (!onboardingDocuments || !Array.isArray(onboardingDocuments)) {
-    return undefined;
+    return {};
   }
 
-  const errors = [];
+  const errors = {};
   let hasErrors = false;
 
   // Validate each document
   onboardingDocuments.forEach((doc, index) => {
-    const docErrors = {};
+    // Only validate active documents
+    if (doc.isActive) {
+      // Check if active documents have attachments
+      if (!doc.attachment || doc.attachment.length === 0) {
+        errors.onboardingDocuments = errors.onboardingDocuments || [];
+        errors.onboardingDocuments[index] =
+          errors.onboardingDocuments[index] || {};
+        errors.onboardingDocuments[index].attachment = "Document is required";
+        hasErrors = true;
+      }
 
-    // Check if required documents have attachments when active
-    if (
-      doc.isActive &&
-      doc.isRequired &&
-      (!doc.attachment || doc.attachment.length === 0)
-    ) {
-      docErrors.attachment = "This document is required";
-      hasErrors = true;
-    }
-
-    // Check if expiry date is provided when required
-    if (doc.isActive && doc.hasExpiryDate && !doc.expiryDate) {
-      docErrors.expiryDate = "Expiry date is required";
-      hasErrors = true;
-    }
-
-    // Only add errors if they exist
-    if (Object.keys(docErrors).length > 0) {
-      errors[index] = docErrors;
-    } else {
-      errors[index] = undefined;
+      // Check if expiry date is provided when hasExpiryDate is true
+      if (doc.hasExpiryDate && !doc.expiryDate) {
+        errors.onboardingDocuments = errors.onboardingDocuments || [];
+        errors.onboardingDocuments[index] =
+          errors.onboardingDocuments[index] || {};
+        errors.onboardingDocuments[index].expiryDate =
+          "Expiry date is required";
+        hasErrors = true;
+      }
     }
   });
 
-  // Return errors array if any errors were found, otherwise undefined
-  return hasErrors ? errors : undefined;
+  return hasErrors ? errors : {};
 };
-
 export {
   validationPersonalInfoFormSchema,
   validationAcademicRecordSchema,

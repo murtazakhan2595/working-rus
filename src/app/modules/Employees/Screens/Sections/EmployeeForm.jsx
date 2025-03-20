@@ -12,12 +12,13 @@ import { EmployeeInformation } from "app/utils/Types/Employee";
 import {
   getEmployeeInformation,
   mapEmployeePayloadData,
+  mapEmployeeDocsChecklist,
 } from "app/utils/MappingObjects/mapEmployeeData";
 import {
   getEmployeeData,
   getNewEmployeeCode,
   saveEmployeeWorkInformationData,
-  saveDocumentChecklist,
+  saveEmployeeDocChecklist,
   getDocumentChecklist,
 } from "app/hooks/employee";
 import {
@@ -209,10 +210,12 @@ const SheetOnBorading = ({
       if (response) {
         const employeeId = response.id;
         // Save document checklist
-        // await saveDocumentChecklist({
-        //   employee_id: employeeId,
-        //   ...checklistData,
-        // });
+        const checklistData = mapEmployeeDocsChecklist({
+          onboardingDocuments: data.onboardingDocuments,
+          employeeId,
+        });
+        console.log(checklistData, "Checklist Data");
+        await saveEmployeeDocChecklist(checklistData);
         // Dispatch fetch actions to update the state
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
@@ -318,9 +321,10 @@ const SheetOnBorading = ({
                     values,
                     id ? true : false
                   );
-                  const onboardinChecklistErrors = validateOnboardingDocuments(
-                    values.onboardingDocuments
-                  );
+                    const documentErrors = validateOnboardingDocuments(
+                      values.onboardingDocuments
+                    );
+
                   if (!id && values.work_email && emailAlreadyExist) {
                     errors.work_email = "Email already exist";
                   }
@@ -328,7 +332,8 @@ const SheetOnBorading = ({
                     errors.username = "Username already exist";
                   }
                   console.error(errors, values, "Errors");
-                  return { ...errors, ...onboardinChecklistErrors };
+                  console.error(documentErrors,values.onboardingDocuments, "Checklist Errors");
+                  return { ...errors, ...documentErrors };
                 }}
               >
                 {(props) => (
