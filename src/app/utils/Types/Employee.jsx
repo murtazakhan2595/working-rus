@@ -144,6 +144,7 @@ const EmployeeInformation = {
   confirmation_date: null,
   jd_file: null,
   kpi_file: null,
+  branch_id:null,
   onboardingDocuments: [],
 };
 const EmployeeProfessionalExperiance = {

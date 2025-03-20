@@ -12,8 +12,10 @@ import {
   TabsContent,
 } from "src/@/components/ui/tabs";
 import Departments from "./Departments";
+import Branches from "./Branches";
 import Designations from "./Designations";
 import AddDepartment from "../sections/Departments/AddDepartment";
+import AddBranch from "./Branches/AddBranch";
 import { getOrganizationList } from "app/hooks/general";
 import { CardContent } from "components/ui/card";
 import AddDesignation from "../sections/Designations/AddDesignation";
@@ -35,6 +37,7 @@ const OfficeSetting = () => {
   const [loading, setLoading] = useState(true);
   const [depLoading, setDepLoading] = useState(true);
   const [department, setDepartments] = useState(null);
+  const [reloadBranchesData, setReloadBranchesData] = useState(false);
   const [depOptions, setdepOptions] = useState({ page: 1, sizePerPage: 10 });
   const [desigOptions, setDesigOptions] = useState({
     page: 1,
@@ -54,7 +57,7 @@ const OfficeSetting = () => {
       }
       setLoading(false);
     } catch (error) {
-      console.log("ERROR", error);
+      console.error("ERROR", error);
     }
   };
 
@@ -70,13 +73,16 @@ const OfficeSetting = () => {
       }
       setLoading(false);
     } catch (error) {
-      console.log(error, "ERROR");
+      console.error(error, "ERROR");
     }
   };
 
   const getDepartments = async () => {
     try {
       setDepLoading(true);
+      const departmentResponse = await getDepartmentList({
+        options: depOptions,
+      });
       const departmentResponse = await getDepartmentList({
         options: depOptions,
       });
@@ -165,6 +171,7 @@ const OfficeSetting = () => {
     { value: "offices", label: "Offices" },
     { value: "department", label: "Department" },
     { value: "designation", label: "Designation" },
+    { value: "branches", label: "Branches" },
     { value: "working-hours", label: "Working Hours" },
     { value: "onboarding", label: "Onboarding Checklist" },
   ];
@@ -226,6 +233,16 @@ const OfficeSetting = () => {
               <Departments
                 loading={depLoading}
                 options={depOptions}
+                setOPtions={setdepOptions}
+                getDepartments={getDepartments}
+                department={department}
+              />
+            </TabsContent>
+            <TabsContent value="branches">
+              <Branches
+                loading={depLoading}
+                options={depOptions}
+                reload={reloadBranchesData}
                 setOPtions={setdepOptions}
                 getDepartments={getDepartments}
                 department={department}

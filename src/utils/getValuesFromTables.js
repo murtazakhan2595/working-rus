@@ -81,6 +81,15 @@ function DepartmentName({ value , fallBackText="N/A" }) {
   );
   return department ? department.label : value ?? fallBackText;
 }
+
+
+export function BranchName({ value , fallBackText="N/A" }) {
+  const branches = useSelector((state) => state.common.branches);
+  const branch = branches.find(
+    (option) => option.value === parseInt(value)
+  );
+  return branch ? branch.label : value ?? fallBackText;
+}
 function ProjectName({ value }) {
   const projects = useSelector((state) => state.common.projects);
   const project = projects.find((option) => option.value === parseInt(value));

@@ -4,7 +4,10 @@ import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
 import { setUserLogout } from "state/actions/UserAction";
 import { EmployeeListData } from "app/utils/Types/General";
-import { useNavigate } from "react-router-dom";
+import {
+  mapBranchList,
+  mapBranchPayloadData,
+} from "app/utils/MappingObjects/mapOfficeSettingData";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -48,6 +51,31 @@ const getDepartmentList = async (payload) => {
   return [];
 };
 
+export const getBranchList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "created_at";
+  try {
+    const URL = `/branch/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const branchResponse = response.data;
+      const branchList = await mapBranchList(branchResponse?.results);
+      return { results: branchList, count: branchResponse.count };
+    } else return [];
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
 const saveDepartment = async (departmentId, payload) => {
   try {
     if (departmentId) {
@@ -77,6 +105,37 @@ const saveDepartment = async (departmentId, payload) => {
     return false;
   }
 };
+export const addUpdateBranch = async (payload, id = null) => {
+  try {
+    const finalPayload = mapBranchPayloadData(payload);
+
+    const url = id
+      ? `${baseUrl}/branch/${id}` // Use id if updating
+      : `${baseUrl}/branch/`; // No id means create new
+
+    const method = id ? "PUT" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    // Check response status
+    if (response.status === 201 || response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    // Handle errors
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error adding/updating LogTime:", error);
+    return false;
+  }
+};
+
 
 const saveDesignation = async (designationId, payload) => {
   try {
@@ -349,9 +408,11 @@ const getEmployeeCustomList = async (payload) => {
   const ordering = payload?.ordering ?? "-id";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/customemp/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const URL = `/customemp/?ordering=${ordering}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),

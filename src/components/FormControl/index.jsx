@@ -471,6 +471,7 @@ const FilterInput = ({
   value,
   isClearable = true,
   type,
+  className='',
 }) => {
   const classNamesStyle = "";
   const width = "w-56";
@@ -668,7 +669,7 @@ const FilterInput = ({
     );
   };
   return (
-    <div className="flex flex-wrap items-start gap-x-3 gap-y-3">
+    <div className={`${className} flex flex-wrap items-start gap-x-3 gap-y-3`}>
       {filters &&
         filters?.map((filter, index) => {
           switch (filter.type) {

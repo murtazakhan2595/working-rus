@@ -88,6 +88,7 @@ const SheetOnBorading = ({
   managers,
   isOpen,
   setIsOpen,
+  branches,
   discard = false,
 }) => {
   const formRef = React.createRef();
@@ -518,6 +519,20 @@ const SheetOnBorading = ({
                         </div>
                         <div className="space-y-2">
                           <SelectInputComponent
+                            name={"branch_id"}
+                            options={branches}
+                            error={props.errors?.branch_id}
+                            touch={props.touched.branch_id}
+                            value={props.values.branch_id}
+                            required={true}
+                            label={"Branch"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectInputComponent
                             name={"employee_location"}
                             options={countriesList}
                             error={props.errors?.employee_location}
@@ -879,6 +894,7 @@ const mapStateToProps = (state) => {
     employees: state.emp.employees,
     departments: state.common.departments,
     designations: state.common.designations,
+    branches: state.common.branches,
     managers: state.emp.reportingManagers,
   };
 };
