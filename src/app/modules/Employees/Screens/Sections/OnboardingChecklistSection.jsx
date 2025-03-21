@@ -6,6 +6,7 @@ import { Label } from "src/@/components/ui/label";
 import { Card, CardContent } from "components/ui/card";
 import { Attachments } from "app/modules/TaskManagment/Sections";
 import { getOnboardingDocument } from "app/hooks/officeSetting";
+import { getEmployeeDocsChecklist } from "app/hooks/employee";
 
 const OnboardingChecklistSection = ({ formikProps }) => {
   console.log("formikProps", formikProps);
@@ -45,10 +46,19 @@ const OnboardingChecklistSection = ({ formikProps }) => {
             formikProps.setFieldValue("onboardingDocuments", initialDocuments);
           }
           else{
+            // const employeeDocsChecklist =await  getEmployeeDocsChecklist({filterData:{employee_id:formikProps.values.employee_id}})
+            console.log(
+              "confirmining its in else block",
+              formikProps.values.onboardingDocuments
+            );
             const initialDocuments = formikProps.values.onboardingDocuments.map(
               (doc) => ({
+                id: doc.id,
                 templateId: doc.checklist_id,
-                name: doc.checklist_id,
+                name: response.results.find(
+                  (template) => template.id === doc.checklist_id,
+                ).name,
+
                 isActive: doc.is_Active,
                 hasExpiryDate: doc.has_expiry_date,
                 expiryDate: doc.expiry_date,
