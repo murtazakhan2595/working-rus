@@ -54,7 +54,7 @@ const EmployeeVisaDetails = {
   license_number: null,
   license_Issuance_Country: null,
   license_Issuance_Date: null,
-  license_Expiry_Date: null,
+  license_expiry_date: null,
   license_copy: null,
   id:null,
 };

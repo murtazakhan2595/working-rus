@@ -7,10 +7,10 @@ import {
   ManagerName,
   getCountryFullName,
   getWorkPlaceType,
-  BranchName
+  BranchName,
 } from "utils/getValuesFromTables";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-
+import { DetailBox } from "components/SheetCardExtension";
 import { renderDate } from "utils/renderValues";
 
 const WorkInformation = ({
@@ -19,22 +19,50 @@ const WorkInformation = ({
   employeeId,
   getDataByHooks,
 }) => {
-  
   const workInformation = [
-    { title: "Department", data: <DepartmentName value={userData?.department_name} /> },
+    {
+      title: "Department",
+      data: <DepartmentName value={userData?.department_name} />,
+    },
     { title: "Brannch", data: <BranchName value={userData?.branch_id} /> },
-    { title: "Position", data: <DesignationName value={userData?.department_position} /> },
+    {
+      title: "Position",
+      data: <DesignationName value={userData?.department_position} />,
+    },
     { title: "Work Email", data: userData?.work_email },
     { title: "Employee Type", data: userData?.employee_type },
     { title: "Employee Status", data: userData?.employee_status },
-    { title: "Work Type", data: getWorkPlaceType(userData?.employee_work_type) },
-    { title: "Work Location", data: getCountryFullName(userData?.employee_location) },
-    { title: "Direct Report To", data: <ManagerName value={userData?.direct_report} /> },
+    {
+      title: "Work Type",
+      data: getWorkPlaceType(userData?.employee_work_type),
+    },
+    {
+      title: "Work Location",
+      data: getCountryFullName(userData?.employee_location),
+    },
+    {
+      title: "Direct Report To",
+      data: <ManagerName value={userData?.direct_report} />,
+    },
     { title: "Joining Date", data: renderDate(userData?.joining_date) },
-    ...(userData?.contract_start_date ? [{ title: "Contract Start Date", data: renderDate(userData?.contract_start_date) }] : []),
-    ...(userData?.contract_end_date ? [{ title: "Contract End Date", data: renderDate(userData?.contract_end_date) }] : []),
+    ...(userData?.contract_start_date
+      ? [
+          {
+            title: "Contract Start Date",
+            data: renderDate(userData?.contract_start_date),
+          },
+        ]
+      : []),
+    ...(userData?.contract_end_date
+      ? [
+          {
+            title: "Contract End Date",
+            data: renderDate(userData?.contract_end_date),
+          },
+        ]
+      : []),
   ].filter(Boolean); // Removes any undefined or falsy values
-  
+
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   return (
     <>
@@ -55,19 +83,33 @@ const WorkInformation = ({
             )}
           </div>
         </CardHeader>
-        <CardContent className="flex items-center pt-6 space-x-4">
-          <div className="grid w-full lg:grid-cols-3 gap-4 md:grid-cols-2 grid-cols-1">
+        <CardContent className="flex flex-col gap-4 pt-6">
+          <div className="grid w-full lg:grid-cols-4 gap-4 md:grid-cols-3 grid-cols-2">
             {workInformation.map((info, index) => (
-              <div className="flex flex-row w-full gap-2" key={index}>
-                <div className="flex-1 text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000">
-                  {info.title}
-                </div>
-                <div className="flex-1 text-sm text-black break-all xl:break-normal lg:break-all md:break-all xl:text-base lg:text-base md:text-sm">
-                  {info.data || "N/A"}
-                </div>
-              </div>
+              <DetailBox
+                 orientation="horizontal"
+                key={index}
+                className=""
+                label={info.title}
+                value={info.data}
+                fallbackText={""}
+              />
             ))}
           </div>
+          <DetailBox
+             orientation="horizontal"
+            className=""
+            label={"Job Description"}
+            value={userData.jd_file}
+            fallbackText={""}
+          />
+          <DetailBox
+            orientation="horizontal"
+            className=""
+            label={"Job Kpis"}
+            value={userData.kpi_file}
+            fallbackText={""}
+          />
         </CardContent>
       </Card>
       {showPersonalDetailCard && (

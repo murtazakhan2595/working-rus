@@ -88,7 +88,7 @@ const IdentificationDetails = ({ isEditable, employeeId }) => {
                   },
                   {
                     title: "Expiry Date",
-                    data: renderDate(visaData?.license_Expiry_Date),
+                    data: renderDate(visaData?.license_expiry_date),
                   },
                   {
                     title: "License Copy",

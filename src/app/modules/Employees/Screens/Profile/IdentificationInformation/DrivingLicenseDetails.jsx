@@ -59,10 +59,10 @@ const DrivingLicenseDetails = ({
       </div>
       <div className="space-y-2">
         <DateInput
-          name={"license_Expiry_Date"}
-          error={errors.license_Expiry_Date}
-          touch={touched.license_Expiry_Date}
-          value={values.license_Expiry_Date}
+          name={"license_expiry_date"}
+          error={errors.license_expiry_date}
+          touch={touched.license_expiry_date}
+          value={values.license_expiry_date}
           label={"License Expiry Date"}
           required={true}
           onChange={(field, value) => {
