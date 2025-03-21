@@ -218,11 +218,11 @@ const Form = ({
               {props.values?.transfer_type === "EXTERNAL" && (
                 <div className="space-y-4">
                   <SelectInputComponent
-                    name={"employee_location"}
+                    name={"old_branch"}
                     options={Branches}
-                    error={props.errors?.employee_location}
-                    touch={props.touched?.employee_location}
-                    value={selectedEmployee?.employee_location}
+                    error={props.errors?.old_branch}
+                    touch={props.touched?.old_branch}
+                    value={selectedEmployee?.branch_id}
                     required={false}
                     disabled={true}
                     label={"Current Branch"}
@@ -235,11 +235,11 @@ const Form = ({
                {props.values?.transfer_type === "EXTERNAL" && (
                 <div className="space-y-4">
                   <SelectInputComponent
-                    name={"new_location"}
+                    name={"new_branch"}
                     options={Branches}
-                    error={props.errors?.new_location}
-                    touch={props.touched?.new_location}
-                    value={props.values?.new_location}
+                    error={props.errors?.new_branch}
+                    touch={props.touched?.new_branch}
+                    value={props.values?.new_branch}
                     required={true}
                     label={"New Branch"}
                     onChange={(field, value) => {

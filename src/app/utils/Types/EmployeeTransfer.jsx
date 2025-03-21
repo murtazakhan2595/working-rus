@@ -1,5 +1,5 @@
 export const EmployeeTransfer = {
-  new_location: null,
+  new_branch: null,
   effective_transfer_date: null,
   reason_of_transfer: null,
   notes: null,
@@ -10,6 +10,7 @@ export const EmployeeTransfer = {
   new_reporting_manager: null,
   reason_of_rejection:null,
   old_department:null,
-  old_location:null,
-  reporting_manager:null
+  old_branch:null,
+  reporting_manager:null,
+  hr_manager:null,
 };

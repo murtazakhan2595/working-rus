@@ -31,7 +31,7 @@ export function mapEmployeeTransferInfo(data) {
     const payload = {};
     payload.department_name=data.new_department;
     payload.direct_report=data.new_reporting_manager;
-    payload.employee_location=data.new_location;
+    payload.branch_id=data.new_branch;
   
     // Return the constructed payload
     return payload;

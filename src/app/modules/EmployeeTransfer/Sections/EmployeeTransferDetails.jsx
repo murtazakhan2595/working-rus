@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 import { EmployeeTransferStatusView } from "app/modules/EmployeeTransfer/Sections";
 import {
   DepartmentName,
-  DesignationName,
-  EmployeeID,
+  EmployeeName,
+  BranchName,
   TerminationStatus,
   ResignationReason,
   ResignationStatus,
@@ -30,6 +30,18 @@ import {
   DialogBox,
 } from "components";
 import { renderDate } from "utils/renderValues";
+
+const renderActionButtons = (status, userRole, new_reporting_manager) => {
+  if (!status || userRole === 4) return false;
+  if (userRole === 1 || userRole === 3) {
+    if (status === "ACCEPTED BY MANAGER") return true;
+    else if (status === "PENDING" && !new_reporting_manager) return true;
+  } else if (userRole === 2) {
+    if (status === "PENDING") return true;
+  }
+  return false;
+};
+
 const EmployeeTransferDetails = ({
   transferID = null,
   isInternalTransfer = true,
@@ -40,6 +52,7 @@ const EmployeeTransferDetails = ({
   readOnlyMode = false,
 }) => {
   const userRole = useSelector((state) => state.user.userProfile.role);
+  const userId = useSelector((state) => state.user.userProfile.id);
   const [currentTranfer, setCurrentTranfer] = useState({});
   const [OpenConfirmRejection, setOpenConfirmRejection] = useState(false);
   const [currentTranferId, setCurrentTranferId] = useState(transferID);
@@ -93,16 +106,17 @@ const EmployeeTransferDetails = ({
     }
   };
   const handleSubmit = async (event, status) => {
-    debugger;
     if (event) event.preventDefault();
     try {
       const payload = {};
-      if (status === "approved") {
-        if (userRole === 2) payload.status = "ACCEPTED BY MANAGER";
-        else if (userRole === 3 || userRole === 1) payload.status = "APPROVED";
-      } else if (status === "rejected") {
-        if (userRole === 2) payload.status = "REJECTED BY MANAGER";
-        else if (userRole === 3 || userRole === 1) payload.status = "REJECTED";
+
+      if (userRole === 3 || userRole === 1) {
+        if (status === "approved") payload.status = "APPROVED";
+        else if (status === "rejected") payload.status = "REJECTED";
+        payload.hr_manager = userId;
+      } else if (userRole === 2) {
+        if (status === "approved") payload.status = "ACCEPTED BY MANAGER";
+        else if (status === "rejected") payload.status = "REJECTED BY MANAGER";
       }
       const response = await addUpdateEmpTransferDetails(
         payload,
@@ -136,8 +150,8 @@ const EmployeeTransferDetails = ({
     ...(currentTranfer?.transfer_type === "EXTERNAL"
       ? [
           {
-            label: "Current Location",
-            value: currentTranfer?.old_location,
+            label: "Current Branch",
+            value: <BranchName value={currentTranfer?.old_branch} />,
           },
         ]
       : [{}]),
@@ -153,8 +167,8 @@ const EmployeeTransferDetails = ({
     ...(currentTranfer?.transfer_type === "EXTERNAL"
       ? [
           {
-            label: "New Location",
-            value: currentTranfer?.new_location,
+            label: "New Branch",
+            value: <BranchName value={currentTranfer?.new_branch} />,
           },
         ]
       : [{}]),
@@ -166,7 +180,21 @@ const EmployeeTransferDetails = ({
       label: "Reason for Tranfer",
       value: currentTranfer?.reason_of_transfer,
     },
+    ...(currentTranfer?.hr_manager
+      ? [
+          {
+            label: "HR Manager",
+            value: <EmployeeName value={currentTranfer?.hr_manager} />,
+          },
+        ]
+      : []),
   ].filter(Boolean);
+
+  const showActionbutton = renderActionButtons(
+    currentTranfer?.status,
+    userRole,
+    currentTranfer?.new_reporting_manager
+  );
 
   return (
     <>
@@ -199,11 +227,7 @@ const EmployeeTransferDetails = ({
               </div>
               {!readOnlyMode && (
                 <div className="flex flex-row flex-wrap max-w-[50%] items-center gap-2">
-                  {(((userRole === 3 || userRole === 1) &&
-                    (currentTranfer?.status === "ACCEPTED BY MANAGER" ||
-                      !currentTranfer?.new_reporting_manager)) ||
-                    (userRole === 2 &&
-                      currentTranfer?.status === "PENDING")) && (
+                  {showActionbutton && (
                     <>
                       <Button
                         variant="successOutline"
