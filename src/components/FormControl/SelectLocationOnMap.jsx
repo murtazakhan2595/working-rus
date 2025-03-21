@@ -6,9 +6,9 @@ import {
   DialogTitle,
 } from "src/@/components/ui/dialog";
 import { Button } from "components/ui/button";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+// import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+// import "leaflet/dist/leaflet.css";
+// import L from "leaflet";
 
 function SelectLocationOnMap({ isOpen, onClose, onSave }) {
   const [branchName, setBranchName] = useState("");
