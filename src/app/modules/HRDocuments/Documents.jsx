@@ -8,6 +8,9 @@ import {
   getEmployeeTransferStats,
 } from "app/hooks/employeeTransfer";
 import {
+  HRDocumentsColumns,
+} from "app/modules/HRDocuments/Sections";
+import {
   Tabs,
   TabsList,
   TabsTrigger,
@@ -23,10 +26,7 @@ import {
 } from "app/modules/EmployeeTransfer";
 import Config from "constants/config";
 
-const ExternalTabs = [
-  Config.TEAM_INTERNALTRANSFER ? "Internal" : null,
-  Config.TEAM_EXTERNALTRANSFER ? "External" : null,
-].filter(Boolean);
+const ExternalTabs = ["All", "Signed", "Pending", "Expired"].filter(Boolean);
 
 const InternalTabs = ["Requests", "Records"];
 
@@ -40,7 +40,7 @@ export default function Documents() {
   });
   const [employeeTransferStat, setEmployeeTransferStat] = useState({});
   const [OpenUploadDocumentForm, setOpenUploadDocumentForm] = useState(false);
-  const [activeExternalTab, setActiveExternalTab] = useState("Internal");
+  const [activeExternalTab, setActiveExternalTab] = useState("All");
   const [activeInternalTab, setActiveInternalTab] = useState("Requests");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -171,7 +171,7 @@ export default function Documents() {
       />
       <Stats stats={statsData} />
       <Tabs
-        defaultValue="Internal"
+        defaultValue="All"
         className="w-full"
         onValueChange={(tab) => {
           setActiveExternalTab(tab);
@@ -218,24 +218,13 @@ export default function Documents() {
         </div>
         <Card>
           <CardContent>
-            <TabsContent value="Internal">
-              <EmployeeInternalTranfer
-                TabList={InternalTabs}
-                activeTab={activeInternalTab}
-                setActiveTab={setActiveInternalTab}
-                EmployeesTransferData={employeeTransferData}
-                reloadData={fetchData}
-              />
-            </TabsContent>
-            <TabsContent value="External">
-              <EmployeeExternalTranfer
-                TabList={InternalTabs}
-                activeTab={activeInternalTab}
-                setActiveTab={setActiveInternalTab}
-                EmployeesTransferData={employeeTransferData}
-                reloadData={fetchData}
-              />
-            </TabsContent>
+            <TableCustom
+              data={employeeTransferData.results}
+              columns={HRDocumentsColumns}
+              pagination={true}
+              dataTotalSize={employeeTransferData.count || 0}
+              tableOptions={tableOptions}
+            />
           </CardContent>
         </Card>
       </Tabs>

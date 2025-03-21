@@ -1,0 +1,3 @@
+const Document = {
+  type: "Mandatory",
+};

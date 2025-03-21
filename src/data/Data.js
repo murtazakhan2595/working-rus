@@ -245,6 +245,16 @@ export const UserRoles = [
   { value: 3, label: "HR" },
   { value: 4, label: "Employee" },
 ];
+export const HRDocumentTargetAudience = [
+  { value: 'Specific Employee', label: "Specific Employee" },
+  { value: 'Department', label: "Department" },
+  { value: 'All Employees', label: "All Employees" },
+];
+export const HRDocumentCategory = [
+  { value: 'Policy', label: "Policy" },
+  { value: 'Compliance', label: "Compliance" },
+  { value: 'Agreement', label: "Agreement" },
+];
 
 export const employeeStatus = [
   { label: "All", value: "All" },

@@ -2,9 +2,9 @@ import { Button } from "components/ui/button";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Formik } from "formik";
-import { EmployeeTransfer } from "app/utils/Types/EmployeeTransfer";
-import { validationEmpTranferFormSchema } from "app/utils/FormSchema/employeeTransferFromSchema";
-import { countriesList } from "data/Data";
+import { Document } from "app/utils/Types/HRDocuments";
+import { validationHRDocumentFormSchema } from "app/utils/FormSchema/hrDocumentFromSchema";
+import { HRDocumentTargetAudience, HRDocumentCategory } from "data/Data";
 import {
   RadioGroupInput,
   TextAreaInput,
@@ -15,9 +15,9 @@ import {
 import { PageLoader } from "components";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import {
-  getEmployeeTransferData,
-  addUpdateEmpTransferDetails,
-} from "app/hooks/employeeTransfer";
+  getHRDocumentData,
+  addUpdateHRDocumentDetails,
+} from "app/hooks/hrDocuments";
 import { useSelector } from "react-redux";
 import SheetComponent from "components/ui/CustomSheet";
 
@@ -28,27 +28,16 @@ const FormSheetData = {
   footer: null,
 };
 
-const TransferForm = ({
-  transfer_type = "INTERNAL",
-  isEmployee = false,
+const UploadDocumentForm = ({
   id = null,
   isOpen = true,
   setIsOpen = () => {},
-  onlyRejectionForm = false,
 }) => {
   const [closeSheet, setCloseSheet] = useState(false);
   const handleClose = () => {
     setCloseSheet(true);
   };
-  return onlyRejectionForm ? (
-    <Form
-      id={id}
-      transfer_type={transfer_type}
-      isEmployee={isEmployee}
-      setIsOpen={setIsOpen}
-      onlyRejectionForm={onlyRejectionForm}
-    />
-  ) : (
+  return (
     <>
       {handleCloseWithConfirmation({
         isOpen: closeSheet,
@@ -63,50 +52,27 @@ const TransferForm = ({
         width="678px"
         setIsOpen={setIsOpen}
       >
-        <Form
-          id={id}
-          setIsOpen={setIsOpen}
-          transfer_type={transfer_type}
-          isEmployee={isEmployee}
-          onlyRejectionForm={onlyRejectionForm}
-          handleClose={handleClose}
-        />
+        <Form id={id} setIsOpen={setIsOpen} handleClose={handleClose} />
       </SheetComponent>
     </>
   );
 };
 
-const Form = ({
-  transfer_type = "INTERNAL",
-  isEmployee = false,
-  id = null,
-  onlyRejectionForm = false,
-  setIsOpen = () => {},
-  handleClose = () => {},
-}) => {
+const Form = ({ id = null, setIsOpen = () => {}, handleClose = () => {} }) => {
   const formRef = React.createRef();
   const Departments = useSelector((state) => state.common.departments);
-  const UserDetails = useSelector((state) => state.emp.user_details);
-  const Mangers = useSelector((state) => state.emp.reportingManagers);
   const AllEmployees = useSelector((state) => state.emp.employees);
   const Employees = React.useMemo(() => {
     return AllEmployees?.filter(
       (employee) => employee.employee_status === "Active"
     );
   }, [AllEmployees]);
-  const [formData, setFormData] = useState({
-    ...EmployeeTransfer,
-    transfer_type: transfer_type,
-  });
-  const [selectedEmployee, setSelectedEmployee] = useState({});
+  const [formData, setFormData] = useState(Document);
   const fetchData = async (isMounted) => {
     try {
-      const response = await getEmployeeTransferData(id);
+      const response = await getHRDocumentData(id);
       if (isMounted && response) {
         setFormData(response);
-        setSelectedEmployee(
-          Employees.find((obj) => obj.value === response.employee_id)
-        );
       }
     } catch (error) {
       console.error(error);
@@ -123,26 +89,17 @@ const Form = ({
     };
   }, [id]);
 
-  useEffect(() => {
-    if (isEmployee) {
-      setSelectedEmployee(UserDetails);
-      setFormData((prev) => {
-        return { ...prev, employee_id: UserDetails.id };
-      });
-    }
-  }, [isEmployee]);
-
   const handleSubmit = async (data) => {
     try {
-      const response = await addUpdateEmpTransferDetails(data, id);
+      const response = await addUpdateHRDocumentDetails(data, id);
       // return
       if (response) {
         if (id) {
-          toast.success("Employee Tranfer Request Updated Successfully!", {
+          toast.success("Document Updated Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
         } else {
-          toast.success("Employee Tranfer Request Submitted Successfully!", {
+          toast.success("Document Submitted Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
@@ -164,219 +121,132 @@ const Form = ({
         handleSubmit(values, resetForm);
       }}
       validate={(values) => {
-        const errors = validationEmpTranferFormSchema(
-          values,
-          onlyRejectionForm
-        );
+        const errors = validationHRDocumentFormSchema(values);
         console.error(errors, values, "Errors");
         return errors;
       }}
     >
       {(props) => (
         <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
-          {!onlyRejectionForm && (
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 md:grid-cols-2">
-              <div className="space-y-4 col-span-2">
-                <RadioGroupInput
-                  name={"transfer_type"}
-                  label={"Tranfer Type"}
-                  error={props.errors?.transfer_type}
-                  touch={props.touched?.transfer_type}
-                  value={props.values?.transfer_type}
-                  options={[
-                    { value: "INTERNAL", label: "Internal" },
-                    { value: "EXTERNAL", label: "External" },
-                  ]}
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                />
-              </div>
-              <div className="space-y-4">
-                <SelectInputComponent
-                  name={"employee_id"}
-                  options={Employees}
-                  error={props.errors?.employee_id}
-                  touch={props.touched?.employee_id}
-                  value={props.values?.employee_id}
-                  required={true}
-                  disabled={isEmployee}
-                  label={"Employee"}
-                  onChange={(field, value) => {
-                    props.setFieldValue(field, value);
-                    if (value)
-                      setSelectedEmployee(
-                        Employees.find((obj) => obj.value === value)
-                      );
-                    else setSelectedEmployee({});
-                  }}
-                />
-              </div>
-              <div className="space-y-4"></div>
-              <div className="space-y-4">
-                <SelectInputComponent
-                  name={"reporting_manager"}
-                  options={Mangers}
-                  error={props.errors?.reporting_manager}
-                  touch={props.touched?.reporting_manager}
-                  value={selectedEmployee.report_to}
-                  required={false}
-                  disabled={true}
-                  label={"Current Reporting Manager"}
-                  placeholder={"Current Reporting Manager"}
-                  onChange={(field, value) => {
-                    props.setFieldValue(field, value);
-                  }}
-                />
-              </div>
-              <div className="space-y-4">
-                <SelectInputComponent
-                  name={"old_department"}
-                  options={Departments}
-                  error={props.errors?.old_department}
-                  touch={props.touched?.old_department}
-                  value={selectedEmployee.department_name}
-                  required={false}
-                  disabled={true}
-                  label={"Current Department"}
-                  onChange={(field, value) => {
-                    props.setFieldValue(field, value);
-                  }}
-                />
-              </div>
-              {props.values?.transfer_type === "EXTERNAL" && (
-                <div className="space-y-4">
-                  <SelectInputComponent
-                    name={"employee_location"}
-                    options={countriesList}
-                    error={props.errors?.employee_location}
-                    touch={props.touched?.employee_location}
-                    value={selectedEmployee?.employee_location}
-                    required={false}
-                    disabled={true}
-                    label={"Current Location"}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
-              )}
-              <div className="space-y-4">
-                <SelectInputComponent
-                  name={"new_department"}
-                  options={Departments}
-                  error={props.errors?.new_department}
-                  touch={props.touched?.new_department}
-                  value={props.values?.new_department}
-                  label={"New Department"}
-                  required={true}
-                  onChange={(field, value) => {
-                    props.setFieldValue(field, value);
-                  }}
-                />
-              </div>
-
-              {props.values?.transfer_type === "EXTERNAL" && (
-                <div className="space-y-4">
-                  <SelectInputComponent
-                    name={"new_location"}
-                    options={countriesList}
-                    error={props.errors?.new_location}
-                    touch={props.touched?.new_location}
-                    value={props.values?.new_location}
-                    required={true}
-                    label={"New Location"}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                  />
-                </div>
-              )}
-              <div className="space-y-4">
-                <SelectInputComponent
-                  name={"new_reporting_manager"}
-                  options={Mangers}
-                  error={props.errors?.new_reporting_manager}
-                  touch={props.touched?.new_reporting_manager}
-                  value={props.values?.new_reporting_manager}
-                  required={false}
-                  label={"New Reporting Manager"}
-                  placeholder={"New Reporting Manager"}
-                  onChange={(field, value) => {
-                    props.setFieldValue(field, value);
-                  }}
-                />
-              </div>
-              <div className="space-y-4">
-                <DateInput
-                  name={"effective_transfer_date"}
-                  error={props.errors?.effective_transfer_date}
-                  touch={props.touched?.effective_transfer_date}
-                  value={props.values?.effective_transfer_date}
-                  required={true}
-                  label={"Effective Tranfer Date"}
-                  onChange={(field, value) => {
-                    props.setFieldValue(field, value);
-                  }}
-                />
-              </div>
-              <div className="space-y-4">
-                <TextInput
-                  name={"reason_of_transfer"}
-                  error={props.errors?.reason_of_transfer}
-                  touch={props.touched?.reason_of_transfer}
-                  value={props.values?.reason_of_transfer}
-                  required={true}
-                  label={"Reason for Transfer"}
-                  onChange={(field, value) => {
-                    props.setFieldValue(field, value);
-                  }}
-                />
-              </div>
-              <div className="col-span-2 space-y-4">
-                <TextAreaInput
-                  name={"notes"}
-                  error={props.errors?.notes}
-                  touch={props.touched?.notes}
-                  value={props.values?.notes}
-                  label={"Note"}
-                  required={false}
-                  maxRows={5}
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                />
-              </div>
-            </div>
-          )}
-          {onlyRejectionForm && (
-            <div className="space-y-4">
-              <TextAreaInput
-                name={"reason_of_rejection"}
-                error={props.errors?.reason_of_rejection}
-                touch={props.touched?.reason_of_rejection}
-                value={props.values?.reason_of_rejection}
-                label={"Reason of Rejection"}
-                required={false}
-                maxRows={5}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 md:grid-cols-2">
+            <div className="space-y-4 col-span-2">
+              <RadioGroupInput
+                name={"transfer_type"}
+                // label={"Tranfer Type"}
+                error={props.errors?.transfer_type}
+                touch={props.touched?.transfer_type}
+                value={props.values?.transfer_type}
+                options={[
+                  { value: "Mandatory", label: "Mandatory" },
+                  { value: "Optional", label: "Optional" },
+                ]}
                 onChange={(field, value) => {
                   props.handleChange(field)(value);
                 }}
               />
             </div>
-          )}
+            <div className="space-y-4">
+              <TextInput
+                name={"reason_of_transfer"}
+                error={props.errors?.reason_of_transfer}
+                touch={props.touched?.reason_of_transfer}
+                value={props.values?.reason_of_transfer}
+                required={true}
+                label={"Document Name"}
+                onChange={(field, value) => {
+                  props.setFieldValue(field, value);
+                }}
+              />
+            </div>
+            <div className="space-y-4">
+              <SelectInputComponent
+                name={"employee_id"}
+                options={HRDocumentCategory}
+                error={props.errors?.employee_id}
+                touch={props.touched?.employee_id}
+                value={props.values?.employee_id}
+                required={true}
+                label={"Category"}
+                onChange={(field, value) => {
+                  props.setFieldValue(field, value);
+                }}
+              />
+            </div>
+            <div className="space-y-4">
+              <SelectInputComponent
+                name={"reporting_manager"}
+                options={HRDocumentTargetAudience}
+                error={props.errors?.reporting_manager}
+                touch={props.touched?.reporting_manager}
+                value={props.values?.reporting_manager}
+                required={true}
+                label={"Target Audience"}
+                placeholder={"Target Audience"}
+                onChange={(field, value) => {
+                  props.setFieldValue(field, value);
+                }}
+              />
+            </div>
+
+            {props.values?.reporting_manager === "Department" && (
+              <div className="space-y-4">
+                <SelectInputComponent
+                  name={"reporting_manager"}
+                  options={Departments}
+                  error={props.errors?.reporting_manager}
+                  touch={props.touched?.reporting_manager}
+                  value={props.values?.new_location}
+                  required={true}
+                  label={"Department"}
+                  onChange={(field, value) => {
+                    props.setFieldValue(field, value);
+                  }}
+                />
+              </div>
+            )}
+
+            {props.values?.reporting_manager === "Specific Employee" && (
+              <div className="space-y-4">
+                <SelectInputComponent
+                  name={"reporting_manager"}
+                  options={Employees}
+                  error={props.errors?.reporting_manager}
+                  touch={props.touched?.reporting_manager}
+                  value={props.values?.new_location}
+                  required={true}
+                  label={"Employee"}
+                  onChange={(field, value) => {
+                    props.setFieldValue(field, value);
+                  }}
+                />
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <DateInput
+                name={"effective_transfer_date"}
+                error={props.errors?.effective_transfer_date}
+                touch={props.touched?.effective_transfer_date}
+                value={props.values?.effective_transfer_date}
+                required={true}
+                label={"Expiration Date"}
+                onChange={(field, value) => {
+                  props.setFieldValue(field, value);
+                }}
+              />
+            </div>
+          </div>
+
           <div className="p-6 border-t border-gray-200 bg-gray-50">
             <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-              {!onlyRejectionForm && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={handleClose}
-                  type="button"
-                >
-                  Cancel
-                </Button>
-              )}
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={handleClose}
+                type="button"
+              >
+                Cancel
+              </Button>
               <Button type="submit" size="lg" variant="default">
                 {id ? "Update" : "Add"}
               </Button>
@@ -388,4 +258,4 @@ const Form = ({
   );
 };
 
-export default TransferForm;
+export default UploadDocumentForm;
