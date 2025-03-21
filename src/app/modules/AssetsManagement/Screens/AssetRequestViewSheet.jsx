@@ -13,6 +13,10 @@ import { toast } from "react-toastify";
 import { getAttachmentById } from "app/hooks/assets"; // Assuming similar function exists for assets
 import { requestAsset } from "app/hooks/assets"; // Assuming this function exists
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
+import { DesignationName } from "utils/getValuesFromTables";
+import { getDesignationName } from "utils/getValuesFromTables";
+import { EmployeeOverview } from "components";
+import { getDepartmentName } from "utils/getValuesFromTables";
 
 const AssetRequestViewSheet = ({
   request, // Updated from assetRequest to match what's being passed
@@ -20,14 +24,13 @@ const AssetRequestViewSheet = ({
   setIsOpen,
   isMyRequest = false,
   reload,
+  d
 }) => {
   // For compatibility with the existing prop structure
   const assetRequest = request;
   const [attachments, setAttachments] = useState([]);
-
   useEffect(() => {
     const fetchData = async () => {
-      console.log("assetRequest", assetRequest);
       // Handle attachments if they exist in the asset
       if (
         assetRequest?.asset?.attachments &&
@@ -152,13 +155,11 @@ const AssetRequestViewSheet = ({
         width="600px"
       >
         {/* Employee Information Section */}
-        <EmployeeDataInfo
-          name={`${assetRequest?.employee?.first_name || ""} ${
-            assetRequest?.employee?.last_name || ""
-          }`}
-          email={assetRequest?.employee?.work_email}
-          src={assetRequest?.employee?.profile_picture?.file}
+        <EmployeeOverview
           id={assetRequest?.employee?.id}
+          showEmail={true}
+          showDepartment={true}
+          showPosition={true}
         />
 
         {/* Details Section */}
@@ -259,7 +260,12 @@ const AssetRequestViewSheet = ({
         {/* Close Button for non-pending or my requests */}
         {(isMyRequest || assetRequest?.asset_status !== "Pending") && (
           <div className="flex justify-end pt-6">
-            <Button variant="outline" type="button" size="lg" onClick={() => setIsOpen(false)}>
+            <Button
+              variant="outline"
+              type="button"
+              size="lg"
+              onClick={() => setIsOpen(false)}
+            >
               Close
             </Button>
           </div>

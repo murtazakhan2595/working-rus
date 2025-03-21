@@ -1009,6 +1009,7 @@ export const MyAssetRequestColumns = [
     formatter: (cell) => {
       return cell || "N/A";
     },
+    maxWidth: "200px",
   },
   {
     dataField: "asset_status",
@@ -1129,7 +1130,24 @@ export const AssetRequestColumns = [
   {
     dataField: "reason",
     text: "Reason",
-    formatter: (cell) => <>{cell?.asset_type}</>,
+    formatter: (cell) => (
+      <span className="max-w-[200px] truncate block overflow-hidden text-ellipsis whitespace-nowrap">
+        {cell}
+      </span>
+    ),
+  },
+
+  {
+    dataField: "created_at",
+    text: "Request Date",
+    formatter: (cell) => {
+      return cell ? new Date(cell).toLocaleDateString() : "N/A";
+    },
+  },
+  {
+    dataField: "assigned_dept",
+    text: "Approver",
+    formatter: (cell) => <>{cell?.full_name || "N/A"}</>,
   },
   {
     dataField: "asset_status",
@@ -1148,13 +1166,6 @@ export const AssetRequestColumns = [
           {cell || "N/A"}
         </span>
       );
-    },
-  },
-  {
-    dataField: "asset_assigned_date",
-    text: "Request Date",
-    formatter: (cell) => {
-      return cell ? new Date(cell).toLocaleDateString() : "N/A";
     },
   },
 ];
