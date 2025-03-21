@@ -33,14 +33,7 @@ const OrganizationalChart = ({ initialData = null }) => {
   const transformApiData = (apiNode, managerId = null) => {
     // Generate a node border color based on department
     const getDepartmentColor = (department) => {
-      const colors = {
-        Sales: "#4CAF50",
-        HR: "#2196F3",
-        Development: "#9C27B0",
-        "Project Management": "#FF9800",
-        Operations: "#F44336",
-      };
-      return colors[department] || "#953EA3"; // Default purple for unknown departments
+      return "#9C27B0"
     };
 
     // Generate initials for avatar fallback
@@ -77,13 +70,7 @@ const OrganizationalChart = ({ initialData = null }) => {
 
     // Generate a node border color based on role level
     const getManagerColor = (designation) => {
-      if (designation && designation.toLowerCase().includes("ceo")) {
-        return "#4CAF50"; // Green for CEO
-      } else if (designation && designation.toLowerCase().includes("manager")) {
-        return "#FF9800"; // Orange for managers
-      } else {
-        return "#2196F3"; // Blue for others
-      }
+      return "#9C27B0";
     };
 
     // Generate initials for avatar fallback

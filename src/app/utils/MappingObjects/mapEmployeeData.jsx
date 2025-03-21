@@ -260,8 +260,8 @@ async function getEmployeeInformation(data) {
 }
 
 
-function mapEmployeeDocsChecklist(data, employeeId) {
-  console.log("mapEmployeeDocsChecklist", data, employeeId);
+function mapEmployeeDocsChecklist(data) {
+  console.log("mapEmployeeDocsChecklist", data);
   let arrayData;
    if (Array.isArray(data)) {
      // Data is already an array
@@ -280,9 +280,10 @@ function mapEmployeeDocsChecklist(data, employeeId) {
    }
   const employeeDocsChecklist = arrayData.map((template) => {
     const doc = {
-      employee_id: employeeId,
+      id: template.id,
+      employee_id: data?.employeeId,
       checklist_id: template.templateId,
-      isActive: template.isActive,
+      is_Active: template.isActive,
       has_expiry_date: template.isActive,
       expiry_date: template.expiryDate,
       attachment: template?.attachment?.[0]?.attachment ?? null,

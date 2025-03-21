@@ -247,6 +247,15 @@ const getStatusLabel = (statusValue, TaskStatus) => {
   );
 };
 
+function getDesignationName(value, designations) {
+  const designation = designations.find(
+    (option) => option.value === parseInt(value)
+  );
+
+  console.log("designation", designation);
+  return designation ? designation.label : "N/A";
+}
+
 export {
   getStatusLabel,
   getCountryFullName,
@@ -274,4 +283,5 @@ export {
   getDepartmentName,
   getManagerName,
   getOrganizationCountryFullName,
+  getDesignationName,
 };
