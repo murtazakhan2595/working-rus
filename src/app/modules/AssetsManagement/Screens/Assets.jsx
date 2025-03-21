@@ -283,7 +283,7 @@ const Assets = ({ userProfile, departments }) => {
           {
             type: "search",
             placeholder: "Employee Name",
-            name: "employee_name",
+            name: "emp_name",
           },
           {
             type: "select-one",

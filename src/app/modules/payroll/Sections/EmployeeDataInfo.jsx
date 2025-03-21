@@ -4,7 +4,7 @@ import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
 import { getRandomColor } from "utils/renderValues";
 
 
-const EmployeeDataInfo = ({ name, email, src, id, designation }) => {
+const EmployeeDataInfo = ({ name, email, src, id, designation, department }) => {
   return (
     <div className="flex items-center">
       <Avatar
@@ -26,6 +26,9 @@ const EmployeeDataInfo = ({ name, email, src, id, designation }) => {
         </div>}
         {designation &&<div className="hidden text-sm text-muted-foreground md:inline">
           <div>{designation}</div>
+        </div>}
+        {department &&<div className="hidden text-sm text-muted-foreground md:inline">
+          <div>{department}</div>
         </div>}
       </div>
     </div>
