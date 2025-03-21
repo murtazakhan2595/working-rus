@@ -2,7 +2,7 @@ import { addUpdateBranch } from "app/hooks/general";
 import { Branch } from "app/utils/Types/OfficeSetting";
 import { RadioGroupInput } from "components/FormControl";
 import { TextAreaInput } from "components/FormControl";
-import { TextInput } from "components/FormControl";
+import { TextInput ,SelectLocationOnMap} from "components/FormControl";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { Button } from "components/ui/button";
@@ -110,6 +110,7 @@ const AddBranchForm = ({
                   props.handleChange(field)(value);
                 }}
               />
+              {/* <SelectLocationOnMap /> */}
             </SheetCardExtension>
             <div className="p-6 border-t border-gray-200 bg-gray-50 mt-5">
               <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">

@@ -107,8 +107,6 @@ const SheetOnBorading = ({
   const [closeSheet, setCloseSheet] = useState(false);
   const [shiftSelect, setShiftSelect] = useState(false);
 
-
-
   const getShiftList = async () => {
     const shiftData = await getShift();
     if (shiftData) {
@@ -139,7 +137,6 @@ const SheetOnBorading = ({
           });
           // setEmpId(`TXB-${employeeData.id.toString().padStart(4, "0")}`);
           setEmpId(response.serial_number);
-        
 
           validateEmail(employeeData.work_email);
           validateUsername(employeeData.username);
@@ -154,7 +151,7 @@ const SheetOnBorading = ({
           getShiftList();
         }
       } catch (error) {
-        console.error("ERROR--",error);
+        console.error("ERROR--", error);
       } finally {
         setIsLoading(false);
       }
@@ -303,28 +300,29 @@ const SheetOnBorading = ({
                   handleSubmit(values, resetForm);
                 }}
                 validate={(values) => {
-                  try{
+                  try {
                     const errors = validationEmployeeInfoFormSchema(
-                    values,
-                    id ? true : false
-                  );
+                      values,
+                      id ? true : false
+                    );
                     const documentErrors = validateOnboardingDocuments(
                       values?.onboardingDocuments
                     );
 
-                  if (!id && values.work_email && emailAlreadyExist) {
-                    errors.work_email = "Email already exist";
-                  }
-                  if (!id && values.username && usernameAlreadyExist) {
-                    errors.username = "Username already exist";
-                  }
-                  console.error(errors, values, "Errors");
-                  console.error(documentErrors,values?.onboardingDocuments, "Checklist Errors");
-                  return {
-                    ...errors,
-                    ...(documentErrors ? documentErrors : {}),
-                  };
-                  }catch(error){
+                    if (!id && values.work_email && emailAlreadyExist) {
+                      errors.work_email = "Email already exist";
+                    }
+                    if (!id && values.username && usernameAlreadyExist) {
+                      errors.username = "Username already exist";
+                    }
+                    const finalErrors = {
+                      ...errors,
+                      ...(documentErrors ? documentErrors : {}),
+                    };
+                    console.error(finalErrors, values, "Errors");
+                   
+                    return finalErrors;
+                  } catch (error) {
                     console.error(error);
                   }
                 }}

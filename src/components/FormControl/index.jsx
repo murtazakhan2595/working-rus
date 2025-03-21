@@ -42,6 +42,7 @@ import DateInput from "./DateInput";
 import RadioGroupInput from "./RadioGroupInput";
 import CheckBoxInput from "./CheckBoxInput";
 import DateRangeInput from "./DateRangeInput";
+import SelectLocationOnMap from "./SelectLocationOnMap";
 
 const errorClassName = "text-red-800 text-xs font-[inter] font-normal ml-1";
 export const inputButtonClassName =
@@ -706,6 +707,7 @@ const FilterInput = ({
 export {
   CommentsInputField,
   TimePicker,
+  SelectLocationOnMap,
   SelectMultiInputComponent,
   SelectInputComponent,
   DateInput,

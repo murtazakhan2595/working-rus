@@ -189,6 +189,8 @@ const OfficeSetting = () => {
                 <AddDesignation reload={getDesignations} />
               ) : activeTab === "working-hours" ? (
                 <Shift reload={fetchShifts} />
+              ) : activeTab === "branches" ? (
+                <AddBranch reload={getDesignations} />
               ) : (
                 <OnboardingTab reload={getOnboardingDocuments} />
               )
