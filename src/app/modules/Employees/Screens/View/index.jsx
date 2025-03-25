@@ -120,42 +120,6 @@ const ViewEmployee = ({ userProfile, profileView }) => {
                   </div>
                 </div>
 
-                {/* Probation Information */}
-                {(employeeData?.probation_start_date ||
-                  employeeData?.probation_end_date ||
-                  employeeData?.probation_period) && (
-                  <div className="text-right">
-                    <h3 className="text-sm font-semibold  mb-1">
-                      Probation Details
-                    </h3>
-                    <div className="flex flex-col gap-1">
-                      {employeeData?.probation_start_date && (
-                        <p className="text-sm">
-                          <span className="font-medium text-black">Start:</span>{" "}
-                          {moment(employeeData.probation_start_date).format(
-                            "MMMM Do, YYYY"
-                          )}
-                        </p>
-                      )}
-                      {employeeData?.probation_end_date && (
-                        <p className="text-sm">
-                          <span className="font-medium text-black">End:</span>{" "}
-                          {moment(employeeData.probation_end_date).format(
-                            "MMMM Do, YYYY"
-                          )}
-                        </p>
-                      )}
-                      {employeeData?.probation_period && (
-                        <p className="text-sm">
-                          <span className="font-medium text-black">
-                            Period:
-                          </span>{" "}
-                          {employeeData.probation_period}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </div>
