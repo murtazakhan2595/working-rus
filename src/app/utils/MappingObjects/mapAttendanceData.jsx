@@ -15,8 +15,13 @@ export function mapAttendanceData(data) {
       if (key === "status") {
         if (data[key] === "Absent") payload["is_absent"] = true;
         else if (data[key] === "Present") payload["is_absent"] = false;
-        else if (data[key] === "Late") payload["is_late"] = true;
-        else if (data[key] === "Weekend") payload["is_weekend"] = true;
+        else if (data[key] === "Late") {
+          payload["is_late"] = true;
+          payload["is_absent"] = false;
+        } else if (data[key] === "Weekend") {
+          payload["is_weekend"] = true;
+          payload["is_absent"] = false;
+        }
       }
       payload[key] = data[key];
     }

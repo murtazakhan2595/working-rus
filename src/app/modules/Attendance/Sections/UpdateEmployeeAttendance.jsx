@@ -197,7 +197,6 @@ const Form = ({
                   }}
                 />
               </div>
-              
             </div>
           </SheetCardExtension>
           <SheetCardExtension title="Attendance Details">
@@ -241,6 +240,7 @@ const Form = ({
                       error={props.errors?.checkin}
                       touch={props.touched?.checkin}
                       value={props.values?.checkin}
+                      date={props.values?.date}
                       required={true}
                       label={"Check-In Time"}
                       onChange={(field, value) => {
@@ -254,6 +254,7 @@ const Form = ({
                       error={props.errors?.checkout}
                       touch={props.touched?.checkout}
                       value={props.values?.checkout}
+                      date={props.values?.date}
                       required={true}
                       label={"Check-Out Time"}
                       onChange={(field, value) => {
