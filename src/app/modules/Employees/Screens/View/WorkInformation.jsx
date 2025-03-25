@@ -24,7 +24,7 @@ const WorkInformation = ({
       title: "Department",
       data: <DepartmentName value={userData?.department_name} />,
     },
-    { title: "Brannch", data: <BranchName value={userData?.branch_id} /> },
+    { title: "Branch", data: <BranchName value={userData?.branch_id} /> },
     {
       title: "Position",
       data: <DesignationName value={userData?.department_position} />,
