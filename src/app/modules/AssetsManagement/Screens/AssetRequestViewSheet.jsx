@@ -128,7 +128,10 @@ const AssetRequestViewSheet = ({
         ...assetRequest,
         asset_status: status,
         asset_assigned_by: userProfile.id,
+        asset_assigned_date:
+          status === "Accepted" ? moment().format("YYYY-MM-DD") : null,
       };
+      console.log("updatedRequest", updatedRequest);
 
       const response = await requestAsset(updatedRequest);
 
