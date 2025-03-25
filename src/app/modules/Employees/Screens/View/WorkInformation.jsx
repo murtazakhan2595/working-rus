@@ -12,6 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { DetailBox } from "components/SheetCardExtension";
 import { renderDate } from "utils/renderValues";
+import { useSelector } from "react-redux";
 
 const WorkInformation = ({
   userData,
@@ -19,6 +20,8 @@ const WorkInformation = ({
   employeeId,
   getDataByHooks,
 }) => {
+  const userRole = useSelector((state) => state.user.userProfile.role);
+
   const workInformation = [
     {
       title: "Department",
@@ -70,24 +73,25 @@ const WorkInformation = ({
         <CardHeader>
           <div className="flex justify-between">
             <CardTitle className="text-primary">Job Details</CardTitle>
-            {isEditable && (
-              <div className="flex items-center gap-4">
-                <div
-                  onClick={() => {
-                    setShowPersonalDetailCard(true);
-                  }}
-                >
-                  <CiEdit className="text-2xl cursor-pointer" />
+            {isEditable &&
+              (userRole === 1 || userRole === 3)&&(
+                <div className="flex items-center gap-4">
+                  <div
+                    onClick={() => {
+                      setShowPersonalDetailCard(true);
+                    }}
+                  >
+                    <CiEdit className="text-2xl cursor-pointer" />
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 pt-6">
           <div className="grid w-full lg:grid-cols-4 gap-4 md:grid-cols-3 grid-cols-2">
             {workInformation.map((info, index) => (
               <DetailBox
-                 orientation="horizontal"
+                orientation="horizontal"
                 key={index}
                 className=""
                 label={info.title}
@@ -97,7 +101,7 @@ const WorkInformation = ({
             ))}
           </div>
           <DetailBox
-             orientation="horizontal"
+            orientation="horizontal"
             className=""
             label={"Job Description"}
             value={userData.jd_file}
