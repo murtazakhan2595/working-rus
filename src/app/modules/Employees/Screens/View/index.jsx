@@ -26,6 +26,7 @@ import { DepartmentName } from "utils/getValuesFromTables";
 import { Header } from "components";
 import ReadOnlyOnboardingChecklist from "./OnboardingChecklist";
 import moment from "moment";
+import ProfileCompletionBar from "./ProfileCompletionBar";
 
 const ViewEmployee = ({ userProfile, profileView }) => {
   const [employeeData, setEmployeeData] = React.useState({});
@@ -42,7 +43,6 @@ const ViewEmployee = ({ userProfile, profileView }) => {
 
       let empData = await getEmployeeData(userId);
       setEmployeeData(empData);
-      console.log(empData,"EMPLDATA")
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -63,6 +63,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
       ? [{ value: "onboardingChecklist", label: "Onboarding Checklist" }]
       : []),
   ];
+  console.log("employeeData", employeeData);
 
   return (
     <>
@@ -109,6 +110,13 @@ const ViewEmployee = ({ userProfile, profileView }) => {
                       />{" "}
                       | <DepartmentName value={employeeData.department_name} />
                     </p>
+                    <p className="text-base text-muted-foreground">
+                      {employeeData?.employee_status === "Active"
+                        ? "Permanent"
+                        : employeeData?.employee_status === "Probation"
+                        ? "Probation"
+                        : ""}
+                    </p>
                   </div>
                 </div>
 
@@ -123,9 +131,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
                     <div className="flex flex-col gap-1">
                       {employeeData?.probation_start_date && (
                         <p className="text-sm">
-                          <span className="font-medium text-black">
-                            Start:
-                          </span>{" "}
+                          <span className="font-medium text-black">Start:</span>{" "}
                           {moment(employeeData.probation_start_date).format(
                             "MMMM Do, YYYY"
                           )}
@@ -133,9 +139,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
                       )}
                       {employeeData?.probation_end_date && (
                         <p className="text-sm">
-                          <span className="font-medium text-black">
-                            End:
-                          </span>{" "}
+                          <span className="font-medium text-black">End:</span>{" "}
                           {moment(employeeData.probation_end_date).format(
                             "MMMM Do, YYYY"
                           )}
@@ -155,6 +159,11 @@ const ViewEmployee = ({ userProfile, profileView }) => {
               </CardContent>
             </Card>
           </div>
+          <Card className="mb-4">
+            <CardContent className="py-4">
+              <ProfileCompletionBar employeeData={employeeData} />
+            </CardContent>
+          </Card>
           <div>
             <Tabs
               value={activeTab}
