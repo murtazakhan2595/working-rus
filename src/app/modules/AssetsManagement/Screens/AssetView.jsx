@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "components/ui/button";
 import moment from "moment";
 import { Tag, MapPin, Calendar, Banknote, Info } from "lucide-react";
-import AttachmentUI from "components/ui/AttachmentUI"; // Import the AttachmentUI component
+import AttachmentUI from "components/ui/AttachmentUI";
+import AlertDialogue from "components/ui/AlertDialogue";
 
 const AssetView = ({ assetData, onEdit, onDelete, onClose }) => {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
   // Format currency
   const formatCurrency = (value) => {
     return `AED ${parseFloat(value).toFixed(2)}`;
@@ -74,6 +77,16 @@ const AssetView = ({ assetData, onEdit, onDelete, onClose }) => {
     return parts[parts.length - 1];
   };
 
+  // Handle delete confirmation
+  const handleDeleteClick = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    onDelete(); // Call the original onDelete function when confirmed
+    setIsDeleteDialogOpen(false);
+  };
+
   return (
     <div className="w-full p-0">
       <div className="flex flex-col">
@@ -89,11 +102,23 @@ const AssetView = ({ assetData, onEdit, onDelete, onClose }) => {
                   Edit
                 </Button>
                 <Button
-                  onClick={onDelete}
+                  onClick={handleDeleteClick}
                   className="border bg-white border-[#e8e8ec] text-neutral-1200 text-xs font-semibold font-[inter]"
                 >
                   Delete
                 </Button>
+
+                {/* Delete Confirmation Dialog */}
+                {isDeleteDialogOpen && (
+                  <AlertDialogue
+                    isOpen={isDeleteDialogOpen}
+                    setIsOpen={setIsDeleteDialogOpen}
+                    handleContinue={handleConfirmDelete}
+                    continueText="Delete"
+                    title={`Are you sure you want to delete ${assetData.asset_name}?`}
+                    description="This action cannot be undone. Once deleted, the asset data will be permanently removed."
+                  />
+                )}
               </div>
             </div>
 
