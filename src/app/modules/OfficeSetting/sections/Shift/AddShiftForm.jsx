@@ -128,13 +128,13 @@ const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
               <Label>Start Time</Label>
               <TimePicker
                 value={props.values.starttime || "09:00 AM"} // Bind Formik value for starttime
-                onChange={(time) => handleTimeChange("starttime", time, props)} // Update Formik value on time change
+                onChange={(field,time) => handleTimeChange("starttime", time, props)} // Update Formik value on time change
               />
 
               <Label>End Time</Label>
               <TimePicker
                 value={props.values.endtime || "05:00 PM"} // Bind Formik value for endtime
-                onChange={(time) => handleTimeChange("endtime", time, props)} // Update Formik value on time change
+                onChange={(field,time) => handleTimeChange("endtime", time, props)} // Update Formik value on time change
               />
             </SheetCardExtension>
             <div className="p-6 border-t border-gray-200 bg-gray-50">
