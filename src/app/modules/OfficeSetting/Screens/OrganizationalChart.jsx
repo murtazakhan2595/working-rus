@@ -438,7 +438,7 @@ const OrganizationalChart = ({ initialData = null }) => {
         className="bg-white p-4 rounded-lg shadow overflow-auto"
         style={{ minHeight: "600px" }}
       >
-        <div className="org-chart-container">
+        <div className="w-full flex items-center justify-center">
           {organizationData ? (
             renderOrganizationNode(organizationData)
           ) : (
@@ -457,7 +457,7 @@ const OrganizationalChart = ({ initialData = null }) => {
           display: flex;
           flex-direction: column;
           align-items: center;
-          min-width: max-content;
+          max-width: fit-content;
         }
 
         .expand-toggle {
