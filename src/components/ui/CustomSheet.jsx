@@ -18,7 +18,7 @@ import {
 } from "../../src/@/components/ui/dialog";
 import { Button } from "../../components/ui/button";
 import { Label } from "../../src/@/components/ui/label";
-import { Input } from "../../components/ui/input";
+import { cn } from "src/@/lib/utils";
 import { Textarea } from "../../src/@/components/ui/textarea";
 
 const SheetComponent = ({
@@ -36,7 +36,7 @@ const SheetComponent = ({
   isOpen,
   setIsOpen,
   children,
-  contentClassName,
+  className,
   footer,
 }) => {
   // const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -65,7 +65,7 @@ const SheetComponent = ({
         )}
         <SheetContent
           style={{ width }}
-          className={`${contentClassName} overflow-y-auto sm:max-w-4xl`}
+          className={cn(`overflow-y-auto sm:max-w-2xl`,className)}
           // onInteractOutside={handleInteractOutside}
         >
           <SheetHeader className="prose text-left">

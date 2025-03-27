@@ -60,8 +60,7 @@ export function getMenuList(pathname, userRole) {
     peopleEngagementMenus:
       userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
     organizationalChart: true,
-    isAssetsManagement:
-      userRole === 1  || userRole === 3 ,
+    isAssetsManagement: userRole === 1 || userRole === 3,
   };
 
   const createMenu = (
@@ -147,6 +146,7 @@ export function getMenuList(pathname, userRole) {
         createMenu("/my-claims", "My Claims"),
         Config.TRANSFER_MANAGEMENT &&
           createMenu("/my-tranfers", "My Transfers"),
+        Config.HR_DOCUMENTS && createMenu("/my-documents", "HR Documents"),
         Config.ASSETS_MANAGEMENT && createMenu("/my-assets", "My Assets"),
         createMenu("/exit-employee", "Exit"),
         // createMenu("/letter1", "Type of Letter 1"),

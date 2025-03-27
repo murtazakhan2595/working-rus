@@ -2,7 +2,7 @@ import { Button } from "components/ui/button";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Formik } from "formik";
-import { Document } from "app/utils/Types/HRDocuments";
+import { Document, DocumentAssignment } from "app/utils/Types/HRDocuments";
 import { validationHRDocumentFormSchema } from "app/utils/FormSchema/hrDocumentFromSchema";
 import { HRDocumentTargetAudience, HRDocumentCategory } from "data/Data";
 import {
@@ -11,8 +11,9 @@ import {
   SelectInputComponent,
   DateInput,
   TextInput,
+  CoverFileUpload,
 } from "components/FormControl";
-import { PageLoader } from "components";
+import { SheetUI } from "components";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import {
   getHRDocumentData,
@@ -33,28 +34,179 @@ const UploadDocumentForm = ({
   isOpen = true,
   setIsOpen = () => {},
 }) => {
-  const [closeSheet, setCloseSheet] = useState(false);
-  const handleClose = () => {
-    setCloseSheet(true);
+  const Departments = useSelector((state) => state.common.departments);
+  const Employees = useSelector((state) => state.emp.employees);
+  const Document_Category = useSelector((state) => state.doc_category.category);
+  const [formData, setFormData] = useState({
+    ...Document,
+    ...DocumentAssignment,
+  });
+  const [formValues, setFormValues] = useState({
+    ...Document,
+    ...DocumentAssignment,
+  });
+  const fetchData = async (isMounted) => {
+    try {
+      const response = await getHRDocumentData(id);
+      if (isMounted && response) {
+        setFormData(response);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (id) {
+      fetchData(isMounted);
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
+
+  // const fetchFolder = async (isMounted, value) => {
+  //   try {
+  //     const response = await getHRDocumentData(id);
+  //     if (isMounted && response) {
+  //       setFormData(response);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const handleSubmit = async (data) => {
+    try {
+      const response = await addUpdateHRDocumentDetails(data, id);
+      // return
+      if (response) {
+        if (id) {
+          toast.success("Document Updated Successfully!", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        } else {
+          toast.success("Document Submitted Successfully!", {
+            position: toast.POSITION.TOP_RIGHT,
+          });
+        }
+        setIsOpen(false);
+      }
+    } catch (error) {
+      // Handle errors and rollback form data
+      setFormData(data);
+      console.error(error);
+    }
   };
   return (
-    <>
-      {handleCloseWithConfirmation({
-        isOpen: closeSheet,
-        setCloseSheet,
-        setIsOpen,
-      })}
-
-      <SheetComponent
-        {...FormSheetData}
-        contentClassName="custom-sheet-width"
-        isOpen={isOpen}
-        width="678px"
-        setIsOpen={setIsOpen}
-      >
-        <Form id={id} setIsOpen={setIsOpen} handleClose={handleClose} />
-      </SheetComponent>
-    </>
+    <SheetUI
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      variant="sheet"
+      sheetConfig={FormSheetData}
+      formConfig={{
+        initialValues: formData,
+        enableReinitialize: true,
+        handleSubmit: handleSubmit,
+        validateFormSchema: validationHRDocumentFormSchema,
+        submitButtonText: id ? "Update" : "Add",
+        cancelButtonText: "Cancel",
+        columns: 2,
+        renderUpdatedFormValues: setFormValues,
+        formFiels: [
+          {
+            sheetCardExtension: false,
+            // sheetCardTitle: "Employee Details",
+            InputFiels: [
+              {
+                InputField: RadioGroupInput,
+                name: "acknowledgment_type",
+                required: true,
+                disabled: false,
+                label: "Acknowledgment Type",
+                options: [
+                  { value: "MANDATORY", label: "MANDATORY" },
+                  { value: "OPTIONAL", label: "OPTIONAL" },
+                ],
+                colsSpan: 2,
+              },
+              {
+                InputField: TextInput,
+                name: "name",
+                required: true,
+                label: "Document Name",
+              },
+              {
+                InputField: SelectInputComponent,
+                name: "category",
+                required: true,
+                label: "Category",
+                options: Document_Category,
+                onChange: (_, value) => {
+                  // if(value){
+                  //   fetchFolder(true,value);
+                  // }
+                },
+              },
+              {
+                InputField: SelectInputComponent,
+                name: "target_audience",
+                required: true,
+                label: "Target Audience",
+                options: HRDocumentTargetAudience,
+              },
+              ...(formValues.target_audience === "Department"
+                ? [
+                    {
+                      InputField: SelectInputComponent,
+                      name: "object_id",
+                      required: true,
+                      label: "Department",
+                      options: Departments,
+                    },
+                  ]
+                : []),
+              ...(formValues.target_audience === "Specific Employee"
+                ? [
+                    {
+                      InputField: SelectInputComponent,
+                      name: "object_id",
+                      required: true,
+                      label: "Employee",
+                      options: Employees,
+                    },
+                  ]
+                : []),
+              {
+                InputField: DateInput,
+                name: "expiration_date",
+                required: true,
+                label: "Expiration Date",
+              },
+              {
+                InputField: TextAreaInput,
+                name: "description",
+                required: true,
+                label: "Note",
+                colsSpan: 2,
+                maxRows: 5,
+              },
+              {
+                InputField: CoverFileUpload,
+                name: "file",
+                required: true,
+                label: "Document",
+                colsSpan: 2,
+                variant: "AttachmentFileUpload",
+                allowUpdate: true,
+                multiple: false,
+              },
+            ],
+          },
+        ],
+      }}
+    ></SheetUI>
   );
 };
 

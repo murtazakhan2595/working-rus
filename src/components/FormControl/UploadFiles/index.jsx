@@ -104,7 +104,6 @@ const CoverFileUpload = ({
     document.body.appendChild(tempFileInput);
     tempFileInput.click();
   };
-
   return (
     <FormField
       name={name}

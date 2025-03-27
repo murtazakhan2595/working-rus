@@ -1,19 +1,18 @@
-export const validationHRDocumentFormSchema = (
-    values,
-  ) => {
-    const errors = {};
-      if (!values.transfer_type)
-        errors.transfer_type = "Transfer Type is required";
-      if (!values.employee_id) errors.employee_id = "Employee is required";
-      if (!values.new_department)
-        errors.new_department = "Department name is required";
-      if (values.transfer_type === "EXTERNAL" && !values.new_branch)
-        errors.new_branch = "Location is required";
-      if (!values.effective_transfer_date)
-        errors.effective_transfer_date = "Date is required";
-      if (!values.reason_of_transfer)
-        errors.reason_of_transfer = "Reason is required";
-  
-    return errors;
-  };
-  
+export const validationHRDocumentFormSchema = (values) => {
+  const errors = {};
+  if (!values.acknowledgment_type)
+    errors.acknowledgment_type = "Acknowledgment Type is required";
+  if (!values.name) errors.name = "Name is required";
+  if (!values.category) errors.category = "Category is required";
+  if (!values.expiration_date) errors.expiration_date = "Date is required";
+  if (!values.description) errors.description = "Note is required";
+  if (!values.target_audience)
+    errors.target_audience = "Target Audience is required";
+  if (values.target_audience) {
+    if (values.target_audience === "Department" && !values.object_id)
+      errors.object_id = "Department is required";
+    if (values.target_audience === "Specific Employee" && !values.object_id)
+      errors.object_id = "Employee is required";
+  }
+  return errors;
+};

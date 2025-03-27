@@ -29,11 +29,9 @@ const Attendance = () => {
   const [weeklySummary, setWeeklySummary] = useState([]);
   const departments = useSelector((state) => state.common.departments);
   const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [activeTab, setActiveTab] = useState("day");
+  const [activeTab, setActiveTab] = useState("Month");
   const [filterData, setFilterData] = useState({});
-  const [dateRange, setDateRange] = useState(
-    `${moment().format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`
-  );
+  const [dateRange, setDateRange] = useState(GetDateRange("MONTH"));
   const [leaveStatus, setLeaveStatus] = useState({});
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));

@@ -25,7 +25,7 @@ import { GetAssigneDtr } from "../../../state/slices/GetAssigneDtr";
 import ViewTaskDetails from "./ViewTaskDetails";
 import UpdateModal from "./UpdateModal";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { toggleFilter } from "../../../state/slices/FilterSlice";
+import { toggleFilter } from "../../../state/slices/HRDocumentsSlice";
 
 const CreateTask = ({ baseUrl, token }) => {
 

@@ -4,10 +4,11 @@ import { UploadDocumentForm } from "app/modules/HRDocuments";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
 import { Header } from "components";
 import {
-  getDocumentList,
+  getDocumentAssignmentList,
   getEmployeeTransferStats,
 } from "app/hooks/hrDocuments";
-import { HRDocumentsColumns } from "app/modules/HRDocuments/Sections";
+import { MyHRDocumentsColumns } from "app/modules/HRDocuments/Sections";
+import { DocumentDetails } from "app/modules/HRDocuments/Screens";
 import {
   Tabs,
   TabsList,
@@ -23,24 +24,22 @@ import Config from "constants/config";
 
 const ExternalTabs = ["All", "Signed", "Pending", "Expired"].filter(Boolean);
 
-export default function Documents() {
+export default function MyDocuments() {
   const userRole = useSelector((state) => state.user.userProfile.role);
   const userID = useSelector((state) => state.user.userProfile.id);
   const Document_Category = useSelector((state) => state.doc_category.category);
   const [isLoading, setIsLoading] = useState(true);
-  const [employeeTransferData, setEmployeeTransferData] = useState({
+  const [HRDocumentsData, setHRDocumentsData] = useState({
     results: [],
     count: 0,
   });
   const [employeeTransferStat, setEmployeeTransferStat] = useState({});
-  const [OpenUploadDocumentForm, setOpenUploadDocumentForm] = useState(false);
+  const [OpenDocumentID, setOpenDocumentID] = useState(false);
   const [activeExternalTab, setActiveExternalTab] = useState("All");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
-  const [filterData, setFilterData] = useState(
-    userRole === 2 ? { new_reporting_manager: userID } : {}
-  );
+  const [filterData, setFilterData] = useState({ emp: userID });
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -53,18 +52,21 @@ export default function Documents() {
     onSortChange: (sortName) => {
       setOrdering(sortName);
     },
+    onRowClick: (row) => {
+      setOpenDocumentID(row.id);
+    },
   };
 
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
-      const data = await getDocumentList({
+      const data = await getDocumentAssignmentList({
         options,
         filterData,
         ordering,
       });
       if (isMounted) {
-        setEmployeeTransferData(data);
+        setHRDocumentsData(data);
       }
     } catch (error) {
       console.error("Error fetching employees:", error);
@@ -158,74 +160,43 @@ export default function Documents() {
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
-      <Header
-        content={
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              setOpenUploadDocumentForm(true);
-            }}
-          >
-            Upload New Document
-          </Button>
-        }
-      />
-      {/* <Stats stats={statsData} /> */}
-      <Tabs
-        defaultValue="All"
-        className="w-full"
-        onValueChange={(tab) => {
-          setActiveExternalTab(tab);
-        }}
-        value={activeExternalTab}
-      >
-        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
-          <TabsList className="flex items-center justify-center mb-4">
-            {ExternalTabs.map((tab) => (
-              <TabsTrigger
-                key={tab}
-                value={tab}
-                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-              >
-                {tab}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          <FilterInput
-            filters={[
-              {
-                type: "select-one",
-                option: Document_Category,
-                name: "category",
-                placeholder: "Category",
-                values: selectedCategory,
-              },
-            ]}
-            onChange={handleFilterChange}
+      <Header />
+
+      <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+        <FilterInput
+          filters={[
+            {
+              type: "select-one",
+              option: Document_Category,
+              name: "category",
+              placeholder: "Category",
+              values: selectedCategory,
+            },
+          ]}
+          onChange={handleFilterChange}
+        />
+      </div>
+      <Card>
+        <CardContent>
+          <TableCustom
+            data={HRDocumentsData.results}
+            columns={MyHRDocumentsColumns}
+            pagination={true}
+            dataTotalSize={HRDocumentsData.count || 0}
+            tableOptions={tableOptions}
           />
-        </div>
-        <Card>
-          <CardContent>
-            <TableCustom
-              data={employeeTransferData.results}
-              columns={HRDocumentsColumns}
-              pagination={true}
-              dataTotalSize={employeeTransferData.count || 0}
-              tableOptions={tableOptions}
-            />
-          </CardContent>
-        </Card>
-      </Tabs>
-      {OpenUploadDocumentForm && (
-        <UploadDocumentForm
-          isOpen={OpenUploadDocumentForm}
+        </CardContent>
+      </Card>
+      {OpenDocumentID && (
+        <DocumentDetails
+          documentID={OpenDocumentID}
+          isOpen={!!OpenDocumentID}
           setIsOpen={() => {
-            setOpenUploadDocumentForm(false);
-            fetchData(true);
+            setOpenDocumentID(null);
           }}
-          transfer_type={
-            activeExternalTab === "Internal" ? "INTERNAL" : "EXTERNAL"
-          }
+          DocumentList={HRDocumentsData.results}
+          reloadData={fetchData}
+          // readOnlyMode={true}
         />
       )}
     </div>

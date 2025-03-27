@@ -8,7 +8,7 @@ import GetDtrSlice from "./GetDtrSlice";
 import GetDtrAllSlice from "./GetDtrAllSlice";
 import GetAssigneDtr from "./GetAssigneDtr";
 import UpdateDtrSlice from "./UpdateDtrSlice";
-import FilterSlice from "./FilterSlice";
+import HRDocumentsSlice from "./HRDocumentsSlice";
 import GetTeamDtrSlice from "./GetTeamDtrSlice";
 import CommonSlice from "./CommonSlice";
 import taskManagmentSlice from "./TaskManagmentSlice";
@@ -24,7 +24,7 @@ const rootReducer = combineReducers({
   getDtrAll: GetDtrAllSlice,
   getAssigne: GetAssigneDtr,
   updateDtr: UpdateDtrSlice,
-  filters: FilterSlice,
+  doc_category: HRDocumentsSlice,
   teamDtr: GetTeamDtrSlice,
   common: CommonSlice,
   task_managment: taskManagmentSlice,

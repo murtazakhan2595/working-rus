@@ -96,7 +96,7 @@ export function getFormattedDropdownItems(
       ? `${item[prefixKey]} ${separator} ${item[labelKey]}` // Format: "Prefix - Label"
       : item[labelKey], // If no prefix, use label directly
     value: item[valueKey],
-    ...items,
+    ...item,
   }));
 
   // If additionalOption exists, append it to the dropdown options

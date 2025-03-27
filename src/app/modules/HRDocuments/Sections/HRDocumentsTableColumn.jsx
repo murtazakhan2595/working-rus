@@ -11,7 +11,7 @@ import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
 import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
 import { DesignationName } from "utils/getValuesFromTables";
-import { DepartmentName, ManagerName } from "utils/getValuesFromTables";
+import { DocCategoryName, ManagerName } from "utils/getValuesFromTables";
 import { Switch } from "src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
 import { Clock } from "lucide-react";
@@ -27,49 +27,39 @@ import { formatDuration } from "utils/renderValues";
  */
 export const HRDocumentsColumns = [
   {
-    dataField: "employee_id",
+    dataField: "name",
     text: "Name",
-    formatter: (cell, row) => (
-      <EmployeeOverview
-        id={row.employee_id}
-        showId={true}
-        showPosition={true}
-        showDepartment={true}
-      />
-    ),
-    minWidth: "120px",
-    // dataSort: true,
+    // minWidth: "120px",
+    dataSort: true,
   },
   {
-    dataField: "new_department",
+    dataField: "category",
     text: "Category",
-    formatter: (cell, row) => <DepartmentName value={cell} />,
+    formatter: (cell, row) => <DocCategoryName value={cell} />,
     dataSort: true,
     minWidth: "110px",
   },
   {
-    dataField: "new_reporting_manager",
+    dataField: "target_audience",
     text: "Target Audience",
-    formatter: (cell, row) => <ManagerName value={cell} />,
     dataSort: true,
     minWidth: "110px",
   },
   {
-    dataField: "effective_transfer_date",
+    dataField: "expiration_date",
     text: "Expiration Date",
     formatter: (cell, row) => renderDate(cell),
-
     dataSort: true,
     minWidth: "110px",
   },
-  {
-    dataField: "status",
-    text: "Type",
-    dataSort: true,
-    formatter: (cell, row) => (
-      <EmployeeTransferStatusView status={cell || "PENDING"} />
-    ),
-  },
+  // {
+  //   dataField: "status",
+  //   text: "Type",
+  //   dataSort: true,
+  //   formatter: (cell, row) => (
+  //     <EmployeeTransferStatusView status={cell || "PENDING"} />
+  //   ),
+  // },
 ];
 
 /**
@@ -79,39 +69,38 @@ export const HRDocumentsColumns = [
  *
  * @returns {array} An array of column definitions.
  */
-export const MyTransfersColumns = [
+export const MyHRDocumentsColumns = [
   {
-    dataField: "transfer_type",
-    text: "Tranfer Type",
-    formatter: (cell, row) => (cell === "INTERNAL" ? "Internal" : "External"),
+    dataField: "document_name",
+    text: "Name",
     minWidth: "120px",
     dataSort: true,
   },
   {
     dataField: "new_department",
-    text: "New Department",
+    text: "Category",
     formatter: (cell, row) => (
-      <DepartmentName value={cell} fallBackText={"-"} />
+      <DocCategoryName value={cell} fallBackText={"-"} />
     ),
     dataSort: true,
     minWidth: "110px",
   },
+  // {
+  //   dataField: "new_reporting_manager",
+  //   text: "New Reporting Manager",
+  //   formatter: (cell, row) => <ManagerName value={cell} fallBackText="-" />,
+  //   dataSort: true,
+  //   minWidth: "110px",
+  // },
+  // {
+  //   dataField: "new_location",
+  //   text: "New Location",
+  //   dataSort: true,
+  //   minWidth: "110px",
+  // },
   {
-    dataField: "new_reporting_manager",
-    text: "New Reporting Manager",
-    formatter: (cell, row) => <ManagerName value={cell} fallBackText="-" />,
-    dataSort: true,
-    minWidth: "110px",
-  },
-  {
-    dataField: "new_location",
-    text: "New Location",
-    dataSort: true,
-    minWidth: "110px",
-  },
-  {
-    dataField: "effective_transfer_date",
-    text: "Effective Transfer Date",
+    dataField: "due_date",
+    text: "Due Date",
     formatter: (cell, row) => renderDate(cell),
 
     dataSort: true,
@@ -122,7 +111,9 @@ export const MyTransfersColumns = [
     text: "Status",
     dataSort: true,
     formatter: (cell, row) => (
-      <EmployeeTransferStatusView status={cell || "PENDING"} />
+      <StatusLabel className="cursor-pointer" status={cell}>
+        {cell.charAt(0) + cell.slice(1).toLowerCase()}
+      </StatusLabel>
     ),
   },
 ];
