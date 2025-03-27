@@ -24,7 +24,7 @@ const AssetRequestViewSheet = ({
   setIsOpen,
   isMyRequest = false,
   reload,
-  d
+  d,
 }) => {
   // For compatibility with the existing prop structure
   const assetRequest = request;
@@ -60,6 +60,11 @@ const AssetRequestViewSheet = ({
 
   const detailItems = [
     {
+      label: "Asset ID",
+      value: assetRequest?.asset?.id || "Not specified",
+    },
+    // Existing fields
+    {
       label: "Asset Name",
       value: assetRequest?.asset?.asset_name || assetRequest?.asset_name,
     },
@@ -67,10 +72,54 @@ const AssetRequestViewSheet = ({
       label: "Asset Type",
       value: assetRequest?.asset?.asset_type || "Not specified",
     },
+    // New fields - Model & Specifications
+    {
+      label: "Model",
+      value: assetRequest?.asset?.asset_model || "Not specified",
+    },
+    {
+      label: "Specifications",
+      value: assetRequest?.asset?.asset_description || "Not specified",
+    },
+    // Existing field
     {
       label: "Serial Number",
       value: assetRequest?.asset?.asset_serial_number || "Not specified",
     },
+    // New field - Location
+    {
+      label: "Location",
+      value: assetRequest?.asset?.asset_location_name || "Not specified",
+    },
+    // New field - Purchase Date
+    {
+      label: "Purchase Date",
+      value: assetRequest?.asset?.asset_purchase_date
+        ? moment(assetRequest?.asset?.asset_purchase_date).format("MMM D, YYYY")
+        : "Not specified",
+    },
+    // New field - Warranty Expiry
+    {
+      label: "Warranty Expiry",
+      value: assetRequest?.asset?.asset_warranty_expiry
+        ? moment(assetRequest?.asset?.asset_warranty_expiry).format(
+            "MMM D, YYYY"
+          )
+        : "Not specified",
+    },
+    // New field - Initial Condition
+    {
+      label: "Initial Condition",
+      value: assetRequest?.asset?.asset_initial_condition || "Not specified",
+    },
+    // New field - Purchase Cost
+    {
+      label: "Purchase Cost",
+      value: assetRequest?.asset?.asset_purchase_price
+        ? `$${assetRequest?.asset?.asset_purchase_price.toFixed(2)}`
+        : "Not specified",
+    },
+    // Existing fields
     {
       label: "Request Date",
       value: moment(assetRequest?.created_at).format("MMM D, YYYY"),
@@ -163,6 +212,7 @@ const AssetRequestViewSheet = ({
           showEmail={true}
           showDepartment={true}
           showPosition={true}
+          showId={true}
         />
 
         {/* Details Section */}
@@ -175,7 +225,6 @@ const AssetRequestViewSheet = ({
               <DetailBox key={index} label={item?.label} value={item?.value} />
             ))}
 
-            {/* Attachments Section */}
             {/* Attachments Section */}
             {attachments && attachments.length > 0 && (
               <div className="flex items-center max-w-full gap-4 mt-4">
