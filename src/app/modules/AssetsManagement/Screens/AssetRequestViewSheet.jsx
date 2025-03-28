@@ -213,6 +213,7 @@ const AssetRequestViewSheet = ({
           showDepartment={true}
           showPosition={true}
           showId={true}
+          showBranchName={true}
         />
 
         {/* Details Section */}
