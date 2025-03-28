@@ -28,37 +28,10 @@ const UploadDocumentForm = ({
   isOpen = true,
   setIsOpen = () => {},
 }) => {
-  const Departments = useSelector((state) => state.common.departments);
-  const Employees = useSelector((state) => state.emp.employees);
-  const Document_Category = useSelector((state) => state.doc_category.category);
-  const [formData, setFormData] = useState({
+ const [formData, setFormData] = useState({
     signature: null,
     signature_data: moment().format("YYYY-MM-DD"),
   });
-  const [formValues, setFormValues] = useState({
-    signature: null,
-    signature_data: moment().format("YYYY-MM-DD"),
-  });
-  const fetchData = async (isMounted) => {
-    try {
-      const response = await getHRDocumentData(id);
-      if (isMounted && response) {
-        setFormData(response);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    if (id) {
-      fetchData(isMounted);
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [id]);
 
   const handleSubmit = async (data) => {
     try {
@@ -82,8 +55,6 @@ const UploadDocumentForm = ({
       console.error(error);
     }
   };
-
-  console.log(formValues, "formVslued");
   return (
     <SheetUI
       isOpen={isOpen}
@@ -94,11 +65,15 @@ const UploadDocumentForm = ({
         initialValues: formData,
         enableReinitialize: true,
         handleSubmit: handleSubmit,
-        validateFormSchema: validationHRDocumentFormSchema,
+        validateFormSchema: (values) => {
+          const error = {};
+          if (!values.signature) error.signature = "Signature is required";
+          return error;
+        },
         submitButtonText: "Submit Signature",
         cancelButtonText: "Cancel",
         columns: 1,
-        renderUpdatedFormValues: setFormValues,
+      //  renderUpdatedFormValues: setFormValues,
         formFiels: [
           {
             sheetCardExtension: false,
@@ -110,22 +85,13 @@ const UploadDocumentForm = ({
                 required: true,
                 disabled: false,
                 label: "Signature",
-                variant: "Draw",
+                //   variant: "Type",
               },
             ],
           },
         ],
       }}
-    >
-      <div className="border p-4 rounded-lg shadow-md">
-      <h2 className="text-lg font-semibold mb-2">Signature</h2>
-      {formValues.signature ? (
-        <img src={URL.createObjectURL(formValues.signature)} alt="Signature" className="w-48 h-auto" />
-      ) : (
-        <p>No signature available</p>
-      )}
-    </div>
-    </SheetUI>
+    ></SheetUI>
   );
 };
 

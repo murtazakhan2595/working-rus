@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Undo2, RotateCcw, Redo2 ,CheckCheck} from "lucide-react";
+import { Undo2, RotateCcw, Redo2, CheckCheck } from "lucide-react";
 import {
   FormField,
-  FormPopoverButton,
-  FormPlaceholder,
-  FormFieldIcon,
+  inputButtonClassName,
+  InvalidInput,
 } from "components/FormControl";
-import { format, parse, isValid } from "date-fns";
-import { Input } from "components/ui/input";
+import { cn } from "src/@/lib/utils";
 import { Button } from "components/ui/button";
-import { convert_base64_To_File } from "utils/fileUtils";
+import { convert_base64_To_File, convert_Text_To_File } from "utils/fileUtils";
 const InputSignature = React.memo(
   ({
     name,
@@ -21,13 +19,10 @@ const InputSignature = React.memo(
     required = false, // Whether the field is required
     className = "w-full", // Custom styling
     variant = "Draw", // Determine signature variant i.e. [Draw, Type, Image]
-    placeholder = null, // Placeholder text when no value is selected
-    showReset = false,
     disabled = false,
     setError = () => {},
   }) => {
-    const [activeTab, setActiveTab] = useState("draw");
-    const [signature, setSignature] = useState(null);
+    const [signature, setSignature] = useState(value);
     const [color, setColor] = useState("#000000");
     const [thickness, setThickness] = useState(2);
     const [font, setFont] = useState("Dancing Script");
@@ -38,7 +33,8 @@ const InputSignature = React.memo(
     const [historyIndex, setHistoryIndex] = useState(-1);
     const [isDrawing, setIsDrawing] = useState(false);
 
-    const clearSignature = useCallback(() => {
+    const clearSignature = useCallback((event) => {
+      event.preventDefault();
       setSignature(null);
       setTypedText("");
       if (canvasRef.current) {
@@ -47,6 +43,7 @@ const InputSignature = React.memo(
       }
       setHistory([]);
       setHistoryIndex(-1);
+      onChange(name, null);
     }, []);
 
     const handleDraw = useCallback(
@@ -54,9 +51,13 @@ const InputSignature = React.memo(
         if (!isDrawing || !canvasRef.current) return;
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
+
+        // Get canvas offset
         const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const scaleX = canvas.width / rect.width; // Account for scaling
+        const scaleY = canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
 
         ctx.lineWidth = thickness;
         ctx.lineCap = "round";
@@ -66,16 +67,20 @@ const InputSignature = React.memo(
         ctx.beginPath();
         ctx.moveTo(x, y);
       },
-      [isDrawing, color, thickness]
+      [isDrawing]
     );
 
     const startDrawing = useCallback((e) => {
       setIsDrawing(true);
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d");
+
       const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+
       ctx.beginPath();
       ctx.moveTo(x, y);
     }, []);
@@ -92,7 +97,8 @@ const InputSignature = React.memo(
       setHistoryIndex(newHistory.length - 1);
     }, [history, historyIndex, isDrawing]);
 
-    const undo = useCallback(() => {
+    const undo = useCallback((event) => {
+      event.preventDefault();
       if (historyIndex > 0) {
         setHistoryIndex(historyIndex - 1);
         const img = new Image();
@@ -110,7 +116,8 @@ const InputSignature = React.memo(
       }
     }, [history, historyIndex]);
 
-    const redo = useCallback(() => {
+    const redo = useCallback((event) => {
+      event.preventDefault();
       if (historyIndex < history.length - 1) {
         setHistoryIndex(historyIndex + 1);
         const img = new Image();
@@ -138,13 +145,13 @@ const InputSignature = React.memo(
       }
     }, []);
 
-    const handleSave = useCallback(() => {
-      debugger
+    const handleSave = useCallback(async (event) => {
+      event.preventDefault();
       let signatureData;
       if (variant === "Draw" && canvasRef.current) {
         signatureData = convert_base64_To_File(canvasRef.current.toDataURL());
       } else if (variant === "Type" && typedText) {
-        signatureData = typedText;
+        signatureData = await convert_Text_To_File(typedText);
       } else if (variant === "Image" && signature) {
         signatureData = signature;
       }
@@ -154,7 +161,7 @@ const InputSignature = React.memo(
         return;
       }
 
-      onChange(name,signatureData);
+      onChange(name, signatureData);
       setError(null);
     }, [typedText, signature, onChange]);
 
@@ -168,7 +175,13 @@ const InputSignature = React.memo(
         className={className}
         disabled={disabled}
       >
-        <div className="w-full p-6 rounded-lg border border-neutral-500 bg-white">
+        <div
+          className={cn(
+            inputButtonClassName,
+            "w-full p-0",
+            error && touch ? InvalidInput : ""
+          )}
+        >
           <div className="">
             {variant === "Draw" && (
               <div>
@@ -182,30 +195,24 @@ const InputSignature = React.memo(
                   onMouseLeave={stopDrawing}
                   className="bg-gray-300 rounded-lg w-full"
                 />
-                <div className="flex items-center gap-4 mt-4 text-neutral-1200">
-                  <Input
-                    type="range"
-                    min="1"
-                    max="10"
-                    value={thickness}
-                    onChange={(e) => setThickness(Number(e.target.value))}
-                    className="w-32"
-                  />
+                <div className="flex items-center text-neutral-1200 justify-end">
                   <Button
                     onClick={undo}
                     disabled={historyIndex <= 0}
                     size="icon"
                     variant="ghost"
+                    title="Undo"
                   >
-                    <Undo2 />
+                    <Undo2 size={19} />
                   </Button>
                   <Button
                     onClick={redo}
                     disabled={historyIndex >= history.length - 1}
                     size="icon"
                     variant="ghost"
+                    title="Redo"
                   >
-                    <Redo2 />
+                    <Redo2 size={19} />
                   </Button>
                   <ClearSignature clearSignature={clearSignature} />
                   <SaveSignature handleSave={handleSave} />
@@ -249,6 +256,8 @@ const InputSignature = React.memo(
                 >
                   {typedText}
                 </div>
+                <ClearSignature clearSignature={clearSignature} />
+                <SaveSignature handleSave={handleSave} />
               </div>
             )}
 
@@ -297,13 +306,22 @@ const InputSignature = React.memo(
 );
 
 const SaveSignature = ({ handleSave = () => {} }) => {
-  return <Button onClick={handleSave} size="icon" variant="ghost"><CheckCheck /></Button>;
+  return (
+    <Button onClick={handleSave} size="icon" variant="ghost" title="Save">
+      <CheckCheck size={19} />
+    </Button>
+  );
 };
 
 const ClearSignature = ({ clearSignature = () => {} }) => {
   return (
-    <Button onClick={clearSignature} size="icon" variant="ghost">
-      <RotateCcw />
+    <Button
+      onClick={clearSignature}
+      size="icon"
+      variant="ghost"
+      title="Clear All"
+    >
+      <RotateCcw size={19} />
     </Button>
   );
 };

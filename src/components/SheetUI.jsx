@@ -39,7 +39,7 @@ const SheetUI = forwardRef(
       submitButtonText = "Submit",
       cancelButtonText = "Cancel",
       formFiels,
-      renderUpdatedFormValues,
+      renderUpdatedFormValues=()=>{},
       columns,
     } = formConfig;
 
@@ -74,6 +74,7 @@ const SheetUI = forwardRef(
         >
           {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+              {children}
               {formFiels?.map(
                 ({ InputFiels, sheetCardExtension, sheetCardTitle }, index) => {
                   return (
@@ -139,7 +140,6 @@ const SheetUI = forwardRef(
                   );
                 }
               )}
-              {children}
               <div className="p-6 border-t border-gray-200 bg-gray-50">
                 <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
                   <Button

@@ -89,3 +89,30 @@ export function convert_base64_To_File(base64URL) {
     return file;
   }
 }
+
+export function convert_Text_To_File(text, fileName = "signature.png") {
+  return new Promise((resolve) => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = 300; // Set width of image
+    canvas.height = 100; // Set height of image
+
+    // Set background
+    ctx.fillStyle = "#fff"; // White background
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Set text properties
+    ctx.fillStyle = "#000"; // Black text
+    ctx.font = "20px Arial";
+    ctx.fillText(text, 20, 50); // Draw text on canvas
+
+    // Convert canvas to Blob and then File
+    canvas.toBlob((blob) => {
+      const file = new File([blob], fileName, { type: "image/png" });
+      resolve(file);
+    }, "image/png");
+  });
+}
+
+

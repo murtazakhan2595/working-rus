@@ -55,7 +55,7 @@ const DocumentDetails = ({
   const userId = useSelector((state) => state.user.userProfile.id);
   const [currentDocument, setCurrentDocument] = useState({});
   const [currentDocumentId, setCurrentDocumentId] = useState(documentID);
-  const [OpenSignationForm, setOpenSignationForm] = useState(true);
+  const [OpenSignationForm, setOpenSignationForm] = useState(false);
 
   const fetchData = async (isMounted, documentId) => {
     try {
