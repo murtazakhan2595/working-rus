@@ -1,43 +1,247 @@
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
-import SheetComponent from "components/ui/SheetComponent";
+import SheetComponent from "components/ui/CustomSheet";
 import React, { useEffect, useState } from "react";
-import { Formik } from "formik";
+import { Formik, useFormikContext } from "formik";
 import { Button } from "components/ui/button";
-import { SelectInputComponent } from "components/FormControl";
-import { saveShiftAssignment } from "app/hooks/attendance";
+import { SelectInputComponent, CheckBoxInput } from "components/FormControl";
 import { toast } from "react-toastify";
 import { connect } from "react-redux";
 import { getEmployeeList } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import moment from "moment";
-import { getShiftAssignment } from "app/hooks/attendance";
-
+import { getShiftAssignment, getShift } from "app/hooks/attendance";
 import { Switch } from "../../../../../src/@/components/ui/switch";
+import { CardContent, Card, CardHeader, CardTitle } from "components/ui/card";
+import AddShiftForm from "app/modules/OfficeSetting/sections/Shift/AddShiftForm";
+import { saveEmployeeWorkInformationData } from "app/hooks/employee";
 
-import { CardContent } from "components/ui/card";
-import { Card } from "components/ui/card";
-import { CardHeader } from "components/ui/card";
-import { CardTitle } from "components/ui/card";
+// Form values updater component - helps us update form values when employee changes
+const FormUpdater = ({ employeeId, employees, setShiftSelect }) => {
+  const { setFieldValue } = useFormikContext();
 
-const AssignShift = ({ users, shifts }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => {
+    if (employeeId && employees && employees.length > 0) {
+      // Find the selected employee in the employees array
+      const selectedEmployee = employees.find(
+        (emp) => emp.id.toString() === employeeId.toString()
+      );
 
-  const handleSubmit = async (formData, resetForm) => {
-    console.log("Form submitted:", formData);
-    const response = await saveShiftAssignment(formData);
-    if (response) {
-      resetForm();
-      setIsOpen(false);
-      toast.success("Employee Shift saved successfully");
-    } else {
-      resetForm();
-      toast.error("Error saving Employee Shift");
+      if (selectedEmployee && selectedEmployee.shift_assignment) {
+        // If employee has a shift assignment, update form values
+        setFieldValue("shift_assignment", selectedEmployee.shift_assignment);
+        setShiftSelect(true); // Check the "Choose Shift" checkbox
+      } else {
+        // If employee doesn't have a shift assignment, reset form values
+        setFieldValue("shift_assignment", "");
+        setShiftSelect(false);
+      }
     }
+  }, [employeeId, employees, setFieldValue, setShiftSelect]);
+
+  return null; // This component doesn't render anything
+};
+
+const AssignShift = ({ employees }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [shiftSelect, setShiftSelect] = useState(false);
+  const [shiftList, setShiftList] = useState([]);
+  const [addShift, setAddShift] = useState(false);
+  const [closeSheet, setCloseSheet] = useState(false);
+  const [initialValues, setInitialValues] = useState({
+    shift_assignment: "",
+    employee: "",
+  });
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
+
+  const empOptions = employees?.map((emp) => {
+    return {
+      value: emp.id,
+      label: `${emp.first_name} ${emp.last_name}`,
+    };
+  });
+
+  const getShiftList = async () => {
+    const shiftData = await getShift();
+    if (shiftData) {
+      const shiftList = shiftData.results.map((shift) => {
+        return {
+          value: shift.id,
+          label: `${shift.name} (${moment(shift.starttime).format(
+            "h:mm a"
+          )} - ${moment(shift.endtime).format("h:mm a")})`,
+        };
+      });
+      setShiftList(shiftList);
+    }
+  };
+
+  useEffect(() => {
+    getShiftList();
+  }, [employees]);
+
+  const handleClose = () => {
+    setCloseSheet(true);
   };
 
   const formSheetData = {
     triggerText: "Assign Shift",
     title: "Assign Shift",
+    description: null,
+    footer: null,
+  };
+
+  const handleSubmit = async (values, { resetForm }) => {
+    try {
+      // Save shift assignment
+      const response = await saveEmployeeWorkInformationData(values.employee, {
+        shift_assignment: values.shift_assignment,
+        employee: values.employee,
+      });
+
+      if (response) {
+        toast.success("Shift assigned successfully!", {
+          position: toast.POSITION.TOP_RIGHT,
+        });
+        resetForm();
+        setIsOpen(false);
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+      toast.error(error.message || "An error occurred", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    }
+  };
+
+  return (
+    <>
+      {handleCloseWithConfirmation({
+        isOpen: closeSheet,
+        setCloseSheet,
+        setIsOpen,
+        discard: false,
+      })}
+
+      <SheetComponent
+        {...formSheetData}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        width="568px"
+      >
+        <Formik
+          initialValues={initialValues}
+          onSubmit={handleSubmit}
+          enableReinitialize
+        >
+          {(props) => (
+            <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+              {/* Add form updater component to update shift data when employee changes */}
+              <FormUpdater
+                employeeId={props.values.employee}
+                employees={employees}
+                setShiftSelect={setShiftSelect}
+              />
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Shift Details</h3>
+
+                <div className="space-y-2">
+                  <SelectInputComponent
+                    name={"employee"}
+                    options={empOptions || []}
+                    error={props.errors?.employee}
+                    touch={props.touched.employee}
+                    value={props.values.employee}
+                    label={"Employee"}
+                    required={true}
+                    onChange={(field, value) => {
+                      props.setFieldValue(field, value);
+                      setSelectedEmployeeId(value);
+                    }}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-2">
+                    <CheckBoxInput
+                      label="Choose Shift"
+                      name="shift-select"
+                      value={shiftSelect}
+                      onChange={(name, value) => {
+                        setShiftSelect(value);
+                        if (!value) {
+                          props.setFieldValue("shift_assignment", "");
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {shiftSelect && (
+                    <div className="space-y-2">
+                      <SelectInputComponent
+                        name={"shift_assignment"}
+                        options={shiftList}
+                        error={props.errors?.shift_assignment}
+                        touch={props.touched.shift_assignment}
+                        value={props.values.shift_assignment}
+                        label={"Shift"}
+                        required={true}
+                        onChange={(field, value) => {
+                          props.setFieldValue(field, value);
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <CheckBoxInput
+                      label="Custom Shift"
+                      name="custom-shift"
+                      value={addShift}
+                      onChange={(name, value) => {
+                        setAddShift(value);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-gray-200 bg-gray-50">
+                <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={handleClose}
+                    type="button"
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" size="lg" variant="default">
+                    Assign
+                  </Button>
+                </div>
+              </div>
+            </form>
+          )}
+        </Formik>
+      </SheetComponent>
+
+      {addShift && (
+        <ShiftAction
+          isOpen={addShift}
+          setIsOpen={setAddShift}
+          reload={getShiftList}
+        />
+      )}
+    </>
+  );
+};
+
+// ShiftAction component
+const ShiftAction = ({ isOpen, setIsOpen, reload }) => {
+  const formSheetData = {
+    triggerText: null,
+    title: "Add Shift Details",
     description: null,
     footer: null,
   };
@@ -49,167 +253,15 @@ const AssignShift = ({ users, shifts }) => {
       setIsOpen={setIsOpen}
       width="568px"
     >
-      <AssignShiftForm
-        handleSubmit={handleSubmit}
+      <AddShiftForm
         isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        users={users}
-        shifts={shifts}
+        setIsOpen={(value) => {
+          reload();
+          setIsOpen(value);
+        }}
       />
     </SheetComponent>
   );
 };
 
-const AssignShiftForm = ({
-  handleSubmit,
-  isOpen,
-  setIsOpen,
-  users,
-  shifts,
-}) => {
-  const [loading, setLoading] = useState(false);
-  const [closeSheet, setCloseSheet] = useState(false);
-  const [employeeShiftsList, setEmployeeShiftsList] = useState([]);
-  const [isModify, setIsModify] = useState(false);
-  const [formData, setFormData] = useState({
-    employee: null,
-    shift: null,
-  });
-  const usersList = users?.map((user) => ({
-    value: `${user.id}`,
-    label: `${user.first_name} ${user.last_name}`,
-  }));
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [shiftsList, setShiftsList] = useState(
-    shifts?.map((shift) => ({
-      value: `${shift.id}`,
-      label: `${shift.name} (${moment(shift.start_time).format(
-        "h:mm a"
-      )} - ${moment(shift.end_time).format("h:mm a")})`,
-    }))
-  );
-  useEffect(() => {
-    const fetchShifts = async () => {
-      const shiftData = await getShiftAssignment({
-        filterData: { employee_id: selectedEmployee },
-      });
-      if (shiftData) {
-        setEmployeeShiftsList(shiftData.results);
-        let filteredShifts = shiftsList?.filter(
-          (shift) =>
-            !shiftData.results.some(
-              (shiftData) => shiftData.shift === shift.value
-            )
-        );
-        console.log("Filtered Shifts", filteredShifts);
-        setShiftsList(filteredShifts);
-      }
-    };
-    fetchShifts();
-  }, [selectedEmployee]);
-
-  const handleClose = () => {
-    // setIsOpen(false)
-    setCloseSheet(true);
-  };
-
-  return (
-    <>
-      {handleCloseWithConfirmation({
-        isOpen: closeSheet,
-        setCloseSheet,
-        setIsOpen,
-      })}
-      <Formik
-        initialValues={formData}
-        // innerRef={formRef}
-        onSubmit={(values, { resetForm }) => {
-          console.log(values, "VALUES ARE HERE");
-          handleSubmit(values, resetForm); // Call the parent function here
-        }}
-        validate={(values) => {
-          let errors = {};
-          if (!values.employee) {
-            errors.employee = "User is required";
-          }
-          if (!values.shift) {
-            errors.shift = "Shift is required";
-          }
-          return errors;
-        }}
-      >
-        {(props) => (
-          <form onSubmit={props.handleSubmit}>
-            <div className="space-y-2 pb-2">
-              <SelectInputComponent
-                name="employee"
-                options={usersList}
-                error={props.errors.employee}
-                touch={props.touched.employee}
-                value={props.values.employee}
-                label="User"
-                required
-                onChange={(field, value) => {
-                  setSelectedEmployee(value);
-                  props.handleChange(field)(value);
-                }}
-              />
-
-              {selectedEmployee &&
-                employeeShiftsList.length > 0 &&
-                employeeShiftsList.map((shift, index) => (
-                  <Card className="p-0" key={index}>
-                    <CardHeader className="p-1">
-                      <CardTitle className="text-[20px]">
-                        {shift.shift_name}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-2 flex items-center justify-between">
-                      <div className="text-[16px]">
-                        <p>{`Shift Type: ${shift.shift_type}`}</p>
-                        <p>{`Shift Time: ${moment(
-                          shift.shift_start_time
-                        ).format("h:mm A")} to ${moment(
-                          shift.shift_end_time
-                        ).format("h:mm A")}`}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-
-              <SelectInputComponent
-                name="shift"
-                options={shiftsList}
-                error={props.errors.shift}
-                touch={props.touched.shift}
-                value={props.values.shift}
-                label="Shift"
-                required
-                onChange={(field, value) => {
-                  props.handleChange(field)(value);
-                }}
-              />
-            </div>
-            {/* Form Actions */}
-            <div className="p-6 border-t border-gray-200 bg-gray-50">
-              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  type="button"
-                  onClick={handleClose}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" size="lg" variant="default">
-                  Save
-                </Button>
-              </div>
-            </div>
-          </form>
-        )}
-      </Formik>
-    </>
-  );
-};
 export default AssignShift;
