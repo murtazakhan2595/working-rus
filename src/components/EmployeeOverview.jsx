@@ -2,6 +2,7 @@ import React from "react";
 import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
 import { GetUser } from "utils/getValuesFromTables";
 import { OverviewCard } from "components";
+import { BranchName } from "utils/getValuesFromTables";
 
 // const combineFLName = employee?.first_name?.charAt(0).toUpperCase() +  employee?.last_name?.charAt(0).toUpperCase()
 const EmployeeOverview = React.memo(
@@ -13,8 +14,10 @@ const EmployeeOverview = React.memo(
     showDepartment = false,
     showEmail = false,
     avatarSize='10',
+    showBranchName = false,
   }) => {
     const userProfile = id ? GetUser(id) : {};
+    console.log("userProfile", userProfile);
     if (!userProfile) return null;
     return (
       <OverviewCard
@@ -34,6 +37,9 @@ const EmployeeOverview = React.memo(
             : []), // Ensure it's an array
           ...(showDepartment
             ? [<DepartmentName value={userProfile?.department_name} />]
+            : []), // Ensure it's an array
+          ...(showBranchName
+            ? [<BranchName value={userProfile?.branch_id} fallbackText="" />]
             : []), // Ensure it's an array
         ]}
       />

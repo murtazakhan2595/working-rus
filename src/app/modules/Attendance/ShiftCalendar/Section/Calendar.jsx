@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -6,42 +6,34 @@ import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import luxonPlugin from "@fullcalendar/luxon3";
 import rrulePlugin from "@fullcalendar/rrule";
-import { DateTime } from "luxon"; // Import Luxon's DateTime
+import { DateTime } from "luxon";
 
 const Calendar = ({ shift }) => {
-  console.log("shift", shift);
   const [events, setEvents] = useState([]);
+  const prevShiftRef = useRef(null);
 
   useEffect(() => {
-    if (shift) {
-      // const eventsArray = shifts.map((shift) => {
-      //   const startDate = DateTime.fromISO(shift.shift_start_time);
-      //   const endDate = DateTime.fromISO(shift.shift_end_time);
+    // Skip effect if shift is null or undefined
+    if (!shift) {
+      setEvents([]);
+      prevShiftRef.current = null;
+      return;
+    }
 
-      //   // Calculate the duration using Luxon's Duration
-      //   const duration = endDate.diff(startDate, ["hours", "minutes"]); // Duration in hours and minutes
+    // Skip effect if the shift hasn't actually changed
+    if (
+      prevShiftRef.current &&
+      prevShiftRef.current.id === shift.id &&
+      prevShiftRef.current.starttime === shift.starttime &&
+      prevShiftRef.current.endtime === shift.endtime
+    ) {
+      return;
+    }
 
-      //   // Format the duration to "HH:mm" format
-      //   const formattedDuration = `${duration.hours
-      //     .toString()
-      //     .padStart(2, "0")}:${duration.minutes.toString().padStart(2, "0")}`;
+    // Update the reference to current shift
+    prevShiftRef.current = shift;
 
-      //   console.log("Formatted Duration for shift", formattedDuration);
-
-      //   // Create recurring event using rrule
-      //   return {
-      //     title: `${shift.emp_name} Shift`,
-      //     rrule: {
-      //       freq: "daily", // Repeat daily
-      //       dtstart: shift.shift_start_time,
-      //       // until: "2025-12-31T17:00:00", // Optional: define an end date for the recurring event
-      //     },
-      //     duration: formattedDuration,
-      //   };
-      // });
-
-      // console.log("Events Array", eventsArray);
-      // setEvents(eventsArray);
+    try {
       const startDate = DateTime.fromISO(shift.starttime);
       const endDate = DateTime.fromISO(shift.endtime);
       const duration = endDate.diff(startDate, ["hours", "minutes"]);
@@ -49,26 +41,22 @@ const Calendar = ({ shift }) => {
         .toString()
         .padStart(2, "0")}:${duration.minutes.toString().padStart(2, "0")}`;
 
-      console.log("Formatted Duration for shift", formattedDuration);
-      // Single event object
+      // Create the event object
       const event = {
         title: `${shift.name} Shift`,
         rrule: {
-          freq: "daily", // Recurring daily
+          freq: "daily",
           dtstart: shift.starttime,
-          // until: "2025-12-31T17:00:00", // Optional: end date for recurring events
         },
         duration: formattedDuration,
       };
 
-      console.log("Event Object", event);
-      setEvents([event]); // Set the event inside an array
-    } else {
+      setEvents([event]);
+    } catch (error) {
+      console.error("Error processing shift data:", error);
       setEvents([]);
     }
   }, [shift]);
-
-  console.log("Events", events);
 
   return (
     <div className="min-w-[75%] p-4 bg-gray-100 rounded-lg shadow-lg">
@@ -82,14 +70,14 @@ const Calendar = ({ shift }) => {
           rrulePlugin,
         ]}
         height="70vh"
-        initialView="timeGridWeek" // Start with a weekly view
+        initialView="timeGridWeek"
         nowIndicator={true}
         headerToolbar={{
           left: "prev,next today",
           center: "title",
           right: "dayGridMonth,timeGridWeek,timeGridDay",
         }}
-        events={events} // Pass the dynamic events
+        events={events}
       />
     </div>
   );
