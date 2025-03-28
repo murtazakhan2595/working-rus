@@ -77,7 +77,7 @@ export const MyHRDocumentsColumns = [
     dataSort: true,
   },
   {
-    dataField: "new_department",
+    dataField: "document_category",
     text: "Category",
     formatter: (cell, row) => (
       <DocCategoryName value={cell} fallBackText={"-"} />

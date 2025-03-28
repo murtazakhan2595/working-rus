@@ -141,6 +141,7 @@ export const getHRDocumentData = async (id) => {
 };
 
 export const addUpdateDocumentAssignment = async (payload, id = null) => {
+  debugger
   try {
     const endPoint =
       payload.target_audience === "Department"
@@ -156,7 +157,7 @@ export const addUpdateDocumentAssignment = async (payload, id = null) => {
       ? `${baseUrl}/document-assignments/${endPoint}${id}/` // Use id if updating
       : `${baseUrl}/document-assignments/${endPoint}`; // No id means create new
 
-    const method = id ? "PUT" : "POST"; // Determine method based on existence of id
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
 
     const response = await axios({
       method,
@@ -179,7 +180,7 @@ export const addUpdateDocumentAssignment = async (payload, id = null) => {
   }
 };
 
-export const addUpdateHRDocumentDetails = async (payload, id = null) => {
+export const addUpdateHRDocumentDetails = async (payload, id = 16) => {
   try {
     const finalPayload = mapDocumentPayloadData(payload);
     const url = id
@@ -197,7 +198,7 @@ export const addUpdateHRDocumentDetails = async (payload, id = null) => {
 
     // Check response status
     if (response.status === 201 || response.status === 200) {
-      if (payload.target_audience === "Department") {
+      if (!id) {
         const assignmentResponse = await addUpdateDocumentAssignment({
           ...payload,
           document: response.data.id,

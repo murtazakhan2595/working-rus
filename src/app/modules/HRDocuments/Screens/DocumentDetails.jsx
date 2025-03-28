@@ -1,6 +1,6 @@
 import moment from "moment";
 import React, { useState, useEffect } from "react";
-import { EmployeeTransferStatusView } from "app/modules/EmployeeTransfer/Sections";
+import { SignatureForm } from "app/modules/HRDocuments/Sections";
 import {
   DepartmentName,
   EmployeeName,
@@ -21,7 +21,8 @@ import {
 import { saveEmployeePersonalInfoData } from "app/hooks/employee";
 import { useSelector } from "react-redux";
 import { mapEmployeeTransferInfo } from "app/utils/MappingObjects/mapEmployeeTransferData";
-import { Sheet, SheetContent, SheetHeader } from "src/@/components/ui/sheet";
+import { ImageDocView } from "components/ui/ImageDocPreview";
+import AttachmentUI from "components/ui/AttachmentUI";
 import { TransferForm } from "app/modules/EmployeeTransfer/Sections";
 import { DetailBox } from "components/SheetCardExtension";
 import {
@@ -53,9 +54,8 @@ const DocumentDetails = ({
   const userRole = useSelector((state) => state.user.userProfile.role);
   const userId = useSelector((state) => state.user.userProfile.id);
   const [currentDocument, setCurrentDocument] = useState({});
-  const [OpenConfirmRejection, setOpenConfirmRejection] = useState(false);
   const [currentDocumentId, setCurrentDocumentId] = useState(documentID);
-  const [OpenTransferForm, setOpenTransferForm] = useState(false);
+  const [OpenSignationForm, setOpenSignationForm] = useState(true);
 
   const fetchData = async (isMounted, documentId) => {
     try {
@@ -109,16 +109,13 @@ const DocumentDetails = ({
     try {
       const payload = {
         status: status,
-        viewed_date: moment().format("YYYY-MM-DD"),
+        ...(status === "VIEWED"
+          ? { viewed_date: moment().format("YYYY-MM-DD") }
+          : {}),
+        ...(status === "ACKNOWLEDGED"
+          ? { acknowledged_date: moment().format("YYYY-MM-DD") }
+          : {}),
       };
-      if (userRole === 3 || userRole === 1) {
-        if (status === "approved") payload.status = "APPROVED";
-        else if (status === "rejected") payload.status = "REJECTED";
-        payload.hr_manager = userId;
-      } else if (userRole === 2) {
-        if (status === "approved") payload.status = "ACCEPTED BY MANAGER";
-        else if (status === "rejected") payload.status = "REJECTED BY MANAGER";
-      }
       const response = await addUpdateDocumentAssignment(
         payload,
         currentDocumentId
@@ -141,13 +138,25 @@ const DocumentDetails = ({
 
   const labelList = [
     {
-      label: "document_category",
-      value: <DocCategoryName value={currentDocument?.old_department} />,
+      label: "Category",
+      value: <DocCategoryName value={currentDocument?.document_category} />,
     },
-    {
-      label: "Due Date",
-      value: renderDate(currentDocument?.due_date),
-    },
+    ...(currentDocument?.due_date
+      ? [
+          {
+            label: "Due Date",
+            value: renderDate(currentDocument?.due_date),
+          },
+        ]
+      : []),
+    ...(currentDocument?.viewed_date
+      ? [
+          {
+            label: "Viewed Date",
+            value: renderDate(currentDocument?.viewed_date),
+          },
+        ]
+      : []),
   ].filter(Boolean);
 
   const showActionbutton = renderActionButtons(
@@ -185,24 +194,38 @@ const DocumentDetails = ({
                 <div className="flex flex-row flex-wrap max-w-[50%] items-center gap-2">
                   {currentDocument?.status === "PENDING" && (
                     <Button
-                      variant="continue"
+                      variant="outline"
                       onClick={(e) => {
                         handleSubmit(e, "VIEWED");
                       }}
                       type="button"
+                      size="sm"
                     >
-                      Viewed
+                      Mark as Viewed
                     </Button>
                   )}
                   {currentDocument?.status === "VIEWED" && (
                     <Button
-                      variant="continue"
+                      variant="outline"
                       onClick={(e) => {
-                        handleSubmit(e, "VIEWED");
+                        handleSubmit(e, "ACKNOWLEDGED");
                       }}
+                      size="sm"
                       type="button"
                     >
-                      Viewed
+                      Acknowledge
+                    </Button>
+                  )}
+                  {currentDocument?.status === "ACKNOWLEDGED" && (
+                    <Button
+                      variant="outline"
+                      onClick={(e) => {
+                        setOpenSignationForm(e, "ACKNOWLEDGED");
+                      }}
+                      size="sm"
+                      type="button"
+                    >
+                      Sign Document
                     </Button>
                   )}
                 </div>
@@ -225,68 +248,30 @@ const DocumentDetails = ({
                       />
                     );
                   })}
-                {currentDocument?.notes && (
-                  <DetailBox
-                    orientation="horizontal"
-                    key={"notes"}
-                    className="col-span-3"
-                    label={"Notes"}
-                    value={currentDocument?.notes}
-                  />
-                )}
-                {(currentDocument?.status === "REJECTED" ||
-                  currentDocument?.status === "REJECTED BY MANAGER") && (
-                  <DetailBox
-                    orientation="horizontal"
-                    key={"reason_of_rejection"}
-                    className="col-span-3"
-                    label={"Reason of Rejection"}
-                    value={currentDocument?.reason_of_rejection}
-                  />
-                )}
               </div>
             </div>
+          </section>
+          <section className="min-h-[75vh]">
+            <AttachmentUI
+              attachment={currentDocument.document_file}
+              name={`${currentDocument?.document_name} - Document`}
+              viewOnly={true}
+            />
           </section>
           <section>
             <div className="flex flex-row justify-end gap-4 flex-wrap"></div>
           </section>
         </div>
       </ViewDetailSheetCardExtension>
-      {OpenTransferForm && (
-        <TransferForm
+      {OpenSignationForm && (
+        <SignatureForm
           id={currentDocumentId}
-          isOpen={OpenTransferForm}
-          setIsOpen={(value) => {
-            if (value === "close") setOpenTransferForm(false);
-            else {
-              setOpenTransferForm(false);
-              fetchData(true, currentDocumentId);
-            }
+          isOpen={OpenSignationForm}
+          setIsOpen={() => {
+            setOpenSignationForm(false);
+            fetchData(true, currentDocumentId);
           }}
-          transfer_type={currentDocument?.transfer_type}
         />
-      )}
-      {OpenConfirmRejection && (
-        <DialogBox
-          isOpen={OpenConfirmRejection}
-          setIsOpen={setOpenConfirmRejection}
-          title={"Confirm Rejection"}
-          description={
-            "Provide reason for rejection. Once submitted, the action cannot be reverted"
-          }
-        >
-          <TransferForm
-            id={currentDocumentId}
-            isOpen={OpenTransferForm}
-            setIsOpen={() => {
-              debugger;
-              setOpenConfirmRejection(false);
-              handleSubmit(null, "rejected");
-            }}
-            transfer_type={currentDocument?.transfer_type}
-            onlyRejectionForm={true}
-          />
-        </DialogBox>
       )}
     </>
   );

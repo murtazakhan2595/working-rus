@@ -9,41 +9,41 @@ import { CircleCheck, CircleDot, X } from "lucide-react";
 import { cn } from "src/@/lib/utils.js";
 import { cva } from "class-variance-authority";
 
-const statusVariants = cva(
-  "",
-  {
-    variants: {
-      variant: {
-        default: "border-transparent bg-neutral-300 text-neutral-1100",
-        ghost: "border-transparent bg-transparent text-neutral-1200",
-        outline: "text-slate-900 dark:text-slate-50",
-        plum: "bg-plum-300 text-plum-1100",
-        error: "bg-red-50 text-red-400",
-        warning: "bg-amber-100 text-amber-500",
-        success: "bg-emerald-50 text-emerald-700",
-        neutral: "bg-neutral-300 text-neutral-1100",
-        "dot-plum":
-          "bg-white border-neutral-300 flex items-center gap-2 text-neutral-1100",
-        "dot-error": "bg-white border-neutral-300 flex items-center gap-2",
-        "dot-warning": "bg-white border-neutral-300 flex items-center gap-2",
-        "dot-emerald": "bg-white border-neutral-300 flex items-center gap-2",
-        "dot-neutral": "bg-white border-neutral-300 flex items-center gap-2",
-      },
+const statusVariants = cva("", {
+  variants: {
+    variant: {
+      default: "border-transparent bg-neutral-300 text-neutral-1100",
+      ghost: "border-transparent bg-transparent text-neutral-1200",
+      outline: "text-slate-900 dark:text-slate-50",
+      plum: "bg-plum-300 text-plum-1100",
+      error: "bg-red-50 text-red-400",
+      warning: "bg-amber-50 text-amber-700",
+      success: "bg-emerald-50 text-emerald-700",
+      neutral: "bg-neutral-300 text-neutral-1100",
+      "dot-plum":
+        "bg-white border-neutral-300 flex items-center gap-2 text-neutral-1100",
+      "dot-error": "bg-white border-neutral-300 flex items-center gap-2",
+      "dot-warning": "bg-white border-neutral-300 flex items-center gap-2",
+      "dot-emerald": "bg-white border-neutral-300 flex items-center gap-2",
+      "dot-neutral": "bg-white border-neutral-300 flex items-center gap-2",
     },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
 
 export const getStatusVariant = (Status) => {
   if (!Status) return "default";
   const status = Status.toLowerCase();
   if (status.includes("approved")) return "success";
   else if (status.includes("accepted")) return "success";
+  else if (status.includes("viewed")) return "warning";
   else if (status.includes("success")) return "success";
   else if (status.includes("declined")) return "error";
+  else if (status.includes("expired")) return "error";
   else if (status.includes("rejected")) return "error";
+  else if (status.includes("acknowleged")) return "success";
   else if (status.includes("pending")) return "default";
   else return "default";
 };

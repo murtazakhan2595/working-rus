@@ -21,7 +21,7 @@ import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
 import Config from "constants/config";
 
-const ExternalTabs = ["All", "Signed", "Pending", "Expired"].filter(Boolean);
+const DocumentTabs = ["All", "Signed", "Pending", "Expired"].filter(Boolean);
 
 export default function Documents() {
   const userRole = useSelector((state) => state.user.userProfile.role);
@@ -34,7 +34,7 @@ export default function Documents() {
   });
   const [employeeTransferStat, setEmployeeTransferStat] = useState({});
   const [OpenUploadDocumentForm, setOpenUploadDocumentForm] = useState(false);
-  const [activeExternalTab, setActiveExternalTab] = useState("All");
+  const [activeDocumentTab, setActiveDocumentTab] = useState("All");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
@@ -130,14 +130,14 @@ export default function Documents() {
   useEffect(() => {
     setFilterData((prevFilter) => ({
       ...prevFilter,
-      ...(activeExternalTab === "All"
+      ...(activeDocumentTab === "All"
         ? { status: "PENDING,VIEWED,ACKNOWLEDGED,EXPIRED" }
         : {}),
-      ...(activeExternalTab === "Signed" ? { status: "ACKNOWLEDGED" } : {}),
-      ...(activeExternalTab === "Expired" ? { status: "EXPIRED" } : {}),
-      ...(activeExternalTab === "Pending" ? { status: "PENDING" } : {}),
+      ...(activeDocumentTab === "Signed" ? { status: "ACKNOWLEDGED" } : {}),
+      ...(activeDocumentTab === "Expired" ? { status: "EXPIRED" } : {}),
+      ...(activeDocumentTab === "Pending" ? { status: "PENDING" } : {}),
     }));
-  }, [activeExternalTab]);
+  }, [activeDocumentTab]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
@@ -175,13 +175,13 @@ export default function Documents() {
         defaultValue="All"
         className="w-full"
         onValueChange={(tab) => {
-          setActiveExternalTab(tab);
+          setActiveDocumentTab(tab);
         }}
-        value={activeExternalTab}
+        value={activeDocumentTab}
       >
         <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
           <TabsList className="flex items-center justify-center mb-4">
-            {ExternalTabs.map((tab) => (
+            {DocumentTabs.map((tab) => (
               <TabsTrigger
                 key={tab}
                 value={tab}
@@ -224,7 +224,7 @@ export default function Documents() {
             fetchData(true);
           }}
           transfer_type={
-            activeExternalTab === "Internal" ? "INTERNAL" : "EXTERNAL"
+            activeDocumentTab === "Internal" ? "INTERNAL" : "EXTERNAL"
           }
         />
       )}

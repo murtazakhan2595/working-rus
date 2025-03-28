@@ -125,9 +125,6 @@ const UpdateEmployeeAttendance = ({
                 options: Employees,
               },
               {
-                colsSpan: 2,
-              },
-              {
                 InputField: SelectInputComponent,
                 name: "department",
                 required: true,

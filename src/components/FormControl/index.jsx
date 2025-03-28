@@ -31,6 +31,7 @@ import CommentsInputField from "./CommentsInputField";
 import DateRangeFilter from "./DateRangeFilter";
 import SortingFilters from "./SortingFilters";
 import TimePicker from "./TimePicker";
+import InputSignature from "./InputSignature";
 import {
   SelectMultiInputComponent,
   SelectInputComponent,
@@ -728,5 +729,6 @@ export {
   DateRangeFilter,
   ColorInput,
   DateRangeInput,
+  InputSignature,
 };
 

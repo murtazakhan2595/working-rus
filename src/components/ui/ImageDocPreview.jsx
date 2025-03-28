@@ -82,7 +82,7 @@ export default function ImageDocPreview({
         if (!open && fileType !== "PDF") resetZoom();
       }}
     >
-      <DialogContent className="w-full max-w-6xl min-h-[90%] h-[90vh] flex flex-col gap-2 p-4 bg-white rounded-lg shadow-lg">
+      <DialogContent className="w-full max-w-6xl min-h-[90%] h-[90vh] flex flex-col gap-2 p-4 bg-white rounded-lg">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-2">
           <h4 className="text-lg font-semibold">{name || "Attachment"}</h4>
@@ -120,7 +120,7 @@ export default function ImageDocPreview({
         )}
 
         {/* File Display */}
-        <Card className="overflow-hidden flex-grow relative flex justify-center items-center bg-gray-200 p-4 rounded-md shadow">
+        <div className="overflow-hidden flex-grow relative flex justify-center items-center bg-gray-200 p-4 ">
           {imageFileType.includes(fileType) ? (
             <img
               ref={imgRef}
@@ -150,7 +150,7 @@ export default function ImageDocPreview({
               style={{ minHeight: "75vh" }}
             />
           )}
-        </Card>
+        </div>
 
         {/* Footer */}
         <div className="flex justify-end border-t pt-2">

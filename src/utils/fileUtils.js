@@ -54,7 +54,9 @@ export function filebase64Download(file, fileName) {
   const newTab = window.open(file, "_blank");
 
   if (!newTab) {
-    console.error("Failed to open the file in a new tab. Please check browser settings.");
+    console.error(
+      "Failed to open the file in a new tab. Please check browser settings."
+    );
   }
 }
 
@@ -65,4 +67,25 @@ export function getFileSizeInKB(base64String) {
   const byteLength = binaryString.length;
   const kbSize = byteLength / 1024;
   return kbSize.toFixed(0);
+}
+
+export function convert_base64_To_File(base64URL) {
+  if (base64URL) {
+    // Extract base64 string
+    const base64Data = base64URL.replace(/^data:image\/png;base64,/, "");
+
+    // Convert base64 to a Blob
+    const byteCharacters = atob(base64Data);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: "image/png" });
+
+    // Create a File object
+    const file = new File([blob], "signature.png", { type: "image/png" });
+
+    return file;
+  }
 }
