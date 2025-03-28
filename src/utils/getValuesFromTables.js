@@ -88,6 +88,7 @@ export function BranchName({ value , fallBackText="N/A" }) {
   const branch = branches.find(
     (option) => option.value === parseInt(value)
   );
+  console.log("branch", branch, value, branches);
   return branch ? branch.label : value ?? fallBackText;
 }
 function ProjectName({ value }) {
