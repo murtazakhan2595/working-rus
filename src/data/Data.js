@@ -713,6 +713,12 @@ export const revisionStatusOptions = [
   { value: "APPROVED", label: "Approved" },
   { value: "REJECTED", label: "Rejected" },
 ];
+export const HRDocumentsStatus = [
+  { value: "PENDING", label: "Pending" },
+  { value: "VIEWED", label: "Viewed" },
+  { value: "ACKNOWLEDGED", label: "Acknowledged" },
+  { value: "EXPIRED", label: "Expired" },
+];
 export const monthsOptions = [
   { value: "January", label: "January" },
   { value: "February", label: "February" },

@@ -4,7 +4,6 @@ import { Button } from "components/ui/button";
 import moment from "moment";
 import {
   getAttendanceSummary,
-  getDepartmentPercentage,
   getWeeklySummary,
 } from "app/hooks/attendance";
 import { PageLoader, TableCustom } from "components";
@@ -23,7 +22,6 @@ const Attendance = () => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [departmentPercentage, setDepartmentPercentage] = useState([]);
   const [openUpdateEmployeeAttendance, setOpenUpdateEmployeeAttendance] =
     useState(false);
   const [weeklySummary, setWeeklySummary] = useState([]);
@@ -32,7 +30,6 @@ const Attendance = () => {
   const [activeTab, setActiveTab] = useState("Month");
   const [filterData, setFilterData] = useState({});
   const [dateRange, setDateRange] = useState(GetDateRange("MONTH"));
-  const [leaveStatus, setLeaveStatus] = useState({});
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -90,19 +87,9 @@ const Attendance = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const departmentPercentage = await getDepartmentPercentage();
-      if (departmentPercentage) {
-        console.log("departmentPercentage", departmentPercentage);
-        setDepartmentPercentage(departmentPercentage);
-      }
       const weeklySummary = await getWeeklySummary();
       if (weeklySummary) {
         setWeeklySummary(weeklySummary);
-      }
-
-      const leaveStatus = await getLeaveStatusDaily();
-      if (leaveStatus) {
-        setLeaveStatus(leaveStatus);
       }
     };
     fetchData();
@@ -115,9 +102,9 @@ const Attendance = () => {
         )}`}
       >
         <div className="flex gap-4">
-          <LeaveStatusOverview leaveStatus={leaveStatus} />
+          <LeaveStatusOverview />
           <StatisticsChart weeklySummary={weeklySummary} />
-          <DepartmentOverview departmentPercentage={departmentPercentage} />
+          <DepartmentOverview />
         </div>
         {/* <Header /> */}
         <StatsCards attendanceData={attendanceData.results || []} />

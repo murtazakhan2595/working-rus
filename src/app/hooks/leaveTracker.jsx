@@ -5,7 +5,7 @@ import moment from "moment";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-  "Content-Type": "application/json", 
+  "Content-Type": "application/json",
 });
 
 const formDataHeader = () => ({
@@ -253,7 +253,7 @@ const getLeaveTransaction = async (payload) => {
 };
 const saveAttachment = async (payload) => {
   try {
-    const response = await axios.post(`${baseUrl}/leaveattachments`, payload,         {
+    const response = await axios.post(`${baseUrl}/leaveattachments`, payload, {
       headers: formDataHeader(),
     });
     if (response.status === 201 || response.status === 200) {
@@ -297,7 +297,10 @@ const getLeaveComponentsWithUsed = async (employeeId) => {
     // Fetch the leave components (leave types)
     const leaveComponentsResponse = await axios.get(
       `${baseUrl}/leavecomponents/?search=${encodeURIComponent(
-        JSON.stringify({ employee_id_and_org: `${employeeId},true`, "status": true })
+        JSON.stringify({
+          employee_id_and_org: `${employeeId},true`,
+          status: true,
+        })
       )}&ordering=-id`,
       {
         headers: headers(),
@@ -497,24 +500,30 @@ const getLeavestatesCustomApi = async (payload) => {
     }
     return [];
   }
-}
+};
 
-const getLeaveStatusDaily = async() =>{
-  try{
-    const response = await axios.get(`${baseUrl}/leavestatusdaily`, {
-      headers: headers(),
-    });
-    if(response.status === 200){
+const getLeaveStatusDaily = async (payload) => {
+  const departments = payload?.filterData?.department ?? "";
+  try {
+    const response = await axios.get(
+      `${baseUrl}/leaves_statistics?${
+        departments ? `departments=${departments}` : ""
+      }`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
       return response.data;
     }
-  } catch(error){
+  } catch (error) {
     console.error("Error fetching daily leave status:", error);
-    if(error?.response?.status === 401){
+    if (error?.response?.status === 401) {
       HandleLogout();
     }
     return [];
   }
-} 
+};
 
 export {
   saveLeaveComponents,

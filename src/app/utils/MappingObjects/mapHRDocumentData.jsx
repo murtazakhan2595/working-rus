@@ -18,6 +18,20 @@ export function mapDocumentAssignedData(data) {
   return employeeTransferDetails;
 }
 
+export function mapDocumentCategoryData(data) {
+  const employeeTransferDetails = Object.keys(DocumentCategory).reduce(
+    (acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
+
+  return employeeTransferDetails;
+}
+
 export function mapDocumentCategoryPayloadData(data) {
   // Initialize an empty payload object
   const payload = {};
@@ -51,13 +65,15 @@ export function mapDocumentPayloadData(data) {
 }
 export function mapDocumentAssignmentPayloadData(data) {
   // Initialize an empty payload object
-  const payload = {};
+  const payload = new FormData();
   // Iterate over the keys in the Task object
   for (const key in DocumentAssignment) {
     // Check if the key exists in the data object
     if (data.hasOwnProperty(key) && data[key]) {
       // Add the key and its value to the payload
-      payload[key] = data[key];
+      if (key === "signature_file") {
+        if (data[key] instanceof File) payload.append(key, data[key]);
+      } else payload.append(key, data[key]);
     }
   }
 

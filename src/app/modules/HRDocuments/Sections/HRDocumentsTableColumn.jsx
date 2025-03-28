@@ -1,7 +1,7 @@
 import { EmployeeID, UserRole } from "utils/getValuesFromTables";
 import { EmployeeTransferStatusView } from "app/modules/EmployeeTransfer/Sections";
 import { dropdownOptions, formatNumber } from "data/Data";
-import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
+import { EmployeeOverview, StatusLabel, ViewSignature } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
 import { EmployeeAttendenceHistoryActions } from "app/modules/Attendance/EmployeeAttendance/Section";
 import moment from "moment";
@@ -17,7 +17,7 @@ import { getExpenseType } from "utils/getValuesFromTables";
 import { Clock } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
 import { StatusLabelAttendance } from "components/StatusLabel";
-import { formatDuration } from "utils/renderValues";
+import { CategoryActions } from "app/modules/HRDocuments/Sections";
 /**
  * HRDocumentsColumns
  *
@@ -29,7 +29,7 @@ export const HRDocumentsColumns = [
   {
     dataField: "name",
     text: "Name",
-    // minWidth: "120px",
+    // maxWidth: "200px",
     dataSort: true,
   },
   {
@@ -74,7 +74,6 @@ export const MyHRDocumentsColumns = [
     dataField: "document_name",
     text: "Name",
     minWidth: "120px",
-    dataSort: true,
   },
   {
     dataField: "document_category",
@@ -82,27 +81,12 @@ export const MyHRDocumentsColumns = [
     formatter: (cell, row) => (
       <DocCategoryName value={cell} fallBackText={"-"} />
     ),
-    dataSort: true,
     minWidth: "110px",
   },
-  // {
-  //   dataField: "new_reporting_manager",
-  //   text: "New Reporting Manager",
-  //   formatter: (cell, row) => <ManagerName value={cell} fallBackText="-" />,
-  //   dataSort: true,
-  //   minWidth: "110px",
-  // },
-  // {
-  //   dataField: "new_location",
-  //   text: "New Location",
-  //   dataSort: true,
-  //   minWidth: "110px",
-  // },
   {
     dataField: "due_date",
     text: "Due Date",
     formatter: (cell, row) => renderDate(cell),
-
     dataSort: true,
     minWidth: "110px",
   },
@@ -115,5 +99,35 @@ export const MyHRDocumentsColumns = [
         {cell.charAt(0) + cell.slice(1).toLowerCase()}
       </StatusLabel>
     ),
+  },
+  {
+    dataField: "signature_file:null",
+    text: "Signature",
+    formatter: (cell, row) => <ViewSignature signature={cell} />,
+  },
+];
+
+/**
+ * DocCategoryColumns
+ *
+ * Returns an array of column definitions for the DocCategory table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const DocCategoryColumns = (reload) => [
+  {
+    dataField: "name",
+    text: "Name",
+    minWidth: "120px",
+  },
+  {
+    dataField: "description",
+    text: "Description",
+    minWidth: "110px",
+  },
+  {
+    text: "Action",
+    formatter: (cell, row) => <CategoryActions reload={reload} data={row} />,
+    width:'90px'
   },
 ];

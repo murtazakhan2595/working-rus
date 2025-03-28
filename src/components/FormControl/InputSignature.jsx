@@ -8,6 +8,7 @@ import {
 import { cn } from "src/@/lib/utils";
 import { Button } from "components/ui/button";
 import { convert_base64_To_File, convert_Text_To_File } from "utils/fileUtils";
+
 const InputSignature = React.memo(
   ({
     name,
@@ -97,43 +98,49 @@ const InputSignature = React.memo(
       setHistoryIndex(newHistory.length - 1);
     }, [history, historyIndex, isDrawing]);
 
-    const undo = useCallback((event) => {
-      event.preventDefault();
-      if (historyIndex > 0) {
-        setHistoryIndex(historyIndex - 1);
-        const img = new Image();
-        img.src = history[historyIndex - 1];
-        img.onload = () => {
-          const ctx = canvasRef.current.getContext("2d");
-          ctx.clearRect(
-            0,
-            0,
-            canvasRef.current.width,
-            canvasRef.current.height
-          );
-          ctx.drawImage(img, 0, 0);
-        };
-      }
-    }, [history, historyIndex]);
+    const undo = useCallback(
+      (event) => {
+        event.preventDefault();
+        if (historyIndex > 0) {
+          setHistoryIndex(historyIndex - 1);
+          const img = new Image();
+          img.src = history[historyIndex - 1];
+          img.onload = () => {
+            const ctx = canvasRef.current.getContext("2d");
+            ctx.clearRect(
+              0,
+              0,
+              canvasRef.current.width,
+              canvasRef.current.height
+            );
+            ctx.drawImage(img, 0, 0);
+          };
+        }
+      },
+      [history, historyIndex]
+    );
 
-    const redo = useCallback((event) => {
-      event.preventDefault();
-      if (historyIndex < history.length - 1) {
-        setHistoryIndex(historyIndex + 1);
-        const img = new Image();
-        img.src = history[historyIndex + 1];
-        img.onload = () => {
-          const ctx = canvasRef.current.getContext("2d");
-          ctx.clearRect(
-            0,
-            0,
-            canvasRef.current.width,
-            canvasRef.current.height
-          );
-          ctx.drawImage(img, 0, 0);
-        };
-      }
-    }, [history, historyIndex]);
+    const redo = useCallback(
+      (event) => {
+        event.preventDefault();
+        if (historyIndex < history.length - 1) {
+          setHistoryIndex(historyIndex + 1);
+          const img = new Image();
+          img.src = history[historyIndex + 1];
+          img.onload = () => {
+            const ctx = canvasRef.current.getContext("2d");
+            ctx.clearRect(
+              0,
+              0,
+              canvasRef.current.width,
+              canvasRef.current.height
+            );
+            ctx.drawImage(img, 0, 0);
+          };
+        }
+      },
+      [history, historyIndex]
+    );
 
     const handleUpload = useCallback(async (file) => {
       try {
@@ -145,25 +152,28 @@ const InputSignature = React.memo(
       }
     }, []);
 
-    const handleSave = useCallback(async (event) => {
-      event.preventDefault();
-      let signatureData;
-      if (variant === "Draw" && canvasRef.current) {
-        signatureData = convert_base64_To_File(canvasRef.current.toDataURL());
-      } else if (variant === "Type" && typedText) {
-        signatureData = await convert_Text_To_File(typedText);
-      } else if (variant === "Image" && signature) {
-        signatureData = signature;
-      }
+    const handleSave = useCallback(
+      async (event) => {
+        event.preventDefault();
+        let signatureData;
+        if (variant === "Draw" && canvasRef.current) {
+          signatureData = convert_base64_To_File(canvasRef.current.toDataURL());
+        } else if (variant === "Type" && typedText) {
+          signatureData = await convert_Text_To_File(typedText);
+        } else if (variant === "Image" && signature) {
+          signatureData = signature;
+        }
 
-      if (!signatureData) {
-        setError("Please create a signature before saving");
-        return;
-      }
+        if (!signatureData) {
+          setError("Please create a signature before saving");
+          return;
+        }
 
-      onChange(name, signatureData);
-      setError(null);
-    }, [typedText, signature, onChange]);
+        onChange(name, signatureData);
+        setError(null);
+      },
+      [typedText, signature, onChange]
+    );
 
     return (
       <FormField
@@ -326,4 +336,16 @@ const ClearSignature = ({ clearSignature = () => {} }) => {
   );
 };
 
-export default InputSignature;
+const ViewSignature = ({ signature }) => {
+  if (!signature) return null;
+  const signatureURL =
+    signature instanceof File ? URL.createObjectURL(signature) : signature;
+
+  return (
+    <div>
+      <img src={signatureURL} alt="Signature" className="w-auto h-auto" />
+    </div>
+  );
+};
+
+export {InputSignature,ViewSignature};

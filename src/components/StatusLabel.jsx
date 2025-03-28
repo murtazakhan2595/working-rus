@@ -43,7 +43,7 @@ export const getStatusVariant = (Status) => {
   else if (status.includes("declined")) return "error";
   else if (status.includes("expired")) return "error";
   else if (status.includes("rejected")) return "error";
-  else if (status.includes("acknowleged")) return "success";
+  else if (status.includes("acknowledge")) return "success";
   else if (status.includes("pending")) return "default";
   else return "default";
 };

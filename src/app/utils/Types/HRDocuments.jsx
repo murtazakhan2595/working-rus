@@ -23,5 +23,5 @@ export const DocumentAssignment = {
   document_category: null,
   document_file:null,
   signature_data:null,
-  signature:null,
+  signature_file:null,
 };

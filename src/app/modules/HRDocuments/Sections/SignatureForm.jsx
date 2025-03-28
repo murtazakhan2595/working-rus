@@ -29,7 +29,7 @@ const UploadDocumentForm = ({
   setIsOpen = () => {},
 }) => {
  const [formData, setFormData] = useState({
-    signature: null,
+    signature_file: null,
     signature_data: moment().format("YYYY-MM-DD"),
   });
 
@@ -67,7 +67,7 @@ const UploadDocumentForm = ({
         handleSubmit: handleSubmit,
         validateFormSchema: (values) => {
           const error = {};
-          if (!values.signature) error.signature = "Signature is required";
+          if (!values.signature_file) error.signature_file = "Signature is required";
           return error;
         },
         submitButtonText: "Submit Signature",
@@ -81,7 +81,7 @@ const UploadDocumentForm = ({
             InputFiels: [
               {
                 InputField: InputSignature,
-                name: "signature",
+                name: "signature_file",
                 required: true,
                 disabled: false,
                 label: "Signature",

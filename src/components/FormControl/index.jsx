@@ -31,7 +31,7 @@ import CommentsInputField from "./CommentsInputField";
 import DateRangeFilter from "./DateRangeFilter";
 import SortingFilters from "./SortingFilters";
 import TimePicker from "./TimePicker";
-import InputSignature from "./InputSignature";
+import { InputSignature } from "./InputSignature";
 import {
   SelectMultiInputComponent,
   SelectInputComponent,
@@ -473,7 +473,7 @@ const FilterInput = ({
   value,
   isClearable = true,
   type,
-  className='',
+  className = "",
 }) => {
   const classNamesStyle = "";
   const width = "w-56";
@@ -731,4 +731,3 @@ export {
   DateRangeInput,
   InputSignature,
 };
-

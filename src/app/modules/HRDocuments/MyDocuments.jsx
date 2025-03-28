@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "components/ui/card";
-import { UploadDocumentForm } from "app/modules/HRDocuments";
+import { HRDocumentsStatus } from "data/Data";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
-import { Header } from "components";
 import {
   getDocumentAssignmentList,
   getEmployeeTransferStats,
@@ -16,11 +15,11 @@ import {
   TabsContent,
 } from "src/@/components/ui/tabs";
 import Stats from "components/ui/Stats";
-import TableCustom from "components/CustomTable";
 import { useSelector } from "react-redux";
 import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
 import Config from "constants/config";
+import { PageLoader,TableCustom,Header } from "components";
 
 const ExternalTabs = ["All", "Signed", "Pending", "Expired"].filter(Boolean);
 
@@ -33,10 +32,9 @@ export default function MyDocuments() {
     results: [],
     count: 0,
   });
-  const [employeeTransferStat, setEmployeeTransferStat] = useState({});
   const [OpenDocumentID, setOpenDocumentID] = useState(false);
-  const [activeExternalTab, setActiveExternalTab] = useState("All");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
   const [filterData, setFilterData] = useState({ emp: userID });
@@ -75,22 +73,6 @@ export default function MyDocuments() {
     }
   };
 
-  const fetchStatData = async (isMounted) => {
-    setIsLoading(true);
-    try {
-      const data = await getEmployeeTransferStats({
-        filterData: { transfer_type: filterData.transfer_type },
-      });
-      if (isMounted) {
-        setEmployeeTransferStat(data);
-      }
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-    } finally {
-      if (isMounted) setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
     let isMounted = true;
     fetchData(isMounted);
@@ -99,51 +81,10 @@ export default function MyDocuments() {
     };
   }, [options, filterData, ordering]);
 
-  useEffect(() => {
-    let isMounted = true;
-    fetchStatData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [filterData.transfer_type]);
-
-  const statsData = [
-    {
-      label: "Total",
-      value: employeeTransferStat.total_transfers || 0,
-      icon: UsersRound,
-    },
-    {
-      label: "Approved",
-      value: employeeTransferStat.approved_transfers || 0,
-      icon: Contact,
-    },
-    {
-      label: "Rejected",
-      value: employeeTransferStat.rejected_transfers || 0,
-      icon: UserRoundCheck,
-    },
-    {
-      label: "Pending",
-      value: employeeTransferStat.pending_transfers || 0,
-      icon: UserRoundCheck,
-    },
-  ];
-  useEffect(() => {
-    setFilterData((prevFilter) => ({
-      ...prevFilter,
-      ...(activeExternalTab === "All"
-        ? { status: "PENDING,VIEWED,ACKNOWLEDGED,EXPIRED" }
-        : {}),
-      ...(activeExternalTab === "Signed" ? { status: "ACKNOWLEDGED" } : {}),
-      ...(activeExternalTab === "Expired" ? { status: "EXPIRED" } : {}),
-      ...(activeExternalTab === "Pending" ? { status: "PENDING" } : {}),
-    }));
-  }, [activeExternalTab]);
-
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
     if (filterName === "category") setSelectedCategory(filterValue);
+    else if (filterName === "status") setSelectedStatus(filterValue);
 
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -162,15 +103,22 @@ export default function MyDocuments() {
     >
       <Header />
 
-      <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+      <div className="flex flex-col items-start justify-end lg:flex-row md:flex-row xl:flex-row">
         <FilterInput
           filters={[
             {
               type: "select-one",
               option: Document_Category,
-              name: "category",
+              name: "document_category",
               placeholder: "Category",
               values: selectedCategory,
+            },
+            {
+              type: "select-two",
+              option: HRDocumentsStatus,
+              name: "status",
+              placeholder: "Status",
+              values: selectedStatus,
             },
           ]}
           onChange={handleFilterChange}
@@ -178,13 +126,17 @@ export default function MyDocuments() {
       </div>
       <Card>
         <CardContent>
-          <TableCustom
-            data={HRDocumentsData.results}
-            columns={MyHRDocumentsColumns}
-            pagination={true}
-            dataTotalSize={HRDocumentsData.count || 0}
-            tableOptions={tableOptions}
-          />
+          {isLoading ? (
+            <PageLoader />
+          ) : (
+            <TableCustom
+              data={HRDocumentsData.results}
+              columns={MyHRDocumentsColumns}
+              pagination={true}
+              dataTotalSize={HRDocumentsData.count || 0}
+              tableOptions={tableOptions}
+            />
+          )}
         </CardContent>
       </Card>
       {OpenDocumentID && (

@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { Pie, PieChart, Cell, Legend } from "recharts";
 import { useSelector } from "react-redux";
 import {
@@ -10,6 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from "components/ui/card";
+import { getLeaveStatusDaily } from "app/hooks/leaveTracker";
+import { FilterInput } from "components/FormControl";
 
 // Define color mapping for different leave types
 const colorMap = {
@@ -19,37 +21,82 @@ const colorMap = {
   "Total Employees": "#F0F0F3",
 };
 
-export function LeaveStatusOverview({ leaveStatus }) {
+export function LeaveStatusOverview() {
   // Transform API data into chart format
-  const employees = useSelector((state) => state.emp.employees);
+  const Employees = useSelector((state) => state.emp.employees);
+  const Departments = useSelector((state) => state.common.departments);
+  const [leaveStatusData, setLeaveStatusData] = useState({});
+  const [selectedDepartment, setSelectDepartment] = useState("");
+  const [filterData, setFilterData] = useState({});
+  const fetchData = async (isMounted) => {
+    try {
+      const response = await getLeaveStatusDaily({ filterData });
+      if (isMounted) {
+        setLeaveStatusData(response);
+      }
+    } catch (error) {
+      console.error("Error fetching details:", error);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [filterData]);
+
   const chartData =
-    leaveStatus?.leave_details?.map((item) => ({
+    leaveStatusData?.leave_details?.map((item) => ({
       name: item.leave_name,
       value: item.count,
       color: colorMap[item.leave_name] || "#E6E6FA", // Fallback color if type not in mapping
     })) || [];
 
-  const totalLeaves = leaveStatus?.total_employees_on_leave || 0;
+  const totalLeaves = leaveStatusData?.total_employees_on_leave || 0;
   const dataToRender =
     chartData.length && chartData.length > 0
       ? chartData
       : [
           {
             name: "Total Employees",
-            value: employees.length || 0,
+            value: Employees.length || 0,
             color: colorMap["Total Employees"], // Fallback color if type not in mapping
           },
         ];
-
-  console.log("chartData", chartData);
-
+  const handleFilterChange = (filterName, filterValue) => {
+    if (filterName === "departments") setSelectDepartment(filterValue);
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
   return (
     <Card className="flex flex-col shadow-lg border rounded-xl bg-white min-w-[33%] gap-4">
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl font-bold text-plum-900">
-          Leave Status Overview
+        <CardTitle className="flex flex-row flex-wrap gap-2 justify-between">
+          <div className="text-xl font-bold text-plum-900"> Leave Status Overview</div>
+          <FilterInput
+            filters={[
+              {
+                type: "select-one",
+                option: Departments,
+                name: "departments",
+                placeholder: "Department",
+                values: selectedDepartment,
+              },
+            ]}
+            onChange={handleFilterChange}
+          />
         </CardTitle>
       </CardHeader>
+      <CardDescription className="flex justify-end items-center"></CardDescription>
       <CardContent className="flex justify-center items-center">
         <PieChart width={200} height={200}>
           <Pie

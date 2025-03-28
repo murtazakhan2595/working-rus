@@ -9,6 +9,7 @@ import {
   mapDocumentCategoryPayloadData,
   mapDocumentPayloadData,
   mapDocumentAssignmentPayloadData,
+  mapDocumentCategoryData,
 } from "app/utils/MappingObjects/mapHRDocumentData";
 import { HandleLogout } from "./general";
 
@@ -141,7 +142,6 @@ export const getHRDocumentData = async (id) => {
 };
 
 export const addUpdateDocumentAssignment = async (payload, id = null) => {
-  debugger
   try {
     const endPoint =
       payload.target_audience === "Department"
@@ -163,7 +163,7 @@ export const addUpdateDocumentAssignment = async (payload, id = null) => {
       method,
       url,
       data: finalPayload,
-      headers: headers(),
+      headers: formDataHeader(),
     });
 
     // Check response status
@@ -256,7 +256,7 @@ export const getDocumentCategoryData = async (id) => {
     const response = await axios.get(`${baseUrl}/documentcategory/${id}`, {
       headers: headers(),
     });
-    const documentCategoryData = mapDocumentAssignedData(response.data);
+    const documentCategoryData = mapDocumentCategoryData(response.data);
     return documentCategoryData;
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -272,8 +272,8 @@ export const addUpdateDocumentcategory = async (payload, id = null) => {
     const finalPayload = mapDocumentCategoryPayloadData(payload);
 
     const url = id
-      ? `${baseUrl}/documentCategory/${id}` // Use id if updating
-      : `${baseUrl}/documentCategory/`; // No id means create new
+      ? `${baseUrl}/documentcategory/${id}` // Use id if updating
+      : `${baseUrl}/documentcategory/`; // No id means create new
 
     const method = id ? "PUT" : "POST"; // Determine method based on existence of id
 

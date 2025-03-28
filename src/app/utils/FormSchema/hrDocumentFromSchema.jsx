@@ -16,3 +16,8 @@ export const validationHRDocumentFormSchema = (values) => {
   }
   return errors;
 };
+export const validationDocumentCategoryFormSchema = (values) => {
+  const errors = {};
+  if (!values.name) errors.name = "Name is required";
+  return errors;
+};

@@ -24,7 +24,7 @@ import "react-toastify/dist/ReactToastify.css";
 import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
 import Employee from "app/modules/Employees/Employee.jsx";
 import { EmployeeTransfer, MyTransfers } from "app/modules/EmployeeTransfer";
-import { Documents ,MyDocuments} from "app/modules/HRDocuments";
+import { HRDocuments ,MyDocuments} from "app/modules/HRDocuments";
 import { EditEmployeeProfile } from "app/modules/Employees/Screens/Profile";
 import { MyDtr } from "app/modules/DTR";
 import ForgotPassword from "app/modules/Login/ForgotPassword.jsx";
@@ -167,7 +167,7 @@ const SidebarRoutes = [
   },
   Config.HR_DOCUMENTS && {
     path: "/documents",
-    component: <Documents />,
+    component: <HRDocuments />,
     name: "HR Documents",
   },
   Config.HR_DOCUMENTS && {

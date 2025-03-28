@@ -22,6 +22,8 @@ import { FilterInput } from "components/FormControl";
 import Config from "constants/config";
 
 const DocumentTabs = ["All", "Signed", "Pending", "Expired"].filter(Boolean);
+const innerTabClassName =
+  "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
 
 export default function Documents() {
   const userRole = useSelector((state) => state.user.userProfile.role);
@@ -33,7 +35,6 @@ export default function Documents() {
     count: 0,
   });
   const [employeeTransferStat, setEmployeeTransferStat] = useState({});
-  const [OpenUploadDocumentForm, setOpenUploadDocumentForm] = useState(false);
   const [activeDocumentTab, setActiveDocumentTab] = useState("All");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -128,15 +129,22 @@ export default function Documents() {
     },
   ];
   useEffect(() => {
-    setFilterData((prevFilter) => ({
-      ...prevFilter,
-      ...(activeDocumentTab === "All"
-        ? { status: "PENDING,VIEWED,ACKNOWLEDGED,EXPIRED" }
-        : {}),
-      ...(activeDocumentTab === "Signed" ? { status: "ACKNOWLEDGED" } : {}),
-      ...(activeDocumentTab === "Expired" ? { status: "EXPIRED" } : {}),
-      ...(activeDocumentTab === "Pending" ? { status: "PENDING" } : {}),
-    }));
+    setFilterData((prevFilter) => {
+      const updatedFilter = { ...prevFilter };
+      if (activeDocumentTab === "All") {
+        delete updatedFilter.status; // Remove the status key
+      } else {
+        updatedFilter.status =
+          activeDocumentTab === "Signed"
+            ? "ACKNOWLEDGED"
+            : activeDocumentTab === "Expired"
+            ? "EXPIRED"
+            : activeDocumentTab === "Pending"
+            ? "PENDING"
+            : updatedFilter.status; // Keep existing value if no match
+      }
+      return updatedFilter;
+    });
   }, [activeDocumentTab]);
 
   const handleFilterChange = (filterName, filterValue) => {
@@ -158,18 +166,6 @@ export default function Documents() {
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
-      <Header
-        content={
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              setOpenUploadDocumentForm(true);
-            }}
-          >
-            Upload New Document
-          </Button>
-        }
-      />
       {/* <Stats stats={statsData} /> */}
       <Tabs
         defaultValue="All"
@@ -185,7 +181,7 @@ export default function Documents() {
               <TabsTrigger
                 key={tab}
                 value={tab}
-                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                className={innerTabClassName}
               >
                 {tab}
               </TabsTrigger>
@@ -204,30 +200,15 @@ export default function Documents() {
             onChange={handleFilterChange}
           />
         </div>
-        <Card>
-          <CardContent>
-            <TableCustom
-              data={employeeTransferData.results}
-              columns={HRDocumentsColumns}
-              pagination={true}
-              dataTotalSize={employeeTransferData.count || 0}
-              tableOptions={tableOptions}
-            />
-          </CardContent>
-        </Card>
-      </Tabs>
-      {OpenUploadDocumentForm && (
-        <UploadDocumentForm
-          isOpen={OpenUploadDocumentForm}
-          setIsOpen={() => {
-            setOpenUploadDocumentForm(false);
-            fetchData(true);
-          }}
-          transfer_type={
-            activeDocumentTab === "Internal" ? "INTERNAL" : "EXTERNAL"
-          }
+
+        <TableCustom
+          data={employeeTransferData.results}
+          columns={HRDocumentsColumns}
+          pagination={true}
+          dataTotalSize={employeeTransferData.count || 0}
+          tableOptions={tableOptions}
         />
-      )}
+      </Tabs>
     </div>
   );
 }
