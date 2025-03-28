@@ -50,9 +50,7 @@ export function getBloodGroup(bloodGroup) {
   return response ? response.label : bloodGroup;
 }
 export function getGender(gender) {
-  const response = GenderOptions.find(
-    (option) => option.value === gender
-  );
+  const response = GenderOptions.find((option) => option.value === gender);
   return response ? response.label : gender;
 }
 function getJobType(jobType, includeAllOption = false) {
@@ -74,7 +72,7 @@ function TerminationStatus(status) {
 }
 
 // Function to get department name from department value
-function DepartmentName({ value , fallBackText="N/A" }) {
+function DepartmentName({ value, fallBackText = "N/A" }) {
   const departments = useSelector((state) => state.common.departments);
   const department = departments.find(
     (option) => option.value === parseInt(value)
@@ -82,13 +80,17 @@ function DepartmentName({ value , fallBackText="N/A" }) {
   return department ? department.label : value ?? fallBackText;
 }
 
-
-export function BranchName({ value , fallBackText="N/A" }) {
-  const branches = useSelector((state) => state.common.branches);
-  const branch = branches.find(
+export function DocCategoryName({ value, fallBackText = "N/A" }) {
+  const doc_categories = useSelector((state) => state.doc_category.category);
+  const doc_category = doc_categories.find(
     (option) => option.value === parseInt(value)
   );
-  console.log("branch", branch, value, branches);
+  return doc_category ? doc_category.label : value ?? fallBackText;
+}
+
+export function BranchName({ value, fallBackText = "N/A" }) {
+  const branches = useSelector((state) => state.common.branches);
+  const branch = branches.find((option) => option.value === parseInt(value));
   return branch ? branch.label : value ?? fallBackText;
 }
 function ProjectName({ value }) {
@@ -164,7 +166,7 @@ function getEmployeeid(value) {
   return employee;
 }
 
-function ManagerName({ value,fallBackText='N/A' }) {
+function ManagerName({ value, fallBackText = "N/A" }) {
   const managers = useSelector((state) => state.emp.reportingManagers);
   const manager = managers.find((option) => option.value === parseInt(value));
   return <>{manager ? manager.label : fallBackText}</>;
@@ -229,7 +231,6 @@ export function getLabelByValue(value, options) {
   const selectedOption = options.find((option) => option.value === value);
   return selectedOption ? selectedOption.label : "N/A";
 }
-
 
 function getManagerName(value, managers) {
   const manager = managers.find((option) => option.value === value);

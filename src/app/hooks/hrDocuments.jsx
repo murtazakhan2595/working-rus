@@ -2,12 +2,14 @@ import React from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { initialState } from "state/slices/UserSlice";
-import { setUserLogout } from "state/actions/UserAction";
+import { getFormattedDropdownItems } from "utils/Lists";
 import { EmployeeListData } from "app/utils/Types/General";
 import {
-  mapEmployeeTransferData,
-  mapEmployeeTransferPayloadData,
-} from "app/utils/MappingObjects/mapEmployeeTransferData";
+  mapDocumentAssignedData,
+  mapDocumentCategoryPayloadData,
+  mapDocumentPayloadData,
+  mapDocumentAssignmentPayloadData,
+} from "app/utils/MappingObjects/mapHRDocumentData";
 import { HandleLogout } from "./general";
 
 const baseUrl = initialState.baseUrl;
@@ -15,13 +17,17 @@ const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
 });
+const formDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  // Don't explicitly set 'Content-Type' for FormData
+});
 
-export const getEmployeeTransferList = async (payload) => {
+export const getDocumentList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const ordering = payload?.ordering ?? "-id";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/employeetranfer/?ordering=${ordering}&${
+  const URL = `/document/?ordering=${ordering}&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
     JSON.stringify(filterData)
@@ -32,11 +38,11 @@ export const getEmployeeTransferList = async (payload) => {
     });
     if (response.status === 200) {
       const employeeTransferDataResponse = response.data;
-      const employeeTransferData = {
+      const HRDocumentData = {
         count: employeeTransferDataResponse.count,
         results: employeeTransferDataResponse.results,
       };
-      return employeeTransferData;
+      return HRDocumentData;
     } else return { results: [], count: 0 };
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -45,6 +51,53 @@ export const getEmployeeTransferList = async (payload) => {
     console.error("Error fetching Personal Info data :", error);
   }
   return { results: [], count: 0 };
+};
+
+export const getDocumentAssignmentList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const ordering = payload?.ordering ?? "-id";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/document-assignments/?ordering=${ordering}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const documentAssignmentsDataResponse = response.data;
+      const documentAssignmentsData = {
+        count: documentAssignmentsDataResponse.count,
+        results: documentAssignmentsDataResponse.results,
+      };
+      return documentAssignmentsData;
+    } else return { results: [], count: 0 };
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return { results: [], count: 0 };
+};
+
+export const getDocumentAssignmentData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/document-assignments/${id}`, {
+      headers: headers(),
+    });
+    const HRDocumentData = mapDocumentAssignedData(response.data);
+    return HRDocumentData;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching data:", error);
+  }
+  return 0;
 };
 
 export const getEmployeeTransferStats = async (payload) => {
@@ -76,8 +129,8 @@ export const getHRDocumentData = async (id) => {
     const response = await axios.get(`${baseUrl}/employeetranfer/${id}`, {
       headers: headers(),
     });
-    const employeeTransferData = mapEmployeeTransferData(response.data);
-    return employeeTransferData;
+    const HRDocumentData = mapDocumentAssignedData(response.data);
+    return HRDocumentData;
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();
@@ -87,13 +140,140 @@ export const getHRDocumentData = async (id) => {
   return 0;
 };
 
-export const addUpdateHRDocumentDetails = async (payload, id = null) => {
+export const addUpdateDocumentAssignment = async (payload, id = null) => {
+  debugger
   try {
-    const finalPayload = mapEmployeeTransferPayloadData(payload);
+    const endPoint =
+      payload.target_audience === "Department"
+        ? "assign_to_department/"
+        : payload.target_audience === "Specific Employee"
+        ? "assign_to_employee/"
+        : payload.target_audience === "All Employees"
+        ? "assign_to_organization/"
+        : "";
+
+    const finalPayload = mapDocumentAssignmentPayloadData(payload);
+    const url = id
+      ? `${baseUrl}/document-assignments/${endPoint}${id}/` // Use id if updating
+      : `${baseUrl}/document-assignments/${endPoint}`; // No id means create new
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    // Check response status
+    if (response.status === 201 || response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    // Handle errors
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error adding/updating LogTime:", error);
+    return false;
+  }
+};
+
+export const addUpdateHRDocumentDetails = async (payload, id = 16) => {
+  try {
+    const finalPayload = mapDocumentPayloadData(payload);
+    const url = id
+      ? `${baseUrl}/document/${id}` // Use id if updating
+      : `${baseUrl}/document/`; // No id means create new
+
+    const method = id ? "PUT" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: formDataHeader(),
+    });
+
+    // Check response status
+    if (response.status === 201 || response.status === 200) {
+      if (!id) {
+        const assignmentResponse = await addUpdateDocumentAssignment({
+          ...payload,
+          document: response.data.id,
+        });
+      }
+      return response.data;
+    }
+  } catch (error) {
+    // Handle errors
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error adding/updating LogTime:", error);
+    return false;
+  }
+};
+
+// Document Category
+
+export const getDocumentCategoryList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const ordering = payload?.ordering ?? "-id";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/documentcategory/?ordering=${ordering}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const documentCategoryDataResponse = response.data;
+      const documentCategoryData = {
+        count: documentCategoryDataResponse.count,
+        results: getFormattedDropdownItems(
+          documentCategoryDataResponse.results
+        ),
+      };
+      return documentCategoryData;
+    } else return { results: [], count: 0 };
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return { results: [], count: 0 };
+};
+
+export const getDocumentCategoryData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/documentcategory/${id}`, {
+      headers: headers(),
+    });
+    const documentCategoryData = mapDocumentAssignedData(response.data);
+    return documentCategoryData;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching data:", error);
+  }
+  return 0;
+};
+
+export const addUpdateDocumentcategory = async (payload, id = null) => {
+  try {
+    const finalPayload = mapDocumentCategoryPayloadData(payload);
 
     const url = id
-      ? `${baseUrl}/employeetranfer/${id}` // Use id if updating
-      : `${baseUrl}/employeetranfer/`; // No id means create new
+      ? `${baseUrl}/documentCategory/${id}` // Use id if updating
+      : `${baseUrl}/documentCategory/`; // No id means create new
 
     const method = id ? "PUT" : "POST"; // Determine method based on existence of id
 

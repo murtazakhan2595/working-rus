@@ -13,6 +13,7 @@ import TooltipText from "./TooltipText";
 import OverviewCard from "./OverviewCard";
 import ViewDetailSheetCardExtension from "./ViewDetailSheetCardExtension";
 import DialogBox from "./DialogBox";
+import SheetUI from "./SheetUI";
 export {
   Header,
   PageLoader,
@@ -30,4 +31,5 @@ export {
   getStatusVariant,
   ViewDetailSheetCardExtension,
   DialogBox,
+  SheetUI,
 };

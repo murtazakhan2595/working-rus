@@ -1,6 +1,7 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { HandleLogout } from "./general";
+import { mapAttendanceData } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -171,12 +172,14 @@ const getAttendanceSummary = async (payload) => {
   }
 };
 
-const saveAttendance = async (payload) => {
+const saveAttendance = async (payload, id) => {
+  const attendanceId = id || payload?.id;
+  const finalPayload = mapAttendanceData(payload);
   try {
-    if (payload?.id) {
+    if (attendanceId) {
       const response = await axios.patch(
-        `${baseUrl}/attendance/${payload.id}/`,
-        payload,
+        `${baseUrl}/attendance/${attendanceId}/`,
+        finalPayload,
         {
           headers: headers(),
         }
@@ -185,9 +188,13 @@ const saveAttendance = async (payload) => {
         return response.data;
       }
     } else {
-      const response = await axios.post(`${baseUrl}/attendance/`, payload, {
-        headers: headers(),
-      });
+      const response = await axios.post(
+        `${baseUrl}/attendance/`,
+        finalPayload,
+        {
+          headers: headers(),
+        }
+      );
       if (response.status === 201 || response.status === 200) {
         return response.data;
       }

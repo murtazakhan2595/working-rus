@@ -1,4 +1,3 @@
-import { CiViewBoard } from "react-icons/ci";
 import { countries } from "country-data";
 import {
   fetchDepartments,
@@ -17,10 +16,10 @@ import {
   fetchUser,
 } from "state/slices/EmpSlice";
 import { fetchLeaveComponents } from "state/slices/LeaveManagementSlice";
+import { fetchDocumentCategory } from "state/slices/HRDocumentsSlice";
 import {
   ArrowDown,
   ArrowRight,
-  CircleEllipsis,
   ArrowUp,
   Timer,
 } from "lucide-react";
@@ -246,9 +245,9 @@ export const UserRoles = [
   { value: 4, label: "Employee" },
 ];
 export const HRDocumentTargetAudience = [
-  { value: 'Specific Employee', label: "Specific Employee" },
-  { value: 'Department', label: "Department" },
   { value: 'All Employees', label: "All Employees" },
+  { value: 'Department', label: "Department" },
+  { value: 'Specific Employee', label: "Specific Employee" },
 ];
 export const HRDocumentCategory = [
   { value: 'Policy', label: "Policy" },
@@ -824,6 +823,7 @@ export const handleUpdateProfile = (dispatch, data) => {
   dispatch(fetchBranches());
   dispatch(fetchDepartments());
   dispatch(fetchDesignations());
+  dispatch(fetchDocumentCategory());
   dispatch(fetchOrganizations());
   dispatch(fetchTaskLabels());
   dispatch(fetchTerminationReasons());

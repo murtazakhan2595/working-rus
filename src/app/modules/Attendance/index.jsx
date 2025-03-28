@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "components/ui/card";
+import { Button } from "components/ui/button";
 import moment from "moment";
 import {
-  getAttendance,
   getAttendanceSummary,
   getDepartmentPercentage,
   getWeeklySummary,
 } from "app/hooks/attendance";
 import { PageLoader, TableCustom } from "components";
 import { EmployeesAttendanceColumns } from "app/modules/Attendance/Sections/AttendanceTableColumns";
+import { UpdateEmployeeAttendance } from "app/modules/Attendance/Sections";
 import { LeaveStatusOverview } from "./Sections/LeaveStatusOverview";
 import { StatisticsChart } from "./Sections/StatisticsChart";
 import DepartmentOverview from "./Sections/DepartmentOverview";
@@ -23,14 +24,14 @@ const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [departmentPercentage, setDepartmentPercentage] = useState([]);
+  const [openUpdateEmployeeAttendance, setOpenUpdateEmployeeAttendance] =
+    useState(false);
   const [weeklySummary, setWeeklySummary] = useState([]);
   const departments = useSelector((state) => state.common.departments);
   const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [activeTab, setActiveTab] = useState("day");
+  const [activeTab, setActiveTab] = useState("Month");
   const [filterData, setFilterData] = useState({});
-  const [dateRange, setDateRange] = useState(
-    `${moment().format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`
-  );
+  const [dateRange, setDateRange] = useState(GetDateRange("MONTH"));
   const [leaveStatus, setLeaveStatus] = useState({});
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -85,7 +86,7 @@ const Attendance = () => {
     return () => {
       isMounted = false;
     };
-  }, [options, filterData,dateRange]);
+  }, [options, filterData, dateRange]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -155,6 +156,14 @@ const Attendance = () => {
               return;
             }}
           />
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              setOpenUpdateEmployeeAttendance(true);
+            }}
+          >
+            Update Attendance
+          </Button>
         </div>
         {isLoading ? (
           <PageLoader />
@@ -172,6 +181,15 @@ const Attendance = () => {
           </Card>
         )}
       </div>
+      {openUpdateEmployeeAttendance && (
+        <UpdateEmployeeAttendance
+          isOpen={openUpdateEmployeeAttendance}
+          setIsOpen={() => {
+            setOpenUpdateEmployeeAttendance(false);
+            getAttendanceList(true);
+          }}
+        />
+      )}
     </div>
   );
 };

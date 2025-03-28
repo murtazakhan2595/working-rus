@@ -38,16 +38,20 @@ export const EmployeesAttendanceColumns = [
     dataField: "attendance_stats",
     text: "Attendance %",
     formatter: (cell, row) => {
-      const percentage = calculatePercentage(cell);
-      return(
-      <div className="flex justify-between gap-1">
-        {`${percentage.toFixed(0)}%`}
-        <Progress
-          value={percentage}
-          className="mt-1 h-2 bg-gray-400"
-        />
-      </div>
-    )}
+      const total =
+        parseInt(cell.Present) ||
+        0 + parseInt(cell.Absent) ||
+        0 + parseInt(cell.Late) ||
+        0;
+      const present = parseInt(cell.Present) || 0 + parseInt(cell.Late) || 0;
+      const percentage = calculatePercentage(present , total);
+      return (
+        <div className="flex justify-between gap-1">
+          {`${percentage.toFixed(0)}%`}
+          <Progress value={percentage} className="mt-1 h-2 bg-gray-400" />
+        </div>
+      );
+    },
   },
   {
     dataField: "",
