@@ -16,11 +16,11 @@ const CategoryActions = ({ data, reload = () => {} }) => {
   const [OpenDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [EditCategory, setEditCategory] = useState(false);
 
-  const handleEdit = (data) => {
+  const handleEdit = () => {
     setEditCategory(true);
   };
 
-  const handleDelete = (data) => {
+  const handleDelete = () => {
     setOpenDeleteAlert(true);
   };
 

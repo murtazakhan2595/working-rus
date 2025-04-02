@@ -132,16 +132,16 @@ export default function Documents() {
     setFilterData((prevFilter) => {
       const updatedFilter = { ...prevFilter };
       if (activeDocumentTab === "All") {
-        delete updatedFilter.status; // Remove the status key
+        delete updatedFilter.doc_status; // Remove the status key
       } else {
-        updatedFilter.status =
+        updatedFilter.doc_status =
           activeDocumentTab === "Signed"
-            ? "ACKNOWLEDGED"
+            ? "Signed"
             : activeDocumentTab === "Expired"
-            ? "EXPIRED"
+            ? "Expired"
             : activeDocumentTab === "Pending"
-            ? "PENDING"
-            : updatedFilter.status; // Keep existing value if no match
+            ? "Pending"
+            : updatedFilter.doc_status; // Keep existing value if no match
       }
       return updatedFilter;
     });
