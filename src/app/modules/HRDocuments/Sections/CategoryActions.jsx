@@ -26,7 +26,7 @@ const CategoryActions = ({ data, reload = () => {} }) => {
 
   const confirmDelete = async () => {
     try {
-      await deleteRecord(`/branch/${data?.id}`, data?.branch_name);
+      await deleteRecord(`/documentcategory/${data?.id}`, data?.name);
       reload(true);
     } catch (error) {
       console.error("ERROR", error);

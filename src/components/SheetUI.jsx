@@ -39,7 +39,7 @@ const SheetUI = forwardRef(
       submitButtonText = "Submit",
       cancelButtonText = "Cancel",
       formFiels,
-      renderUpdatedFormValues=()=>{},
+      renderUpdatedFormValues = () => {},
       columns,
     } = formConfig;
 
@@ -61,11 +61,13 @@ const SheetUI = forwardRef(
           innerRef={formRef}
           enableReinitialize={enableReinitialize}
           onSubmit={(values, { resetForm }) => {
+            debugger;
             handleSubmit(values, resetForm);
           }}
           validate={(values) => {
             const errors = validateFormSchema(values);
-            console.error("Form Errors:", errors, "Values:", values);
+            if (errors)
+              console.error("Form Errors:", errors, "Values:", values);
             if (renderUpdatedFormValues) {
               renderUpdatedFormValues(values);
             }
@@ -150,7 +152,7 @@ const SheetUI = forwardRef(
                   >
                     {cancelButtonText}
                   </Button>
-                  <Button type="submit" size="lg" variant="default">
+                  <Button type="submit" size="lg" variant="default" onClick={props.handleSubmit}>
                     {submitButtonText}
                   </Button>
                 </div>

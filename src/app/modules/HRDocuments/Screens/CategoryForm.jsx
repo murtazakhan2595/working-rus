@@ -44,7 +44,6 @@ const CategoryForm = ({ id = null, isOpen = true, setIsOpen = () => {} }) => {
   }, [id]);
 
   const handleSubmit = async (data) => {
-    debugger
     try {
       const response = await addUpdateDocumentcategory(data, id);
       // return
