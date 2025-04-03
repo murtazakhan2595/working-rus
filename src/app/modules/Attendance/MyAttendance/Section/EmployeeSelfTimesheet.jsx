@@ -35,7 +35,6 @@ export default function EmployeeSelfTimesheet({
   disable,
   reloadData,
 }) {
- 
   const updatePaybleHours = async () => {
     if (!OnBreak && attendance?.checkin) {
       const checkInDate = moment(attendance.checkin);
@@ -60,13 +59,13 @@ export default function EmployeeSelfTimesheet({
   };
 
   useEffect(() => {
-    if (!OnBreak && attendance?.checkin && !attendance.checkout) {
+    if (!OnBreak && attendance?.checkin && !attendance?.checkout) {
       updatePaybleHours(); // Initial update
       const interval = setInterval(updatePaybleHours, 60000); // Update every second
 
       return () => clearInterval(interval); // Cleanup on unmount
     }
-  }, [attendance?.checkin, OnBreak, attendance.checkout]);
+  }, [attendance?.checkin, OnBreak, attendance?.checkout]);
 
   return (
     <Card>
@@ -172,7 +171,7 @@ const RenderShiftControlIcons = ({
   const userProfile = useSelector((state) => state.user.userProfile);
 
   if (attendance && attendance.checkout) {
-    return  null;
+    return null;
   }
   if (!employeeShift?.shift_start_time || !employeeShift?.shift_end_time)
     return null;
