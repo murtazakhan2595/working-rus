@@ -43,7 +43,7 @@ const TimePicker = ({
   const hour = currentMoment.format("hh");
   const minute = currentMoment.format("mm");
   const period = currentMoment.format("A");
-
+  console.log()
   return (
     <>
       <FormField
