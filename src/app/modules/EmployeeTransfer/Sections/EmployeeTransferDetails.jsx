@@ -177,7 +177,7 @@ const EmployeeTransferDetails = ({
       value: renderDate(currentTranfer?.effective_transfer_date),
     },
     {
-      label: "Reason for Tranfer",
+      label: "Reason for Transfer",
       value: currentTranfer?.reason_of_transfer,
     },
     ...(currentTranfer?.hr_manager
@@ -201,7 +201,7 @@ const EmployeeTransferDetails = ({
       <ViewDetailSheetCardExtension
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        title="Tranfer Detail"
+        title="Transfer Detail"
         handlePrevious={handlePrevious}
         handleNext={handleNext}
       >

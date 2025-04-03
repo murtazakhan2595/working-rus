@@ -178,12 +178,12 @@ const SidebarRoutes = [
   Config.TRANSFER_MANAGEMENT && {
     path: "/employee-tranfer",
     component: <EmployeeTransfer />,
-    name: "Employee Tranfer",
+    name: "Employee Transfer",
   },
   Config.TRANSFER_MANAGEMENT && {
     path: "/my-tranfers",
     component: <MyTransfers />,
-    name: "My Tranfer",
+    name: "My Transfer",
   },
   Config.ASSETS_MANAGEMENT && {
     path: "/my-assets",

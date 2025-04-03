@@ -114,8 +114,8 @@ const Attendance = () => {
             filters={[
               {
                 type: "search",
-                placeholder: "Search by ID and Name",
-                name: "emp_id",
+                placeholder: "Search by Name",
+                name: "emp_name",
               },
               {
                 type: "select-one",

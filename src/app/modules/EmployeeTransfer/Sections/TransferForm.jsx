@@ -140,11 +140,11 @@ const Form = ({
       // return
       if (response) {
         if (id) {
-          toast.success("Employee Tranfer Request Updated Successfully!", {
+          toast.success("Employee Transfer Request Updated Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
         } else {
-          toast.success("Employee Tranfer Request Submitted Successfully!", {
+          toast.success("Employee Transfer Request Submitted Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
@@ -181,7 +181,7 @@ const Form = ({
               <div className="space-y-4 col-span-2">
                 <RadioGroupInput
                   name={"transfer_type"}
-                  label={"Tranfer Type"}
+                  label={"Transfer Type"}
                   error={props.errors?.transfer_type}
                   touch={props.touched?.transfer_type}
                   value={props.values?.transfer_type}
@@ -315,7 +315,7 @@ const Form = ({
                   touch={props.touched?.effective_transfer_date}
                   value={props.values?.effective_transfer_date}
                   required={true}
-                  label={"Effective Tranfer Date"}
+                  label={"Effective Transfer Date"}
                   onChange={(field, value) => {
                     props.setFieldValue(field, value);
                   }}

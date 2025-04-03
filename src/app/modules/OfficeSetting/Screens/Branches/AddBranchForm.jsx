@@ -64,7 +64,7 @@ const AddBranchForm = ({
             <SheetCardExtension title="Branch Details">
               <RadioGroupInput
                 name={"branch_status"}
-                label={"Tranfer Type"}
+                label={"Transfer Type"}
                 error={props.errors?.branch_status}
                 touch={props.touched?.branch_status}
                 value={props.values?.branch_status}

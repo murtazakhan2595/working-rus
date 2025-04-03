@@ -79,7 +79,7 @@ const Header = ({ content, userProfile }) => {
       "job-description": "Job Description",
       "office-settings": "Office Setting",
       "my-attendance": "Attendance History",
-      "employee-tranfer": "Employee Tranfer",
+      "employee-tranfer": "Employee Transfer",
       "my-tranfers": "My Tranfers",
       "assets":"Assets",
       "my-assets":"My Assets",

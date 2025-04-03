@@ -82,7 +82,7 @@ export const InternalTransferColumns = [
 export const MyTransfersColumns = [
   {
     dataField: "transfer_type",
-    text: "Tranfer Type",
+    text: "Transfer Type",
     formatter: (cell, row) => (cell === "INTERNAL" ? "Internal" : "External"),
     minWidth: "120px",
     dataSort: true,
