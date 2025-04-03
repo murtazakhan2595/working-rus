@@ -1,4 +1,5 @@
 const EmpSheetLoader = () => {
+  console.log("Loading employee sheet...");
   return (
     <tbody className="bg-white text-gray-500">
       <tr className="whitespace-nowrap border-b-2">
