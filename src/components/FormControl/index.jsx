@@ -47,7 +47,7 @@ import SelectLocationOnMap from "./SelectLocationOnMap";
 
 const errorClassName = "text-red-800 text-xs font-[inter] font-normal ml-1";
 export const inputButtonClassName =
-  "inline-flex items-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-white text-primary  dark:border-slate-800 dark:bg-slate-950 dark:hover:bg-slate-800 dark:hover:text-slate-50 h-fit px-4 py-2 flex-wrap justify-between w-full rounded-sm border-neutral-500";
+  "inline-flex items-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border bg-white text-primary hover:text-primary hover:bg-white hover:shadow-none h-fit px-4 py-2 flex-wrap justify-between w-full rounded-sm border-neutral-500";
 
 export const InvalidInput = "border-red-800";
 // General FormField Component

@@ -171,32 +171,27 @@ const getAttendanceSummary = async (payload) => {
   }
 };
 
-const saveAttendance = async (payload, id) => {
+const saveAttendance = async (payload, userDetails, id) => {
+  const shift_id = userDetails?.shift_assignment;
   const attendanceId = id || payload?.id;
-  const finalPayload = mapAttendanceData(payload);
   try {
-    if (attendanceId) {
-      const response = await axios.patch(
-        `${baseUrl}/attendance/${attendanceId}/`,
-        finalPayload,
-        {
-          headers: headers(),
-        }
-      );
-      if (response.status === 200 || response.status === 201) {
-        return response.data;
-      }
-    } else {
-      const response = await axios.post(
-        `${baseUrl}/attendance/`,
-        finalPayload,
-        {
-          headers: headers(),
-        }
-      );
-      if (response.status === 201 || response.status === 200) {
-        return response.data;
-      }
+    const shift = await getShiftById(shift_id);
+    const finalPayload = mapAttendanceData(payload, shift);
+
+    const url = attendanceId
+      ? `${baseUrl}/attendance/${attendanceId}/` // Use id if updating
+      : `${baseUrl}/attendance/`; // No id means create new
+
+    const method = attendanceId ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
     }
   } catch (error) {
     console.error("Error saving attendance:", error);
@@ -292,7 +287,7 @@ const getBreakStatus = async (payload) => {
 };
 
 const endBreak = async (payload, endtime) => {
-  debugger
+  debugger;
   console.log("endbreak", payload, endtime);
   const lastBreak = await getBreak(payload);
   const lastBreakId = lastBreak?.results[0]?.id;

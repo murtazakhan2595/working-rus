@@ -16,7 +16,7 @@ const calculateAttendanceStats = (attendance) => {
   };
 };
 
-const HourlyStatistics = ({ userId}) => {
+const HourlyStatistics = ({ userId }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [todayAttendanceData, setTodayAttendanceData] = useState({});
   const [weeklyAttendanceData, setWeeklyAttendanceData] = useState({});
@@ -96,12 +96,12 @@ const HourlyStatistics = ({ userId}) => {
     let isMounted = true;
     setIsLoading(true);
     loadUserData(isMounted);
-  
+
     // Refresh data every 1 minute
     const interval = setInterval(() => {
       loadUserData(isMounted);
     }, 60000); // 60,000 ms = 1 min
-  
+
     return () => {
       isMounted = false;
       clearInterval(interval); // Cleanup on unmount
@@ -134,18 +134,19 @@ const HourlyStatistics = ({ userId}) => {
         value={overtimeAttendanceData.value || 0}
         label={"Overtime"}
         total={overtimeAttendanceData.total || 0}
+        showTotal={false}
       />
     </div>
   );
 };
 
-const Statistics = ({ value, total, label }) => (
+const Statistics = ({ value, total, label, showTotal = true }) => (
   <div>
     <div className="flex justify-between mb-1">
       <span className="text-slate-900">{label}</span>
       <span>
-        <span className="text-slate-1200">{formatDuration(value)}</span>/{total}
-        hrs
+        <span className="text-slate-1200">{formatDuration(value)}</span>
+        {showTotal ? `/${total}h` : ""}
       </span>
     </div>
     <Progress

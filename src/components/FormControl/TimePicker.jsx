@@ -21,14 +21,12 @@ const TimePicker = ({
   onChange,
   className,
 }) => {
-  const initialDateTime = value
-    ? moment(value).toISOString()
-    : moment(date || new Date()).toISOString();
+  const initialDateTime = value ? moment(value).toISOString() : null;
 
   const [time, setTime] = useState(initialDateTime);
 
   const handleTimeChange = (newHour, newMinute, newPeriod) => {
-    const updatedTime = moment(time)
+    const updatedTime = (time ? moment(time) : moment(date || new Date()))
       .hour(newPeriod === "PM" ? parseInt(newHour, 10) + 12 : newHour)
       .minute(newMinute)
       .second(0)
@@ -39,11 +37,10 @@ const TimePicker = ({
     }
   };
 
-  const currentMoment = moment(time);
-  const hour = currentMoment.format("hh");
-  const minute = currentMoment.format("mm");
-  const period = currentMoment.format("A");
-  console.log()
+  const currentMoment = time ? moment(time) : null;
+  const hour = currentMoment ? currentMoment.format("hh") : "00";
+  const minute = currentMoment ?currentMoment.format("mm"): "00";;
+  const period = currentMoment ? currentMoment.format("A"): "AM";;
   return (
     <>
       <FormField
@@ -85,9 +82,7 @@ const TimePicker = ({
                 min="0"
                 max="59"
                 value={minute}
-                onChange={(e) =>
-                  handleTimeChange(hour, e.target.value, period)
-                }
+                onChange={(e) => handleTimeChange(hour, e.target.value, period)}
                 className="border rounded-md p-1"
               />
             </div>

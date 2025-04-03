@@ -61,7 +61,6 @@ const SheetUI = forwardRef(
           innerRef={formRef}
           enableReinitialize={enableReinitialize}
           onSubmit={(values, { resetForm }) => {
-            debugger;
             handleSubmit(values, resetForm);
           }}
           validate={(values) => {

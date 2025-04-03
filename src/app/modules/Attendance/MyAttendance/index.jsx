@@ -19,7 +19,7 @@ import { getBreakStatus } from "app/hooks/attendance";
 import { endBreak, getShiftById } from "app/hooks/attendance";
 import { getStats, employeeData } from "app/hooks/attendance";
 import TableCustom from "components/CustomTable";
-import { myAttendanceColumn } from "app/utils/Types/TableColumns";
+import { MyAttendanceColumn } from "app/modules/Attendance/Sections/AttendanceTableColumns";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { HourlyStatistics } from "../EmployeeAttendance/Section";
@@ -86,7 +86,8 @@ const Attendance = () => {
     }
   };
   const fetchShiftData = async () => {
-    const shift = await getShiftById(user_details?.shift_assignment || 1);
+    debugger
+    const shift = await getShiftById(user_details?.shift_assignment);
     if (shift) {
       setEmployeeShift({
         shift_start_time: moment(
@@ -188,7 +189,7 @@ const Attendance = () => {
       payable_hours: "0",
       date: moment().format("YYYY-MM-DD"),
     };
-    const response = await saveAttendance(payload);
+    const response = await saveAttendance(payload,user_details);
     if (response) {
       toast.success("Shift started");
       setAttendanceWithLocalTime(response);
@@ -429,7 +430,7 @@ const Attendance = () => {
               <CardContent>
                 <TableCustom
                   data={attendanceData}
-                  columns={myAttendanceColumn}
+                  columns={MyAttendanceColumn}
                   pagination={true}
                   dataTotalSize={attendanceData.count || 0}
                   // tableOptions={tableOptions}

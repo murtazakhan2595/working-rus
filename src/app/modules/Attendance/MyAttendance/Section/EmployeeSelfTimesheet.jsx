@@ -37,15 +37,15 @@ export default function EmployeeSelfTimesheet({
 }) {
   const updatePaybleHours = async () => {
     if (!OnBreak && attendance?.checkin) {
-      const checkInDate = moment(attendance.checkin);
-      const now = moment(moment().format("YYYY-MM-DDTHH:mm:ss"));
-      const totalHours = parseFloat(
-        now.diff(checkInDate, "hours", true)
-      ).toFixed(2);
+      debugger
+      const checkInDate = moment(attendance.checkin); // Ensure UTC
+      const now = moment();
+      const totalHours = now.diff(checkInDate, "hours", true); // Get total time in decimal hours
+
       // Convert break hours to milliseconds
       const breakMs = parseFloat(attendance?.break_duration || 0);
       // Calculate elapsed time minus break
-      const payableHours = totalHours - breakMs;
+      const payableHours = (totalHours < 0 ? 0 : totalHours) - breakMs;
 
       const payload = {
         id: attendance.id,

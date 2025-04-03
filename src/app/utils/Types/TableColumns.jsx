@@ -875,49 +875,6 @@ export const MyDtrTasksColumns = [
   },
 ];
 
-export const myAttendanceColumn = [
-  {
-    text: "Date",
-    dataField: "date",
-    formatter: (cell) => <>{`${renderDate(cell)}`} </>,
-  },
-  {
-    text: "Check In",
-    dataField: "checkin",
-    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
-  },
-  {
-    text: "Check Out",
-    dataField: "checkout",
-    formatter: (cell) =>
-      cell ? (
-        <span>{moment(cell?.replace("Z", "")).format("h:mm A")}</span>
-      ) : (
-        "Not Checked Out"
-      ),
-  },
-  {
-    text: "Break",
-    dataField: "break_duration",
-    formatter: (cell) => <>{formatDuration(cell)}</>,
-  },
-  {
-    text: "Overtime",
-    dataField: "overtime_hours",
-    formatter: (cell) => <>{formatDuration(cell)}</>,
-  },
-  {
-    text: "Productivity",
-    dataField: "payable_hours",
-    formatter: (cell) => <>{formatDuration(cell)}</>,
-  },
-  {
-    dataField: "status",
-    text: "Status",
-    formatter: (cell) => <StatusLabelAttendance status={cell} />,
-  },
-];
-
 export const AssetsColumns = [
   {
     dataField: "id",

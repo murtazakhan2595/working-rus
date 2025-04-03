@@ -30,33 +30,10 @@ const UpdateEmployeeAttendance = ({
   const Designations = useSelector((state) => state.common.designations);
   const UserDetails = useSelector((state) => state.emp.user_details);
   const Mangers = useSelector((state) => state.emp.reportingManagers);
-  const Employees = useSelector((state) => state.emp.employees);
+  const Employees = useSelector((state) => state.emp.employees_detail);
   const [formData, setFormData] = useState(Attendance);
   const [formValues, setFormValues] = useState(Attendance);
   const [selectedEmployee, setSelectedEmployee] = useState({});
-  //   const fetchData = async (isMounted) => {
-  //     try {
-  //       const response = await getEmployeeTransferData(id);
-  //       if (isMounted && response) {
-  //         setFormData(response);
-  //         setSelectedEmployee(
-  //           Employees.find((obj) => obj.value === response.employee_id)
-  //         );
-  //       }
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-
-  //   useEffect(() => {
-  //     let isMounted = true;
-  //     if (id) {
-  //       fetchData(isMounted);
-  //     }
-  //     return () => {
-  //       isMounted = false;
-  //     };
-  //   }, [id]);
 
   useEffect(() => {
     if (isEmployee) {
@@ -69,15 +46,15 @@ const UpdateEmployeeAttendance = ({
 
   const handleSubmit = async (data) => {
     try {
-      const response = await saveAttendance(data, id);
+      const response = await saveAttendance(data, selectedEmployee, id);
       // return
       if (response) {
         if (id) {
-          toast.success("Employee Tranfer Request Updated Successfully!", {
+          toast.success("Attendance Updated Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
         } else {
-          toast.success("Employee Tranfer Request Submitted Successfully!", {
+          toast.success("Attendance Submitted Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
@@ -89,6 +66,7 @@ const UpdateEmployeeAttendance = ({
       console.error(error);
     }
   };
+  console.log(selectedEmployee,'selectedEm')
   return (
     <SheetUI
       isOpen={isOpen}
