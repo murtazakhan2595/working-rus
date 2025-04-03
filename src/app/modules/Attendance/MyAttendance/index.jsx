@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import moment from "moment";
-import { EmployeeSelfTimesheet } from "app/modules/Attendance/MyAttendance/Section";
+import {
+  EmployeeSelfTimesheet,
+  RecentActivities,
+} from "app/modules/Attendance/MyAttendance/Section";
 import {
   getAttendance,
   saveAttendance,
@@ -20,12 +23,11 @@ import { myAttendanceColumn } from "app/utils/Types/TableColumns";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { HourlyStatistics } from "../EmployeeAttendance/Section";
-import { getRecentActivities } from "app/hooks/attendance";
 import { DateRangeFilter } from "components/FormControl";
 import { GetDateRange } from "utils/renderValues";
 
 const Attendance = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [employeeShift, setEmployeeShift] = useState({});
   const [attendance, setAttendance] = useState(null);
@@ -36,10 +38,7 @@ const Attendance = () => {
   const [dateRange, setDateRange] = useState(null);
   const [attendanceHistoryLoading, setAttendanceHistoryLoading] =
     useState(false);
-  const [recentActivities, setRecentActivities] = useState([]);
   const [activeFilter, setactiveFilter] = useState("day");
-  
-
 
   const userProfile = useSelector((state) => state.user.userProfile);
   const user_details = useSelector((state) => state.emp.user_details);
@@ -105,14 +104,6 @@ const Attendance = () => {
         },
       });
       setOnBreak(breakStatus);
-      const recentActivities = await getRecentActivities({
-        filterData: {
-          employee_id: userProfile.id,
-          date: moment().format("YYYY-MM-DD"),
-        },
-        
-      },attendance.results[0], userProfile);
-      setRecentActivities(recentActivities);
     }
 
     setDisable(false);
@@ -136,14 +127,12 @@ const Attendance = () => {
       checkout
     );
 
-
     const breakDuration = await calculateBreak({
       filterData: {
         employee_id: userProfile.id,
         attendance: attendance.id,
       },
     });
-    
 
     let overTime = 0;
     if (attendance.payable_hours > attendance.total_hours) {
@@ -157,17 +146,6 @@ const Attendance = () => {
     };
     const response = await saveAttendance(payload);
     if (response) {
-          const recentActivities = await getRecentActivities(
-            {
-              filterData: {
-                employee_id: userProfile.id,
-                date: moment().format("YYYY-MM-DD"),
-              },
-            },
-            response,
-            userProfile
-          );
-          setRecentActivities(recentActivities);
       await getAttendanceList();
       toast.success("Shift ended");
       setAttendanceWithLocalTime(response);
@@ -209,19 +187,8 @@ const Attendance = () => {
     };
     const response = await saveAttendance(payload);
     if (response) {
-      const recentActivities = await getRecentActivities(
-        {
-          filterData: {
-            employee_id: userProfile.id,
-            date: moment().format("YYYY-MM-DD"),
-          },
-        },
-        response,
-        userProfile
-      );
       toast.success("Shift started");
       setAttendanceWithLocalTime(response);
-
     }
   };
 
@@ -241,7 +208,7 @@ const Attendance = () => {
     }
   };
   const updateAttendanceAttributes2 = async () => {
-    debugger
+    debugger;
     const breakDuration = await calculateBreak({
       filterData: {
         employee_id: userProfile.id,
@@ -265,7 +232,7 @@ const Attendance = () => {
   };
 
   const updatePayableHours = async () => {
-    debugger
+    debugger;
     if (!attendance && attendance.results.length > 0) {
       toast.error("No attendance found");
       return;
@@ -334,23 +301,13 @@ const Attendance = () => {
         toast.success("Break ended");
       }
     }
-    const recentActivities = await getRecentActivities(
-      {
-        filterData: {
-          employee_id: userProfile.id,
-          date: moment().format("YYYY-MM-DD"),
-        },
-      },
-      attendance,
-      userProfile
-    );
-    setRecentActivities(recentActivities);
+
     await getAttendanceList();
     setDisable(false);
   };
 
   const pauseShift = async () => {
-    debugger
+    debugger;
     setDisable(true);
     const startTime = moment().format("YYYY-MM-DDTHH:mm:ss");
     await updatePayableHours();
@@ -368,38 +325,27 @@ const Attendance = () => {
     }
     await updateAttendanceAttributes1();
     await getAttendanceList();
-    const recentActivities = await getRecentActivities(
-      {
-        filterData: {
-          employee_id: userProfile.id,
-          date: moment().format("YYYY-MM-DD"),
-        },
-      },
-      attendance,
-      userProfile
-    );
-    setRecentActivities(recentActivities);
+
     setDisable(false);
   };
 
-  
-const handleFilterChange = (dateRange) => {
-  if (dateRange?.toUpperCase() === "DAY") {
-    setFilterData({
-      date: moment().format("YYYY-MM-DD"),
-      employee_id: userProfile.id,
-    });
-  } else {
-    setFilterData({
-      date_range: GetDateRange(dateRange),
-      employee_id: userProfile.id,
-    });
-  }
-};
+  const handleFilterChange = (dateRange) => {
+    if (dateRange?.toUpperCase() === "DAY") {
+      setFilterData({
+        date: moment().format("YYYY-MM-DD"),
+        employee_id: userProfile.id,
+      });
+    } else {
+      setFilterData({
+        date_range: GetDateRange(dateRange),
+        employee_id: userProfile.id,
+      });
+    }
+  };
 
-  const downloadAttendance = ()=>{
-    navigate(`/attendance-reports/${userProfile?.id}`) 
-  }
+  const downloadAttendance = () => {
+    navigate(`/attendance-reports/${userProfile?.id}`);
+  };
 
   console.log("FILTERDATAAAAAAA", filterData);
 
@@ -436,38 +382,7 @@ const handleFilterChange = (dateRange) => {
                 />
               </CardContent>
             </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-plum-900">
-                  Recent Activities
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {recentActivities?.length > 0 ? (
-                  <div className="space-y-4">
-                    {recentActivities?.slice(0, 4)?.map((item, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between"
-                      >
-                        <div>
-                          <div>{item.time}</div>
-                          <div className="text-slate-900">
-                            {item.description}
-                          </div>
-                        </div>
-                        <div className="text-slate-900">{item.activity}</div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center text-slate-900">
-                    No recent activities to display
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <RecentActivities attendance={attendance} />
           </div>
 
           <div className="flex gap-2 justify-between items-center">

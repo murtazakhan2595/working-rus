@@ -1,2 +1,3 @@
 import EmployeeSelfTimesheet from './EmployeeSelfTimesheet';
-export {EmployeeSelfTimesheet};
+import RecentActivities from './RecentActivities';
+export {EmployeeSelfTimesheet,RecentActivities};

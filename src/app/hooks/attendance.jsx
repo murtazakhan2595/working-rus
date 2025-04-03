@@ -262,7 +262,7 @@ const getBreak = async (payload) => {
 };
 
 const calculateBreak = async (payload) => {
-  debugger
+  debugger;
   const breaks = await getBreak(payload);
   let breakDuration = 0; // total duration in minutes
   console.log("BREAAKS IN ");
@@ -468,13 +468,13 @@ const getWeeklySummary = async () => {
   }
 };
 
-const getRecentActivities = async (payload, attendance, userProfile) => {
-  console.log("RECENT ACTIVITIES", payload, attendance);
+export const getRecentActivities = async (payload, attendance, userProfile) => {
   let recentActivities = [];
+  if (!attendance) return recentActivities;
   recentActivities.push({
-    time: moment(attendance.checkin).format("hh:mm a"),
+    time: moment(attendance.checkin).format("hh:mm A"),
     activity: "Check in",
-    description: "Checked in for the day",
+    description: "Checked In",
     timestamp: moment(attendance.checkin),
   });
 
@@ -489,7 +489,7 @@ const getRecentActivities = async (payload, attendance, userProfile) => {
     getBreaks.results.forEach((breakItem) => {
       // Add break start
       recentActivities.push({
-        time: moment(breakItem.starttime.replace("Z", "")).format("hh:mm a"),
+        time: moment(breakItem.starttime.replace("Z", "")).format("hh:mm A"),
         activity: `Break Start`,
         description: `Away`,
         timestamp: moment(breakItem.starttime.replace("Z", "")),
@@ -498,7 +498,7 @@ const getRecentActivities = async (payload, attendance, userProfile) => {
       // Add break end
       if (breakItem.endtime) {
         recentActivities.push({
-          time: moment(breakItem.endtime.replace("Z", "")).format("hh:mm a"),
+          time: moment(breakItem.endtime.replace("Z", "")).format("hh:mm A"),
           activity: `Break End`,
           description: `Back`,
           timestamp: moment(breakItem.endtime.replace("Z", "")),
@@ -506,10 +506,9 @@ const getRecentActivities = async (payload, attendance, userProfile) => {
       }
     });
   }
-  console.log("GETBREAKS", getBreaks);
   if (attendance.checkout) {
     recentActivities.push({
-      time: moment(attendance.checkout?.replace("Z", "")).format("hh:mm a"),
+      time: moment(attendance.checkout?.replace("Z", "")).format("hh:mm A"),
       activity: "Check out",
       description: "Checked out for the day",
       timestamp: moment(attendance.checkout),
@@ -522,13 +521,11 @@ const getRecentActivities = async (payload, attendance, userProfile) => {
 
   // Remove timestamp field
   recentActivities = recentActivities.map(({ timestamp, ...rest }) => rest);
-  console.log("RECENTACTIVITIES ACTIVITIES", recentActivities);
   return recentActivities;
 };
 
 export {
   getAttendanceStats,
-  getRecentActivities,
   saveShiftAssignment,
   getEmployeeList,
   getShift,

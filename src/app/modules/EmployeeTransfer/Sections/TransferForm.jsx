@@ -23,7 +23,7 @@ import SheetComponent from "components/ui/CustomSheet";
 
 const FormSheetData = {
   triggerText: "Submit",
-  title: "Employee Tranfer Request Form",
+  title: "Employee Transfer Request Form",
   description: null,
   footer: null,
 };
