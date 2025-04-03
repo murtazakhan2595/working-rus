@@ -140,7 +140,6 @@ const getAttendance = async (payload) => {
 
 const getAttendanceSummary = async (payload) => {
   console.log(payload, "PAYLOAD OF ATTENDANCE");
-  // debugger
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -242,7 +241,7 @@ const getBreak = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  let URL = `/breaks?ordering=-starttime&${pageNo ? `page=${pageNo}&` : ""}${
+  let URL = `/breaks?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
@@ -262,10 +261,8 @@ const getBreak = async (payload) => {
 };
 
 const calculateBreak = async (payload) => {
-  debugger;
   const breaks = await getBreak(payload);
   let breakDuration = 0; // total duration in minutes
-  console.log("BREAAKS IN ");
   if (breaks && breaks.results) {
     breaks.results.forEach((element) => {
       const start = moment(element.starttime).utc(); // parse start time as UTC
@@ -273,14 +270,11 @@ const calculateBreak = async (payload) => {
         ? moment(element.endtime).local() // parse and convert end time to local time
         : moment().local(); // if no endtime, use the current time in local time
 
-      console.log("start", start);
-      console.log("end", end);
       if (start.isValid() && end.isValid()) {
         breakDuration += parseFloat(end.diff(start, "hours", true)); // calculate difference in hours
       }
     });
   }
-  console.log(breakDuration);
   return parseFloat(breakDuration).toFixed(2); // return the break duration as a fixed decimal value
 };
 
@@ -298,6 +292,7 @@ const getBreakStatus = async (payload) => {
 };
 
 const endBreak = async (payload, endtime) => {
+  debugger
   console.log("endbreak", payload, endtime);
   const lastBreak = await getBreak(payload);
   const lastBreakId = lastBreak?.results[0]?.id;
@@ -489,28 +484,28 @@ export const getRecentActivities = async (payload, attendance, userProfile) => {
     getBreaks.results.forEach((breakItem) => {
       // Add break start
       recentActivities.push({
-        time: moment(breakItem.starttime.replace("Z", "")).format("hh:mm A"),
+        time: moment(breakItem.starttime).format("hh:mm A"),
         activity: `Break Start`,
         description: `Away`,
-        timestamp: moment(breakItem.starttime.replace("Z", "")),
+        timestamp: moment(breakItem.starttime),
       });
 
       // Add break end
       if (breakItem.endtime) {
         recentActivities.push({
-          time: moment(breakItem.endtime.replace("Z", "")).format("hh:mm A"),
+          time: moment(breakItem.endtime).format("hh:mm A"),
           activity: `Break End`,
           description: `Back`,
-          timestamp: moment(breakItem.endtime.replace("Z", "")),
+          timestamp: moment(breakItem.endtime),
         });
       }
     });
   }
   if (attendance.checkout) {
     recentActivities.push({
-      time: moment(attendance.checkout?.replace("Z", "")).format("hh:mm A"),
+      time: moment(attendance.checkout).format("hh:mm A"),
       activity: "Check out",
-      description: "Checked out for the day",
+      description: "Checked",
       timestamp: moment(attendance.checkout),
     });
   }

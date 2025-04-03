@@ -5,35 +5,24 @@ import { CalculateHoursWorked } from "app/modules/Attendance/Sections/CalculateW
 import { Progress } from "src/@/components/ui/progress";
 import { PageLoader } from "components";
 import { GetDateRange, GetShiftTotalHours } from "utils/renderValues";
-import { formatDuration } from "utils/renderValues";
+import { formatDuration, calculateTotal } from "utils/renderValues";
 
-const HourlyStatistics = ({
-  userId,
-  shiftId,
-  attendanceData,
-  dateRange,
-}) => {
+const calculateAttendanceStats = (attendance) => {
+  const totalHours = CalculateHoursWorked(attendance);
+  const total = calculateTotal(attendance, "total_hours");
+  return {
+    value: totalHours.totalWorkedHours,
+    total: total,
+  };
+};
+
+const HourlyStatistics = ({ userId}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [todayAttendanceData, setTodayAttendanceData] = useState({});
   const [weeklyAttendanceData, setWeeklyAttendanceData] = useState({});
   const [monthlyAttendanceData, setMonthlyAttendanceData] = useState({});
   const [remainingAttendanceData, setRemainingAttendanceData] = useState({});
   const [overtimeAttendanceData, setOvertimeAttendanceData] = useState({});
-
-  const [shiftData, setShiftData] = useState({});
-
-  const calculateAttendanceStats = (attendance, shiftDuration, rangeType) => {
-    const totalHours = CalculateHoursWorked(attendance);
-    const total = GetShiftTotalHours(
-      moment(shiftDuration.starttime).format("HH:mm"),
-      moment(shiftDuration.endtime).format("HH:mm"),
-      rangeType
-    );
-    return {
-      value: totalHours.totalWorkedHours,
-      total: total,
-    };
-  };
 
   const fetchAttendanceData = async (filterData, rangeType) => {
     try {
@@ -53,9 +42,7 @@ const HourlyStatistics = ({
       },
       "day"
     );
-    setTodayAttendanceData(
-      calculateAttendanceStats(todayAttendance, shiftData, "day")
-    );
+    setTodayAttendanceData(calculateAttendanceStats(todayAttendance));
   };
 
   const getWeeklyAttendanceStats = async () => {
@@ -66,9 +53,7 @@ const HourlyStatistics = ({
       },
       "week"
     );
-    setWeeklyAttendanceData(
-      calculateAttendanceStats(weeklyAttendance, shiftData, "week")
-    );
+    setWeeklyAttendanceData(calculateAttendanceStats(weeklyAttendance));
   };
 
   const getMonthlyAttendanceStats = async () => {
@@ -79,33 +64,22 @@ const HourlyStatistics = ({
       },
       "month"
     );
-    setMonthlyAttendanceData(
-      calculateAttendanceStats(monthlyAttendance, shiftData, "month")
-    );
-  };
 
-  const getRemainingHoursData = () => {
-    const totalHours = CalculateHoursWorked(attendanceData);
+    const monthlytAttendanceStats = calculateAttendanceStats(monthlyAttendance);
+    setMonthlyAttendanceData(monthlytAttendanceStats);
     setRemainingAttendanceData({
-      value: totalHours.totalWorkedHours,
-      total: dateRange ? totalHours.totalHours : todayAttendanceData.total,
+      value: monthlytAttendanceStats.total - monthlytAttendanceStats.value,
+      total: monthlytAttendanceStats.total,
     });
-  };
-
-  const getOvertimeHoursData = () => {
-    const totalHours = CalculateHoursWorked(attendanceData, "overtime_hours");
     setOvertimeAttendanceData({
-      value: totalHours.totalWorkedHours,
-      total: dateRange ? totalHours.totalHours : todayAttendanceData.total,
+      value: calculateTotal(monthlyAttendance, "overtime_hours"),
+      total: monthlytAttendanceStats.total,
     });
   };
 
   const loadUserData = async (isMounted) => {
     if (!isMounted) return;
     try {
-      const shiftData = await getShiftById(shiftId);
-      setShiftData(shiftData);
-
       await Promise.all([
         await getTodayAttendanceStats(),
         await getWeeklyAttendanceStats(),
@@ -118,28 +92,22 @@ const HourlyStatistics = ({
     }
   };
 
-  const loadDynamicUserData = async (isMounted) => {
-    if (!isMounted) return;
-    await Promise.all([getRemainingHoursData(), getOvertimeHoursData()]);
-  };
-
   useEffect(() => {
     let isMounted = true;
     setIsLoading(true);
     loadUserData(isMounted);
+  
+    // Refresh data every 1 minute
+    const interval = setInterval(() => {
+      loadUserData(isMounted);
+    }, 60000); // 60,000 ms = 1 min
+  
     return () => {
       isMounted = false;
+      clearInterval(interval); // Cleanup on unmount
     };
-  }, [shiftId, userId]);
+  }, [userId]);
 
-  useEffect(() => {
-    let isMounted = true;
-    setIsLoading(true);
-    loadDynamicUserData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [attendanceData]);
   return (
     <div className="space-y-4">
       <Statistics

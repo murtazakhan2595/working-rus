@@ -10,4 +10,5 @@ export const Attendance = {
   status: 'Present',
   employee_id: null,
   break_duration:null,
+  total_hours:null,
 };

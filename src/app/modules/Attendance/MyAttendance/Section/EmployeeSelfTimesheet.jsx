@@ -8,8 +8,8 @@ import {
   StopCircle,
   PauseCircle,
 } from "lucide-react";
-import { convertUTCToLocal } from "app/hooks/attendance";
-import { formatTimeWithAMPM } from "app/hooks/attendance";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import { formatDuration } from "utils/renderValues";
 import { renderDate } from "utils/renderValues";
 import {
@@ -18,143 +18,55 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
+import {
+  endBreak,
+  saveAttendance,
+  saveBreak,
+  getBreak,
+  calculateBreak,
+} from "app/hooks/attendance";
 
 export default function EmployeeSelfTimesheet({
   employeeShift,
   attendance,
   startShift,
-  pauseShift,
   endShift,
   OnBreak,
   disable,
+  reloadData,
 }) {
-  const [elapsedTime, setElapsedTime] = useState("");
-  console.log("BREAK STAUS", OnBreak);
-  // Determine which icons to show
-  const renderShiftControlIcons = (disable) => {
-    if (attendance && attendance.checkout) {
-      return null;
-    }
+ 
+  const updatePaybleHours = async () => {
+    if (!OnBreak && attendance?.checkin) {
+      const checkInDate = moment(attendance.checkin);
+      const now = moment(moment().format("YYYY-MM-DDTHH:mm:ss"));
+      const totalHours = parseFloat(
+        now.diff(checkInDate, "hours", true)
+      ).toFixed(2);
+      // Convert break hours to milliseconds
+      const breakMs = parseFloat(attendance?.break_duration || 0);
+      // Calculate elapsed time minus break
+      const payableHours = totalHours - breakMs;
 
-    if (!attendance?.checkin) {
-      // If no attendance, show only Play
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <PlayCircle
-                className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-                onClick={() => {
-                  if (!disable) {
-                    startShift();
-                  }
-                }}
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Start Shift</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
+      const payload = {
+        id: attendance.id,
+        payable_hours: payableHours.toFixed(2),
+      };
+      const response = await saveAttendance(payload);
+      if (response) {
+        await reloadData();
+      }
     }
-
-    if (OnBreak) {
-      // If on break, show Play and Stop
-      return (
-        <>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <PlayCircle
-                  className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-                  onClick={() => {
-                    if (!disable) {
-                      startShift();
-                    }
-                  }}
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Resume Shift</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <StopCircle
-                  className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-                  onClick={() => {
-                    if (!disable) {
-                      endShift();
-                    }
-                  }}
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>End Shift</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </>
-      );
-    }
-
-    // If attendance exists and not on break, show Pause and Stop
-    return (
-      <>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <PauseCircle
-                className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-                onClick={pauseShift}
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Pause Shift</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <StopCircle
-                className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-                onClick={endShift}
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>End Shift</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </>
-    );
   };
 
   useEffect(() => {
-    const updateElapsedTime = () => {
-      const checkInDate = new Date(attendance?.checkin);
-      const now = new Date();
-      // Convert break hours to milliseconds
-      const breakMs = parseFloat(attendance?.break_duration || 0) * 60 * 60 * 1000;
-      // Calculate elapsed time minus break
-      let workDurationMs = now - checkInDate - breakMs;
+    if (!OnBreak && attendance?.checkin && !attendance.checkout) {
+      updatePaybleHours(); // Initial update
+      const interval = setInterval(updatePaybleHours, 60000); // Update every second
 
-      const hours = Math.floor(workDurationMs / (1000 * 60 * 60));
-      const minutes = Math.floor((workDurationMs % (1000 * 60 * 60)) / (1000 * 60));
-      // const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-
-      setElapsedTime(`${hours}h ${minutes}m`);
-    };
-
-    updateElapsedTime(); // Initial update
-    const interval = setInterval(updateElapsedTime, 60000); // Update every second
-
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, [attendance?.checkin]);
+      return () => clearInterval(interval); // Cleanup on unmount
+    }
+  }, [attendance?.checkin, OnBreak, attendance.checkout]);
 
   return (
     <Card>
@@ -187,7 +99,7 @@ export default function EmployeeSelfTimesheet({
               "No shift assigned"
             )}
           </div>
-          <div className="flex items-center justify-center mt-4">
+          <div className="flex items-center flex-row flex-wrap justify-center mt-4">
             <div className="relative">
               <svg className="w-32 h-32">
                 <circle
@@ -218,13 +130,19 @@ export default function EmployeeSelfTimesheet({
                 />
               </svg>
               <div className="absolute text-xl font-semibold transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2 align-middle text-center">
-                {/* {formatDuration(attendance?.payable_hours)} */}
-                {elapsedTime}
+                {formatDuration(attendance?.payable_hours)}
               </div>
             </div>
-            {employeeShift?.shift_start_time &&
-              employeeShift?.shift_end_time &&
-              renderShiftControlIcons(disable)}
+
+            <RenderShiftControlIcons
+              disable={disable}
+              attendance={attendance}
+              employeeShift={employeeShift}
+              startShift={startShift}
+              endShift={endShift}
+              OnBreak={OnBreak}
+              reloadData={reloadData}
+            />
           </div>
           <div className="flex justify-between mt-4">
             <div>
@@ -241,3 +159,166 @@ export default function EmployeeSelfTimesheet({
     </Card>
   );
 }
+
+const RenderShiftControlIcons = ({
+  disable,
+  attendance,
+  employeeShift,
+  startShift,
+  endShift,
+  OnBreak,
+  reloadData = () => {},
+}) => {
+  const userProfile = useSelector((state) => state.user.userProfile);
+
+  if (attendance && attendance.checkout) {
+    return  null;
+  }
+  if (!employeeShift?.shift_start_time || !employeeShift?.shift_end_time)
+    return null;
+
+  const startBreak = async () => {
+    const startTime = moment().utc().format("YYYY-MM-DDTHH:mm:ss[Z]");
+    const payload = {
+      break_type: "Lunch",
+      starttime: startTime,
+      employee_id: userProfile.id,
+      attendance: attendance.id,
+    };
+    const response = await saveBreak(payload);
+    if (response) {
+      toast.success("Break started");
+      reloadData();
+    }
+  };
+
+  const endBreakResumeShift = async () => {
+    const endTime = moment().utc().format("YYYY-MM-DDTHH:mm:ss[Z]");
+    if (OnBreak) {
+      const result = await endBreak(
+        {
+          filterData: {
+            employee_id: userProfile.id,
+            attendance: attendance.id,
+          },
+        },
+        endTime
+      );
+
+      if (result) {
+        toast.success("Break ended");
+        const breakDuration = await calculateBreak({
+          filterData: {
+            employee_id: userProfile.id,
+            attendance: attendance.id,
+          },
+        });
+        const payload = {
+          id: attendance.id,
+          break_duration: breakDuration,
+        };
+        const response = await saveAttendance(payload);
+        if (response) {
+          reloadData();
+        }
+      }
+    }
+  };
+
+  if (!attendance?.checkin) {
+    // If no attendance, show only Play
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PlayCircle
+              className="w-8 h-8 mx-2 text-plum-900 cursor-pointer"
+              onClick={() => {
+                if (!disable) {
+                  startShift();
+                }
+              }}
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Start Shift</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  if (OnBreak) {
+    // If on break, show Play and Stop
+    return (
+      <>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PlayCircle
+                className="w-8 h-8 mx-2 text-plum-900 cursor-pointer"
+                onClick={() => {
+                  if (!disable) {
+                    endBreakResumeShift();
+                  }
+                }}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Resume Shift</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <StopCircle
+                className="w-8 h-8 mx-2 text-plum-900 cursor-pointer"
+                onClick={() => {
+                  if (!disable) {
+                    endShift();
+                  }
+                }}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>End Shift</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </>
+    );
+  }
+
+  // If attendance exists and not on break, show Pause and Stop
+  return (
+    <>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PauseCircle
+              className="w-8 h-8 mx-2 text-plum-900 cursor-pointer"
+              onClick={startBreak}
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Pause Shift</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <StopCircle
+              className="w-8 h-8 mx-2 text-plum-900 cursor-pointer"
+              onClick={endShift}
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>End Shift</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </>
+  );
+};

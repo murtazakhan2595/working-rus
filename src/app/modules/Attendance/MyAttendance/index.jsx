@@ -34,7 +34,7 @@ const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [onBreak, setOnBreak] = useState(false);
   // const [activeTab, setActiveTab] = useState("day");
-  const [disable, setDisable] = useState(false);
+  const [reloadData, setReloadData] = useState(false);
   const [dateRange, setDateRange] = useState(null);
   const [attendanceHistoryLoading, setAttendanceHistoryLoading] =
     useState(false);
@@ -67,7 +67,25 @@ const Attendance = () => {
   };
 
   const fetchData = async () => {
-    setLoading(true);
+    const attendance = await getAttendance({
+      filterData: {
+        employee_id: userProfile.id,
+        date: moment().format("YYYY-MM-DD"),
+      },
+    });
+
+    if (attendance && attendance.results.length > 0) {
+      setAttendance(attendance?.results[0]);
+      const breakStatus = await getBreakStatus({
+        filterData: {
+          employee_id: userProfile.id,
+          attendance: attendance.results[0].id,
+        },
+      });
+      setOnBreak(breakStatus);
+    }
+  };
+  const fetchShiftData = async () => {
     const shift = await getShiftById(user_details?.shift_assignment || 1);
     if (shift) {
       setEmployeeShift({
@@ -81,37 +99,10 @@ const Attendance = () => {
         ),
       });
     }
-
-    const attendance = await getAttendance({
-      filterData: {
-        employee_id: userProfile.id,
-        date: moment().format("YYYY-MM-DD"),
-      },
-    });
-    if (attendance) {
-      setAttendanceWithLocalTime(attendance.results[0]);
-    }
-
-    if (attendance && attendance.results.length > 0) {
-      const breakStatus = await getBreakStatus({
-        filterData: {
-          employee_id: userProfile.id,
-          attendance: attendance.results[0].id,
-        },
-        options: {
-          page: 1,
-          sizePerPage: 1,
-        },
-      });
-      setOnBreak(breakStatus);
-    }
-
-    setDisable(false);
-    setLoading(false);
   };
   const endShift = async () => {
-    setDisable(true);
-    const checkout = moment().format("YYYY-MM-DDTHH:mm:ss");
+    setReloadData(true);
+    const checkout = moment().utc().format("YYYY-MM-DDTHH:mm:ss[Z]");
     await updatePayableHours();
     await endBreak(
       {
@@ -152,11 +143,23 @@ const Attendance = () => {
     }
 
     setOnBreak(false);
-    setDisable(false);
+    setReloadData(true);
   };
 
   useEffect(() => {
-    fetchData();
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchShiftData(isMounted);
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -208,7 +211,6 @@ const Attendance = () => {
     }
   };
   const updateAttendanceAttributes2 = async () => {
-    debugger;
     const breakDuration = await calculateBreak({
       filterData: {
         employee_id: userProfile.id,
@@ -232,7 +234,6 @@ const Attendance = () => {
   };
 
   const updatePayableHours = async () => {
-    debugger;
     if (!attendance && attendance.results.length > 0) {
       toast.error("No attendance found");
       return;
@@ -270,7 +271,7 @@ const Attendance = () => {
     }
   };
   const startShift = async () => {
-    setDisable(true);
+    setReloadData(true);
     if (attendance && attendance.checkout) {
       toast.success("Shift already ended");
       return;
@@ -303,14 +304,13 @@ const Attendance = () => {
     }
 
     await getAttendanceList();
-    setDisable(false);
+    setReloadData(true);
   };
 
   const pauseShift = async () => {
-    debugger;
-    setDisable(true);
+    setReloadData(true);
     const startTime = moment().format("YYYY-MM-DDTHH:mm:ss");
-    await updatePayableHours();
+    // await updatePayableHours();
     const payload = {
       break_type: "Lunch",
       starttime: startTime,
@@ -320,13 +320,11 @@ const Attendance = () => {
     const response = await saveBreak(payload);
     if (response) {
       setOnBreak(true);
-
       toast.success("Break started");
     }
     await updateAttendanceAttributes1();
     await getAttendanceList();
-
-    setDisable(false);
+    setReloadData(true);
   };
 
   const handleFilterChange = (dateRange) => {
@@ -363,6 +361,11 @@ const Attendance = () => {
               pauseShift={pauseShift}
               endShift={endShift}
               OnBreak={onBreak}
+              reloadData={() => {
+                getAttendanceList();
+                fetchData();
+              }}
+              setOnBreak={setOnBreak}
             />
 
             <Card>
@@ -370,16 +373,7 @@ const Attendance = () => {
                 <CardTitle className="text-plum-900">Statistics</CardTitle>
               </CardHeader>
               <CardContent>
-                <HourlyStatistics
-                  userId={userProfile?.id}
-                  shiftId={userProfile?.shift_assignment || 1}
-                  dateRange={
-                    filterData && filterData.date_range
-                      ? filterData.date_range
-                      : null
-                  }
-                  attendanceData={attendanceData}
-                />
+                <HourlyStatistics userId={userProfile?.id} />
               </CardContent>
             </Card>
             <RecentActivities attendance={attendance} />
