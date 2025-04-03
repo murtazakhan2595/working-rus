@@ -10,6 +10,7 @@ import {
   mapDocumentPayloadData,
   mapDocumentAssignmentPayloadData,
   mapDocumentCategoryData,
+  mapDocumentData,
 } from "app/utils/MappingObjects/mapHRDocumentData";
 import { HandleLogout } from "./general";
 
@@ -127,10 +128,10 @@ export const getEmployeeTransferStats = async (payload) => {
 
 export const getHRDocumentData = async (id) => {
   try {
-    const response = await axios.get(`${baseUrl}/employeetranfer/${id}`, {
+    const response = await axios.get(`${baseUrl}/document/${id}`, {
       headers: headers(),
     });
-    const HRDocumentData = mapDocumentAssignedData(response.data);
+    const HRDocumentData = mapDocumentData(response.data);
     return HRDocumentData;
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -138,7 +139,7 @@ export const getHRDocumentData = async (id) => {
     }
     console.error("Error fetching data:", error);
   }
-  return 0;
+  return null;
 };
 
 export const addUpdateDocumentAssignment = async (payload, id = null) => {

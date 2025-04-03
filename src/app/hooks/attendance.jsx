@@ -262,6 +262,7 @@ const getBreak = async (payload) => {
 };
 
 const calculateBreak = async (payload) => {
+  debugger
   const breaks = await getBreak(payload);
   let breakDuration = 0; // total duration in minutes
   console.log("BREAAKS IN ");

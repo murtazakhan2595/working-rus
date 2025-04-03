@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "components/ui/card";
-import { UploadDocumentForm } from "app/modules/HRDocuments";
+import { DocumentDetails } from "app/modules/HRDocuments/Screens";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
 import { Header } from "components";
 import {
@@ -39,6 +39,7 @@ export default function Documents() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
+    const [OpenDocumentID, setOpenDocumentID] = useState(false);
   const [filterData, setFilterData] = useState(
     userRole === 2 ? { new_reporting_manager: userID } : {}
   );
@@ -53,6 +54,9 @@ export default function Documents() {
     onPageChange: onPageChange,
     onSortChange: (sortName) => {
       setOrdering(sortName);
+    },
+    onRowClick: (row) => {
+      setOpenDocumentID(row.id);
     },
   };
 
@@ -209,6 +213,18 @@ export default function Documents() {
           tableOptions={tableOptions}
         />
       </Tabs>
+       {OpenDocumentID && (
+              <DocumentDetails
+                documentID={OpenDocumentID}
+                isOpen={!!OpenDocumentID}
+                setIsOpen={() => {
+                  setOpenDocumentID(null);
+                }}
+                DocumentList={employeeTransferData.results}
+                reloadData={fetchData}
+                // readOnlyMode={true}
+              />
+            )}
     </div>
   );
 }

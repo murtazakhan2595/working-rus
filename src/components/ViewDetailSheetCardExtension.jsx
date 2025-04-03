@@ -16,7 +16,7 @@ const ViewDetailSheetCardExtension = React.forwardRef(
   ) => {
     return (
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent side="right" className={`w-full p-6 sm:max-w-2xl`}>
+        <SheetContent side="right" className={`w-full p-6 sm:max-w-2xl overflow-y-auto`}>
           <div className="flex flex-col h-full">
             <SheetHeader>
               <div className="flex justify-between gap-x-3 items-center border-b border-[#D7E4FF] b-2">

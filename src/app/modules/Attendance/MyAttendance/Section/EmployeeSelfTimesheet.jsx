@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import moment from "moment";
 import {
@@ -9,7 +10,7 @@ import {
 } from "lucide-react";
 import { convertUTCToLocal } from "app/hooks/attendance";
 import { formatTimeWithAMPM } from "app/hooks/attendance";
-import {formatDuration} from "utils/renderValues";
+import { formatDuration } from "utils/renderValues";
 import { renderDate } from "utils/renderValues";
 import {
   Tooltip,
@@ -27,40 +28,17 @@ export default function EmployeeSelfTimesheet({
   OnBreak,
   disable,
 }) {
+  const [elapsedTime, setElapsedTime] = useState("");
   console.log("BREAK STAUS", OnBreak);
   // Determine which icons to show
-const renderShiftControlIcons = (disable) => {
-  if (attendance && attendance.checkout) {
-    return null;
-  }
+  const renderShiftControlIcons = (disable) => {
+    if (attendance && attendance.checkout) {
+      return null;
+    }
 
-  if (!attendance?.checkin) {
-    // If no attendance, show only Play
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <PlayCircle
-              className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-              onClick={() => {
-                if (!disable) {
-                  startShift();
-                }
-              }}
-            />
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Start Shift</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  }
-
-  if (OnBreak) {
-    // If on break, show Play and Stop
-    return (
-      <>
+    if (!attendance?.checkin) {
+      // If no attendance, show only Play
+      return (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -74,7 +52,68 @@ const renderShiftControlIcons = (disable) => {
               />
             </TooltipTrigger>
             <TooltipContent>
-              <p>Resume Shift</p>
+              <p>Start Shift</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+
+    if (OnBreak) {
+      // If on break, show Play and Stop
+      return (
+        <>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <PlayCircle
+                  className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
+                  onClick={() => {
+                    if (!disable) {
+                      startShift();
+                    }
+                  }}
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Resume Shift</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <StopCircle
+                  className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
+                  onClick={() => {
+                    if (!disable) {
+                      endShift();
+                    }
+                  }}
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>End Shift</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </>
+      );
+    }
+
+    // If attendance exists and not on break, show Pause and Stop
+    return (
+      <>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PauseCircle
+                className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
+                onClick={pauseShift}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Pause Shift</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -83,11 +122,7 @@ const renderShiftControlIcons = (disable) => {
             <TooltipTrigger asChild>
               <StopCircle
                 className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-                onClick={() => {
-                  if (!disable) {
-                    endShift();
-                  }
-                }}
+                onClick={endShift}
               />
             </TooltipTrigger>
             <TooltipContent>
@@ -97,40 +132,29 @@ const renderShiftControlIcons = (disable) => {
         </TooltipProvider>
       </>
     );
-  }
+  };
 
-  // If attendance exists and not on break, show Pause and Stop
-  return (
-    <>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <PauseCircle
-              className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-              onClick={pauseShift}
-            />
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Pause Shift</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <StopCircle
-              className="w-8 h-8 ml-4 text-plum-900 cursor-pointer"
-              onClick={endShift}
-            />
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>End Shift</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </>
-  );
-};
+  useEffect(() => {
+    const updateElapsedTime = () => {
+      const checkInDate = new Date(attendance?.checkin);
+      const now = new Date();
+      // Convert break hours to milliseconds
+      const breakMs = parseFloat(attendance?.break_duration || 0) * 60 * 60 * 1000;
+      // Calculate elapsed time minus break
+      let workDurationMs = now - checkInDate - breakMs;
+
+      const hours = Math.floor(workDurationMs / (1000 * 60 * 60));
+      const minutes = Math.floor((workDurationMs % (1000 * 60 * 60)) / (1000 * 60));
+      // const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+      setElapsedTime(`${hours}h ${minutes}m`);
+    };
+
+    updateElapsedTime(); // Initial update
+    const interval = setInterval(updateElapsedTime, 60000); // Update every second
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [attendance?.checkin]);
 
   return (
     <Card>
@@ -193,8 +217,9 @@ const renderShiftControlIcons = (disable) => {
                   cy="64"
                 />
               </svg>
-              <div className="absolute text-2xl font-bold transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2 align-middle text-center">
-                {formatDuration(attendance?.payable_hours)}
+              <div className="absolute text-xl font-semibold transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2 align-middle text-center">
+                {/* {formatDuration(attendance?.payable_hours)} */}
+                {elapsedTime}
               </div>
             </div>
             {employeeShift?.shift_start_time &&

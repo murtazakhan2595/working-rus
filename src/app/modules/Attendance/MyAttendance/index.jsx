@@ -241,6 +241,7 @@ const Attendance = () => {
     }
   };
   const updateAttendanceAttributes2 = async () => {
+    debugger
     const breakDuration = await calculateBreak({
       filterData: {
         employee_id: userProfile.id,
@@ -264,6 +265,7 @@ const Attendance = () => {
   };
 
   const updatePayableHours = async () => {
+    debugger
     if (!attendance && attendance.results.length > 0) {
       toast.error("No attendance found");
       return;
@@ -348,6 +350,7 @@ const Attendance = () => {
   };
 
   const pauseShift = async () => {
+    debugger
     setDisable(true);
     const startTime = moment().format("YYYY-MM-DDTHH:mm:ss");
     await updatePayableHours();

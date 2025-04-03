@@ -1,27 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "components/ui/card";
 import { HRDocumentsStatus } from "data/Data";
-import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
-import {
-  getDocumentAssignmentList,
-  getEmployeeTransferStats,
-} from "app/hooks/hrDocuments";
+import { getDocumentAssignmentList } from "app/hooks/hrDocuments";
 import { MyHRDocumentsColumns } from "app/modules/HRDocuments/Sections";
-import { DocumentDetails } from "app/modules/HRDocuments/Screens";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "src/@/components/ui/tabs";
-import Stats from "components/ui/Stats";
+import { MyDocumentDetails } from "app/modules/HRDocuments/Screens";
 import { useSelector } from "react-redux";
-import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
-import Config from "constants/config";
-import { PageLoader,TableCustom,Header } from "components";
+import { PageLoader, TableCustom, Header } from "components";
 
-const ExternalTabs = ["All", "Signed", "Pending", "Expired"].filter(Boolean);
 
 export default function MyDocuments() {
   const userRole = useSelector((state) => state.user.userProfile.role);
@@ -140,7 +126,7 @@ export default function MyDocuments() {
         </CardContent>
       </Card>
       {OpenDocumentID && (
-        <DocumentDetails
+        <MyDocumentDetails
           documentID={OpenDocumentID}
           isOpen={!!OpenDocumentID}
           setIsOpen={() => {

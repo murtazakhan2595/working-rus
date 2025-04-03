@@ -1,25 +1,26 @@
 import moment from "moment";
 import React, { useState, useEffect } from "react";
 import { SignatureForm } from "app/modules/HRDocuments/Sections";
-import { DocCategoryName } from "utils/getValuesFromTables";
+import {
+  DocCategoryName,
+} from "utils/getValuesFromTables";
 import { Button } from "components/ui/button";
 import {
   addUpdateDocumentAssignment,
-  getHRDocumentData,
-  getDocumentAssignmentList,
+  getDocumentAssignmentData,
 } from "app/hooks/hrDocuments";
 import { saveEmployeePersonalInfoData } from "app/hooks/employee";
+import { useSelector } from "react-redux";
 import { mapEmployeeTransferInfo } from "app/utils/MappingObjects/mapEmployeeTransferData";
 import AttachmentUI from "components/ui/AttachmentUI";
-import { DetailBox, SheetCardExtension } from "components/SheetCardExtension";
+import { DetailBox } from "components/SheetCardExtension";
 import {
   ViewDetailSheetCardExtension,
   StatusLabel,
-  EmployeeOverview,
 } from "components";
 import { renderDate } from "utils/renderValues";
 
-const DocumentDetails = ({
+const MyDocumentDetails = ({
   documentID = null,
   DocumentList = [],
   reloadData = () => {},
@@ -28,20 +29,15 @@ const DocumentDetails = ({
   readOnlyMode = false,
 }) => {
   const [currentDocument, setCurrentDocument] = useState({});
-  const [DocumentAssignees, setDocumentAssignees] = useState([]);
   const [currentDocumentId, setCurrentDocumentId] = useState(documentID);
   const [OpenSignationForm, setOpenSignationForm] = useState(false);
 
   const fetchData = async (isMounted, documentId) => {
     try {
-      const response = await getHRDocumentData(documentId);
-      const assigneeResponse = await getDocumentAssignmentList({
-        filterData: { document: documentId },
-      });
+      const response = await getDocumentAssignmentData(documentId);
       if (isMounted && response) {
         setCurrentDocument(response);
         setCurrentDocumentId(documentId);
-        setDocumentAssignees(assigneeResponse?.results);
       }
     } catch (error) {
       console.error(error);
@@ -118,13 +114,13 @@ const DocumentDetails = ({
   const labelList = [
     {
       label: "Category",
-      value: <DocCategoryName value={currentDocument?.category} />,
+      value: <DocCategoryName value={currentDocument?.document_category} />,
     },
-    ...(currentDocument?.expiration_date
+    ...(currentDocument?.due_date
       ? [
           {
             label: "Due Date",
-            value: renderDate(currentDocument?.expiration_date),
+            value: renderDate(currentDocument?.due_date),
           },
         ]
       : []),
@@ -136,15 +132,8 @@ const DocumentDetails = ({
           },
         ]
       : []),
-    ...(currentDocument?.target_audience
-      ? [
-          {
-            label: "Target Audience",
-            value: currentDocument?.target_audience,
-          },
-        ]
-      : []),
   ].filter(Boolean);
+
   return (
     <>
       <ViewDetailSheetCardExtension
@@ -159,18 +148,15 @@ const DocumentDetails = ({
             <div className="flex flex-wrap items-center justify-between w-full">
               <div className="ml-1">
                 <div className="text-xl text-neutral-1200 font-bold mb-3">
-                  {currentDocument?.name}
+                  {currentDocument?.document_name}
                 </div>
                 <div className="flex flex-row gap-1 flex-wrap overflow-hidden">
-                  <StatusLabel status={currentDocument.doc_status}>
-                    {currentDocument.doc_status?.charAt(0) +
-                      currentDocument.doc_status?.slice(1).toLowerCase()}
-                  </StatusLabel>
-                  <StatusLabel status={currentDocument.acknowledgment_type}>
-                    {currentDocument.acknowledgment_type?.charAt(0) +
-                      currentDocument.acknowledgment_type
-                        ?.slice(1)
-                        .toLowerCase()}
+                  <StatusLabel
+                    className="cursor-pointer"
+                    status={currentDocument.status}
+                  >
+                    {currentDocument.status?.charAt(0) +
+                      currentDocument.status?.slice(1).toLowerCase()}
                   </StatusLabel>
                 </div>
               </div>
@@ -217,63 +203,33 @@ const DocumentDetails = ({
             </div>
           </section>
           <section>
-            <div className="mt-6">
-              <SheetCardExtension title="Document Details">
-                <div class="grid grid-cols-3 gap-8">
-                  {labelList &&
-                    labelList.map((data, index) => {
-                      return (
-                        <DetailBox
-                          orientation="horizontal"
-                          key={index}
-                          className=""
-                          label={data.label}
-                          value={data.value}
-                          fallbackText={""}
-                        />
-                      );
-                    })}
-                  <DetailBox
-                    orientation="horizontal"
-                    className=""
-                    label={"Description"}
-                    value={currentDocument.description}
-                    fallbackText={""}
-                  />
-                </div>
-              </SheetCardExtension>
+            <div className="mt-3">
+              <div class="grid grid-cols-3 gap-8 my-4 border border-gray-400 rounded-lg pr-3 pl-4 py-4">
+                {labelList &&
+                  labelList.map((data, index) => {
+                    return (
+                      <DetailBox
+                        orientation="horizontal"
+                        key={index}
+                        className=""
+                        label={data.label}
+                        value={data.value}
+                        fallbackText={""}
+                      />
+                    );
+                  })}
+              </div>
             </div>
           </section>
-          <section>
+          <section className="min-h-[75vh]">
             <AttachmentUI
-              attachment={currentDocument.file}
-              name={`${currentDocument?.file} - Document`}
+              attachment={currentDocument.document_file}
+              name={`${currentDocument?.document_name} - Document`}
               viewOnly={true}
             />
           </section>
           <section>
-            <div className="mt-6">
-              <SheetCardExtension title="Document Assignees">
-                {DocumentAssignees?.map((assignee, index) => {
-                  return (
-                    <div key={index} className="flex flex-row justify-between">
-                      <EmployeeOverview
-                        id={assignee.object_id}
-                        showId={true}
-                        showDepartment={true}
-                        showPosition={true}
-                      />
-                      <div>
-                        <StatusLabel status={assignee.status}>
-                          {assignee.status?.charAt(0) +
-                            assignee.status?.slice(1).toLowerCase()}
-                        </StatusLabel>
-                      </div>
-                    </div>
-                  );
-                })}
-              </SheetCardExtension>
-            </div>
+            <div className="flex flex-row justify-end gap-4 flex-wrap"></div>
           </section>
         </div>
       </ViewDetailSheetCardExtension>
@@ -291,4 +247,4 @@ const DocumentDetails = ({
   );
 };
 
-export default DocumentDetails;
+export default MyDocumentDetails;

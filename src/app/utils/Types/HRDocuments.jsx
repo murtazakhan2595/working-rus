@@ -8,6 +8,7 @@ export const Document = {
   employee_id: null,
   description: null,
   file: null,
+  doc_status:null,
 };
 
 export const DocumentCategory = { name: null, description: null };

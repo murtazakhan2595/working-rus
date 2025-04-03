@@ -9,7 +9,6 @@ import React, { useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import SheetComponent from "components/ui/SheetComponent";
 import {CategoryForm} from "app/modules/HRDocuments/Screens";
 
 const CategoryActions = ({ data, reload = () => {} }) => {

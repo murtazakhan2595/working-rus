@@ -9,4 +9,5 @@ export const Attendance = {
   is_late: false,
   status: 'Present',
   employee_id: null,
+  break_duration:null,
 };

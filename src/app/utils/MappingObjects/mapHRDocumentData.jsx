@@ -17,6 +17,19 @@ export function mapDocumentAssignedData(data) {
 
   return employeeTransferDetails;
 }
+export function mapDocumentData(data) {
+  const employeeTransferDetails = Object.keys(Document).reduce(
+    (acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
+
+  return employeeTransferDetails;
+}
 
 export function mapDocumentCategoryData(data) {
   const employeeTransferDetails = Object.keys(DocumentCategory).reduce(
