@@ -11,6 +11,7 @@ import {
   LeaveEmployeeDetails,
   OnGoingApplications,
 } from "../Screens";
+import EventCalendar from "../Screens/EventCalendar";
 
 const DashboardHR = [
   {
@@ -148,6 +149,12 @@ const DashboardEmployee = [
     className: `w-full`,
     content: <MyTeams />,
     value: "MyTeam",
+  },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <EventCalendar />,
+    value: "EventCalendar",
   },
 ];
 export const getDashboard = (userRole) => {
