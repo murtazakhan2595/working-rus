@@ -31,7 +31,7 @@ const AddBranchForm = ({
       const response = await addUpdateBranch(values, branchData.id);
       if (response) {
         toast.success(
-          `Department ${editMode?.data ? "Updated" : "Added"} Successfully!`,
+          `Branch ${editMode?.data ? "Updated" : "Added"} Successfully!`,
           {
             position: toast.POSITION.TOP_RIGHT,
           }
