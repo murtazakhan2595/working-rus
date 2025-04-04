@@ -2,7 +2,7 @@ import { addUpdateBranch } from "app/hooks/general";
 import { Branch } from "app/utils/Types/OfficeSetting";
 import { RadioGroupInput } from "components/FormControl";
 import { TextAreaInput } from "components/FormControl";
-import { TextInput } from "components/FormControl";
+import { TextInput ,SelectLocationOnMap} from "components/FormControl";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { Button } from "components/ui/button";
@@ -11,7 +11,6 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchBranches } from "state/slices/CommonSlice";
-import { SelectLocationOnMap } from "components/FormControl";
 
 const AddBranchForm = ({
   setIsOpen,
@@ -20,7 +19,6 @@ const AddBranchForm = ({
   reload = () => {},
 }) => {
   const [closeSheet, setCloseSheet] = useState(false);
-  const [showMap, setShowMap] = useState(false);
   const formData = editMode ? branchData : Branch;
   const dispatch = useDispatch();
 
@@ -33,7 +31,7 @@ const AddBranchForm = ({
       const response = await addUpdateBranch(values, branchData.id);
       if (response) {
         toast.success(
-          `Branch ${editMode ? "Updated" : "Added"} Successfully!`,
+          `Branch ${editMode?.data ? "Updated" : "Added"} Successfully!`,
           {
             position: toast.POSITION.TOP_RIGHT,
           }
@@ -47,23 +45,6 @@ const AddBranchForm = ({
     }
   };
 
-  const handleMapClose = () => {
-    setShowMap(false);
-  };
-
-const handleLocationSave = (formik, locationData) => {
-  formik.setFieldValue("branch_coordinates", {
-    lat: locationData.coordinates.lat,
-    lng: locationData.coordinates.lng,
-  });
-  formik.setFieldValue("branch_location", locationData.formattedAddress);
-
-  // Also set the branch_address field with the same formatted address
-  formik.setFieldValue("branch_address", locationData.formattedAddress);
-
-  setShowMap(false);
-};
-
   return (
     <>
       {handleCloseWithConfirmation({
@@ -72,11 +53,7 @@ const handleLocationSave = (formik, locationData) => {
         setIsOpen,
       })}
       <Formik
-        initialValues={{
-          ...formData,
-          branch_coordinates: formData.branch_coordinates || { lat: 0, lng: 0 },
-          branch_location: formData.branch_location || "",
-        }}
+        initialValues={formData}
         enableReinitialize
         onSubmit={(values, { resetForm }) => {
           handleSubmit(values, resetForm);
@@ -133,61 +110,7 @@ const handleLocationSave = (formik, locationData) => {
                   props.handleChange(field)(value);
                 }}
               />
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium  mb-1">
-                  Branch Location
-                </label>
-                <div className="flex items-center gap-2">
-                  <TextInput
-                    name="branch_location"
-                    label=""
-                    placeholder="Select location on map"
-                    value={props.values.branch_location}
-                    disabled={true}
-                    // className="flex-1"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowMap(true)}
-                  >
-                    Open Map
-                  </Button>
-                </div>
-
-                {props.values.branch_coordinates &&
-                  props.values.branch_coordinates.lat !== 0 && (
-                    <div className="grid grid-cols-2 gap-4 mt-2">
-                      <div>
-                        <span className="text-xs text-neutral-1000">Latitude:</span>
-                        <span className="text-sm ml-1">
-                          {props.values.branch_coordinates.lat.toFixed(6)}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs text-neutral-1000">
-                          Longitude:
-                        </span>
-                        <span className="text-sm ml-1">
-                          {props.values.branch_coordinates.lng.toFixed(6)}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-              </div>
-
-              {showMap && (
-                <SelectLocationOnMap
-                  isOpen={showMap}
-                  onClose={handleMapClose}
-                  onSave={(locationData) =>
-                    handleLocationSave(props, locationData)
-                  }
-                  initialLocation={props.values.branch_location}
-                  initialCoordinates={props.values.branch_coordinates}
-                />
-              )}
+              {/* <SelectLocationOnMap /> */}
             </SheetCardExtension>
             <div className="p-6 border-t border-gray-200 bg-gray-50 mt-5">
               <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">

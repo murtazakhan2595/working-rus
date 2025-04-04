@@ -17,6 +17,7 @@ const EmployeeOverview = React.memo(
     showBranchName = false,
   }) => {
     const userProfile = id ? GetUser(id) : {};
+    console.log("userProfile", userProfile);
     if (!userProfile) return null;
     return (
       <OverviewCard
