@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getFileNameFromURL } from "utils/downUtils";
+import { getFileNameFromURL } from "utils/downloadUtils";
 import { FormField } from "components/FormControl";
 import { CoverFileInput } from "./CoverFileInput";
 import AttachmentFileInput from "./AttachmentFileInput";

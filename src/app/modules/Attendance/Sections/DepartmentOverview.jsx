@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
 import { getDepartmentPercentage } from "app/hooks/attendance";
-import { ScrollArea } from "src/@/components/ui/scroll-area";
 const DepartmentOverview = () => {
   const [departmentAttendanceData, setDepartmentAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState([]);
@@ -31,8 +30,7 @@ console.log()
       <h2 className="text-xl font-semibold text-plum-900 mb-4">
         Department Overview
       </h2>
-                 <ScrollArea className="[&>div>div[style]]:!block">
-      <ul className="space-y-4 h-[320px]">
+      <ul className="space-y-4">
         {departmentAttendanceData.map((dept, index) => (
           <li key={index} className="flex items-center justify-between">
             <div className="flex-1">
@@ -40,25 +38,18 @@ console.log()
                 {dept.department_name}
               </p>
               <p className="text-xs text-gray-800">
-                {dept.total_employees} members • {dept.present_count}
-                present • {dept.late_count} late
+                {dept.total_employees} members • {dept.attendance_percentage}%
+                attendance
               </p>
-              <div className="flex flex-row gap-3">
-                <Progress
-                  value={dept.attendance_percentage}
-                  className="mt-1 h-2 bg-gray-500"
-                  color="purple"
-                />
-                <p className="text-xs text-gray-800 min-w-[105px]">
-                  {dept.attendance_percentage}% attendance
-                </p>
-              </div>
+              <Progress
+                value={dept.attendance_percentage}
+                className="mt-1 h-2 bg-gray-500"
+                color="purple"
+              />
             </div>
           </li>
         ))}
       </ul>
-                  </ScrollArea>
-      
     </div>
   );
 };

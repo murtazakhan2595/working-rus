@@ -5,7 +5,7 @@ import { HandleLogout } from "./general";
 import { Project } from "app/utils/Types/TaskManagment";
 import { mapProjectPayloadData } from "app/utils/MappingObjects/mapTaskManagementData";
 import { convertStringsArrayToJsonArray } from "utils/Lists";
-import { getFileNameFromURL } from "utils/downUtils";
+import { getFileNameFromURL } from "utils/downloadUtils";
 import { trackTaskActivities } from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails/Sections/activityHelper";
 
 const baseUrl = initialState.baseUrl;

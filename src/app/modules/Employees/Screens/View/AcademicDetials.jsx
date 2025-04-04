@@ -5,7 +5,7 @@ import { CiEdit } from "react-icons/ci";
 import { renderDate } from "utils/renderValues";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { getEmployeeAcademicRecordData } from "app/hooks/employee";
-import {getFileNameFromURL} from 'utils/downUtils';
+import {getFileNameFromURL} from 'utils/downloadUtils';
 import { PageLoader } from "components";
 
 const AcademicInfo = ({

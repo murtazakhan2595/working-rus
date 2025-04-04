@@ -493,7 +493,11 @@ const FilterInput = ({
 
   const renderInputField = (filter, index) => {
     return (
-      <div className="relative">
+      <div
+        className={`${filter.className} ${filter.width ?? width} ${
+          filter.height ?? height
+        } relative`}
+      >
         {!inputValues[filter.name] && (
           <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
         )}
@@ -501,9 +505,7 @@ const FilterInput = ({
           key={index}
           type={filter.type}
           placeholder={filter.placeholder}
-          className={`${filter.className ?? classNamesStyle} ${
-            filter.width ?? width
-          } ${filter.height ?? height} rounded-sm text-neutral-1000`}
+          className={`rounded-sm text-neutral-1000`}
           name={filter.name}
           id={filter.name}
           value={inputValues[filter.name] || ""}

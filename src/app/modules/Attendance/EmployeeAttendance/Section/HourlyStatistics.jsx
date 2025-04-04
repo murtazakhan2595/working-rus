@@ -8,10 +8,10 @@ import { GetDateRange, GetShiftTotalHours } from "utils/renderValues";
 import { formatDuration, calculateTotal } from "utils/renderValues";
 
 const calculateAttendanceStats = (attendance) => {
-  const totalWorkedHours = calculateTotal(attendance,"payable_hours");
+  const totalHours = CalculateHoursWorked(attendance);
   const total = calculateTotal(attendance, "total_hours");
   return {
-    value: totalWorkedHours,
+    value: totalHours.totalWorkedHours,
     total: total,
   };
 };

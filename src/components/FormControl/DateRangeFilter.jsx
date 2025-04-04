@@ -155,7 +155,7 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
         className="flex flex-wrap items-center self-stretch my-auto justify-between text-neutral-900"
         style={{ width: "fit-content" }}
       >
-        <ArrowLeft className="h-5" />
+        {/* <ArrowLeft className="h-5" /> */}
         {timeFilters.map((filter, index) => (
           <TimeFilterButton
             key={index}
@@ -165,7 +165,7 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
           />
         ))}
         {renderDateRangePicker(activeDateRange)}
-        <ArrowRight className="h-5" />
+        {/* <ArrowRight className="h-5" /> */}
       </div>
     </CardContent>
   );

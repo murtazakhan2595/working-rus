@@ -6,7 +6,7 @@ import { renderDate } from "utils/renderValues";
 import { getEmployeeCerficationData } from "app/hooks/employee";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { PageLoader } from "components";
-import { getFileNameFromURL } from "utils/downUtils";
+import { getFileNameFromURL } from "utils/downloadUtils";
 
 const Certifications = ({ isEditable, employeeId }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);

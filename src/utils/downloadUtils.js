@@ -1,4 +1,7 @@
 import axios from "axios";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import moment from "moment";
 
 export const downloadFiles = async (file, name) => {
   try {
@@ -54,4 +57,39 @@ const getImageExtension = (contentType) => {
     default:
       return "jpg"; // Default to jpg if the format is not recognized
   }
+};
+
+export const exportRecordToExcel = (
+  dataToExport,
+  module = "Company Record",
+  filename
+) => {
+  const ModuleName = `${module ?? "Company Record"}`;
+  const fileName = filename
+    ? `${filename}.xlsx`
+    : `${ModuleName}_${moment().format("YYYY-MM-DD_HH-mm-ss")}.xlsx`;
+
+  if (dataToExport.length === 0) {
+    alert("No data to export!");
+    return;
+  }
+
+  // Convert JSON to worksheet
+  const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+
+  // Create a workbook and append worksheet
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, ModuleName);
+
+  // Write workbook and trigger download
+  const excelBuffer = XLSX.write(workbook, {
+    bookType: "xlsx",
+    type: "array",
+  });
+
+  const dataBlob = new Blob([excelBuffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+
+  saveAs(dataBlob, fileName);
 };

@@ -5,8 +5,8 @@ import { EmployeeOverview } from "components";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
 import { formatDuration } from "utils/renderValues";
 import moment from "moment";
-import { StatusLabel } from "components/StatusLabel";
-import { renderDate, formatNumber } from "utils/renderValues";
+import { StatusLabelAttendance } from "components/StatusLabel";
+import { renderDate,formatNumber } from "utils/renderValues";
 
 /**
  * AttendanceColumns
@@ -49,7 +49,7 @@ export const EmployeesAttendanceColumns = [
         0 + parseInt(cell.Late) ||
         0;
       const present = parseInt(cell.Present) || 0 + parseInt(cell.Late) || 0;
-      const percentage = calculatePercentage(present, total);
+      const percentage = calculatePercentage(present , total);
       return (
         <div className="flex justify-between gap-1">
           {`${percentage.toFixed(0)}%`}
@@ -64,6 +64,8 @@ export const EmployeesAttendanceColumns = [
     formatter: (cell, row) => <EmployeeAttendenceActions row={row} />,
   },
 ];
+
+
 
 export const MyAttendanceColumn = [
   {
@@ -81,7 +83,7 @@ export const MyAttendanceColumn = [
     dataField: "checkout",
     formatter: (cell) =>
       cell ? (
-        <span>{moment(cell).format("h:mm A")}</span>
+        <span>{moment(cell?.replace("Z", "")).format("h:mm A")}</span>
       ) : (
         "Not Checked Out"
       ),
@@ -109,7 +111,7 @@ export const MyAttendanceColumn = [
   {
     dataField: "status",
     text: "Status",
-    formatter: (cell) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+    formatter: (cell) => <StatusLabelAttendance status={cell} />,
   },
   {
     dataField: "",
