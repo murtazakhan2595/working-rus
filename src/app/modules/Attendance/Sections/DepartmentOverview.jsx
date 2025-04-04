@@ -18,7 +18,7 @@ const DepartmentOverview = () => {
       if (isMounted) setIsLoading(false);
     }
   };
-
+console.log()
   useEffect(() => {
     let isMounted = true;
     fetchData(isMounted);
