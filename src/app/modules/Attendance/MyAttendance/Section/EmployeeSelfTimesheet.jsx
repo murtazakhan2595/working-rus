@@ -25,6 +25,7 @@ import {
   getBreak,
   calculateBreak,
 } from "app/hooks/attendance";
+import { Button } from "components/ui/button";
 
 export default function EmployeeSelfTimesheet({
   employeeShift,
@@ -37,7 +38,6 @@ export default function EmployeeSelfTimesheet({
 }) {
   const updatePaybleHours = async () => {
     if (!OnBreak && attendance?.checkin) {
-      debugger
       const checkInDate = moment(attendance.checkin); // Ensure UTC
       const now = moment();
       const totalHours = now.diff(checkInDate, "hours", true); // Get total time in decimal hours
@@ -255,7 +255,7 @@ const RenderShiftControlIcons = ({
           <Tooltip>
             <TooltipTrigger asChild>
               <PlayCircle
-                className="w-8 h-8 mx-2 text-plum-900 cursor-pointer"
+                className="w-8 h-8 mx-2 text-red-300 cursor-pointer"
                 onClick={() => {
                   if (!disable) {
                     endBreakResumeShift();
@@ -264,7 +264,7 @@ const RenderShiftControlIcons = ({
               />
             </TooltipTrigger>
             <TooltipContent>
-              <p>Resume Shift</p>
+              <p>End Break</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -292,16 +292,17 @@ const RenderShiftControlIcons = ({
   // If attendance exists and not on break, show Pause and Stop
   return (
     <>
+    {/* <Button variant='success'>Break</Button> */}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
             <PauseCircle
-              className="w-8 h-8 mx-2 text-plum-900 cursor-pointer"
+              className="w-8 h-8 mx-2 text-emerald-500 cursor-pointer"
               onClick={startBreak}
             />
           </TooltipTrigger>
           <TooltipContent>
-            <p>Pause Shift</p>
+            <p>Start Break</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -309,7 +310,7 @@ const RenderShiftControlIcons = ({
         <Tooltip>
           <TooltipTrigger asChild>
             <StopCircle
-              className="w-8 h-8 mx-2 text-plum-900 cursor-pointer"
+              className="w-8 h-8 mx-2 text-neutral-900 cursor-pointer"
               onClick={endShift}
             />
           </TooltipTrigger>
