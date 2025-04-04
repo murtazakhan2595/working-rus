@@ -185,7 +185,6 @@ function TerminationReason(value) {
   const reason = terminationReasonsOptions.find(
     (option) => option.value === value
   );
-  console.log(value, reason, terminationReasonsOptions);
   return reason ? reason.label : "Unknown Reason";
 }
 
@@ -212,7 +211,6 @@ function getExperience(joiningDate) {
 
   const years = Math.floor(duration.asYears());
   const months = Math.floor(duration.asMonths()) % 12;
-  console.log(`returning ${years} years, ${months} months`);
   return `${years} years, ${months} months`;
 }
 function getExpenseType(value) {
@@ -222,14 +220,16 @@ function getExpenseType(value) {
   return response ? response.label : "N/A";
 }
 
-function getDepartmentName(value, departments) {
+function getDepartmentName(value, departments, fallBackText) {
   const department = departments.find((option) => option.value === value);
-  return department ? department.label : "N/A";
+  return department ? department.label : fallBackText ?? "N/A";
 }
 
-export function getLabelByValue(value, options) {
-  const selectedOption = options.find((option) => option.value === value);
-  return selectedOption ? selectedOption.label : "N/A";
+export function getLabelByValue(value, options, fallBackText) {
+  const selectedOption = options.find(
+    (option) => option.value === parseInt(value)
+  );
+  return selectedOption ? selectedOption.label : fallBackText ?? "N/A";
 }
 
 function getManagerName(value, managers) {
@@ -254,7 +254,6 @@ function getDesignationName(value, designations) {
     (option) => option.value === parseInt(value)
   );
 
-  console.log("designation", designation);
   return designation ? designation.label : "N/A";
 }
 

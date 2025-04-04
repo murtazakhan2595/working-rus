@@ -5,7 +5,7 @@ import { CiEdit } from "react-icons/ci";
 import { renderDate } from "utils/renderValues";
 import { getEmployeeProfessionalExperianceData } from "app/hooks/employee";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-import { getFileNameFromURL } from "utils/downUtils";
+import { getFileNameFromURL } from "utils/downloadUtils";
 import { PageLoader } from "components";
 
 const Experience = ({ isEditable, employeeId }) => {

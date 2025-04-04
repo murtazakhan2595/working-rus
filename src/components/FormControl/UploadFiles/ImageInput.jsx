@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import ImageDocPreview from "components/ui/ImageDocPreview";
 import { Button } from "components/ui/button";
 import { Input } from "components/ui/input";
-import { getFileNameFromURL } from "utils/downUtils";
+import { getFileNameFromURL } from "utils/downloadUtils";
 import upload from "assets/images/upload.png";
 
 import { errorClassName } from "components/FormControl";
