@@ -27,13 +27,15 @@ import {
   getDay,
   isToday,
   getDate,
-  getWeekDay,
-  isSameMonth,
+  parseISO,
+  isSameDay,
+  isWithinInterval,
 } from "date-fns";
 import { getShiftById } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import { getEmployeeWorkInformationData } from "app/hooks/employee";
 import { getEmployeeData } from "app/hooks/employee";
+import { getLeaveTransaction } from "app/hooks/leaveTracker";
 
 export default function EventCalendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -42,7 +44,10 @@ export default function EventCalendar() {
   const [shiftData, setShiftData] = useState(null);
   const [workingDays, setWorkingDays] = useState([]);
   const [absentDays, setAbsentDays] = useState([]);
+  const [leaveDays, setLeaveDays] = useState([]);
+  const [leaveInfo, setLeaveInfo] = useState({});
   const [loading, setLoading] = useState(true);
+  const [leaveTransaction, setLeaveTransaction] = useState([]);
 
   useEffect(() => {
     const getEmpShift = async () => {
@@ -67,12 +72,91 @@ export default function EventCalendar() {
     getEmpShift();
   }, [userProfile.id]);
 
-  // Calculate working days whenever the month or shift data changes
+  // Fetch leave transaction data
+  useEffect(() => {
+    const fetchLeaveTransaction = async () => {
+      try {
+        const filterData = {
+          employee_id: userProfile.id,
+        };
+        const leaves = await getLeaveTransaction({
+          filterData,
+          options: { page: 1, sizePerPage: 100 }, // Get more leaves to ensure all are visible
+        });
+
+        if (leaves) {
+          setLeaveTransaction(leaves.results || []);
+        }
+      } catch (error) {
+        console.error("Error fetching leave data:", error);
+      }
+    };
+
+    fetchLeaveTransaction();
+  }, [userProfile.id]);
+
+  // Calculate working days and leave days whenever the month, shift data, or leave transactions change
   useEffect(() => {
     if (shiftData) {
       calculateWorkingDays(shiftData, currentMonth);
     }
-  }, [currentMonth, shiftData]);
+
+    // Process leave data for the current month
+    processLeaveData(currentMonth);
+  }, [currentMonth, shiftData, leaveTransaction]);
+
+  const processLeaveData = (month) => {
+    const startDate = startOfMonth(month);
+    const endDate = endOfMonth(month);
+    const leaveMap = {};
+    const leaveDaysArray = [];
+
+    // Organize leave data by date
+    leaveTransaction.forEach((leave) => {
+      // Check if leave is approved
+      const isApproved =
+        leave?.action_hr === "Approved" && leave?.action_manager === "Approved";
+
+      // Only process approved leaves
+      if (isApproved && leave.leave_request) {
+        const leaveStartDate = parseISO(leave.leave_request.start_date);
+        const leaveEndDate = parseISO(leave.leave_request.end_date);
+
+        // Check if leave falls within the current month
+        if (
+          isWithinInterval(leaveStartDate, {
+            start: startDate,
+            end: endDate,
+          }) ||
+          isWithinInterval(leaveEndDate, { start: startDate, end: endDate }) ||
+          (leaveStartDate <= startDate && leaveEndDate >= endDate)
+        ) {
+          // Get all days in the leave period
+          const leavePeriodDays = eachDayOfInterval({
+            start: leaveStartDate < startDate ? startDate : leaveStartDate,
+            end: leaveEndDate > endDate ? endDate : leaveEndDate,
+          });
+
+          // Add each day to leave days
+          leavePeriodDays.forEach((day) => {
+            const dayOfMonth = getDate(day);
+            leaveDaysArray.push(dayOfMonth);
+
+            // Store leave information for tooltip
+            leaveMap[dayOfMonth] = {
+              type: leave.component_name,
+              days: leave.leave_request.no_of_days,
+              startDate: format(leaveStartDate, "MMM d"),
+              endDate: format(leaveEndDate, "MMM d"),
+            };
+          });
+        }
+      }
+    });
+
+    setLeaveDays(leaveDaysArray);
+    setLeaveInfo(leaveMap);
+  };
 
   const calculateWorkingDays = (shift, month) => {
     const daysInMonth = eachDayOfInterval({
@@ -125,9 +209,10 @@ export default function EventCalendar() {
     <div key={`empty-${i}`} className="h-10 w-10" />
   ));
 
-  // Determine day type (working, absent, or regular)
+  // Determine day type (working, absent, leave, or regular)
   const getDayType = (day) => {
     const dayOfMonth = day.getDate();
+    if (leaveDays.includes(dayOfMonth)) return "leave";
     if (workingDays.includes(dayOfMonth)) return "working";
     if (absentDays.includes(dayOfMonth)) return "absent";
     return "regular";
@@ -139,6 +224,9 @@ export default function EventCalendar() {
     const formattedDate = format(day, "MMMM dd, yyyy");
 
     switch (type) {
+      case "leave":
+        const leave = leaveInfo[dayOfMonth];
+        return `Leave: ${leave.type} (${leave.startDate} - ${leave.endDate})`;
       case "working":
         let shiftTimes = "";
         if (shiftData) {
@@ -163,11 +251,6 @@ export default function EventCalendar() {
         <CardTitle className="flex flex-row justify-between w-full">
           <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
             Event Calendar
-            {/* {shiftData && (
-              <span className="ml-2 text-sm font-normal">
-                ({shiftData.name} Shift)
-              </span>
-            )} */}
           </div>
           <Button
             variant="ghost"
@@ -240,6 +323,11 @@ export default function EventCalendar() {
                               ? "bg-[#fee2e2] text-red-800"
                               : ""
                           }
+                          ${
+                            dayType === "leave"
+                              ? "bg-purple-100 text-purple-800"
+                              : ""
+                          }
                           ${isCurrentDay ? "ring-2 ring-primary" : ""}
                           hover:bg-gray-100
                         `}
@@ -259,7 +347,7 @@ export default function EventCalendar() {
 
         {showAll && (
           <div className="mt-4 pt-4 border-t border-gray-200">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <h3 className="text-sm font-medium mb-2">Working Days</h3>
                 <div className="flex flex-wrap gap-2">
@@ -300,18 +388,43 @@ export default function EventCalendar() {
                   ))}
                 </div>
               </div>
+              <div>
+                <h3 className="text-sm font-medium mb-2">Leave Days</h3>
+                <div className="flex flex-wrap gap-2">
+                  {leaveDays.map((day) => (
+                    <span
+                      key={`leave-${day}`}
+                      className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-md"
+                    >
+                      {format(
+                        new Date(
+                          currentMonth.getFullYear(),
+                          currentMonth.getMonth(),
+                          day
+                        ),
+                        "MMM d"
+                      )}{" "}
+                      - {leaveInfo[day].type}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        <div className="flex items-center gap-4 mt-4">
+        <div className="flex items-center gap-4 mt-4 flex-wrap">
           <div className="flex items-center">
             <div className="w-3 h-3 rounded-full bg-blue-100 mr-2"></div>
             <span className="text-xs text-muted-foreground">Working Day</span>
           </div>
           <div className="flex items-center">
             <div className="w-3 h-3 rounded-full bg-[#fee2e2] mr-2"></div>
-            <span className="text-xs text-muted-foreground">Absent</span>
+            <span className="text-xs text-muted-foreground">Non-Working</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 rounded-full bg-purple-100 mr-2"></div>
+            <span className="text-xs text-muted-foreground">On Leave</span>
           </div>
           <div className="flex items-center">
             <div className="w-3 h-3 rounded-full border border-primary mr-2"></div>
