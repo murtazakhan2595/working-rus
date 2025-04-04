@@ -102,9 +102,17 @@ const Attendance = () => {
         Department: row["employee_department name"],
         Designation: await getLabelByValue(
           row.employee_designation,
-          Designations,'-'
+          Designations,
+          "-"
         ),
-        Status: row.daily_status,
+        ...(activeTab.toUpperCase() === "DAY"
+          ? { Status: row.daily_status }
+          : {
+              Present: row.attendance_stats.Present,
+              Absent: row.attendance_stats.Absent,
+              Late: row.attendance_stats.Late,
+              Leaves: row.attendance_stats["On Leave"],
+            }),
       }))
     );
     exportRecordToExcel(dataToExport, "Attendance", `Attendance_${dateRange}`);
