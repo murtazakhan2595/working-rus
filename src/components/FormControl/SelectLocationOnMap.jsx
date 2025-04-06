@@ -10,9 +10,85 @@ import { Button } from "components/ui/button";
 // import "leaflet/dist/leaflet.css";
 // import L from "leaflet";
 
-function SelectLocationOnMap({ isOpen, onClose, onSave }) {
-  const [branchName, setBranchName] = useState("");
-  const [searchInput, setSearchInput] = useState("");
+// Fix Leaflet icon issue in React
+const fixLeafletIcon = () => {
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+    iconUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+    shadowUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  });
+};
+
+// Component to handle map interactions
+const LocationMarker = ({ setPosition, initialPosition }) => {
+  const [position, setMarkerPosition] = useState(initialPosition);
+  const markerRef = useRef(null);
+  const map = useMap();
+  console.log()
+
+  useEffect(() => {
+    // Set up map click handler
+    map.on("click", function (e) {
+      const newPos = e.latlng;
+      setMarkerPosition(newPos);
+      setPosition(newPos);
+      map.flyTo(newPos, map.getZoom());
+    });
+
+    // Clean up handler on unmount
+    return () => {
+      map.off("click");
+    };
+  }, [map, setPosition]);
+
+  useEffect(() => {
+    if (
+      initialPosition &&
+      initialPosition.lat !== 0 &&
+      initialPosition.lng !== 0
+    ) {
+      map.flyTo(initialPosition, 13);
+    }
+  }, [initialPosition, map]);
+
+  const eventHandlers = {
+    dragend() {
+      const marker = markerRef.current;
+      if (marker) {
+        const newPos = marker.getLatLng();
+        setMarkerPosition(newPos);
+        setPosition(newPos);
+      }
+    },
+  };
+
+  return position ? (
+    <Marker
+      position={position}
+      draggable={true}
+      eventHandlers={eventHandlers}
+      ref={markerRef}
+    />
+  ) : null;
+};
+
+function SelectLocationOnMap({
+  isOpen,
+  onClose,
+  onSave,
+  initialLocation = "",
+  initialCoordinates = { lat: 40.7128, lng: -74.006 },
+}) {
+  // Initialize Leaflet icons
+  useEffect(() => {
+    fixLeafletIcon();
+  }, []);
+
+  const [searchInput, setSearchInput] = useState(initialLocation);
   const [suggestions, setSuggestions] = useState([]);
   const [coordinates, setCoordinates] = useState({
     lat: 40.7128,
