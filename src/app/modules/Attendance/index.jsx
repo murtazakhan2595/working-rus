@@ -35,7 +35,7 @@ const Attendance = () => {
     if (dateRange) {
       const date_range = dateRange.split(",");
       if (date_range && date_range.length > 0) {
-        setTotalDays(getWorkingDays(date_range[0], date_range[1]));
+        setTotalDays(getWorkingDays(date_range[0], moment()));
       }
     }
   }, [dateRange]);
