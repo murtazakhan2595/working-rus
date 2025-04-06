@@ -9,19 +9,13 @@ import React, { useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import { UpdateEmployeeAttendance } from "app/modules/Attendance/Sections";
+import { CategoryForm } from "app/modules/HRDocuments/Screens";
 
 const MyAttendenceActions = ({ data, reload = () => {} }) => {
   const [OpenDeleteAlert, setOpenDeleteAlert] = useState(false);
-  const [OpenEditAttendance, setOpenEditAttendance] = useState(false);
 
-  const handleDelete = (event) => {
-    event.preventDefault();
+  const handleDelete = () => {
     setOpenDeleteAlert(true);
-  };
-  const handleEdit = (event) => {
-    event.preventDefault();
-    setOpenEditAttendance(true);
   };
 
   const confirmDelete = async () => {
@@ -43,8 +37,9 @@ const MyAttendenceActions = ({ data, reload = () => {} }) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
-          <DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleDelete(data)}>
+            Delete
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -58,17 +53,6 @@ const MyAttendenceActions = ({ data, reload = () => {} }) => {
             confirmDelete();
             setOpenDeleteAlert(false);
           }}
-        />
-      )}
-      {OpenEditAttendance && (
-        <UpdateEmployeeAttendance
-          id={data.id}
-          isOpen={OpenEditAttendance}
-          setIsOpen={() => {
-            setOpenEditAttendance(false);
-            reload(true);
-          }}
-          // isEmployee={true}
         />
       )}
     </>

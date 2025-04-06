@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { Attendance } from "app/utils/Types/Attendance";
 import { validateUpdateAttendanceFormSchema } from "app/utils/FormSchema/AttendanceFormSchema";
 import { SheetUI } from "components";
-import { saveAttendance,getAttendanceData } from "app/hooks/attendance";
+import { saveAttendance } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import {
   RadioGroupInput,
@@ -44,31 +44,6 @@ const UpdateEmployeeAttendance = ({
     }
   }, [isEmployee]);
 
-  const fetchData = async (isMounted) => {
-    try {
-      const response = await getAttendanceData(id);
-      if (isMounted && response) {
-        setFormData(response);
-        setFormValues(response);
-        setSelectedEmployee(
-          Employees.find((obj) => obj.value === response.employee_id)
-        );
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    if (id) {
-      fetchData(isMounted);
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [id]);
-
   const handleSubmit = async (data) => {
     try {
       const response = await saveAttendance(data, selectedEmployee, id);
@@ -91,6 +66,7 @@ const UpdateEmployeeAttendance = ({
       console.error(error);
     }
   };
+  console.log(selectedEmployee,'selectedEm')
   return (
     <SheetUI
       isOpen={isOpen}

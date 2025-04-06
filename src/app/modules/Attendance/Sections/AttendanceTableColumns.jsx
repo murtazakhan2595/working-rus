@@ -5,8 +5,8 @@ import { EmployeeOverview } from "components";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
 import { formatDuration } from "utils/renderValues";
 import moment from "moment";
-import { StatusLabel } from "components/StatusLabel";
-import { renderDate, formatNumber } from "utils/renderValues";
+import { StatusLabelAttendance } from "components/StatusLabel";
+import { renderDate,formatNumber } from "utils/renderValues";
 
 /**
  * AttendanceColumns
@@ -63,6 +63,8 @@ export const EmployeesAttendanceColumns = (
   },
 ];
 
+
+
 export const MyAttendanceColumn = [
   {
     text: "Date",
@@ -103,7 +105,7 @@ export const MyAttendanceColumn = [
   {
     dataField: "status",
     text: "Status",
-    formatter: (cell) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+    formatter: (cell) => <StatusLabelAttendance status={cell} />,
   },
   {
     dataField: "",
