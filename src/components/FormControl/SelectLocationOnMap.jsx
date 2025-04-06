@@ -28,6 +28,7 @@ const LocationMarker = ({ setPosition, initialPosition }) => {
   const [position, setMarkerPosition] = useState(initialPosition);
   const markerRef = useRef(null);
   const map = useMap();
+  console.log()
 
   useEffect(() => {
     // Set up map click handler
