@@ -336,16 +336,20 @@ const ClearSignature = ({ clearSignature = () => {} }) => {
   );
 };
 
-const ViewSignature = ({ signature }) => {
+const ViewSignature = ({ signature, className }) => {
   if (!signature) return null;
   const signatureURL =
     signature instanceof File ? URL.createObjectURL(signature) : signature;
 
   return (
     <div>
-      <img src={signatureURL} alt="Signature" className="w-auto h-auto" />
+      <img
+        src={signatureURL}
+        alt="Signature"
+        className={cn("w-auto h-auto", className)}
+      />
     </div>
   );
 };
 
-export {InputSignature,ViewSignature};
+export { InputSignature, ViewSignature };

@@ -1,9 +1,7 @@
 import moment from "moment";
 import React, { useState, useEffect } from "react";
 import { SignatureForm } from "app/modules/HRDocuments/Sections";
-import {
-  DocCategoryName,
-} from "utils/getValuesFromTables";
+import { DocCategoryName } from "utils/getValuesFromTables";
 import { Button } from "components/ui/button";
 import {
   addUpdateDocumentAssignment,
@@ -14,10 +12,7 @@ import { useSelector } from "react-redux";
 import { mapEmployeeTransferInfo } from "app/utils/MappingObjects/mapEmployeeTransferData";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { DetailBox } from "components/SheetCardExtension";
-import {
-  ViewDetailSheetCardExtension,
-  StatusLabel,
-} from "components";
+import { ViewDetailSheetCardExtension, StatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
 
 const MyDocumentDetails = ({
@@ -132,6 +127,14 @@ const MyDocumentDetails = ({
           },
         ]
       : []),
+    ...(currentDocument?.signature_data
+      ? [
+          {
+            label: "Signature Date",
+            value: renderDate(currentDocument?.signature_data),
+          },
+        ]
+      : []),
   ].filter(Boolean);
 
   return (
@@ -186,17 +189,24 @@ const MyDocumentDetails = ({
                       Acknowledge
                     </Button>
                   )}
-                  {currentDocument?.status === "ACKNOWLEDGED" && (
-                    <Button
-                      variant="outline"
-                      onClick={(e) => {
-                        setOpenSignationForm(e, "ACKNOWLEDGED");
-                      }}
-                      size="sm"
-                      type="button"
-                    >
-                      Sign Document
-                    </Button>
+                  {currentDocument?.status === "ACKNOWLEDGED" &&
+                    !currentDocument.signature_file && (
+                      <Button
+                        variant="outline"
+                        onClick={(e) => {
+                          setOpenSignationForm(e, "ACKNOWLEDGED");
+                        }}
+                        size="sm"
+                        type="button"
+                      >
+                        Sign Document
+                      </Button>
+                    )}
+                  {currentDocument.signature_file && (
+                    <img
+                      src={currentDocument.signature_file}
+                      className="w-16 h-16"
+                    />
                   )}
                 </div>
               )}

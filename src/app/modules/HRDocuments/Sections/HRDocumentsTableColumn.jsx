@@ -101,9 +101,9 @@ export const MyHRDocumentsColumns = [
     ),
   },
   {
-    dataField: "signature_file:null",
+    dataField: "signature_file",
     text: "Signature",
-    formatter: (cell, row) => <ViewSignature signature={cell} />,
+    formatter: (cell, row) => <ViewSignature signature={cell} className='w-14 h-12'/>,
   },
 ];
 

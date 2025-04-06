@@ -740,64 +740,6 @@ export const LeaveAplicationColumns = [
   },
 ];
 
-/**
- * Attendance History
- *
- * Returns an array of column definitions for the Employee table.
- *
- * @returns {array} An array of column definitions.
- */
-export const MyAttendanceHistoryColumns = [
-  {
-    dataField: "date",
-    text: "Data",
-    formatter: (cell) => <>{`${renderDate(cell)}`}</>,
-  },
-  {
-    dataField: "checkin",
-    text: "Check In",
-
-    formatter: (cell) => <>{`${moment(cell).format("hh:mm A")}`}</>,
-  },
-
-  {
-    dataField: "checkout",
-    text: "Check Out",
-    formatter: (cell) => (
-      <>{`${cell ? moment(cell).format("hh:mm A") : "Working"}`}</>
-    ),
-  },
-  {
-    dataField: "break_duration",
-    text: "Break",
-    formatter: (cell) => <>{`${cell} hrs`}</>,
-  },
-  {
-    dataField: "overtime_hours",
-    text: "Overtime",
-    formatter: (cell) => <>{`${cell} hrs`}</>,
-  },
-  {
-    dataField: "payable_hours",
-    text: "Productivity",
-    formatter: (cell, row) => (
-      <>{`${
-        parseFloat(row.payable_hours) + parseFloat(row.overtime_hours)
-      } hrs`}</>
-    ),
-  },
-  {
-    dataField: "status",
-    text: "Status",
-    formatter: (cell) => <StatusLabel status={cell} />,
-  },
-  {
-    dataField: "",
-    text: "Actions",
-    formatter: (cell, row) => <EmployeeAttendenceHistoryActions row={row} />,
-  },
-];
-
 export const MyDtrTasksColumns = [
   {
     dataField: "",

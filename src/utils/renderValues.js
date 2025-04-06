@@ -298,3 +298,19 @@ export const lightenColor = (hex, percent = 85) => {
 
   return newHex;
 };
+
+export const getWorkingDays = (startDate, endDate) => {
+  let start = moment(startDate);
+  const end = moment(endDate);
+  let count = 0;
+
+  while (start <= end) {
+    const day = start.day(); // 0 = Sunday, 6 = Saturday
+    if (day !== 0 && day !== 6) {
+      count++;
+    }
+    start.add(1, "day");
+  }
+
+  return count;
+};

@@ -15,7 +15,10 @@ import { renderDate, formatNumber } from "utils/renderValues";
  *
  * @returns {array} An array of column definitions.
  */
-export const EmployeesAttendanceColumns = [
+export const EmployeesAttendanceColumns = (
+  TotalDays = 5,
+  reload = () => {}
+) => [
   {
     dataField: "employee_id",
     text: "Employees",
@@ -43,13 +46,8 @@ export const EmployeesAttendanceColumns = [
     dataField: "attendance_stats",
     text: "Attendance %",
     formatter: (cell, row) => {
-      const total =
-        parseInt(cell.Present) ||
-        0 + parseInt(cell.Absent) ||
-        0 + parseInt(cell.Late) ||
-        0;
       const present = parseInt(cell.Present) || 0 + parseInt(cell.Late) || 0;
-      const percentage = calculatePercentage(present, total);
+      const percentage = calculatePercentage(present, TotalDays);
       return (
         <div className="flex justify-between gap-1">
           {`${percentage.toFixed(0)}%`}
@@ -80,11 +78,7 @@ export const MyAttendanceColumn = [
     text: "Check Out",
     dataField: "checkout",
     formatter: (cell) =>
-      cell ? (
-        <span>{moment(cell).format("h:mm A")}</span>
-      ) : (
-        "Not Checked Out"
-      ),
+      cell ? <span>{moment(cell).format("h:mm A")}</span> : "Working",
   },
   {
     text: "Break",

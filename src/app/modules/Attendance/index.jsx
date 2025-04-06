@@ -12,14 +12,13 @@ import DepartmentOverview from "./Sections/DepartmentOverview";
 import { StatsCards } from "./Sections/StatsCards";
 import { FilterInput, DateRangeFilter } from "components/FormControl";
 import { useSelector } from "react-redux";
-import { GetDateRange } from "utils/renderValues";
+import { GetDateRange, getWorkingDays } from "utils/renderValues";
 import { exportRecordToExcel } from "utils/downloadUtils";
 import { getLabelByValue } from "utils/getValuesFromTables";
 
 const Attendance = () => {
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
-  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [openUpdateEmployeeAttendance, setOpenUpdateEmployeeAttendance] =
@@ -27,22 +26,20 @@ const Attendance = () => {
   const [weeklySummary, setWeeklySummary] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [activeTab, setActiveTab] = useState("Day");
+  const [TotalDays, setTotalDays] = useState(1);
   const [filterData, setFilterData] = useState({});
   const [dateRange, setDateRange] = useState(
     `${moment().format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`
   );
-  const onPageChange = (name, value) => {
-    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
-  };
-
-  const tableOptions = {
-    page: options.page,
-    sizePerPage: options.sizePerPage,
-    onPageChange: onPageChange,
-  };
-
+  useEffect(() => {
+    if (dateRange) {
+      const date_range = dateRange.split(",");
+      if (date_range && date_range.length > 0) {
+        setTotalDays(getWorkingDays(date_range[0], date_range[1]));
+      }
+    }
+  }, [dateRange]);
   const handleFilterChange = (filterName, filterValue) => {
-    onPageChange("page", 1);
     if (filterName === "department_name") {
       setSelectedDepartment(filterValue);
     }
@@ -60,7 +57,6 @@ const Attendance = () => {
     setIsLoading(true);
     try {
       const attendanceData = await getAttendanceSummary({
-        options,
         filterData,
         dateRange,
       });
@@ -82,7 +78,7 @@ const Attendance = () => {
     return () => {
       isMounted = false;
     };
-  }, [options, filterData, dateRange]);
+  }, [filterData, dateRange]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -185,21 +181,21 @@ const Attendance = () => {
             Export
           </Button>
         </div>
-        {isLoading ? (
-          <PageLoader />
-        ) : (
-          <Card>
-            <CardContent>
+
+        <Card>
+          <CardContent>
+            {isLoading ? (
+              <PageLoader />
+            ) : (
               <TableCustom
                 data={attendanceData.results || []}
-                columns={EmployeesAttendanceColumns}
-                pagination={true}
+                columns={EmployeesAttendanceColumns(TotalDays)}
+                pagination={false}
                 dataTotalSize={attendanceData.count || 0}
-                tableOptions={tableOptions}
               />
-            </CardContent>
-          </Card>
-        )}
+            )}
+          </CardContent>
+        </Card>
       </div>
       {openUpdateEmployeeAttendance && (
         <UpdateEmployeeAttendance

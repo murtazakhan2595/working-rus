@@ -4,7 +4,7 @@ import { GetDateRange } from "utils/renderValues";
 import moment from "moment";
 import { PageLoader, Header, TableCustom } from "components";
 import {DateRangeFilter } from "components/FormControl";
-import { MyAttendanceHistoryColumns } from "app/utils/Types/TableColumns";
+import { MyAttendanceColumn } from "app/modules/Attendance/Sections/AttendanceTableColumns";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -68,7 +68,7 @@ const EmployeeAttendanceHistory = ({
           ) : (
             <TableCustom
               data={attendanceData.results}
-              columns={MyAttendanceHistoryColumns}
+              columns={MyAttendanceColumn}
               pagination={true}
               dataTotalSize={attendanceData.count || 0}
               tableOptions={tableOptions}
