@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { RxCross2 } from "react-icons/rx";
+import { cn } from "src/@/lib/utils";
 import { Bell } from "lucide-react";
-
+import { ScrollArea } from "src/@/components/ui/scroll-area";
 import { Button } from "components/ui/button";
 import {
   Card,
@@ -219,65 +219,70 @@ const WebSocketNotifications = () => {
         <DropdownMenuContent align="end" className="w-[400px] p-0">
           <Card className="border-0 shadow-none">
             <CardHeader className="px-6 py-4 border-b">
-              <CardTitle>Notifications</CardTitle>
+              <CardTitle className="text-neutral-1200">Notifications</CardTitle>
               {unreadCount > 0 && (
-                <CardDescription className="text-yellow-500">
+                <CardDescription className="text-yellow-500 text-xs">
                   You have {unreadCount} unread notifications
                 </CardDescription>
               )}
             </CardHeader>
-            <CardContent className="p-0 max-h-[270px] overflow-y-auto">
-              {notifications.length === 0 ? (
-                <div className="text-center text-gray-500 py-4">
-                  No notifications
-                </div>
-              ) : (
-                notifications.map((notification, index) => {
-                  const plainTextDescription = stripHtml(
-                    notification.description || ""
-                  ); // Ensure it's not undefined
-                  return (
-                    <div
-                      key={index}
-                      className={`flex items-start gap-4 px-6 py-4  transition-colors cursor-pointer
-                    ${
-                      ("flex items-start gap-4 px-6 py-4 transition-colors cursor-pointer",
-                      notification.isRead
-                        ? "bg-gray-50 hover:bg-gray-100"
-                        : "bg-blue-50 hover:bg-blue-100")
-                    }
-                  `}
-                      onClick={() => handleNotificationClick(notification)}
-                    >
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full">
-                        <Bell className="w-5 h-5" />
+            <ScrollArea className="[&>div>div[style]]:!block">
+              <CardContent className="p-0 px-3 max-h-[60vh] flex flex-col gap-1">
+                {notifications.length === 0 ? (
+                  <div className="text-center text-gray-500 py-4">
+                    No notifications
+                  </div>
+                ) : (
+                  notifications.map((notification, index) => {
+                    const plainTextDescription = stripHtml(
+                      notification.description || ""
+                    ); // Ensure it's not undefined
+                    return (
+                      <div
+                        key={index}
+                        className={cn(
+                          "flex items-start gap-4 px-1 py-2 transition-colors cursor-pointer hover:bg-gray-100",
+                          notification.isRead ? "bg-gray-50" : "bg-gray-300"
+                        )}
+                        onClick={() => handleNotificationClick(notification)}
+                      >
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full">
+                          <Bell
+                            className={cn(
+                              "w-5 h-5",
+                              notification.isRead
+                                ? "text-neutral-1100"
+                                : "text-red-600"
+                            )}
+                          />
+                        </div>
+                        <div className="flex-1 space-y-1">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <p
+                                className={`text-sm font-medium leading-none ${
+                                  !notification.isRead ? "font-bold" : ""
+                                }`}
+                              >
+                                {truncateText(plainTextDescription, 50)}
+                              </p>
+                            </TooltipTrigger>
+                            {notification.description.length > 50 && (
+                              <TooltipContent className="max-w-[250px] max-h-[150px] overflow-y-auto p-2 bg-white shadow-lg rounded-md border border-gray-200">
+                                {plainTextDescription}
+                              </TooltipContent>
+                            )}
+                          </Tooltip>
+                          <p className="text-sm text-muted-foreground">
+                            {notification.time}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1 space-y-1">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <p
-                              className={`text-sm font-medium leading-none ${
-                                !notification.isRead ? "font-bold" : ""
-                              }`}
-                            >
-                              {truncateText(plainTextDescription, 50)}
-                            </p>
-                          </TooltipTrigger>
-                          {notification.description.length > 50 && (
-                            <TooltipContent className="max-w-[250px] max-h-[150px] overflow-y-auto p-2 bg-white shadow-lg rounded-md border border-gray-200">
-                              {plainTextDescription}
-                            </TooltipContent>
-                          )}
-                        </Tooltip>
-                        <p className="text-sm text-muted-foreground">
-                          {notification.time}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </CardContent>
+                    );
+                  })
+                )}
+              </CardContent>
+            </ScrollArea>
 
             <CardFooter className="px-6 py-4 border-t">
               <Button variant="secondary" size="sm" onClick={markAllRead}>

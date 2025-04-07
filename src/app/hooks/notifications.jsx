@@ -33,11 +33,10 @@ const getNotifications = async () => {
   const markAsRead = async (notificationId) => {
     try {
       const response = await axios.post(
-        `${baseUrl}/notifications/${notificationId}/mark-as-read/`,
+        `${baseUrl}/Notificationsystem/${notificationId}/read/`,
         {},
         { headers: headers() }
       );
-
       if (response.status === 200) {
         return true
        
@@ -52,25 +51,20 @@ const getNotifications = async () => {
 
 const markAllNotificationsAsRead = async (unreadNotifications) => {
   try {
-    // Create an array of promises for each unread notification
-    const markReadPromises = unreadNotifications
-      .filter((notification) => !notification.isRead)
-      .map((notification) => markAsRead(notification.id));
-
-    // Wait for all promises to resolve
-    const results = await Promise.all(markReadPromises);
-
-    // If all operations were successful (no false values)
-    if (results.every((result) => result === true)) {
-      return true;
+    const response = await axios.post(
+      `${baseUrl}/Notificationsystem/read-all/`,
+      {},
+      { headers: headers() }
+    );
+    if (response.status === 200) {
+      return true
+     
     }
-    return false;
   } catch (error) {
-    console.error("Error marking all notifications as read:", error);
+    console.error("Error marking notification as read:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return false;
   }
 };
 
