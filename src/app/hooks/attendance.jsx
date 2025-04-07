@@ -202,6 +202,28 @@ const saveAttendance = async (payload, userDetails, id) => {
   }
 };
 
+export const getAttendanceData = async (id) => {
+  try {
+    const url = `${baseUrl}/attendance/${id}/`;
+
+    const method = "GET"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
 const saveBreak = async (payload) => {
   try {
     if (payload?.id) {

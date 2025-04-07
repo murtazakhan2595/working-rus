@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { cn } from "src/@/lib/utils"; // Import your `cn` utility if available
 import {
   DropdownMenu,
@@ -18,13 +18,18 @@ const TimePicker = ({
   disabled = false,
   value = null,
   date = null,
-  onChange,
+  onChange=()=>{},
   className,
 }) => {
-  const initialDateTime = value ? moment(value).toISOString() : null;
+  const [time, setTime] = useState(() =>
+    value ? moment(value).toISOString() : null
+  );
 
-  const [time, setTime] = useState(initialDateTime);
-
+  useEffect(() => {
+    if (value) {
+      setTime(moment(value).toISOString());
+    }
+  }, [value]); // Runs whenever `value` changes
   const handleTimeChange = (newHour, newMinute, newPeriod) => {
     const updatedTime = (time ? moment(time) : moment(date || new Date()))
       .hour(newPeriod === "PM" ? parseInt(newHour, 10) + 12 : newHour)
@@ -39,8 +44,9 @@ const TimePicker = ({
 
   const currentMoment = time ? moment(time) : null;
   const hour = currentMoment ? currentMoment.format("hh") : "00";
-  const minute = currentMoment ?currentMoment.format("mm"): "00";;
-  const period = currentMoment ? currentMoment.format("A"): "AM";;
+  const minute = currentMoment ? currentMoment.format("mm") : "00";
+  const period = currentMoment ? currentMoment.format("A") : "AM";
+
   return (
     <>
       <FormField

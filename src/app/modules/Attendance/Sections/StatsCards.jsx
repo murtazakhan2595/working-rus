@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { getAttendanceStats } from "app/hooks/attendance";
 import { getEmployeeCustomList } from "app/hooks/general";
 
-export function StatsCards({ attendanceData }) {
+export function StatsCards() {
   const employees = useSelector((state) => state.emp.employees);
   const [loading, setLoading] = useState(false);
   const [cardStats, setCardStats] = useState({
@@ -20,8 +20,8 @@ export function StatsCards({ attendanceData }) {
       const response = await getAttendanceStats();
       if (response && isMounted) {
         setCardStats({
-          present: response?.attendance_stats?.Present,
-          absent: response?.attendance_stats?.Absent,
+          present: response?.daily_stats?.Present,
+          absent: response?.daily_stats?.Absent,
           late: response?.daily_stats?.Late,
         });
       }
