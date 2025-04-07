@@ -65,7 +65,7 @@ const SheetUI = forwardRef(
           }}
           validate={(values) => {
             const errors = validateFormSchema(values);
-            if (errors)
+            // if (errors)
               console.error("Form Errors:", errors, "Values:", values);
             if (renderUpdatedFormValues) {
               renderUpdatedFormValues(values);

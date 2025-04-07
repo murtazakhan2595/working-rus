@@ -65,7 +65,7 @@ export const EmployeesAttendanceColumns = (
 
 
 
-export const MyAttendanceColumn = [
+export const MyAttendanceColumn =(reload)=> [
   {
     text: "Date",
     dataField: "date",
@@ -110,6 +110,6 @@ export const MyAttendanceColumn = [
   {
     dataField: "",
     text: "Actions",
-    formatter: (cell, row) => <MyAttendenceActions data={row} />,
+    formatter: (cell, row) => <MyAttendenceActions data={row} reload ={reload}/>,
   },
 ];

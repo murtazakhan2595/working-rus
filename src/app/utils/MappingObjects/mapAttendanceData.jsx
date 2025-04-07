@@ -24,23 +24,27 @@ export function mapAttendanceData(data, shiftDetails) {
         }
         payload[key] = data[key];
       } else if (key === "checkin") {
-        payload[key] = moment(data[key]);
+        const checkInTime = moment(data[key]);
+        payload[key] = checkInTime;
         if (shiftDetails) {
           const startTime = moment(shiftDetails.starttime);
           const endTime = moment(shiftDetails.endtime);
           const totalHours = endTime.diff(startTime, "hours", true);
           payload["total_hours"] = totalHours;
+          payload.is_absent = false;
         }
+        payload.is_weekend = [0, 6].includes(checkInTime.day());
       } else if (key === "checkout") {
-        payload[key] = moment(data[key]);
-        payload["payable_hours"] = payload.checkout.diff(
-          payload.checkin,
-          "hours",
-          true
-        );
+        debugger
+        const checkin = moment(payload.checkin);
+        const checkout = moment(data[key]);
+
+        payload[key] = checkout;
+        payload["payable_hours"] = checkin.diff(payload.checkin, "hours", true);
         if (payload.payable_hours > payload.total_hours) {
-          payload["overtime_hours"] =
-            payload.payable_hours - payload.total_hours;
+          payload["overtime_hours"] = parseFloat(
+            parseFloat(payload.payable_hours) - parseFloat(payload.total_hours)
+          ).toFixed(2);
         }
       } else payload[key] = data[key];
     }

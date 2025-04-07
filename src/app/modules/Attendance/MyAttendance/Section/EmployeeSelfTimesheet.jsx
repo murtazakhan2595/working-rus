@@ -30,7 +30,6 @@ import { Button } from "components/ui/button";
 export default function EmployeeSelfTimesheet({
   employeeShift,
   attendance,
-  startShift,
   endShift,
   OnBreak,
   disable,
@@ -137,7 +136,6 @@ export default function EmployeeSelfTimesheet({
               disable={disable}
               attendance={attendance}
               employeeShift={employeeShift}
-              startShift={startShift}
               endShift={endShift}
               OnBreak={OnBreak}
               reloadData={reloadData}
@@ -163,12 +161,12 @@ const RenderShiftControlIcons = ({
   disable,
   attendance,
   employeeShift,
-  startShift,
   endShift,
   OnBreak,
   reloadData = () => {},
 }) => {
   const userProfile = useSelector((state) => state.user.userProfile);
+  const user_details = useSelector((state) => state.emp.user_details);
 
   if (attendance && attendance.checkout) {
     return null;
@@ -177,7 +175,7 @@ const RenderShiftControlIcons = ({
     return null;
 
   const startBreak = async () => {
-    const startTime = moment().utc().format("YYYY-MM-DDTHH:mm:ss[Z]");
+    const startTime = moment().utc().toISOString() ;
     const payload = {
       break_type: "Lunch",
       starttime: startTime,
@@ -224,6 +222,32 @@ const RenderShiftControlIcons = ({
     }
   };
 
+  const startShift = async () => {
+    if (attendance && attendance.checkout) {
+      toast.success("Shift already ended");
+      return;
+    }
+    if (!attendance) {
+      const is_late = moment(moment().format("HH:mm:ss"), "HH:mm:ss").isAfter(
+        employeeShift.shift_start_time
+      );
+      const payload = {
+        checkin: moment().utc().format("YYYY-MM-DDTHH:mm:ss[Z]"),
+        status: is_late ? "Late" : "Present",
+        is_late: is_late,
+        employee_id: userProfile.id,
+        date: moment().format("YYYY-MM-DD"),
+      };
+      const response = await saveAttendance(payload, user_details);
+      if (response) {
+        toast.success("Shift started");
+        reloadData(true);
+      }
+      return;
+    }
+    reloadData(true);
+  };
+
   if (!attendance?.checkin) {
     // If no attendance, show only Play
     return (
@@ -268,23 +292,7 @@ const RenderShiftControlIcons = ({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <StopCircle
-                className="w-8 h-8 mx-2 text-plum-900 cursor-pointer"
-                onClick={() => {
-                  if (!disable) {
-                    endShift();
-                  }
-                }}
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>End Shift</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+
       </>
     );
   }
@@ -292,7 +300,7 @@ const RenderShiftControlIcons = ({
   // If attendance exists and not on break, show Pause and Stop
   return (
     <>
-    {/* <Button variant='success'>Break</Button> */}
+      {/* <Button variant='success'>Break</Button> */}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>

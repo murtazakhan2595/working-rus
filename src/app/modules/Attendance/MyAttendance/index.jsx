@@ -98,7 +98,7 @@ const Attendance = () => {
   };
   const endShift = async () => {
     setReloadData(true);
-    const checkout = moment().utc().format("YYYY-MM-DDTHH:mm:ss[Z]");
+    const checkout = moment().utc().toISOString() ;
     await updatePayableHours();
     await endBreak(
       {
@@ -162,73 +162,6 @@ const Attendance = () => {
     getAttendanceList();
   }, [filterData]);
 
-  const initializeAttendance = async () => {
-    const startTime = moment(employeeShift.shift_start_time, "h:mm a");
-    const endTime = moment(employeeShift.shift_end_time, "h:mm a");
-    const totalHours = endTime.diff(startTime, "hours", true);
-    const is_late = moment(moment().format("HH:mm:ss"), "HH:mm:ss").isAfter(
-      employeeShift.shift_start_time
-    );
-    const payload = {
-      total_hours: totalHours,
-      checkin: moment().utc().format("YYYY-MM-DDTHH:mm:ss[Z]"),
-      status: is_late ? "Late" : "Present",
-      is_late: is_late,
-      employee_id: userProfile.id,
-      shift_assignment: employeeShift.id,
-      checkout: null,
-      is_weekend: [0, 6].includes(moment().day()),
-      is_absent: false,
-      break_duration: "0",
-      overtime_hours: "0",
-      payable_hours: "0",
-      date: moment().format("YYYY-MM-DD"),
-    };
-    const response = await saveAttendance(payload, user_details);
-    if (response) {
-      toast.success("Shift started");
-      setAttendanceWithLocalTime(response);
-    }
-  };
-
-  const updateAttendanceAttributes1 = async () => {
-    let overTime = 0;
-    if (parseFloat(attendance.payable_hours) > attendance.total_hours) {
-      overTime = parseFloat(attendance.payable_hours) - attendance.total_hours;
-    }
-    const payload = {
-      id: attendance.id,
-      overtime_hours: overTime,
-    };
-    const response = await saveAttendance(payload);
-    if (response) {
-      setAttendanceWithLocalTime(response);
-      await getAttendanceList();
-    }
-  };
-  const updateAttendanceAttributes2 = async () => {
-    const breakDuration = await calculateBreak({
-      filterData: {
-        employee_id: userProfile.id,
-        attendance: attendance.id,
-      },
-    });
-    let overTime = 0;
-    if (parseFloat(attendance.payable_hours) > attendance.total_hours) {
-      overTime = parseFloat(attendance.payable_hours) - attendance.total_hours;
-    }
-    const payload = {
-      id: attendance.id,
-      overtime_hours: overTime,
-      break_duration: breakDuration,
-    };
-    const response = await saveAttendance(payload);
-    if (response) {
-      setAttendanceWithLocalTime(response);
-      await getAttendanceList();
-    }
-  };
-
   const updatePayableHours = async () => {
     if (!attendance && attendance.results.length > 0) {
       toast.error("No attendance found");
@@ -266,63 +199,6 @@ const Attendance = () => {
       await getAttendanceList();
     }
   };
-  const startShift = async () => {
-    setReloadData(true);
-    if (attendance && attendance.checkout) {
-      toast.success("Shift already ended");
-      return;
-    }
-    if (!attendance) {
-      await initializeAttendance();
-      await getAttendanceList();
-      return;
-    }
-    if (onBreak) {
-      const result = await endBreak(
-        {
-          filterData: {
-            employee_id: userProfile.id,
-            attendance: attendance.id,
-          },
-          options: {
-            page: 1,
-            sizePerPage: 1,
-          },
-        },
-        moment().format("YYYY-MM-DDTHH:mm:ss")
-      );
-
-      if (result) {
-        await updateAttendanceAttributes2();
-        setOnBreak(false);
-        toast.success("Break ended");
-      }
-    }
-
-    await getAttendanceList();
-    setReloadData(true);
-  };
-
-  const pauseShift = async () => {
-    setReloadData(true);
-    const startTime = moment().format("YYYY-MM-DDTHH:mm:ss");
-    // await updatePayableHours();
-    const payload = {
-      break_type: "Lunch",
-      starttime: startTime,
-      employee_id: userProfile.id,
-      attendance: attendance.id,
-    };
-    const response = await saveBreak(payload);
-    if (response) {
-      setOnBreak(true);
-      toast.success("Break started");
-    }
-    await updateAttendanceAttributes1();
-    await getAttendanceList();
-    setReloadData(true);
-  };
-
   const handleFilterChange = (dateRange) => {
     if (dateRange?.toUpperCase() === "DAY") {
       setFilterData({
@@ -348,8 +224,6 @@ const Attendance = () => {
           <EmployeeSelfTimesheet
             employeeShift={employeeShift}
             attendance={attendance}
-            startShift={startShift}
-            pauseShift={pauseShift}
             endShift={endShift}
             OnBreak={onBreak}
             reloadData={() => {
@@ -392,7 +266,7 @@ const Attendance = () => {
           <CardContent>
             <TableCustom
               data={attendanceData}
-              columns={MyAttendanceColumn}
+              columns={MyAttendanceColumn(getAttendanceList)}
               pagination={true}
               dataTotalSize={attendanceData.count || 0}
              // tableOptions={tableOptions}
