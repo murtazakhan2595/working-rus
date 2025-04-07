@@ -10,6 +10,7 @@ import {
   TaskProgress,
   LeaveEmployeeDetails,
   OnGoingApplications,
+  ExpiredDocuments,
 } from "../Screens";
 import EventCalendar from "../Screens/EventCalendar";
 
@@ -39,6 +40,7 @@ const DashboardHR = [
     content: <LeaveTrackerOverview />,
     value: "LeaveTracker",
   },
+
   {
     type: "div",
     className: `w-full`,
@@ -82,6 +84,12 @@ const DashboardHR = [
     className: `w-full`,
     content: <MyTeams />,
     value: "MyTeam",
+  },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <ExpiredDocuments />,
+    value: "ExpiredDocuments",
   },
 ];
 
