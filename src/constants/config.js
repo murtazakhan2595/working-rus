@@ -56,3 +56,10 @@ export const URLS = [
     Backend: "https://staging-hrms-be.tecbrix.cloud/api",
   },
 ];
+
+export const WEBSOCKET_PATHS = [
+  "/ws/notifications/",
+  "/ws/systemnotifications/",
+  // Add more as needed
+];
+
