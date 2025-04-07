@@ -33,18 +33,14 @@ export function mapAttendanceData(data, shiftDetails) {
         }
       } else if (key === "checkout") {
         payload[key] = moment(data[key]);
-        if (!data.payable_hours) {
-          payload["payable_hours"] = payload.checkout.diff(
-            payload.checkin,
-            "hours",
-            true
-          );
-        }
-        if (!data.overtime_hours) {
-          if (payload.payable_hours > payload.total_hours) {
-            payload["overtime_hours"] =
-              payload.payable_hours - payload.total_hours;
-          }
+        payload["payable_hours"] = payload.checkout.diff(
+          payload.checkin,
+          "hours",
+          true
+        );
+        if (payload.payable_hours > payload.total_hours) {
+          payload["overtime_hours"] =
+            payload.payable_hours - payload.total_hours;
         }
       } else payload[key] = data[key];
     }
