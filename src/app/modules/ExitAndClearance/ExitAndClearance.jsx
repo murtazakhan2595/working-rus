@@ -41,8 +41,11 @@ const ExitAndClearance = ({ userProfile, departments }) => {
       const response = await getEmployeesExitCount(
         userProfile.role === 2
           ? { filterData: { reporting_to: userProfile.id } }
-          : {}
+          : {},
+        activeTab,
+        activeInnerTab
       );
+
       if (response) {
         setTotalExit(response.total);
         setRejectedResignation(response.rejected);
@@ -54,7 +57,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   };
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [activeTab, activeInnerTab]);
 
   const closeRequestTerminationCard = () => {
     fetchData();

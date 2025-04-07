@@ -15,7 +15,7 @@ const formDataHeader = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   // Don't explicitly set 'Content-Type' for FormData
 });
-const getEmployeesExitCount = async (payload) => {
+const getEmployeesExitCount = async (payload, activeTab, activeInnerTab) => {
   const filterData = payload?.filterData ?? {};
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -34,42 +34,17 @@ const getEmployeesExitCount = async (payload) => {
     });
 
     if (response.status === 200) {
-      const resignationData = response.data?.results?.result || [];
-      const total = response?.data?.count || 0;
-      let rejected = 0; // Changed from const to let to allow updating
-      let approved = 0; // Changed from const to let to allow updating
-
-      // Iterating through each resignation to calculate counts
-      resignationData.forEach((resignation) => {
-        const status_resignation = resignation.status_resignation;
-        const status_termination = resignation.status_termination;
-
-        // Check status for resignation
-        if (ExitStatusCurrentStep(status_resignation) === 2) {
-          if (Status(status_resignation, 2) === "Approved") {
-            approved += 1;
-          } else {
-            rejected += 1;
-          }
-        }
-        if (
-          ExitStatusCurrentStep(status_resignation) >= 3 ||
-          ExitStatusCurrentStep(status_termination) >= 3
-        ) {
-          approved += 1;
-        }
-        // Check status for termination
-        else if (ExitStatusCurrentStep(status_termination) === 0) {
-          if (Status(status_resignation, 0) === "Approved") {
-            approved += 1;
-          } else {
-            rejected += 1;
-          }
-        }
-      });
-
+      const resignationData = response.data?.results || [];
       // Returning the calculated values
-      return { total, approved, rejected };
+      return {
+        total: resignationData?.total_exit || 0,
+        approved:
+          resignationData?.approved_termination +
+            resignationData?.approved_resignation || 0,
+        rejected:
+          resignationData?.rejected_resignation +
+            resignationData?.rejected_termination || 0,
+      };
     } else {
       return null;
     }
@@ -96,7 +71,6 @@ const getEmployeesResignations = async (payload) => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
-    console.log("getemployeeresignation", response);
     if (response.status === 200) {
       const resignationData = response.data;
       return {
