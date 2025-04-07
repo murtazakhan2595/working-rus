@@ -25,7 +25,7 @@ export function mapAttendanceData(data, shiftDetails) {
         payload[key] = data[key];
       } else if (key === "checkin") {
         const checkInTime = moment(data[key]);
-        payload[key] = checkInTime;
+        payload[key] = data[key];
         if (shiftDetails) {
           const startTime = moment(shiftDetails.starttime);
           const endTime = moment(shiftDetails.endtime);
@@ -35,12 +35,14 @@ export function mapAttendanceData(data, shiftDetails) {
         }
         payload.is_weekend = [0, 6].includes(checkInTime.day());
       } else if (key === "checkout") {
-        debugger
+        debugger;
         const checkin = moment(payload.checkin);
-        const checkout = moment(data[key]);
-
-        payload[key] = checkout;
-        payload["payable_hours"] = checkin.diff(payload.checkin, "hours", true);
+        payload[key] = data[key];
+        payload["payable_hours"] = parseFloat(moment(payload.checkout).diff(
+          checkin,
+          "hours",
+          true
+        )).toFixed(2);
         if (payload.payable_hours > payload.total_hours) {
           payload["overtime_hours"] = parseFloat(
             parseFloat(payload.payable_hours) - parseFloat(payload.total_hours)

@@ -30,7 +30,6 @@ import { Button } from "components/ui/button";
 export default function EmployeeSelfTimesheet({
   employeeShift,
   attendance,
-  endShift,
   OnBreak,
   disable,
   reloadData,
@@ -61,7 +60,6 @@ export default function EmployeeSelfTimesheet({
     if (!OnBreak && attendance?.checkin && !attendance?.checkout) {
       updatePaybleHours(); // Initial update
       const interval = setInterval(updatePaybleHours, 60000); // Update every second
-
       return () => clearInterval(interval); // Cleanup on unmount
     }
   }, [attendance?.checkin, OnBreak, attendance?.checkout]);
@@ -136,7 +134,6 @@ export default function EmployeeSelfTimesheet({
               disable={disable}
               attendance={attendance}
               employeeShift={employeeShift}
-              endShift={endShift}
               OnBreak={OnBreak}
               reloadData={reloadData}
             />
@@ -161,7 +158,6 @@ const RenderShiftControlIcons = ({
   disable,
   attendance,
   employeeShift,
-  endShift,
   OnBreak,
   reloadData = () => {},
 }) => {
@@ -175,7 +171,7 @@ const RenderShiftControlIcons = ({
     return null;
 
   const startBreak = async () => {
-    const startTime = moment().utc().toISOString() ;
+    const startTime = moment().utc().toISOString();
     const payload = {
       break_type: "Lunch",
       starttime: startTime,
@@ -248,6 +244,20 @@ const RenderShiftControlIcons = ({
     reloadData(true);
   };
 
+  const endShift = async () => {
+    const checkout = moment().utc().toISOString();
+    const payload = {
+      ...attendance,
+      id: attendance.id,
+      checkout: checkout,
+    };
+    const response = await saveAttendance(payload, user_details);
+    if (response) {
+      toast.success("Shift ended");
+      reloadData(true);
+    }
+  };
+
   if (!attendance?.checkin) {
     // If no attendance, show only Play
     return (
@@ -292,7 +302,6 @@ const RenderShiftControlIcons = ({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-
       </>
     );
   }

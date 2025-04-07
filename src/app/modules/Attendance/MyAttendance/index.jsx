@@ -32,11 +32,7 @@ const Attendance = () => {
   const [attendance, setAttendance] = useState(null);
   const [attendanceData, setAttendanceData] = useState([]);
   const [onBreak, setOnBreak] = useState(false);
-  // const [activeTab, setActiveTab] = useState("day");
-  const [reloadData, setReloadData] = useState(false);
-  const [dateRange, setDateRange] = useState(null);
   const [activeFilter, setactiveFilter] = useState("Month");
-
   const userProfile = useSelector((state) => state.user.userProfile);
   const user_details = useSelector((state) => state.emp.user_details);
   const [filterData, setFilterData] = useState({
@@ -53,13 +49,6 @@ const Attendance = () => {
     }
   };
 
-  const setAttendanceWithLocalTime = (attendance) => {
-    if (attendance) {
-      setAttendance({
-        ...attendance,
-      });
-    }
-  };
 
   const fetchData = async () => {
     const attendance = await getAttendance({
@@ -96,51 +85,6 @@ const Attendance = () => {
       });
     }
   };
-  const endShift = async () => {
-    setReloadData(true);
-    const checkout = moment().utc().toISOString() ;
-    await updatePayableHours();
-    await endBreak(
-      {
-        filterData: {
-          employee_id: userProfile.id,
-          attendance: attendance.id,
-        },
-        options: {
-          page: 1,
-          sizePerPage: 1,
-        },
-      },
-      checkout
-    );
-
-    const breakDuration = await calculateBreak({
-      filterData: {
-        employee_id: userProfile.id,
-        attendance: attendance.id,
-      },
-    });
-
-    let overTime = 0;
-    if (attendance.payable_hours > attendance.total_hours) {
-      overTime = attendance.payable_hours - attendance.total_hours;
-    }
-    const payload = {
-      id: attendance.id,
-      checkout: checkout,
-      break_duration: breakDuration,
-      overtime_hours: overTime,
-    };
-    const response = await saveAttendance(payload);
-    if (response) {
-      await getAttendanceList();
-      toast.success("Shift ended");
-      setAttendanceWithLocalTime(response);
-    }
-
-    setOnBreak(false);
-    setReloadData(true);
-  };
 
   useEffect(() => {
     let isMounted = true;
@@ -162,43 +106,6 @@ const Attendance = () => {
     getAttendanceList();
   }, [filterData]);
 
-  const updatePayableHours = async () => {
-    if (!attendance && attendance.results.length > 0) {
-      toast.error("No attendance found");
-      return;
-    }
-    let startTime;
-    let endTime;
-    const lastBreak = await getBreak({
-      filterData: {
-        employee_id: userProfile.id,
-        attendance: attendance.id,
-      },
-      options: {
-        page: 1,
-        sizePerPage: 3,
-      },
-    });
-    if (lastBreak && lastBreak.results.length === 0) {
-      startTime = moment(attendance.checkin);
-      endTime = moment(moment().format("YYYY-MM-DDTHH:mm:ss"));
-    } else {
-      startTime = moment(lastBreak.results[0].endtime?.replace("Z", ""));
-      endTime = moment(moment().format("YYYY-MM-DDTHH:mm:ss"));
-    }
-    const totalHours = endTime.diff(startTime, "hours", true);
-    const payableHours =
-      parseFloat(attendance.payable_hours) + parseFloat(totalHours);
-    const payload = {
-      id: attendance.id,
-      payable_hours: payableHours.toFixed(2),
-    };
-    const response = await saveAttendance(payload);
-    if (response) {
-      setAttendanceWithLocalTime(response);
-      await getAttendanceList();
-    }
-  };
   const handleFilterChange = (dateRange) => {
     if (dateRange?.toUpperCase() === "DAY") {
       setFilterData({
@@ -224,7 +131,6 @@ const Attendance = () => {
           <EmployeeSelfTimesheet
             employeeShift={employeeShift}
             attendance={attendance}
-            endShift={endShift}
             OnBreak={onBreak}
             reloadData={() => {
               getAttendanceList();
@@ -246,7 +152,6 @@ const Attendance = () => {
 
         <div className="flex gap-2 justify-between items-center">
           <h3 className="text-2xl font-semibold leading-none tracking-tight flex flex-col space-y-1.5 p-6">
-            {" "}
             <div className="text-plum-900">Attendance History</div>
           </h3>
           <div className="flex gap-2">
@@ -267,9 +172,8 @@ const Attendance = () => {
             <TableCustom
               data={attendanceData}
               columns={MyAttendanceColumn(getAttendanceList)}
-              pagination={true}
+              pagination={false}
               dataTotalSize={attendanceData.count || 0}
-             // tableOptions={tableOptions}
             />
           </CardContent>
         </Card>
