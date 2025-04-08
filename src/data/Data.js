@@ -740,16 +740,6 @@ export const payoutPeriodOptions = [
   { value: "per_hour", label: "Per Hour" },
 ];
 
-export const ClaimExpenseTypeOptions = [
-  { value: 2, label: "Travel, Transportation & Logistics Expenses" },
-  { value: 1, label: "Accommodation" },
-  { value: 3, label: "Meals & Entertainment" },
-  { value: 4, label: "Office Supplies" },
-  { value: 5, label: "Professional Development" },
-  { value: 6, label: "Equipment & Software" },
-  { value: 7, label: "Medical & Wellness" },
-  { value: 8, label: "Miscellaneous" },
-];
 
 export const LeaveTrackerOptions = [
   { value: "Pending", label: "Pending" },
