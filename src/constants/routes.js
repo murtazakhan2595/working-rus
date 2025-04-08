@@ -43,7 +43,7 @@ import {
   PayRun,
   CreatePayRun,
   PayRunDetails,
-} from "app/modules/payroll";
+} from "app/modules/Payroll";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
 import Attendance from "app/modules/Attendance";
 import MyAttendance from "app/modules/Attendance/MyAttendance";

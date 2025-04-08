@@ -34,7 +34,7 @@ import {
 } from "src/@/components/ui/table";
 import { MyDtrTasksColumns } from "app/modules/DTR/Sections/DTRTableColumns";
 import { getTaskDetailsFromLogtime, addUpdateDTR } from "app/hooks/dtr";
-import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
+import {EmployeeOverview} from "components";
 import { getLabelByValue } from "utils/getValuesFromTables";
 import { useSelector } from "react-redux";
 import { DailyReportList } from "../../MyDTR/Screens";
@@ -124,10 +124,8 @@ const ReportCard = ({
   return (
     <SheetCardExtension>
       <div className="flex flex-wrap justify-between gap-6 w-full bg-white rounded-lg">
-        <EmployeeDataInfo
-          name={full_name}
-          designation={getLabelByValue(designation, designations)}
-          src={""}
+        <EmployeeOverview
+          
         />
         <div className="flex gap-4 items-center">
           <StatItem icon={Hourglass} value={stats?.consumed_time} />

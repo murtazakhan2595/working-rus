@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import SheetComponent from "../../../../components/ui/SheetComponent";
-import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
 import { Button } from "components/ui/button";
-import { Input } from "components/ui/input";
+import { EmployeeOverview } from "components";
 import { X } from "lucide-react";
 import AddTypeSheet from "./AddTypeSheet";
 import { getLeaveComponentsWithUsed } from "app/hooks/leaveTracker";
@@ -114,11 +113,9 @@ const ViewDetails = ({
   return (
     <>
       <div className="flex items-center justify-between">
-        <EmployeeDataInfo
-          name={employeeLeaves.first_name + " " + employeeLeaves.last_name}
-          email={employeeLeaves.work_email}
+        <EmployeeOverview
+          showEmail={employeeLeaves.work_email}
           id={employeeLeaves.id}
-          src={employeeLeaves.profile_picture?.file}
         />
         {userProfile.role !== 2 && (
           <Button
@@ -180,11 +177,9 @@ const EditDetails = ({
 
   return (
     <>
-      <EmployeeDataInfo
-        name={employeeLeaves.first_name + " " + employeeLeaves.last_name}
-        email={employeeLeaves.work_email}
+      <EmployeeOverview
+        showEmail={true}
         id={employeeLeaves.id}
-        src={employeeLeaves.profile_picture?.file}
       />
       <div className="flex flex-col p-6 mt-8 bg-white border rounded-lg shadow border-zinc-200">
         <h3 className="mb-4 text-sm font-semibold text-neutral-800">

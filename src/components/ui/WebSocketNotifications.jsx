@@ -29,14 +29,14 @@ import {
   markAsRead,
   markAllNotificationsAsRead,
 } from "app/hooks/notifications";
-import { URLS } from "constants/config";
+import { URLS, WEBSOCKET_PATHS } from "constants/config";
 import { useNavigate } from "react-router-dom";
 
 const WebSocketNotifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
-  const socketRef = useRef(null);
+  const socketRefs = useRef({});
   const navigate = useNavigate();
 
   const fetchNotifications = async () => {
@@ -86,78 +86,103 @@ const WebSocketNotifications = () => {
     }
   };
 
-  const getWebSocketURL = () => {
+  const getWebSocketBaseURL = () => {
     const currentURL = window.location.origin;
     const urlConfig = URLS.find((url) => url.Frontend === currentURL);
     return urlConfig
       ? urlConfig.Backend.replace("https://", "wss://").replace(
           "/api",
-          "/ws/notifications/"
+          ""
         )
-      : "wss://staging-hrms-be.tecbrix.cloud/ws/notifications/";
+      : "wss://staging-hrms-be.tecbrix.cloud";
   };
 
-  const connectWebSocket = () => {
-    if (socketRef.current) {
-      socketRef.current.close();
-    }
-
-    const wsURL = getWebSocketURL() + "?token=" + localStorage.getItem("token");
-    // console.log("Connecting to WebSocket:", wsURL);
-
-    const ws = new WebSocket(wsURL);
-    socketRef.current = ws;
-
-    ws.onopen = () => {
-      // console.log("Connected to WebSocket");
-      setRetryCount(0);
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const newNotification = JSON.parse(event.data);
-        // console.log("New Notification:", newNotification);
-
-        const transformedNotification = {
-          id: newNotification.id,
-          type: newNotification.type,
-          description: newNotification.message,
-          time: formatNotificationTime(newNotification.created_at),
-          isRead: false,
-          task_id: newNotification?.task_id,
-          project_id: newNotification?.project_id,
-        };
-
-        setNotifications((prev) => [transformedNotification, ...prev]);
-      } catch (error) {
-        console.error("Error parsing WebSocket message:", error);
-      }
-    };
-
-    ws.onclose = () => {
-      // console.log("WebSocket disconnected. Attempting to reconnect...");
-      setTimeout(() => {
-        if (retryCount < 5) {
-          setRetryCount((prev) => prev + 1);
-          connectWebSocket();
+  const connectWebSockets = () => {
+    const baseWSURL = getWebSocketBaseURL(); // returns `wss://...` from your logic
+    const token = localStorage.getItem("token");
+    WEBSOCKET_PATHS.forEach((path) => {
+      const fullURL = `${baseWSURL}${path}?token=${token}`;
+  
+      const ws = new WebSocket(fullURL);
+      socketRefs.current[path] = ws;
+  
+      ws.onopen = () => {
+        console.log(`Connected to ${path}`);
+      };
+  
+      ws.onmessage = (event) => {
+        try {
+          const newNotification = JSON.parse(event.data);
+          const transformedNotification = {
+            id: newNotification.id,
+            type: newNotification.type,
+            description: newNotification.message,
+            time: formatNotificationTime(newNotification.created_at),
+            isRead: false,
+            task_id: newNotification?.task_id,
+            project_id: newNotification?.project_id,
+          };
+  
+          setNotifications((prev) => [transformedNotification, ...prev]);
+        } catch (error) {
+          console.error(`Error parsing message from ${path}`, error);
         }
-      }, Math.min(1000 * 2 ** retryCount, 30000)); // Exponential backoff
+      };
+  
+      ws.onerror = (error) => {
+        console.error(`WebSocket error on ${path}:`, error);
+        ws.close();
+      };
+  
+      ws.onclose = () => {
+        console.log(`Disconnected from ${path}, attempting reconnect...`);
+        setTimeout(() => connectWebSocketPath(path), 3000); // simple retry (you can expand to use exponential backoff per path if needed)
+      };
+    });
+  };
+  
+  const connectWebSocketPath = (path) => {
+    const baseWSURL = getWebSocketBaseURL();
+    const token = localStorage.getItem("token");
+    const fullURL = `${baseWSURL}${path}?token=${token}`;
+  // console.log(fullURL,'bvjdfhbjhd')
+    const ws = new WebSocket(fullURL);
+    socketRefs.current[path] = ws;
+  
+    ws.onmessage = (event) => {
+      const newNotification = JSON.parse(event.data);
+      const transformedNotification = {
+        id: newNotification.id,
+        type: newNotification.type,
+        description: newNotification.message,
+        time: formatNotificationTime(newNotification.created_at),
+        isRead: false,
+        task_id: newNotification?.task_id,
+        project_id: newNotification?.project_id,
+      };
+      setNotifications((prev) => [transformedNotification, ...prev]);
     };
-
+  
+    ws.onclose = () => {
+      console.log(`Reconnecting ${path}`);
+      setTimeout(() => connectWebSocketPath(path), 5000);
+    };
+  
     ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
+      console.error(`WebSocket error on reconnect for ${path}:`, error);
       ws.close();
     };
   };
+  
 
   useEffect(() => {
     fetchNotifications();
-    connectWebSocket();
-
+    connectWebSockets();
+  
     return () => {
-      if (socketRef.current) {
-        socketRef.current.close();
-      }
+      Object.values(socketRefs.current).forEach((ws) => {
+        if (ws) ws.close();
+      });
     };
   }, []);
 
@@ -242,7 +267,7 @@ const WebSocketNotifications = () => {
                         key={index}
                         className={cn(
                           "flex items-start gap-4 px-1 py-2 transition-colors cursor-pointer hover:bg-gray-100",
-                          notification.isRead ? "bg-gray-50" : "bg-gray-300"
+                          notification.isRead ? "bg-gray-100" : "bg-gray-300"
                         )}
                         onClick={() => handleNotificationClick(notification)}
                       >
@@ -252,7 +277,7 @@ const WebSocketNotifications = () => {
                               "w-5 h-5",
                               notification.isRead
                                 ? "text-neutral-1100"
-                                : "text-red-600"
+                                : "text-red-700"
                             )}
                           />
                         </div>

@@ -8,8 +8,8 @@ import {
   TabsTrigger,
   TabsContent,
 } from "../../../../src/@/components/ui/tabs.jsx";
-import PayRunCard from "../Sections/PayRunCard.jsx";
-import PaySlipCard from "../Sections/PaySlipCard.jsx";
+import PayRunCard from "../../Payroll/Sections/PayRunCard.jsx";
+import PaySlipCard from "../../Payroll/Sections/PaySlipCard.jsx";
 import { getSalarySetupData } from "app/hooks/payroll.jsx";
 import { useNavigate } from "react-router-dom";
 import { getPayun } from "app/hooks/payroll.jsx";

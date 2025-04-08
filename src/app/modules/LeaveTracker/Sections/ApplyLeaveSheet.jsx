@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import SheetComponent from "../../../../components/ui/SheetComponent";
-import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
 import moment from "moment";
 import { Button } from "components/ui/button";
 import { Formik } from "formik";

@@ -18,7 +18,7 @@ import {
 } from "../../../hooks/payroll";
 import { toast } from "react-toastify";
 import { validateRevisedSalaryForm } from "../../../utils/FormSchema/payrollFormSchema";
-import EmployeeDataInfo from "../Sections/EmployeeDataInfo";
+import EmployeeDataInfo from "../../Payroll/Sections/EmployeeDataInfo";
 import moment from "moment";
 import { StatusDropdown } from "./EmployeeSalaryDetails";
 import { revisionStatusOptions } from "data/Data";

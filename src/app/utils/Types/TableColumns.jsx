@@ -3,21 +3,17 @@ import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applica
 import { dropdownOptions } from "data/Data";
 import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
 import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
-import { EmployeeAttendenceHistoryActions } from "app/modules/Attendance/EmployeeAttendance/Section";
 import moment from "moment";
-import { renderDate,formatNumber } from "utils/renderValues";
+import { formatNumber } from "utils/renderValues";
 import { AiOutlineDownload } from "react-icons/ai";
 import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
-import EmployeeDataInfo from "../../modules/payroll/Sections/EmployeeDataInfo";
-import { DesignationName } from "utils/getValuesFromTables";
+import EmployeeDataInfo from "app/modules/Payroll/Sections/EmployeeDataInfo";
 import { DepartmentName } from "utils/getValuesFromTables";
-import { Switch } from "../../../src/@/components/ui/switch";
+import { Switch } from "src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
-import { Badge, Calendar, Clock, FileText, MapPin, Tag } from "lucide-react";
+import { Clock,  MapPin, Tag } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
-import { StatusLabelAttendance } from "components/StatusLabel";
-import { formatDuration } from "utils/renderValues";
 /**
  * EmployeeColumns
  *
@@ -186,71 +182,7 @@ export const ExitResignedColumns = [
   },
 ];
 
-export const EmployeePayrollColumns = [
-  {
-    dataField: "serial_number",
-    text: "ID",
-    formatter: (cell) => <EmployeeID value={cell} />,
-  },
-  {
-    dataField: "name",
-    text: "Employee",
-    formatter: (cell, row) => (
-      <EmployeeDataInfo
-        name={cell}
-        email={row.work_email}
-        src={row?.profile_picture}
-      />
-    ),
-  },
-  {
-    dataField: "department_role",
-    text: "Designation",
-    formatter: (cell) => <DesignationName value={cell} />,
-  },
-  {
-    dataField: "department_name",
-    text: "Department",
-    // formatter: (cell) => <DepartmentName value={cell} />,
-  },
-  {
-    dataField: "latest_effective_date",
-    text: "Last Revised Date",
-    formatter: (cell, row) => {
-      // Check if the cell has a value
-      if (!cell)
-        return (
-          <div class="h-[22px] px-3 py-[3px] rounded-full border border-[#f1d1f3] justify-end items-center gap-1.5 inline-flex">
-            <div class="text-[#ab4aba] text-xs font-semibold">New</div>
-          </div>
-        );
 
-      // Try parsing the date using both formats
-      let formattedDate;
-      if (moment(cell, "MM-DD-YYYY", true).isValid()) {
-        formattedDate = moment(cell, "MM-DD-YYYY").format("MMM D, YYYY");
-      } else if (moment(cell, "YYYY-MM-DD", true).isValid()) {
-        formattedDate = moment(cell, "YYYY-MM-DD").format("MMM D, YYYY");
-      } else {
-        // Handle invalid date format
-        formattedDate = "Invalid Date";
-      }
-
-      return <>{formattedDate}</>;
-    },
-  },
-
-  {
-    dataField: "basic_salary",
-    text: "Total cost",
-    formatter: (cell) => <>{"AED " + Math.round(cell)}</>,
-  },
-  {
-    dataField: "salary_type",
-    text: "Salary Type",
-    formatter: (cell) => <div className="capitalize">{cell}</div>,
-  },
-];
 
 export const SalaryComponentColumns = (onCheckedChange) => [
   {

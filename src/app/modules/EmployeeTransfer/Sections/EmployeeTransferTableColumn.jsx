@@ -1,23 +1,7 @@
-import { EmployeeID, UserRole } from "utils/getValuesFromTables";
 import { EmployeeTransferStatusView } from "app/modules/EmployeeTransfer/Sections";
-import { dropdownOptions, formatNumber } from "data/Data";
-import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
-import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
-import { EmployeeAttendenceHistoryActions } from "app/modules/Attendance/EmployeeAttendance/Section";
-import moment from "moment";
+import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
-import { AiOutlineDownload } from "react-icons/ai";
-import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
-import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
-import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
-import { DesignationName } from "utils/getValuesFromTables";
 import { DepartmentName, ManagerName } from "utils/getValuesFromTables";
-import { Switch } from "src/@/components/ui/switch";
-import { getExpenseType } from "utils/getValuesFromTables";
-import { Clock } from "lucide-react";
-import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
-import { StatusLabelAttendance } from "components/StatusLabel";
-import { formatDuration } from "utils/renderValues";
 /**
  * InternalTransferColumns
  *

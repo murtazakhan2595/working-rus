@@ -33,10 +33,10 @@ export function StatsCards() {
   };
 
   const statsData = [
-    { title: "Total Employees", value: employees?.length },
-    { title: "Present", value: cardStats?.present },
-    { title: "Late", value: cardStats?.late },
-    { title: "Absent", value: cardStats?.absent },
+    { title: "Total Employees", value: employees?.length ||0},
+    { title: "Present", value: cardStats?.present||0 },
+    { title: "Late", value: cardStats?.late ||0},
+    { title: "Absent", value: cardStats?.absent ||0},
     {
       title: "Not Arrived",
       value:

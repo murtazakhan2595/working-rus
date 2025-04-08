@@ -24,7 +24,7 @@ import moment from "moment";
 import { getPayslip } from "app/hooks/payroll";
 import { getPayslipByID } from "app/hooks/payroll";
 import { getFinalSettlement } from "app/hooks/payroll";
-import Newlogo from "./../../../../assets/images/NewLogo";
+import Newlogo from "../../../../assets/images/NewLogo";
 import "../styles/payslip.css";
 
 // Dummy Earnings Data
