@@ -11,7 +11,6 @@ import {
   TextAreaInput,
 } from "components/FormControl";
 import { DateInput } from "components/FormControl";
-import { ClaimExpenseTypeOptions } from "data/Data";
 import { getEmployeePayroll } from "app/hooks/payroll";
 import { connect } from "react-redux";
 import { saveReimbursement } from "app/hooks/payroll";
@@ -273,7 +272,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                     error={props.errors?.reason}
                     touch={props.touched?.reason}
                     value={props.values?.reason}
-                    options={ClaimExpenseTypeOptions}
+                    options={[]}
                     label={"Reason for Leave"}
                     required={true}
                     onChange={(field, value) => {

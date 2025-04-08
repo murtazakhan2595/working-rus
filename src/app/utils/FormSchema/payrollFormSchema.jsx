@@ -1,6 +1,10 @@
 const validateRevisedSalaryForm = (values, isEditMode) => {
   const errors = {};
-  if (values.previous_salary === null || values.previous_salary === undefined || values.previous_salary === "") {
+  if (
+    values.previous_salary === null ||
+    values.previous_salary === undefined ||
+    values.previous_salary === ""
+  ) {
     errors.previous_salary = "Previous CTC is required";
   }
   if (!values.new_salary) errors.new_salary = "Revised CTC is required";
@@ -10,21 +14,38 @@ const validateRevisedSalaryForm = (values, isEditMode) => {
   return errors;
 };
 
-const validateClaimRequestForm = (values) =>{
+const validateClaimRequestForm = (values) => {
   const errors = {};
-  if(!values.expense_type){
+
+  if (!values.expense_type) {
     errors.expense_type = "Expense Type is required";
   }
-  if(!values.amount){
+
+  if (!values.amount) {
     errors.amount = "Amount is required";
   }
-  if(!values.payment_date){
+
+  if (!values.payment_date) {
     errors.payment_date = "Date of Expense is required";
   }
-  if(!values.description){
+
+  if (!values.description) {
     errors.description = "Description is required";
-  } 
+  } else if (values.description.length < 10) {
+    errors.description = "Description must be at least 10 characters";
+  }
+
+  if (!values.reason) {
+    errors.reason = "Reason is required";
+  } else if (values.reason.length < 10) {
+    errors.reason = "Reason must be at least 10 characters";
+  }
+
+  if (!values.attachment) {
+    errors.attachment = "Attachment is required";
+  }
+
   return errors;
-}
+};
 
 export { validateRevisedSalaryForm, validateClaimRequestForm };

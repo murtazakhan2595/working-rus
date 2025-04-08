@@ -17,7 +17,6 @@ import { getEmployeeData } from "app/hooks/employee.jsx";
 import { Button } from "components/ui/button";
 import { deleteReimbursement } from "app/hooks/payroll.jsx";
 import { toast } from "react-toastify";
-import { ClaimExpenseTypeOptions } from "data/Data.js";
 import { DateInput } from "components/FormControl";
 
 
@@ -223,7 +222,7 @@ const handleDeleteClaims = async () => {
                 filters={[
                   {
                     type: "select-one",
-                    option: ClaimExpenseTypeOptions,
+                    option: [],
                     name: "expense_type",
                     placeholder: "Expense Type",
                     values: selectedExpenseType,
