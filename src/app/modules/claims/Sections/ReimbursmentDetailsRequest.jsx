@@ -64,40 +64,31 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
     fetchPayroll();
   }, []);
 
-  console.log(expenseTypeOptions)
 
-  const handleFormSubmit = async (values) => {
-    setLoading(true);
-    values.status_hr = {
-      status: "pending",
-    };
-    values.status_manager = {
-      status: "pending",
-    };
-    values.status_superadmin = {
-      status: "pending",
-    };
-    values.status = "pending";
-    values.is_paid = false;
-    values.employee_payroll = payroll.id;
+const handleFormSubmit = async (values) => {
+  console.log("Form values before submission:", values);
+  // Remove the 'return' statement that was here
 
-    const formData = new FormData();
+  setLoading(true);
+  values.status_hr = {
+    status: "pending",
+  };
+  values.status_manager = {
+    status: "pending",
+  };
+  values.status_superadmin = {
+    status: "pending",
+  };
+  values.status = "pending";
+  values.is_paid = false;
+  values.employee_payroll = payroll.id;
 
-    // Add all form values to FormData
-    Object.keys(values).forEach((key) => {
-      if (key === "attachment") {
-        // The Attachments component handles the attachment format differently
-        // It returns an array of files which might be File objects or IDs
-        if (values[key] && Array.isArray(values[key])) {
-          values[key].forEach((file) => {
-            if (file instanceof File) {
-              formData.append("attachment", file);
-            } else if (file && file.id) {
-              formData.append("attachment", file.id);
-            }
-          });
-        }
-      } else if (
+  const formData = new FormData();
+
+  // Add all non-attachment form values to FormData
+  Object.keys(values).forEach((key) => {
+    if (key !== "attachment") {
+      if (
         key === "status_hr" ||
         key === "status_manager" ||
         key === "status_superadmin"
@@ -107,28 +98,51 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
       } else {
         formData.append(key, values[key]);
       }
-    });
-
-    try {
-      const response = await saveReimbursement(formData);
-      if (response) {
-        toast.success("Reimbursement request sent successfully");
-        reload();
-        setIsOpen(false);
-      }
-    } catch (error) {
-      console.error("Error submitting reimbursement request:", error);
-      toast.error("Failed to send reimbursement request");
-    } finally {
-      setLoading(false);
     }
-  };
+  });
+
+  // Simpler attachment handling
+  if (values.attachment && Array.isArray(values.attachment)) {
+    values.attachment.forEach((item) => {
+      // If item is an object with attachment property (from console log)
+      if (item && item.attachment && item.attachment instanceof File) {
+        formData.append("attachment", item.attachment);
+      }
+      // If item is directly a File
+      else if (item instanceof File) {
+        formData.append("attachment", item);
+      }
+      // If item has an ID (for existing attachments)
+      else if (item && item.id) {
+        formData.append("attachment", item.id);
+      }
+    });
+  }
+
+  // Log FormData entries for debugging
+  console.log("FormData entries:");
+  for (let pair of formData.entries()) {
+    console.log(pair[0], pair[1]);
+  }
+
+  try {
+    const response = await saveReimbursement(formData);
+    if (response) {
+      toast.success("Reimbursement request sent successfully");
+      reload();
+      setIsOpen(false);
+    }
+  } catch (error) {
+    console.error("Error submitting reimbursement request:", error);
+    toast.error("Failed to send reimbursement request");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleClose = () => {
     setCloseSheet(true);
   };
-
-  // We no longer need the handleFileChange function as it will be handled by the Attachments component
 
   return (
     <div>
@@ -237,6 +251,7 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                 <Attachments
                   attachmentSelected={props.values.attachment || []}
                   onChange={(attachment) => {
+                    console.log("attachment", attachment);
                     props.setFieldValue("attachment", attachment);
                   }}
                   acceptedFileTypes=".pdf,.png,.jpg,.jpeg"
