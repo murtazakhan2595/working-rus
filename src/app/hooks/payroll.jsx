@@ -2,6 +2,7 @@ import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { getEmployeeCustomList, HandleLogout } from "./general";
 import moment from "moment";
+import { mapPayRunList } from "app/utils/MappingObjects/mapPayrollData";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -350,7 +351,7 @@ const saveEarnAndDeduction = async (payload) => {
     }
     return false;
   }
-}
+};
 
 const deleteEarnAndDeduction = async (id) => {
   try {
@@ -368,7 +369,7 @@ const deleteEarnAndDeduction = async (id) => {
     }
     return false;
   }
-}
+};
 
 const saveEmployeePayroll = async (payload) => {
   try {
@@ -402,7 +403,7 @@ const saveEmployeePayroll = async (payload) => {
     }
     return false;
   }
-}
+};
 
 const saveEmployeeEarnDeduction = async (payload) => {
   try {
@@ -436,7 +437,7 @@ const saveEmployeeEarnDeduction = async (payload) => {
     }
     return false;
   }
-}
+};
 
 const saveReimbursement = async (payload) => {
   try {
@@ -470,13 +471,13 @@ const saveReimbursement = async (payload) => {
     }
     return false;
   }
-}
+};
 const getReimbursement = async (payload, options) => {
   const pageNo = options?.page ?? "";
   const pageSize = options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  console.log("payload - ", payload)
-  console.log("filterData - ", filterData)
+  console.log("payload - ", payload);
+  console.log("filterData - ", filterData);
   const URL = `/payroll/reimbursement/?ordering=-id&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
@@ -496,7 +497,7 @@ const getReimbursement = async (payload, options) => {
     }
     return [];
   }
-}
+};
 const deleteReimbursement = async (id) => {
   try {
     const response = await axios.delete(
@@ -513,13 +514,16 @@ const deleteReimbursement = async (id) => {
     }
     return false;
   }
-}
+};
 
 const getPayrollSummary = async () => {
   try {
-    const response = await axios.get(`${baseUrl}/payroll/organization/${1}/payroll-summary/`, {
-      headers: headers(),
-    });
+    const response = await axios.get(
+      `${baseUrl}/payroll/organization/${1}/payroll-summary/`,
+      {
+        headers: headers(),
+      }
+    );
     if (response.status === 200) {
       return response.data;
     }
@@ -530,11 +534,11 @@ const getPayrollSummary = async () => {
     }
     return [];
   }
-}
+};
 
 const savePayrun = async (payload) => {
   try {
-    if(payload?.id){
+    if (payload?.id) {
       const response = await axios.patch(
         `${baseUrl}/payroll/payroll-run/${payload.id}`,
         payload,
@@ -545,8 +549,7 @@ const savePayrun = async (payload) => {
       if (response.status === 201 || response.status === 200) {
         return response.data;
       }
-    }
-    else{
+    } else {
       const response = await axios.post(
         `${baseUrl}/payroll/payroll-run/`,
         payload,
@@ -559,7 +562,6 @@ const savePayrun = async (payload) => {
         return response.data;
       }
     }
-
   } catch (error) {
     console.error("Error saving payrun data:", error);
     if (error?.response?.status === 401) {
@@ -567,7 +569,7 @@ const savePayrun = async (payload) => {
     }
     return false;
   }
-}
+};
 const getPayun = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -582,7 +584,9 @@ const getPayun = async (payload) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      return response.data;
+      const PayRunResponse = response.data;
+      const PayRunList = await mapPayRunList(PayRunResponse.results);
+      return { count: PayRunResponse.count, results: PayRunList };
     }
   } catch (error) {
     console.error("Error fetching payrun data:", error);
@@ -594,12 +598,9 @@ const getPayun = async (payload) => {
 };
 const getPayslipByID = async (id) => {
   try {
-    const response = await axios.get(
-      `${baseUrl}/payroll/payslip/${id}`,
-      {
-        headers: headers(),
-      }
-    );
+    const response = await axios.get(`${baseUrl}/payroll/payslip/${id}`, {
+      headers: headers(),
+    });
     if (response.status === 200) {
       return response.data;
     }
@@ -610,7 +611,7 @@ const getPayslipByID = async (id) => {
     }
     return [];
   }
-}
+};
 
 const saveFinalSettlement = async (payload) => {
   try {
@@ -644,7 +645,7 @@ const saveFinalSettlement = async (payload) => {
     }
     return false;
   }
-}
+};
 const getEmpPayrolDetails = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -668,7 +669,7 @@ const getEmpPayrolDetails = async (payload) => {
     }
     return { results: [], count: 0 };
   }
-}
+};
 
 const getFinalSettlement = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
@@ -693,16 +694,13 @@ const getFinalSettlement = async (payload) => {
     }
     return [];
   }
-}
+};
 
 const getPayRunById = async (id) => {
   try {
-    const response = await axios.get(
-      `${baseUrl}/payroll/payroll-run/${id}`,
-      {
-        headers: headers(),
-      }
-    );
+    const response = await axios.get(`${baseUrl}/payroll/payroll-run/${id}`, {
+      headers: headers(),
+    });
     if (response.status === 200) {
       return response.data;
     }
@@ -713,7 +711,7 @@ const getPayRunById = async (id) => {
     }
     return [];
   }
-}
+};
 
 export {
   getEmployeePayroll,

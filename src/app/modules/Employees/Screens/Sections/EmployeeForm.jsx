@@ -172,7 +172,7 @@ const SheetOnBorading = ({
   };
   const validateUsername = (username) => {
     const employee = employees.filter(
-      (emp) => emp.label === username && emp.value !== id
+      (emp) => emp.username === username && emp.id !== id
     );
     if (employee && employee.length > 0) {
       setUsernameAlreadyExist(true);

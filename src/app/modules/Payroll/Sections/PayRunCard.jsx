@@ -64,6 +64,7 @@ function PayRunCard({ cardData }) {
 
   useEffect(() => {
     // Check if a pay run exists for the current month
+    console.log(cardDataList);
     const currentMonthPayRun = cardDataList?.find((data) => {
       const startDate = moment(data.start_date);
       const endDate = moment(data.end_date);
@@ -91,7 +92,7 @@ function PayRunCard({ cardData }) {
   console.log("CARD-DATA-LIST", cardDataList);
   return (
     <>
-      {cardDataList?.map((data, index) => {
+      {cardDataList && cardDataList?.map((data, index) => {
         const processedData = processCardData(data);
         console.log("PROCESSED-DATA", processedData);
         return (
