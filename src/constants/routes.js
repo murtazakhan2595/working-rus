@@ -33,17 +33,17 @@ import ComingSoon from "app/modules/comingSoon/ComingSoon.jsx";
 import Services from "app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 import { ExitAndClearance, EmployeeExit } from "app/modules/ExitAndClearance";
-import {
-  Payslip,
-  EmployeeSalaryDetails,
-  EmployeesPayroll,
-  MyPayroll,
-  SalarySetup,
-  SalarySetupDetail,
-  PayRun,
-  CreatePayRun,
-  PayRunDetails,
-} from "app/modules/Payroll";
+// import {
+//   Payslip,
+//   EmployeeSalaryDetails,
+//   EmployeesPayroll,
+//   MyPayroll,
+//   SalarySetup,
+//   SalarySetupDetail,
+//   PayRun,
+//   CreatePayRun,
+//   PayRunDetails,
+// } from "app/modules/Payroll";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
 import Attendance from "app/modules/Attendance";
 import MyAttendance from "app/modules/Attendance/MyAttendance";
@@ -115,39 +115,39 @@ const SidebarRoutes = [
     component: <LeaveTracker />,
     name: "Leave Tracker",
   },
-  Config.PAYROLL &&
-    Config.SELF_SERVICE_HUB && {
-      path: "/my-payroll",
-      component: <MyPayroll />,
-      name: "My Payroll",
-    },
-  Config.PAYROLL && {
-    path: "/payroll/:id",
-    component: <EmployeeSalaryDetails />,
-    name: "Payroll Details",
-  },
-  Config.PAYROLL && {
-    path: "/payslip/:id",
-    component: <Payslip />,
-    name: "Payslip",
-  },
-  Config.PAYROLL && {
-    path: "/payslip-eos/:id",
-    component: <Payslip />,
-    name: "Payslip EOS",
-  },
+  // Config.PAYROLL &&
+  //   Config.SELF_SERVICE_HUB && {
+  //     path: "/my-payroll",
+  //     component: <MyPayroll />,
+  //     name: "My Payroll",
+  //   },
+  // Config.PAYROLL && {
+  //   path: "/payroll/:id",
+  //   component: <EmployeeSalaryDetails />,
+  //   name: "Payroll Details",
+  // },
+  // Config.PAYROLL && {
+  //   path: "/payslip/:id",
+  //   component: <Payslip />,
+  //   name: "Payslip",
+  // },
+  // Config.PAYROLL && {
+  //   path: "/payslip-eos/:id",
+  //   component: <Payslip />,
+  //   name: "Payslip EOS",
+  // },
   Config.SELF_SERVICE_HUB &&
     Config.EMPLOYEE_OFFBOARDING && {
       path: "/exit-employee",
       component: <EmployeeExit />,
       name: "Exit Employee",
     },
-  Config.PAYROLL &&
-    Config.SELF_SERVICE_HUB && {
-      path: "/my-claims",
-      component: <MyClaims />,
-      name: "My Claims",
-    },
+  // Config.PAYROLL &&
+  //   Config.SELF_SERVICE_HUB && {
+  //     path: "/my-claims",
+  //     component: <MyClaims />,
+  //     name: "My Claims",
+  //   },
   Config.SELF_SERVICE_HUB &&
     Config.LEAVE_MANAGMENT && {
       path: "/my-leave-tracker",
@@ -210,41 +210,41 @@ const SidebarRoutes = [
     component: <EditEmployeeProfile />,
     name: "Edit Employee Profile",
   },
-  Config.PAYROLL && {
-    path: "/payroll",
-    component: <EmployeesPayroll />,
-    name: "Payroll",
-  },
-  Config.PAYROLL && {
-    path: "/payroll/salary-setup/:id",
-    component: <SalarySetupDetail />,
-    name: "Salary Setup Detail",
-  },
-  Config.PAYROLL && {
-    path: "/payroll/salary-setup-eos/:id",
-    component: <SalarySetupDetail />,
-    name: "Salary Setup EOS",
-  },
-  Config.PAYROLL && {
-    path: "/payroll/create-payrun",
-    component: <CreatePayRun />,
-    name: "Create Payrun",
-  },
-  Config.PAYROLL && {
-    path: "/payroll/pay-slip-details/:id",
-    component: <PayRunDetails />,
-    name: "Pay Slip Details",
-  },
-  Config.PAYROLL && {
-    path: "/salary-setup",
-    component: <SalarySetup />,
-    name: "Salary Setup",
-  },
-  Config.PAYROLL && {
-    path: "/pay-run",
-    component: <PayRun />,
-    name: "Pay Run",
-  },
+  // Config.PAYROLL && {
+  //   path: "/payroll",
+  //   component: <EmployeesPayroll />,
+  //   name: "Payroll",
+  // },
+  // Config.PAYROLL && {
+  //   path: "/payroll/salary-setup/:id",
+  //   component: <SalarySetupDetail />,
+  //   name: "Salary Setup Detail",
+  // },
+  // Config.PAYROLL && {
+  //   path: "/payroll/salary-setup-eos/:id",
+  //   component: <SalarySetupDetail />,
+  //   name: "Salary Setup EOS",
+  // },
+  // Config.PAYROLL && {
+  //   path: "/payroll/create-payrun",
+  //   component: <CreatePayRun />,
+  //   name: "Create Payrun",
+  // },
+  // Config.PAYROLL && {
+  //   path: "/payroll/pay-slip-details/:id",
+  //   component: <PayRunDetails />,
+  //   name: "Pay Slip Details",
+  // },
+  // Config.PAYROLL && {
+  //   path: "/salary-setup",
+  //   component: <SalarySetup />,
+  //   name: "Salary Setup",
+  // },
+  // Config.PAYROLL && {
+  //   path: "/pay-run",
+  //   component: <PayRun />,
+  //   name: "Pay Run",
+  // },
   Config.ATTENDANCE && {
     path: "/attendance",
     component: <Attendance />,
