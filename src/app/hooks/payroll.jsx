@@ -713,7 +713,28 @@ const getPayRunById = async (id) => {
   }
 };
 
+const claimExpenseChoices = async()=>{
+  try{
+    const response = await axios.get(
+       `${baseUrl}/payroll/expensechoice/`,
+       {
+        headers:headers()
+       }
+    )
+    if(response.status === 200){
+      return response.data
+    }
+  }catch(error){
+     console.error("Error fetching payrun data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+}
+
 export {
+  claimExpenseChoices,
   getEmployeePayroll,
   saveEmployeePayroll,
   getEmployeePayrollById,

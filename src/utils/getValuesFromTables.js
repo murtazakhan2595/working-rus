@@ -14,7 +14,6 @@ import {
 } from "data/Data";
 import { useSelector } from "react-redux";
 import moment from "moment";
-import { ClaimExpenseTypeOptions } from "data/Data";
 import { ReasonForLeaving } from "data/Data";
 
 function getCountryFullName(countryCode) {
@@ -213,7 +212,7 @@ function getExperience(joiningDate) {
   return `${years} years, ${months} months`;
 }
 function getExpenseType(value) {
-  const response = ClaimExpenseTypeOptions.find(
+  const response = [].find(
     (option) => option.value === value
   );
   return response ? response.label : "N/A";
