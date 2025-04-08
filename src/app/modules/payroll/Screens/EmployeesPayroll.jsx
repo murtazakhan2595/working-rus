@@ -4,7 +4,7 @@ import {
   CardContent,
   CardHeader,
 } from "../../../../components/ui/card.jsx";
-import { EmployeePayrollColumns } from "app/modules/payroll/Sections";
+import { EmployeePayrollColumns } from "app/modules/Payroll/Sections";
 import CustomTable from "components/CustomTable";
 import Header from "../../../../components/Header.jsx";
 import { FilterInput } from "components/FormControl";

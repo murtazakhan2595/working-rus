@@ -54,9 +54,9 @@ import {
   saveEmployeePayroll,
   updateSalaryRevisionStatus,
 } from "../../../hooks/payroll";
-import AddAdditionalEarningSheet from "../Sections/AddAdditionalEarningSheet";
+import AddAdditionalEarningSheet from "../../Payroll/Sections/AddAdditionalEarningSheet";
 import { toast } from "react-toastify";
-import { calculateEarningsAndDeductions } from "../Sections/CalculationsHelperFunctions.jsx";
+import { calculateEarningsAndDeductions } from "../../Payroll/Sections/CalculationsHelperFunctions.jsx";
 
 const SalarySetupDetail = () => {
   const [employeeData, setEmployeeData] = React.useState({});

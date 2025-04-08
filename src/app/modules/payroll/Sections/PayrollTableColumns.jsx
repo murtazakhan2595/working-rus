@@ -7,7 +7,6 @@ import { renderDate } from "utils/renderValues";
 import { AiOutlineDownload } from "react-icons/ai";
 import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
-import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
 import { DepartmentName,DesignationName } from "utils/getValuesFromTables";
 import { Switch } from "src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";

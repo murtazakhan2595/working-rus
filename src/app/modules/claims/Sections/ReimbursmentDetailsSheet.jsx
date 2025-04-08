@@ -1,5 +1,5 @@
 import SheetComponent from "../../../../components/ui/SheetComponent";
-import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
+import EmployeeDataInfo from "app/modules/Payroll/Sections/EmployeeDataInfo";
 import moment from "moment";
 import { Button } from "components/ui/button";
 import { getExpenseType } from "utils/getValuesFromTables";

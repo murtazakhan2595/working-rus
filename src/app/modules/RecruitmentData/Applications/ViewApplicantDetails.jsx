@@ -6,7 +6,7 @@ import { RenderJobApplicationActions } from "./Sections";
 import { fetchJobById, downloadCV } from "app/hooks/recruitment";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { Button } from "components/ui/button";
-import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
+import EmployeeDataInfo from "app/modules/Payroll/Sections/EmployeeDataInfo";
 import {
   DetailBox,
   DisplayFile,

@@ -78,7 +78,7 @@ import {
   saveEmployeePayroll,
   updateSalaryRevisionStatus,
 } from "../../../hooks/payroll";
-import { calculateEarningsAndDeductions } from "../Sections/CalculationsHelperFunctions";
+import { calculateEarningsAndDeductions } from "../../Payroll/Sections/CalculationsHelperFunctions";
 import moment from "moment";
 
 export default function EmployeeSalaryDetails() {

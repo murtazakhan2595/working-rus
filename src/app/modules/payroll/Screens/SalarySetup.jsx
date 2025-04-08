@@ -19,9 +19,9 @@ import {
   TabsTrigger,
   TabsContent,
 } from "src/@/components/ui/tabs";
-import SalaryComponent from "../Sections/SalaryComponent";
+import SalaryComponent from "../../Payroll/Sections/SalaryComponent.jsx";
 import { getSalarySetupData } from "app/hooks/payroll.jsx";
-import AddComponentSheet from "../Sections/AddComponentSheet.jsx";
+import AddComponentSheet from "../../Payroll/Sections/AddComponentSheet.jsx";
 
 const SalarySetup = ({ departments }) => {
   const [isLoading, setIsLoading] = useState(false);

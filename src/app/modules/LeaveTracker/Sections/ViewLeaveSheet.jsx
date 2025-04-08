@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import SheetComponent from "../../../../components/ui/SheetComponent";
-import EmployeeDataInfo from "app/modules/payroll/Sections/EmployeeDataInfo";
+import SheetComponent from "components/ui/SheetComponent";
 import moment from "moment";
 import { Button } from "components/ui/button";
-import { getExpenseType } from "utils/getValuesFromTables";
+import { EmployeeOverview } from "components";
 import { getFileSizeInKB } from "utils/fileUtils";
 import { Paperclip } from "lucide-react";
 import { filebase64Download } from "utils/fileUtils";
@@ -123,19 +122,17 @@ const ViewLeaveSheet = ({
         {...formSheetData}
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
-        setIsOpen={onClose} 
+        setIsOpen={onClose}
         width="600px"
       >
-        <EmployeeDataInfo
-          name={leaveApplication?.leave_request?.employee_info?.first_name}
-          email={leaveApplication?.leave_request?.employee_info?.work_email}
-          src={
-            leaveApplication?.leave_request?.employee_info?.profile_picture
-              ?.file
-          }
+        <EmployeeOverview
           id={leaveApplication?.leave_request?.employee_info?.id}
+          showEmail={true}
         />
-        <DetailCard date={leaveApplication?.created_at} detailCardTitle="Details">
+        <DetailCard
+          date={leaveApplication?.created_at}
+          detailCardTitle="Details"
+        >
           <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
             {detailItems.map((item, index) => (
               <DetailBox label={item?.label} value={item?.value} />
@@ -172,32 +169,32 @@ const ViewLeaveSheet = ({
         </DetailCard>
 
         <DetailCard detailCardTitle="Approval Status">
-            <section className="flex relative flex-col max-w-[382px] mt-3">
-              <div className="flex absolute -bottom-0.5 z-0 justify-center items-start w-6 h-[150px] left-[5px] min-h-[150px]" />
-              {approvalSteps.map((step, index) => (
-                <div className="z-0 flex items-center justify-between w-full gap-10">
-                  <div className="flex gap-4 self-stretch my-auto w-[194px]">
-                    <div className="flex justify-center items-center px-1 bg-white h-[33px] w-[33px]">
-                      <img
-                        loading="lazy"
-                        src={step.icon}
-                        alt=""
-                        className="object-contain self-stretch my-auto aspect-square w-[25px]"
-                      />
-                    </div>
-                    <div className="py-0.5 my-auto text-xs leading-loose text-[#6B7280] min-h-[24px]">
-                      {step.text}
-                    </div>
+          <section className="flex relative flex-col max-w-[382px] mt-3">
+            <div className="flex absolute -bottom-0.5 z-0 justify-center items-start w-6 h-[150px] left-[5px] min-h-[150px]" />
+            {approvalSteps.map((step, index) => (
+              <div className="z-0 flex items-center justify-between w-full gap-10">
+                <div className="flex gap-4 self-stretch my-auto w-[194px]">
+                  <div className="flex justify-center items-center px-1 bg-white h-[33px] w-[33px]">
+                    <img
+                      loading="lazy"
+                      src={step.icon}
+                      alt=""
+                      className="object-contain self-stretch my-auto aspect-square w-[25px]"
+                    />
                   </div>
-                  {step.time && (
-                    <div className="self-stretch py-0.5 my-auto text-xs leading-loose text-[#6B7280]">
-                      {step.time}
-                    </div>
-                  )}
+                  <div className="py-0.5 my-auto text-xs leading-loose text-[#6B7280] min-h-[24px]">
+                    {step.text}
+                  </div>
                 </div>
-              ))}
-            </section>
-            </DetailCard>
+                {step.time && (
+                  <div className="self-stretch py-0.5 my-auto text-xs leading-loose text-[#6B7280]">
+                    {step.time}
+                  </div>
+                )}
+              </div>
+            ))}
+          </section>
+        </DetailCard>
         {!isMyLeave && showButtons && (
           <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
             <Button
