@@ -21,7 +21,9 @@ const EmployeesPayroll = () => {
   const userID = useSelector((state) => state.user.userProfile.id);
   const [isLoading, setIsLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState({ results: [], count: 0 });
-  const [filterData, setFilterData] = useState(userRole === 2 ? {} : {});
+  const [filterData, setFilterData] = useState(
+    userRole === 2 ? { direct_report: userID } : {}
+  );
   const [selectedSalaryType, setSelectedSalaryType] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const navigate = useNavigate();

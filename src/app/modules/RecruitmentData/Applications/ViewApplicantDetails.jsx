@@ -6,7 +6,7 @@ import { RenderJobApplicationActions } from "./Sections";
 import { fetchJobById, downloadCV } from "app/hooks/recruitment";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { Button } from "components/ui/button";
-import EmployeeDataInfo from "app/modules/Payroll/Sections/EmployeeDataInfo";
+import { EmployeeOverview } from "components";
 import {
   DetailBox,
   DisplayFile,
@@ -23,7 +23,6 @@ const ViewApplicantDetails = ({
   const [selectedApplicationIndex, setSelectedApplicationIndex] =
     useState(applicantIndex);
   const [applicant, setApplicant] = useState(null);
-
 
   useEffect(() => {
     let isMounted = true; // Track if the component is still mounted
@@ -76,12 +75,7 @@ const ViewApplicantDetails = ({
         </Button>
       </div>
       <div class="mb-4 flex items-center justify-between mt-4">
-        <EmployeeDataInfo
-          name={applicant?.first_name + " " + applicant?.last_name}
-          email={applicant?.email}
-          id={applicant?.id}
-          src={applicant?.profile_picture?.file}
-        />
+        <EmployeeOverview id={applicant?.id} showEmail={true} />
 
         <div className="text-base  flex items-center gap-x-4">
           <RenderJobApplicationActions
@@ -145,7 +139,6 @@ const ViewApplicantDetails = ({
             file={applicant?.coverletter}
           />
         </div>
-
       </DetailCard>
     </div>
   );

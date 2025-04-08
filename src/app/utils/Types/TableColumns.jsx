@@ -8,11 +8,10 @@ import { formatNumber } from "utils/renderValues";
 import { AiOutlineDownload } from "react-icons/ai";
 import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
-import EmployeeDataInfo from "app/modules/Payroll/Sections/EmployeeDataInfo";
 import { DepartmentName } from "utils/getValuesFromTables";
 import { Switch } from "src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
-import { Clock,  MapPin, Tag } from "lucide-react";
+import { Clock, MapPin, Tag } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
 /**
  * EmployeeColumns
@@ -182,8 +181,6 @@ export const ExitResignedColumns = [
   },
 ];
 
-
-
 export const SalaryComponentColumns = (onCheckedChange) => [
   {
     dataField: "name",
@@ -316,11 +313,9 @@ export const ClaimRequestColumns = [
     formatter: (cell) => <EmployeeID value={cell} />,
   },
   {
-    dataField: "full_name",
+    dataField: "id",
     text: "Employees",
-    formatter: (cell, row) => (
-      <EmployeeDataInfo name={cell} email={`${row?.work_email}`} />
-    ),
+    formatter: (cell, row) => <EmployeeOverview name={cell} showEmail={true} />,
   },
   {
     dataField: "expense_type",
@@ -369,11 +364,7 @@ export const createPayrunColumns = (components) => [
     text: "Employee",
     formatter: (cell, row) => (
       <>
-        <EmployeeDataInfo
-          name={row.name}
-          email={row.work_email}
-          src={row?.profile_picture?.file}
-        />
+        <EmployeeOverview id={cell} showEmail={row.work_email} />
       </>
     ),
   },
@@ -475,10 +466,8 @@ export const downloadPayslipColumns = (components) => [
     text: "Name",
     formatter: (cell, row) => (
       <>
-        <EmployeeDataInfo
-          name={row.full_name}
-          email={row.work_email}
-          src={row?.profile_picture?.file}
+        <EmployeeOverview
+id={cell}          showEmail={true}
         />
       </>
     ),
@@ -542,10 +531,8 @@ export const LeaveRecordColumns = [
     text: "Employee",
     formatter: (cell, row) => (
       <>
-        <EmployeeDataInfo
-          name={`${row.first_name} ${row.last_name}`}
-          email={row.work_email}
-          src={row?.profile_picture?.file}
+       <EmployeeOverview
+id={cell}          showEmail={true}
         />
       </>
     ),
@@ -784,14 +771,11 @@ export const AssetsColumns = [
     formatter: (cell, row) => (
       <div className="flex items-center gap-2">
         <MapPin size={16} className="text-muted-foreground" />
-        <span>
-          {cell}
-        </span>
+        <span>{cell}</span>
       </div>
     ),
   },
 ];
-
 
 export const MyAssetRequestColumns = [
   {
@@ -864,7 +848,6 @@ export const MyAssetRequestColumns = [
     },
   },
 ];
-
 
 export const AssignedAssetsColumns = [
   {

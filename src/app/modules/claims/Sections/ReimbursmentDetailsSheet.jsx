@@ -1,5 +1,5 @@
 import SheetComponent from "../../../../components/ui/SheetComponent";
-import EmployeeDataInfo from "app/modules/Payroll/Sections/EmployeeDataInfo";
+import { EmployeeOverview } from "components";
 import moment from "moment";
 import { Button } from "components/ui/button";
 import { getExpenseType } from "utils/getValuesFromTables";
@@ -164,11 +164,8 @@ const ReimbursmentDetailsSheet = ({
         isOpen={isOpen}
         setIsOpen={setIsOpen}
       >
-        <EmployeeDataInfo
-          name={claimRequest.full_name}
-          email={claimRequest.work_email}
-          id={claimRequest.employeeid}
-        />
+        <EmployeeOverview id={claimRequest.employeeid} showEmail={true} />
+
         <DetailCard
           detailCardTitle="Details"
           date={` ${moment(claimRequest?.date_of_expense).format(
