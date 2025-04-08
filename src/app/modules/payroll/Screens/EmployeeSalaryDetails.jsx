@@ -63,7 +63,7 @@ import {
 } from "utils/getValuesFromTables";
 import { getEmployeeData } from "app/hooks/employee";
 import { numberToWords } from "utils/renderValues.js";
-import { PageLoader } from "components";
+import { PageLoader, EmployeeOverview } from "components";
 import {
   revisionLetterOptions,
   revisionStatusOptions,
@@ -293,41 +293,23 @@ export default function EmployeeSalaryDetails() {
         />
       )}
       <div className="mb-4">
-        <Button
-          variant="ghost"
-          onClick={handleBack}
-          className="p-4 text-xl text-balance"
-        >
-          <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
+        <Button variant="ghost" className="p-4 text-xl text-balance hover:bg-transparent">
+          <ArrowLeft
+            className="w-6 h-6 mr-2 rounded-lg shadow-sm"
+            onClick={handleBack}
+          />
           Detail
         </Button>
       </div>
       <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3">
         <Card>
           <CardContent className="flex items-center pt-6 space-x-4">
-            <Avatar className="w-20 h-20 ">
-              <AvatarImage
-                src={employeeData?.avatar}
-                alt={`${employeeData?.first_name} ${employeeData?.last_name}`}
-              />
-              <AvatarFallback className="bg-plum-400">
-                {`${employeeData?.first_name} `
-                  ?.split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="text-base text-black">
-                <EmployeeID value={employeeID} />
-              </p>
-              <h2 className="text-2xl font-bold text-black">
-                {employeeData?.first_name} {employeeData?.last_name}
-              </h2>
-              <p className="text-base text-muted-foreground">
-                <DesignationName value={employeeData?.department_position} />
-              </p>
-            </div>
+            <EmployeeOverview
+              id={employeeData.id}
+              showId={true}
+              showDepartment={true}
+              avatarSize={16}
+            />
           </CardContent>
         </Card>
         <Card>
@@ -398,10 +380,10 @@ export default function EmployeeSalaryDetails() {
             salaryType={payrollDetails?.salary_type}
             payoutPeriod={payrollDetails?.payout_period}
             lastRevisedDate={latestApprovedSalaryRevision?.last_revised_date}
-            previousCTC={
-              latestApprovedSalaryRevision?.previous_salary
+            previousCTC={latestApprovedSalaryRevision?.previous_salary}
+            currentCTC={
+              latestApprovedSalaryRevision?.new_salary || totalEarnings
             }
-            currentCTC={latestApprovedSalaryRevision?.new_salary || totalEarnings}
           />
           <Card className="mb-4 h-fit">
             <CardHeader>
@@ -429,7 +411,7 @@ export default function EmployeeSalaryDetails() {
                 </SelectContent>
               </Select>
               <Button
-                disabled={!selectedMonth} 
+                disabled={!selectedMonth}
                 variant="secondary"
                 onClick={() =>
                   navigate(

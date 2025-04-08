@@ -162,12 +162,14 @@ const SalarySetupDetail = () => {
         id: payrollId,
         hourly_rate: monthlyGrossSalary,
         is_new: false,
+        employee:employeeData.id
       };
     } else {
       payload = {
         id: payrollId,
         basic_salary: monthlyGrossSalary,
         is_new: false,
+        employee:employeeData.id
       };
     }
 
