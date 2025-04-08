@@ -122,9 +122,10 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
 
       <SheetComponent
         {...formSheetData}
-        contentClassName="custom-sheet-width"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
+        contentClassName="custom-sheet-width"
+        width="568px"
       >
         <Formik
           initialValues={claimRequest}
@@ -226,8 +227,13 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="lg" variant="default" disabled={loading}>
-                {loading ? "Submitting..." : "Submit"}
+                <Button
+                  type="submit"
+                  size="lg"
+                  variant="default"
+                  disabled={loading}
+                >
+                  {loading ? "Submitting..." : "Submit"}
                 </Button>
               </div>
             </form>
