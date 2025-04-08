@@ -15,6 +15,7 @@ const EmployeeOverview = React.memo(
     showEmail = false,
     avatarSize='10',
     showBranchName = false,
+    showNationality = false,
   }) => {
     const userProfile = id ? GetUser(id) : {};
     if (!userProfile) return null;
@@ -39,6 +40,9 @@ const EmployeeOverview = React.memo(
             : []), // Ensure it's an array
           ...(showBranchName
             ? [<BranchName value={userProfile?.branch_id} fallbackText="" />]
+            : []), // Ensure it's an array
+          ...(showNationality
+            ? [userProfile?.nationality]
             : []), // Ensure it's an array
         ]}
       />

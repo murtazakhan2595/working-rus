@@ -315,6 +315,7 @@ const getEmployeeListWithDetail = async () => {
         profile_picture: employee.profile_picture,
         shift_assignment: employee.shift_assignment,
         serial_number: employee.serial_number,
+        nationality: employee.nationality,
         name_initials: `${
           employee?.first_name?.charAt(0)?.toUpperCase() || ""
         }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,

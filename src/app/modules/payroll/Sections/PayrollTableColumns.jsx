@@ -7,12 +7,11 @@ import { renderDate } from "utils/renderValues";
 import { AiOutlineDownload } from "react-icons/ai";
 import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
-import { DepartmentName,DesignationName } from "utils/getValuesFromTables";
+import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
 import { Switch } from "src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
-import { Clock,  MapPin, Tag } from "lucide-react";
+import { Clock, MapPin, Tag } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
-
 
 export const EmployeePayrollColumns = [
   {
@@ -22,12 +21,7 @@ export const EmployeePayrollColumns = [
   {
     dataField: "employee",
     text: "Employee",
-    formatter: (cell, row) => (
-      <EmployeeOverview
-        id={cell}
-        showEmail={true}
-      />
-    ),
+    formatter: (cell, row) => <EmployeeOverview id={cell} showEmail={true} />,
   },
   {
     dataField: "department_role",
@@ -74,5 +68,31 @@ export const EmployeePayrollColumns = [
     dataField: "salary_type",
     text: "Salary Type",
     formatter: (cell) => <div className="capitalize">{cell}</div>,
+  },
+];
+
+export const EmployeePayslipColumns = [
+  {
+    dataField: "month",
+    text: "Month",
+  },
+  {
+    dataField: "gross_salary",
+    text: "Salary",
+    formatter: (cell) => <>{"AED " + Math.round(cell)}</>,
+  },
+  {
+    dataField: "gross_salary",
+    text: "Total Deductions",
+    formatter: (cell, row) => {
+      return <>{"AED " + (cell - row.net_salary)}</>;
+    },
+  },
+  {
+    dataField: "",
+    text: "Total Earnings",
+    formatter: (cell, row) => {
+      return <>{row.net_salary > 0 ? "AED " + row.net_salary : "0.00"} </>;
+    },
   },
 ];

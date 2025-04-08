@@ -533,7 +533,6 @@ const getPayrollSummary = async () => {
 }
 
 const savePayrun = async (payload) => {
-  console.log("payload", payload);
   try {
     if(payload?.id){
       const response = await axios.patch(

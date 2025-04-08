@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "../../../../src/@/components/ui/avatar";
+import { DetailBox } from "components/SheetCardExtension";
 import { Button } from "../../../../components/ui/button";
 import {
   Card,
@@ -34,11 +30,7 @@ import {
   CalendarIcon,
   Filter,
 } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../../../../src/@/components/ui/popover";
+import { EmployeePayslipDetails } from "app/modules/Payroll/Sections";
 import {
   Command,
   CommandEmpty,
@@ -278,9 +270,30 @@ export default function EmployeeSalaryDetails() {
         });
       }
     }
-
     setRevisionLoading(false);
   };
+  const BankDetails = [
+    {
+      label: "Bank Name",
+      value: employeeData.bank_name,
+    },
+    {
+      label: "Account Title",
+      value: employeeData.account_title,
+    },
+    {
+      label: "Account Number",
+      value: employeeData.account_number,
+    },
+    {
+      label: "IBAN Number",
+      value: employeeData.account_iban,
+    },
+    {
+      label: "Swift Code",
+      value: employeeData.swift_code,
+    },
+  ].filter(Boolean);
   return (
     <div className="container p-4 mx-auto">
       {selectedRevision && !fromMyPayroll && (
@@ -293,7 +306,10 @@ export default function EmployeeSalaryDetails() {
         />
       )}
       <div className="mb-4">
-        <Button variant="ghost" className="p-4 text-xl text-balance hover:bg-transparent">
+        <Button
+          variant="ghost"
+          className="p-4 text-xl text-balance hover:bg-transparent"
+        >
           <ArrowLeft
             className="w-6 h-6 mr-2 rounded-lg shadow-sm"
             onClick={handleBack}
@@ -301,7 +317,7 @@ export default function EmployeeSalaryDetails() {
           Detail
         </Button>
       </div>
-      <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 md:grid-cols-3">
         <Card>
           <CardContent className="flex items-center pt-6 space-x-4">
             <EmployeeOverview
@@ -309,6 +325,8 @@ export default function EmployeeSalaryDetails() {
               showId={true}
               showDepartment={true}
               avatarSize={16}
+              showPosition={true}
+              showNationality={true}
             />
           </CardContent>
         </Card>
@@ -344,9 +362,6 @@ export default function EmployeeSalaryDetails() {
             </p>
           </CardContent>
         </Card>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3 h-[450px]">
         <Card className="h-fit">
           <CardHeader>
             <CardTitle className="text-plum-900">Salary BreakUp</CardTitle>
@@ -374,7 +389,7 @@ export default function EmployeeSalaryDetails() {
             </div>
           </CardContent>
         </Card>
-        <div className="grid col-span-2 grid-rows-1 gap-4 mb-4 md:grid-rows-2">
+        <div className="col-span-2">
           <SalarySummary
             joiningDate={employeeData?.joining_date}
             salaryType={payrollDetails?.salary_type}
@@ -385,47 +400,34 @@ export default function EmployeeSalaryDetails() {
               latestApprovedSalaryRevision?.new_salary || totalEarnings
             }
           />
-          <Card className="mb-4 h-fit">
-            <CardHeader>
-              <CardTitle className="text-plum-900">Salary Slips</CardTitle>
-            </CardHeader>
-            <CardContent className="flex items-center justify-between">
-              <Select
-                onValueChange={(value) => {
-                  const selectedMonth = months.find(
-                    (month) => month.value === value
+        </div>
+        <Card className="mb-4 h-fit">
+          <CardHeader>
+            <CardTitle className="text-plum-900">Bank Details</CardTitle>
+          </CardHeader>
+          <CardContent className="flex items-center justify-between">
+            <div class="grid grid-cols-1 gap-4">
+              {BankDetails &&
+                BankDetails.map((data, index) => {
+                  return (
+                    <DetailBox
+                      // orientation="horizontal"
+                      key={index}
+                      className=""
+                      label={data.label}
+                      value={data.value}
+                      fallbackText={""}
+                    />
                   );
-                  setSelectedMonth(selectedMonth.label);
-                  setSelectedPayslipId(selectedMonth.payslipId);
-                }}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Pick a month" />
-                </SelectTrigger>
-                <SelectContent className="">
-                  {months?.map((month) => (
-                    <SelectItem key={month.value} value={month.value}>
-                      {month.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                disabled={!selectedMonth}
-                variant="secondary"
-                onClick={() =>
-                  navigate(
-                    `/payslip/${selectedPayslipId}?employeeID=${employeeID}`
-                  )
-                }
-              >
-                Download Slip
-              </Button>
-            </CardContent>
-          </Card>
+                })}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="col-span-2">
+          <EmployeePayslipDetails payrollId={id} employeeID={employeeID} />
         </div>
       </div>
-
       <Card>
         <CardHeader className="flex flex-row items-center justify-between w-full">
           <CardTitle className="text-plum-900">Salary Revisions</CardTitle>
