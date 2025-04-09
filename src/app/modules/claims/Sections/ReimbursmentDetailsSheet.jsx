@@ -1,19 +1,19 @@
-import SheetComponent from "../../../../components/ui/SheetComponent";
-import { EmployeeOverview } from "components";
-import moment from "moment";
+import React, { useState } from "react";
+import SheetComponent from "components/ui/SheetComponent";
 import { Button } from "components/ui/button";
+import moment from "moment";
+import { MapPin, Calendar, Banknote, Info, Tag } from "lucide-react";
+import AttachmentUI from "components/ui/AttachmentUI";
+import AlertDialogue from "components/ui/AlertDialogue";
+import { deleteReimbursement } from "app/hooks/payroll";
+import { toast } from "react-toastify";
 import { getExpenseType } from "utils/getValuesFromTables";
+import { useSelector } from "react-redux";
+import { saveReimbursement } from "app/hooks/payroll";
+import { EmployeeOverview } from "components";
 import statusApprovedIcon from "assets/images/status-approved.png";
 import statusPendingIcon from "assets/images/status-pending.svg";
-import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import { saveReimbursement } from "app/hooks/payroll";
 import statusRejectedIcon from "assets/images/status-rejected.svg";
-import {
-  DetailCard,
-  DetailBox,
-  DisplayFile,
-} from "components/SheetCardExtension";
 
 // Function to calculate "X days ago"
 const calculateTimeAgo = (date) => {
@@ -31,80 +31,139 @@ const calculateTimeAgo = (date) => {
   }
 };
 
-const ReimbursmentDetailsSheet = ({
+const ReimbursementDetailsSheet = ({
   claimRequest,
   isOpen,
   setIsOpen,
   isMyClaims,
-  employeeData,
   reload,
+  expenseTypeOptions,
 }) => {
-  const detailItems = [
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const userProfile = useSelector((state) => state.user.userProfile);
+
+  const formSheetData = {
+    triggerText: null,
+    title: "Reimbursement Details",
+    description: null,
+    footer: null,
+  };
+
+  // Format currency
+  const formatCurrency = (value) => {
+    return `AED ${parseFloat(value).toFixed(2)}`;
+  };
+
+  // Organize reimbursement details into sections
+  const basicDetails = [
+    { label: "Employee Name", value: claimRequest?.full_name || "N/A" },
     {
-      label: "Expense type",
-      value: getExpenseType(claimRequest.expense_type),
+      label: "Expense Type",
+      value: getExpenseType(claimRequest.expense_type, expenseTypeOptions),
     },
-    { label: "Amount", value: claimRequest.amount },
-    { label: "Date of Expense", value: claimRequest.payment_date },
     { label: "Description", value: claimRequest.description },
+    { label: "Claim ID", value: claimRequest.id },
   ];
+
+  const expenseDetails = [
+    {
+      label: "Date of Expense",
+      value: claimRequest.payment_date
+        ? moment(claimRequest.payment_date).format("MMM D, YYYY")
+        : "N/A",
+      icon: <Calendar size={16} className="text-muted-foreground" />,
+    },
+    {
+      label: "Amount",
+      value: formatCurrency(claimRequest.amount),
+      icon: <Banknote size={16} className="text-muted-foreground" />,
+    },
+    {
+      label: "Status",
+      value: claimRequest.status,
+      icon: <Info size={16} className="text-muted-foreground" />,
+    },
+  ];
+
+  // Modified to only show Manager and HR approval steps
   const approvalSteps = [
     {
+      label: "Manager Approval",
+      value: claimRequest?.status_manager?.status || "pending",
       icon:
         claimRequest?.status_manager?.status === "approved"
           ? statusApprovedIcon
           : claimRequest?.status_manager?.status === "rejected"
           ? statusRejectedIcon
-          : statusPendingIcon, // Check for rejected, else pending
-      text: "Manager Approval",
+          : statusPendingIcon,
       time: calculateTimeAgo(claimRequest?.status_manager?.date),
     },
     {
+      label: "HR Approval",
+      value: claimRequest?.status_hr?.status || "pending",
       icon:
         claimRequest?.status_hr?.status === "approved"
           ? statusApprovedIcon
           : claimRequest?.status_hr?.status === "rejected"
           ? statusRejectedIcon
-          : statusPendingIcon, // Check for rejected, else pending
-      text: "HR Approval",
+          : statusPendingIcon,
       time: calculateTimeAgo(claimRequest?.status_hr?.date),
     },
-    {
-      icon:
-        claimRequest?.status_superadmin?.status === "approved"
-          ? statusApprovedIcon
-          : claimRequest?.status_superadmin?.status === "rejected"
-          ? statusRejectedIcon
-          : statusPendingIcon, // Check for rejected, else pending
-      text: "Final Approval",
-      time: calculateTimeAgo(claimRequest?.status_superadmin?.date),
-    },
+    // Final approval removed from UI but will still be handled in the backend
   ];
 
-  const formSheetData = {
-    triggerText: null,
-    title: "Reimbursment requests",
-
-    description: null,
-    footer: null,
+  // Helper function to extract filename from URL
+  const getFilenameFromUrl = (url) => {
+    if (!url) return "Attachment";
+    const parts = url.split("/");
+    return parts[parts.length - 1];
   };
-  const userProfile = useSelector((state) => state.user.userProfile);
+
+  // Handle delete confirmation
+  const handleDeleteClick = () => {
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteReimbursement(claimRequest.id);
+      toast.success("Reimbursement deleted successfully");
+      setIsDeleteDialogOpen(false);
+      setIsOpen(false);
+      if (reload) reload();
+    } catch (error) {
+      console.error("Error deleting reimbursement:", error);
+      toast.error("Failed to delete reimbursement");
+    }
+  };
 
   const handleStatusChange = async (status) => {
     // Update the status based on user role
-    if (userProfile.role === 3) {
+    if (userProfile.role === 3 || userProfile.role === 1) {
+      // HR role
       claimRequest.status_hr = {
         status: status,
         date: moment().format("YYYY-MM-DD"),
       };
+
+      // Automatically update final approval when HR approves
+      // This ensures the backend flow continues to work as expected
+      claimRequest.status_superadmin = {
+        status: status,
+        date: moment().format("YYYY-MM-DD"),
+      };
     }
+
     if (userProfile.role === 2) {
+      // Manager role
       claimRequest.status_manager = {
         status: status,
         date: moment().format("YYYY-MM-DD"),
       };
     }
+
     if (userProfile.role === 1) {
+      // Superadmin role - keeping this for backend compatibility
       claimRequest.status_superadmin = {
         status: status,
         date: moment().format("YYYY-MM-DD"),
@@ -112,10 +171,10 @@ const ReimbursmentDetailsSheet = ({
     }
 
     // Determine the overall claim request status
+    // Modified to consider only manager and HR approval since final approval is auto-updated with HR
     if (
       claimRequest?.status_manager?.status === "approved" &&
-      claimRequest?.status_hr?.status === "approved" &&
-      claimRequest?.status_superadmin?.status === "approved"
+      claimRequest?.status_hr?.status === "approved"
     ) {
       claimRequest.status = "approved";
       claimRequest.approval_date = moment().format("YYYY-MM-DD");
@@ -150,7 +209,7 @@ const ReimbursmentDetailsSheet = ({
       // Manager role
       return claimRequest?.status_manager?.status === "pending";
     } else if (userProfile.role === 1) {
-      // Superadmin role
+      // Superadmin role - keeping this for backend compatibility
       return claimRequest?.status_superadmin?.status === "pending";
     }
     return false;
@@ -162,94 +221,228 @@ const ReimbursmentDetailsSheet = ({
         {...formSheetData}
         contentClassName="custom-sheet-width"
         isOpen={isOpen}
+        width="568px"
         setIsOpen={setIsOpen}
       >
-        <EmployeeOverview id={claimRequest.employeeid} showEmail={true} />
+        <div className="w-full p-0">
+          <div className="flex flex-col">
+            <div className="flex-grow">
+              <div className="p-0">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold">Details</h3>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      onClick={handleDeleteClick}
+                      className="border bg-white border-[#e8e8ec] text-neutral-1200 text-xs font-semibold font-[inter]"
+                    >
+                      Delete
+                    </Button>
 
-        <DetailCard
-          detailCardTitle="Details"
-          date={` ${moment(claimRequest?.date_of_expense).format(
-            "MMMM DD, YYYY"
-          )}`}
-          dateTitle="Create on:"
-        >
-          <div className="flex w-full mt-3">
-            <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
-              {detailItems.map((item, index) => (
-                <DetailBox label={item?.label} value={item?.value} />
-              ))}
-              <div className="flex items-center max-w-full gap-4 mt-4">
-                <div className="flex flex-col leading-none min-w-[88px] text-neutral-400 w-[132px]">
-                  <div className="text-neutral-900">Attachment</div>
+                    {/* Delete Confirmation Dialog */}
+                    {isDeleteDialogOpen && (
+                      <AlertDialogue
+                        isOpen={isDeleteDialogOpen}
+                        setIsOpen={setIsDeleteDialogOpen}
+                        handleContinue={handleConfirmDelete}
+                        continueText="Delete"
+                        title={`Are you sure you want to delete this reimbursement?`}
+                        description="This action cannot be undone. Once deleted, the reimbursement data will be permanently removed."
+                      />
+                    )}
+                  </div>
                 </div>
-                {claimRequest?.attachment ? (
-                  <a
-                    href={claimRequest?.attachment}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View Receipt
-                  </a>
+
+                {/* Employee Overview */}
+                <div className="font-[inter] mb-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 text-sm font-medium leading-[1.2] tracking-[0px] ">
+                  <section className="flex flex-col justify-center p-6 text-sm bg-white">
+                    <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
+                      Employee Information
+                    </div>
+                    <div className="flex w-full mt-3">
+                      <EmployeeOverview
+                        id={claimRequest.employeeid}
+                        showEmail={true}
+                      />
+                    </div>
+                  </section>
+                </div>
+
+                {/* Basic Details Section */}
+                <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 text-sm font-medium leading-[1.2] tracking-[0px] ">
+                  <section className="flex flex-col justify-center p-6 text-sm bg-white">
+                    <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
+                      Basic Information
+                    </div>
+                    <div className="flex w-full mt-3">
+                      <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
+                        {basicDetails.map((item, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center max-w-full gap-4 mt-4"
+                          >
+                            <div className="flex flex-col leading-none min-w-[88px] w-[132px]">
+                              <div>{item.label}</div>
+                            </div>
+                            <div className="flex-1 leading-5 text-neutral-900 shrink basis-0">
+                              {item.value || "N/A"}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+                  <div className="h-[45px] px-6 pt-[13px] pb-3 bg-zinc-100/50 border-t border-zinc-200 justify-start items-center inline-flex">
+                    <div className="inline-flex flex-col items-start justify-start grow shrink basis-0">
+                      <div>
+                        <span className="text-[#8b8d98] text-xs font-medium leading-tight">
+                          Created on:
+                        </span>
+                        <span className="text-[#8b8d98] text-xs font-normal leading-3">
+                          {` ${moment(claimRequest?.created_at).format(
+                            "MMMM DD, YYYY"
+                          )}`}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Expense Details Section */}
+                <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 text-sm font-medium leading-[1.2] tracking-[0px] ">
+                  <section className="flex flex-col justify-center p-6 text-sm bg-white">
+                    <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
+                      Expense Information
+                    </div>
+                    <div className="flex w-full mt-3">
+                      <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
+                        {expenseDetails.map((item, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center max-w-full gap-4 mt-4"
+                          >
+                            <div className="flex flex-col leading-none min-w-[88px] w-[132px]">
+                              <div>{item.label}</div>
+                            </div>
+                            <div className="flex-1 leading-5 text-neutral-900 shrink basis-0 flex items-center gap-2 capitalize">
+                              {item.icon}
+                              {item.value || "N/A"}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+                  <div className="h-[45px] px-6 pt-[13px] pb-3 bg-zinc-100/50 border-t border-zinc-200 justify-start items-center inline-flex">
+                    <div className="inline-flex flex-col items-start justify-start grow shrink basis-0">
+                      <div>
+                        <span className="text-[#8b8d98] text-xs font-medium leading-tight">
+                          Last updated:
+                        </span>
+                        <span className="text-[#8b8d98] text-xs font-normal leading-3">
+                          {` ${moment(claimRequest?.updated_at).format(
+                            "MMMM DD, YYYY"
+                          )}`}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Approval Status Section - Modified to only show Manager and HR approval */}
+                <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 text-sm font-medium leading-[1.2] tracking-[0px] ">
+                  <section className="flex flex-col justify-center p-6 text-sm bg-white">
+                    <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
+                      Approval Status
+                    </div>
+                    <div className="flex w-full mt-3">
+                      <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
+                        {approvalSteps.map((step, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center max-w-full gap-4 mt-4"
+                          >
+                            <div className="flex flex-col leading-none min-w-[88px] w-[132px]">
+                              <div>{step.label}</div>
+                            </div>
+                            <div className="flex-1 leading-5 text-neutral-900 shrink basis-0 flex items-center gap-2">
+                              <img
+                                src={step.icon}
+                                alt=""
+                                className="object-contain self-stretch my-auto aspect-square w-[25px]"
+                              />
+                              <span className="capitalize">{step.value}</span>
+                              {step.time && (
+                                <span className="text-xs text-[#6B7280] ml-2">
+                                  ({step.time})
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+                </div>
+
+                {/* Attachments Section */}
+                {claimRequest.attachment && (
+                  <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 text-sm font-medium leading-[1.2] tracking-[0px] ">
+                    <section className="flex flex-col justify-center p-6 text-sm bg-white">
+                      <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
+                        Attachments
+                      </div>
+                      <div className="flex w-full mt-3">
+                        <div className="flex flex-col flex-1 shrink justify-center w-full basis-0 min-w-[240px]">
+                          <AttachmentUI
+                            id="receipt"
+                            attachment={claimRequest.attachment}
+                            name={getFilenameFromUrl(claimRequest.attachment)}
+                            viewOnly={true}
+                            removeFile={() => {}} // Empty function since it's view only
+                          />
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                {!isMyClaims && hasPendingApprovalForUser() ? (
+                  <div className="flex justify-end mt-6 gap-3">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={() => handleStatusChange("rejected")}
+                    >
+                      Reject
+                    </Button>
+                    <Button
+                      type="submit"
+                      size="lg"
+                      variant="default"
+                      onClick={() => handleStatusChange("approved")}
+                    >
+                      Accept
+                    </Button>
+                  </div>
                 ) : (
-                  "No Attachment Found"
+                  <div className="flex justify-end mt-6">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Close
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
           </div>
-        </DetailCard>
-
-        <DetailCard detailCardTitle="Approval Status">
-          <div className="flex absolute -bottom-0.5 z-0 justify-center items-start w-6 h-[150px] left-[5px] min-h-[150px]" />
-          {approvalSteps.map((step, index) => (
-            <div className="z-0 flex items-center justify-between w-full gap-10">
-              <div className="flex gap-4 self-stretch my-auto w-[194px]">
-                <div className="flex justify-center items-center px-1 bg-white h-[33px] w-[33px]">
-                  <img
-                    loading="lazy"
-                    src={step.icon}
-                    alt=""
-                    className="object-contain self-stretch my-auto aspect-square w-[25px]"
-                  />
-                </div>
-                <div className="py-0.5 my-auto text-xs leading-loose text-[#6B7280] min-h-[24px]">
-                  {step.text}
-                </div>
-              </div>
-              {step.time && (
-                <div className="self-stretch py-0.5 my-auto text-xs leading-loose text-[#6B7280]">
-                  {step.time}
-                </div>
-              )}
-            </div>
-          ))}
-        </DetailCard>
-        {!isMyClaims && hasPendingApprovalForUser() && (
-          <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => {
-                handleStatusChange("rejected");
-              }}
-            >
-              Reject
-            </Button>
-            <Button
-              type="submit"
-              size="lg"
-              variant="default"
-              // className=" bg-[#1c2024] text-white"
-              onClick={() => {
-                handleStatusChange("approved");
-              }}
-            >
-              Accept
-            </Button>
-          </div>
-        )}
+        </div>
       </SheetComponent>
     </div>
   );
 };
 
-export default ReimbursmentDetailsSheet;
+export default ReimbursementDetailsSheet;
