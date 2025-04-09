@@ -211,10 +211,10 @@ function getExperience(joiningDate) {
   const months = Math.floor(duration.asMonths()) % 12;
   return `${years} years, ${months} months`;
 }
-function getExpenseType(value) {
-  const response = [].find(
-    (option) => option.value === value
-  );
+function getExpenseType(value, expenseTypeOptions) {
+  console.log("value--------------", value);
+  console.log("expenseTypeOptions--------------", expenseTypeOptions);
+  const response = expenseTypeOptions?.find((option) => option.value === value);
   return response ? response.label : "N/A";
 }
 

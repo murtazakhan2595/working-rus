@@ -48,7 +48,6 @@ const ReimbursmentDetailsRequest = ({ userProfile, reload }) => {
         });
         setPayroll(response?.results[0]);
         const options = await claimExpenseChoices()
-        console.log("options",options);
         if(options){
           setExpenseTypeOptions(
             options.results.map((op) => ({
