@@ -27,7 +27,10 @@ import { getFinalSettlement } from "app/hooks/payroll";
 import Newlogo from "../../../../assets/images/NewLogo";
 import "../styles/payslip.css";
 import { DetailBox } from "components/SheetCardExtension";
-import { EmployeeAllowancesColumns ,EmployeeDeductionsColumns} from "app/modules/Payroll/Sections";
+import {
+  EmployeeAllowancesColumns,
+  EmployeeDeductionsColumns,
+} from "app/modules/Payroll/Sections";
 
 // Dummy Earnings Data
 const dummyEarningsData = [
@@ -252,10 +255,10 @@ export default function Payslip() {
               </div>
 
               {/* Earnings and Deductions */}
-              <Card className="border-color-[#D0CDD7]">
-                <CardContent className="grid grid-cols-2 gap-6 p-6">
-                  {/* Employee Earnings */}
-                  <div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="border-color-[#D0CDD7]">
+                  <CardContent className="p-6">
+                    {/* Employee Earnings */}
                     <h3 className="mb-4 text-lg font-semibold text-slate-1200">
                       Allowances
                     </h3>
@@ -277,10 +280,10 @@ export default function Payslip() {
                         ) : null
                       }
                     />
-                  </div>
-
-                  {/* Employee Deductions */}
-                  <div className="">
+                  </CardContent>
+                </Card>
+                <Card className="border-color-[#D0CDD7]">
+                  <CardContent className="p-6">
                     <h3 className="mb-4 text-lg font-semibold text-slate-1200">
                       Deductions
                     </h3>
@@ -288,7 +291,9 @@ export default function Payslip() {
                       data={payslip?.total_deduction_types || []}
                       columns={EmployeeDeductionsColumns}
                       pagination={false}
-                      dataTotalSize={payslip?.total_deduction_types?.length || 0}
+                      dataTotalSize={
+                        payslip?.total_deduction_types?.length || 0
+                      }
                       fallbackText="No Deduction Applicable"
                       footerText={
                         payslip?.total_deduction_types?.length > 0 ? (
@@ -302,9 +307,9 @@ export default function Payslip() {
                         ) : null
                       }
                     />
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
               {/* End of Service */}
               {isEos && (
                 <Card className="border-color-[#D0CDD7]">
@@ -399,7 +404,9 @@ export default function Payslip() {
 
                     {/* Footer */}
                     <div className="flex justify-between mt-auto text-neutral-1100">
-                      <div className="py-4 text-lg font-bold">Total Net in AED</div>
+                      <div className="py-4 text-lg font-bold">
+                        Total Net in AED
+                      </div>
                       <div className="py-4 text-lg font-bold text-right">
                         AED {Number(payslip?.net_salary).toFixed(2)}
                       </div>
