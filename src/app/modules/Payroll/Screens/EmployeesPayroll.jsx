@@ -85,7 +85,7 @@ const EmployeesPayroll = () => {
               {
                 type: "search",
                 placeholder: "Search by Name",
-                name: "name",
+                name: "emp_name",
               },
               {
                 type: "select-one",
