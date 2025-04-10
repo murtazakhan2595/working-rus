@@ -306,21 +306,11 @@ export const SalarySetupColumns = [
   },
 ];
 
-export const ClaimRequestColumns = [
-  {
-    dataField: "serial_number",
-    text: "ID",
-    formatter: (cell) => <EmployeeID value={cell} />,
-  },
-  {
-    dataField: "id",
-    text: "Employees",
-    formatter: (cell, row) => <EmployeeOverview name={cell} showEmail={true} />,
-  },
+export const MyClaimsRequestColumns = (expenseTypeOptions) => [
   {
     dataField: "expense_type",
     text: "Expense type",
-    formatter: (cell) => <>{getExpenseType(cell)}</>,
+    formatter: (cell) => <>{getExpenseType(cell, expenseTypeOptions)}</>,
   },
   {
     dataField: "payment_date",
@@ -345,6 +335,77 @@ export const ClaimRequestColumns = [
         )}
       </>
     ),
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell) => <ClaimRequestStatus status={cell} />,
+  },
+];
+
+export const ClaimRequestColumns = (expenseTypeOptions) => [
+  {
+    dataField: "id",
+    text: "ID",
+    formatter: (cell, row) => {
+      return (
+        <div
+          onClick={(event) => {
+            // Stop the event propagation to prevent onRowClick from being triggered
+            event.stopPropagation();
+            event.preventDefault();
+            return false
+          }}
+        >
+          <>{cell}</>
+        </div>
+      );
+    },
+  },
+  {
+    dataField: "employeeid",
+    text: "Employees",
+    formatter: (cell, row) => <EmployeeOverview id={cell} showEmail={true} />,
+  },
+  {
+    dataField: "expense_type",
+    text: "Expense type",
+    formatter: (cell) => <>{getExpenseType(cell, expenseTypeOptions)}</>,
+  },
+  {
+    dataField: "payment_date",
+    text: "Date of Expense",
+  },
+  {
+    dataField: "amount",
+    text: "Amount",
+    formatter: (cell) => <>{`AED ${cell}`}</>,
+  },
+  {
+    dataField: "attachment",
+    text: "Receipt",
+    formatter: (cell) => (
+      <>
+        {cell ? (
+          <a href={cell} target="_blank" rel="noopener noreferrer">
+            View Receipt
+          </a>
+        ) : (
+          "No Attachment"
+        )}
+      </>
+    ),
+  },
+  {
+    dataField: "approval_date",
+    text: "Approval Date",
+    formatter: (cell, row) => {
+      return cell
+        ? new Date(cell).toLocaleDateString()
+        : row?.rejection_date
+        ? new Date(row.rejection_date).toLocaleDateString()
+        : "N/A";
+    },
   },
 
   {
@@ -416,43 +477,6 @@ export const createPayrunColumns = (components) => [
     formatter: (cell) => {
       return <>{"AED " + cell}</>;
     },
-  },
-];
-
-export const MyClaimsRequestColumns = [
-  {
-    dataField: "expense_type",
-    text: "Expense Type",
-    formatter: (cell) => <>{getExpenseType(cell)}</>,
-  },
-  {
-    dataField: "payment_date",
-    text: "date of Expense",
-  },
-  {
-    dataField: "amount",
-    text: "Amount",
-    formatter: (cell) => <>{`AED ${cell}`}</>,
-  },
-  {
-    dataField: "attachment",
-    text: "Receipt",
-    formatter: (cell) => (
-      <>
-        {cell ? (
-          <a href={cell} target="_blank" rel="noopener noreferrer">
-            View Receipt
-          </a>
-        ) : (
-          "No Attachment"
-        )}
-      </>
-    ),
-  },
-  {
-    dataField: "status",
-    text: "Status",
-    formatter: (cell) => <ClaimRequestStatus status={cell} />,
   },
 ];
 
