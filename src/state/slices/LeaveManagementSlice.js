@@ -14,7 +14,7 @@ export const fetchLeaveComponents = createAsyncThunk(
   async () => {
     try {
       const response = await getLeaveComponents({
-        filterData: { status: true },
+        filterData: { status: [true] },
       });
       return response;
     } catch (error) {

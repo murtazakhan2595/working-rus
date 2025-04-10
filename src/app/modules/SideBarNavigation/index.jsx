@@ -1,10 +1,10 @@
-import { UserNav } from "./user-nav";
-import { SheetMenu } from "./sheet-menu";
+import  UserNavigation  from "./UserNavigation";
+import { MenuSheet } from "./MenuSheet";
 import { useNavigate } from 'react-router-dom';
 import Notifications from "app/modules/Notifications";
 
 
-function Navbar({ title, setUserLogout, userRole }) {
+function SideBarNavigation({ title, setUserLogout, userRole }) {
   const navigate = useNavigate();
   const handleLogout = () => {
     window.localStorage.setItem("token", "");
@@ -17,7 +17,7 @@ function Navbar({ title, setUserLogout, userRole }) {
       <header className="sticky top-0 z-0 w-full h-16 bg-white ">
         <div className="flex items-center mx-4 sm:mx-8 h-14">
           <div className="flex items-center space-x-4 lg:space-x-0">
-            <SheetMenu userRole={userRole} />
+            <MenuSheet userRole={userRole} />
           </div>
 
           <div className="flex items-center justify-end flex-1 space-x-2">
@@ -25,7 +25,7 @@ function Navbar({ title, setUserLogout, userRole }) {
             {/* <UserNotifications/>
              */}
             <Notifications />
-            <UserNav setUserLogout={handleLogout} />
+            <UserNavigation setUserLogout={handleLogout} />
           </div>
         </div>
       </header>
@@ -34,4 +34,4 @@ function Navbar({ title, setUserLogout, userRole }) {
 }
 
 
-export { Navbar };
+export { SideBarNavigation };
