@@ -58,8 +58,9 @@ export const URLS = [
 ];
 
 export const WEBSOCKET_PATHS = [
- "/ws/notifications/",
+  "/ws/notifications/",
   "/ws/systemnotifications/",
+  "/ws/payrollnotifications/",
   // Add more as needed
 ];
 
