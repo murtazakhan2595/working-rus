@@ -6,6 +6,7 @@ import {
   TableHead,
   TableBody,
   TableCell,
+  TableFooter,
 } from "../src/@/components/ui/table";
 import {
   Pagination,
@@ -32,6 +33,8 @@ export default function TableCustom({
   selectedRows,
   setSelectedRows,
   disabledRows,
+  fallbackText = "No data available",
+  footerText = null,
 }) {
   // State for expanded row tracking
   const [expandedRowId, setExpandedRowId] = useState(null);
@@ -274,11 +277,12 @@ export default function TableCustom({
                   colSpan={columns.length}
                   className="py-4 text-center text-neutral-1200"
                 >
-                  No data available
+                  {fallbackText}
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
+          {footerText && <TableFooter>{footerText}</TableFooter>}
         </Table>
       </div>
 

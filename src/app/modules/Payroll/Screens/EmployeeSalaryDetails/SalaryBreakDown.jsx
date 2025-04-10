@@ -106,10 +106,10 @@ export default function SalaryBreakDown({ payrollDetails }) {
         <CardTitle className="text-plum-900">Salary BreakUp</CardTitle>
       </CardHeader>
       <CardContent>
-        <h3 className="mb-4 text-lg font-semibold text-black">
+        {/* <h3 className="mb-4 text-lg font-semibold text-black">
           CTC Components
-        </h3>
-        <div className="flex flex-col gap-4">
+        </h3> */}
+        <div className="flex flex-col gap-2">
           <div className="flex flex-row font-bold">
             <div className="flex flex-row font-bold text-left">
               Basic Salary

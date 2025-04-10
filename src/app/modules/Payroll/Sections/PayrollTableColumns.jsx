@@ -44,17 +44,6 @@ export const EmployeePayrollColumns = [
           </div>
         );
 
-      // Try parsing the date using both formats
-      let formattedDate;
-      if (moment(cell, "MM-DD-YYYY", true).isValid()) {
-        formattedDate = moment(cell, "MM-DD-YYYY").format("MMM D, YYYY");
-      } else if (moment(cell, "YYYY-MM-DD", true).isValid()) {
-        formattedDate = moment(cell, "YYYY-MM-DD").format("MMM D, YYYY");
-      } else {
-        // Handle invalid date format
-        formattedDate = "Invalid Date";
-      }
-
       return <>{renderDate(cell)}</>;
     },
   },
@@ -99,7 +88,7 @@ export const EmployeePayslipColumns = [
     dataField: "net_salary",
     text: "Gross Salary",
     formatter: (cell, row) => {
-      return <>{"AED " + cell }</>;
+      return <>{"AED " + cell}</>;
     },
   },
 ];
@@ -169,5 +158,44 @@ export const PayrunEmployeePayrollColumns = [
           )}
       </>
     ),
+  },
+];
+
+export const EmployeeAllowancesColumns = [
+  {
+    dataField: "description",
+    text: "Allowances types",
+  },
+  {
+    dataField: "amount",
+    text: "Amount",
+    formatter: (cell, row) => {
+      const total = Number(cell).toFixed(2);
+      return (
+        <>
+          {total}
+          {row.amount_type === "fixed" ? "AED" : "%"}
+        </>
+      );
+    },
+  },
+];
+export const EmployeeDeductionsColumns = [
+  {
+    dataField: "description",
+    text: "Deduction types",
+  },
+  {
+    dataField: "amount",
+    text: "Amount",
+    formatter: (cell, row) => {
+      const total = Number(cell).toFixed(2);
+      return (
+        <>
+          {total}
+          {row.amount_type === "fixed" ? "AED" : "%"}
+        </>
+      );
+    },
   },
 ];

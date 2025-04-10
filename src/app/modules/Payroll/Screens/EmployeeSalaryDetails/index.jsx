@@ -296,7 +296,7 @@ export default function EmployeeSalaryDetails() {
             <CardTitle className="text-plum-900">Bank Details</CardTitle>
           </CardHeader>
           <CardContent className="flex items-center justify-between">
-            <div class="grid grid-cols-1 gap-4">
+            <div class="grid grid-cols-1 gap-4 w-full">
               {BankDetails &&
                 BankDetails.map((data, index) => {
                   return (

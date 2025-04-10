@@ -17,8 +17,8 @@ import {
   // getExperience,
 } from "utils/getValuesFromTables";
 import { getEmployeeData } from "app/hooks/employee";
-import { numberToWords } from "utils/renderValues.js";
-import { PageLoader } from "components";
+import { numberToWords, renderDate } from "utils/renderValues";
+import { PageLoader, TableCustom } from "components";
 import { ArrowLeft } from "lucide-react";
 import moment from "moment";
 import { getPayslip } from "app/hooks/payroll";
@@ -26,6 +26,8 @@ import { getPayslipByID } from "app/hooks/payroll";
 import { getFinalSettlement } from "app/hooks/payroll";
 import Newlogo from "../../../../assets/images/NewLogo";
 import "../styles/payslip.css";
+import { DetailBox } from "components/SheetCardExtension";
+import { EmployeeAllowancesColumns ,EmployeeDeductionsColumns} from "app/modules/Payroll/Sections";
 
 // Dummy Earnings Data
 const dummyEarningsData = [
@@ -177,7 +179,7 @@ export default function Payslip() {
                   </h3>
                   <div className="space-y-2">
                     {[
-                      { label: "ID", value: <EmployeeID value={employeeID} /> },
+                      { label: "ID", value: employeeData.serial_number },
                       {
                         label: "Name",
                         value: `${employeeData?.first_name} ${employeeData?.last_name}`,
@@ -192,9 +194,7 @@ export default function Payslip() {
                       },
                       {
                         label: "Date of Joining",
-                        value: moment(employeeData?.joining_date).format(
-                          "DD/MM/YYYY"
-                        ),
+                        value: renderDate(employeeData?.joining_date),
                       },
                       {
                         label: "Pay Period",
@@ -204,18 +204,17 @@ export default function Payslip() {
                       },
                       {
                         label: "Pay Date",
-                        value: moment(payslip?.generated_at).format(
-                          "DD/MM/YYYY"
-                        ),
+                        value: renderDate(payslip?.generated_at),
                       },
                     ].map((item, index) => (
-                      <div
+                      <DetailBox
+                        // orientation="horizontal"
                         key={index}
-                        className="flex justify-between py-1 border-0"
-                      >
-                        <span className="text-gray-900">{item.label}</span>
-                        <span className="text-slate-1100">{item.value}</span>
-                      </div>
+                        className=""
+                        label={item.label}
+                        value={item.value}
+                        fallbackText={""}
+                      />
                     ))}
                   </div>
                 </div>
@@ -233,13 +232,11 @@ export default function Payslip() {
                       {numberToWords(Number(payslip?.net_salary))}
                     </p>
                   </CardContent>
-                  <CardFooter className="flex flex-row justify-between w-full bg-[#FEFCFF] border-t p-0 rounded-b-lg">
+                  {/* <CardFooter className="flex flex-row justify-between w-full bg-[#FEFCFF] border-t p-0 rounded-b-lg">
                     <div className="flex flex-row items-center justify-center flex-1 gap-1 p-2">
                       <p className="font-semibold text-normal text-slate-1200">
                         20
                       </p>
-                      {/* {employeeData.daysOfWork} */}
-                      {/* <p className="font-semibold text-normal text-slate-1200"> {employeeData.daysOfWork}</p> */}
                       <p className="text-normal text-slate-1000">
                         Days of work
                       </p>
@@ -248,11 +245,9 @@ export default function Payslip() {
                       <p className="font-semibold text-normal text-slate-1200">
                         11
                       </p>
-                      {/* {employeeData.absentDays} */}
-                      {/* <p className="font-semibold text-normal text-slate-1000"> {employeeData.absentDays}</p> */}
                       <p className="text-normal text-slate-1000">Absent days</p>
                     </div>
-                  </CardFooter>
+                  </CardFooter> */}
                 </Card>
               </div>
 
@@ -262,96 +257,51 @@ export default function Payslip() {
                   {/* Employee Earnings */}
                   <div>
                     <h3 className="mb-4 text-lg font-semibold text-slate-1200">
-                      Employee Earnings
+                      Allowances
                     </h3>
-                    <div className="flex flex-col min-h-[260px]">
-                      {/* Header - Always visible */}
-                      <div className="flex justify-between p-4 border-b">
-                        <div className="font-medium text-slate-1000">
-                          Earning types
-                        </div>
-                        <div className="font-medium text-right text-slate-1000">
-                          Amount
-                        </div>
-                      </div>
-
-                      {/* Body - Flexible space */}
-                      <div className="flex-1">
-                        {payslip?.total_earning_types?.map((item, index) => (
-                          <div
-                            key={index}
-                            className="flex justify-between px-4 border-b last:border-b-0"
-                          >
-                            <div className="py-3 capitalize">
-                              {item.description}
-                            </div>
-                            <div className="py-3">
-                              AED {Number(item.amount).toFixed(2)}
+                    <TableCustom
+                      data={payslip?.total_earning_types || []}
+                      columns={EmployeeAllowancesColumns}
+                      pagination={false}
+                      dataTotalSize={payslip?.total_earning_types?.length || 0}
+                      fallbackText="No Allowances Applicable"
+                      footerText={
+                        payslip?.total_earning_types?.length > 0 ? (
+                          <div>
+                            <div>Total</div>
+                            <div>
+                              AED
+                              {Number(payslip?.gross_salary || 0).toFixed(2)}
                             </div>
                           </div>
-                        ))}
-                      </div>
-
-                      {/* Footer - Always at bottom */}
-                      <div className="flex justify-between p-4 mt-auto bg-plum-200">
-                        <div className="text-lg font-bold">Total in AED</div>
-                        <div className="text-lg font-bold">
-                          AED {Number(payslip?.gross_salary || 0).toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-2 text-sm text-center text-slate-1100">
-                      A list of your earnings in AED
-                    </div>
+                        ) : null
+                      }
+                    />
                   </div>
 
                   {/* Employee Deductions */}
                   <div className="">
                     <h3 className="mb-4 text-lg font-semibold text-slate-1200">
-                      Employee Deductions
+                      Deductions
                     </h3>
-                    <div className="flex flex-col min-h-[260px]">
-                      {/* Header - Always visible */}
-                      <div className="flex justify-between p-4 border-b">
-                        <div className="font-medium text-slate-1000">
-                          Deduction types
-                        </div>
-                        <div className="font-medium text-right text-slate-1000">
-                          Amount
-                        </div>
-                      </div>
-
-                      {/* Body - Flexible space */}
-                      <div className="flex-1">
-                        {payslip?.total_deduction_types?.map((item, index) => (
-                          <div
-                            key={index}
-                            className="flex justify-between px-4 border-b last:border-b-0"
-                          >
-                            <div className="py-3 capitalize">
-                              {item.description}
-                            </div>
-                            <div className="py-3">
-                              AED {Number(item.amount).toFixed(2)}
+                    <TableCustom
+                      data={payslip?.total_deduction_types || []}
+                      columns={EmployeeDeductionsColumns}
+                      pagination={false}
+                      dataTotalSize={payslip?.total_deduction_types?.length || 0}
+                      fallbackText="No Deduction Applicable"
+                      footerText={
+                        payslip?.total_deduction_types?.length > 0 ? (
+                          <div>
+                            <div>Total</div>
+                            <div>
+                              AED
+                              {Number(payslip?.gross_salary || 0).toFixed(2)}
                             </div>
                           </div>
-                        ))}
-                      </div>
-
-                      {/* Footer - Always at bottom */}
-                      <div className="flex justify-between p-4 mt-auto bg-plum-200">
-                        <div className="text-lg font-bold">Total in AED</div>
-                        <div className="text-lg font-bold">
-                          AED{" "}
-                          {Number(
-                            payslip?.gross_salary - payslip?.net_salary || 0
-                          ).toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-2 text-sm text-center text-slate-1100">
-                      A list of your deductions in AED
-                    </div>
+                        ) : null
+                      }
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -415,22 +365,21 @@ export default function Payslip() {
               <Card className="border-color-[#D0CDD7]">
                 <CardHeader>
                   <CardTitle>
-                    {" "}
-                    <h3 className="mb-4 text-lg font-semibold text-slate-1200">
+                    <h3 className="text-lg font-semibold text-slate-1200">
                       Net Pay
                     </h3>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="w-full">
-                    {/* Header */}
-                    <div className="flex justify-between pb-2 border-b">
-                      <div className="text-slate-1000">Earnings</div>
-                      <div className="text-slate-1000">Deductions</div>
-                    </div>
-
                     {/* Body */}
                     <div className="max-h-[320px] overflow-auto">
+                      <div className="flex justify-between border-b last:border-b-0">
+                        <div className="py-4">Basic Salary</div>
+                        <div className="py-4 text-right">
+                          AED {Number(payslip?.basic_salary)?.toFixed(2)}
+                        </div>
+                      </div>
                       <div className="flex justify-between border-b last:border-b-0">
                         <div className="py-4">Earnings</div>
                         <div className="py-4 text-right">
@@ -449,8 +398,8 @@ export default function Payslip() {
                     </div>
 
                     {/* Footer */}
-                    <div className="flex justify-between p-4 mt-auto bg-plum-200">
-                      <div className="py-4 text-lg font-bold">Total in AED</div>
+                    <div className="flex justify-between mt-auto text-neutral-1100">
+                      <div className="py-4 text-lg font-bold">Total Net in AED</div>
                       <div className="py-4 text-lg font-bold text-right">
                         AED {Number(payslip?.net_salary).toFixed(2)}
                       </div>
