@@ -8,7 +8,7 @@ const CheckBoxInput = React.memo(
     name,
     value,
     error,
-    onChange,
+    onChange = () => {},
     touch,
     required = false,
     label,

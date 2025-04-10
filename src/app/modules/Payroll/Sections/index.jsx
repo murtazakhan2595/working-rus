@@ -1,3 +1,2 @@
-import { EmployeePayrollColumns, EmployeePayslipColumns } from "./PayrollTableColumns";
-import EmployeePayslipDetails from "./EmployeePayslipDetails";
-export { EmployeePayrollColumns, EmployeePayslipDetails, EmployeePayslipColumns };
+import { EmployeePayrollColumns, EmployeePayslipColumns ,PayrunEmployeePayrollColumns} from "./PayrollTableColumns";
+export { EmployeePayrollColumns, EmployeePayslipColumns,PayrunEmployeePayrollColumns };

@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { DetailBox } from "components/SheetCardExtension";
-import { Button } from "../../../../components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../../components/ui/card";
+import { Button } from "components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../../src/@/components/ui/select";
+} from "src/@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -21,7 +16,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../../../src/@/components/ui/table";
+} from "src/@/components/ui/table";
 import {
   DollarSign,
   TrendingUp,
@@ -30,7 +25,7 @@ import {
   CalendarIcon,
   Filter,
 } from "lucide-react";
-import { EmployeePayslipDetails } from "app/modules/Payroll/Sections";
+import EmployeePayslipDetails  from "app/modules/Payroll/Screens/EmployeeSalaryDetails/EmployeePayslipDetails";
 import {
   Command,
   CommandEmpty,
@@ -38,7 +33,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "../../../../src/@/components/ui/command";
+} from "src/@/components/ui/command";
 import { format } from "date-fns";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
@@ -47,7 +42,7 @@ import {
   getSalaryRevision,
   getEmployeeEarnAndDeduction,
 } from "app/hooks/payroll";
-import RevisedSalarySheet from "./RevisedSalarySheet";
+import RevisedSalarySheet from "app/modules/Payroll/Screens/RevisedSalarySheet";
 import {
   DesignationName,
   EmployeeID,
@@ -56,25 +51,19 @@ import {
 import { getEmployeeData } from "app/hooks/employee";
 import { numberToWords } from "utils/renderValues.js";
 import { PageLoader, EmployeeOverview } from "components";
-import {
-  revisionLetterOptions,
-  revisionStatusOptions,
-} from "../../../../data/Data";
-import {
-  FilterInput,
-  SelectInputComponent,
-} from "../../../../components/FormControl";
+import { revisionLetterOptions, revisionStatusOptions } from "data/Data";
+import { FilterInput, SelectInputComponent } from "components/FormControl";
 import {
   getEarnAndDeduction,
   getPayslip,
   saveEmployeePayroll,
   updateSalaryRevisionStatus,
-} from "../../../hooks/payroll";
-import { calculateEarningsAndDeductions } from "../../Payroll/Sections/CalculationsHelperFunctions";
+} from "app/hooks/payroll";
+import { calculateEarningsAndDeductions } from "app/modules/Payroll/Sections/CalculationsHelperFunctions";
 import moment from "moment";
+import SalaryBreakDown from "app/modules/Payroll/Screens/EmployeeSalaryDetails/SalaryBreakDown";
 
 export default function EmployeeSalaryDetails() {
-  const [date, setDate] = useState();
   const [payrollDetails, setPayrollDetails] = useState({});
   const [salaryRevisions, setSalaryRevisions] = useState([]);
   const [employeeData, setEmployeeData] = useState({});
@@ -85,16 +74,12 @@ export default function EmployeeSalaryDetails() {
   const [rejectedRevisions, setRejectedRevisions] = useState(0);
   const [lastIncrementDate, setLastIncrementDate] = useState(null);
   const [payslips, setPayslips] = useState([]);
-  const [earnings, setEarnings] = useState([]);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [months, setMonths] = useState([]);
-  const [selectedPayslipId, setSelectedPayslipId] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
 
   const [latestApprovedSalaryRevision, setLatestApprovedSalaryRevision] =
     useState({});
   const [loading, setLoading] = useState(true);
-  const [revisionLoading, setRevisionLoading] = useState(false);
 
   const { id } = useParams();
   const location = useLocation();
@@ -115,17 +100,7 @@ export default function EmployeeSalaryDetails() {
     if (response) {
       setPayrollDetails(response);
     }
-    const earnAndDeduction = await getEarnAndDeduction();
-    if (earnAndDeduction && response) {
-      const { earnings, deductions, totalEarnings, totalDeductions } =
-        calculateEarningsAndDeductions(
-          response.basic_salary,
-          earnAndDeduction.results
-        );
 
-      setEarnings(earnings);
-      setTotalEarnings(totalEarnings);
-    }
     const salaryRevisionData = await getSalaryRevision({
       filterData,
     }); // hardcode for now filter not woking on Backend
@@ -180,52 +155,6 @@ export default function EmployeeSalaryDetails() {
     }
   }, [id]);
 
-  useEffect(() => {
-    if (payslips && payslips.results?.length > 0) {
-      const currentYear = new Date().getFullYear(); // Get current year
-      const monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-
-      // Set to collect unique months for the current year
-      const uniqueMonths = new Set();
-      const monthToPayslipIdMap = {};
-
-      // Update payslip data to include month name
-      payslips.results.forEach((payslip) => {
-        const generatedAt = new Date(payslip.generated_at);
-        const year = generatedAt.getFullYear();
-        const month = generatedAt.getMonth(); // 0-based index (0 = January)
-
-        // Check if the year is the current year
-        if (year === currentYear) {
-          uniqueMonths.add(month);
-          payslip.month = monthNames[month];
-          monthToPayslipIdMap[month] = payslip.id;
-        }
-      });
-
-      // Convert the Set to an array of month objects for the dropdown
-      const currentYearMonths = Array.from(uniqueMonths).map((monthIndex) => ({
-        value: `${currentYear}-${String(monthIndex + 1).padStart(2, "0")}`, // e.g. "2024-01"
-        label: monthNames[monthIndex],
-        payslipId: monthToPayslipIdMap[monthIndex],
-      }));
-      setMonths(currentYearMonths);
-    }
-  }, [payslips]);
-
   const handleBack = () => {
     navigate(fromMyPayroll ? -2 : -1);
   };
@@ -254,7 +183,6 @@ export default function EmployeeSalaryDetails() {
   };
 
   const handleStatusChange = async (name, value, revision) => {
-    setRevisionLoading(true);
     if (name === "revision_status") {
       revision.revision_status = value;
     } else if (name === "revision_letter") {
@@ -270,7 +198,6 @@ export default function EmployeeSalaryDetails() {
         });
       }
     }
-    setRevisionLoading(false);
   };
   const BankDetails = [
     {
@@ -339,10 +266,10 @@ export default function EmployeeSalaryDetails() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-plum-900">
-              {Number(totalEarnings)} AED
+              {Number(payrollDetails?.basic_salary)} AED
             </div>
             <p className="text-xs text-muted-foreground">
-              {numberToWords(Number(totalEarnings))}
+              {numberToWords(Number(payrollDetails?.basic_salary))}
             </p>
           </CardContent>
         </Card>
@@ -362,46 +289,9 @@ export default function EmployeeSalaryDetails() {
             </p>
           </CardContent>
         </Card>
-        <Card className="h-fit">
-          <CardHeader>
-            <CardTitle className="text-plum-900">Salary BreakUp</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <h3 className="mb-4 text-lg font-semibold text-black">
-              CTC Components
-            </h3>
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-row font-bold text-left"></div>
-              {earnings?.map((item, index) => (
-                <div className="flex flex-row gap-4" key={index}>
-                  <div className="flex-1">{item.name}</div>
-                  <div className="flex-1 text-right">
-                    AED {item.monthly_amount}
-                  </div>
-                </div>
-              ))}
-              <div className="flex flex-row font-bold">
-                <div className="flex-1 mb-4 text-lg font-medium text-black">
-                  Total Salary in AED
-                </div>
-                <div className="flex-1 text-right">AED {totalEarnings}</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <div className="col-span-2">
-          <SalarySummary
-            joiningDate={employeeData?.joining_date}
-            salaryType={payrollDetails?.salary_type}
-            payoutPeriod={payrollDetails?.payout_period}
-            lastRevisedDate={latestApprovedSalaryRevision?.last_revised_date}
-            previousCTC={latestApprovedSalaryRevision?.previous_salary}
-            currentCTC={
-              latestApprovedSalaryRevision?.new_salary || totalEarnings
-            }
-          />
-        </div>
-        <Card className="mb-4 h-fit">
+      </div>
+      <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 md:grid-cols-2">
+        <Card className="mb-4 h-full">
           <CardHeader>
             <CardTitle className="text-plum-900">Bank Details</CardTitle>
           </CardHeader>
@@ -423,11 +313,10 @@ export default function EmployeeSalaryDetails() {
             </div>
           </CardContent>
         </Card>
-
-        <div className="col-span-2">
-          <EmployeePayslipDetails payrollId={id} employeeID={employeeID} />
-        </div>
+        <SalaryBreakDown payrollDetails={payrollDetails} />
       </div>
+      <EmployeePayslipDetails payrollId={id} employeeID={employeeID} />
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between w-full">
           <CardTitle className="text-plum-900">Salary Revisions</CardTitle>

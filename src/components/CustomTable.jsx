@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableHeader,
@@ -15,7 +15,7 @@ import {
   PaginationLink,
   PaginationNext,
 } from "../src/@/components/ui/pagination";
-import { SelectInputComponent } from "./FormControl";
+import { SelectInputComponent, CheckBoxInput } from "./FormControl";
 
 export default function TableCustom({
   columns,
@@ -91,13 +91,14 @@ export default function TableCustom({
   };
 
   // Row selection logic
-  const handleRowSelection = (event, rowId) => {
-    event.preventDefault();
-    setSelectedRows((prevSelected) =>
-      prevSelected.includes(rowId)
-        ? prevSelected.filter((id) => id !== rowId)
-        : [...prevSelected, rowId]
-    );
+  const handleRowSelection = (rowId) => {
+    console.log(selectedRows);
+    if (selectedRows.includes(rowId)) {
+      const uploadedRows = selectedRows.filter((id) => id !== rowId);
+      setSelectedRows(uploadedRows);
+    } else {
+      setSelectedRows([...selectedRows, rowId]);
+    }
   };
 
   // Select all rows
@@ -120,14 +121,15 @@ export default function TableCustom({
                 {/* Select All Checkbox */}
                 {selectable && (
                   <TableHead className="p-0 w-[0px] text-right m-0">
-                    <input
-                      type="checkbox"
-                      onChange={handleSelectAllRows}
-                      checked={
+                    <CheckBoxInput
+                      name="select-all"
+                      value={
                         data?.length > 0 &&
                         selectedRows?.length === data?.length
                       }
-                      className="w-4 h-4 accent-[#ab4aba] border-[#ab4aba] border-[2px] outline-none rounded focus:ring-0"
+                      onChange={(_) => {
+                        handleSelectAllRows();
+                      }}
                     />
                   </TableHead>
                 )}
@@ -188,11 +190,12 @@ export default function TableCustom({
                     {/* Select Row Checkbox */}
                     {selectable && (
                       <TableCell className="p-0 pl-1 w-[0px] text-right ml-0 text-neutral-1200">
-                        <input
-                          type="checkbox"
-                          onChange={(e) => handleRowSelection(e, row.id)}
-                          checked={selectedRows?.includes(row.id)}
-                          className="w-4 h-4 accent-[#ab4aba] border-[#ab4aba] border-[2px] outline-none rounded focus:ring-0"
+                        <CheckBoxInput
+                          name="select-row"
+                          value={selectedRows?.includes(row.id)}
+                          onChange={(_) => {
+                            handleRowSelection(row.id);
+                          }}
                         />
                       </TableCell>
                     )}

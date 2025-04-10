@@ -8,6 +8,7 @@ import {
   TabsTrigger,
   TabsContent,
 } from "../../../../src/@/components/ui/tabs.jsx";
+import { Button } from "components/ui/button";
 import PayRunCard from "../../Payroll/Sections/PayRunCard.jsx";
 import PaySlipCard from "../../Payroll/Sections/PaySlipCard.jsx";
 import { getSalarySetupData } from "app/hooks/payroll.jsx";
@@ -26,7 +27,7 @@ const PayRun = () => {
       const data = await getPayun();
       if (data) {
         console.log(data);
-        setPayRunData(data)
+        setPayRunData(data);
       }
       setIsLoading(false);
     };
@@ -55,11 +56,17 @@ const PayRun = () => {
                 key={tab.value}
                 value={tab.value}
                 className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-                >
+              >
                 {tab.label}
               </TabsTrigger>
             ))}
           </TabsList>
+          <Button
+            className="bg-black"
+            onClick={() => navigate("/payroll/create-payrun")}
+          >
+            Create New Pay Run
+          </Button>
         </div>
         <TabsContent value="runPayroll">
           {isLoading ? <PageLoader /> : <PayRunCard cardData={payRunData} />}

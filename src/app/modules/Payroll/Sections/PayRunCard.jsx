@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "../../../../components/ui/button";
+import { Button } from "components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,9 +7,7 @@ import {
   CardTitle,
 } from "../../../../components/ui/card";
 import moment from "moment";
-import { useNavigate } from "react-router-dom"; 
-
-
+import { useNavigate } from "react-router-dom";
 
 function CardValues({ values }) {
   const items = [
@@ -64,7 +62,9 @@ function PayRunCard({ cardData }) {
 
   useEffect(() => {
     // Check if a pay run exists for the current month
-    console.log(cardDataList);
+
+    setCardDataList(cardData?.results || []);
+
     const currentMonthPayRun = cardDataList?.find((data) => {
       const startDate = moment(data.start_date);
       const endDate = moment(data.end_date);
@@ -73,51 +73,36 @@ function PayRunCard({ cardData }) {
         endDate.isSameOrAfter(currentMonthStart)
       );
     });
-    console.log("CURRENTMONTHLYPAYRUN", currentMonthPayRun);
-
-    if (!currentMonthPayRun) {
-      setCardDataList((prevList) => [
-        {
-          title: `Process Pay Run for ${moment().format("MMMM YYYY")}`,
-          employeesNetPay: "",
-          paymentDate: "",
-          numberofEmployees: "",
-          buttonLabel: "Create Pay Run",
-          onBtnClick: () => navigate("/payroll/create-payrun"),
-        },
-        ...prevList, // Add the rest of the data
-      ]);
-    }
   }, [cardData]);
-  console.log("CARD-DATA-LIST", cardDataList);
   return (
     <>
-      {cardDataList && cardDataList?.map((data, index) => {
-        const processedData = processCardData(data);
-        console.log("PROCESSED-DATA", processedData);
-        return (
-          <Card className="mb-4" key={index}>
-            <CardHeader>
-              <CardTitle className="text-plum-900 text-lg sm:text-2xl">
-                {processedData.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-row flex-wrap justify-between w-full items-start gap-4 pt-6">
-              <CardValues values={processedData} />
-              {processedData.buttonLabel && (
-                <div className="flex">
-                  <Button
-                    className="bg-black"
-                    onClick={processedData.onBtnClick}
-                  >
-                    {processedData.buttonLabel}
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        );
-      })}
+      {cardDataList &&
+        cardDataList?.map((data, index) => {
+          const processedData = processCardData(data);
+          console.log("PROCESSED-DATA", processedData);
+          return (
+            <Card className="mb-4" key={index}>
+              <CardHeader>
+                <CardTitle className="text-plum-900 text-lg sm:text-2xl">
+                  {processedData.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-row flex-wrap justify-between w-full items-start gap-4 pt-6">
+                <CardValues values={processedData} />
+                {processedData.buttonLabel && (
+                  <div className="flex">
+                    <Button
+                      className="bg-black"
+                      onClick={processedData.onBtnClick}
+                    >
+                      {processedData.buttonLabel}
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
     </>
   );
 }

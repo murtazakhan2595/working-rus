@@ -77,8 +77,8 @@ export const EmployeePayslipColumns = [
     text: "Month",
   },
   {
-    dataField: "gross_salary",
-    text: "Salary",
+    dataField: "basic_salary",
+    text: "Basic Salary",
     formatter: (cell) => <>{"AED " + Math.round(cell)}</>,
   },
   {
@@ -94,5 +94,80 @@ export const EmployeePayslipColumns = [
     formatter: (cell, row) => {
       return <>{row.net_salary > 0 ? "AED " + row.net_salary : "0.00"} </>;
     },
+  },
+  {
+    dataField: "net_salary",
+    text: "Gross Salary",
+    formatter: (cell, row) => {
+      return <>{"AED " + cell }</>;
+    },
+  },
+];
+
+export const PayrunEmployeePayrollColumns = [
+  {
+    dataField: "serial_number",
+    text: "ID",
+  },
+  {
+    dataField: "employee",
+    text: "Employee",
+    formatter: (cell, row) => (
+      <>
+        <EmployeeOverview
+          id={cell}
+          showEmail={row.work_email}
+          showDepartment={true}
+        />
+      </>
+    ),
+  },
+  {
+    dataField: "basic_salary",
+    text: "Basic Salary",
+    formatter: (cell, row) => {
+      const total = Number(cell).toFixed(2);
+      return <>{"AED " + total}</>;
+    },
+  },
+
+  {
+    dataField: "total_earnings",
+    text: "Earnings",
+    formatter: (cell, row) => {
+      const total = Number(cell).toFixed(2);
+      return <>{"AED " + total}</>;
+    },
+  },
+  {
+    dataField: "total_deductions",
+    text: "Deductions",
+    formatter: (cell, row) => {
+      const total = Number(cell).toFixed(2);
+      return <>{"AED " + total} </>;
+    },
+  },
+  {
+    dataField: "total_reimbursements",
+    text: "Claims",
+    formatter: (cell) => {
+      const total = Number(cell).toFixed(2);
+      return <>{"AED " + total}</>;
+    },
+  },
+  {
+    dataField: "total_earnings_types",
+    text: "Gross Pay",
+    formatter: (cell, row) => (
+      <>
+        {"AED " +
+          Math.round(
+            cell +
+              row.total_earnings * 1 +
+              row.basic_salary * 1 +
+              row.total_reimbursements * 1
+          )}
+      </>
+    ),
   },
 ];

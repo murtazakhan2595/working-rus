@@ -1,4 +1,3 @@
-
 export const calculateEarningsAndDeductions = (
   monthlyGrossSalary,
   earnAndDeductionType
@@ -13,27 +12,26 @@ export const calculateEarningsAndDeductions = (
     if (item.income_type === "earning") {
       let monthlyAmount;
       console.log("item", item, monthlyGrossSalary);
-        if (item.amounts_types === "percentage") {
-          monthlyAmount = (monthlyGrossSalary * item.amounts) / 100;
-        } else if (item.amounts_types === "fixed") {
-          monthlyAmount = item.amounts;
-        }
-     earnings.push({
-       name: item.name,
-       amounts:
-         item.amounts_types === "percentage"
-           ? `Variable ${item.amounts}%`
-           : `Fixed, Amt: AED ${item.amounts}`,
-       monthly_amount: monthlyAmount,
-     });
-     totalEarnings += Number(monthlyAmount);
-     console.log("MONTHLYAMOUNT ", totalEarnings);
+      if (item.amounts_types === "percentage") {
+        monthlyAmount = (monthlyGrossSalary * item.amounts) / 100;
+      } else if (item.amounts_types === "fixed") {
+        monthlyAmount = item.amounts;
+      }
+      earnings.push({
+        name: item.name,
+        amounts:
+          item.amounts_types === "percentage"
+            ? `Variable ${item.amounts}%`
+            : `Fixed, Amt: AED ${item.amounts}`,
+        monthly_amount: monthlyAmount,
+      });
+      totalEarnings += Number(monthlyAmount);
+      console.log("MONTHLYAMOUNT ", totalEarnings);
     } else {
       let monthlyAmount;
       if (item.amounts_types === "percentage") {
         monthlyAmount = (monthlyGrossSalary * item.amounts) / 100;
-      }
-      else if(item.amounts_types === "fixed"){
+      } else if (item.amounts_types === "fixed") {
         monthlyAmount = item.amounts;
       }
       deductions.push({
@@ -88,5 +86,32 @@ export const calculateTotalMonthlyEarningsAndDeductions = (
   return {
     totalEarnings,
     totalDeductions,
+  };
+};
+
+export const calculateAmounts  = (basicSalary, incomes) => {
+  let totalAmounts  = 0;
+  let amountsBreakdown = [];
+
+  incomes.forEach((income) => {
+    let value = 0;
+
+    if (income.amount_type === "percentage") {
+      value = (parseFloat(income.amount) / 100) * basicSalary;
+    } else if (income.amount_type === "fixed") {
+      value = parseFloat(income.amount);
+    }
+
+    totalAmounts  += value;
+
+    amountsBreakdown.push({
+      ...income,
+      calculated_amount: value.toFixed(2),
+    });
+  });
+
+  return {
+    totalAmounts : totalAmounts .toFixed(2),
+    amountsBreakdown,
   };
 };
