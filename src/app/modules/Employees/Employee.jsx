@@ -132,7 +132,7 @@ export default function EmployeeManagement() {
             {
               type: "search",
               placeholder: "Search by ID and Name",
-              name: "id_and_first_name",
+              name: "emp_search",
             },
             {
               type: "select-one",

@@ -68,6 +68,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
   }, [employeeId]);
 
   const handleSubmit = async (data) => {
+    console.log("handle submit is called")
     // Prepare personal information from data
     const payload = mapEmployeePersonalInformationPayloadData(data);
     try {
@@ -99,6 +100,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
               initialValues={personalInfo}
               ref={formRef}
               onSubmit={(values, { resetForm }) => {
+                console.log("Form submitted with values:", values);
                 handleSubmit(values, resetForm);
               }}
               validate={(values) => {
@@ -110,7 +112,18 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
               }}
             >
               {(props) => (
-                <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                <form
+                  onSubmit={props.handleSubmit}
+                  className="mt-6 space-y-6"
+                  onKeyDown={(e) => {
+                    // Prevent form submission on Enter key press
+                    if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
+                      e.preventDefault();
+                    }
+                  }}
+                >
+                  {console.log("Form values:", props.values)}
+                  {console.log("Form errors:", props.errors)}
                   <div className="space-y-4">
                     <Card className="p-6">
                       <CardContent>
@@ -139,8 +152,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               {props.values.first_name} {props.values.last_name}
                             </h6>
                             <span className="opacity-65 fs-12">
-                              ID:{" "}
-                              {props.values.serial_number}
+                              ID: {props.values.serial_number}
                             </span>
                           </div>
                         )}
@@ -331,7 +343,6 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                           isEditMode={isEditMode}
                           isEdited={isEdited}
                         />
-                       
                       </CardFooter>
                     </Card>
                   </div>
