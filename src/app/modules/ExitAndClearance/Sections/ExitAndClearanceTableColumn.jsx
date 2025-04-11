@@ -9,6 +9,29 @@ import { EmployeeOverview } from "components";
 import moment from "moment";
 import { AiOutlineDownload } from "react-icons/ai";
 
+const downloadAttachment = async (file, name) => {
+  console.log("in download attachment", file, name);
+
+  // Instead of trying to fetch the file content through axios (which is subject to CORS),
+  // create a direct link to download the file
+  const link = document.createElement("a");
+  link.href = file;
+
+  // Set download attribute with filename
+  link.download = name || "download";
+
+  // Determine file extension from the URL if possible
+  const fileExtension = file.split(".").pop().toLowerCase();
+  if (fileExtension && !name.endsWith(`.${fileExtension}`)) {
+    link.download = `${name}.${fileExtension}`;
+  }
+
+  // Append to body, click, and remove
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
   const columns = [
     {
@@ -56,17 +79,19 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
       formatter: (cell, row) => (
         <>
           {row?.resignation_letter ? (
-            <a
+            <button
               className="justify-start items-center gap-2.5 inline-flex"
-              href={row.resignation_letter}
-              target="_blank"
-              rel="noreferrer"
-              download
+              onClick={(e) => {
+                e.preventDefault();
+                downloadAttachment(
+                  row.resignation_letter,
+                  `Resignation_${row.employee_id || row.emp_name}`
+                );
+              }}
             >
               <div className="text-[#5c5e64] text-base font-normal">File</div>
-
               <AiOutlineDownload />
-            </a>
+            </button>
           ) : (
             "N/A"
           )}
@@ -87,8 +112,8 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
       formatter: (cell, row) => (
         <RenderResignationAction row={row} reload={reload} />
       ),
-      headerAlign:"right",
-      width:'80px',
+      headerAlign: "right",
+      width: "80px",
     },
   ];
   return columns;
@@ -151,17 +176,19 @@ export const ExitRequestColumns = (
       formatter: (cell, row) => (
         <>
           {row?.termination_letter ? (
-            <a
+            <button
               className="justify-start items-center gap-2.5 inline-flex"
-              href={row.termination_letter}
-              target="_blank"
-              rel="noreferrer"
-              download
+              onClick={(e) => {
+                e.preventDefault();
+                downloadAttachment(
+                  row.termination_letter,
+                  `Termination_${row.employee_id || row.serial_number}`
+                );
+              }}
             >
               <div className="text-[#5c5e64] text-base font-normal">File</div>
-
               <AiOutlineDownload />
-            </a>
+            </button>
           ) : (
             "N/A"
           )}
@@ -184,8 +211,8 @@ export const ExitRequestColumns = (
       formatter: (cell, row) => (
         <RenderTerminationAction row={row} reload={reload} viewMode={false} />
       ),
-      width:'80px',
-      headerAlign:"right",
+      width: "80px",
+      headerAlign: "right",
     });
   }
   return columns;
