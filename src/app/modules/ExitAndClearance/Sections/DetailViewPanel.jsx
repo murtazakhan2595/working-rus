@@ -1,6 +1,7 @@
 import pdfIcon from "assets/images/pdfIcon.svg";
 import { AiOutlineDownload } from "react-icons/ai";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { downloadAttachmentDirectLink } from "utils/fileUtils";
 
 export const ViewDetailBox = ({ labelList }) => {
   return (
@@ -47,16 +48,19 @@ export const ViewAttachmentDetail = ({ title, attachments }) => {
                   </div>
                 </p>
               </div>
-
-              <a
-                href={attachment.file}
-                className="flex gap-2 items-center"
-                target="_blank"
+              <button
+                className="justify-start items-center gap-2.5 inline-flex"
+                onClick={(e) => {
+                  e.preventDefault();
+                  downloadAttachmentDirectLink(
+                    attachment.file,
+                    attachment?.name
+                  );
+                }}
               >
-                <p class="text-[14px] text-[#323333]">Download</p>
-
+                <div className="text-[#5c5e64] text-base font-normal">Download</div>
                 <AiOutlineDownload />
-              </a>
+              </button>
             </div>
           );
         })}

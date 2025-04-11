@@ -115,4 +115,26 @@ export function convert_Text_To_File(text, fileName = "signature.png") {
   });
 }
 
+export const downloadAttachmentDirectLink = async (file, name) => {
+  console.log("in download attachment", file, name);
+
+  // Instead of trying to fetch the file content through axios (which is subject to CORS),
+  // create a direct link to download the file
+  const link = document.createElement("a");
+  link.href = file;
+
+  // Set download attribute with filename
+  link.download = name || "download";
+
+  // Determine file extension from the URL if possible
+  const fileExtension = file.split(".").pop().toLowerCase();
+  if (fileExtension && !name.endsWith(`.${fileExtension}`)) {
+    link.download = `${name}.${fileExtension}`;
+  }
+
+  // Append to body, click, and remove
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
