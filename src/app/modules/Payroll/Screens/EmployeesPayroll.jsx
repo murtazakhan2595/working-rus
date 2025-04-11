@@ -11,7 +11,7 @@ import { FilterInput } from "components/FormControl";
 import { useNavigate } from "react-router-dom";
 import { PageLoader } from "components";
 import { getEmployeePayroll } from "app/hooks/payroll.jsx";
-import { salaryTypeOptions } from "data/Data.js";
+import { SalaryTypeOptions } from "data/Data.js";
 import { connect } from "react-redux";
 import { useSelector } from "react-redux";
 
@@ -96,7 +96,7 @@ const EmployeesPayroll = () => {
               },
               {
                 type: "select-two",
-                option: salaryTypeOptions,
+                option: SalaryTypeOptions,
                 name: "salary_type",
                 placeholder: "Salary Type",
                 values: selectedSalaryType,

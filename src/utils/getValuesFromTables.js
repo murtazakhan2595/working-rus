@@ -14,7 +14,7 @@ import {
 } from "data/Data";
 import { useSelector } from "react-redux";
 import moment from "moment";
-import { ReasonForLeaving } from "data/Data";
+import { ReasonForLeaving ,SalaryTypeOptions} from "data/Data";
 
 function getCountryFullName(countryCode) {
   const country = countriesList.find((option) => option.value === countryCode);
@@ -68,8 +68,6 @@ function TerminationStatus(status) {
   );
   return response ? response.label : status ?? "N/A";
 }
-
-// Function to get department name from department value
 function DepartmentName({ value, fallBackText = "N/A" }) {
   const departments = useSelector((state) => state.common.departments);
   const department = departments.find(
@@ -120,6 +118,12 @@ export function EmployeeNameList(employeeIdList) {
     .map((employee) => employee.name);
 
   return employeesNameList;
+}
+
+export function SalaryType({ value, fallBackText = "N/A" }) {
+  const SalaryTypeList = SalaryTypeOptions;
+  const salaryType = SalaryTypeList.find((option) => option.value === value);
+  return salaryType ? salaryType.label : value ?? fallBackText;
 }
 
 function GetUser(id) {

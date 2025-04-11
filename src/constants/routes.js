@@ -236,7 +236,7 @@ const SidebarRoutes = [
     name: "Pay Slip Details",
   },
   Config.PAYROLL && {
-    path: "/salary-setup",
+    path: "/payroll/salary-setup",
     component: <SalarySetup />,
     name: "Salary Setup",
   },

@@ -3,15 +3,18 @@ import {
   Card,
   CardContent,
   CardHeader,
-} from "../../../../components/ui/card.jsx";
+} from "../../../../../components/ui/card.jsx";
 import { SalarySetupColumns } from "app/utils/Types/TableColumns";
 import CustomTable from "components/CustomTable";
-import Header from "../../../../components/Header.jsx";
+import Header from "../../../../../components/Header.jsx";
 import { FilterInput } from "components/FormControl";
 import { useNavigate } from "react-router-dom";
 import { PageLoader } from "components";
-import { getEmployeePayroll } from "app/hooks/payroll.jsx";
-import { salaryTypeOptions } from "data/Data.js";
+import {
+  EmployeesSalaryList,
+  SalaryComponents,
+} from "app/modules/Payroll/Screens/SalarySetup";
+import { SalaryTypeOptions } from "data/Data.js";
 import { connect } from "react-redux";
 import {
   Tabs,
@@ -19,9 +22,8 @@ import {
   TabsTrigger,
   TabsContent,
 } from "src/@/components/ui/tabs";
-import SalaryComponent from "../../Payroll/Sections/SalaryComponent.jsx";
 import { getSalarySetupData } from "app/hooks/payroll.jsx";
-import AddComponentSheet from "../../Payroll/Sections/AddComponentSheet.jsx";
+import AddComponentSheet from "../../Sections/AddComponentSheet.jsx";
 
 const SalarySetup = ({ departments }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,9 +44,9 @@ const SalarySetup = ({ departments }) => {
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
     onRowClick: (row) => {
-      if (row.is_eos_applicable){
+      if (row.is_eos_applicable) {
         navigate(`/payroll/salary-setup-eos/${row.id}`);
-      }else navigate(`/payroll/salary-setup/${row.id}`);
+      } else navigate(`/payroll/salary-setup/${row.id}`);
     },
   };
 
@@ -100,7 +102,7 @@ const SalarySetup = ({ departments }) => {
           },
           {
             type: "select-two",
-            option: salaryTypeOptions,
+            option: SalaryTypeOptions,
             name: "salary_type",
             placeholder: "Salary Type",
           },
@@ -113,13 +115,19 @@ const SalarySetup = ({ departments }) => {
           },
           {
             type: "select-one",
-            option: [{ value:"earning", label:"Earning"}, { value:"deduction", label:"Deduction"}],
+            option: [
+              { value: "earning", label: "Earning" },
+              { value: "deduction", label: "Deduction" },
+            ],
             name: "income_type",
             placeholder: "Component Type",
           },
           {
             type: "select-two",
-            option: [{ value: true, label: "Active" }, { value: false, label: "Inactive" }],
+            option: [
+              { value: true, label: "Active" },
+              { value: false, label: "Inactive" },
+            ],
             name: "is_active",
             placeholder: "Active",
           },
@@ -128,7 +136,11 @@ const SalarySetup = ({ departments }) => {
   return (
     <div className="flex flex-col gap-4 salary-startup">
       <Header
-        content={activeTab === "components" && <AddComponentSheet isOpen ={isOpen} setIsOpen={setIsOpen}/>}
+        content={
+          activeTab === "components" && (
+            <AddComponentSheet isOpen={isOpen} setIsOpen={setIsOpen} />
+          )
+        }
       />
 
       <Tabs
@@ -143,59 +155,19 @@ const SalarySetup = ({ departments }) => {
                 key={tab.value}
                 value={tab.value}
                 className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-                 >
+              >
                 {tab.label}
               </TabsTrigger>
             ))}
           </TabsList>
         </div>
         <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="h-[47px] flex-col justify-center items-start inline-flex">
-                <div className="flex flex-col items-start justify-start">
-                  <div className="self-stretch text-[#ab4aba] text-2xl font-medium  leading-normal">
-                    {activeTab === "components"
-                      ? "Components"
-                      : "Employee Salaries"}
-                  </div>
-                </div>
-                <div className="pt-1.5 flex-col justify-start items-start flex">
-                  <div className="flex flex-col items-start justify-start">
-                    <div className="self-stretch text-[#8b8d98] text-sm font-normal  leading-[16.80px]">
-                      {activeTab === "components"
-                        ? "Types details are listed here"
-                        : "Payrolls of all employees are listed below"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <FilterInput
-                filters={filters}
-                onChange={
-                  activeTab === "salary"
-                    ? handleSalaryFilterChange
-                    : handleComponentFilterChange
-                } // Dynamic filter handler
-              />
-            </div>
-          </CardHeader>
           <CardContent>
             <TabsContent value="salary">
-              {isLoading ? (
-                <PageLoader />
-              ) : (
-                <CustomTable
-                  data={salarySetupData?.results || []}
-                  columns={SalarySetupColumns}
-                  pagination={true}
-                  dataTotalSize={salarySetupData?.count || 0}
-                  tableOptions={tableOptions}
-                />
-              )}
+              <EmployeesSalaryList />
             </TabsContent>
             <TabsContent value="components">
-              <SalaryComponent componentFilterData={componentFilterData} />
+              <SalaryComponents componentFilterData={componentFilterData} />
             </TabsContent>
           </CardContent>
         </Card>

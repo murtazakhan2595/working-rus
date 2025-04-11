@@ -160,7 +160,7 @@ export function getMenuList(pathname, userRole) {
       // createMenu("/payroll", "Employee Payrolls"),
       ...(userRole !== 2 ? [createMenu("/payroll", "Employee Payrolls")] : []),
       ...(userRole === 2 ? [createMenu("/payroll", "Team Payrolls")] : []),
-      ...(userRole !== 2 ? [createMenu("/salary-setup", "Salary Setup")] : []),
+      ...(userRole !== 2 ? [createMenu("/payroll/salary-setup", "Salary Setup")] : []),
       createMenu("/claim-request", "Claim Request"),
       ...(userRole !== 2 ? [createMenu("/pay-run", "Pay Run")] : []),
       // createMenu("/salary-setup", "Salary Setup"),

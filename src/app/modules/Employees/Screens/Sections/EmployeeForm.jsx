@@ -37,7 +37,7 @@ import {
   UserRoles,
   countriesCallingCodes,
   countriesList,
-  salaryTypeOptions,
+  SalaryTypeOptions,
 } from "data/Data";
 import OnboardingChecklistSection from "./OnboardingChecklistSection";
 
@@ -756,7 +756,7 @@ const SheetOnBorading = ({
                           <div className="space-y-2">
                             <SelectInputComponent
                               name={"salary_type"}
-                              options={salaryTypeOptions}
+                              options={SalaryTypeOptions}
                               error={props.errors?.salary_type}
                               touch={props.touched.salary_type}
                               value={props.values.salary_type}

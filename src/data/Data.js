@@ -697,7 +697,7 @@ export const TerminationStatusOptions = [
   { label: "Exit Interview", value: "exit interview" },
 ];
 
-export const salaryTypeOptions = [
+export const SalaryTypeOptions = [
   { value: "monthly", label: "Monthly" },
   { value: "weekly", label: "Weekly" },
   { value: "hourly", label: "Per Hour" },

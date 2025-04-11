@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "../../../../components/ui/card.jsx";
-import { SalaryComponentColumns } from "app/utils/Types/TableColumns";
+import { SalaryComponentColumns } from "app/modules/Payroll/Sections";
 import CustomTable from "components/CustomTable";
 import Header from "../../../../components/Header.jsx";
 import { FilterInput } from "components/FormControl";
