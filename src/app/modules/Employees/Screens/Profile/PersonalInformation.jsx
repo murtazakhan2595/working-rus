@@ -295,7 +295,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               error={props.errors.marital_status}
                               touch={props.touched.marital_status}
                               value={props.values.marital_status}
-                              label={"Martial Status"}
+                              label={"Marital Status"}
                               onChange={(field, value) => {
                                 setIsEdited(true);
                                 props.setFieldValue(field, value);
