@@ -8,29 +8,7 @@ import {
 import { EmployeeOverview } from "components";
 import moment from "moment";
 import { AiOutlineDownload } from "react-icons/ai";
-
-const downloadAttachment = async (file, name) => {
-  console.log("in download attachment", file, name);
-
-  // Instead of trying to fetch the file content through axios (which is subject to CORS),
-  // create a direct link to download the file
-  const link = document.createElement("a");
-  link.href = file;
-
-  // Set download attribute with filename
-  link.download = name || "download";
-
-  // Determine file extension from the URL if possible
-  const fileExtension = file.split(".").pop().toLowerCase();
-  if (fileExtension && !name.endsWith(`.${fileExtension}`)) {
-    link.download = `${name}.${fileExtension}`;
-  }
-
-  // Append to body, click, and remove
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
+import {downloadAttachmentDirectLink} from "utils/fileUtils"
 
 export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
   const columns = [
@@ -83,7 +61,7 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
               className="justify-start items-center gap-2.5 inline-flex"
               onClick={(e) => {
                 e.preventDefault();
-                downloadAttachment(
+                downloadAttachmentDirectLink(
                   row.resignation_letter,
                   `Resignation_${row.employee_id || row.emp_name}`
                 );
@@ -180,7 +158,7 @@ export const ExitRequestColumns = (
               className="justify-start items-center gap-2.5 inline-flex"
               onClick={(e) => {
                 e.preventDefault();
-                downloadAttachment(
+                downloadAttachmentDirectLink(
                   row.termination_letter,
                   `Termination_${row.employee_id || row.serial_number}`
                 );
