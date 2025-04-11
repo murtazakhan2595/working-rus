@@ -320,7 +320,7 @@ const SheetOnBorading = ({
                       ...(documentErrors ? documentErrors : {}),
                     };
                     console.error(finalErrors, values, "Errors");
-                   
+
                     return finalErrors;
                   } catch (error) {
                     console.error(error);
@@ -485,6 +485,53 @@ const SheetOnBorading = ({
                             }}
                           />
                         </div>
+                        {/* New UAE Address Fields */}
+                        <div className="col-span-1 space-y-2 xl:col-span-3 lg:col-span-2 md:col-span-2">
+                          <TextAreaInput
+                            name={"uae_residence_address"}
+                            error={props.errors?.uae_residence_address}
+                            touch={props.touched?.uae_residence_address}
+                            value={props.values?.uae_residence_address}
+                            label={"UAE Residence Address"}
+                            required={false}
+                            maxRows={3}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <TextInput
+                            name={"po_box_number"}
+                            error={props.errors?.po_box_number}
+                            touch={props.touched?.po_box_number}
+                            value={props.values?.po_box_number}
+                            label={"PO Box Number"}
+                            required={false}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
+                        </div>
+
+                        {/* Conditional Family Book Number field - only shown for UAE nationals */}
+                        {props.values.employee_location ===
+                          "United Arab Emirates" && (
+                          <div className="space-y-2 w-fit">
+                            <TextInput
+                              name={"family_book_number"}
+                              error={props.errors?.family_book_number}
+                              touch={props.touched?.family_book_number}
+                              value={props.values?.family_book_number}
+                              label={"Family Book Number"}
+                              required={true}
+                              onChange={(field, value) => {
+                                props.handleChange(field)(value);
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
 

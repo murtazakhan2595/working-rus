@@ -64,6 +64,19 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     if (!values.contract_end_date)
       errors.contract_end_date = "End date is required";
   }
+  // UAE Family Book validation (mandatory only for UAE nationals)
+  if (
+    values.employee_location === "United Arab Emirates" &&
+    !values.family_book_number
+  ) {
+    errors.family_book_number =
+      "Family Book Number is required for UAE Nationals";
+  }
+
+  // Optional validations for PO Box (if provided, ensure it's in correct format)
+  if (values.po_box_number && !/^\d+$/.test(values.po_box_number)) {
+    errors.po_box_number = "PO Box Number must contain only numbers";
+  }
   return errors;
 };
 
