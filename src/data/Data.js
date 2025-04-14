@@ -685,7 +685,7 @@ export const NoticePeriod = [
   // },
 ];
 export const TerminationStatusOptions = [
-  { label: "Viewd By Manager", value: "viewed by manager" },
+  { label: "Viewed By Manager", value: "viewed by manager" },
   { label: "Accepted by Employee", value: "accepted by employee" },
   { label: "Rejected by Employee", value: "rejected by employee" },
   { label: "Clearance initiated", value: "initiated clearance" },

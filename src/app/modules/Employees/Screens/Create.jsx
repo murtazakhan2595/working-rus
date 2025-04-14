@@ -79,7 +79,7 @@ const CreateUpdateEmployee = () => {
               <DialogTitle>Success!</DialogTitle>
             </DialogHeader>
             <p>
-              User has been successfully registered and has been sent to {email}
+              User has been successfully registered and email has been sent to {email}
             </p>
           </DialogContent>
           <DialogFooter>
