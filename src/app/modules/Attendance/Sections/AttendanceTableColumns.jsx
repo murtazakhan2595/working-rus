@@ -55,7 +55,7 @@ export const EmployeesAttendanceColumns = (
     text: "Present Days",
     formatter: (cell, row) => (
       <span>
-        {parseInt(cell?.Present) + parseInt(row?.attendance_stats?.Late)}
+        {parseInt(cell?.Present)}
       </span>
     ),
   },
@@ -75,7 +75,7 @@ export const EmployeesAttendanceColumns = (
     dataField: "attendance_stats",
     text: "Attendance %",
     formatter: (cell, row) => {
-      const present = parseInt(cell.Present) || 0 + parseInt(cell.Late) || 0;
+      const present = parseInt(cell.Present) || 0;
       const percentage = calculatePercentage(present, TotalDays);
       return (
         <div className="flex justify-between gap-1">

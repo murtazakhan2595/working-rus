@@ -39,7 +39,7 @@ import {
   EmployeesPayroll,
   MyPayroll,
   SalarySetup,
-  SalarySetupDetail,
+  EmployeeSalarySetup,
   PayRun,
   CreatePayRun,
   PayRunDetails,
@@ -219,12 +219,12 @@ const SidebarRoutes = [
   },
   Config.PAYROLL && {
     path: "/payroll/salary-setup/:id",
-    component: <SalarySetupDetail />,
+    component: <EmployeeSalarySetup />,
     name: "Salary Setup Detail",
   },
   Config.PAYROLL && {
     path: "/payroll/salary-setup-eos/:id",
-    component: <SalarySetupDetail />,
+    component: <EmployeeSalarySetup />,
     name: "Salary Setup EOS",
   },
   Config.PAYROLL && {

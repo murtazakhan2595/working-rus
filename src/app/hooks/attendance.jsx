@@ -122,7 +122,7 @@ const getAttendance = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  let URL = `/attendance?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
+  let URL = `/attendance?ordering=-date&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
