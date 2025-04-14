@@ -6,10 +6,10 @@ import EmpSlice from "./EmpSlice";
 import leaveManagementSlice from "./LeaveManagementSlice";
 import GetDtrSlice from "./GetDtrSlice";
 import GetDtrAllSlice from "./GetDtrAllSlice";
-import GetAssigneDtr from "./GetAssigneDtr";
+import PayrollSlice from "./PayrollSlice";
 import UpdateDtrSlice from "./UpdateDtrSlice";
 import HRDocumentsSlice from "./HRDocumentsSlice";
-import GetTeamDtrSlice from "./GetTeamDtrSlice";
+import AttendanceSlice from "./AttendanceSlice";
 import CommonSlice from "./CommonSlice";
 import taskManagmentSlice from "./TaskManagmentSlice";
 import exitEmployeeSlice from "./ExitEmployeeSlice";
@@ -22,10 +22,10 @@ const rootReducer = combineReducers({
   getDtr: GetDtrSlice,
   leave_management: leaveManagementSlice,
   getDtrAll: GetDtrAllSlice,
-  getAssigne: GetAssigneDtr,
+  payroll: PayrollSlice,
   updateDtr: UpdateDtrSlice,
   doc_category: HRDocumentsSlice,
-  teamDtr: GetTeamDtrSlice,
+  attendance: AttendanceSlice,
   common: CommonSlice,
   task_managment: taskManagmentSlice,
   exit_emp:exitEmployeeSlice,

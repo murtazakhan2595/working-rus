@@ -6,7 +6,7 @@ import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn prov
 import { formatDuration } from "utils/renderValues";
 import moment from "moment";
 import { StatusLabelAttendance } from "components/StatusLabel";
-import { renderDate,formatNumber } from "utils/renderValues";
+import { renderDate, formatNumber } from "utils/renderValues";
 
 /**
  * AttendanceColumns
@@ -63,9 +63,7 @@ export const EmployeesAttendanceColumns = (
   },
 ];
 
-
-
-export const MyAttendanceColumn =(reload)=> [
+export const MyAttendanceColumn = (reload) => [
   {
     text: "Date",
     dataField: "date",
@@ -79,8 +77,34 @@ export const MyAttendanceColumn =(reload)=> [
   {
     text: "Check Out",
     dataField: "checkout",
-    formatter: (cell) =>
-      cell ? <span>{moment(cell).format("h:mm A")}</span> : "Working",
+    formatter: (cell, row) => {
+      const getCheckoutTime = (checkIn) => {
+        if (!checkIn) return "--";
+        const checkInTime = moment(checkIn);
+        const now = moment();
+
+        // If 14 hours have passed since check-in, return check-in + 14 hours
+        const fourteenHoursLater = moment(checkInTime).add(14, "hours");
+
+        if (now.isAfter(fourteenHoursLater)) {
+          return (
+            <div>
+              {fourteenHoursLater.format("h:mm A")}
+              <br />
+              (Check-out missing)
+            </div>
+          );
+        }
+
+        // If 14 hours not yet passed, return "Pending"
+        return "Working";
+      };
+      return cell ? (
+        <span>{moment(cell).format("h:mm A")}</span>
+      ) : (
+        getCheckoutTime(row.checkin, cell)
+      );
+    },
   },
   {
     text: "Break",
@@ -90,12 +114,12 @@ export const MyAttendanceColumn =(reload)=> [
   {
     text: "Overtime",
     dataField: "overtime_hours",
-    formatter: (cell) => <>{formatDuration(cell)}</>,
+    formatter: (cell, row) => <>{row.checkout ? formatDuration(cell) : "--"}</>,
   },
   {
     text: "Productivity",
     dataField: "payable_hours",
-    formatter: (cell) => <>{formatDuration(cell)}</>,
+    formatter: (cell, row) => <>{row.checkout ? formatDuration(cell) : "--"}</>,
   },
   {
     text: "Total Hours",
@@ -107,9 +131,11 @@ export const MyAttendanceColumn =(reload)=> [
     text: "Status",
     formatter: (cell) => <StatusLabelAttendance status={cell} />,
   },
-  {
-    dataField: "",
-    text: "Actions",
-    formatter: (cell, row) => <MyAttendenceActions data={row} reload ={reload}/>,
-  },
+  // {
+  //   dataField: "",
+  //   text: "Actions",
+  //   formatter: (cell, row) => (
+  //     <MyAttendenceActions data={row} reload={reload} />
+  //   ),
+  // },
 ];

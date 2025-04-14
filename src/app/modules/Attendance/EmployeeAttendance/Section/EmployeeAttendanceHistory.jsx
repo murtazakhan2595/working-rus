@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { GetDateRange } from "utils/renderValues";
 import moment from "moment";
 import { PageLoader, Header, TableCustom } from "components";
-import {DateRangeFilter } from "components/FormControl";
+import { DateRangeFilter } from "components/FormControl";
 import { MyAttendanceColumn } from "app/modules/Attendance/Sections/AttendanceTableColumns";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +32,7 @@ const EmployeeAttendanceHistory = ({
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
   };
-
+  console.log(attendanceData, "attendanceData");
   return (
     <div>
       <div className="flex justify-between mb-5">
@@ -63,17 +63,13 @@ const EmployeeAttendanceHistory = ({
       </div>
       <Card>
         <CardContent>
-          {isLoading ? (
-            <PageLoader />
-          ) : (
-            <TableCustom
-              data={attendanceData.results}
-              columns={MyAttendanceColumn}
-              pagination={true}
-              dataTotalSize={attendanceData.count || 0}
-              tableOptions={tableOptions}
-            />
-          )}
+          <TableCustom
+            data={attendanceData.results}
+            columns={MyAttendanceColumn()}
+            pagination={false}
+            dataTotalSize={attendanceData.count || 0}
+            tableOptions={tableOptions}
+          />
         </CardContent>
       </Card>
     </div>

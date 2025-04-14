@@ -12,3 +12,12 @@ export const Attendance = {
   status: "Present",
   employee_id: null,
 };
+
+export const Shift = {
+  endtime: null,
+  id: null,
+  name: null,
+  starttime: null,
+  type: null,
+  weekdays: null,
+};
