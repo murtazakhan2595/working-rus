@@ -248,18 +248,25 @@ export const calculatePercentage = (count = 0, total = 0) => {
 
 export const calculateTotal = (data, label) => {
   if (!Array.isArray(data)) return 0;
-  return data.reduce((total, item) => {
+  const total = data.reduce((total, item) => {
     const value = parseFloat(item[label]);
     return total + (isNaN(value) ? 0 : value);
   }, 0);
+  return parseFloat(parseFloat(total).toFixed(2));
 };
+
 export const calculateTotalCount = (data, label, value) => {
   if (!Array.isArray(data)) return 0;
   return data.reduce((count, item) => {
     return count + (item[label] === value ? 1 : 0);
   }, 0);
 };
-
+export const countLabelOccurrences = (data, label) => {
+  if (!Array.isArray(data)) return 0;
+  return data.reduce((count, item) => {
+    return count + (item[label] ? 1 : 0);
+  }, 0);
+};
 export const calculateTaskCount = (data, statusType) => {
   if (!Array.isArray(data)) return 0;
   return data.filter((task) => {

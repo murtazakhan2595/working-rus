@@ -15,6 +15,29 @@ import { renderDate, formatNumber } from "utils/renderValues";
  *
  * @returns {array} An array of column definitions.
  */
+
+const getCheckoutTime = (checkIn) => {
+  if (!checkIn) return "--";
+  const checkInTime = moment(checkIn);
+  const now = moment();
+
+  // If 14 hours have passed since check-in, return check-in + 14 hours
+  const fourteenHoursLater = moment(checkInTime).add(14, "hours");
+
+  if (now.isAfter(fourteenHoursLater)) {
+    return (
+      <div>
+        {fourteenHoursLater.format("h:mm A")}
+        <br />
+        (Check-out missing)
+      </div>
+    );
+  }
+
+  // If 14 hours not yet passed, return "Pending"
+  return "Working";
+};
+
 export const EmployeesAttendanceColumns = (
   TotalDays = 5,
   reload = () => {}
@@ -78,27 +101,6 @@ export const MyAttendanceColumn = (reload) => [
     text: "Check Out",
     dataField: "checkout",
     formatter: (cell, row) => {
-      const getCheckoutTime = (checkIn) => {
-        if (!checkIn) return "--";
-        const checkInTime = moment(checkIn);
-        const now = moment();
-
-        // If 14 hours have passed since check-in, return check-in + 14 hours
-        const fourteenHoursLater = moment(checkInTime).add(14, "hours");
-
-        if (now.isAfter(fourteenHoursLater)) {
-          return (
-            <div>
-              {fourteenHoursLater.format("h:mm A")}
-              <br />
-              (Check-out missing)
-            </div>
-          );
-        }
-
-        // If 14 hours not yet passed, return "Pending"
-        return "Working";
-      };
       return cell ? (
         <span>{moment(cell).format("h:mm A")}</span>
       ) : (
@@ -138,4 +140,49 @@ export const MyAttendanceColumn = (reload) => [
   //     <MyAttendenceActions data={row} reload={reload} />
   //   ),
   // },
+];
+
+export const AttendanceReportColumns = [
+  {
+    text: "Date",
+    dataField: "date",
+    formatter: (cell) => <>{`${renderDate(cell)}`}</>,
+  },
+  {
+    text: "Check In",
+    dataField: "checkin",
+    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+  },
+  {
+    text: "Check Out",
+    dataField: "checkout",
+    formatter: (cell, row) => {
+      return cell ? (
+        <span>{moment(cell).format("h:mm A")}</span>
+      ) : (
+        getCheckoutTime(row.checkin, cell)
+      );
+    },
+  },
+  {
+    text: "Break",
+    dataField: "break_duration",
+    formatter: (cell) => <>{formatDuration(cell)}</>,
+  },
+  {
+    text: "Overtime",
+    dataField: "overtime_hours",
+    formatter: (cell, row) => <>{row.checkout ? formatDuration(cell) : "--"}</>,
+  },
+  {
+    text: "Productivity",
+    dataField: "payable_hours",
+    formatter: (cell, row) => <>{row.checkout ? formatDuration(cell) : "--"}</>,
+  },
+  {
+    text: "Total Hours",
+    dataField: "total_hours",
+    formatter: (cell) => <>{formatDuration(cell)}</>,
+  },
+  { text: "Status", dataField: "status" },
 ];

@@ -162,7 +162,7 @@ const Attendance = () => {
               }}
             />
             <Button variant="outline" onClick={downloadAttendance}>
-              Download
+              Monthly Report
             </Button>
           </div>
         </div>

@@ -24,7 +24,7 @@ import "react-toastify/dist/ReactToastify.css";
 import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
 import Employee from "app/modules/Employees/Employee.jsx";
 import { EmployeeTransfer, MyTransfers } from "app/modules/EmployeeTransfer";
-import { HRDocuments ,MyDocuments} from "app/modules/HRDocuments";
+import { HRDocuments, MyDocuments } from "app/modules/HRDocuments";
 import { EditEmployeeProfile } from "app/modules/Employees/Screens/Profile";
 import { MyDtr } from "app/modules/DTR";
 import ForgotPassword from "app/modules/Login/ForgotPassword.jsx";
@@ -45,13 +45,15 @@ import {
   PayRunDetails,
 } from "app/modules/Payroll";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
-import Attendance from "app/modules/Attendance";
-import MyAttendance from "app/modules/Attendance/MyAttendance";
-import EmployeeAttendance from "app/modules/Attendance/EmployeeAttendance";
+import {
+  Attendance,
+  MyAttendance,
+  EmployeeAttendance,
+  EmployeeAttendanceReport,
+} from "app/modules/Attendance";
 import StyleGuide from "app/modules/StyleGuide";
 import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
-import AttendanceReport from "app/modules/Attendance/Sections/AttendenceFile";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 import OrganizationalChart from "app/modules/OfficeSetting/Screens/OrganizationalChart";
 import { TeamProfileMangement } from "app/modules/TeamManagment";
@@ -187,7 +189,7 @@ const SidebarRoutes = [
   },
   Config.ASSETS_MANAGEMENT && {
     path: "/my-assets",
-    component:<MyAssets />,
+    component: <MyAssets />,
     name: "My Assets",
   },
   Config.TEAM_MANAGEMENT && {
@@ -268,7 +270,7 @@ const SidebarRoutes = [
 
   Config.ATTENDANCE && {
     path: "attendance-reports/:id",
-    component: <AttendanceReport />,
+    component: <EmployeeAttendanceReport />,
     name: "Attendance Report",
   },
 
