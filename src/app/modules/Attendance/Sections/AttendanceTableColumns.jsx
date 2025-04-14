@@ -53,12 +53,18 @@ export const EmployeesAttendanceColumns = (
   {
     dataField: "attendance_stats",
     text: "Present Days",
-    formatter: (cell) => <span>{cell?.Present}</span>,
+    formatter: (cell, row) => (
+      <span>
+        {parseInt(cell?.Present) + parseInt(row?.attendance_stats?.Late)}
+      </span>
+    ),
   },
   {
     dataField: "attendance_stats",
     text: "Absent Days",
-    formatter: (cell) => <span>{cell?.Absent}</span>,
+    formatter: (cell) => (
+      <span>{parseInt(TotalDays) - parseInt(cell?.Absent)}</span>
+    ),
   },
   {
     dataField: "attendance_stats",

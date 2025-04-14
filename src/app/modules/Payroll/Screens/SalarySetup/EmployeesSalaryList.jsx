@@ -14,16 +14,14 @@ import { SalaryTypeOptions } from "data/Data";
 import { connect } from "react-redux";
 import { SalarySetupColumns } from "app/modules/Payroll/Sections/PayrollTableColumns";
 import SalaryComponent from "../../Sections/SalaryComponent.jsx";
-import { getEmployeeList } from "app/hooks/general";
+import { getEmployeeCustomList } from "app/hooks/general";
 import AddComponentSheet from "../../Sections/AddComponentSheet.jsx";
 
 const EmployeesSalaryList = ({ departments }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({is_new:true});
   const [componentFilterData, setComponentFilterData] = useState({});
-  const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [activeTab, setActiveTab] = useState("salary");
   const [EmployeesList, setEmployeesList] = useState([]);
   const navigate = useNavigate();
 
@@ -45,7 +43,7 @@ const EmployeesSalaryList = ({ departments }) => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const data = await getEmployeeList({ options, filterData });
+      const data = await getEmployeeCustomList({ options, filterData });
       if (data) {
         setEmployeesList(data);
       }

@@ -213,7 +213,7 @@ export const SalarySetupColumns = [
     ),
   },
   {
-    dataField: "basic_salary",
+    dataField: "salary",
     text: "Monthly Salary",
   },
   {
