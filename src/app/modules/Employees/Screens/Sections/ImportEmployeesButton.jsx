@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "../../../../../components/ui/button";
 import {
   Dialog,
@@ -31,6 +31,8 @@ import {
   getShifts,
 } from "app/hooks/employee";
 
+import {getBranchList} from "app/hooks/general"
+
 const ImportEmployeesButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [file, setFile] = useState(null);
@@ -38,12 +40,16 @@ const ImportEmployeesButton = () => {
   const [validationErrors, setValidationErrors] = useState([]);
   const [showFieldInfo, setShowFieldInfo] = useState(true);
 
+  // Create a ref for the file input element
+  const fileInputRef = useRef(null);
+
   // Reference data state
   const [userRoles, setUserRoles] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [designations, setDesignations] = useState([]);
   const [managers, setManagers] = useState([]);
   const [shifts, setShifts] = useState([]);
+  const [branches, setBranches] = useState([]);
   const [isLoadingReferenceData, setIsLoadingReferenceData] = useState(false);
 
   // Fetch reference data when modal opens
@@ -56,37 +62,51 @@ const ImportEmployeesButton = () => {
   // Process and format error messages for better readability
   const formatErrorMessages = (errors) => {
     const formattedErrors = [];
-    
+
     if (!errors || errors.length === 0) return formattedErrors;
-    
-    errors.forEach(error => {
+
+    errors.forEach((error) => {
       // Check if error is a string with JSON-like content
-      if (typeof error === 'string' && (error.includes('{') || error.includes('['))) {
+      if (
+        typeof error === "string" &&
+        (error.includes("{") || error.includes("["))
+      ) {
         try {
           // Try to extract row information
           const rowMatch = error.match(/Row (\d+):/);
-          const rowNum = rowMatch ? rowMatch[1] : '';
-          
+          const rowNum = rowMatch ? rowMatch[1] : "";
+
           // Check for date format errors which have a specific pattern
-          if (error.includes('Date has wrong format')) {
-            const dateFieldPattern = /'([^']+)': \[ErrorDetail\(string='Date has wrong format/g;
+          if (error.includes("Date has wrong format")) {
+            const dateFieldPattern =
+              /'([^']+)': \[ErrorDetail\(string='Date has wrong format/g;
             let dateMatch;
             let dateFields = [];
-            
+
             while ((dateMatch = dateFieldPattern.exec(error)) !== null) {
               const fieldName = dateMatch[1];
-              dateFields.push(fieldName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()));
+              dateFields.push(
+                fieldName
+                  .replace(/_/g, " ")
+                  .replace(/\b\w/g, (l) => l.toUpperCase())
+              );
             }
-            
+
             if (dateFields.length > 0) {
-              formattedErrors.push(`${rowNum ? `Row ${rowNum}: ` : ''}Date fields must use YYYY-MM-DD format: ${dateFields.join(', ')}`);
+              formattedErrors.push(
+                `${
+                  rowNum ? `Row ${rowNum}: ` : ""
+                }Date fields must use YYYY-MM-DD format: ${dateFields.join(
+                  ", "
+                )}`
+              );
               return; // Skip further processing for this error
             }
           }
-          
+
           // Try to parse any JSON-like structure
           let errorObj = {};
-          const jsonStart = error.indexOf('{');
+          const jsonStart = error.indexOf("{");
           if (jsonStart !== -1) {
             try {
               // Extract the JSON part and parse it
@@ -94,38 +114,51 @@ const ImportEmployeesButton = () => {
               errorObj = JSON.parse(jsonPart.replace(/'/g, '"'));
             } catch {
               // If parsing fails, use regex to extract field names and error messages
-              const fieldErrorPattern = /'([^']+)': \[ErrorDetail\(string='([^']+)/g;
+              const fieldErrorPattern =
+                /'([^']+)': \[ErrorDetail\(string='([^']+)/g;
               let match;
               while ((match = fieldErrorPattern.exec(error)) !== null) {
                 errorObj[match[1]] = [{ message: match[2] }];
               }
             }
           }
-          
+
           // Process each field error
           if (Object.keys(errorObj).length > 0) {
             Object.entries(errorObj).forEach(([field, fieldErrors]) => {
               // Handle case where fieldErrors is an array of ErrorDetail objects
               if (Array.isArray(fieldErrors)) {
-                fieldErrors.forEach(fieldError => {
-                  let errorMessage = '';
-                  if (typeof fieldError === 'object' && fieldError.message) {
+                fieldErrors.forEach((fieldError) => {
+                  let errorMessage = "";
+                  if (typeof fieldError === "object" && fieldError.message) {
                     errorMessage = fieldError.message;
-                  } else if (typeof fieldError === 'string') {
+                  } else if (typeof fieldError === "string") {
                     errorMessage = fieldError;
                   } else if (fieldError && fieldError.string) {
                     errorMessage = fieldError.string;
                   }
-                  
+
                   if (errorMessage) {
-                    const formattedField = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    formattedErrors.push(`${rowNum ? `Row ${rowNum}: ` : ''}${formattedField}: ${errorMessage}`);
+                    const formattedField = field
+                      .replace(/_/g, " ")
+                      .replace(/\b\w/g, (l) => l.toUpperCase());
+                    formattedErrors.push(
+                      `${
+                        rowNum ? `Row ${rowNum}: ` : ""
+                      }${formattedField}: ${errorMessage}`
+                    );
                   }
                 });
               } else {
                 // Handle case where fieldErrors is not an array
-                const formattedField = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                formattedErrors.push(`${rowNum ? `Row ${rowNum}: ` : ''}${formattedField}: ${fieldErrors}`);
+                const formattedField = field
+                  .replace(/_/g, " ")
+                  .replace(/\b\w/g, (l) => l.toUpperCase());
+                formattedErrors.push(
+                  `${
+                    rowNum ? `Row ${rowNum}: ` : ""
+                  }${formattedField}: ${fieldErrors}`
+                );
               }
             });
           } else {
@@ -141,7 +174,7 @@ const ImportEmployeesButton = () => {
         formattedErrors.push(error);
       }
     });
-    
+
     return formattedErrors;
   };
 
@@ -178,6 +211,11 @@ const ImportEmployeesButton = () => {
       if (shiftsResponse && shiftsResponse.results) {
         setShifts(shiftsResponse.results);
       }
+
+      const branchesResponse = await getBranchList();
+      if (branchesResponse && branchesResponse.results) {
+        setBranches(branchesResponse.results);
+      }
     } catch (error) {
       console.error("Error fetching reference data:", error);
       toast.error("Failed to load reference data", {
@@ -185,6 +223,14 @@ const ImportEmployeesButton = () => {
       });
     } finally {
       setIsLoadingReferenceData(false);
+    }
+  };
+
+  // Function to reset the file input and state
+  const resetFileInput = () => {
+    setFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -251,12 +297,12 @@ const ImportEmployeesButton = () => {
       const response = await uploadEmployeesData(formData);
 
       // Handle successful response
-      if (response && (response.status === 200  || response.status === 201)) {
+      if (response && (response.status === 200 || response.status === 201)) {
         toast.success("Employees imported successfully", {
           position: toast.POSITION.TOP_RIGHT,
         });
         setIsOpen(false);
-        setFile(null);
+        resetFileInput();
       }
       // Handle error responses with validation errors
       else if (response && response.errors) {
@@ -266,6 +312,9 @@ const ImportEmployeesButton = () => {
           : [response.errors];
         const formattedErrors = formatErrorMessages(errors);
         setValidationErrors(formattedErrors);
+
+        // Reset file input when errors occur
+        resetFileInput();
 
         // Also show a toast notification
         toast.error(
@@ -280,6 +329,10 @@ const ImportEmployeesButton = () => {
         setValidationErrors([
           "The file contains invalid data. Please check the format and try again.",
         ]);
+
+        // Reset file input when errors occur
+        resetFileInput();
+
         toast.error("Failed to import employees", {
           position: toast.POSITION.TOP_RIGHT,
         });
@@ -291,7 +344,9 @@ const ImportEmployeesButton = () => {
       if (error?.response?.data?.errors) {
         // Backend returned specific validation errors
         const errors = error.response.data.errors;
-        const formattedErrors = formatErrorMessages(Array.isArray(errors) ? errors : [errors]);
+        const formattedErrors = formatErrorMessages(
+          Array.isArray(errors) ? errors : [errors]
+        );
         setValidationErrors(formattedErrors);
       } else if (error?.response?.data?.message) {
         // Backend returned a single error message
@@ -302,6 +357,9 @@ const ImportEmployeesButton = () => {
           "An unexpected error occurred. Please try again or contact support.",
         ]);
       }
+
+      // Reset file input when errors occur
+      resetFileInput();
 
       toast.error("Import failed", {
         position: toast.POSITION.TOP_RIGHT,
@@ -328,7 +386,7 @@ const ImportEmployeesButton = () => {
           setIsOpen(open);
           if (!open) {
             setValidationErrors([]);
-            setFile(null);
+            resetFileInput();
           }
         }}
       >
@@ -406,7 +464,7 @@ const ImportEmployeesButton = () => {
                                   <ul className="list-disc pl-3 text-xs text-blue-700">
                                     {userRoles.map((role) => (
                                       <li key={role.id}>
-                                        "{role.id}" for {role.name}
+                                        "{role.name}" for {role.name}
                                       </li>
                                     ))}
                                   </ul>
@@ -427,7 +485,7 @@ const ImportEmployeesButton = () => {
                                   <ul className="list-disc pl-3 text-xs text-blue-700">
                                     {departments.map((dept) => (
                                       <li key={dept.id}>
-                                        "{dept.id}" for {dept.name}
+                                        "{dept.name}" for {dept.name}
                                       </li>
                                     ))}
                                   </ul>
@@ -448,7 +506,7 @@ const ImportEmployeesButton = () => {
                                   <ul className="list-disc pl-3 text-xs text-blue-700">
                                     {designations.map((des) => (
                                       <li key={des.id}>
-                                        "{des.id}" for {des.name}
+                                        "{des.name}" for {des.name}
                                       </li>
                                     ))}
                                   </ul>
@@ -469,7 +527,8 @@ const ImportEmployeesButton = () => {
                                   <ul className="list-disc pl-3 text-xs text-blue-700">
                                     {managers.map((mgr) => (
                                       <li key={mgr.id}>
-                                        "{mgr.id}" for {mgr.first_name + " " + mgr.last_name}
+                                        "{mgr.username}" for{" "}
+                                        {mgr.first_name + " " + mgr.last_name}
                                       </li>
                                     ))}
                                   </ul>
@@ -490,13 +549,35 @@ const ImportEmployeesButton = () => {
                                   <ul className="list-disc pl-3 text-xs text-blue-700">
                                     {shifts.map((shift) => (
                                       <li key={shift.id}>
-                                        "{shift.id}" for {shift.name}
+                                        "{shift.name}" for {shift.name}
                                       </li>
                                     ))}
                                   </ul>
                                 ) : (
                                   <p className="text-xs text-blue-700 italic">
                                     No shift data available
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-blue-700">
+                                branch_name:
+                              </p>
+                              <div className="max-h-24 overflow-y-auto pl-2 text-xs">
+                                {console.log(branches)}
+                                {branches.length > 0 ? (
+                                  <ul className="list-disc pl-3 text-xs text-blue-700">
+                                    {branches.map((branch) => (
+                                      <li key={branch.id}>
+                                        "{branch.branch_name}" for{" "}
+                                        {branch.branch_name}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : (
+                                  <p className="text-xs text-blue-700 italic">
+                                    No Branch data available
                                   </p>
                                 )}
                               </div>
@@ -511,23 +592,30 @@ const ImportEmployeesButton = () => {
                         </h4>
                         <ul className="list-disc pl-5 text-xs text-blue-700">
                           <li>
-                            <strong>employee_work_type</strong>: REMOTE, ON_SITE,
-                            Hybrid, Work_From_Home
+                            <strong>employee_work_type</strong>: REMOTE,
+                            ON_SITE, Hybrid, Work_From_Home
                           </li>
                           <li>
                             <strong>employee_type</strong>: Intern, Part-Time,
                             Full-Time, Contract, Freelancer
                           </li>
                           <li>
-                            <strong>employee_status</strong>: Active, Terminated,
-                            Deceased, Resigned, Probation, Notice Period, Exit,
-                            Absconded, Legal Case
+                            <strong>employee_status</strong>: Active,
+                            Terminated, Deceased, Resigned, Probation, Notice
+                            Period, Exit, Absconded, Legal Case
                           </li>
                           <li>
-                            <strong>blood_group</strong>: A+, A-, B+, B-, O+, O-,
-                            AB+, AB-
+                            <strong>blood_group</strong>: A+, A-, B+, B-, O+,
+                            O-, AB+, AB-
                           </li>
                         </ul>
+                        <h4 className="text-xs font-medium text-blue-800 mt-3">
+                          Accepted Date Format:
+                        </h4>
+                        <p className="text-xs text-blue-700 pl-2">
+                          All date fields must use: <strong>YYYY-MM-DD</strong>{" "}
+                          format
+                        </p>
                       </div>
                     </div>
 
@@ -547,6 +635,7 @@ const ImportEmployeesButton = () => {
                     type="file"
                     accept=".xlsx,.xls,.csv"
                     onChange={handleFileChange}
+                    ref={fileInputRef}
                   />
                 </div>
                 {file && (
@@ -566,7 +655,9 @@ const ImportEmployeesButton = () => {
                       </div>
                       <ul className="list-disc pl-4 text-sm text-red-700 space-y-1">
                         {validationErrors.map((error, index) => (
-                          <li key={index} className="break-words">{error}</li>
+                          <li key={index} className="break-words">
+                            {error}
+                          </li>
                         ))}
                       </ul>
                     </div>
@@ -581,7 +672,7 @@ const ImportEmployeesButton = () => {
               variant="outline"
               onClick={() => {
                 setIsOpen(false);
-                setFile(null);
+                resetFileInput();
                 setValidationErrors([]);
               }}
               type="button"
