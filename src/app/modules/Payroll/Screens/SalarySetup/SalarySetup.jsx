@@ -17,6 +17,8 @@ import {
 } from "src/@/components/ui/tabs";
 import AddComponentSheet from "../../Sections/AddComponentSheet.jsx";
 import {EmployeesSalaryList} from 'app/modules/Payroll/Screens/SalarySetup';
+import AddAdjustmentSheet from "../../Sections/AddAdjustmentSheet.jsx";
+import PayrollAdjustment from "../../Sections/PayrollAdjustment.jsx"
 
 const SalarySetup = ({ departments }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,15 +27,19 @@ const SalarySetup = ({ departments }) => {
   const tabsData = [
     { value: "salary", label: "Salary" },
     { value: "components", label: "Components" },
+    { value: "payroll-adjustment", label: "Payroll Adjustment" },
   ];
 
   return (
     <div className="flex flex-col gap-4 salary-startup">
       <Header
         content={
-          activeTab === "components" && (
+          (activeTab === "components" && (
             <AddComponentSheet isOpen={isOpen} setIsOpen={setIsOpen} />
-          )
+          )) ||
+          (activeTab === "payroll-adjustment" && (
+            <AddAdjustmentSheet isOpen={isOpen} setIsOpen={setIsOpen} />
+          ))
         }
       />
 
@@ -48,7 +54,7 @@ const SalarySetup = ({ departments }) => {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                className="data-[state=active]:bg-primary-200 w-36 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
               >
                 {tab.label}
               </TabsTrigger>
@@ -62,6 +68,9 @@ const SalarySetup = ({ departments }) => {
             </TabsContent>
             <TabsContent value="components">
               <SalaryComponents />
+            </TabsContent>
+            <TabsContent value="payroll-adjustment">
+              <PayrollAdjustment />
             </TabsContent>
           </CardContent>
         </Card>

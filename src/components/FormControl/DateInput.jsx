@@ -10,6 +10,7 @@ import { format, parse, isValid } from "date-fns";
 import { Input } from "components/ui/input";
 import { Calendar } from "src/@/components/ui/calendar";
 import { PatternFormat } from "react-number-format";
+
 const DateInput = React.memo(
   ({
     name,
@@ -22,20 +23,37 @@ const DateInput = React.memo(
     className = "w-full", // Custom styling
     placeholder = null, // Placeholder text when no value is selected
     showReset = false,
-    disabled=false,
+    disabled = false,
+    dateFormat = "yyyy-MM-dd", // Default format for the value
+    showMonthYearPicker = false, // Whether to show only month/year picker
   }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [date, setDate] = useState(
-      value && isValid(parse(value, "yyyy-MM-dd", new Date()))
-        ? parse(value, "yyyy-MM-dd", new Date())
-        : null
-    );
-    const [inputValue, setInputValue] = useState(
-      value && isValid(parse(value, "yyyy-MM-dd", new Date()))
-        ? format(parse(value, "yyyy-MM-dd", new Date()), "dd/MM/yyyy")
-        : ""
-    );
+
+    // Determine input and display formats based on showMonthYearPicker
+    const inputPattern = showMonthYearPicker ? "MM/yyyy" : "dd/MM/yyyy";
+    const displayPattern = showMonthYearPicker ? "MMMM yyyy" : "d MMMM yyyy";
+    const inputMask = showMonthYearPicker ? "##/####" : "##/##/####";
+    const inputPlaceholder = showMonthYearPicker ? "MM/YYYY" : "DD/MM/YYYY";
+
+    // Parse the initial date based on the format
+    const [date, setDate] = useState(() => {
+      if (!value) return null;
+      try {
+        const parsedDate = parse(value, dateFormat, new Date());
+        return isValid(parsedDate) ? parsedDate : null;
+      } catch (e) {
+        return null;
+      }
+    });
+
+    // Format input value based on the selected date
+    const [inputValue, setInputValue] = useState(() => {
+      if (!date) return "";
+      return format(date, inputPattern);
+    });
+
     const [calendarDate, setCalendarDate] = useState(date);
+
     const handleReset = (e) => {
       e.stopPropagation(); // Prevent the popover from opening
       resetFields();
@@ -44,28 +62,30 @@ const DateInput = React.memo(
     // Sync the input field and calendar when the value changes externally
     useEffect(() => {
       if (value) {
-        const parsedDate = parse(value, "yyyy-MM-dd", new Date());
-        if (isValid(parsedDate)) {
-          setDate(parsedDate);
-          setInputValue(format(parsedDate, "dd/MM/yyyy"));
-          setCalendarDate(parsedDate);
-        } else {
-          setDate(null);
-          setInputValue("");
-          setCalendarDate(null);
+        try {
+          const parsedDate = parse(value, dateFormat, new Date());
+          if (isValid(parsedDate)) {
+            setDate(parsedDate);
+            setInputValue(format(parsedDate, inputPattern));
+            setCalendarDate(parsedDate);
+          } else {
+            resetFields(false);
+          }
+        } catch (e) {
+          resetFields(false);
         }
       } else {
-        setDate(null);
-        setInputValue("");
-        setCalendarDate(null);
+        resetFields(false);
       }
-    }, [value]);
+    }, [value, dateFormat, inputPattern]);
 
-    const resetFields = () => {
+    const resetFields = (callOnChange = true) => {
       setDate(null);
       setInputValue("");
       setCalendarDate(null);
-      onChange(name, ""); // Reset the form value
+      if (callOnChange) {
+        onChange(name, ""); // Reset the form value
+      }
       setIsOpen(false);
     };
 
@@ -74,14 +94,22 @@ const DateInput = React.memo(
       const { formattedValue } = values;
       setInputValue(formattedValue);
 
-      const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+      // Use different regex patterns based on the picker mode
+      const dateRegex = showMonthYearPicker
+        ? /^(0[1-9]|1[0-2])\/\d{4}$/
+        : /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+
       if (dateRegex.test(formattedValue)) {
-        const parsedDate = parse(formattedValue, "dd/MM/yyyy", new Date());
-        if (isValid(parsedDate)) {
-          setDate(parsedDate);
-          setCalendarDate(parsedDate); // Sync with the calendar
-          onChange(name, format(parsedDate, "yyyy-MM-dd"));
-          setIsOpen(false);
+        try {
+          const parsedDate = parse(formattedValue, inputPattern, new Date());
+          if (isValid(parsedDate)) {
+            setDate(parsedDate);
+            setCalendarDate(parsedDate); // Sync with the calendar
+            onChange(name, format(parsedDate, dateFormat));
+            setIsOpen(false);
+          }
+        } catch (e) {
+          // Invalid date, do nothing
         }
       }
     };
@@ -90,9 +118,9 @@ const DateInput = React.memo(
     const handleCalendarSelect = (selectedDate) => {
       if (selectedDate) {
         setDate(selectedDate);
-        setInputValue(format(selectedDate, "dd/MM/yyyy"));
+        setInputValue(format(selectedDate, inputPattern));
         setCalendarDate(selectedDate);
-        onChange(name, format(selectedDate, "yyyy-MM-dd"));
+        onChange(name, format(selectedDate, dateFormat));
         setIsOpen(false);
       }
     };
@@ -117,13 +145,11 @@ const DateInput = React.memo(
             <div className="flex justify-start w-full gap-2 items-center">
               <FormFieldIcon icon={<LucideCalendar size={16} />} />
               {date ? (
-                // [MODIFIED] Wrapped content in div with flex layout
                 <div className="flex justify-between items-center w-full">
-                  <span>{format(date, "d MMMM yyyy")}</span>
-                  {/* [NEW] Added reset button that shows on hover */}
+                  <span>{format(date, displayPattern)}</span>
                   {showReset && (
                     <span
-                      className="text-sm text-neutral-900 hover:text-red-500 cursor-pointer ml-2 px-2 py-0.5 border border-neutral-200 rounded-md  hover:bg-white transition-colors"
+                      className="text-sm text-neutral-900 hover:text-red-500 cursor-pointer ml-2 px-2 py-0.5 border border-neutral-200 rounded-md hover:bg-white transition-colors"
                       onClick={handleReset}
                     >
                       Reset
@@ -132,7 +158,13 @@ const DateInput = React.memo(
                 </div>
               ) : (
                 <FormPlaceholder
-                  placeholder={placeholder ? placeholder : `Pick a date`}
+                  placeholder={
+                    placeholder
+                      ? placeholder
+                      : showMonthYearPicker
+                      ? "Select Month-Year"
+                      : "Pick a date"
+                  }
                 />
               )}
             </div>
@@ -140,8 +172,8 @@ const DateInput = React.memo(
           popoverContent={
             <div className="flex flex-col p-2 space-y-2">
               <PatternFormat
-                format="##/##/####"
-                placeholder="DD/MM/YYYY"
+                format={inputMask}
+                placeholder={inputPlaceholder}
                 value={inputValue}
                 onValueChange={handleInputChange}
                 customInput={Input}
@@ -149,14 +181,16 @@ const DateInput = React.memo(
               />
               <Calendar
                 mode="single"
-                selected={calendarDate} // Ensure calendar is synced with input
+                selected={calendarDate}
                 onSelect={handleCalendarSelect}
                 month={calendarDate || new Date()}
                 onMonthChange={setCalendarDate}
-                // disabled={(date) =>
-                //   date > new Date() || date < new Date("1900-01-01")
-                // }
                 initialFocus
+                // For month-year picker, show only month view
+                view={showMonthYearPicker ? "month" : "day"}
+                // For month-year picker, don't allow day selection
+                // This works if the Calendar component supports it
+                showMonthYearPicker={showMonthYearPicker}
               />
             </div>
           }
