@@ -29,7 +29,7 @@ const SalaryComponent = ({ componentFilterData }) => {
     onPageChange: onPageChange,
     onRowClick: (row) => {
       setIsOpen(true);
-      setSelectedComponent(row);
+      // setSelectedComponent(row);
     },
   };
 

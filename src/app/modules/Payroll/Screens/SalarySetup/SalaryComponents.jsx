@@ -34,11 +34,11 @@ const SalaryComponents = ({ departments }) => {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
-    onRowClick: (row) => {
-      if (row.is_eos_applicable) {
-        navigate(`/payroll/salary-setup-eos/${row.id}`);
-      } else navigate(`/payroll/salary-setup/${row.id}`);
-    },
+    // onRowClick: (row) => {
+    //   if (row.is_eos_applicable) {
+    //     navigate(`/payroll/salary-setup-eos/${row.id}`);
+    //   } else navigate(`/payroll/salary-setup/${row.id}`);
+    // },
   };
 
   const fetchData = async () => {
@@ -85,7 +85,7 @@ const SalaryComponents = ({ departments }) => {
   return (
     <>
       <div className="flex items-center justify-between">
-        <div className="flex-col justify-center items-start inline-flex">
+        <div className="inline-flex flex-col items-start justify-center">
           <div className="self-stretch text-[#ab4aba] text-2xl font-medium  leading-normal">
             {"Components"}
           </div>
