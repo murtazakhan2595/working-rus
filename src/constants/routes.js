@@ -58,6 +58,7 @@ import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
 import OrganizationalChart from "app/modules/OfficeSetting/Screens/OrganizationalChart";
 import { TeamProfileMangement } from "app/modules/TeamManagment";
 import { Assets, MyAssets } from "app/modules/AssetsManagement";
+import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
 
 const SidebarRoutes = [
   {
@@ -226,6 +227,11 @@ const SidebarRoutes = [
     path: "/payroll/salary-setup-eos/:id",
     component: <EmployeeSalarySetup />,
     name: "Salary Setup EOS",
+  },
+  Config.PAYROLL && {
+    path: "/payroll/team-payroll-adjustment",
+    component: <TeamAdjustments />,
+    name: "Salary Setup",
   },
   Config.PAYROLL && {
     path: "/payroll/create-payrun",

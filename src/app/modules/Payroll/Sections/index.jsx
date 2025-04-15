@@ -6,6 +6,7 @@ import {
   EmployeeDeductionsColumns,
   SalarySetupColumns,
   SalaryComponentColumns,
+  AdjustmentComponentColumns,
 } from "./PayrollTableColumns";
 export {
   EmployeePayrollColumns,
@@ -15,4 +16,5 @@ export {
   EmployeeDeductionsColumns,
   SalaryComponentColumns,
   SalarySetupColumns,
+  AdjustmentComponentColumns,
 };

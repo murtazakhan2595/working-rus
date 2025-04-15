@@ -22,6 +22,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
+import { format } from "date-fns";
+
 
 export const EmployeePayrollColumns = [
   {
@@ -432,3 +434,52 @@ export const SalaryComponentColumns = (onCheckedChange, handleReload) => [
   }
 ];
 
+export const AdjustmentComponentColumns = [
+  {
+    dataField: "employee",
+    text: "Employee",
+    formatter: (cell) => <EmployeeOverview id={cell} showEmail={false} />,
+  },
+  {
+    dataField: "name",
+    text: "Adjustment Name",
+  },
+  {
+    dataField: "month",
+    text: "Payable Month",
+  },
+  {
+    dataField: "income_type",
+    text: "Adjustment Type",
+    formatter: (cell) => <div className="capitalize">{cell}</div>,
+  },
+  {
+    dataField: "amounts_types",
+    text: "Amount Type",
+    formatter: (cell) => (
+      <div className="capitalize">
+        {cell === "percentage" ? "Variable" : cell}
+      </div>
+    ),
+  },
+  {
+    dataField: "amounts",
+    text: "Amount",
+    formatter: (cell) => <>{"AED " + Math.round(cell)}</>,
+  },
+  {
+    dataField: "",
+    text: "Status",
+    formatter: (cell, row) => {
+      return (
+        <>
+          {row.is_manager_approval ? (
+            <ClaimRequestStatus status={row.manager_approval.status} />
+          ) : (
+            <>N/A</>
+          )}
+        </>
+      );
+    },
+  },
+];
