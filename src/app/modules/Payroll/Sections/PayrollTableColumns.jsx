@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { EmployeeID, UserRole } from "utils/getValuesFromTables";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions } from "data/Data";
@@ -9,8 +10,18 @@ import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
 import { SalaryType, DesignationName } from "utils/getValuesFromTables";
 import { Badge } from "components/ui/badge";
-import { Clock, MapPin, Tag } from "lucide-react";
+import { Clock, MapPin, Tag, Pencil, Trash2, X } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
+import AddComponentSheet from "./AddComponentSheet";
+import AlertDialogue from "components/ui/AlertDialogue";
+import { toast } from "react-toastify";
+import { deleteEarnAndDeduction } from "app/hooks/payroll";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "src/@/components/ui/tooltip";
 
 export const EmployeePayrollColumns = [
   {
@@ -239,7 +250,118 @@ export const SalarySetupColumns = [
   },
 ];
 
-export const SalaryComponentColumns = (onCheckedChange) => [
+class ActionButtonCell extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isOpenEdit: false,
+      isOpenDelete: false
+    };
+  }
+
+  handleOpenEdit = () => {
+    this.setState({ isOpenEdit: true });
+  };
+
+  handleCloseEdit = () => {
+    this.setState({ isOpenEdit: false });
+  };
+
+  handleOpenDelete = () => {
+    this.setState({ isOpenDelete: true });
+  };
+
+  handleCloseDelete = () => {
+    this.setState({ isOpenDelete: false });
+  };
+
+  handleDeleteConfirm = async () => {
+    try {
+      const response = await deleteEarnAndDeduction(this.props.row.id);
+      if (response) {
+        toast.success("Component deleted successfully");
+        if (typeof this.props.handleReload === 'function') {
+          this.props.handleReload();
+        }
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete component");
+    }
+    this.handleCloseDelete();
+  };
+
+  render() {
+    const { row, handleReload } = this.props;
+    const { isOpenEdit, isOpenDelete } = this.state;
+
+    return (
+      <div 
+        className="flex items-center gap-3"
+        onClick={(event) => {
+          event.stopPropagation();
+        }}
+      >
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button 
+                className="flex items-center justify-center w-8 h-8 transition-colors border border-blue-300 rounded-full hover:bg-blue-50"
+                onClick={this.handleOpenEdit}
+                aria-label="Edit component"
+              >
+                <Pencil size={16} className="text-blue-600" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Edit</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button 
+                className="flex items-center justify-center w-8 h-8 transition-colors border border-red-400 rounded-full hover:bg-red-50"
+                onClick={this.handleOpenDelete}
+                aria-label="Delete component"
+              >
+                <X size={16} className="text-red-600" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Delete</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        {isOpenEdit && (
+          <AddComponentSheet
+            component={row}
+            isOpen={isOpenEdit}
+            setIsOpen={this.handleCloseEdit}
+            reload={handleReload}
+            onSuccess={handleReload}
+          />
+        )}
+
+        {isOpenDelete && (
+          <AlertDialogue
+            isOpen={isOpenDelete}
+            setIsOpen={this.handleCloseDelete}
+            handleContinue={this.handleDeleteConfirm}
+            continueText="Delete"
+            title={`Are you sure you want to delete "${row.name}"?`}
+            description="This action cannot be undone. Once deleted, the component data will be permanently removed."
+          />
+        )}
+      </div>
+    );
+  }
+}
+
+export const SalaryComponentColumns = (onCheckedChange, handleReload) => [
   {
     dataField: "name",
     text: "Component Name",
@@ -255,7 +377,7 @@ export const SalaryComponentColumns = (onCheckedChange) => [
               cell === "deduction" ? "bg-[#29a385]" : "bg-[#EA3E69]"
             } rounded-full`}
           />
-          <div className="text-neutral-1200 text-xs font-semibold  leading-3 capitalize">
+          <div className="text-xs font-semibold leading-3 capitalize text-neutral-1200">
             {cell}
           </div>
         </div>
@@ -275,7 +397,6 @@ export const SalaryComponentColumns = (onCheckedChange) => [
     dataField: "amounts",
     text: "Amount",
     formatter: (cell, row) => {
-      console.log("INFO", cell, row);
       const amount =
         row.amounts_types === "percentage"
           ? `${Math.fround(cell)}% of gross`
@@ -290,7 +411,6 @@ export const SalaryComponentColumns = (onCheckedChange) => [
       return (
         <div
           onClick={(event) => {
-            // Stop the event propagation to prevent onRowClick from being triggered
             event.stopPropagation();
           }}
         >
@@ -298,7 +418,6 @@ export const SalaryComponentColumns = (onCheckedChange) => [
             id="activate"
             checked={cell}
             onCheckedChange={(value) => {
-              // The event is handled by the div, so no need to stop it here
               onCheckedChange(value, row);
             }}
           />
@@ -306,5 +425,10 @@ export const SalaryComponentColumns = (onCheckedChange) => [
       );
     },
   },
+  {
+    dataField: "actions",
+    text: "",
+    formatter: (cell, row) => <ActionButtonCell row={row} handleReload={handleReload} />
+  }
 ];
 
