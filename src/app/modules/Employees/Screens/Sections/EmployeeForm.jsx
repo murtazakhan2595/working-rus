@@ -121,6 +121,7 @@ const SheetOnBorading = ({
       setShiftList(shiftList);
     }
   };
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -884,6 +885,16 @@ const SheetOnBorading = ({
                         </Button>
                       </div>
                     </div>
+                    {addShift && (
+                      <ShiftAction
+                        isOpen={addShift}
+                        setIsOpen={setAddShift}
+                        reload={getShiftList}
+                        setEmployeeShift={(value) => {
+                          props.setFieldValue("shift_assignment", value);
+                        }}
+                      />
+                    )}
                   </form>
                 )}
               </Formik>
@@ -891,18 +902,16 @@ const SheetOnBorading = ({
           </div>
         </div>
       </div>
-      {addShift && (
-        <ShiftAction
-          isOpen={addShift}
-          setIsOpen={setAddShift}
-          reload={getShiftList}
-        />
-      )}
     </>
   );
 };
 
-const ShiftAction = ({ isOpen, setIsOpen, reload }) => {
+const ShiftAction = ({
+  isOpen,
+  setIsOpen,
+  reload = () => {},
+  setEmployeeShift = () => {},
+}) => {
   const formSheetData = {
     triggerText: null,
     title: "Update Shift Details",
@@ -922,6 +931,8 @@ const ShiftAction = ({ isOpen, setIsOpen, reload }) => {
           reload();
           setIsOpen(value);
         }}
+        reload={reload}
+        setEmployeeShift={setEmployeeShift}
       />
     </SheetComponent>
   );

@@ -3,14 +3,14 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "../../../../../src/@/components/ui/avatar";
-import { Button } from "../../../../../components/ui/button";
+} from "../../../../../../src/@/components/ui/avatar";
+import { Button } from "../../../../../../components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "../../../../../components/ui/card";
+} from "../../../../../../components/ui/card";
 
 import {
   Table,
@@ -19,7 +19,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../../../../src/@/components/ui/table";
+} from "../../../../../../src/@/components/ui/table";
 import { ArrowLeft } from "lucide-react";
 
 import { useNavigate, useParams, useLocation } from "react-router-dom";
@@ -29,7 +29,7 @@ import {
   getSalaryRevision,
   getEmployeeEarnAndDeduction,
 } from "app/hooks/payroll";
-import RevisedSalarySheet from "../RevisedSalarySheet";
+import RevisedSalarySheet from "../../RevisedSalarySheet";
 import {
   DesignationName,
   EmployeeID,
@@ -41,22 +41,22 @@ import { PageLoader } from "components";
 import {
   revisionLetterOptions,
   revisionStatusOptions,
-} from "../../../../../data/Data";
+} from "../../../../../../data/Data";
 import {
   FilterInput,
   SelectInputComponent,
   TextInput,
-} from "../../../../../components/FormControl";
+} from "../../../../../../components/FormControl";
 import {
   getEarnAndDeduction,
   getEmployeePayroll,
   getPayslip,
   saveEmployeePayroll,
   updateSalaryRevisionStatus,
-} from "../../../../hooks/payroll";
-import AddAdditionalEarningSheet from "../../Sections/AddAdditionalEarningSheet";
+} from "../../../../../hooks/payroll";
+import AddAdditionalEarningSheet from "../../../Sections/AddAdditionalEarningSheet";
 import { toast } from "react-toastify";
-import { calculateEarningsAndDeductions } from "../../Sections/CalculationsHelperFunctions.jsx";
+import { calculateEarningsAndDeductions } from "../../../Sections/CalculationsHelperFunctions.jsx";
 import { EmployeeOverview } from "components";
 
 const EmployeeSalarySetup = () => {

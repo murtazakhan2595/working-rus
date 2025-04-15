@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "../../../../../components/ui/card.jsx";
+import { Card, CardContent, CardHeader } from "components/ui/card.jsx";
 import CustomTable from "components/CustomTable";
-import Header from "../../../../../components/Header.jsx";
 import { FilterInput } from "components/FormControl";
 import { useNavigate } from "react-router-dom";
 import { PageLoader } from "components";
-import { getEmployeePayroll } from "app/hooks/payroll.jsx";
+import { PendingSetups } from "app/modules/Payroll/Screens/SalarySetup/EmployeesSalarySetup";
 import { SalaryTypeOptions } from "data/Data";
 import { connect } from "react-redux";
 import { SalarySetupColumns } from "app/modules/Payroll/Sections/PayrollTableColumns";
-import SalaryComponent from "../../Sections/SalaryComponent.jsx";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "src/@/components/ui/tabs";
 import { getEmployeeCustomList } from "app/hooks/general";
-import AddComponentSheet from "../../Sections/AddComponentSheet.jsx";
+
+const innerTabClassName =
+  "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
 
 const EmployeesSalaryList = ({ departments }) => {
+  const [activeTab, setActiveTab] = useState("Salary Setup");
   const [isLoading, setIsLoading] = useState(false);
-  const [filterData, setFilterData] = useState({is_new:true});
+  const [filterData, setFilterData] = useState({ is_new: true });
   const [componentFilterData, setComponentFilterData] = useState({});
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [EmployeesList, setEmployeesList] = useState([]);
@@ -65,67 +68,44 @@ const EmployeesSalaryList = ({ departments }) => {
     });
   };
 
-  // Separate handler for Component filters
-  const handleComponentFilterChange = (filterName, filterValue) => {
-    onPageChange("page", 1);
-    const updatedFilters = { ...componentFilterData };
-    if (filterValue === "") {
-      delete updatedFilters[filterName];
-    } else {
-      updatedFilters[filterName] = filterValue;
-    }
-    setComponentFilterData(updatedFilters); // Update component filters
-  };
-
-  const tabsData = [
-    { value: "salary", label: "Salary" },
-    { value: "components", label: "Components" },
-  ];
-
   return (
-    <>
-      <CardHeader>
-        <div className="flex flex-row items-center justify-between">
-          <div className="flex-col justify-center items-start inline-flex">
-            <div className="self-stretch text-[#ab4aba] text-2xl font-medium  leading-normal">
-              {"Employee Salaries"}
-            </div>
-            <div className="self-stretch text-[#8b8d98] text-sm font-normal  leading-[16.80px]">
-              {"Payrolls of all employees are listed below"}
-            </div>
-          </div>
-          <FilterInput
-            filters={[
-              {
-                type: "select-one",
-                option: departments,
-                name: "department_name",
-                placeholder: "Department",
-              },
-              {
-                type: "select-two",
-                option: SalaryTypeOptions,
-                name: "salary_type",
-                placeholder: "Salary Type",
-              },
-            ]}
-            onChange={handleSalaryFilterChange} // Dynamic filter handler
-          />
-        </div>
-      </CardHeader>
-
-      {isLoading ? (
-        <PageLoader />
-      ) : (
-        <CustomTable
-          data={EmployeesList.results || []}
-          columns={SalarySetupColumns}
-          pagination={true}
-          dataTotalSize={EmployeesList?.count || 0}
-          tableOptions={tableOptions}
+    <Tabs
+      className="w-full"
+      onValueChange={(tab) => {
+        setActiveTab(tab);
+      }}
+      value={activeTab}
+    >
+      <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+        <TabsList className="flex items-center justify-center mb-4">
+          {["Salary Setup"].map((tab) => (
+            <TabsTrigger key={tab} value={tab} className={innerTabClassName}>
+              {tab}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <FilterInput
+          filters={[
+            {
+              type: "select-one",
+              option: departments,
+              name: "department_name",
+              placeholder: "Department",
+            },
+            {
+              type: "select-two",
+              option: SalaryTypeOptions,
+              name: "salary_type",
+              placeholder: "Salary Type",
+            },
+          ]}
+          onChange={handleSalaryFilterChange} // Dynamic filter handler
         />
-      )}
-    </>
+      </div>
+      <TabsContent value="Salary Setup">
+        <PendingSetups filterData={filterData} />
+      </TabsContent>
+    </Tabs>
   );
 };
 const mapStateToProps = (state) => {

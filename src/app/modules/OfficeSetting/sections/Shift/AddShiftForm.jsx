@@ -1,6 +1,6 @@
 import { Label } from "src/@/components/ui/label";
 import { ShiftInformation } from "app/utils/Types/Shift";
-import { TextInput ,TimePicker} from "components/FormControl";
+import { TextInput, TimePicker } from "components/FormControl";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { Button } from "components/ui/button";
 import { Formik } from "formik";
@@ -14,7 +14,14 @@ import { saveShift } from "app/hooks/general";
 import { validateShiftFormSchema } from "app/utils/FormSchema/ShiftFormSchema";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 
-const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
+const AddShiftForm = ({
+  isOpen,
+  setIsOpen,
+  edit,
+  setEdit,
+  reload = () => {},
+  setEmployeeShift = () => {},
+}) => {
   console.log("Reload in AddShiftForm:", reload);
   const [formData, setFormData] = useState(() => {
     if (edit?.data) {
@@ -60,12 +67,13 @@ const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
 
       const response = await saveShift(updatedValues?.id, updatedValues);
       if (response) {
-        toast.success(`Shift ${edit ? "Updated": "Added"} Successfully!`, {
+        toast.success(`Shift ${edit ? "Updated" : "Added"} Successfully!`, {
           position: toast.POSITION.TOP_RIGHT,
         });
-        console.log("response", response)
-        reload();
+        console.log("response", response);
+        reload(true);
         setIsOpen(false);
+        setEmployeeShift(response.id);
         setEdit({
           open: false,
           data: null,
@@ -128,13 +136,17 @@ const AddShiftForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
               <Label>Start Time</Label>
               <TimePicker
                 value={props.values.starttime || "09:00 AM"} // Bind Formik value for starttime
-                onChange={(field,time) => handleTimeChange("starttime", time, props)} // Update Formik value on time change
+                onChange={(field, time) =>
+                  handleTimeChange("starttime", time, props)
+                } // Update Formik value on time change
               />
 
               <Label>End Time</Label>
               <TimePicker
                 value={props.values.endtime || "05:00 PM"} // Bind Formik value for endtime
-                onChange={(field,time) => handleTimeChange("endtime", time, props)} // Update Formik value on time change
+                onChange={(field, time) =>
+                  handleTimeChange("endtime", time, props)
+                } // Update Formik value on time change
               />
             </SheetCardExtension>
             <div className="p-6 border-t border-gray-200 bg-gray-50">
