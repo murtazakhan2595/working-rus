@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "../../../../components/ui/card.jsx";
-import { SalaryComponentColumns } from "app/modules/Payroll/Sections";
+import { AdjustmentComponentColumns } from "app/modules/Payroll/Sections";
 import CustomTable from "components/CustomTable";
 import Header from "../../../../components/Header.jsx";
 import { FilterInput } from "components/FormControl";
@@ -9,15 +9,16 @@ import { PageLoader } from "components";
 import { connect } from "react-redux";
 import { getEarnAndDeduction } from "app/hooks/payroll.jsx";
 import { saveEarnAndDeduction } from "app/hooks/payroll.jsx";
-import AddComponentSheet from "./AddComponentSheet.jsx";
+import AddAdjustmentSheet from "./AddAdjustmentSheet.jsx";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension.jsx";
+import { getEmployeeEarnAndDeduction } from "app/hooks/payroll.jsx";
 
-const SalaryComponent = ({ componentFilterData }) => {
+const PayrollAdjustment = ({ componentFilterData }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [component, setComponent] = useState([]);
+  const [adjustment, setAdjustment] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
-  const [selectedComponent, setSelectedComponent] = useState(null);
+  const [adjustmentComponent, setAdjustmentComponent] = useState(null);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -29,18 +30,18 @@ const SalaryComponent = ({ componentFilterData }) => {
     onPageChange: onPageChange,
     onRowClick: (row) => {
       setIsOpen(true);
-      setSelectedComponent(row);
+      setAdjustmentComponent(row);
     },
   };
 
   const fetchData = async () => {
     setIsLoading(true);
-    const response = await getEarnAndDeduction({
+    const response = await getEmployeeEarnAndDeduction({
       options,
       filterData: { ...componentFilterData },
     });
     if (response) {
-      setComponent(response.results);
+      setAdjustment(response.results);
     }
     setIsLoading(false);
   };
@@ -48,17 +49,6 @@ const SalaryComponent = ({ componentFilterData }) => {
     fetchData();
   }, [options, componentFilterData]);
 
-  const onCheckedChange = async (value, component) => {
-    const updatedComponent = { ...component, is_active: value };
-    const response = await saveEarnAndDeduction(updatedComponent);
-    if (response) {
-      setComponent((prevState) =>
-        prevState.map((item) =>
-          item.id === updatedComponent.id ? updatedComponent : item
-        )
-      );
-    }
-  };
 
   const handleClose = () => {
     setIsOpen(false)
@@ -67,10 +57,14 @@ const SalaryComponent = ({ componentFilterData }) => {
 
   return (
     <div className="flex flex-col gap-4 profile-management">
-      {handleCloseWithConfirmation({isOpen: closeSheet, setCloseSheet, setIsOpen})}
-      {selectedComponent && (
-        <AddComponentSheet
-          component={selectedComponent}
+      {handleCloseWithConfirmation({
+        isOpen: closeSheet,
+        setCloseSheet,
+        setIsOpen,
+      })}
+      {adjustmentComponent && (
+        <AddAdjustmentSheet
+          adjustment={adjustmentComponent}
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           reload={fetchData}
@@ -82,10 +76,10 @@ const SalaryComponent = ({ componentFilterData }) => {
         <PageLoader />
       ) : (
         <CustomTable
-          data={component}
-          columns={SalaryComponentColumns(onCheckedChange)}
+          data={adjustment}
+          columns={AdjustmentComponentColumns}
           pagination={true}
-          dataTotalSize={0}
+          dataTotalSize={adjustment.length}
           tableOptions={tableOptions}
         />
       )}
@@ -93,4 +87,4 @@ const SalaryComponent = ({ componentFilterData }) => {
   );
 };
 
-export default SalaryComponent;
+export default PayrollAdjustment;

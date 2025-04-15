@@ -17,7 +17,7 @@ import {
 import { getEmployeeCustomList } from "app/hooks/general";
 import { toast } from "react-toastify";
 
-import { deleteEarnAndDeduction } from "app/hooks/payroll";
+import { deleteEmployeeEarnDeduction } from "app/hooks/payroll";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { DetailCard } from "components/SheetCardExtension";
@@ -107,10 +107,11 @@ const AddAdjustmentSheet = ({
   };
 
   const handleAdjustmentDelete = async () => {
-    const response = await deleteEarnAndDeduction(adjustment.id);
+    const response = await deleteEmployeeEarnDeduction(adjustment.id);
     if (response) {
       toast.success("Adjustment deleted successfully");
       setIsOpen(false);
+      setIsDelete(false);
       reload();
     }
   };
@@ -527,6 +528,7 @@ const ViewAdjustment = ({
     { label: "Payable Month", value: formattedMonth },
     { label: "Reason", value: adjustment.reason || "Not specified" },
     { label: "Approval Status", value: approvalStatus },
+    {label: "Description", value: adjustment.description || "Not specified"},
   ];
 
   return (

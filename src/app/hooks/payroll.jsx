@@ -187,43 +187,8 @@ const getEmployeeEarnAndDeduction = async (payload) => {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
-    const responseEarnDededuction = await axios.get(
-      `${baseUrl}/payroll/earn-deduction-type/`,
-      {
-        headers: headers(),
-      }
-    );
-    if (response.status === 200 && responseEarnDededuction.status === 200) {
-      const earnDeduction = responseEarnDededuction.data.results;
-      response.data.results.map((item) => {
-        item.income_type = earnDeduction.find(
-          (earnDeduction) => earnDeduction.id === item.income_type
-        )?.income_type;
-      });
-      const earnings = response.data.results.filter(
-        (item) => item.income_type === "earning"
-      );
-
-      const deductions = response.data.results.filter(
-        (item) => item.income_type === "deduction"
-      );
-
-      // Calculate total amounts for earnings and deductions
-      const totalEarnings = earnings
-        .reduce((total, item) => total + parseFloat(item.amount), 0)
-        .toFixed(2);
-
-      const totalDeductions = deductions
-        .reduce((total, item) => total + parseFloat(item.amount), 0)
-        .toFixed(2);
-
-      const data = {
-        earnings,
-        deductions,
-        totalEarnings,
-        totalDeductions,
-      };
-      return data;
+    if (response.status === 200) {
+      return response.data;
     }
   } catch (error) {
     console.error("Error fetching salary revision data:", error);
@@ -733,6 +698,24 @@ const claimExpenseChoices = async()=>{
   }
 }
 
+const deleteEmployeeEarnDeduction = async (id) => {
+  try {
+    const response = await axios.delete(
+      `${baseUrl}/payroll/employee-earn-deduction/${id}`,
+      {
+        headers: headers(),
+      }
+    );
+    return true;
+  } catch (error) {
+    console.error("Error deleting employee earn and deduction data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
+
 export {
   claimExpenseChoices,
   getEmployeePayroll,
@@ -749,6 +732,7 @@ export {
   getSalarySetupData,
   saveEarnAndDeduction,
   deleteEarnAndDeduction,
+  deleteEmployeeEarnDeduction,
   saveEmployeeEarnDeduction,
   saveReimbursement,
   getReimbursement,
