@@ -21,7 +21,40 @@ const initialEarningAndDeduction = {
   income_type: "earning",
   amounts_types: "fixed",
   amounts: "",
-  is_active: false,
+  is_active: true, // Default active
+};
+
+const validateForm = (values) => {
+  const errors = {};
+  
+  if (!values.name) {
+    errors.name = "Component name is required";
+  } else if (values.name.length > 50) {
+    errors.name = "Component name cannot exceed 50 characters";
+  }
+  
+  if (!values.income_type) {
+    errors.income_type = "Component type is required";
+  }
+  
+  if (!values.amounts_types) {
+    errors.amounts_types = "Amount type is required";
+  }
+  
+  if (!values.amounts) {
+    errors.amounts = "Amount is required";
+  } else {
+    const amountNum = parseFloat(values.amounts);
+    const isValidNumber = /^\d+(\.\d+)?$/.test(values.amounts);
+    
+    if (!isValidNumber) {
+      errors.amounts = "Must be a valid number";
+    } else if (values.amounts_types === "percentage" && amountNum > 100) {
+      errors.amounts = "Percentage cannot exceed 100%";
+    }
+  }
+  
+  return errors;
 };
 
 const AddComponentSheet = ({
@@ -31,6 +64,7 @@ const AddComponentSheet = ({
   isOpen,
   setIsOpen,
   onClose,
+  onSuccess,
 }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
@@ -48,25 +82,48 @@ const AddComponentSheet = ({
   };
 
   const handleSubmit = async (values) => {
-    const response = await saveEarnAndDeduction(values);
-    if (response) {
-      if (values.id) {
-        toast.success("Component updated successfully");
-      } else {
-        toast.success("Component added successfully");
+    try {
+      const response = await saveEarnAndDeduction(values);
+      if (response) {
+        if (values.id) {
+          toast.success("Component updated successfully");
+        } else {
+          toast.success("Component added successfully");
+        }
+        setIsOpen(false);
+        setIsEdit(false);
+        
+        // Call onSuccess with the newly created/updated component
+        if (typeof onSuccess === 'function') {
+          onSuccess(response);
+        }
+        
+        // Ensure reload is called properly if onSuccess isn't available
+        if (typeof reload === 'function' && typeof onSuccess !== 'function') {
+          await reload();
+        }
       }
-      setIsOpen(false);
-      setIsEdit(false);
-      reload();
+    } catch (error) {
+      toast.error("Failed to save component");
+      console.error("Save error:", error);
     }
   };
 
   const handleComponentDelete = async () => {
-    const response = await deleteEarnAndDeduction(component.id);
-    if (response) {
-      toast.success("Component deleted successfully");
-      setIsOpen(false);
-      reload();
+    try {
+      const response = await deleteEarnAndDeduction(component.id);
+      if (response) {
+        toast.success("Component deleted successfully");
+        setIsOpen(false);
+        
+        // Ensure reload is called properly
+        if (typeof reload === 'function') {
+          await reload();
+        }
+      }
+    } catch (error) {
+      toast.error("Failed to delete component");
+      console.error("Delete error:", error);
     }
   };
 
@@ -113,6 +170,7 @@ const AddComponentSheet = ({
               setIsOpen={setIsOpen}
               setIsEdit={setIsEdit}
               onClose={handleClose}
+              onSuccess={onSuccess}
             />
           )}
         </SheetComponent>
@@ -129,11 +187,12 @@ const ComponentForm = ({
   setIsOpen,
   setIsEdit,
   onClose,
+  onSuccess,
 }) => {
   return (
     <Formik
       initialValues={earnAndDeduction}
-      // validationSchema={validationSchema}
+      validate={validateForm}
       enableReinitialize={true}
       onSubmit={handleSubmit}
     >
