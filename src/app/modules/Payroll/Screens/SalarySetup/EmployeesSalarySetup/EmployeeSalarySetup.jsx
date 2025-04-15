@@ -1,9 +1,4 @@
-import React, { useEffect } from "react";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "../../../../../../src/@/components/ui/avatar";
+import React, { useEffect, useState } from "react";
 import { Button } from "../../../../../../components/ui/button";
 import {
   Card,
@@ -30,22 +25,18 @@ import {
   getEmployeeEarnAndDeduction,
 } from "app/hooks/payroll";
 import RevisedSalarySheet from "../../RevisedSalarySheet";
-import {
-  DesignationName,
-  EmployeeID,
-  getExperience,
-} from "utils/getValuesFromTables";
+import { SalaryTypeOptions } from "data/Data";
 import { getEmployeeData } from "app/hooks/employee";
 import { numberToWords } from "utils/renderValues.js";
-import { PageLoader } from "components";
+import { PageLoader, SheetUI } from "components";
+import { mapEmployeePayRollData } from "app/utils/MappingObjects/mapPayrollData";
 import {
-  revisionLetterOptions,
-  revisionStatusOptions,
-} from "../../../../../../data/Data";
-import {
-  FilterInput,
+  NumberInput,
   SelectInputComponent,
   TextInput,
+  RadioGroupInput,
+  TimePicker,
+  DateInput,
 } from "../../../../../../components/FormControl";
 import {
   getEarnAndDeduction,
@@ -62,9 +53,10 @@ import { EmployeeOverview } from "components";
 const EmployeeSalarySetup = () => {
   const [employeeData, setEmployeeData] = React.useState({});
   const [payrollId, setPayrollId] = React.useState(null);
+  const [payrollForm, setPayrollForm] = useState({});
   const [earnAndDeductionType, setEarnAndDeductionsType] = React.useState([]);
   const [earnAndDeductions, setEarnAndDeductions] = React.useState([]);
-  const [monthlyGrossSalary, setMonthlyGrossSalary] = React.useState();
+  const [monthlyGrossSalary, setMonthlyGrossSalary] = useState({});
   const [earnings, setEarnings] = React.useState([]);
   const [deductions, setDeductions] = React.useState([]);
   const [totalEarnings, setTotalEarnings] = React.useState(0);
@@ -86,6 +78,8 @@ const EmployeeSalarySetup = () => {
     //
     if (response) {
       setPayrollId(response?.results[0]?.id);
+      console.log(response?.results[0], "response?.results[0]");
+      setPayrollForm(mapEmployeePayRollData(response?.results[0]));
       if (response?.results[0]?.salary_type === "hourly") {
         setMonthlyGrossSalary(response?.results[0]?.hourly_rate);
       } else {
@@ -224,6 +218,72 @@ const EmployeeSalarySetup = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-start gap-4 pt-6 space-x-4">
+              <SheetUI
+                isOpen={true}
+                variant=""
+                className="w-full"
+                formConfig={{
+                  initialValues: payrollForm,
+                  enableReinitialize: true,
+                  handleSubmit: () => {},
+                  validateFormSchema: () => {},
+                  submitButtonText: "Save",
+                  columns: 3,
+                  formFiels: [
+                    {
+                      sheetCardExtension: false,
+                      InputFiels: [
+                        {
+                          InputField: NumberInput,
+                          name: "basic_salary",
+                          required: true,
+                          label: "Gross Salary",
+                        },
+
+                        {
+                          InputField: SelectInputComponent,
+                          name: "salary_type",
+                          required: true,
+                          label: "Salary Type",
+                          options: SalaryTypeOptions,
+                        },
+                        {
+                          InputField: NumberInput,
+                          name: "CTC",
+                          required: true,
+                          label: "CTC",
+                        },
+                        {
+                          InputField: NumberInput,
+                          name: "basic_salary",
+                          required: true,
+                          label: "Basic Salary",
+                        },
+                        {
+                          InputField: RadioGroupInput,
+                          name: "status",
+                          required: true,
+                          disabled: false,
+                          label: "Status",
+                          options: [
+                            { value: "Present", label: "Present" },
+                            { value: "Absent", label: "Absent" },
+                            { value: "Late", label: "Late" },
+                            { value: "Weekend", label: "Weekend" },
+                          ],
+                          colsSpan: 3,
+                        },
+                        {
+                          InputField: DateInput,
+                          name: "date",
+                          required: true,
+                          label: "Attendance Date",
+                        },
+                      ].filter(Boolean),
+                    },
+                  ],
+                }}
+              ></SheetUI>
               <div className="text-lg font-semibold text-black">
                 {" "}
                 {isEos

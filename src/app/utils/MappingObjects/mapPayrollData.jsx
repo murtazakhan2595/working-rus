@@ -1,4 +1,4 @@
-import { PayRun } from "app/utils/Types/Payroll";
+import { PayRun, EmployeePayRoll } from "app/utils/Types/Payroll";
 import moment from "moment";
 
 export function mapPayRunData(data) {
@@ -24,4 +24,16 @@ export async function mapPayRunList(data) {
   });
 
   return PayRunList;
+}
+
+export function mapEmployeePayRollData(data) {
+  if (!data) return {};
+  const payrunData = Object.keys(EmployeePayRoll).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      acc[key] = data[key];
+    }
+    return acc;
+  }, {});
+
+  return payrunData;
 }

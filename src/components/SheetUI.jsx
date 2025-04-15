@@ -14,6 +14,7 @@ const SheetUI = forwardRef(
       isOpen = true,
       setIsOpen = () => {},
       children,
+      className,
       variant = "modal", // Determines if the component is a 'modal' or 'sheet'
       sheetConfig = {
         triggerText: "Submit",
@@ -37,7 +38,7 @@ const SheetUI = forwardRef(
       handleSubmit,
       validateFormSchema,
       submitButtonText = "Submit",
-      cancelButtonText = "Cancel",
+      cancelButtonText,
       formFiels,
       renderUpdatedFormValues = () => {},
       columns,
@@ -55,6 +56,7 @@ const SheetUI = forwardRef(
         sheetConfig={sheetConfig}
         isCloseConfirmationOpen={isCloseConfirmationOpen}
         setIsCloseConfirmationOpen={setIsCloseConfirmationOpen}
+        className={className}
       >
         <Formik
           initialValues={initialValues}
@@ -66,7 +68,7 @@ const SheetUI = forwardRef(
           validate={(values) => {
             const errors = validateFormSchema(values);
             // if (errors)
-              console.error("Form Errors:", errors, "Values:", values);
+            console.error("Form Errors:", errors, "Values:", values);
             if (renderUpdatedFormValues) {
               renderUpdatedFormValues(values);
             }
@@ -143,15 +145,22 @@ const SheetUI = forwardRef(
               )}
               <div className="p-6 border-t border-gray-200 bg-gray-50">
                 <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
+                  {cancelButtonText && (
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      onClick={handleClose}
+                      type="button"
+                    >
+                      {cancelButtonText}
+                    </Button>
+                  )}
                   <Button
-                    variant="outline"
+                    type="submit"
                     size="lg"
-                    onClick={handleClose}
-                    type="button"
+                    variant="default"
+                    onClick={props.handleSubmit}
                   >
-                    {cancelButtonText}
-                  </Button>
-                  <Button type="submit" size="lg" variant="default" onClick={props.handleSubmit}>
                     {submitButtonText}
                   </Button>
                 </div>
@@ -183,6 +192,7 @@ const FormBody = ({
 const SheetVariant = ({
   children,
   isOpen = true,
+  className,
   setIsOpen = () => {},
   setIsCloseConfirmationOpen = () => {},
   isCloseConfirmationOpen = false,
@@ -204,32 +214,33 @@ const SheetVariant = ({
           setCloseSheet: setIsCloseConfirmationOpen,
           setIsOpen,
         })}
-
-      {variant === "modal" ? (
-        // Render a dialog box when variant is 'modal'
-        <DialogBox
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          title={sheetConfig.title}
-          description={sheetConfig.description}
-          className={sheetConfig.className}
-        >
-          {children}
-        </DialogBox>
-      ) : variant === "sheet" ? (
-        // Render a sheet component when variant is 'sheet'
-        <SheetComponent
-          {...sheetConfig}
-          width={sheetConfig.width}
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-        >
-          {children}
-        </SheetComponent>
-      ) : (
-        // Default case if variant is neither 'modal' nor 'sheet'
-        children
-      )}
+      <div className={className}>
+        {variant === "modal" ? (
+          // Render a dialog box when variant is 'modal'
+          <DialogBox
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            title={sheetConfig.title}
+            description={sheetConfig.description}
+            className={sheetConfig.className}
+          >
+            {children}
+          </DialogBox>
+        ) : variant === "sheet" ? (
+          // Render a sheet component when variant is 'sheet'
+          <SheetComponent
+            {...sheetConfig}
+            width={sheetConfig.width}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+          >
+            {children}
+          </SheetComponent>
+        ) : (
+          // Default case if variant is neither 'modal' nor 'sheet'
+          children
+        )}
+      </div>
     </>
   );
 };

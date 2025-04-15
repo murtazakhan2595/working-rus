@@ -13,6 +13,7 @@ import {
 } from "src/@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "src/@/components/ui/radio-group";
 import TextInput from "components/FormControl/TextInput";
+import NumberInput from "components/FormControl/NumberInput";
 import PasswordInput from "components/FormControl/PasswordInput";
 import CoverFileUpload from "components/FormControl/UploadFiles";
 import { ChevronsUpDown, Check, SearchIcon } from "lucide-react";
@@ -197,73 +198,73 @@ export const FormFieldIcon = memo(
 //   );
 // };
 
-const NumberInput = ({
-  name,
-  value,
-  error,
-  onBlur,
-  touch,
-  onChange,
-  label,
-  disabled,
-  required,
-  regEx,
-  min,
-  max,
-  step,
-  placeholder,
-}) => {
-  return (
-    <>
-      <div className="flex flex-col gap-4">
-        {label && (
-          <Label htmlFor={name}>
-            {label}
-            {required && <span className="text-red-600">* </span>}
-          </Label>
-        )}
-        <Input
-          type="number"
-          id={name}
-          name={name}
-          autoComplete="Off"
-          placeholder={label ? "Enter " + label : placeholder}
-          value={value ?? ""}
-          disabled={disabled}
-          className={error && touch ? "is-invalid" : "text-neutral-1000"}
-          min={min}
-          max={max}
-          step={step ?? "any"}
-          onChange={(option) => {
-            const value = option.target.value;
-            // Only allow numeric input
-            if (/^\d*\.?\d*$/.test(value) || value === "") {
-              onChange(name, value);
-            }
-          }}
-          // Prevent non-numeric input including 'e' and special characters
-          onKeyDown={(e) => {
-            if (
-              e.key === "e" ||
-              e.key === "E" ||
-              e.key === "+" ||
-              e.key === "-"
-            ) {
-              e.preventDefault();
-            }
-          }}
-          onBlur={(event) => {
-            if (onBlur) {
-              onBlur(event);
-            }
-          }}
-        />
+// const NumberInput = ({
+//   name,
+//   value,
+//   error,
+//   onBlur,
+//   touch,
+//   onChange,
+//   label,
+//   disabled,
+//   required,
+//   regEx,
+//   min,
+//   max,
+//   step,
+//   placeholder,
+// }) => {
+//   return (
+//     <>
+//       <div className="flex flex-col gap-4">
+//         {label && (
+//           <Label htmlFor={name}>
+//             {label}
+//             {required && <span className="text-red-600">* </span>}
+//           </Label>
+//         )}
+//         <Input
+//           type="number"
+//           id={name}
+//           name={name}
+//           autoComplete="Off"
+//           placeholder={label ? "Enter " + label : placeholder}
+//           value={value ?? ""}
+//           disabled={disabled}
+//           className={error && touch ? "is-invalid" : "text-neutral-1000"}
+//           min={min}
+//           max={max}
+//           step={step ?? "any"}
+//           onChange={(option) => {
+//             const value = option.target.value;
+//             // Only allow numeric input
+//             if (/^\d*\.?\d*$/.test(value) || value === "") {
+//               onChange(name, value);
+//             }
+//           }}
+//           // Prevent non-numeric input including 'e' and special characters
+//           onKeyDown={(e) => {
+//             if (
+//               e.key === "e" ||
+//               e.key === "E" ||
+//               e.key === "+" ||
+//               e.key === "-"
+//             ) {
+//               e.preventDefault();
+//             }
+//           }}
+//           onBlur={(event) => {
+//             if (onBlur) {
+//               onBlur(event);
+//             }
+//           }}
+//         />
 
-        {error && touch && <div className={errorClassName}>{error}</div>}
-      </div>
-    </>
-  );
-};
+//         {error && touch && <div className={errorClassName}>{error}</div>}
+//       </div>
+//     </>
+//   );
+// };
 
 const PhoneNumberInput = ({
   name,

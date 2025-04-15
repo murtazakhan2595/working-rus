@@ -10,3 +10,8 @@ export const PayRun = {
   total_employees: null,
   title: null,
 };
+
+export const EmployeePayRoll = {
+  basic_salary:null,
+  salary_type:null,
+};
