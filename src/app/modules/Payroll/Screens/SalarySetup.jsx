@@ -20,8 +20,10 @@ import {
   TabsContent,
 } from "src/@/components/ui/tabs";
 import SalaryComponent from "../../Payroll/Sections/SalaryComponent.jsx";
+import PayrollAdjustment from "../../Payroll/Sections/PayrollAdjustment.jsx";
 import { getSalarySetupData } from "app/hooks/payroll.jsx";
 import AddComponentSheet from "../../Payroll/Sections/AddComponentSheet.jsx";
+import AddAdjustmentSheet from "../Sections/AddAdjustmentSheet.jsx";
 
 const SalarySetup = ({ departments }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -88,6 +90,7 @@ const SalarySetup = ({ departments }) => {
   const tabsData = [
     { value: "salary", label: "Salary" },
     { value: "components", label: "Components" },
+    {value: "payroll-adjustment", label: "Payroll Adjustment"}
   ];
   const filters =
     activeTab === "salary"
@@ -128,7 +131,14 @@ const SalarySetup = ({ departments }) => {
   return (
     <div className="flex flex-col gap-4 salary-startup">
       <Header
-        content={activeTab === "components" && <AddComponentSheet isOpen ={isOpen} setIsOpen={setIsOpen}/>}
+        content={
+          (activeTab === "components" && (
+            <AddComponentSheet isOpen={isOpen} setIsOpen={setIsOpen} />
+          )) ||
+          (activeTab === "payroll-adjustment" && (
+            <AddAdjustmentSheet isOpen={isOpen} setIsOpen={setIsOpen} />
+          ))
+        }
       />
 
       <Tabs
@@ -142,8 +152,8 @@ const SalarySetup = ({ departments }) => {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-                 >
+                className="data-[state=active]:bg-primary-200 w-36 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+              >
                 {tab.label}
               </TabsTrigger>
             ))}
@@ -196,6 +206,9 @@ const SalarySetup = ({ departments }) => {
             </TabsContent>
             <TabsContent value="components">
               <SalaryComponent componentFilterData={componentFilterData} />
+            </TabsContent>
+            <TabsContent value="payroll-adjustment">
+              <PayrollAdjustment componentFilterData={componentFilterData} />
             </TabsContent>
           </CardContent>
         </Card>
