@@ -10,7 +10,10 @@ import { DateInput } from "components/FormControl";
 import { Switch } from "../../../../src/@/components/ui/switch";
 import { Label } from "../../../../src/@/components/ui/label";
 
-import { saveEmployeeEarnDeduction, getEmployeePayroll } from "app/hooks/payroll";
+import {
+  saveEmployeeEarnDeduction,
+  getEmployeePayroll,
+} from "app/hooks/payroll";
 import { getEmployeeCustomList } from "app/hooks/general";
 import { toast } from "react-toastify";
 
@@ -21,8 +24,10 @@ import { DetailCard } from "components/SheetCardExtension";
 import { DetailBox } from "components/SheetCardExtension";
 import { EmployeeOverview } from "components";
 import { connect } from "react-redux";
+import { validateAdjustmentForm } from "app/utils/FormSchema/payrollFormSchema";
 
 const initialAdjustment = {
+  type_name: "",
   employee_id: "",
   employee_name: "",
   income_type: "earning",
@@ -34,10 +39,11 @@ const initialAdjustment = {
   employee_payroll: null,
   is_manager_approval: false,
   manager_approval: {
-    status: "not_required",
-    date: null,
+    status: "approved",
   },
 };
+
+
 
 const AddAdjustmentSheet = ({
   adjustment,
@@ -47,11 +53,12 @@ const AddAdjustmentSheet = ({
   isOpen,
   setIsOpen,
   onClose,
+  userProfile,
 }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
-
+  const [payrollId, setPayrollId] = useState(null);
   const [adjustmentData, setAdjustmentData] = useState(
     adjustment || initialAdjustment
   );
@@ -64,16 +71,26 @@ const AddAdjustmentSheet = ({
   };
 
   const handleSubmit = async (values) => {
+    // const employeePayroll = await getEmployeePayroll({
+    //   filterData: { employee_id: values?.employee_id },
+    // });
+    // if(employeePayroll?.results && employeePayroll.results.length > 0 ) {
+    //   setPayrollId(employeePayroll.results[0].id);
+    //   values.employee_payroll = employeePayroll.results[0].id;
+    // }else{
+    //   toast.error("Employee payroll not found");
+    //   return;
+    // }
+    values.employee_payroll= 1
     // Set manager approval status based on toggle
     if (!values.is_manager_approval) {
       values.manager_approval = {
-        status: "not_required",
-        date: null,
+        status: "approved",
       };
-    } else {
+    } else if (!values.id) {
+      // Only set to pending for new adjustments
       values.manager_approval = {
         status: "pending",
-        date: null,
       };
     }
 
@@ -112,6 +129,28 @@ const AddAdjustmentSheet = ({
     setCloseSheet(true);
   };
 
+  // Function to handle manager approval/rejection
+  const handleManagerApproval = async (status) => {
+    const updatedAdjustment = {
+      ...adjustment,
+      manager_approval: {
+        status: status,
+        date: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
+      },
+    };
+
+    const response = await saveEmployeeEarnDeduction(updatedAdjustment);
+    if (response) {
+      toast.success(
+        `Adjustment ${
+          status === "approved" ? "approved" : "rejected"
+        } successfully`
+      );
+      setIsOpen(false);
+      reload();
+    }
+  };
+
   return (
     <>
       <div>
@@ -134,6 +173,8 @@ const AddAdjustmentSheet = ({
               setIsEdit={setIsEdit}
               isDelete={isDelete}
               setIsDelete={setIsDelete}
+              userProfile={userProfile}
+              handleManagerApproval={handleManagerApproval}
             />
           ) : (
             <AdjustmentForm
@@ -143,6 +184,8 @@ const AddAdjustmentSheet = ({
               setIsEdit={setIsEdit}
               onClose={handleClose}
               employees={employees}
+              userProfile={userProfile}
+              validateForm={validateAdjustmentForm}
             />
           )}
         </SheetComponent>
@@ -168,6 +211,8 @@ const AdjustmentForm = ({
   setIsEdit,
   onClose,
   employees,
+  userProfile,
+  validateForm,
 }) => {
   // State for employee search
   const [employeeSearch, setEmployeeSearch] = useState("");
@@ -178,40 +223,50 @@ const AdjustmentForm = ({
     }))
   );
   const [isSearching, setIsSearching] = useState(false);
+  const [showReasonField, setShowReasonField] = useState(false);
 
-const searchEmployees = (query) => {
-  if (!query) {
-    setEmployeesList([]);
-    return;
-  }
+  const searchEmployees = (query) => {
+    if (!query) {
+      setEmployeesList([]);
+      return;
+    }
 
-  setIsSearching(true);
-  try {
-    // Use employees from props instead of making API call
-    const filteredEmployees = employees.filter((emp) => {
-      // Convert query and employee data to lowercase for case-insensitive comparison
-      const searchQuery = query.toLowerCase();
-      const nameMatch = emp.name?.toLowerCase().includes(searchQuery);
-      const serialMatch = emp.serial_number
-        ?.toLowerCase()
-        .includes(searchQuery);
+    setIsSearching(true);
+    try {
+      // Use employees from props instead of making API call
+      const filteredEmployees = employees.filter((emp) => {
+        // Convert query and employee data to lowercase for case-insensitive comparison
+        const searchQuery = query.toLowerCase();
+        const nameMatch = emp.name?.toLowerCase().includes(searchQuery);
+        const serialMatch = emp.serial_number
+          ?.toLowerCase()
+          .includes(searchQuery);
 
-      // Return true if either name or serial_number contains the search query
-      return nameMatch || serialMatch;
-    });
+        // Return true if either name or serial_number contains the search query
+        return nameMatch || serialMatch;
+      });
 
-    setEmployeesList(
-      filteredEmployees.map((emp) => ({
-        value: emp.id,
-        label: `${emp.name} (${emp.serial_number || "No ID"})`,
-      }))
-    );
-  } catch (error) {
-    console.error("Error searching employees:", error);
-  } finally {
-    setIsSearching(false);
-  }
-};
+      setEmployeesList(
+        filteredEmployees.map((emp) => ({
+          value: emp.id,
+          label: `${emp.name} (${emp.serial_number || "No ID"})`,
+        }))
+      );
+    } catch (error) {
+      console.error("Error searching employees:", error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Determine if the current user is a manager
+  const isManager = userProfile?.role === 2;
+
+  // Show reason field based on user role
+  useEffect(() => {
+    // Show reason field if user is a manager
+    setShowReasonField(isManager);
+  }, [isManager]);
 
   // Debounce search to avoid excessive API calls
   useEffect(() => {
@@ -229,6 +284,7 @@ const searchEmployees = (query) => {
       initialValues={adjustmentData}
       enableReinitialize={true}
       onSubmit={handleSubmit}
+      validate={validateForm}
     >
       {(props) => (
         <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
@@ -238,14 +294,13 @@ const searchEmployees = (query) => {
               <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                 <div className="text-zinc-950">Employee Information</div>
               </div>
-              <div className="pt-4">
-                <div>Select Employee</div>
-              </div>
               <SelectInputComponent
                 name="employee_id"
                 error={props.errors?.employee_id}
                 touch={props.touched?.employee_id}
                 value={props.values?.employee_id}
+                label="Select Employee"
+                required={true}
                 options={employeesList}
                 onInputChange={(value) => setEmployeeSearch(value)}
                 onChange={(field, value) => {
@@ -259,24 +314,10 @@ const searchEmployees = (query) => {
                     const nameMatch = selectedEmployee.label.match(/(.*) \(/);
                     const name = nameMatch ? nameMatch[1] : "";
                     props.setFieldValue("employee_name", name);
-
-                    // Fetch employee payroll details
-                    getEmployeePayroll({ filterData: { employee_id: value } })
-                      .then((response) => {
-                        if (response?.results && response.results.length > 0) {
-                          props.setFieldValue(
-                            "employee_payroll",
-                            response.results[0].id
-                          );
-                        }
-                      })
-                      .catch((error) =>
-                        console.error("Error fetching payroll:", error)
-                      );
+                    props.setFieldValue("employee_id", value);
                   }
                 }}
                 placeholder="Search by ID or Name"
-                required={true}
                 isLoading={isSearching}
               />
 
@@ -297,14 +338,25 @@ const searchEmployees = (query) => {
               <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                 <div className="text-zinc-950">Adjustment Details</div>
               </div>
-              <div className="pt-4">
-                <div>Adjustment Type</div>
-              </div>
+              <TextInput
+                name={"type_name"}
+                error={props.errors?.type_name}
+                touch={props.touched?.type_name}
+                value={props.values?.type_name}
+                label="Adjustment Name"
+                onChange={(field, value) => {
+                  props.handleChange(field)(value);
+                }}
+                placeholder="Enter adjustment name"
+                required={true}
+              />
               <RadioGroupInput
                 name={"income_type"}
                 error={props.errors?.income_type}
                 touch={props.touched?.income_type}
                 value={props.values?.income_type}
+                label="Adjustment Type"
+                required={true}
                 options={[
                   { value: "earning", label: "Addition" },
                   { value: "deduction", label: "Deduction" },
@@ -313,14 +365,13 @@ const searchEmployees = (query) => {
                   props.handleChange(field)(value);
                 }}
               />
-              <div className="pt-4">
-                <div>Amount Type</div>
-              </div>
               <RadioGroupInput
                 name={"amounts_types"}
                 error={props.errors?.amounts_types}
                 touch={props.touched?.amounts_types}
                 value={props.values?.amounts_types}
+                label="Amount Type"
+                required={true}
                 options={[
                   { value: "fixed", label: "Fixed" },
                   { value: "percentage", label: "Variable (% of Gross)" },
@@ -329,14 +380,12 @@ const searchEmployees = (query) => {
                   props.handleChange(field)(value);
                 }}
               />
-              <div className="pt-4">
-                <div>Amount</div>
-              </div>
               <TextInput
                 name={"amounts"}
                 error={props.errors?.amounts}
                 touch={props.touched?.amounts}
                 value={props.values?.amounts}
+                label="Amount"
                 onChange={(field, value) => {
                   props.handleChange(field)(value);
                 }}
@@ -345,21 +394,21 @@ const searchEmployees = (query) => {
                     ? "Enter amount"
                     : "Enter percentage"
                 }
+                required={true}
               />
-              <div className="pt-4">
-                <div>Payable Month</div>
-              </div>
               <DateInput
                 name={"month"}
+                label="Payable Month"
                 error={props.errors?.month}
                 touch={props.touched?.month}
                 value={props.values?.month}
                 onChange={(field, value) => {
                   props.handleChange(field)(value);
                 }}
-                dateFormat="MM/yyyy"
-                showMonthYearPicker
+                dateFormat="yyyy-MM"
+                showMonthYearPicker={true}
                 placeholder="Select Month-Year"
+                required={true}
               />
             </div>
           </div>
@@ -370,27 +419,33 @@ const searchEmployees = (query) => {
               <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                 <div className="text-zinc-950">Additional Information</div>
               </div>
-              <div className="pt-4">
-                <div>Reason</div>
-              </div>
-              <TextInput
-                name={"reason"}
-                error={props.errors?.reason}
-                touch={props.touched?.reason}
-                value={props.values?.reason}
-                onChange={(field, value) => {
-                  props.handleChange(field)(value);
-                }}
-                placeholder="E.g., Bonus, Loan Repayment, etc."
-              />
-              <div className="pt-4">
-                <div>Description</div>
-              </div>
+
+              {/* Show Reason field conditionally for managers */}
+              {showReasonField && (
+                <>
+                  <TextInput
+                    name={"reason"}
+                    error={props.errors?.reason}
+                    touch={props.touched?.reason}
+                    value={props.values?.reason}
+                    label="Reason"
+                    onChange={(field, value) => {
+                      props.handleChange(field)(value);
+                    }}
+                    placeholder="Provide reason for the adjustment"
+                    required={
+                      props.values.manager_approval?.status === "rejected"
+                    }
+                  />
+                </>
+              )}
               <TextAreaInput
                 name={"description"}
                 error={props.errors?.description}
                 touch={props.touched?.description}
                 value={props.values?.description}
+                label="Description"
+                required={false}
                 onChange={(field, value) => {
                   props.handleChange(field)(value);
                 }}
@@ -433,6 +488,8 @@ const ViewAdjustment = ({
   setIsEdit,
   isDelete,
   setIsDelete,
+  userProfile,
+  handleManagerApproval,
 }) => {
   // Format the amount display based on type
   const formattedAmount =
@@ -452,6 +509,15 @@ const ViewAdjustment = ({
   const approvalStatus = adjustment.is_manager_approval
     ? adjustment.manager_approval?.status || "pending"
     : "not required";
+
+  // Determine if the current user is a manager
+  const isManager = userProfile?.role === 2;
+
+  // Check if this adjustment requires manager approval and is pending
+  const isPendingManagerApproval =
+    adjustment.is_manager_approval &&
+    adjustment.manager_approval?.status === "pending" &&
+    isManager;
 
   const details = [
     {
@@ -485,25 +551,31 @@ const ViewAdjustment = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setIsEdit(true);
-            }}
-          >
-            Edit
-          </Button>
+          {/* Only show edit/delete if not pending manager approval or if user is not a manager */}
+          {(!isPendingManagerApproval || !isManager) && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsEdit(true);
+                }}
+              >
+                Edit
+              </Button>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setIsDelete(true);
-            }}
-          >
-            Delete
-          </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsDelete(true);
+                }}
+              >
+                Delete
+              </Button>
+            </>
+          )}
+
           {isDelete && (
             <AlertDialogue
               isOpen={isDelete}
@@ -552,6 +624,23 @@ const ViewAdjustment = ({
               {adjustment.description}
             </div>
           </section>
+        </div>
+      )}
+
+      {/* Show Manager Approval buttons if applicable */}
+      {isPendingManagerApproval && (
+        <div className="flex justify-end mt-6 gap-3">
+          <Button variant="outline" size="lg" onClick={() => setIsEdit(true)}>
+            Reject with Reason
+          </Button>
+          <Button
+            type="button"
+            size="lg"
+            variant="default"
+            onClick={() => handleManagerApproval("approved")}
+          >
+            Approve
+          </Button>
         </div>
       )}
     </>

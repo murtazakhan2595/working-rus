@@ -48,4 +48,29 @@ const validateClaimRequestForm = (values) => {
   return errors;
 };
 
-export { validateRevisedSalaryForm, validateClaimRequestForm };
+// Validation function for the adjustment form
+const validateAdjustmentForm = (values) => {
+  const errors = {};
+
+  // Required fields
+  if (!values.employee_id) errors.employee_id = "Employee is required";
+  if (!values.amounts) errors.amounts = "Amount is required";
+  if (!values.month) errors.month = "Payable Month is required";
+  if(!values.type_name) errors.type_name = "Adjustment name is required";
+
+  // Reason is required only if manager rejects
+  if (
+    values.manager_approval &&
+    values.manager_approval.status === "rejected" &&
+    (!values.reason || values.reason.trim() === "")
+  ) {
+    errors.reason = "Reason is required when rejecting an adjustment";
+  }
+
+  return errors;
+};
+export {
+  validateRevisedSalaryForm,
+  validateClaimRequestForm,
+  validateAdjustmentForm,
+};
