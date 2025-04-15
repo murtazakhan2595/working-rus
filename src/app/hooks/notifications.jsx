@@ -1,7 +1,7 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { HandleLogout } from "./general";
-import moment from "moment";
+import { mapNotificationList } from "app/utils/MappingObjects/mapNotificationData";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -12,14 +12,17 @@ const formDataHeader = () => ({
   // Don't explicitly set 'Content-Type' for FormData
 });
 
-
 const getNotifications = async () => {
   try {
     const response = await axios.get(`${baseUrl}/Notificationsystem/`, {
       headers: headers(),
     });
     if (response.status === 200) {
-      return response.data;
+      const NotificationListData = response.data;
+      const NotificationList = await mapNotificationList(
+        NotificationListData.results
+      );
+      return { results: NotificationList, count: NotificationListData.count };
     }
   } catch (error) {
     console.error("Error fetching notifications:", error);
@@ -30,35 +33,15 @@ const getNotifications = async () => {
   }
 };
 
-  const markAsRead = async (notificationId) => {
-    try {
-      const response = await axios.post(
-        `${baseUrl}/Notificationsystem/${notificationId}/read/`,
-        {},
-        { headers: headers() }
-      );
-      if (response.status === 200) {
-        return true
-       
-      }
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-      if (error?.response?.status === 401) {
-        HandleLogout();
-      }
-    }
-  };
-
-const markAllNotificationsAsRead = async (unreadNotifications) => {
+const markAsRead = async (notificationId) => {
   try {
     const response = await axios.post(
-      `${baseUrl}/Notificationsystem/read-all/`,
+      `${baseUrl}/Notificationsystem/${notificationId}/read/`,
       {},
       { headers: headers() }
     );
     if (response.status === 200) {
-      return true
-     
+      return true;
     }
   } catch (error) {
     console.error("Error marking notification as read:", error);
@@ -68,5 +51,22 @@ const markAllNotificationsAsRead = async (unreadNotifications) => {
   }
 };
 
+const markAllNotificationsAsRead = async (unreadNotifications) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/Notificationsystem/read-all/`,
+      {},
+      { headers: headers() }
+    );
+    if (response.status === 200) {
+      return true;
+    }
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+  }
+};
 
-export { getNotifications, markAsRead , markAllNotificationsAsRead };
+export { getNotifications, markAsRead, markAllNotificationsAsRead };

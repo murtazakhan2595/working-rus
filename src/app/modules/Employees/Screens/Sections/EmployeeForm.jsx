@@ -37,7 +37,7 @@ import {
   UserRoles,
   countriesCallingCodes,
   countriesList,
-  salaryTypeOptions,
+  SalaryTypeOptions,
 } from "data/Data";
 import OnboardingChecklistSection from "./OnboardingChecklistSection";
 
@@ -121,6 +121,7 @@ const SheetOnBorading = ({
       setShiftList(shiftList);
     }
   };
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -803,7 +804,7 @@ const SheetOnBorading = ({
                           <div className="space-y-2">
                             <SelectInputComponent
                               name={"salary_type"}
-                              options={salaryTypeOptions}
+                              options={SalaryTypeOptions}
                               error={props.errors?.salary_type}
                               touch={props.touched.salary_type}
                               value={props.values.salary_type}
@@ -884,6 +885,16 @@ const SheetOnBorading = ({
                         </Button>
                       </div>
                     </div>
+                    {addShift && (
+                      <ShiftAction
+                        isOpen={addShift}
+                        setIsOpen={setAddShift}
+                        reload={getShiftList}
+                        setEmployeeShift={(value) => {
+                          props.setFieldValue("shift_assignment", value);
+                        }}
+                      />
+                    )}
                   </form>
                 )}
               </Formik>
@@ -891,18 +902,16 @@ const SheetOnBorading = ({
           </div>
         </div>
       </div>
-      {addShift && (
-        <ShiftAction
-          isOpen={addShift}
-          setIsOpen={setAddShift}
-          reload={getShiftList}
-        />
-      )}
     </>
   );
 };
 
-const ShiftAction = ({ isOpen, setIsOpen, reload }) => {
+const ShiftAction = ({
+  isOpen,
+  setIsOpen,
+  reload = () => {},
+  setEmployeeShift = () => {},
+}) => {
   const formSheetData = {
     triggerText: null,
     title: "Update Shift Details",
@@ -922,6 +931,8 @@ const ShiftAction = ({ isOpen, setIsOpen, reload }) => {
           reload();
           setIsOpen(value);
         }}
+        reload={reload}
+        setEmployeeShift={setEmployeeShift}
       />
     </SheetComponent>
   );

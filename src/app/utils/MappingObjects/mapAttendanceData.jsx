@@ -1,5 +1,19 @@
-import { Attendance } from "app/utils/Types/Attendance";
+import { Attendance, Shift } from "app/utils/Types/Attendance";
 import moment from "moment";
+
+export function mapShiftData(data) {
+  const shiftDetails = Object.keys(Shift).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      if (key === "starttime")
+        acc['shiftStartTime'] = moment(data[key]).format("hh:mm A")
+      if (key === "endtime")
+        acc['shiftEndTime'] = moment(data[key]).format("hh:mm A")
+      acc[key] = data[key];
+    }
+    return acc;
+  }, {});
+  return shiftDetails;
+}
 export function mapAttendanceData(data, shiftDetails) {
   // Initialize an empty payload object
   const payload = {};
@@ -38,11 +52,9 @@ export function mapAttendanceData(data, shiftDetails) {
         debugger;
         const checkin = moment(payload.checkin);
         payload[key] = data[key];
-        payload["payable_hours"] = parseFloat(moment(payload.checkout).diff(
-          checkin,
-          "hours",
-          true
-        )).toFixed(2);
+        payload["payable_hours"] = parseFloat(
+          moment(payload.checkout).diff(checkin, "hours", true)
+        ).toFixed(2);
         if (payload.payable_hours > payload.total_hours) {
           payload["overtime_hours"] = parseFloat(
             parseFloat(payload.payable_hours) - parseFloat(payload.total_hours)

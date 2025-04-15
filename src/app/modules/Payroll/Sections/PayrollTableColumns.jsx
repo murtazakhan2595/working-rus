@@ -4,12 +4,11 @@ import { dropdownOptions } from "data/Data";
 import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
 import moment from "moment";
 import { renderDate } from "utils/renderValues";
-import { AiOutlineDownload } from "react-icons/ai";
+import { Switch } from "src/@/components/ui/switch";
 import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
-import { DepartmentName, DesignationName } from "utils/getValuesFromTables";
-import { Switch } from "src/@/components/ui/switch";
-import { getExpenseType } from "utils/getValuesFromTables";
+import { SalaryType, DesignationName } from "utils/getValuesFromTables";
+import { Badge } from "components/ui/badge";
 import { Clock, MapPin, Tag } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
 
@@ -199,3 +198,113 @@ export const EmployeeDeductionsColumns = [
     },
   },
 ];
+
+export const SalarySetupColumns = [
+  {
+    dataField: "serial_number",
+    text: "ID",
+    formatter: (cell) => <EmployeeID value={cell} />,
+  },
+  {
+    dataField: "id",
+    text: "Employees",
+    formatter: (cell, row) => (
+      <EmployeeOverview id={cell} showDepartment={true} />
+    ),
+  },
+  {
+    dataField: "salary",
+    text: "Monthly Salary",
+  },
+  {
+    dataField: "salary_type",
+    text: "Salary Type",
+    formatter: (cell) => <SalaryType value={cell} fallBackText={"-"} />,
+  },
+  {
+    dataField: "is_new",
+    text: "",
+    formatter: (cell, row) => {
+      const showNewBadge = cell === null || cell === true;
+      const showEosBadge = row.is_eos_applicable === true;
+      if (showNewBadge || showEosBadge) {
+        return (
+          <div class="flex gap-2">
+            {showNewBadge && <Badge variant={"dot-plum"} dot={'bg-plum-1100'}>New</Badge>}
+            {showEosBadge && <Badge variant={"dot-plum"} dot={'bg-plum-1100'}>EOS</Badge>}
+          </div>
+        );
+      }
+    },
+  },
+];
+
+export const SalaryComponentColumns = (onCheckedChange) => [
+  {
+    dataField: "name",
+    text: "Component Name",
+  },
+  {
+    dataField: "income_type",
+    text: "Component Type",
+    formatter: (cell) => (
+      <div className="">
+        <div className="h-6 px-3 py-[3px] rounded-full border border-[#f0f0f3] justify-center items-center gap-1.5 inline-flex">
+          <div
+            className={`w-1.5 h-1.5 ${
+              cell === "deduction" ? "bg-[#29a385]" : "bg-[#EA3E69]"
+            } rounded-full`}
+          />
+          <div className="text-neutral-1200 text-xs font-semibold  leading-3 capitalize">
+            {cell}
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    dataField: "amounts_types",
+    text: "Amount Type",
+    formatter: (cell) => (
+      <div className="capitalize">
+        {cell === "percentage" ? "Variable" : cell}
+      </div>
+    ),
+  },
+  {
+    dataField: "amounts",
+    text: "Amount",
+    formatter: (cell, row) => {
+      console.log("INFO", cell, row);
+      const amount =
+        row.amounts_types === "percentage"
+          ? `${Math.fround(cell)}% of gross`
+          : `AED ${cell} Flat Amount`;
+      return <>{amount}</>;
+    },
+  },
+  {
+    dataField: "is_active",
+    text: "Active",
+    formatter: (cell, row) => {
+      return (
+        <div
+          onClick={(event) => {
+            // Stop the event propagation to prevent onRowClick from being triggered
+            event.stopPropagation();
+          }}
+        >
+          <Switch
+            id="activate"
+            checked={cell}
+            onCheckedChange={(value) => {
+              // The event is handled by the div, so no need to stop it here
+              onCheckedChange(value, row);
+            }}
+          />
+        </div>
+      );
+    },
+  },
+];
+

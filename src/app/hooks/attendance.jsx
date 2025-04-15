@@ -1,7 +1,10 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { HandleLogout } from "./general";
-import { mapAttendanceData } from "app/utils/MappingObjects/mapAttendanceData";
+import {
+  mapAttendanceData,
+  mapShiftData,
+} from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -119,7 +122,7 @@ const getAttendance = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  let URL = `/attendance?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
+  let URL = `/attendance?ordering=-date&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
@@ -416,19 +419,21 @@ const employeeData = async (id) => {
 };
 
 const getShiftById = async (id) => {
-  try {
-    const shiftResponse = await axios.get(`${baseUrl}/shift/${id}`, {
-      headers: headers(),
-    });
-    const shiftData = shiftResponse.data;
-    return shiftData;
-  } catch (error) {
-    console.error("Error fetching shift by id:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout();
+  if (id) {
+    try {
+      const shiftResponse = await axios.get(`${baseUrl}/shift/${id}`, {
+        headers: headers(),
+      });
+      const shiftData = mapShiftData(shiftResponse.data);
+      return shiftData;
+    } catch (error) {
+      console.error("Error fetching shift by id:", error);
+      if (error?.response?.status === 401) {
+        HandleLogout();
+      }
+      return false;
     }
-    return false;
-  }
+  } else return {};
 };
 
 const getAttendanceStats = async () => {
@@ -522,7 +527,7 @@ export const getRecentActivities = async (payload, attendance, userProfile) => {
     recentActivities.push({
       time: moment(attendance.checkout).format("hh:mm A"),
       activity: "Check out",
-      description: "Checked",
+      description: "Checked Out",
       timestamp: moment(attendance.checkout),
     });
   }

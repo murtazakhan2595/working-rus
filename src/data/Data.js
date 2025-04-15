@@ -17,12 +17,8 @@ import {
 } from "state/slices/EmpSlice";
 import { fetchLeaveComponents } from "state/slices/LeaveManagementSlice";
 import { fetchDocumentCategory } from "state/slices/HRDocumentsSlice";
-import {
-  ArrowDown,
-  ArrowRight,
-  ArrowUp,
-  Timer,
-} from "lucide-react";
+import { fetchShiftById } from "state/slices/AttendanceSlice";
+import { ArrowDown, ArrowRight, ArrowUp, Timer } from "lucide-react";
 import { lightenColor } from "utils/renderValues";
 
 export const countriesCallingCodes = countries.all
@@ -245,14 +241,14 @@ export const UserRoles = [
   { value: 4, label: "Employee" },
 ];
 export const HRDocumentTargetAudience = [
-  { value: 'All Employees', label: "All Employees" },
-  { value: 'Department', label: "Department" },
-  { value: 'Specific Employee', label: "Specific Employee" },
+  { value: "All Employees", label: "All Employees" },
+  { value: "Department", label: "Department" },
+  { value: "Specific Employee", label: "Specific Employee" },
 ];
 export const HRDocumentCategory = [
-  { value: 'Policy', label: "Policy" },
-  { value: 'Compliance', label: "Compliance" },
-  { value: 'Agreement', label: "Agreement" },
+  { value: "Policy", label: "Policy" },
+  { value: "Compliance", label: "Compliance" },
+  { value: "Agreement", label: "Agreement" },
 ];
 
 export const employeeStatus = [
@@ -297,7 +293,6 @@ export const EmployeeTransferStatus = [
     value: "REJECTED",
     label: "Rejected",
   },
- 
 ];
 
 export const PriorityList = [
@@ -697,7 +692,7 @@ export const TerminationStatusOptions = [
   { label: "Exit Interview", value: "exit interview" },
 ];
 
-export const salaryTypeOptions = [
+export const SalaryTypeOptions = [
   { value: "monthly", label: "Monthly" },
   { value: "weekly", label: "Weekly" },
   { value: "hourly", label: "Per Hour" },
@@ -739,7 +734,6 @@ export const payoutPeriodOptions = [
   { value: "weekly", label: "Weekly" },
   { value: "per_hour", label: "Per Hour" },
 ];
-
 
 export const LeaveTrackerOptions = [
   { value: "Pending", label: "Pending" },
@@ -804,7 +798,7 @@ export const AssetCategories = [
   { label: "Other", value: "Other" },
 ];
 
-export const handleUpdateProfile = (dispatch, data) => {
+export const handleUpdateProfile = async (dispatch, data) => {
   const userprofile = {
     id: data.id,
     username: data.username,
@@ -813,9 +807,9 @@ export const handleUpdateProfile = (dispatch, data) => {
     organization: data.organization,
   };
   dispatch(setUserProfile(userprofile));
-  dispatch(fetchEmployeesDetail());
-  dispatch(fetchUser(userprofile.id));
+  const employee_details = await dispatch(fetchUser(userprofile.id));
   dispatch(fetchEmployees());
+  dispatch(fetchEmployeesDetail());
   dispatch(fetchBranches());
   dispatch(fetchDepartments());
   dispatch(fetchDesignations());
@@ -826,4 +820,5 @@ export const handleUpdateProfile = (dispatch, data) => {
   dispatch(fetchReportingManagers());
   dispatch(fetchLeaveComponents());
   dispatch(fetchProjects(userprofile));
+  dispatch(fetchShiftById(employee_details?.payload?.shift_assignment));
 };

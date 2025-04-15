@@ -157,24 +157,23 @@ export function numberToWords(number) {
   return result.trim();
 }
 
-export function renderDate(date, fallbackValue ='N/A') {
-  return date ? moment(date).format("MMM DD, YYYY") : fallbackValue ;
+export function renderDate(date, fallbackValue = "N/A") {
+  return date ? moment(date).format("MMM DD, YYYY") : fallbackValue;
 }
 
-export const formatDuration = (duration) => {
+export const formatDuration = (duration, calculateSeconds = false) => {
   if (!duration || duration <= 0) return "0min";
 
-  const totalMinutes = Math.floor(duration * 60); // Convert hours to minutes
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
+  const totalSeconds = Math.floor(duration * 3600); // Convert hours to seconds
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
 
-  if (hours === 0) {
-    return `${minutes}min`;
-  }
-  if (minutes === 0) {
-    return `${hours}h`;
-  }
-  return `${hours}h ${minutes}min`;
+  const parts = [];
+  if (hours > 0) parts.push(`${hours}h`);
+  parts.push(`${minutes}min`);
+  if (seconds > 0 && calculateSeconds) parts.push(`${seconds}s`);
+  return parts.join(" ");
 };
 
 export const GetDateRange = (period) => {
@@ -249,18 +248,25 @@ export const calculatePercentage = (count = 0, total = 0) => {
 
 export const calculateTotal = (data, label) => {
   if (!Array.isArray(data)) return 0;
-  return data.reduce((total, item) => {
+  const total = data.reduce((total, item) => {
     const value = parseFloat(item[label]);
     return total + (isNaN(value) ? 0 : value);
   }, 0);
+  return parseFloat(parseFloat(total).toFixed(2));
 };
+
 export const calculateTotalCount = (data, label, value) => {
   if (!Array.isArray(data)) return 0;
   return data.reduce((count, item) => {
     return count + (item[label] === value ? 1 : 0);
   }, 0);
 };
-
+export const countLabelOccurrences = (data, label) => {
+  if (!Array.isArray(data)) return 0;
+  return data.reduce((count, item) => {
+    return count + (item[label] ? 1 : 0);
+  }, 0);
+};
 export const calculateTaskCount = (data, statusType) => {
   if (!Array.isArray(data)) return 0;
   return data.filter((task) => {

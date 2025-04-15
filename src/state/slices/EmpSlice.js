@@ -34,7 +34,7 @@ export const fetchEmployees = createAsyncThunk(
   async () => {
     try {
       const response = await getEmployeeList();
-      return response;
+      return response.results;
     } catch (error) {
       throw error;
     }

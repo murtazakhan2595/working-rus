@@ -21,7 +21,7 @@ import { fetchDTRByEmployeeId } from "../../../state/slices/GetDtrSlice";
 import { FaAngleUp } from "react-icons/fa6";
 import SuccessPopup from "./SuccessPop";
 import { getDTRAll } from "../../../state/slices/GetDtrAllSlice";
-import { GetAssigneDtr } from "../../../state/slices/GetAssigneDtr";
+import { GetAssigneDtr } from "../../../state/slices/PayrollSlice";
 import ViewTaskDetails from "./ViewTaskDetails";
 import UpdateModal from "./UpdateModal";
 import { BsThreeDotsVertical } from "react-icons/bs";

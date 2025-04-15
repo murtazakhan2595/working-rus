@@ -136,7 +136,6 @@ export const addUpdateBranch = async (payload, id = null) => {
   }
 };
 
-
 const saveDesignation = async (designationId, payload) => {
   try {
     if (designationId) {
@@ -255,40 +254,55 @@ const getManagersList = async () => {
   return [];
 };
 
-const getEmployeeList = async () => {
+const getEmployeeList = async (payload) => {
   try {
-    const response = await axios.get(
-      `${baseUrl}/customemp?search=${encodeURIComponent(
-        JSON.stringify({ employee_status: "Active,Probation,Notice Period" })
-      )}`,
-      {
-        headers: headers(),
-      }
-    );
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData
+      ? {
+          ...payload?.filterData,
+          employee_status: "Active,Probation,Notice Period",
+        }
+      : { employee_status: "Active,Probation,Notice Period" };
+    const URL = `/customemp/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
     if (response.status === 200) {
       const employeeResponse = response.data?.results?.employees ?? [];
       const employeeList = employeeResponse.map((employee) => ({
         value: employee.id,
+        id: employee.id,
         label: `${employee.first_name} ${employee.last_name}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
         department_name: employee.department_name,
         department_position: employee.department_position,
         employee_location: employee.employee_location,
-        direct_report:employee.direct_report,
+        direct_report: employee.direct_report,
         branch_id: employee.branch_id,
         work_email: employee.work_email,
+        serial_number: employee.serial_number,
+        basic_salary: employee.salary,
+        salary_type: employee.salary_type,
+        is_eos_applicable: employee.is_eos_applicable,
+        is_new: employee.is_new,
         employee_status: employee.employee_status,
         name_initials: `${
           employee?.first_name?.charAt(0)?.toUpperCase() || ""
         }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
       }));
-      return employeeList;
-    } else return [];
+      return { results: employeeList, count: response.data?.count };
+    } else return { results: [], count: 0 };
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
   }
-  return [];
+  return { results: [], count: 0 };
 };
 
 const getEmployeeListWithDetail = async () => {
@@ -305,7 +319,7 @@ const getEmployeeListWithDetail = async () => {
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
         first_name: employee.first_name,
-        direct_report:employee.direct_report,
+        direct_report: employee.direct_report,
         last_name: employee.last_name,
         department_name: employee.department_name,
         department_position: employee.department_position,

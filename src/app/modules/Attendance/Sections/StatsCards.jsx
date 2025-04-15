@@ -20,7 +20,7 @@ export function StatsCards() {
       const response = await getAttendanceStats();
       if (response && isMounted) {
         setCardStats({
-          present: response?.daily_stats?.Present,
+          present: parseInt(response?.daily_stats?.Present) + parseInt(response?.daily_stats?.Late),
           absent: response?.daily_stats?.Absent,
           late: response?.daily_stats?.Late,
         });

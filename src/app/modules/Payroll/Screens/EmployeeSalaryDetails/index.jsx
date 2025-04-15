@@ -320,7 +320,7 @@ export default function EmployeeSalaryDetails() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between w-full">
           <CardTitle className="text-plum-900">Salary Revisions</CardTitle>
-          {!fromMyPayroll && (
+          {/* {!fromMyPayroll && (
             <RevisedSalarySheet
               payrollID={id}
               state={"create"}
@@ -330,7 +330,7 @@ export default function EmployeeSalaryDetails() {
               }
               employeeData={employeeData}
             />
-          )}
+          )} */}
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4 mb-4">

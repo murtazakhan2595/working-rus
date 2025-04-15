@@ -1,2 +1,18 @@
-import { EmployeePayrollColumns, EmployeePayslipColumns ,PayrunEmployeePayrollColumns,EmployeeAllowancesColumns,EmployeeDeductionsColumns} from "./PayrollTableColumns";
-export { EmployeePayrollColumns, EmployeePayslipColumns,PayrunEmployeePayrollColumns ,EmployeeAllowancesColumns,EmployeeDeductionsColumns};
+import {
+  EmployeePayrollColumns,
+  EmployeePayslipColumns,
+  PayrunEmployeePayrollColumns,
+  EmployeeAllowancesColumns,
+  EmployeeDeductionsColumns,
+  SalarySetupColumns,
+  SalaryComponentColumns,
+} from "./PayrollTableColumns";
+export {
+  EmployeePayrollColumns,
+  EmployeePayslipColumns,
+  PayrunEmployeePayrollColumns,
+  EmployeeAllowancesColumns,
+  EmployeeDeductionsColumns,
+  SalaryComponentColumns,
+  SalarySetupColumns,
+};

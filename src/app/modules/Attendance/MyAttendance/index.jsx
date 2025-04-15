@@ -8,7 +8,7 @@ import {
 import {
   getAttendance,
   saveAttendance,
-  saveBreak,
+  getAttendanceData,
   getBreak,
 } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
@@ -27,17 +27,18 @@ import { DateRangeFilter } from "components/FormControl";
 import { GetDateRange } from "utils/renderValues";
 
 const Attendance = () => {
-  const navigate = useNavigate();
-  const [employeeShift, setEmployeeShift] = useState({});
   const [attendance, setAttendance] = useState(null);
+  const navigate = useNavigate();
   const [attendanceData, setAttendanceData] = useState([]);
   const [onBreak, setOnBreak] = useState(false);
-  const [activeFilter, setactiveFilter] = useState("Month");
+  const [activeFilter, setactiveFilter] = useState("Day");
+  const EmployeeShiftData = useSelector(
+    (state) => state.attendance.assignedShiftData
+  );
   const userProfile = useSelector((state) => state.user.userProfile);
-  const user_details = useSelector((state) => state.emp.user_details);
   const [filterData, setFilterData] = useState({
     employee_id: userProfile.id,
-    date_range: GetDateRange(activeFilter),
+    date: moment().format("YYYY-MM-DD"),
   });
 
   const getAttendanceList = async () => {
@@ -49,46 +50,48 @@ const Attendance = () => {
     }
   };
 
-
-  const fetchData = async () => {
-    const attendance = await getAttendance({
-      filterData: {
-        employee_id: userProfile.id,
-        date: moment().format("YYYY-MM-DD"),
-      },
-    });
-
-    if (attendance && attendance.results.length > 0) {
-      const todayAttendance = attendance?.results[0];
-      setAttendance(todayAttendance);
+  const fetchBreakStatusData = async (isMounted, attendance) => {
+    if (attendance && attendance?.id && isMounted) {
       const breakStatus = await getBreakStatus({
         filterData: {
           employee_id: userProfile.id,
-          attendance: todayAttendance.id,
+          attendance: attendance?.id,
         },
       });
       setOnBreak(breakStatus);
     }
   };
-  const fetchShiftData = async (isMounted, shiftAssigned) => {
-    const shift = await getShiftById(shiftAssigned);
-    if (shift && isMounted) {
-      setEmployeeShift({
-        shift_start_time: moment(
-          moment(shift.starttime).format("HH:mm:ss"),
-          "HH:mm:ss"
-        ),
-        shift_end_time: moment(
-          moment(shift.endtime).format("HH:mm:ss"),
-          "HH:mm:ss"
-        ),
-      });
-    }
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchBreakStatusData(isMounted, attendance);
+    return () => {
+      isMounted = false;
+    };
+  }, [attendance]);
+
+  const fetchTodayAttandanceData = async (isMounted) => {
+    if (isMounted)
+      if (attendance?.id) {
+        const attendanceData = await getAttendanceData(attendance?.id);
+        setAttendance(attendanceData);
+      } else {
+        const attendanceList = await getAttendance({
+          filterData: {
+            employee_id: userProfile.id,
+            date: moment().format("YYYY-MM-DD"),
+          },
+        });
+        if (attendanceList && attendanceList?.results?.length > 0) {
+          const todayAttendance = attendanceList?.results[0];
+          setAttendance(todayAttendance);
+        }
+      }
   };
 
   useEffect(() => {
     let isMounted = true;
-    fetchData(isMounted);
+    fetchTodayAttandanceData(isMounted);
     return () => {
       isMounted = false;
     };
@@ -96,14 +99,10 @@ const Attendance = () => {
 
   useEffect(() => {
     let isMounted = true;
-    fetchShiftData(isMounted, user_details?.shift_assignment);
+    getAttendanceList(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [user_details]);
-
-  useEffect(() => {
-    getAttendanceList();
   }, [filterData]);
 
   const handleFilterChange = (dateRange) => {
@@ -129,12 +128,12 @@ const Attendance = () => {
       <div className="p-4 space-y-4">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <EmployeeSelfTimesheet
-            employeeShift={employeeShift}
+            employeeShift={EmployeeShiftData}
             attendance={attendance}
             OnBreak={onBreak}
             reloadData={() => {
               getAttendanceList();
-              fetchData();
+              fetchTodayAttandanceData(true);
             }}
             setOnBreak={setOnBreak}
           />
@@ -163,7 +162,7 @@ const Attendance = () => {
               }}
             />
             <Button variant="outline" onClick={downloadAttendance}>
-              Download
+              Monthly Report
             </Button>
           </div>
         </div>

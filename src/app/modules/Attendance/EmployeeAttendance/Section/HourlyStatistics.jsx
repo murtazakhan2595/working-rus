@@ -100,7 +100,7 @@ const HourlyStatistics = ({ userId }) => {
     // Refresh data every 1 minute
     const interval = setInterval(() => {
       loadUserData(isMounted);
-    }, 60000); // 60,000 ms = 1 min
+    }, 360000); // 60,000 ms = 1 min
 
     return () => {
       isMounted = false;

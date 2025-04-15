@@ -3,14 +3,14 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "../../../../src/@/components/ui/avatar";
-import { Button } from "../../../../components/ui/button";
+} from "../../../../../../src/@/components/ui/avatar";
+import { Button } from "../../../../../../components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "../../../../components/ui/card";
+} from "../../../../../../components/ui/card";
 
 import {
   Table,
@@ -19,7 +19,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../../../src/@/components/ui/table";
+} from "../../../../../../src/@/components/ui/table";
 import { ArrowLeft } from "lucide-react";
 
 import { useNavigate, useParams, useLocation } from "react-router-dom";
@@ -29,7 +29,7 @@ import {
   getSalaryRevision,
   getEmployeeEarnAndDeduction,
 } from "app/hooks/payroll";
-import RevisedSalarySheet from "./RevisedSalarySheet";
+import RevisedSalarySheet from "../../RevisedSalarySheet";
 import {
   DesignationName,
   EmployeeID,
@@ -41,24 +41,25 @@ import { PageLoader } from "components";
 import {
   revisionLetterOptions,
   revisionStatusOptions,
-} from "../../../../data/Data";
+} from "../../../../../../data/Data";
 import {
   FilterInput,
   SelectInputComponent,
   TextInput,
-} from "../../../../components/FormControl";
+} from "../../../../../../components/FormControl";
 import {
   getEarnAndDeduction,
   getEmployeePayroll,
   getPayslip,
   saveEmployeePayroll,
   updateSalaryRevisionStatus,
-} from "../../../hooks/payroll";
-import AddAdditionalEarningSheet from "../../Payroll/Sections/AddAdditionalEarningSheet";
+} from "../../../../../hooks/payroll";
+import AddAdditionalEarningSheet from "../../../Sections/AddAdditionalEarningSheet";
 import { toast } from "react-toastify";
-import { calculateEarningsAndDeductions } from "../../Payroll/Sections/CalculationsHelperFunctions.jsx";
+import { calculateEarningsAndDeductions } from "../../../Sections/CalculationsHelperFunctions.jsx";
+import { EmployeeOverview } from "components";
 
-const SalarySetupDetail = () => {
+const EmployeeSalarySetup = () => {
   const [employeeData, setEmployeeData] = React.useState({});
   const [payrollId, setPayrollId] = React.useState(null);
   const [earnAndDeductionType, setEarnAndDeductionsType] = React.useState([]);
@@ -162,14 +163,14 @@ const SalarySetupDetail = () => {
         id: payrollId,
         hourly_rate: monthlyGrossSalary,
         is_new: false,
-        employee:employeeData.id
+        employee: employeeData.id,
       };
     } else {
       payload = {
         id: payrollId,
         basic_salary: monthlyGrossSalary,
         is_new: false,
-        employee:employeeData.id
+        employee: employeeData.id,
       };
     }
 
@@ -197,42 +198,13 @@ const SalarySetupDetail = () => {
         <>
           <Card className="mb-4">
             <CardContent className="flex justify-between pt-6">
-              <div className="flex items-center space-x-4">
-                <Avatar className="w-20 h-20 ">
-                  <AvatarImage
-                    src={employeeData?.avatar}
-                    alt={`${employeeData?.first_name} ${employeeData?.last_name}`}
-                  />
-                  <AvatarFallback className="bg-plum-400">
-                    {`${employeeData?.first_name} `
-                      ?.split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-base text-black">
-                    <EmployeeID value={id} />
-                  </p>
-                  <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-2xl font-bold text-black">
-                      {employeeData?.first_name} {employeeData?.last_name}
-                    </h2>
-                    {isEos && (
-                      <div className=" px-3 py-[3px] rounded-full border border-[#f49fb4] justify-center items-center gap-1.5 inline-flex">
-                        <div className="text-[#ce1644] text-xs font-semibold">
-                          End of Service
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-base text-muted-foreground">
-                    <DesignationName
-                      value={employeeData?.department_position}
-                    />
-                  </p>
-                </div>
-              </div>
+              <EmployeeOverview
+                id={employeeData.id}
+                showId={true}
+                showDepartment={true}
+                showEmail={true}
+                avatarSize={"16"}
+              />
               {isEos && payslips && (
                 <Button
                   className="bg-[#1c2024] text-white align-bottom self-end	"
@@ -434,4 +406,4 @@ const SalarySetupDetail = () => {
   );
 };
 
-export default SalarySetupDetail;
+export default EmployeeSalarySetup;

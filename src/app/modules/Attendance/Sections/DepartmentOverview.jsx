@@ -49,7 +49,7 @@ const DepartmentOverview = () => {
                       className="mt-1 h-2 bg-gray-500"
                       color="purple"
                     />
-                    <p className="text-xs text-gray-800 min-w-[105px]">
+                    <p className="text-xs text-gray-800 min-w-[120px]">
                       {dept.attendance_percentage}% attendance
                     </p>
                   </div>
