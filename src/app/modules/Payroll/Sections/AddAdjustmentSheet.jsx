@@ -27,7 +27,7 @@ import { connect } from "react-redux";
 import { validateAdjustmentForm } from "app/utils/FormSchema/payrollFormSchema";
 
 const initialAdjustment = {
-  type_name: "",
+  name: "",
   employee_id: "",
   employee_name: "",
   income_type: "earning",
@@ -71,17 +71,16 @@ const AddAdjustmentSheet = ({
   };
 
   const handleSubmit = async (values) => {
-    // const employeePayroll = await getEmployeePayroll({
-    //   filterData: { employee_id: values?.employee_id },
-    // });
-    // if(employeePayroll?.results && employeePayroll.results.length > 0 ) {
-    //   setPayrollId(employeePayroll.results[0].id);
-    //   values.employee_payroll = employeePayroll.results[0].id;
-    // }else{
-    //   toast.error("Employee payroll not found");
-    //   return;
-    // }
-    values.employee_payroll= 1
+    const employeePayroll = await getEmployeePayroll({
+      filterData: { employee_id: values?.employee_id },
+    });
+    if(employeePayroll?.results && employeePayroll.results.length > 0 ) {
+      setPayrollId(employeePayroll.results[0].id);
+      values.employee_payroll = employeePayroll.results[0].id;
+    }else{
+      toast.error("Employee payroll not found");
+      return;
+    }
     // Set manager approval status based on toggle
     if (!values.is_manager_approval) {
       values.manager_approval = {
@@ -339,10 +338,10 @@ const AdjustmentForm = ({
                 <div className="text-zinc-950">Adjustment Details</div>
               </div>
               <TextInput
-                name={"type_name"}
-                error={props.errors?.type_name}
-                touch={props.touched?.type_name}
-                value={props.values?.type_name}
+                name={"name"}
+                error={props.errors?.name}
+                touch={props.touched?.name}
+                value={props.values?.name}
                 label="Adjustment Name"
                 onChange={(field, value) => {
                   props.handleChange(field)(value);

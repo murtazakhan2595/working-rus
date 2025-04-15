@@ -56,7 +56,7 @@ const validateAdjustmentForm = (values) => {
   if (!values.employee_id) errors.employee_id = "Employee is required";
   if (!values.amounts) errors.amounts = "Amount is required";
   if (!values.month) errors.month = "Payable Month is required";
-  if(!values.type_name) errors.type_name = "Adjustment name is required";
+  if(!values.name) errors.name = "Adjustment name is required";
 
   // Reason is required only if manager rejects
   if (
