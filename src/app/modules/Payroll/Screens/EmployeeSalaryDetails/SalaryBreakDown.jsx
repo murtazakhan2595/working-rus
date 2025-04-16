@@ -42,23 +42,6 @@ import {
   getSalaryRevision,
   getEmployeeEarnAndDeduction,
 } from "app/hooks/payroll";
-import RevisedSalarySheet from "app/modules/Payroll/Screens/RevisedSalarySheet";
-import {
-  DesignationName,
-  EmployeeID,
-  getExperience,
-} from "utils/getValuesFromTables";
-import { getEmployeeData } from "app/hooks/employee";
-import { numberToWords } from "utils/renderValues.js";
-import { PageLoader, EmployeeOverview } from "components";
-import { revisionLetterOptions, revisionStatusOptions } from "data/Data";
-import { FilterInput, SelectInputComponent } from "components/FormControl";
-import {
-  getEarnAndDeduction,
-  getPayslip,
-  saveEmployeePayroll,
-  updateSalaryRevisionStatus,
-} from "app/hooks/payroll";
 import {
   calculateEarningsAndDeductions,
   calculateAmounts,

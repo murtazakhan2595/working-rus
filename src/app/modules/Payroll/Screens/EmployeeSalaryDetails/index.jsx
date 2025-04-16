@@ -42,7 +42,6 @@ import {
   getSalaryRevision,
   getEmployeeEarnAndDeduction,
 } from "app/hooks/payroll";
-import RevisedSalarySheet from "app/modules/Payroll/Screens/RevisedSalarySheet";
 import {
   DesignationName,
   EmployeeID,
@@ -223,15 +222,6 @@ export default function EmployeeSalaryDetails() {
   ].filter(Boolean);
   return (
     <div className="container p-4 mx-auto">
-      {selectedRevision && !fromMyPayroll && (
-        <RevisedSalarySheet
-          payrollID={id}
-          state={"view"}
-          selectedRevision={selectedRevision}
-          onClose={onClose}
-          employeeData={employeeData}
-        />
-      )}
       <div className="mb-4">
         <Button
           variant="ghost"
@@ -320,17 +310,6 @@ export default function EmployeeSalaryDetails() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between w-full">
           <CardTitle className="text-plum-900">Salary Revisions</CardTitle>
-          {/* {!fromMyPayroll && (
-            <RevisedSalarySheet
-              payrollID={id}
-              state={"create"}
-              onClose={onClose}
-              previousCTC={
-                latestApprovedSalaryRevision?.new_salary || totalEarnings
-              }
-              employeeData={employeeData}
-            />
-          )} */}
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4 mb-4">

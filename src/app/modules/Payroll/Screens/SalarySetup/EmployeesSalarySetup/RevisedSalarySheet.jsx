@@ -1,5 +1,5 @@
 import { useState } from "react";
-import SheetComponent from "../../../../components/ui/SheetComponent";
+import SheetComponent from "../../../../../../components/ui/SheetComponent";
 import { useRef } from "react";
 import { Formik } from "formik";
 import {
@@ -8,19 +8,20 @@ import {
   TextAreaInput,
 } from "components/FormControl";
 import { DateInput } from "components/FormControl";
+import { EmployeeOverview } from "components";
 import { Button } from "components/ui/button";
-import { Link } from "react-router-dom";
+import { EmployeeSalaryRevision } from "app/utils/Types/Payroll";
 import {
   saveSalaryRevision,
   deleteSalaryRevision,
   updateSalaryRevisionStatus,
   saveEmployeePayroll,
-} from "../../../hooks/payroll";
+} from "../../../../../hooks/payroll";
 import { toast } from "react-toastify";
-import { validateRevisedSalaryForm } from "../../../utils/FormSchema/payrollFormSchema";
-import EmployeeDataInfo from "../../Payroll/Sections/EmployeeDataInfo";
+import { validateRevisedSalaryForm } from "app/utils/FormSchema/payrollFormSchema";
+import EmployeeDataInfo from "../../../Sections/EmployeeDataInfo";
 import moment from "moment";
-import { StatusDropdown } from "./EmployeeSalaryDetails";
+import { StatusDropdown } from "../../EmployeeSalaryDetails";
 import { revisionStatusOptions } from "data/Data";
 import { revisionLetterOptions } from "data/Data";
 
@@ -31,22 +32,11 @@ export default function RevisedSalarySheet({
   onClose,
   previousCTC,
   employeeData,
+  employee_Id,
 }) {
   const formRef = useRef();
   const [isOpen, setIsOpen] = useState(state === "edit" || state === "view");
   const [formState, setFormState] = useState(state);
-  const [formData, setFormData] = useState(
-    selectedRevision || {
-      new_salary: "",
-      previous_salary: previousCTC,
-      revision_difference: "",
-      percentage: "",
-      last_revised_date: "",
-      notes: "",
-      revision_letter: "DRAFT",
-      revision_status: "PENDING",
-    }
-  );
   const formSheetData = {
     triggerText: "Revise Salary",
     title: "Revise Salary",
@@ -61,8 +51,6 @@ export default function RevisedSalarySheet({
   const handleSubmit = async (values, resetForm) => {
     console.log(values);
     values.employee_payroll = payrollID;
-    values.organization = 1; // need to remove this this will handle on bakcend
-    values.effective_date = values.last_revised_date;
     const response = await saveSalaryRevision(values);
     if (response) {
       resetForm();
@@ -94,7 +82,6 @@ export default function RevisedSalarySheet({
           contentClassName="custom-sheet-width"
           isOpen={isOpen}
           setIsOpen={handleSheetClose}
-          
         >
           {formState === "view" ? (
             <RevisedSalaryView
@@ -105,10 +92,11 @@ export default function RevisedSalarySheet({
               onDelete={onDelete}
               employeeData={employeeData}
               payrollID={payrollID}
+              employee_Id={employee_Id}
             />
           ) : (
             <RevisedSalaryForm
-              formData={formData}
+              formData={EmployeeSalaryRevision}
               formRef={formRef}
               handleSubmit={handleSubmit}
               validateRevisedSalaryForm={validateRevisedSalaryForm}
@@ -116,6 +104,8 @@ export default function RevisedSalarySheet({
               isOpen={isOpen}
               setIsOpen={handleSheetClose}
               employeeData={employeeData}
+              employee_Id={employee_Id}
+              previousCTC={previousCTC}
             />
           )}
         </SheetComponent>
@@ -332,7 +322,7 @@ const RevisedSalaryView = ({
 };
 
 const RevisedSalaryForm = ({
-  formData,
+  previousCTC,
   formRef,
   handleSubmit,
   validateRevisedSalaryForm,
@@ -340,9 +330,10 @@ const RevisedSalaryForm = ({
   isOpen,
   setIsOpen,
   employeeData,
+  employee_Id,
 }) => {
   const updateValues = (value) => {
-    const previous_salary = formData.previous_salary;
+    const previous_salary = previousCTC;
     const revision_difference = value - previous_salary;
     const percentage =
       (revision_difference / (previous_salary === 0 ? 1 : previous_salary)) *
@@ -360,14 +351,14 @@ const RevisedSalaryForm = ({
       <div className="flex flex-col ">
         <div className="flex-grow ">
           <div className="p-0">
-            <EmployeeDataInfo
-              name={`${employeeData?.first_name} ${employeeData?.last_name}`}
-              email={employeeData?.work_email}
-              src={employeeData?.profile_picture?.file}
-              id={employeeData?.id}
+            <EmployeeOverview
+              showEmail={true}
+              showDepartment={true}
+              id={employee_Id}
+              showId={true}
             />
             <Formik
-              initialValues={formData}
+              initialValues={EmployeeSalaryRevision}
               innerRef={formRef}
               onSubmit={(values, { resetForm }) => {
                 console.log("Form Data:", values); // Log form data to console
@@ -405,7 +396,7 @@ const RevisedSalaryForm = ({
                           name={"previous_salary"}
                           error={props.errors?.previous_salary}
                           touch={props.touched?.previous_salary}
-                          value={props.values?.previous_salary}
+                          value={previousCTC}
                           label={"Previous CTC (Per Month)"}
                           disabled={true}
                           required={true}
@@ -449,6 +440,19 @@ const RevisedSalaryForm = ({
                           value={props.values?.last_revised_date}
                           required={true}
                           label={"Last Revised Date"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <DateInput
+                          name={"effective_date	"}
+                          error={props.errors?.effective_date	}
+                          touch={props.touched?.effective_date	}
+                          value={props.values?.effective_date	}
+                          required={true}
+                          label={"Effective Date"}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
                           }}

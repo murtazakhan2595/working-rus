@@ -1,12 +1,12 @@
 const validateRevisedSalaryForm = (values, isEditMode) => {
   const errors = {};
-  if (
-    values.previous_salary === null ||
-    values.previous_salary === undefined ||
-    values.previous_salary === ""
-  ) {
-    errors.previous_salary = "Previous CTC is required";
-  }
+  // if (
+  //   values.previous_salary === null ||
+  //   values.previous_salary === undefined ||
+  //   values.previous_salary === ""
+  // ) {
+  //   errors.previous_salary = "Previous CTC is required";
+  // }
   if (!values.new_salary) errors.new_salary = "Revised CTC is required";
   if (!values.last_revised_date)
     errors.last_revised_date = "Last Revised Date is required";
@@ -45,6 +45,45 @@ const validateClaimRequestForm = (values) => {
     errors.attachment = "Attachment is required";
   }
 
+  return errors;
+};
+
+export const validateEmployeeSalarySetupForm = (values) => {
+  const errors = {};
+  if (!values.gross_salary) {
+    errors.gross_salary = "Gross salary is required";
+  }
+  if (!values.salary_type) {
+    errors.salary_type = "Salary type is required";
+  }
+  if (!values.basic_salary) {
+    errors.basic_salary = "Basic salary is required";
+  }
+  if (!values.salary_breakdown_type) {
+    errors.salary_breakdown_type = "Amount Type is required";
+  } else {
+    const {
+      basic_salary = 0,
+      medical_allowance = 0,
+      transport_allowance = 0,
+      house_allowance = 0,
+      other_allowance = 0,
+      salary_breakdown_type,
+    } = values;
+    const CTC =
+    parseFloat(basic_salary|| 0) +
+    parseFloat(house_allowance || 0) +
+    parseFloat(other_allowance|| 0) +
+    parseFloat(medical_allowance|| 0) +
+    parseFloat(transport_allowance|| 0);
+    if (salary_breakdown_type === "fixed") {
+      if (CTC !== values.gross_salary)
+        errors.ctc = "CTC must be equal to gross salary";
+    }if (salary_breakdown_type === "percentage") {
+      if (CTC !== 100)
+        errors.ctc = "CTC must be equal to gross salary";
+    }
+  }
   return errors;
 };
 

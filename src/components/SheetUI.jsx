@@ -42,6 +42,7 @@ const SheetUI = forwardRef(
       formFiels,
       renderUpdatedFormValues = () => {},
       columns,
+      onFormChange,
     } = formConfig;
 
     const handleClose = () => {
@@ -71,6 +72,9 @@ const SheetUI = forwardRef(
             console.error("Form Errors:", errors, "Values:", values);
             if (renderUpdatedFormValues) {
               renderUpdatedFormValues(values);
+            }
+            if (onFormChange) {
+              onFormChange(values);
             }
             return errors;
           }}
@@ -104,6 +108,8 @@ const SheetUI = forwardRef(
                             variant,
                             multiple,
                             allowUpdate,
+                            min,
+                            max,
                           }) => {
                             return (
                               <div
@@ -133,6 +139,8 @@ const SheetUI = forwardRef(
                                   variant={variant}
                                   allowUpdate={allowUpdate}
                                   multiple={multiple}
+                                  min={min}
+                                  max={max}
                                 />
                               </div>
                             );

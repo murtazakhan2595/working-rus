@@ -21,15 +21,16 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   getEmployeePayrollById,
   getSalaryRevisionByPayrollId,
-  getSalaryRevision,
+  getEmployeePayrollDetailByEmpId,
   getEmployeeEarnAndDeduction,
 } from "app/hooks/payroll";
-import RevisedSalarySheet from "../../RevisedSalarySheet";
+import RevisedSalarySheet from "./RevisedSalarySheet";
 import { SalaryTypeOptions } from "data/Data";
 import { getEmployeeData } from "app/hooks/employee";
 import { numberToWords } from "utils/renderValues.js";
 import { PageLoader, SheetUI } from "components";
-import { mapEmployeePayRollData } from "app/utils/MappingObjects/mapPayrollData";
+import { PayrollAdjustmentTable } from "app/modules/Payroll/Sections";
+import { EmployeeSalaryRevisions } from "app/modules/Payroll/Screens/SalarySetup/EmployeesSalarySetup";
 import {
   NumberInput,
   SelectInputComponent,
@@ -45,15 +46,18 @@ import {
   saveEmployeePayroll,
   updateSalaryRevisionStatus,
 } from "../../../../../hooks/payroll";
-import AddAdditionalEarningSheet from "../../../Sections/AddAdditionalEarningSheet";
+import { validateEmployeeSalarySetupForm } from "app/utils/FormSchema/payrollFormSchema";
 import { toast } from "react-toastify";
 import { calculateEarningsAndDeductions } from "../../../Sections/CalculationsHelperFunctions.jsx";
 import { EmployeeOverview } from "components";
 
 const EmployeeSalarySetup = () => {
+  const formRef = React.createRef();
   const [employeeData, setEmployeeData] = React.useState({});
   const [payrollId, setPayrollId] = React.useState(null);
   const [payrollForm, setPayrollForm] = useState({});
+  const [payrollFormData, setPayrollFormData] = useState({});
+  const [CTC, setCTC] = useState(null);
   const [earnAndDeductionType, setEarnAndDeductionsType] = React.useState([]);
   const [earnAndDeductions, setEarnAndDeductions] = React.useState([]);
   const [monthlyGrossSalary, setMonthlyGrossSalary] = useState({});
@@ -72,23 +76,15 @@ const EmployeeSalarySetup = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    const response = await getEmployeePayroll({
-      filterData: { employee_id: id },
-    });
-    //
+    const response = await getEmployeePayrollDetailByEmpId(id);
     if (response) {
-      setPayrollId(response?.results[0]?.id);
-      console.log(response?.results[0], "response?.results[0]");
-      setPayrollForm(mapEmployeePayRollData(response?.results[0]));
-      if (response?.results[0]?.salary_type === "hourly") {
-        setMonthlyGrossSalary(response?.results[0]?.hourly_rate);
-      } else {
-        setMonthlyGrossSalary(response?.results[0]?.basic_salary);
-      }
+      setPayrollId(response.id);
+      setPayrollForm(response);
+      setCTC(response.ctc);
       const earnAndDeductions = await getEmployeeEarnAndDeduction({
-        filterData: { employee_payroll: response?.results[0]?.id },
+        filterData: { employee_payroll: response?.id },
       });
-      setPayrollType(response?.results[0]?.salary_type);
+      setPayrollType(response?.salary_type);
       if (earnAndDeductions) {
         setEarnAndDeductions(earnAndDeductions);
       }
@@ -104,7 +100,7 @@ const EmployeeSalarySetup = () => {
       setEarnAndDeductionsType(earnAndDeductionType.results);
       handleSalaryCalculate(
         earnAndDeductionType.results,
-        response?.results[0]?.basic_salary
+        response?.basic_salary
       );
     }
 
@@ -150,27 +146,63 @@ const EmployeeSalarySetup = () => {
     setTotalEarnings(totalEarnings);
     setTotalDeductions(totalDeductions);
   };
-  const handleSalarySave = async () => {
-    let payload = {};
-    if (payrollType === "hourly") {
-      payload = {
-        id: payrollId,
-        hourly_rate: monthlyGrossSalary,
-        is_new: false,
-        employee: employeeData.id,
-      };
-    } else {
-      payload = {
-        id: payrollId,
-        basic_salary: monthlyGrossSalary,
-        is_new: false,
-        employee: employeeData.id,
-      };
+  const handleSubmit = async (values) => {
+    debugger;
+    const {
+      basic_salary = 0,
+      medical_allowance = 0,
+      transport_allowance = 0,
+      house_allowance = 0,
+      other_allowance = 0,
+      gross_salary = 0,
+      salary_breakdown_type,
+    } = values;
+    const payload = values;
+    payload.is_new = false;
+    payload.ctc = CTC;
+    if (salary_breakdown_type === "percentage") {
+      payload.basic_salary =
+        (parseFloat(basic_salary || 0) / 100) * parseFloat(gross_salary || 0);
+      payload.medical_allowance =
+        (parseFloat(medical_allowance || 0) / 100) *
+        parseFloat(gross_salary || 0);
+      payload.transport_allowance =
+        (parseFloat(transport_allowance || 0) / 100) *
+        parseFloat(gross_salary || 0);
+      payload.house_allowance =
+        (parseFloat(house_allowance || 0) / 100) *
+        parseFloat(gross_salary || 0);
+      payload.other_allowance =
+        (parseFloat(other_allowance || 0) / 100) *
+        parseFloat(gross_salary || 0);
     }
 
-    const response = await saveEmployeePayroll(payload);
+    const response = await saveEmployeePayroll(payload, values.id);
     if (response) {
       toast.success("Salary Saved Successfully");
+    }
+  };
+  const calculateCTC = (FormData) => {
+    const {
+      basic_salary = 0,
+      medical_allowance = 0,
+      transport_allowance = 0,
+      house_allowance = 0,
+      other_allowance = 0,
+      gross_salary = 0,
+      salary_breakdown_type,
+    } = FormData;
+    const TotalAmount =
+      parseFloat(basic_salary || 0) +
+      parseFloat(house_allowance || 0) +
+      parseFloat(other_allowance || 0) +
+      parseFloat(medical_allowance || 0) +
+      parseFloat(transport_allowance || 0);
+    if (salary_breakdown_type === "fixed") {
+      setCTC(TotalAmount);
+    } else {
+      const ctc_amount = (TotalAmount / 100) * (gross_salary || 0);
+      setCTC(ctc_amount);
     }
   };
 
@@ -217,7 +249,7 @@ const EmployeeSalarySetup = () => {
                 {isEos ? "EOS Calculation" : "Salary"}
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col items-start gap-4 pt-6 space-x-4">
+            <CardContent className="flex flex-col items-start gap-4 space-x-4">
               <SheetUI
                 isOpen={true}
                 variant=""
@@ -225,9 +257,11 @@ const EmployeeSalarySetup = () => {
                 formConfig={{
                   initialValues: payrollForm,
                   enableReinitialize: true,
-                  handleSubmit: () => {},
-                  validateFormSchema: () => {},
+                  renderUpdatedFormValues: setPayrollFormData,
+                  handleSubmit: handleSubmit,
+                  validateFormSchema: validateEmployeeSalarySetupForm,
                   submitButtonText: "Save",
+                  onFormChange: calculateCTC,
                   columns: 3,
                   formFiels: [
                     {
@@ -235,7 +269,7 @@ const EmployeeSalarySetup = () => {
                       InputFiels: [
                         {
                           InputField: NumberInput,
-                          name: "basic_salary",
+                          name: "gross_salary",
                           required: true,
                           label: "Gross Salary",
                         },
@@ -249,50 +283,104 @@ const EmployeeSalarySetup = () => {
                         },
                         {
                           InputField: NumberInput,
-                          name: "CTC",
-                          required: true,
+                          name: "ctc",
+                          // required: true,
+                          disabled: true,
                           label: "CTC",
+                          value: CTC,
+                        },
+                        {
+                          InputField: RadioGroupInput,
+                          name: "salary_breakdown_type",
+                          required: true,
+                          disabled: false,
+                          label: "Amount Type",
+                          options: [
+                            { value: "percentage", label: "Percentage" },
+                            { value: "fixed", label: "Fixed" },
+                          ],
+                          colsSpan: 3,
+                          variant: "stacked",
                         },
                         {
                           InputField: NumberInput,
                           name: "basic_salary",
                           required: true,
                           label: "Basic Salary",
+
+                          min: 0,
+                          max:
+                            payrollFormData.salary_breakdown_type ===
+                            "percentage"
+                              ? 100
+                              : null,
                         },
                         {
-                          InputField: RadioGroupInput,
-                          name: "status",
+                          InputField: NumberInput,
+                          name: "medical_allowance",
                           required: true,
-                          disabled: false,
-                          label: "Status",
-                          options: [
-                            { value: "Present", label: "Present" },
-                            { value: "Absent", label: "Absent" },
-                            { value: "Late", label: "Late" },
-                            { value: "Weekend", label: "Weekend" },
-                          ],
-                          colsSpan: 3,
+                          label: "Medical Allowance",
+
+                          min: 0,
+                          max:
+                            payrollFormData.salary_breakdown_type ===
+                            "percentage"
+                              ? 100
+                              : null,
                         },
                         {
-                          InputField: DateInput,
-                          name: "date",
+                          InputField: NumberInput,
+                          name: "transport_allowance",
                           required: true,
-                          label: "Attendance Date",
+                          label: "Transport Allowance",
+
+                          min: 0,
+                          max:
+                            payrollFormData.salary_breakdown_type ===
+                            "percentage"
+                              ? 100
+                              : null,
+                        },
+                        {
+                          InputField: NumberInput,
+                          name: "house_allowance",
+                          required: true,
+                          label: "House Allowance",
+
+                          min: 0,
+                          max:
+                            payrollFormData.salary_breakdown_type ===
+                            "percentage"
+                              ? 100
+                              : null,
+                        },
+                        {
+                          InputField: NumberInput,
+                          name: "other_allowance",
+                          required: true,
+                          label: "Other Allowance",
+
+                          min: 0,
+                          max:
+                            payrollFormData.salary_breakdown_type ===
+                            "percentage"
+                              ? 100
+                              : null,
                         },
                       ].filter(Boolean),
                     },
                   ],
                 }}
               ></SheetUI>
-              <div className="text-lg font-semibold text-black">
+              {/* <div className="text-lg font-semibold text-black">
                 {" "}
                 {isEos
                   ? "Gross Amount"
                   : payrollType === "hourly"
                   ? "Hourly Rate"
                   : "Monthly Gross Salary"}
-              </div>
-              <div className="flex items-center w-full gap-6">
+              </div> */}
+              {/* <div className="flex items-center w-full gap-6">
                 <TextInput
                   name={"add_value"}
                   value={monthlyGrossSalary || ""}
@@ -320,146 +408,29 @@ const EmployeeSalarySetup = () => {
                   </div>
                 ) : null}{" "}
                 {!isEos && <Button onClick={handleSalarySave}>Save</Button>}
-              </div>
+              </div> */}
             </CardContent>
           </Card>
           <div className="grid grid-cols-2 gap-4 mb-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Employee Earnings</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Components</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead className="text-left">
-                        Monthly Amount
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {payrollType !== "hourly" &&
-                      earnings?.map((item, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{item.name}</TableCell>
-                          <TableCell>{item.amounts}</TableCell>
-                          <TableCell className="text-left">
-                            AED {item.monthly_amount}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    <TableRow className="font-bold">
-                      <TableCell>Total in AED</TableCell>
-                      <TableCell className="text-right">
-                        AED{" "}
-                        {payrollType !== "hourly"
-                          ? Number(totalEarnings).toFixed(2)
-                          : monthlyGrossSalary * 80}
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Employee Deductions </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Components</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead className="text-right">
-                        Monthly Amount
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {payrollType !== "hourly" &&
-                      deductions?.map((item, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{item.name}</TableCell>
-                          <TableCell>{item.amounts}</TableCell>
-                          <TableCell className="text-right">
-                            {item.monthly_amount}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    <TableRow className="font-bold">
-                      <TableCell>Total in AED</TableCell>
-                      <TableCell className="text-right">
-                        AED{" "}
-                        {payrollType !== "hourly"
-                          ? Number(totalDeductions).toFixed(2)
-                          : 0}
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            <PayrollAdjustmentTable
+              AdjustmentTitle="Allowances"
+              AdjustmentRecord={{ results: earnings, count: earnings.length }}
+              fallbackText={"No allowance is applicable"}
+            />
+            <PayrollAdjustmentTable
+              AdjustmentTitle="Deductions"
+              AdjustmentRecord={{ results: earnings, count: earnings.length }}
+              fallbackText={"No allowance is applicable"}
+            />
           </div>
-          <Card className="">
-            <CardHeader className="flex flex-row items-center justify-between w-full">
-              <CardTitle>
-                {isEos
-                  ? "EOS Earnings and Deductions"
-                  : "Additional Earnings and Deductions"}
-              </CardTitle>
-              <AddAdditionalEarningSheet
-                isEos={isEos}
-                reload={fetchData}
-                payrollId={payrollId}
-              />
-            </CardHeader>
-            <CardContent className="">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Component</TableHead>
-                    <TableHead>Component Type</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Payable Month</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {earnAndDeductions?.earnings?.map((item, index) => (
-                    <TableRow key={index} className="cursor-pointer">
-                      <TableCell>{item?.type_name}</TableCell>
-                      <TableCell className="capitalize">
-                        {item?.income_type}
-                      </TableCell>
-                      <TableCell>
-                        {item?.amount_type === "percentage"
-                          ? `Variable ${item?.amount}%`
-                          : `Fixed, Amt: AED ${item?.amount}`}
-                      </TableCell>
-                      <TableCell>{item?.month}</TableCell>
-                    </TableRow>
-                  ))}
-                  {earnAndDeductions?.deductions?.map((item, index) => (
-                    <TableRow key={index} className="cursor-pointer">
-                      <TableCell>{item?.type_name}</TableCell>
-                      <TableCell className="capitalize">
-                        {item?.income_type}
-                      </TableCell>
-                      <TableCell>
-                        {" "}
-                        {item?.amount_type === "percentage"
-                          ? `Variable ${item?.amount}%`
-                          : `Fixed, Amt: AED ${item?.amount}`}
-                      </TableCell>
-                      <TableCell>{item?.month}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+{console.log(payrollForm,"previousCTC")
+}
+          <EmployeeSalaryRevisions
+            employee_Id={id}
+            editMode={true}
+            payrollId={payrollForm.id}
+            previousCTC={payrollForm.ctc}
+          />
         </>
       )}
     </div>

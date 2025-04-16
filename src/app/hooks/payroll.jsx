@@ -2,7 +2,7 @@ import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { getEmployeeCustomList, HandleLogout } from "./general";
 import moment from "moment";
-import { mapPayRunList } from "app/utils/MappingObjects/mapPayrollData";
+import { mapPayRunList ,mapEmployeeSalarySetupData} from "app/utils/MappingObjects/mapPayrollData";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -37,6 +37,24 @@ const getEmployeePayroll = async (payload) => {
       HandleLogout();
     }
     return { results: [], count: 0 };
+  }
+};
+export const getEmployeePayrollDetailByEmpId = async (empID) => {
+  const URL = `/payroll/payroll/${empID}/`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const payrollDetail= mapEmployeeSalarySetupData(response.data);
+      return payrollDetail;
+    }
+  } catch (error) {
+    console.error("Error fetching payroll data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return null;
   }
 };
 

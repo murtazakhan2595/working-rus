@@ -162,6 +162,10 @@ export const PayrunEmployeePayrollColumns = [
 
 export const EmployeeAllowancesColumns = [
   {
+    dataField: "name",
+    text: "Component",
+  },
+  {
     dataField: "description",
     text: "Allowances types",
   },
@@ -213,7 +217,7 @@ export const SalarySetupColumns = [
     ),
   },
   {
-    dataField: "salary",
+    dataField: "ctc",
     text: "Monthly Salary",
   },
   {

@@ -1,6 +1,10 @@
-import { PayRun, EmployeePayRoll } from "app/utils/Types/Payroll";
+import {
+  PayRun,
+  EmployeePayRoll,
+  EmployeeSalarySetup,
+} from "app/utils/Types/Payroll";
 import moment from "moment";
-
+import { calculatePercentage } from "utils/renderValues";
 export function mapPayRunData(data) {
   const payrunData = Object.keys(PayRun).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
@@ -30,6 +34,44 @@ export function mapEmployeePayRollData(data) {
   if (!data) return {};
   const payrunData = Object.keys(EmployeePayRoll).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
+      acc[key] = data[key];
+    }
+    return acc;
+  }, {});
+
+  return payrunData;
+}
+export function mapEmployeeSalarySetupData(data) {
+  if (!data) return {};
+  const payrunData = Object.keys(EmployeeSalarySetup).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      if (key === "ctc") acc["gross_salary"] = data[key];
+      if (key === "salary_breakdown_type")
+        if (data[key] === "percentage") {
+          const {
+            basic_salary = 0,
+            medical_allowance = 0,
+            transport_allowance = 0,
+            house_allowance = 0,
+            other_allowance = 0,
+            ctc = 0,
+          } = data;
+          acc["basic_salary"] = calculatePercentage(basic_salary, ctc);
+
+          acc["medical_allowance"] = calculatePercentage(
+            medical_allowance,
+            ctc
+          );
+
+          acc["transport_allowance"] = calculatePercentage(
+            transport_allowance,
+            ctc
+          );
+
+          acc["house_allowance"] = calculatePercentage(house_allowance, ctc);
+
+          acc["other_allowance"] = calculatePercentage(other_allowance, ctc);
+        }
       acc[key] = data[key];
     }
     return acc;
