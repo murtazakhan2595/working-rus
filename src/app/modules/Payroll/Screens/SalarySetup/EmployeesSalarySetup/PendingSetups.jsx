@@ -45,6 +45,7 @@ const PendingSetups = ({ filterData }) => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+      console.log("Fetching with filterData:", filterData); // Debug logging
       const data = await getEmployeeCustomList({ options, filterData });
       if (data) {
         setEmployeesList(data);
@@ -52,18 +53,18 @@ const PendingSetups = ({ filterData }) => {
       setIsLoading(false);
     };
     fetchData();
-  }, [options, filterData]);
+  }, [options, filterData]); // Make sure filterData is in dependency array
 
   return (
     <>
       <CardHeader>
         <div className="flex flex-row items-center justify-between">
-          <div className="flex-col justify-center items-start inline-flex">
+          <div className="inline-flex flex-col items-start justify-center">
             <div className="self-stretch text-[#ab4aba] text-2xl font-medium  leading-normal">
               {"Employee Salaries"}
             </div>
             <div className="self-stretch text-[#8b8d98] text-sm font-normal  leading-[16.80px]">
-              {"Payrolls of all employees are listed below"}
+              {"Payrolls of all employees are listed below "}
             </div>
           </div>
         </div>

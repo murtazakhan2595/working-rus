@@ -13,6 +13,8 @@ import {
 } from "app/hooks/payroll.jsx";
 import { getSalarySetupData } from "app/hooks/payroll.jsx";
 import AddComponentSheet from "../../Sections/AddComponentSheet.jsx";
+import { Button } from "components/ui/button";
+import Header from "components/Header.jsx";
 
 const SalaryComponents = ({ departments }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +24,10 @@ const SalaryComponents = ({ departments }) => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [closeSheet, setCloseSheet] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState(null);
-    const [salarySetupData, setSalarySetupData] = useState([]);
+  const [salarySetupData, setSalarySetupData] = useState([]);
+  const [selectedIncomeType, setSelectedIncomeType] = useState("");
+  const [selectedAmountType, setSelectedAmountType] = useState("");
+  const [selectedIsActive, setSelectedIsActive] = useState("");
   const navigate = useNavigate();
   const [component, setComponent] = useState([]);
 
@@ -34,11 +39,11 @@ const SalaryComponents = ({ departments }) => {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
-    onRowClick: (row) => {
-      if (row.is_eos_applicable) {
-        navigate(`/payroll/salary-setup-eos/${row.id}`);
-      } else navigate(`/payroll/salary-setup/${row.id}`);
-    },
+    // onRowClick: (row) => {
+    //   if (row.is_eos_applicable) {
+    //     navigate(`/payroll/salary-setup-eos/${row.id}`);
+    //   } else navigate(`/payroll/salary-setup/${row.id}`);
+    // },
   };
 
   const fetchData = async () => {
@@ -65,7 +70,17 @@ const SalaryComponents = ({ departments }) => {
     } else {
       updatedFilters[filterName] = filterValue;
     }
-    setComponentFilterData(updatedFilters); // Update component filters
+    
+    // Update the corresponding state based on filter name
+    if (filterName === "income_type") {
+      setSelectedIncomeType(filterValue);
+    } else if (filterName === "amounts_types") {
+      setSelectedAmountType(filterValue);
+    } else if (filterName === "is_active") {
+      setSelectedIsActive(filterValue);
+    }
+    
+    setComponentFilterData(updatedFilters);
   };
   const onCheckedChange = async (value, component) => {
       const updatedComponent = { ...component, is_active: value };
@@ -81,11 +96,50 @@ const SalaryComponents = ({ departments }) => {
   const handleClose = () => {
     setIsOpen(false);
     setCloseSheet(true);
+    fetchData();
   };
+
+  const handleDeleteComponent = async (componentId) => {
+    setIsLoading(true);
+    try {
+      // Implement your delete API call here
+      // const response = await deleteEarnAndDeduction(componentId);
+      // if (response) {
+      //   // Success message if needed
+      // }
+      // Refresh data after deletion
+      await fetchData();
+    } catch (error) {
+      console.error("Error deleting component:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Add this function specifically for component addition
+  const handleAddComponent = () => {
+    setSelectedComponent(null); // Ensure we're creating a new component
+    setIsOpen(true);
+  };
+
+  // Modified to add the component to state directly for immediate UI update
+  const handleComponentAdded = (newComponent) => {
+    // Update the component list without waiting for API fetch
+    setComponent(prevComponents => [newComponent, ...prevComponents]);
+    
+    // Still fetch fresh data to ensure everything is in sync
+    fetchData();
+    
+    // Close the sheet
+    setIsOpen(false);
+    setCloseSheet(true);
+  };
+
   return (
     <>
+     
       <div className="flex items-center justify-between">
-        <div className="flex-col justify-center items-start inline-flex">
+        <div className="inline-flex flex-col items-start justify-center">
           <div className="self-stretch text-[#ab4aba] text-2xl font-medium  leading-normal">
             {"Components"}
           </div>
@@ -93,34 +147,48 @@ const SalaryComponents = ({ departments }) => {
             {"Types details are listed here"}
           </div>
         </div>
-        <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Component Name",
-              name: "name",
-            },
-            {
-              type: "select-one",
-              option: [
-                { value: "earning", label: "Earning" },
-                { value: "deduction", label: "Deduction" },
-              ],
-              name: "income_type",
-              placeholder: "Component Type",
-            },
-            {
-              type: "select-two",
-              option: [
-                { value: true, label: "Active" },
-                { value: false, label: "Inactive" },
-              ],
-              name: "is_active",
-              placeholder: "Active",
-            },
-          ]}
-          onChange={handleComponentFilterChange} // Dynamic filter handler
-        />
+        <div className="flex items-center gap-4">
+          <FilterInput
+            filters={[
+              {
+                type: "search",
+                placeholder: "Component Name",
+                name: "name",
+              },
+              {
+                type: "select-one",
+                option: [
+                  { value: "earning", label: "Earning" },
+                  { value: "deduction", label: "Deduction" },
+                ],
+                name: "income_type",
+                placeholder: "Component Type",
+                values: selectedIncomeType,
+              },
+              {
+                type: "select-three",
+                option: [
+                  { value: "fixed", label: "Fixed" },
+                  { value: "percentage", label: "Variable" },
+                ],
+                name: "amounts_types",
+                placeholder: "Amount Type",
+                values: selectedAmountType,
+              },
+              {
+                type: "select-two",
+                option: [
+                  { value: true, label: "Active" },
+                  { value: false, label: "Inactive" },
+                ],
+                name: "is_active",
+                placeholder: "All",
+                values: selectedIsActive,
+              },
+            ]}
+            onChange={handleComponentFilterChange}
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-4 profile-management">
         {handleCloseWithConfirmation({
@@ -128,13 +196,12 @@ const SalaryComponents = ({ departments }) => {
           setCloseSheet,
           setIsOpen,
         })}
-        {selectedComponent && (
+        {isOpen && (
           <AddComponentSheet
             component={selectedComponent}
             isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            reload={fetchData}
-            onClose={handleClose}
+            setIsOpen={handleClose}
+            onSuccess={handleComponentAdded}
           />
         )}
 
@@ -143,7 +210,7 @@ const SalaryComponents = ({ departments }) => {
         ) : (
           <CustomTable
             data={component}
-            columns={SalaryComponentColumns(onCheckedChange)}
+            columns={SalaryComponentColumns(onCheckedChange, handleComponentAdded)}
             pagination={true}
             dataTotalSize={0}
             tableOptions={tableOptions}

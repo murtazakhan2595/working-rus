@@ -46,6 +46,7 @@ const EmployeesSalaryList = ({ departments }) => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+      console.log("Fetching with filters:", filterData); // Debug log
       const data = await getEmployeeCustomList({ options, filterData });
       if (data) {
         setEmployeesList(data);
@@ -87,6 +88,15 @@ const EmployeesSalaryList = ({ departments }) => {
         <FilterInput
           filters={[
             {
+              type: "search",
+              placeholder: "Employee Name",
+              name: "name",
+              onChange: (value) => {
+                handleSalaryFilterChange("name", value);
+              }
+            },
+            // ... existing code ...
+            {
               type: "select-one",
               option: departments,
               name: "department_name",
@@ -104,6 +114,7 @@ const EmployeesSalaryList = ({ departments }) => {
       </div>
       <TabsContent value="Salary Setup">
         <PendingSetups filterData={filterData} />
+        {console.log("Passing filterData to PendingSetups:", filterData)}
       </TabsContent>
     </Tabs>
   );

@@ -44,7 +44,7 @@ export const DetailBox = ({
       <div className="flex flex-col leading-none min-w-[88px] w-[132px] text-neutral-900">
         <div>{label}</div>
       </div>
-      <div className="flex-1 shrink leading-5 basis-0 text-neutral-1200">{value ?? "N/A"}</div>
+      <div className="flex-1 shrink leading-5 basis-0 text-neutral-1200 capitalize">{value ?? "N/A"}</div>
     </div>
   );
 };

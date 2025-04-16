@@ -71,20 +71,45 @@ export const validateEmployeeSalarySetupForm = (values) => {
       salary_breakdown_type,
     } = values;
     const CTC =
-    parseFloat(basic_salary|| 0) +
-    parseFloat(house_allowance || 0) +
-    parseFloat(other_allowance|| 0) +
-    parseFloat(medical_allowance|| 0) +
-    parseFloat(transport_allowance|| 0);
+      parseFloat(basic_salary || 0) +
+      parseFloat(house_allowance || 0) +
+      parseFloat(other_allowance || 0) +
+      parseFloat(medical_allowance || 0) +
+      parseFloat(transport_allowance || 0);
     if (salary_breakdown_type === "fixed") {
       if (CTC !== values.gross_salary)
         errors.ctc = "CTC must be equal to gross salary";
-    }if (salary_breakdown_type === "percentage") {
-      if (CTC !== 100)
-        errors.ctc = "CTC must be equal to gross salary";
+    }
+    if (salary_breakdown_type === "percentage") {
+      if (CTC !== 100) errors.ctc = "CTC must be equal to gross salary";
     }
   }
   return errors;
 };
 
-export { validateRevisedSalaryForm, validateClaimRequestForm };
+// Validation function for the adjustment form
+const validateAdjustmentForm = (values) => {
+  const errors = {};
+
+  // Required fields
+  if (!values.employee_id) errors.employee_id = "Employee is required";
+  if (!values.amounts) errors.amounts = "Amount is required";
+  if (!values.month) errors.month = "Payable Month is required";
+  if (!values.name) errors.name = "Adjustment name is required";
+
+  // Reason is required only if manager rejects
+  if (
+    values.manager_approval &&
+    values.manager_approval.status === "rejected" &&
+    (!values.reason || values.reason.trim() === "")
+  ) {
+    errors.reason = "Reason is required when rejecting an adjustment";
+  }
+
+  return errors;
+};
+export {
+  validateRevisedSalaryForm,
+  validateClaimRequestForm,
+  validateAdjustmentForm,
+};
