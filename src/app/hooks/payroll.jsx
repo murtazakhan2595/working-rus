@@ -190,12 +190,15 @@ const getEmployeeEarnAndDeduction = async (payload) => {
     if (response.status === 200) {
       return response.data;
     }
+    else{
+      return false
+    }
   } catch (error) {
     console.error("Error fetching salary revision data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return [];
+    return false;
   }
 };
 

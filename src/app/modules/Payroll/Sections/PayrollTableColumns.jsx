@@ -436,7 +436,7 @@ export const SalaryComponentColumns = (onCheckedChange, handleReload) => [
 
 export const AdjustmentComponentColumns = [
   {
-    dataField: "employee",
+    dataField: "employee_id",
     text: "Employee",
     formatter: (cell) => <EmployeeOverview id={cell} showEmail={false} />,
   },

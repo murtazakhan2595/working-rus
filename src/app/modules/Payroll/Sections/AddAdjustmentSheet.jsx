@@ -61,12 +61,23 @@ const AddAdjustmentSheet = ({
     adjustment || initialAdjustment
   );
 
+  useEffect(()=>{
+    if (adjustment && isEdit) {
+      setAdjustmentData(adjustment);
+    } else {
+      setAdjustmentData(initialAdjustment);
+    }
+  },[isEdit])
+
+
   const formSheetData = {
     triggerText: adjustment ? "" : "Add Adjustment",
     title: adjustment ? "Adjustment Details" : "Add Adjustment",
     description: null,
     footer: null,
   };
+
+
 
   const handleSubmit = async (values) => {
     const employeePayroll = await getEmployeePayroll({
@@ -191,6 +202,7 @@ const AddAdjustmentSheet = ({
               employees={employees}
               userProfile={userProfile}
               validateForm={validateAdjustmentForm}
+              isEdit={isEdit}
             />
           )}
         </SheetComponent>
@@ -218,6 +230,7 @@ const AdjustmentForm = ({
   employees,
   userProfile,
   validateForm,
+  isEdit,
 }) => {
   console.log("Adjustment Data: ", adjustmentData);
   // State for employee search
@@ -325,6 +338,7 @@ const AdjustmentForm = ({
                 }}
                 placeholder="Search by ID or Name"
                 isLoading={isSearching}
+                disabled={isEdit} // Disable if in edit mode
               />
 
               {props.values.employee_id && (
@@ -605,8 +619,7 @@ const ViewAdjustment = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* Only show edit/delete if not pending manager approval or if user is not a manager */}
-          {(!isPendingManagerApproval || !isManager) && (
+          {(userProfile.role === 1 || userProfile.role === 3) && (
             <>
               <Button
                 variant="outline"
