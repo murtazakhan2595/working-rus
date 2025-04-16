@@ -12,6 +12,7 @@ import { saveEarnAndDeduction } from "app/hooks/payroll.jsx";
 import AddAdjustmentSheet from "./AddAdjustmentSheet.jsx";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension.jsx";
 import { getEmployeeEarnAndDeduction } from "app/hooks/payroll.jsx";
+import { useSelector } from "react-redux";
 
 const PayrollAdjustment = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +22,7 @@ const PayrollAdjustment = () => {
   const [adjustmentComponent, setAdjustmentComponent] = useState(null);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [adjustmentFilterData, setAdjustmentFilterData] = useState({});
-
+  const userProfile = useSelector((state) => state.user.userProfile);
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -38,9 +39,13 @@ const PayrollAdjustment = () => {
 
   const fetchData = async () => {
     setIsLoading(true);
+    let filterData = { ...adjustmentFilterData };
+    if (userProfile?.role === 2) {
+      filterData.report_to = userProfile.id;
+    }
     const response = await getEmployeeEarnAndDeduction({
       options,
-      filterData: { ...adjustmentFilterData },
+      filterData,
     });
     if (response) {
       setAdjustment(response.results);
@@ -115,8 +120,11 @@ const generateMonthOptions = () => {
           filters={[
             {
               type: "search",
-              placeholder: "Employee ID/Name",
-              name: "employee",
+              placeholder: "Employee Name",
+              name: "employee_name",
+              onChange: (value) => {
+                handleAdjustmentFilterChange("employee_name", value);
+              },
             },
             {
               type: "select-one",

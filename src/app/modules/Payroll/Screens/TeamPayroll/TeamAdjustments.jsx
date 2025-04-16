@@ -20,7 +20,7 @@ const TeamAdjustments = ({ departments }) => {
     <div className="flex flex-col gap-4 salary-startup">
       <Header />
         <Card>
-          <CardContent>
+          <CardContent className="pt-6">
             <PayrollAdjustment />
           </CardContent>
         </Card>

@@ -43,8 +43,6 @@ const initialAdjustment = {
   },
 };
 
-
-
 const AddAdjustmentSheet = ({
   adjustment,
   employees,
@@ -63,6 +61,15 @@ const AddAdjustmentSheet = ({
     adjustment || initialAdjustment
   );
 
+  useEffect(()=>{
+    if (adjustment && isEdit) {
+      setAdjustmentData(adjustment);
+    } else {
+      setAdjustmentData(initialAdjustment);
+    }
+  },[isEdit])
+
+
   const formSheetData = {
     triggerText: adjustment ? "" : "Add Adjustment",
     title: adjustment ? "Adjustment Details" : "Add Adjustment",
@@ -70,14 +77,16 @@ const AddAdjustmentSheet = ({
     footer: null,
   };
 
+
+
   const handleSubmit = async (values) => {
     const employeePayroll = await getEmployeePayroll({
       filterData: { employee_id: values?.employee_id },
     });
-    if(employeePayroll?.results && employeePayroll.results.length > 0 ) {
+    if (employeePayroll?.results && employeePayroll.results.length > 0) {
       setPayrollId(employeePayroll.results[0].id);
       values.employee_payroll = employeePayroll.results[0].id;
-    }else{
+    } else {
       toast.error("Employee payroll not found");
       return;
     }
@@ -130,7 +139,7 @@ const AddAdjustmentSheet = ({
   };
 
   // Function to handle manager approval/rejection
-  const handleManagerApproval = async (status) => {
+  const handleManagerApproval = async (status, reason = null) => {
     const updatedAdjustment = {
       ...adjustment,
       manager_approval: {
@@ -138,6 +147,11 @@ const AddAdjustmentSheet = ({
         date: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
       },
     };
+
+    // Add reason if provided (for rejections)
+    if (reason) {
+      updatedAdjustment.reason = reason;
+    }
 
     const response = await saveEmployeeEarnDeduction(updatedAdjustment);
     if (response) {
@@ -175,6 +189,8 @@ const AddAdjustmentSheet = ({
               setIsDelete={setIsDelete}
               userProfile={userProfile}
               handleManagerApproval={handleManagerApproval}
+              reload={reload}
+              setIsOpen={setIsOpen}
             />
           ) : (
             <AdjustmentForm
@@ -186,6 +202,7 @@ const AddAdjustmentSheet = ({
               employees={employees}
               userProfile={userProfile}
               validateForm={validateAdjustmentForm}
+              isEdit={isEdit}
             />
           )}
         </SheetComponent>
@@ -213,7 +230,9 @@ const AdjustmentForm = ({
   employees,
   userProfile,
   validateForm,
+  isEdit,
 }) => {
+  console.log("Adjustment Data: ", adjustmentData);
   // State for employee search
   const [employeeSearch, setEmployeeSearch] = useState("");
   const [employeesList, setEmployeesList] = useState(
@@ -319,6 +338,7 @@ const AdjustmentForm = ({
                 }}
                 placeholder="Search by ID or Name"
                 isLoading={isSearching}
+                disabled={isEdit} // Disable if in edit mode
               />
 
               {props.values.employee_id && (
@@ -490,7 +510,14 @@ const ViewAdjustment = ({
   setIsDelete,
   userProfile,
   handleManagerApproval,
+  setIsOpen,
+  reload
 }) => {
+  // Add state for rejection reason modal
+  const [showRejectReason, setShowRejectReason] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [isSubmittingRejection, setIsSubmittingRejection] = useState(false);
+
   // Format the amount display based on type
   const formattedAmount =
     adjustment.amounts_types === "fixed"
@@ -519,6 +546,46 @@ const ViewAdjustment = ({
     adjustment.manager_approval?.status === "pending" &&
     isManager;
 
+  // Handle rejection submission
+  const handleReject = async () => {
+    if (!rejectionReason.trim()) {
+      toast.error("Rejection reason is required");
+      return;
+    }
+
+    setIsSubmittingRejection(true);
+
+    // Create updated adjustment with rejection status and reason
+    const updatedAdjustment = {
+      ...adjustment,
+      reason: rejectionReason,
+      manager_approval: {
+        status: "rejected",
+        date: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
+      },
+    };
+
+    try {
+      const response = await saveEmployeeEarnDeduction(updatedAdjustment);
+      if (response) {
+        toast.success("Adjustment rejected successfully");
+        setShowRejectReason(false);
+        setRejectionReason("");
+
+        // Close the sheet completely after successful rejection
+        setIsOpen(false); // This should be passed from the parent component
+
+        // Reload data
+        reload(); // Make sure reload is passed as a prop
+      }
+    } catch (error) {
+      toast.error("Failed to reject adjustment");
+      console.error("Error rejecting adjustment:", error);
+    } finally {
+      setIsSubmittingRejection(false);
+    }
+  };
+
   const details = [
     {
       label: "Amount Type",
@@ -528,7 +595,7 @@ const ViewAdjustment = ({
     { label: "Payable Month", value: formattedMonth },
     { label: "Reason", value: adjustment.reason || "Not specified" },
     { label: "Approval Status", value: approvalStatus },
-    {label: "Description", value: adjustment.description || "Not specified"},
+    { label: "Description", value: adjustment.description || "Not specified" },
   ];
 
   return (
@@ -552,8 +619,7 @@ const ViewAdjustment = ({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* Only show edit/delete if not pending manager approval or if user is not a manager */}
-          {(!isPendingManagerApproval || !isManager) && (
+          {(userProfile.role === 1 || userProfile.role === 3) && (
             <>
               <Button
                 variant="outline"
@@ -631,7 +697,11 @@ const ViewAdjustment = ({
       {/* Show Manager Approval buttons if applicable */}
       {isPendingManagerApproval && (
         <div className="flex justify-end mt-6 gap-3">
-          <Button variant="outline" size="lg" onClick={() => setIsEdit(true)}>
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => setShowRejectReason(true)}
+          >
             Reject with Reason
           </Button>
           <Button
@@ -642,6 +712,53 @@ const ViewAdjustment = ({
           >
             Approve
           </Button>
+        </div>
+      )}
+
+      {/* Rejection Reason Dialog */}
+      {showRejectReason && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+            <h3 className="mb-4 text-lg font-semibold">Rejection Reason</h3>
+            <div className="mb-4">
+              <TextInput
+                name="reason"
+                label="Please provide a reason for rejection"
+                value={rejectionReason}
+                onChange={(field, value) => setRejectionReason(value)}
+                placeholder="Provide reason for the rejection"
+                required={true}
+                error={
+                  rejectionReason.trim() === "" ? "Reason is required" : null
+                }
+                touch={true}
+              />
+            </div>
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowRejectReason(false);
+                  setRejectionReason("");
+                }}
+                disabled={isSubmittingRejection}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="default"
+                onClick={handleReject}
+                disabled={
+                  rejectionReason.trim() === "" || isSubmittingRejection
+                }
+              >
+                {isSubmittingRejection ? "Submitting..." : "Submit"}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </>
