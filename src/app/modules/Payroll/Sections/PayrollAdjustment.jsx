@@ -115,8 +115,11 @@ const generateMonthOptions = () => {
           filters={[
             {
               type: "search",
-              placeholder: "Employee ID/Name",
-              name: "employee",
+              placeholder: "Employee Name",
+              name: "employee_name",
+              onChange: (value) => {
+                handleAdjustmentFilterChange("employee_name", value);
+              },
             },
             {
               type: "select-one",
