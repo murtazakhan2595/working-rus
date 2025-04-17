@@ -19,6 +19,7 @@ import AddComponentSheet from "../../Sections/AddComponentSheet.jsx";
 import {EmployeesSalaryList} from 'app/modules/Payroll/Screens/SalarySetup';
 import AddAdjustmentSheet from "../../Sections/AddAdjustmentSheet.jsx";
 import PayrollAdjustment from "../../Sections/PayrollAdjustment.jsx"
+import ImportPayrollAdjustmentsButton from "./ImportPayrollAdjustmentsButton.jsx";
 
 const SalarySetup = ({ departments }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,7 +39,10 @@ const SalarySetup = ({ departments }) => {
             <AddComponentSheet isOpen={isOpen} setIsOpen={setIsOpen} />
           )) ||
           (activeTab === "payroll-adjustment" && (
-            <AddAdjustmentSheet isOpen={isOpen} setIsOpen={setIsOpen} />
+            <div className="flex items-center gap-2">
+            <ImportPayrollAdjustmentsButton/>
+              <AddAdjustmentSheet isOpen={isOpen} setIsOpen={setIsOpen} />
+            </div>
           ))
         }
       />
