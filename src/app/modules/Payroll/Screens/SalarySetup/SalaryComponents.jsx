@@ -136,9 +136,19 @@ const SalaryComponents = ({ departments }) => {
   };
 
   return (
-    <>
-     
-      <div className="flex items-center justify-between">
+    <div className="relative">
+      {!isOpen && (
+        <Button
+          variant="default"
+          size="default"
+          onClick={handleAddComponent}
+          className="absolute top-[-176px] right-[10px] z-10"
+        >
+          Add Component
+        </Button>
+      )}
+      
+      <div className="flex items-center justify-between mt-12">
         <div className="inline-flex flex-col items-start justify-center">
           <div className="self-stretch text-[#ab4aba] text-2xl font-medium  leading-normal">
             {"Components"}
@@ -202,6 +212,7 @@ const SalaryComponents = ({ departments }) => {
             isOpen={isOpen}
             setIsOpen={handleClose}
             onSuccess={handleComponentAdded}
+            existingComponents={component}
           />
         )}
 
@@ -210,14 +221,14 @@ const SalaryComponents = ({ departments }) => {
         ) : (
           <CustomTable
             data={component}
-            columns={SalaryComponentColumns(onCheckedChange, handleComponentAdded)}
+            columns={SalaryComponentColumns(onCheckedChange, handleComponentAdded, component)}
             pagination={true}
             dataTotalSize={0}
             tableOptions={tableOptions}
           />
         )}
       </div>
-    </>
+    </div>
   );
 };
 const mapStateToProps = (state) => {

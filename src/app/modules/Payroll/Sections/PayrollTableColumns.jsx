@@ -345,6 +345,7 @@ class ActionButtonCell extends React.Component {
             setIsOpen={this.handleCloseEdit}
             reload={handleReload}
             onSuccess={handleReload}
+            existingComponents={this.props.allComponents}
           />
         )}
 
@@ -363,7 +364,7 @@ class ActionButtonCell extends React.Component {
   }
 }
 
-export const SalaryComponentColumns = (onCheckedChange, handleReload) => [
+export const SalaryComponentColumns = (onCheckedChange, handleReload, allComponents = []) => [
   {
     dataField: "name",
     text: "Component Name",
@@ -430,7 +431,7 @@ export const SalaryComponentColumns = (onCheckedChange, handleReload) => [
   {
     dataField: "actions",
     text: "",
-    formatter: (cell, row) => <ActionButtonCell row={row} handleReload={handleReload} />
+    formatter: (cell, row) => <ActionButtonCell row={row} handleReload={handleReload} allComponents={allComponents} />
   }
 ];
 

@@ -34,9 +34,11 @@ const SalarySetup = ({ departments }) => {
     <div className="flex flex-col gap-4 salary-startup">
       <Header
         content={
-          (activeTab === "components" && (
-            <AddComponentSheet isOpen={isOpen} setIsOpen={setIsOpen} />
-          )) ||
+ 
+          // hide for the salary component sheet by zahid
+          // (activeTab === "components" && (
+          //   <AddComponentSheet isOpen={isOpen} setIsOpen={setIsOpen} />
+          // )) ||
           (activeTab === "payroll-adjustment" && (
             <AddAdjustmentSheet isOpen={isOpen} setIsOpen={setIsOpen} />
           ))
