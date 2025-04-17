@@ -737,6 +737,46 @@ const deleteEmployeeEarnDeduction = async (id) => {
   }
 }
 
+const getPayrollAdjustmentTemplate = async () => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/payroll/people/download-template/`,
+      {
+        headers: headers(),
+        responseType: "arraybuffer",
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+};
+
+const uploadPayrollAdjustment = async (formData) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/payroll/people/import/`,
+      formData,
+      {
+        headers: {
+          ...headers(),
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error uploading employees data:", error);
+    return error?.response?.data;
+  }
+};
+
 export {
   claimExpenseChoices,
   getEmployeePayroll,
@@ -766,4 +806,6 @@ export {
   saveFinalSettlement,
   getEmpPayrolDetails,
   getFinalSettlement,
+  getPayrollAdjustmentTemplate,
+  uploadPayrollAdjustment,
 };
