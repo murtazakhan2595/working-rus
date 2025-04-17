@@ -22,40 +22,29 @@ const AddShiftForm = ({
   reload = () => {},
   setEmployeeShift = () => {},
 }) => {
-  console.log("Reload in AddShiftForm:", reload);
-  const [formData, setFormData] = useState(() => {
-    if (edit?.data) {
-      const localStartTime = moment(edit.data.starttime)
-        .local()
-        .format("hh:mm A");
-      const localEndTime = moment(edit.data.endtime).local().format("hh:mm A");
-      return {
-        ...edit.data,
-        starttime: localStartTime,
-        endtime: localEndTime,
-      };
-    }
-    return ShiftInformation;
-  });
+  const formData = edit?.data ?? ShiftInformation;
+  // setFormData] = useState(() => {
+  //   if (edit?.data) {
+  //     const localStartTime = moment(edit.data.starttime)
+  //     const localEndTime = moment(edit.data.endtime)
+  //     return {
+  //       ...edit.data,
+  //       starttime: localStartTime,
+  //       endtime: localEndTime,
+  //     };
+  //   }
+  //   return ShiftInformation;
+  // });
   const [closeSheet, setCloseSheet] = useState(false);
 
   const handleSubmit = async (values) => {
     try {
-      const localDate = moment().format("YYYY-MM-DD");
-
       // Use default times if no value is selected
-      const startTime = values.starttime || "09:00 AM"; // Default start time
-      const endTime = values.endtime || "05:00 PM"; // Default end time
+      const startTime = moment(values.starttime);
+      const endTime = moment(values.endtime)
 
-      const startTimeUTC = moment(
-        `${localDate} ${startTime}`,
-        "YYYY-MM-DD hh:mm A"
-      )
-        .utc()
-        .format();
-      const endTimeUTC = moment(`${localDate} ${endTime}`, "YYYY-MM-DD hh:mm A")
-        .utc()
-        .format();
+      const startTimeUTC = moment(startTime).utc().toISOString();
+      const endTimeUTC =moment(endTime).utc().toISOString();
 
       const updatedValues = {
         ...values,
@@ -135,18 +124,19 @@ const AddShiftForm = ({
 
               <Label>Start Time</Label>
               <TimePicker
-                value={props.values.starttime || "09:00 AM"} // Bind Formik value for starttime
-                onChange={(field, time) =>
-                  handleTimeChange("starttime", time, props)
-                } // Update Formik value on time change
+                value={props.values.starttime} // Bind Formik value for starttime
+                onChange={(field, time) => props.setFieldValue(field, time)} // Update Formik value on time change
+                date={props.values.starttime}
+                name={'starttime'}
               />
 
               <Label>End Time</Label>
               <TimePicker
-                value={props.values.endtime || "05:00 PM"} // Bind Formik value for endtime
-                onChange={(field, time) =>
-                  handleTimeChange("endtime", time, props)
-                } // Update Formik value on time change
+                value={props.values.endtime} // Bind Formik value for endtime
+                onChange={(field, time) => props.setFieldValue(field, time)}
+                date={props.values.endtime}
+                name='endtime'
+
               />
             </SheetCardExtension>
             <div className="p-6 border-t border-gray-200 bg-gray-50">
