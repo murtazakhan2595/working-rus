@@ -21,6 +21,8 @@ import { fetchShiftById } from "state/slices/AttendanceSlice";
 import { ArrowDown, ArrowRight, ArrowUp, Timer } from "lucide-react";
 import { lightenColor } from "utils/renderValues";
 
+console.log(countries);
+
 export const countriesCallingCodes = countries.all
   .filter(
     (country) =>
@@ -38,6 +40,14 @@ export const countriesList = countries.all.map((country) => {
   return {
     value: country.name,
     label: country.name,
+  };
+});
+
+export const CurrencyList = countries.all.map((country) => {
+  return {
+    value: country.currencies[0] ?? "USD",
+    label: `${country.currencies[0] ?? "USD"} - ${country.name}`,
+    currency: country.currencies[0] ?? "USD",
   };
 });
 export const tasksTitle = [

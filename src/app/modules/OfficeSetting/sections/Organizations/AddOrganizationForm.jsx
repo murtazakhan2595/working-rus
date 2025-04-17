@@ -8,11 +8,10 @@ import { Formik } from "formik";
 import { OrganizationInformation } from "app/utils/Types/Organization";
 import { validateOrganizationSchema } from "app/utils/FormSchema/organizationFormSchema";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
-import { currencies } from "country-data";
 import { SelectInputComponent } from "components/FormControl";
-import { getCurrenciesList } from "app/hooks/general";
+import { getTimeZoneList } from "app/hooks/general";
 import { dateFormats } from "data/Data";
-import { days } from "data/Data";
+import { days ,CurrencyList} from "data/Data";
 import { getOrganizationCountryList } from "app/hooks/officeSetting";
 import { getRegionsList } from "app/hooks/officeSetting";
 import { getCitiesList } from "app/hooks/officeSetting";
@@ -33,7 +32,7 @@ const AddOrganizationForm = ({
     edit ? editData : OrganizationInformation
   );
   const [closeSheet, setCloseSheet] = useState(false);
-  const [currencies, setCurrencies] = useState([]);
+  const [TimeZone, setTimeZone] = useState([]);
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState(null);
   const [states, setStates] = useState([]);
@@ -43,8 +42,8 @@ const AddOrganizationForm = ({
 
   const fetchData = async () => {
     try {
-      const currencyData = await getCurrenciesList();
-      setCurrencies(currencyData);
+      const TimeZoneData = await getTimeZoneList();
+      setTimeZone(TimeZoneData);
       const countries = await getOrganizationCountryList();
       if (countries) {
         const countryList = countries.results.map((country) => ({
@@ -213,6 +212,18 @@ const AddOrganizationForm = ({
                     props.handleChange(field)(value);
                   }}
                 />
+                 <SelectInputComponent
+                  name="time_zone"
+                  options={TimeZone}
+                  error={props.errors.time_zone}
+                  touch={props.touched.time_zone}
+                  value={props.values.time_zone}
+                  label="Timezone"
+                  required
+                  onChange={(field, value) => {
+                    props.handleChange(field)(value);
+                  }}
+                />
                 <SelectInputComponent
                   name="date_format"
                   options={dateFormats}
@@ -230,14 +241,13 @@ const AddOrganizationForm = ({
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
                 <SelectInputComponent
                   name="currency"
-                  options={currencies}
+                  options={CurrencyList}
                   error={props.errors.currency}
                   touch={props.touched.currency}
                   value={props.values.currency}
                   label="Currency"
                   required
                   onChange={(field, value) => {
-                    console.log("MKKK", field, value);
                     props.handleChange(field)(value);
                   }}
                 />

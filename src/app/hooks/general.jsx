@@ -293,6 +293,7 @@ const getEmployeeList = async (payload) => {
         is_eos_applicable: employee.is_eos_applicable,
         is_new: employee.is_new,
         employee_status: employee.employee_status,
+        user_role: employee.user_role,
         name_initials: `${
           employee?.first_name?.charAt(0)?.toUpperCase() || ""
         }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
@@ -330,6 +331,7 @@ const getEmployeeListWithDetail = async () => {
         shift_assignment: employee.shift_assignment,
         serial_number: employee.serial_number,
         nationality: employee.nationality,
+        user_role: employee.user_role,
         name_initials: `${
           employee?.first_name?.charAt(0)?.toUpperCase() || ""
         }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
@@ -465,6 +467,31 @@ const getList = async (URL) => {
     });
     if (response.status === 200) return response.data;
     else return [];
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
+export const getTimeZoneList = async (URL) => {
+  try {
+    const response = await axios.get(`${baseUrl}/timezone/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const TimeZoneResponse = response.data;
+      const TimeZoneList = TimeZoneResponse.map((timeZone) => ({
+        value: timeZone.timezone,
+        label: timeZone.timezone,
+        timeZone: timeZone.timezone,
+      }));
+      return TimeZoneList;
+    } else {
+      return [];
+    }
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();

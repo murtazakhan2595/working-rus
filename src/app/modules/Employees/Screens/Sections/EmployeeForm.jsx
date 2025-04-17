@@ -107,6 +107,10 @@ const SheetOnBorading = ({
   const [closeSheet, setCloseSheet] = useState(false);
   const [shiftSelect, setShiftSelect] = useState(false);
 
+  const FilteredReportingEmployees = React.useMemo(() => {
+    return employees?.filter((employee) => employee.user_role !== 4);
+  }, [employees]);
+
   const getShiftList = async () => {
     const shiftData = await getShift();
     if (shiftData) {
@@ -121,7 +125,7 @@ const SheetOnBorading = ({
       setShiftList(shiftList);
     }
   };
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -656,7 +660,7 @@ const SheetOnBorading = ({
                         <div className="space-y-2">
                           <SelectInputComponent
                             name={"direct_report"}
-                            options={managers}
+                            options={FilteredReportingEmployees}
                             error={props.errors?.direct_report}
                             touch={props.touched.direct_report}
                             value={props.values.direct_report}
@@ -669,7 +673,7 @@ const SheetOnBorading = ({
                         <div className="space-y-2">
                           <SelectMultiInputComponent
                             name={"indirect_report"}
-                            options={managers}
+                            options={FilteredReportingEmployees}
                             error={props.errors?.indirect_report}
                             touch={props.touched.indirect_report}
                             value={props.values.indirect_report}

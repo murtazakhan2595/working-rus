@@ -23,8 +23,11 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     errors.department_name = "Department is required";
   if (!values.department_position)
     errors.department_position = "Designation is required";
-  // if (!values.department_manager)
-  //   errors.department_manager = "Manager is required";
+  if (values.direct_report && values.indirect_report){
+    if(values.indirect_report.includes(values.direct_report))
+    errors.indirect_report = "Direct reporting manager cannot be assigned as an indirect reporting manager.";
+
+  }
   if (!values.employee_type) errors.employee_type = "Employee type is required";
   if (!values.employee_work_type)
     errors.employee_work_type = "Work type is required";
