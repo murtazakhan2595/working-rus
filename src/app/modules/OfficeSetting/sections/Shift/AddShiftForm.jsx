@@ -159,7 +159,15 @@ const AddShiftForm = ({
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="lg" variant="default">
+                <Button
+                  type="submit"
+                  size="lg"
+                  variant="default"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    props.handleSubmit();
+                  }}
+                >
                   {edit ? "Update" : "Add"}
                 </Button>
               </div>

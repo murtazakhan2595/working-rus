@@ -11,7 +11,7 @@ import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { SelectInputComponent } from "components/FormControl";
 import { getTimeZoneList } from "app/hooks/general";
 import { dateFormats } from "data/Data";
-import { days ,CurrencyList} from "data/Data";
+import { days, CurrencyList } from "data/Data";
 import { getOrganizationCountryList } from "app/hooks/officeSetting";
 import { getRegionsList } from "app/hooks/officeSetting";
 import { getCitiesList } from "app/hooks/officeSetting";
@@ -212,7 +212,7 @@ const AddOrganizationForm = ({
                     props.handleChange(field)(value);
                   }}
                 />
-                 <SelectInputComponent
+                <SelectInputComponent
                   name="time_zone"
                   options={TimeZone}
                   error={props.errors.time_zone}
@@ -404,7 +404,15 @@ const AddOrganizationForm = ({
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="lg" variant="default">
+                <Button
+                  type="submit"
+                  size="lg"
+                  variant="default"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    props.handleSubmit();
+                  }}
+                >
                   {edit ? "Update" : "Save"}
                 </Button>
               </div>

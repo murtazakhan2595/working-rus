@@ -40,9 +40,12 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
     try {
       const response = await saveDepartment(values?.id, values);
       if (response) {
-        toast.success(`Department ${edit?.data? "Updated":"Added"} Successfully!`, {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+        toast.success(
+          `Department ${edit?.data ? "Updated" : "Added"} Successfully!`,
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
         setIsOpen(false);
         // setEdit({
         //   open: false,
@@ -121,7 +124,15 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="lg" variant="default">
+                <Button
+                  type="submit"
+                  size="lg"
+                  variant="default"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    props.handleSubmit();
+                  }}
+                >
                   {edit ? "Update" : "Add"}
                 </Button>
               </div>

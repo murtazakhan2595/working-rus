@@ -47,7 +47,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
             position: toast.POSITION.TOP_RIGHT,
           }
         );
-        reload()
+        reload();
         setIsOpen(false);
       }
     } catch (error) {
@@ -111,7 +111,15 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="lg" variant="default">
+                <Button
+                  type="submit"
+                  size="lg"
+                  variant="default"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    props.handleSubmit();
+                  }}
+                >
                   {edit?.data ? "Update" : "Add"}
                 </Button>
               </div>
