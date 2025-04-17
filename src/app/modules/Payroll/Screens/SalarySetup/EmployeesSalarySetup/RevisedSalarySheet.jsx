@@ -332,6 +332,7 @@ const RevisedSalaryForm = ({
   employeeData,
   employee_Id,
 }) => {
+  const formData = { ...EmployeeSalaryRevision, previous_salary: previousCTC };
   const updateValues = (value) => {
     const previous_salary = previousCTC;
     const revision_difference = value - previous_salary;
@@ -358,8 +359,9 @@ const RevisedSalaryForm = ({
               showId={true}
             />
             <Formik
-              initialValues={EmployeeSalaryRevision}
+              initialValues={formData}
               innerRef={formRef}
+              enableReinitialize={true}
               onSubmit={(values, { resetForm }) => {
                 console.log("Form Data:", values); // Log form data to console
                 handleSubmit(values, resetForm);
@@ -396,7 +398,7 @@ const RevisedSalaryForm = ({
                           name={"previous_salary"}
                           error={props.errors?.previous_salary}
                           touch={props.touched?.previous_salary}
-                          value={previousCTC}
+                          value={props.values?.previous_salary}
                           label={"Previous CTC (Per Month)"}
                           disabled={true}
                           required={true}
@@ -448,14 +450,16 @@ const RevisedSalaryForm = ({
                       <div className="space-y-2">
                         <DateInput
                           name={"effective_date	"}
-                          error={props.errors?.effective_date	}
-                          touch={props.touched?.effective_date	}
-                          value={props.values?.effective_date	}
+                          error={props.errors?.effective_date}
+                          touch={props.touched?.effective_date}
+                          value={props.values?.effective_date}
                           required={true}
                           label={"Effective Date"}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
                           }}
+                          dateFormat="yyyy-mm"
+                          showMonthYearPicker={true}
                         />
                       </div>
                       <div className="space-y-2">

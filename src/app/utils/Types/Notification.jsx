@@ -88,4 +88,70 @@ export const Notifications_Action_URL = [
     notification_type: "Join Request",
     action_url: "/projects/{project_id}/join_request",
   },
+  // Salary Structure Update - For Employee
+  {
+    module: "Payroll",
+    notification_type: "Salary",
+    action_url: "/my-payroll",
+  },
+  // Salary Structure Setup - For HR
+  {
+    module: "Payroll",
+    notification_type: "Salary",
+    action_url: "/my-payroll",
+  },
+  // Loan Deduction Configured - For HR
+  {
+    module: "Payroll",
+    notification_type: "Loan",
+    action_url: "#",
+  },
+  // Loan Deduction Applied - For Employee
+  {
+    module: "Payroll",
+    notification_type: "Loan",
+    action_url: "#",
+  },
+  // Salary Revision Approved - For HR
+  {
+    module: "Payroll",
+    notification_type: "Salary Increment",
+    action_url: "#",
+  },
+  // Salary Revision Approved - For Employee
+  {
+    module: "Payroll",
+    notification_type: "Salary Increment",
+    action_url: "#",
+  },
+  // Earning/Deduction Created - For Manager
+  {
+    module: "Payroll",
+    notification_type: "EarningDeduction",
+    action_url: "#",
+  },
+  // Earning/Deduction Approved/Rejected by Manager - For Employee
+  {
+    module: "Payroll",
+    notification_type: "EarningDeduction",
+    action_url: "#",
+  },
+  // Earning/Deduction Approved/Rejected by Manager - For HR
+  {
+    module: "Payroll",
+    notification_type: "EarningDeduction",
+    action_url: "#",
+  },
+  // Earning/Deduction Approved/Rejected by HR - For Employee
+  {
+    module: "Payroll",
+    notification_type: "EarningDeduction",
+    action_url: "#",
+  },
+  // Earning/Deduction Approved/Rejected by HR - For Manager
+  {
+    module: "Payroll",
+    notification_type: "EarningDeduction",
+    action_url: "#",
+  }
 ];

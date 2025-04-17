@@ -92,7 +92,6 @@ export default function EmployeeSalaryRevisions({
     new URLSearchParams(location.search).get("fromMyPayroll") === "true";
 
   const fetchData = async () => {
-    debugger;
     setLoading(true);
     const empData = await getEmployeeData(employeeID);
     if (empData) {

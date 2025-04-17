@@ -21,40 +21,7 @@ const innerTabClassName =
 
 const EmployeesSalaryList = ({ departments }) => {
   const [activeTab, setActiveTab] = useState("Salary Setup");
-  const [isLoading, setIsLoading] = useState(false);
-  const [filterData, setFilterData] = useState({ is_new: true });
-  const [componentFilterData, setComponentFilterData] = useState({});
-  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [EmployeesList, setEmployeesList] = useState([]);
-  const navigate = useNavigate();
-
-  const onPageChange = (name, value) => {
-    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
-  };
-
-  const tableOptions = {
-    page: options.page,
-    sizePerPage: options.sizePerPage,
-    onPageChange: onPageChange,
-    onRowClick: (row) => {
-      if (row.is_eos_applicable) {
-        navigate(`/payroll/salary-setup-eos/${row.id}`);
-      } else navigate(`/payroll/salary-setup/${row.id}`);
-    },
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      console.log("Fetching with filters:", filterData); // Debug log
-      const data = await getEmployeeCustomList({ options, filterData });
-      if (data) {
-        setEmployeesList(data);
-      }
-      setIsLoading(false);
-    };
-    fetchData();
-  }, [options, filterData]);
+  const [filterData, setFilterData] = useState({ is_new: false });
 
   // Separate handler for Salary filters
   const handleSalaryFilterChange = (filterName, filterValue) => {
@@ -90,7 +57,7 @@ const EmployeesSalaryList = ({ departments }) => {
             {
               type: "search",
               placeholder: "Employee Name",
-              name: "name",
+              name: "first_name",
               onChange: (value) => {
                 handleSalaryFilterChange("name", value);
               }
