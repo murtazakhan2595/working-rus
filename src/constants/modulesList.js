@@ -115,6 +115,11 @@ const ModuleList = [
     parentModuleId: 20,
   },
   {
+    moduleId: 58,
+    moduleName: "On-Hold Salaries",
+    parentModuleId: 20,
+  },
+  {
     moduleId: 24,
     moduleName: "Pay Run",
     parentModuleId: 20,
