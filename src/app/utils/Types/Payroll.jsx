@@ -53,6 +53,10 @@ export const EmployeeSalarySetup = {
   other_allowance: null,
   transport_allowance: null,
   salary_breakdown_type: "percentage",
+  earning_types:[],
+  earnings:[],
+  deduction_types:[],
+  deductions:[],
 };
 export const EmployeeSalaryRevision = {
   new_salary: null,

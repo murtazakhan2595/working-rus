@@ -201,17 +201,6 @@ const AddOrganizationForm = ({
               </div>
 
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
-                <TextInput
-                  name="time_zone"
-                  label="Timezone"
-                  required
-                  error={props.errors.time_zone}
-                  touch={props.touched.time_zone}
-                  value={props.values.time_zone}
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                />
                 <SelectInputComponent
                   name="time_zone"
                   options={TimeZone}
