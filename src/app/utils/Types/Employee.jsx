@@ -147,7 +147,7 @@ const EmployeeInformation = {
   branch_id: null,
   onboardingDocuments: [],
   family_book_number: null,
-  uae_residence_address: null,
+  permanent_address: null,
   po_box_number: null,
 };
 const EmployeeProfessionalExperiance = {
