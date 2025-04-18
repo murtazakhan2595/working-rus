@@ -59,7 +59,7 @@ import OrganizationalChart from "app/modules/OfficeSetting/Screens/Organizationa
 import { TeamProfileMangement } from "app/modules/TeamManagment";
 import { Assets, MyAssets } from "app/modules/AssetsManagement";
 import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
-import { OnHoldSalaries } from "app/modules/Payroll";
+import { OnHoldSalaries, OnHoldSalaryDetails } from "app/modules/Payroll";
 
 const SidebarRoutes = [
   {
@@ -357,6 +357,11 @@ const SidebarRoutes = [
     path: "/on-hold-salaries",
     component: <OnHoldSalaries />,
     name: "On-Hold Salaries",
+  },
+  Config.PAYROLL && {
+    path: "/payroll/on-hold-salaries/:id",
+    component: <OnHoldSalaryDetails />,
+    name: "On-Hold Salary Details",
   },
   Config.EMPLOYEE_OFFBOARDING && {
     path: "/exit-clearance",
