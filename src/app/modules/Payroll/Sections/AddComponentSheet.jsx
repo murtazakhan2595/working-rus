@@ -24,13 +24,24 @@ const initialEarningAndDeduction = {
   is_active: true, // Default active
 };
 
-const validateForm = (values) => {
+const validateForm = (values, existingComponents = []) => {
   const errors = {};
   
   if (!values.name) {
     errors.name = "Component name is required";
   } else if (values.name.length > 50) {
     errors.name = "Component name cannot exceed 50 characters";
+  } else if (existingComponents && existingComponents.length > 0) {
+    // When editing, exclude the current component from duplicate check
+    const isDuplicate = existingComponents.some(comp => 
+      comp.name && 
+      comp.name.toLowerCase() === values.name.toLowerCase() && 
+      comp.id !== values.id
+    );
+    
+    if (isDuplicate) {
+      errors.name = "Component name already exists";
+    }
   }
   
   if (!values.income_type) {
@@ -65,6 +76,7 @@ const AddComponentSheet = ({
   setIsOpen,
   onClose,
   onSuccess,
+  existingComponents = []
 }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
@@ -93,7 +105,7 @@ const AddComponentSheet = ({
         setIsOpen(false);
         setIsEdit(false);
         
-        // Call onSuccess with the newly created/updated component
+        // Call onSuccess with the newly created/updated component to update UI immediately
         if (typeof onSuccess === 'function') {
           onSuccess(response);
         }
@@ -171,6 +183,7 @@ const AddComponentSheet = ({
               setIsEdit={setIsEdit}
               onClose={handleClose}
               onSuccess={onSuccess}
+              existingComponents={existingComponents}
             />
           )}
         </SheetComponent>
@@ -188,13 +201,39 @@ const ComponentForm = ({
   setIsEdit,
   onClose,
   onSuccess,
+  existingComponents = []
 }) => {
+  const [showDuplicateError, setShowDuplicateError] = useState(false);
+  
+  // Check for duplicate name as user types
+  const checkDuplicateName = (name, id) => {
+    if (!name || !existingComponents || existingComponents.length === 0) return false;
+    
+    return existingComponents.some(comp => 
+      comp.name && 
+      comp.name.toLowerCase() === name.toLowerCase() && 
+      comp.id !== id
+    );
+  };
+
   return (
     <Formik
       initialValues={earnAndDeduction}
-      validate={validateForm}
+      validate={(values) => validateForm(values, existingComponents)}
       enableReinitialize={true}
-      onSubmit={handleSubmit}
+      onSubmit={(values, { setSubmitting, setErrors }) => {
+        // Final check for duplicates before submitting
+        if (checkDuplicateName(values.name, values.id)) {
+          setErrors({ name: "Component name already exists" });
+          setShowDuplicateError(true);
+          setSubmitting(false);
+          toast.error(`"${values.name}" already exists in the component list. Please use a different name.`);
+          return;
+        }
+        
+        setShowDuplicateError(false);
+        handleSubmit(values);
+      }}
     >
       {(props) => (
         <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
@@ -229,9 +268,21 @@ const ComponentForm = ({
                 value={props.values?.name}
                 onChange={(field, value) => {
                   props.handleChange(field)(value);
+                  // Check for duplicates as user types
+                  if (checkDuplicateName(value, props.values.id)) {
+                    props.setFieldError(field, "Component name already exists");
+                    setShowDuplicateError(true);
+                  } else {
+                    setShowDuplicateError(false);
+                  }
                 }}
                 placeholder="Component Name"
               />
+              {showDuplicateError && (
+                <div className="text-xs font-medium text-red-500">
+                  This component name already exists in the list. Please use a different name.
+                </div>
+              )}
             </div>
           </div>
 
@@ -274,6 +325,8 @@ const ComponentForm = ({
                       props.handleChange(field)(value);
                     }}
                     name={"amounts"}
+                    error={props.errors?.amounts}
+                    touch={props.touched?.amounts}
                     placeholder={
                       props.values.amounts_types === "fixed"
                         ? "Enter amount"
