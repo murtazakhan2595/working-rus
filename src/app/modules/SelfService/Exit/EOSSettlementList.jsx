@@ -29,17 +29,23 @@ const EOSSettlementList = ({ userProfile, employeeId }) => {
         console.log("Employee ID passed to component:", employeeId);
         console.log("User profile employeeId:", userProfile?.employeeId);
         
-        // Filter by employee ID if provided
+        // Fix the filtering logic
         let filteredData = data;
         if (employeeId) {
-          // Compare as strings to avoid type mismatches
+          // Filter by provided employeeId prop
           filteredData = data.filter(settlement => 
             String(settlement.employeeId).toLowerCase() === String(employeeId).toLowerCase()
           );
-        } else {
-          // Fallback to all settlements
-          filteredData = data;
+        } else if (userProfile?.employeeId) {
+          // Filter by current user's employeeId from Redux state
+          filteredData = data.filter(settlement => 
+            String(settlement.employeeId).toLowerCase() === String(userProfile.employeeId).toLowerCase()
+          );
         }
+        
+        // Add debugging to verify IDs match
+        console.log("Current user employeeId:", userProfile?.employeeId);
+        console.log("Settlement IDs in data:", data.map(s => s.employeeId));
         
         console.log("Filtered settlements:", filteredData);
         setSettlements(filteredData);
