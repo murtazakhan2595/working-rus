@@ -33,6 +33,7 @@ import ComingSoon from "app/modules/comingSoon/ComingSoon.jsx";
 import Services from "app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 import { ExitAndClearance, EmployeeExit } from "app/modules/ExitAndClearance";
+import { Exit, EOSSettlementDetails } from "app/modules/SelfService/Exit";
 import {
   Payslip,
   EmployeeSalaryDetails,
@@ -378,6 +379,12 @@ const SidebarRoutes = [
     component: <Assets />,
     name: "Assets Management",
   },
+  Config.SELF_SERVICE_HUB &&
+    Config.EMPLOYEE_OFFBOARDING && {
+      path: "/self-service/exit/eos-settlement/:id",
+      component: <EOSSettlementDetails />,
+      name: "EOS Settlement Details",
+    },
 ].filter(Boolean); // Filter out undefined routes
 
 const LoginRoutes = [

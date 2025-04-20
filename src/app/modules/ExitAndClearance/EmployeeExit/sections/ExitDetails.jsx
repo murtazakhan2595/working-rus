@@ -9,6 +9,8 @@ import { Button } from "components/ui/button";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 import { Status } from "app/modules/ExitAndClearance/Sections";
+import EOSSettlementSection from "../../../Employees/Screens/Profile/EmployeeProfile";
+import EOSSettlementList from "../../../SelfService/Exit/EOSSettlementList";
 
 function ExitDetails({ exitData, reloadData = () => {} }) {
   const employeeApproval = Status(exitData.status_termination, 0);
@@ -48,7 +50,7 @@ function ExitDetails({ exitData, reloadData = () => {} }) {
     <Card className="border shadow">
       <CardHeader className="py-2">
         <CardTitle>
-          <div className="justify-between items-center inline-flex w-full">
+          <div className="inline-flex items-center justify-between w-full">
             <div className="text-lg text-neutral-1100">
               {`${
                 exitDetails.exit_category === "resignation"
@@ -63,7 +65,7 @@ function ExitDetails({ exitData, reloadData = () => {} }) {
       </CardHeader>
       <hr />
       <CardContent>
-        <div className="grid grid-cols-3 justify-center self-start mt-5 text-base">
+        <div className="grid self-start justify-center grid-cols-3 mt-5 text-base">
           {exitDetails.map((detail, index) => (
             <DetailBox
               orientation="horizontal"
@@ -132,6 +134,13 @@ function ExitDetails({ exitData, reloadData = () => {} }) {
               {employeeApproval ? "Accepted" : "Rejected"}
             </StatusLabel>
           ))}
+          
+        {/* Add direct EOSSettlementList component with hardcoded ID */}
+        <div className="mt-6">
+        <div className="text-lg text-neutral-1100">End of Service Settlement</div>
+        <hr className="my-2 border-neutral-200" />
+          <EOSSettlementList employeeId="TBX-0044" />
+        </div>
       </CardContent>
     </Card>
   );
