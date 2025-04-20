@@ -22,6 +22,8 @@ import Stats from "components/ui/Stats";
 import { TerminationStatusOptions } from "data/Data";
 import { ExitRequests } from "app/modules/ExitAndClearance/ExitRequests";
 import { ExitRecords } from "app/modules/ExitAndClearance/ExitRecords";
+import EOSSettlementList from '../SelfService/Exit/EOSSettlementList';
+import useEOSSettlement from '../../hooks/useEOSSettlement';
 
 const ExitAndClearance = ({ userProfile, departments }) => {
   const [activeTab, setActiveTab] = useState("Exit Requests");
@@ -36,6 +38,11 @@ const ExitAndClearance = ({ userProfile, departments }) => {
     status_resignation: StatusList(),
     ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
   });
+  const { showEOSSettlement } = useEOSSettlement(
+    { id: userProfile?.employeeId, status: userProfile?.status },
+    userProfile
+  );
+
   const fetchData = async () => {
     try {
       const response = await getEmployeesExitCount(
@@ -240,6 +247,11 @@ const ExitAndClearance = ({ userProfile, departments }) => {
           </CardContent>
         </Card>
       </Tabs>
+      {showEOSSettlement && (
+        <div className="mt-4">
+          <EOSSettlementList employeeId={userProfile?.employeeId} />
+        </div>
+      )}
     </div>
   );
 };
