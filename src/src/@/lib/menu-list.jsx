@@ -177,6 +177,8 @@ export function getMenuList(pathname, userRole) {
       ...(userRole !== 2
         ? [createMenu("/on-hold-salaries", "On-Hold Salaries")]
         : []),
+      // Add the EOS menu item for HR/Payroll officers (userRole 1 or 3)
+      ...(userRole === 1 || userRole === 3 ? [createMenu("/payroll/eos", "End of Service")] : []),
       // createMenu("/salary-setup", "Salary Setup"),
       // createMenu("/loans", "Loans"),
       // createMenu("/pay-run", "Pay Run"),

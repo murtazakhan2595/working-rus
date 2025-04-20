@@ -2,7 +2,7 @@
 export const eosSettlementsList = [
   {
     id: 1,
-    employeeId: "EMP001",
+    employeeId: "TXB-001",
     employeeName: "John Doe",
     department: "Engineering",
     status: "Pending",
@@ -30,7 +30,7 @@ export const eosSettlementsList = [
   },
   {
     id: 2,
-    employeeId: "EMP042",
+    employeeId: "TXB-042",
     employeeName: "Jane Smith",
     department: "Marketing",
     status: "Acknowledged",
@@ -58,7 +58,7 @@ export const eosSettlementsList = [
   },
   {
     id: 3,
-    employeeId: "EMP078",
+    employeeId: "TXB-078",
     employeeName: "Robert Johnson",
     department: "Finance",
     status: "Pending",
@@ -86,7 +86,7 @@ export const eosSettlementsList = [
   },
   {
     id: 4,
-    employeeId: "EMP125",
+    employeeId: "TXB-125",
     employeeName: "Sarah Williams",
     department: "Human Resources",
     status: "Pending",
@@ -183,4 +183,44 @@ export const acknowledgeEOSSettlement = (id) => {
       resolve({ success: true, message: "Settlement acknowledged successfully" });
     }, 500);
   });
+};
+
+// 1. Add proper date formatting
+const formatDate = (dateString) => {
+  if (!dateString) return "N/A";
+  
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Invalid Date";
+    
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  } catch (error) {
+    return "Invalid Date";
+  }
+};
+
+// 2. Fix the service duration calculation
+const calculateServiceDuration = (startDate, endDate) => {
+  try {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      return "Service period calculation not available";
+    }
+    
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const years = Math.floor(diffDays / 365);
+    const months = Math.floor((diffDays % 365) / 30);
+    const days = Math.floor((diffDays % 365) % 30);
+    
+    return `${years} years, ${months} months, ${days} days`;
+  } catch (error) {
+    return "Service period calculation not available";
+  }
 }; 

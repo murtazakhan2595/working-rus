@@ -61,6 +61,7 @@ import { TeamProfileMangement } from "app/modules/TeamManagment";
 import { Assets, MyAssets } from "app/modules/AssetsManagement";
 import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
 import { OnHoldSalaries, OnHoldSalaryDetails } from "app/modules/Payroll";
+import { EOSList, EOSDetails } from "app/modules/Payroll/Screens/EOS";
 
 const SidebarRoutes = [
   {
@@ -254,6 +255,16 @@ const SidebarRoutes = [
     path: "/pay-run",
     component: <PayRun />,
     name: "Pay Run",
+  },
+  Config.PAYROLL && {
+    path: "/payroll/eos",
+    component: <EOSList />,
+    name: "End of Service",
+  },
+  Config.PAYROLL && {
+    path: "/payroll/eos/:id",
+    component: <EOSDetails />,
+    name: "EOS Details",
   },
   Config.ATTENDANCE && {
     path: "/attendance",
