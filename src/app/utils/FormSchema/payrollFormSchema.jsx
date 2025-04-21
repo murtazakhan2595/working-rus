@@ -55,6 +55,22 @@ const validateClaimRequestForm = (values) => {
   return errors;
 };
 
+export const validateGeneratePayRun = (values) => {
+  const errors = {};
+  if (!values.end_date) {
+    errors.payrun_date = "Payroll end date is required";
+  }
+  if (!values.month) {
+    errors.month = "Payroll month is required";
+  }
+  if (!values.start_date) {
+    errors.payrun_date = "Payroll start date is required";
+  }
+  if (!values.payrun_date) {
+    errors.payrun_date = "Payroll date is required";
+  }
+  return errors;
+};
 export const validateEmployeeSalarySetupForm = (values) => {
   const errors = {};
   if (!values.gross_salary) {

@@ -1,14 +1,20 @@
+import moment from "moment";
+
 export const PayRun = {
-  end_date: null,
+  end_date: moment().endOf("month").format("YYYY-MM-DD"),
   excluded_employees: [],
   gross_amount: null,
   is_payroll_run: null,
   net_amount: null,
   run_date: null,
-  start_date: null,
+  start_date: moment().startOf("month").format("YYYY-MM-DD"),
   total_amount: null,
   total_employees: null,
+  month: moment().startOf("month").format("YYYY-MM-DD"),
   title: null,
+  payrun_date: `${moment().startOf("month").format("YYYY-MM-DD")},${moment()
+    .endOf("month")
+    .format("YYYY-MM-DD")}`,
 };
 
 export const EmployeePayRoll = {
@@ -53,10 +59,10 @@ export const EmployeeSalarySetup = {
   other_allowance: null,
   transport_allowance: null,
   salary_breakdown_type: "percentage",
-  earning_types:[],
-  earnings:[],
-  deduction_types:[],
-  deductions:[],
+  earning_types: [],
+  earnings: [],
+  deduction_types: [],
+  deductions: [],
 };
 export const EmployeeSalaryRevision = {
   new_salary: null,
