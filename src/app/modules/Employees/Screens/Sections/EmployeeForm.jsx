@@ -27,6 +27,7 @@ import {
   fetchEmployeesDetail,
 } from "state/slices/EmpSlice";
 import { validationEmployeeInfoFormSchema } from "app/utils/FormSchema/employeeFormSchema";
+import { DisbursementTypeOptions } from "data/Data";
 
 import {
   GenderOptions,
@@ -836,6 +837,63 @@ const SheetOnBorading = ({
                               }}
                             />
                           </div>
+                        </div>
+                      </div>
+                    )}
+                    {props.values.employee_location ===
+                      "United Arab Emirates" && (
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                          Disbursement Information
+                        </h3>
+                        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <SelectInputComponent
+                              name={"disbursement_type"}
+                              options={DisbursementTypeOptions}
+                              error={props.errors?.disbursement_type}
+                              touch={props.touched.disbursement_type}
+                              value={props.values.disbursement_type}
+                              label={"Disbursement Type"}
+                              required={true}
+                              onChange={(field, value) => {
+                                props.setFieldValue(field, value);
+                              }}
+                            />
+                          </div>
+
+                          {/* Show bank detail fields only if Bank Transfer is selected */}
+                          {props.values.disbursement_type ===
+                            "Bank Transfer" && (
+                            <>
+                              <div className="space-y-2">
+                                <TextInput
+                                  name={"agent_bank_rtn_code"}
+                                  error={props.errors?.agent_bank_rtn_code}
+                                  touch={props.touched?.agent_bank_rtn_code}
+                                  value={props.values?.agent_bank_rtn_code}
+                                  label={"AGENT_BANK_RTN_CODE"}
+                                  required={false}
+                                  onChange={(field, value) => {
+                                    props.handleChange(field)(value);
+                                  }}
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <TextInput
+                                  name={"mol_person_id"}
+                                  error={props.errors?.mol_person_id}
+                                  touch={props.touched?.mol_person_id}
+                                  value={props.values?.mol_person_id}
+                                  label={"MOL Person ID"}
+                                  required={false}
+                                  onChange={(field, value) => {
+                                    props.handleChange(field)(value);
+                                  }}
+                                />
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
                     )}
