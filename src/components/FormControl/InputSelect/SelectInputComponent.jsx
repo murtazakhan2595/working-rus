@@ -19,9 +19,10 @@ const SelectInputComponent = React.memo(
     touch,
     value = null, // Current selected values
     label = null, // Label for the select field
-    onChange, // Function to handle selection change
+    onChange = () => {}, // Function to handle selection change
     required = false, // Whether the field is required
     className = "w-full", // Custom styling
+    inputCustomStyle = "", // Custom styling
     icon, // Optional icon inside the button
     allowNewOption = false, // Whether users can add new options
     newOptionConfig = {}, // Configuration for new options
@@ -59,12 +60,14 @@ const SelectInputComponent = React.memo(
           setOpen={setIsOpen}
           disabled={disabled}
           invalidField={!!(error && touch)}
+          className={inputCustomStyle}
           triggerContent={
             <div className="flex justify-start w-full gap-2 items-center">
               <FormFieldIcon icon={icon} />
               {value ? (
                 <span className="max-w-[95%] overflow-hidden">
-                  {options.find((option) => option.value == value)?.label}
+                  {options.find((option) => option.value == value)?.label ||
+                    value}
                 </span>
               ) : (
                 <FormPlaceholder
