@@ -493,11 +493,11 @@ const SheetOnBorading = ({
                         {/* New UAE Address Fields */}
                         <div className="col-span-1 space-y-2 xl:col-span-3 lg:col-span-2 md:col-span-2">
                           <TextAreaInput
-                            name={"uae_residence_address"}
-                            error={props.errors?.uae_residence_address}
-                            touch={props.touched?.uae_residence_address}
-                            value={props.values?.uae_residence_address}
-                            label={"UAE Residence Address"}
+                            name={"permanent_address"}
+                            error={props.errors?.permanent_address}
+                            touch={props.touched?.permanent_address}
+                            value={props.values?.permanent_address}
+                            label={"Permanent Address"}
                             required={false}
                             maxRows={3}
                             onChange={(field, value) => {

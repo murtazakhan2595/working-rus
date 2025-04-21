@@ -6,7 +6,8 @@ import { SalarySetup,EmployeeSalarySetup } from "./Screens/SalarySetup";
 import PayRun from "./Screens/PayRun";
 import CreatePayRun from "./Screens/CreatePayrun";
 import PayRunDetails from "./Screens/PayRunDetails";
-
+import OnHoldSalaries from "./Screens/OnHoldSalaries";
+import OnHoldSalaryDetails  from "./Screens/OnHoldSalaryDetails";
 export {
   MyPayroll,
   EmployeesPayroll,
@@ -17,4 +18,6 @@ export {
   PayRun,
   CreatePayRun,
   PayRunDetails,
+  OnHoldSalaries,
+  OnHoldSalaryDetails,
 };

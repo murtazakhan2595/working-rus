@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { FiEye } from "react-icons/fi";
 import moment from "moment";
+import { Button } from "components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 import {
   DepartmentName,
@@ -33,6 +35,7 @@ const RenderTerminatedRow = ({
   const [openTerminatedDetails, setOpenTerminatedDetails] = useState(null);
   const [terminatedDetailIndex, setTerminatedDetailIndex] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleTerminatedDetails = (terminatedEmp) => {
     setTerminatedDetailIndex(
@@ -68,6 +71,11 @@ const RenderTerminatedRow = ({
       setOpenTerminatedDetails(terminatedEmployeeList[listLength - 1]);
     }
   };
+
+  const handleViewEOSSettlement = (employeeId) => {
+    navigate(`/self-service/exit/eos-settlement/1`);
+  };
+
   return (
     <>
       {openTerminatedDetails && (
@@ -101,6 +109,14 @@ const RenderTerminatedRow = ({
             <FiEye className="text-2xl cursor-pointer opacity-80 mr-2" />
             View Details
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2 flex items-center"
+            onClick={() => handleViewEOSSettlement(terminatedEmployee.employee_id)}
+          >
+            View Final Settlement
+          </Button>
         </div>
       </div>
     </>

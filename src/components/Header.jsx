@@ -85,6 +85,7 @@ const Header = ({ content, userProfile }) => {
       "my-assets":"My Assets",
       "documents":"HR Documents",
       "my-documents":"HR Documents",
+      "on-hold-salaries": "On-Hold Salaries",
     };
     setPathName(pathNames[path] || "Dashboard");
   }, [location]);
