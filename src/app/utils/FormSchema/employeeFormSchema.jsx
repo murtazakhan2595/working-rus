@@ -80,6 +80,12 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   if (values.po_box_number && !/^\d+$/.test(values.po_box_number)) {
     errors.po_box_number = "PO Box Number must contain only numbers";
   }
+  if (values.employee_location === "United Arab Emirates") {
+    // Validate disbursement type (required only for UAE employees)
+    if (!values.disbursement_type) {
+      errors.disbursement_type = "Disbursement type is required";
+    }
+  }
   return errors;
 };
 

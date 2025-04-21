@@ -75,6 +75,12 @@ export const CustomeFieldTypeOption = [
   { value: "CHECKBOX", label: "Checkbox" },
 ];
 
+export const DisbursementTypeOptions = [
+  { value: "Bank Transfer", label: "Bank Transfer" },
+  { value: "Exchange", label: "Exchange" },
+  { value: "Cash", label: "Cash" },
+];
+
 export const dateFormats = [
   { label: "YYYY-MM-DD", value: "%Y-%m-%d" },
   { label: "DD-MM-YYYY", value: "%d-%m-%Y" },
