@@ -8,11 +8,11 @@ import { calculatePercentage } from "utils/renderValues";
 export function mapPayRunData(data) {
   const payrunData = Object.keys(PayRun).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
-      if (key === "start_date") {
-        acc["title"] = `Process Pay Run for ${moment(data[key]).format(
-          "MMMM YYYY"
-        )}`;
-      }
+      // if (key === "start_date") {
+      //   acc["title"] = `Process Pay Run for ${moment(data[key]).format(
+      //     "MMMM YYYY"
+      //   )}`;
+      // }
       acc[key] = data[key];
     }
     return acc;
@@ -79,4 +79,36 @@ export function mapEmployeeSalarySetupData(data) {
   }, {});
 
   return payrunData;
+}
+
+export function mapPayrunPayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in PayRun) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      // Add the key and its value to the payload
+      if (
+        [
+          "salary_on_hold",
+          "nationalities",
+          "departments",
+          "branches",
+          "managers",
+          "religions",
+          "genders",
+        ].includes(key)
+      ) {
+        if (data[key].length > 0) payload[key] = data[key];
+      } else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
 }

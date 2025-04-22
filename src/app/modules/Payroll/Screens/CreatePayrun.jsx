@@ -9,7 +9,7 @@ import {
 } from "../../../../components/ui/card";
 import { PayrunEmployeePayrollColumns } from "app/modules/Payroll/Sections";
 import CustomTable from "components/CustomTable";
-import { createPayrunColumns } from "app/utils/Types/TableColumns";
+import { getDropdownList } from "utils/Lists";
 import { getEmployeePayroll } from "app/hooks/payroll";
 import { getEarnAndDeduction } from "app/hooks/payroll";
 import { toast } from "react-toastify";
@@ -28,17 +28,30 @@ import { getPayun } from "app/hooks/payroll";
 import { getEmpPayrolDetails } from "app/hooks/payroll";
 import { PageLoader } from "components";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { DateRangeInput } from "components/FormControl";
-
+import {
+  DateInput,
+  SelectInputComponent,
+  DateRangeInput,
+} from "components/FormControl";
+import { Formik } from "formik";
+import { GenderOptions, countriesList } from "data/Data";
+import { PayRun } from "app/utils/Types/Payroll";
+import { validateGeneratePayRun } from "app/utils/FormSchema/payrollFormSchema";
+import { SelectMultiInputComponent } from "components/FormControl";
 const CreatePayRun = () => {
-  const [payRunMonth, setPayrunMonth] = useState(null);
+  const formRef = React.createRef();
+  const [Errors, setErrors] = useState({});
   const [employeeData, setEmployeeData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [component, setComponent] = useState([]);
   const [withheldRows, setWithheldRows] = useState([]);
+  const [filterData, setFilterData] = useState({});
   const [payrollData, setPayrollData] = useState([]);
   const navigate = useNavigate();
   const userProfile = useSelector((state) => state.user.userProfile);
+  const Departments = useSelector((state) => state.common.departments);
+  const Branches = useSelector((state) => state.common.branches);
+  const Managers = useSelector((state) => state.emp.reportingManagers);
   const [payrunSubmitDialog, setPayrunSubmitDialog] = useState(false);
   const [payrunConfirmationDialog, setPayrunConfirmationDialog] =
     useState(false);
@@ -48,9 +61,16 @@ const CreatePayRun = () => {
   const [selectedRows, setSelectedRows] = useState([]);
 
   const fetchEmpPayrolData = async (isMounted) => {
-    const response = await getEmpPayrolDetails();
+    const response = await getEmpPayrolDetails({ filterData });
     if (response && isMounted) {
-      setEmployeeData(response);
+      const employeeOptions = getDropdownList(
+        response.results,
+        "name",
+        "employee",
+        "serial_number",
+        "-"
+      );
+      setEmployeeData(employeeOptions);
     }
   };
 
@@ -60,7 +80,7 @@ const CreatePayRun = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [filterData]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -143,7 +163,7 @@ const CreatePayRun = () => {
     // Find employees in employeedata.results whose IDs are in updatedWithheldEmployees
     const withheldEmployeeData = updatedWithheldEmployees
       .map((withheldEmployeeId) => {
-        return employeeData.find(
+        return employeeData?.find(
           (employee) => employee.id === withheldEmployeeId
         );
       })
@@ -253,8 +273,18 @@ const CreatePayRun = () => {
     navigate(-1);
   };
 
-  const handleSubmit = async () => {
-    setPayrunConfirmationDialog(true);
+  const handleSubmit = async (values) => {
+    const reponse = await savePayrun({
+      ...values,
+      is_payroll_run: false,
+    });
+    if (reponse) {
+      setPayrunConfirmationDialog(false);
+      setPayrunSubmitDialog(true);
+      setTimeout(() => {
+        navigate("/pay-run");
+      }, 2000);
+    }
   };
   const handleConfirmSubmit = async () => {
     debugger;
@@ -326,6 +356,18 @@ const CreatePayRun = () => {
     setPayrunConfirmationDialog(false);
   };
 
+  const handleFilterChange = (filterName, filterValue) => {
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
+
   return (
     <>
       {isLoading ? (
@@ -337,12 +379,7 @@ const CreatePayRun = () => {
             onClose={setPayrunSubmitDialog}
             date={moment(payrunDraft?.start_date).format("MMMM YYYY")}
           />
-          <PayRunSubmitDialog
-            isOpen={payrunConfirmationDialog}
-            onClose={handleCloseConfirmationDialog}
-            onConfirm={handleConfirmSubmit}
-            payrunDraft={payrunDraft}
-          />
+
           <div className="flex flex-wrap gap-10 justify-between items-center h-11">
             <div className="flex items-center gap-4">
               <button
@@ -353,89 +390,14 @@ const CreatePayRun = () => {
               </button>
               <div>
                 <span className="text-neutral-1200 text-xl font-semibold  leading-tight">
-                  Pay Run for{" "}
-                </span>
-                <span className="text-neutral-1200 text-xl font-bold  leading-tight">
-                  {moment(payrunDraft?.start_date).format("MMMM YYYY")}
+                  Pay Run
                 </span>
               </div>
             </div>
-            {payRunMonth && (
-              <Button
-                className="bg-[#1c2024] text-white min-w-[120px]"
-                onClick={handleSubmit}
-              >
-                Submit
-              </Button>
-            )}
           </div>
-          {/* <div className="p-6">
-            <section className="flex flex-wrap gap-4 items-center">
-              {payrollData.map((item, index) => (
-                <React.Fragment key={item.title}>
-                  <div className="flex-1 shrink min-w-[240px]">
-                    <div className="pb-2">
-                      <h2 className="text-sm font-medium tracking-tight leading-none text-neutral-800">
-                        {item.title}
-                      </h2>
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold leading-tight text-fuchsia-700">
-                        {item.value}
-                      </p>
-                    </div>
-                  </div>
-                  {index < payrollData.length - 1 && (
-                    <div className="relative">
-                      <div className="w-[70px] h-[1px]  rotate-90 border border-[#deade2] absolute top-0 right-[55px]"></div>
-                    </div>
-                  )}
-                </React.Fragment>
-              ))}
-            </section>
-          </div> */}
-          {/* 
-          <Card>
-            <CardContent className="p-6 flex items-center justify-between">
-              <div className="text-[#ab4aba] text-2xl font-medium ">
-                Payment Date
-              </div>
-            </CardContent>
-          </Card> */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="h-[47px] flex-col justify-center items-start inline-flex">
-                  <div className="flex-col justify-start items-start flex">
-                    <div className="self-stretch text-[#ab4aba] text-2xl font-medium  ">
-                      Employees Summary
-                    </div>
-                  </div>
-                  <div className="pt-1.5 flex-col justify-start items-start flex">
-                    <div className="flex-col justify-start items-start flex">
-                      <div className="self-stretch text-[#8b8d98] text-sm  ">
-                        Employee payroll runs generated are here
-                        <br />
-                        Select employee to hold their salary
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="w-[250px]">
-                  <DateRangeInput
-                    name="payrun_date"
-                    placeholder="Pay Run Date"
-                    value={payRunMonth}
-                    onChange={(field, value) => {
-                      setPayrunMonth(value);
-                    }}
-                  />
-                </div>
-                {showWithholdButton && !showProvideButton && (
-                  <Button variant="outline" onClick={handleWithholdSalary}>
-                    Withhold Salary
-                  </Button>
-                )}
+              <div className="flex items-center justify-between mt-5">
                 {showProvideButton && !showWithholdButton && (
                   <Button
                     className="px-3 py-1.5 bg-[#f9f9fb] rounded-3xl justify-center items-center gap-1 inline-flex"
@@ -449,7 +411,158 @@ const CreatePayRun = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <CustomTable
+              <div className="space-y-4">
+                <Formik
+                  initialValues={PayRun}
+                  ref={formRef}
+                  enableReinitialize={true}
+                  onSubmit={(values, { resetForm }) => {
+                    handleSubmit(values, resetForm);
+                  }}
+                  validate={(values) => {
+                    const errors = validateGeneratePayRun(values);
+                    return errors;
+                  }}
+                >
+                  {(props) => (
+                    <form
+                      onSubmit={props.handleSubmit}
+                      className="mt-6 space-y-6"
+                    >
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        <div className="space-y-2">
+                          <DateInput
+                            name="month"
+                            placeholder="Payroll Month"
+                            value={props.values.month}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                              // setPayrunMonth(value);
+                            }}
+                            error={props.errors.month}
+                            required={true}
+                            label={"Payroll Month"}
+                            touch={props.touched.month}
+                            dateFormat="yyyy-mm"
+                            showMonthYearPicker={true}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <DateRangeInput
+                            name="payrun_date"
+                            placeholder="Pay Run Date"
+                            label="Payroll Date"
+                            error={props.errors.payrun_date}
+                            touch={props.touched.payrun_date}
+                            value={props.values.payrun_date}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectMultiInputComponent
+                            name={"departments"}
+                            value={props.values.departments}
+                            options={Departments}
+                            label={"Department"}
+                            required={true}
+                            onChange={(field, value) => {
+                              handleFilterChange(field, value);
+                              props.setFieldValue(field, value);
+                            }}
+                            SelectAllOption={true}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectMultiInputComponent
+                            name={"branches"}
+                            options={Branches}
+                            value={props.values.branches}
+                            label={"Branch"}
+                            onChange={(field, value) => {
+                              handleFilterChange(field, value);
+                              props.setFieldValue(field, value);
+                            }}
+                            SelectAllOption={true}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectMultiInputComponent
+                            name={"managers"}
+                            options={Managers}
+                            value={props.values.managers}
+                            label={"Direct Report"}
+                            onChange={(field, value) => {
+                              handleFilterChange(field, value);
+                              props.setFieldValue(field, value);
+                            }}
+                            SelectAllOption={true}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectMultiInputComponent
+                            name={"genders"}
+                            options={GenderOptions}
+                            value={props.values.genders}
+                            label={"Gender"}
+                            onChange={(field, value) => {
+                              handleFilterChange(field, value);
+                              props.setFieldValue(field, value);
+                            }}
+                            SelectAllOption={true}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectMultiInputComponent
+                            name={"nationalities"}
+                            options={countriesList}
+                            value={props.values.nationalities}
+                            label={"Nationality"}
+                            onChange={(field, value) => {
+                              handleFilterChange(field, value);
+                              props.setFieldValue(field, value);
+                            }}
+                            SelectAllOption={true}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectMultiInputComponent
+                            name={"salary_on_hold"}
+                            options={employeeData}
+                            value={props.values.salary_on_hold}
+                            label={"Salary On Hold"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                            SelectAllOption={true}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex justify-end">
+                        <Button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            setPayrunConfirmationDialog(true);
+                          }}
+                        >
+                          Generate Payroll
+                        </Button>
+                      </div>
+                      <PayRunSubmitDialog
+                        isOpen={payrunConfirmationDialog}
+                        onClose={handleCloseConfirmationDialog}
+                        onConfirm={() => {
+                          props.handleSubmit();
+                        }}
+                        payrunDraft={payrunDraft}
+                      />
+                    </form>
+                  )}
+                </Formik>
+              </div>
+              {/* <CustomTable
                 data={employeeData?.results || []}
                 columns={PayrunEmployeePayrollColumns}
                 pagination={false}
@@ -458,7 +571,7 @@ const CreatePayRun = () => {
                 setSelectedRows={setSelectedRows}
                 selectedRows={selectedRows}
                 disabledRows={withheldRows}
-              />
+              /> */}
             </CardContent>
           </Card>
         </div>

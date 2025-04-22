@@ -1,16 +1,21 @@
+import moment from "moment";
+
 export const PayRun = {
-  id: null,
-  end_date: null,
-  excluded_employees: [],
-  gross_amount: null,
-  is_payroll_run: null,
-  net_amount: null,
-  run_date: null,
-  start_date: null,
-  total_amount: null,
-  total_employees: null,
-  title: null,
-  month: null,
+  id:null,
+  end_date: moment().endOf("month").format("YYYY-MM-DD"),
+  salary_on_hold: [],
+  nationalities: null,
+  is_payroll_run: false,
+  departments: null,
+  branches: null,
+  start_date: moment().startOf("month").format("YYYY-MM-DD"),
+  managers: null,
+  religions: null,
+  month: '2025-07-01',
+  genders: null,
+  payrun_date: `${moment().startOf("month").format("YYYY-MM-DD")},${moment()
+    .endOf("month")
+    .format("YYYY-MM-DD")}`,
 };
 
 export const EmployeePayRoll = {
@@ -55,10 +60,10 @@ export const EmployeeSalarySetup = {
   other_allowance: null,
   transport_allowance: null,
   salary_breakdown_type: "percentage",
-  earning_types:[],
-  earnings:[],
-  deduction_types:[],
-  deductions:[],
+  earning_types: [],
+  earnings: [],
+  deduction_types: [],
+  deductions: [],
 };
 export const EmployeeSalaryRevision = {
   new_salary: null,
