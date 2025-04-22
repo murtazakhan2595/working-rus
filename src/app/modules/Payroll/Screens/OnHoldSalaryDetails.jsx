@@ -6,6 +6,9 @@ import CustomTable from "components/CustomTable";
 import { useNavigate, useParams } from "react-router-dom";
 import { PageLoader } from "components";
 import moment from "moment";
+import { getPayRunById } from "app/hooks/payroll";
+import { getDesignationName } from "utils/getValuesFromTables";
+import { useSelector } from "react-redux";
 
 const OnHoldSalaryDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -14,7 +17,7 @@ const OnHoldSalaryDetails = () => {
   const [payrollMonth, setPayrollMonth] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
-
+  const Designations = useSelector((state) => state.common.designations);
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -25,59 +28,16 @@ const OnHoldSalaryDetails = () => {
     onPageChange: onPageChange,
   };
 
-  // Mock data for demonstration
-  const mockDetailData = {
-    results: [
-      {
-        id: 1,
-        employee_id: "TXB-0001",
-        employee_name: "John Doe",
-        department: "Engineering",
-        designation: "Software Engineer",
-        branch: "Dubai",
-        salary_amount: 5000.0,
-        held_by: "Sarah Johnson",
-        reason: "Pending documentation verification",
-      },
-      {
-        id: 2,
-        employee_id: "TXB-0002",
-        employee_name: "Alice Smith",
-        department: "Marketing",
-        designation: "Marketing Manager",
-        branch: "Abu Dhabi",
-        salary_amount: 4500.0,
-        held_by: "Michael Brown",
-        reason: "Performance review pending",
-      },
-      {
-        id: 3,
-        employee_id: "TXB-0003",
-        employee_name: "Ahmed Hassan",
-        department: "Finance",
-        designation: "Accountant",
-        branch: "Dubai",
-        salary_amount: 3000.0,
-        held_by: "Sarah Johnson",
-        reason: "Adjustment in progress",
-      },
-    ],
-    count: 3,
-    payrollMonth: "2025-04-01",
-  };
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      // This would be replaced with an actual API call
-      // const response = await getOnHoldSalaryDetails(id, { options });
-
-      // Using mock data for now
-      setTimeout(() => {
-        setDetailData(mockDetailData);
-        setPayrollMonth(mockDetailData.payrollMonth);
-        setIsLoading(false);
-      }, 1000);
+      const response = await getPayRunById(id)
+      if(response){
+        setDetailData(response);
+        setPayrollMonth(response?.month || "");
+      }
+      setIsLoading(false);
     };
 
     fetchData();
@@ -85,52 +45,53 @@ const OnHoldSalaryDetails = () => {
 
   const detailColumns = [
     {
-      dataField: "employee_id",
+      dataField: "serial_number",
       text: "Employee ID",
       formatter: (cellContent) => (
         <div className="font-medium">{cellContent}</div>
       ),
     },
     {
-      dataField: "employee_name",
+      dataField: "name",
       text: "Employee Name",
       formatter: (cellContent) => (
         <div className="font-medium">{cellContent}</div>
       ),
     },
     {
-      dataField: "department",
+      dataField: "department_name",
       text: "Department",
     },
     {
-      dataField: "designation",
+      dataField: "department_role",
       text: "Designation",
+      formatter: (cellContent) => {
+        const designation = getDesignationName(
+          cellContent,
+          Designations
+        );
+        return <div className="font-medium">{designation}</div>;
+      }
     },
     {
       dataField: "branch",
       text: "Branch",
     },
     {
-      dataField: "salary_amount",
+      dataField: "net_amount",
       text: "Salary Amount",
-      formatter: (cellContent) => (
-        <div className="font-semibold text-plum-900">
-          AED {cellContent.toFixed(2)}
-        </div>
-      ),
+      formatter: (cellContent) => {
+        const amount = parseFloat(cellContent);
+        return (
+          <div className="font-semibold text-plum-900">
+            AED {isNaN(amount) ? "0.00" : amount.toFixed(2)}
+          </div>
+        );
+      },
     },
     {
       dataField: "held_by",
       text: "On-Hold By",
-    },
-    {
-      dataField: "reason",
-      text: "Reason for On-Hold",
-      formatter: (cellContent) => (
-        <div className="max-w-xs truncate" title={cellContent}>
-          {cellContent}
-        </div>
-      ),
     },
   ];
 
@@ -170,7 +131,8 @@ const OnHoldSalaryDetails = () => {
               <div className="pt-1.5 flex-col justify-start items-start flex">
                 <div className="flex-col justify-start items-start flex">
                   <div className="self-stretch text-[#8b8d98] text-sm">
-                    {detailData?.count || 0} employees with salary on hold
+                    {detailData?.excluded_employees?.length || 0} employees with
+                    salary on hold
                   </div>
                 </div>
               </div>
@@ -182,10 +144,10 @@ const OnHoldSalaryDetails = () => {
             <PageLoader />
           ) : (
             <CustomTable
-              data={detailData?.results || []}
+              data={detailData?.excluded_employees || []}
               columns={detailColumns}
               pagination={true}
-              dataTotalSize={detailData.count || 0}
+              dataTotalSize={detailData?.excluded_employees?.length || 0}
               tableOptions={tableOptions}
             />
           )}

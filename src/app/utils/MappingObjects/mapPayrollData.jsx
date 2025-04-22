@@ -22,6 +22,7 @@ export function mapPayRunData(data) {
 }
 
 export async function mapPayRunList(data) {
+  console.log("in mapPayRunList", data);
   if (!data || data.length === 0) return [];
   const PayRunList = await data?.map((payrun) => {
     return mapPayRunData(payrun);

@@ -1,4 +1,5 @@
 export const PayRun = {
+  id: null,
   end_date: null,
   excluded_employees: [],
   gross_amount: null,
@@ -9,6 +10,7 @@ export const PayRun = {
   total_amount: null,
   total_employees: null,
   title: null,
+  month: null,
 };
 
 export const EmployeePayRoll = {
