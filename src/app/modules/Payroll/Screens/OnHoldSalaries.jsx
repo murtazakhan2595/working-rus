@@ -14,8 +14,7 @@ import { getPayun } from "../../../hooks/payroll.jsx";
 const OnHoldSalaries = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [onHoldData, setOnHoldData] = useState({ results: [], count: 0 });
-  // const [filterData, setFilterData] = useState({excluded_employees:[]});
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({excluded_employees:[]});
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [filterDate, setFilterDate] = useState(null);
   const navigate = useNavigate();
@@ -56,6 +55,8 @@ const OnHoldSalaries = () => {
     onPageChange: onPageChange,
   };
 
+  console.log("onHoldData", onHoldData);
+
   const onHoldColumns = [
     {
       dataField: "month",
@@ -70,11 +71,13 @@ const OnHoldSalaries = () => {
       dataField: "excluded_employees",
       text: "Employees On Hold",
       formatter: (cellContent) => (
-        <div className="font-semibold text-plum-900">{cellContent?.length || 0}</div>
+        <div className="font-semibold text-plum-900">
+          {cellContent?.length || 0}
+        </div>
       ),
     },
     {
-      dataField: "total_amount",
+      dataField: "excluded_employees_total_net",
       text: "Total Amount On Hold",
       formatter: (cellContent) => {
         const amount = parseFloat(cellContent);

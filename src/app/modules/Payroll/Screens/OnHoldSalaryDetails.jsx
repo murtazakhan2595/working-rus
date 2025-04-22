@@ -9,6 +9,7 @@ import moment from "moment";
 import { getPayRunById } from "app/hooks/payroll";
 import { getDesignationName } from "utils/getValuesFromTables";
 import { useSelector } from "react-redux";
+import { BranchName } from "utils/getValuesFromTables";
 
 const OnHoldSalaryDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -27,6 +28,10 @@ const OnHoldSalaryDetails = () => {
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
   };
+
+  const employees = useSelector((state) => state.emp.employees);
+  const heldBy = employees.find((option) => option.value === parseInt(detailData?.held_by));
+  const heldByName = heldBy ? heldBy.name : "N/A";
 
 
   useEffect(() => {
@@ -66,16 +71,18 @@ const OnHoldSalaryDetails = () => {
       dataField: "department_role",
       text: "Designation",
       formatter: (cellContent) => {
-        const designation = getDesignationName(
-          cellContent,
-          Designations
-        );
+        const designation = getDesignationName(cellContent, Designations);
         return <div className="font-medium">{designation}</div>;
-      }
+      },
     },
     {
       dataField: "branch",
       text: "Branch",
+      formatter: (cellContent) => (
+        <div className="font-medium">
+          <BranchName value={cellContent} />
+        </div>
+      ),
     },
     {
       dataField: "net_amount",
@@ -92,6 +99,9 @@ const OnHoldSalaryDetails = () => {
     {
       dataField: "held_by",
       text: "On-Hold By",
+      formatter: (cellContent) => (
+        <div className="font-medium">{heldByName}</div>
+      ),
     },
   ];
 
