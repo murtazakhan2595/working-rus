@@ -6,7 +6,7 @@ import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
 import moment from "moment";
 import { renderDate } from "utils/renderValues";
 import { Switch } from "src/@/components/ui/switch";
-import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
+import { PayrollListActionOptions } from "app/modules/Payroll/Screens";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
 import { SalaryType, DesignationName } from "utils/getValuesFromTables";
 import { Badge } from "components/ui/badge";
@@ -23,7 +23,10 @@ import {
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
 import { format } from "date-fns";
-
+import { FormatID } from "utils/getValuesFromTables";
+import { DepartmentName } from "utils/getValuesFromTables";
+import { BranchName } from "utils/getValuesFromTables";
+import { ManagerName } from "utils/getValuesFromTables";
 
 export const EmployeePayrollColumns = [
   {
@@ -247,8 +250,16 @@ export const SalarySetupColumns = [
       if (showNewBadge || showEosBadge) {
         return (
           <div class="flex gap-2">
-            {showNewBadge && <Badge variant={"dot-plum"} dot={'bg-plum-1100'}>New</Badge>}
-            {showEosBadge && <Badge variant={"dot-plum"} dot={'bg-plum-1100'}>EOS</Badge>}
+            {showNewBadge && (
+              <Badge variant={"dot-plum"} dot={"bg-plum-1100"}>
+                New
+              </Badge>
+            )}
+            {showEosBadge && (
+              <Badge variant={"dot-plum"} dot={"bg-plum-1100"}>
+                EOS
+              </Badge>
+            )}
           </div>
         );
       }
@@ -261,7 +272,7 @@ class ActionButtonCell extends React.Component {
     super(props);
     this.state = {
       isOpenEdit: false,
-      isOpenDelete: false
+      isOpenDelete: false,
     };
   }
 
@@ -286,7 +297,7 @@ class ActionButtonCell extends React.Component {
       const response = await deleteEarnAndDeduction(this.props.row.id);
       if (response) {
         toast.success("Component deleted successfully");
-        if (typeof this.props.handleReload === 'function') {
+        if (typeof this.props.handleReload === "function") {
           this.props.handleReload();
         }
       }
@@ -302,7 +313,7 @@ class ActionButtonCell extends React.Component {
     const { isOpenEdit, isOpenDelete } = this.state;
 
     return (
-      <div 
+      <div
         className="flex items-center gap-3"
         onClick={(event) => {
           event.stopPropagation();
@@ -311,7 +322,7 @@ class ActionButtonCell extends React.Component {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button 
+              <button
                 className="flex items-center justify-center w-8 h-8 transition-colors border border-blue-300 rounded-full hover:bg-blue-50"
                 onClick={this.handleOpenEdit}
                 aria-label="Edit component"
@@ -324,11 +335,11 @@ class ActionButtonCell extends React.Component {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        
+
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button 
+              <button
                 className="flex items-center justify-center w-8 h-8 transition-colors border border-red-400 rounded-full hover:bg-red-50"
                 onClick={this.handleOpenDelete}
                 aria-label="Delete component"
@@ -368,7 +379,11 @@ class ActionButtonCell extends React.Component {
   }
 }
 
-export const SalaryComponentColumns = (onCheckedChange, handleReload, allComponents = []) => [
+export const SalaryComponentColumns = (
+  onCheckedChange,
+  handleReload,
+  allComponents = []
+) => [
   {
     dataField: "name",
     text: "Component Name",
@@ -435,8 +450,14 @@ export const SalaryComponentColumns = (onCheckedChange, handleReload, allCompone
   {
     dataField: "actions",
     text: "",
-    formatter: (cell, row) => <ActionButtonCell row={row} handleReload={handleReload} allComponents={allComponents} />
-  }
+    formatter: (cell, row) => (
+      <ActionButtonCell
+        row={row}
+        handleReload={handleReload}
+        allComponents={allComponents}
+      />
+    ),
+  },
 ];
 
 export const AdjustmentComponentColumns = [
@@ -485,6 +506,91 @@ export const AdjustmentComponentColumns = [
           )}
         </>
       );
+    },
+  },
+];
+
+export const PayrunPayrollColumns = (reloadData) => [
+  {
+    dataField: "id",
+    text: "Payroll ID",
+    formatter: (cell) => <FormatID value={cell} prefix={"PR-"} />,
+  },
+  {
+    dataField: "month",
+    text: "Month",
+  },
+  {
+    dataField: "departments",
+    text: "Department",
+    formatter: (cell, row) => (
+      <DepartmentName value={cell} fallBackText={"All"} />
+    ),
+  },
+
+  {
+    dataField: "branches",
+    text: "Branch",
+    formatter: (cell, row) => <BranchName value={cell} fallBackText={"All"} />,
+  },
+  {
+    dataField: "managers",
+    text: "Manager",
+    formatter: (cell, row) => <ManagerName value={cell} fallBackText={"All"} />,
+  },
+
+  {
+    dataField: "genders",
+    text: "Gender",
+  },
+  {
+    dataField: "nationalities",
+    text: "Nationality",
+  },
+  {
+    dataField: "",
+    text: "",
+    formatter: (cell, row) => (
+      <PayrollListActionOptions reloadData={reloadData} payrollData={row} />
+    ),
+  },
+];
+
+export const PayRunEmployeesColumns = [
+  {
+    dataField: "serial_number",
+    text: "ID",
+  },
+  {
+    dataField: "employeeid",
+    text: "Name",
+    formatter: (cell, row) => (
+      <>
+        <EmployeeOverview id={cell} showEmail={true} />
+      </>
+    ),
+  },
+  {
+    dataField: "department_name",
+    text: "Department",
+  },
+  {
+    dataField: "gross_salary",
+    text: "Salary",
+    formatter: (cell) => <>{"AED " + Math.round(cell)}</>,
+  },
+  {
+    dataField: "gross_salary",
+    text: "Total Deductions",
+    formatter: (cell, row) => {
+      return <>{"AED " + (cell - row.net_salary)}</>;
+    },
+  },
+  {
+    dataField: "",
+    text: "Total Earnings",
+    formatter: (cell, row) => {
+      return <>{row.net_salary > 0 ? "AED " + row.net_salary : "0.00"} </>;
     },
   },
 ];

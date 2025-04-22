@@ -44,6 +44,7 @@ import {
   PayRun,
   CreatePayRun,
   PayRunDetails,
+  PayrollPayrunDetail,
 } from "app/modules/Payroll";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
 import {
@@ -245,6 +246,11 @@ const SidebarRoutes = [
     path: "/payroll/pay-slip-details/:id",
     component: <PayRunDetails />,
     name: "Pay Slip Details",
+  },
+  Config.PAYROLL && {
+    path: "/payroll/pay-run/details/:id",
+    component: <PayrollPayrunDetail />,
+    name: "Payroll Details",
   },
   Config.PAYROLL && {
     path: "/payroll/salary-setup",

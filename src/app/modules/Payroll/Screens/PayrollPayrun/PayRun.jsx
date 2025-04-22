@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../../../components/Header.jsx";
-import { PageLoader } from "components";
+import { PageLoader, Header } from "components";
 import { connect } from "react-redux";
 import {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "../../../../src/@/components/ui/tabs.jsx";
+} from "src/@/components/ui/tabs.jsx";
 import { Button } from "components/ui/button";
-import PayRunCard from "../../Payroll/Sections/PayRunCard.jsx";
-import PaySlipCard from "../../Payroll/Sections/PaySlipCard.jsx";
+import { PayRunList, PaySlipCard } from "app/modules/Payroll/Screens";
 import { getSalarySetupData } from "app/hooks/payroll.jsx";
 import { useNavigate } from "react-router-dom";
 import { getPayun } from "app/hooks/payroll.jsx";
@@ -65,11 +63,11 @@ const PayRun = () => {
             className="bg-black"
             onClick={() => navigate("/payroll/create-payrun")}
           >
-            Create New Pay Run
+            Create New Payroll
           </Button>
         </div>
         <TabsContent value="runPayroll">
-          {isLoading ? <PageLoader /> : <PayRunCard cardData={payRunData} />}
+          {isLoading ? <PageLoader /> : <PayRunList />}
         </TabsContent>
         <TabsContent value="paySlip">
           {isLoading ? <PageLoader /> : <PaySlipCard cardData={payRunData} />}

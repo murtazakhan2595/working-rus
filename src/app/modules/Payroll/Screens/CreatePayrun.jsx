@@ -273,11 +273,18 @@ const CreatePayRun = () => {
     navigate(-1);
   };
 
-  const handleSubmit = async (event, values) => {
-    event.preventDefault();
-    const errors = validateGeneratePayRun();
-    setErrors(errors);
-    if (!errors) setPayrunConfirmationDialog(true);
+  const handleSubmit = async (values) => {
+    const reponse = await savePayrun({
+      ...values,
+      is_payroll_run: false,
+    });
+    if (reponse) {
+      setPayrunConfirmationDialog(false);
+      setPayrunSubmitDialog(true);
+      setTimeout(() => {
+        navigate("/pay-run");
+      }, 2000);
+    }
   };
   const handleConfirmSubmit = async () => {
     debugger;
@@ -372,12 +379,7 @@ const CreatePayRun = () => {
             onClose={setPayrunSubmitDialog}
             date={moment(payrunDraft?.start_date).format("MMMM YYYY")}
           />
-          <PayRunSubmitDialog
-            isOpen={payrunConfirmationDialog}
-            onClose={handleCloseConfirmationDialog}
-            onConfirm={handleConfirmSubmit}
-            payrunDraft={payrunDraft}
-          />
+
           <div className="flex flex-wrap gap-10 justify-between items-center h-11">
             <div className="flex items-center gap-4">
               <button
@@ -460,9 +462,10 @@ const CreatePayRun = () => {
                           />
                         </div>
                         <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"department_name"}
-                            value={filterData.department_name}
+                          <SelectMultiInputComponent
+                            name={"departments"}
+                            value={props.values.departments}
+                            options={Departments}
                             label={"Department"}
                             required={true}
                             onChange={(field, value) => {
@@ -473,10 +476,10 @@ const CreatePayRun = () => {
                           />
                         </div>
                         <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"branch_id"}
+                          <SelectMultiInputComponent
+                            name={"branches"}
                             options={Branches}
-                            value={filterData.branch_id}
+                            value={props.values.branches}
                             label={"Branch"}
                             onChange={(field, value) => {
                               handleFilterChange(field, value);
@@ -486,10 +489,10 @@ const CreatePayRun = () => {
                           />
                         </div>
                         <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"direct_report"}
+                          <SelectMultiInputComponent
+                            name={"managers"}
                             options={Managers}
-                            value={filterData.direct_report}
+                            value={props.values.managers}
                             label={"Direct Report"}
                             onChange={(field, value) => {
                               handleFilterChange(field, value);
@@ -499,10 +502,10 @@ const CreatePayRun = () => {
                           />
                         </div>
                         <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"gender"}
+                          <SelectMultiInputComponent
+                            name={"genders"}
                             options={GenderOptions}
-                            value={filterData.gender}
+                            value={props.values.genders}
                             label={"Gender"}
                             onChange={(field, value) => {
                               handleFilterChange(field, value);
@@ -512,10 +515,10 @@ const CreatePayRun = () => {
                           />
                         </div>
                         <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"nationality"}
+                          <SelectMultiInputComponent
+                            name={"nationalities"}
                             options={countriesList}
-                            value={filterData.nationality}
+                            value={props.values.nationalities}
                             label={"Nationality"}
                             onChange={(field, value) => {
                               handleFilterChange(field, value);
@@ -526,9 +529,9 @@ const CreatePayRun = () => {
                         </div>
                         <div className="space-y-2">
                           <SelectMultiInputComponent
-                            name={"excluded_employees"}
+                            name={"salary_on_hold"}
                             options={employeeData}
-                            value={props.values.excluded_employees}
+                            value={props.values.salary_on_hold}
                             label={"Salary On Hold"}
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
@@ -541,12 +544,20 @@ const CreatePayRun = () => {
                         <Button
                           onClick={(event) => {
                             event.preventDefault();
-                            props.handleSubmit();
+                            setPayrunConfirmationDialog(true);
                           }}
                         >
                           Generate Payroll
                         </Button>
                       </div>
+                      <PayRunSubmitDialog
+                        isOpen={payrunConfirmationDialog}
+                        onClose={handleCloseConfirmationDialog}
+                        onConfirm={() => {
+                          props.handleSubmit();
+                        }}
+                        payrunDraft={payrunDraft}
+                      />
                     </form>
                   )}
                 </Formik>
