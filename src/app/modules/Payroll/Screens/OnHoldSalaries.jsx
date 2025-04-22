@@ -9,10 +9,12 @@ import { useNavigate } from "react-router-dom";
 import { Eye } from "lucide-react";
 import moment from "moment";
 import DateInput from "components/FormControl/DateInput.jsx";
+import { getPayun } from "../../../hooks/payroll.jsx";
 
 const OnHoldSalaries = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [onHoldData, setOnHoldData] = useState({ results: [], count: 0 });
+  // const [filterData, setFilterData] = useState({excluded_employees:[]});
   const [filterData, setFilterData] = useState({});
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [filterDate, setFilterDate] = useState(null);
@@ -22,42 +24,14 @@ const OnHoldSalaries = () => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
-  // Mock data for demonstration
-  const mockOnHoldData = {
-    results: [
-      {
-        id: 1,
-        month: "2025-04-01",
-        total_employees: 3,
-        total_amount: 12500.0,
-      },
-      {
-        id: 2,
-        month: "2025-03-01",
-        total_employees: 5,
-        total_amount: 18750.0,
-      },
-      {
-        id: 3,
-        month: "2025-02-01",
-        total_employees: 2,
-        total_amount: 8000.0,
-      },
-    ],
-    count: 3,
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      // This would be replaced with an actual API call
-      // const response = await getOnHoldSalaries({ options, filterData });
-
-      // Using mock data for now
-      setTimeout(() => {
-        setOnHoldData(mockOnHoldData);
-        setIsLoading(false);
-      }, 1000);
+      const resposne = await getPayun({options, filterData})
+      if(resposne){
+        setOnHoldData(resposne);
+      }
+      setIsLoading(false);
     };
 
     fetchData();
@@ -86,27 +60,30 @@ const OnHoldSalaries = () => {
     {
       dataField: "month",
       text: "Payroll Month",
-      formatter: (cellContent) => (
-        <div className="font-medium">
-          {moment(cellContent).format("MMMM YYYY")}
+      formatter: (cellContent, row) => (
+        <div className="font-medium capitalize">
+          {moment(row.month).format("MMMM YYYY")}
         </div>
       ),
     },
     {
-      dataField: "total_employees",
+      dataField: "excluded_employees",
       text: "Employees On Hold",
       formatter: (cellContent) => (
-        <div className="font-semibold text-plum-900">{cellContent}</div>
+        <div className="font-semibold text-plum-900">{cellContent?.length || 0}</div>
       ),
     },
     {
       dataField: "total_amount",
       text: "Total Amount On Hold",
-      formatter: (cellContent) => (
-        <div className="font-semibold text-plum-900">
-          AED {cellContent.toFixed(2)}
-        </div>
-      ),
+      formatter: (cellContent) => {
+        const amount = parseFloat(cellContent);
+        return (
+          <div className="font-semibold text-plum-900">
+            AED {isNaN(amount) ? "0.00" : amount.toFixed(2)}
+          </div>
+        );
+      },
     },
     {
       dataField: "actions",
@@ -124,6 +101,8 @@ const OnHoldSalaries = () => {
       ),
     },
   ];
+
+  console.log("onHoldData", onHoldData.results);
 
   return (
     <div className="flex flex-col gap-4 profile-management">
