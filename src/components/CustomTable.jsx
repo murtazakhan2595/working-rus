@@ -120,7 +120,7 @@ export default function TableCustom({
           {/* Table Header */}
           {showHeader && Array.isArray(columns) && (
             <TableHeader>
-              <TableRow>
+              <TableRow className="border-b border-gray-200 bg-gray-50">
                 {/* Select All Checkbox */}
                 {selectable && (
                   <TableHead className="p-0 w-[0px] text-right m-0">
@@ -140,7 +140,7 @@ export default function TableCustom({
                 {columns.map((column, index) => (
                   <TableHead
                     key={index}
-                    className={`min-w-fit ${
+                    className={`min-w-fit text-sm font-medium text-gray-1100 ${
                       column.dataSort ? "cursor-pointer" : ""
                     }`}
                     style={{
@@ -211,7 +211,7 @@ export default function TableCustom({
                             column.onClick || column.rowExpandOnClick
                               ? "cursor-pointer expandable-cell"
                               : ""
-                          }`}
+                          } ${column.dataAlign === "center" ? "text-center" : ""}`}
                           style={{
                             ...(column.width
                               ? {
@@ -263,7 +263,7 @@ export default function TableCustom({
                     >
                       <TableCell
                         colSpan={columns.length}
-                        className="text-neutral-1200 p-0"
+                        className="p-0 text-neutral-1200"
                       >
                         {renderExpandedContent(row)}
                       </TableCell>
@@ -294,7 +294,7 @@ export default function TableCustom({
             onPageChange={handlePageSizeChange}
           />
           <Pagination className="max-w-[calc(100%_-_100px)]">
-            <PaginationContent className="max-w-full justify-center">
+            <PaginationContent className="justify-center max-w-full">
               <PaginationPrevious
                 onClick={() => handlePageChange(currentPage - 1)}
               />

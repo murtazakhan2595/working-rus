@@ -24,6 +24,7 @@ function ExitDetails({ exitData, reloadData = () => {} }) {
     {
       label: "Exit date",
       value: renderDate(exitData.exit_date),
+      
     },
     { label: "Notice period", value: exitData.notice_period },
   ];

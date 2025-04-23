@@ -116,7 +116,7 @@ export default function EmployeeManagement() {
     >
       <Header content={<SheetOnBoarding />} />
       <Stats stats={statsData} />
-      <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row gap-2">
+      <div className="flex flex-col justify-between gap-2 lg:flex-row md:flex-row xl:flex-row">
         <div className="flex">
           <SelectInputComponent
             name="Employee Status"

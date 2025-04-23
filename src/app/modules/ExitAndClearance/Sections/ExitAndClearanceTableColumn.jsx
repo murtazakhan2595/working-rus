@@ -34,15 +34,18 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
       text: "ID",
       formatter: (cell) => <EmployeeID value={cell} />,
       dataSort: true,
+      
     },
     {
       dataField: "report_to",
       text: "Report To",
       formatter: (cell, row) => <ManagerName value={cell} />,
+      
     },
     {
       dataField: "notice_period",
       text: "Notice Period",
+      
     },
     {
       dataField: "exit_date",
@@ -50,6 +53,7 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
       formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
       dataSort: true,
       minWidth: "115px",
+      
     },
     {
       dataField: "",
@@ -75,6 +79,7 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
           )}
         </>
       ),
+      
     },
     {
       dataField: "status_resignation",
@@ -83,6 +88,7 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
       formatter: (cell, row) => (
         <ResignationStatusView status={cell} row={row} />
       ),
+      
     },
     {
       dataField: "",
@@ -91,6 +97,7 @@ export const EmployeeResignationsColumns = (handleRowClicked, reload) => {
         <RenderResignationAction row={row} reload={reload} />
       ),
       headerAlign: "right",
+      
       width: "80px",
     },
   ];
@@ -131,15 +138,18 @@ export const ExitRequestColumns = (
       formatter: (cell) => <EmployeeID value={cell} />,
       dataSort: true,
       minWidth: "105px",
+      
     },
     {
       dataField: "report_to",
       text: "Report To",
       formatter: (cell, row) => <ManagerName value={cell} />,
+      
     },
     {
       dataField: "notice_period",
       text: "Notice Period",
+      
     },
     {
       dataField: "exit_date",
@@ -147,6 +157,7 @@ export const ExitRequestColumns = (
       formatter: (cell) => <>{moment(cell).format("DD-MM-YYYY")}</>,
       dataSort: true,
       minWidth: "115px",
+      
     },
     {
       dataField: "",
@@ -172,6 +183,7 @@ export const ExitRequestColumns = (
           )}
         </>
       ),
+      
     },
     {
       dataField: "status_termination",
@@ -180,6 +192,7 @@ export const ExitRequestColumns = (
         <TerminationStatusView status={cell} row={row} />
       ),
       dataSort: true,
+      
     },
   ];
   if (!hideActions) {
@@ -191,6 +204,7 @@ export const ExitRequestColumns = (
       ),
       width: "80px",
       headerAlign: "right",
+      
     });
   }
   return columns;
