@@ -36,7 +36,7 @@ const EOSSettlementDetails = () => {
     const fetchSettlement = async () => {
       try {
         setLoading(true);
-        console.log("Fetching settlement with ID:", id);
+        console.log("SelfService/EOSDetails - Fetching settlement with ID:", id);
         
         // First try with parse ID
         let data;
@@ -44,15 +44,16 @@ const EOSSettlementDetails = () => {
           data = await getEOSSettlementById(parseInt(id));
         } catch (parseError) {
           // If parsing fails, try with the original ID
-          console.log("Trying with original ID format");
+          console.log("SelfService/EOSDetails - Trying with original ID format");
           data = await getEOSSettlementById(id);
         }
         
         if (data) {
-          console.log("Settlement data found:", data);
+          console.log("SelfService/EOSDetails - Settlement data found:", data);
+          console.log("SelfService/EOSDetails - Department value:", data.department);
           setSettlement(data);
         } else {
-          console.error("No settlement found with ID:", id);
+          console.error("SelfService/EOSDetails - No settlement found with ID:", id);
           toast.error("Settlement not found");
         }
       } catch (error) {
@@ -139,6 +140,8 @@ const EOSSettlementDetails = () => {
     );
   }
 
+  console.log("SelfService/EOSDetails - Rendering settlement with department:", settlement.department);
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
@@ -188,6 +191,7 @@ const EOSSettlementDetails = () => {
                 <div>
                   <h3 className="mb-2 text-sm font-medium text-neutral-900">Department</h3>
                   <p className="text-base font-medium">{settlement.department}</p>
+                  {console.log("SelfService/EOSDetails - Department in render:", settlement.department)}
                 </div>
               </div>
             </div>

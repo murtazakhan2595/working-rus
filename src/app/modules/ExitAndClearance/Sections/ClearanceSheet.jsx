@@ -3,7 +3,7 @@ import { DateInput, TextInput, TextAreaInput } from "components/FormControl";
 import SheetComponent from "../../../../components/ui/SheetComponent";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
-import { getEmployeePayroll, saveFinalSettlement, saveEmployeePayroll } from "app/hooks/payroll";
+import { getEmployeePayroll, saveFinalSettlement, saveEmployeePayroll, getFinalSettlement } from "app/hooks/payroll";
 import { toast } from "react-toastify";
 import { validateClearanceForm } from "app/utils/FormSchema/exitAndClearanceFormSchema";
 import useEOSSettlement from "app/hooks/useEOSSettlement";
@@ -17,35 +17,59 @@ const ClearanceSheet = ({
   const [payroll, setPayroll] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [existingSettlement, setExistingSettlement] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const fetchEmployePayrollID = async () => {
+  // Fetch employee payroll and existing final settlement data
+  const fetchData = async () => {
+    setIsLoading(true);
+    setErrorMessage(null);
+    
     try {
       if (!employeeId) {
         console.error("Employee ID is missing");
+        setIsLoading(false);
         return;
       }
 
+      // First, try to get payroll data
       const payrollData = await getEmployeePayroll({
         filterData: { employee_id: employeeId },
       });
       
       console.log("Fetched payroll data:", payrollData);
       
+      // Check if we have payroll data
       if (payrollData && payrollData.results && payrollData.results.length > 0) {
         setPayroll(payrollData.results[0]);
+        
+        // Then, check if a final settlement already exists for this employee
+        const settlementData = await getFinalSettlement({
+          filterData: { employee_payroll: payrollData.results[0].id },
+        });
+        
+        console.log("Fetched settlement data:", settlementData);
+        
+        if (settlementData && settlementData.results && settlementData.results.length > 0) {
+          setExistingSettlement(settlementData.results[0]);
+        } else {
+          setExistingSettlement(null);
+        }
       } else {
         console.error("No payroll data found for employee ID:", employeeId);
         setErrorMessage("No payroll data found for this employee");
       }
     } catch (error) {
-      console.error("Error fetching employee payroll:", error);
-      setErrorMessage("Failed to fetch employee payroll data");
+      console.error("Error fetching data:", error);
+      setErrorMessage("Failed to fetch employee data");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     if (employeeId && isOpen) {
-      fetchEmployePayrollID();
+      fetchData();
     }
   }, [employeeId, isOpen]);
 
@@ -75,15 +99,16 @@ const ClearanceSheet = ({
         throw new Error("Payroll data is missing");
       }
       
-      // Prepare the final data with payroll ID
+      // Prepare the final data with payroll ID and include the id if it's an update
       const finalValues = { 
         ...values, 
-        employee_payroll: payroll.id 
+        employee_payroll: payroll.id,
+        ...(existingSettlement ? { id: existingSettlement.id } : {})
       };
       
       console.log("Submitting final settlement:", finalValues);
       
-      // First save the final settlement
+      // Save the final settlement
       const response = await saveFinalSettlement(finalValues);
       
       if (!response) {
@@ -111,7 +136,7 @@ const ClearanceSheet = ({
       // Update status and close the form
       handleOptionSelect("initiated clearance");
       setIsOpen(false);
-      toast.success("Final Settlement saved successfully");
+      toast.success(existingSettlement ? "Final Settlement updated successfully" : "Final Settlement saved successfully");
       resetForm();
     } catch (error) {
       console.error("Error in final settlement submission:", error);
@@ -128,6 +153,31 @@ const ClearanceSheet = ({
     null
   );
 
+  // Prepare initial values for the form
+  const getInitialValues = () => {
+    if (existingSettlement) {
+      return {
+        last_working_date: existingSettlement.last_working_date || "",
+        remaining_salary: existingSettlement.remaining_salary?.toString() || "",
+        earned_leave_encashment: existingSettlement.earned_leave_encashment?.toString() || "",
+        total_deductions: existingSettlement.total_deductions?.toString() || "",
+        gratuity_amount: existingSettlement.gratuity_amount?.toString() || "",
+        final_amount: existingSettlement.final_amount?.toString() || "",
+        notes: existingSettlement.notes || "",
+      };
+    }
+    
+    return {
+      last_working_date: "",
+      remaining_salary: "",
+      earned_leave_encashment: "",
+      total_deductions: "",
+      gratuity_amount: "",
+      final_amount: "",
+      notes: "",
+    };
+  };
+
   return (
     <SheetComponent
       {...formSheetData}
@@ -136,27 +186,31 @@ const ClearanceSheet = ({
       setIsOpen={setIsOpen}
     >
       {errorMessage && (
-        <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
+        <div className="p-4 mb-4 text-sm text-red-700 border border-red-200 rounded-lg">
           {errorMessage}
         </div>
       )}
       
-      {!payroll && !errorMessage && (
+      {isLoading && (
         <div className="p-4 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg">
-          Loading employee payroll data...
+          Loading employee data...
+        </div>
+      )}
+      
+      {!isLoading && !errorMessage && !payroll && (
+        <div className="p-4 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg">
+          No payroll data found for this employee
+        </div>
+      )}
+      
+      {!isLoading && existingSettlement && (
+        <div className="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg">
+          Existing settlement found - you are editing the current settlement
         </div>
       )}
       
       <Formik
-        initialValues={{
-          last_working_date: "",
-          remaining_salary: "",
-          earned_leave_encashment: "",
-          total_deductions: "",
-          gratuity_amount: "",
-          final_amount: "",
-          notes: "",
-        }}
+        initialValues={getInitialValues()}
         validate={validateClearanceForm}
         enableReinitialize={true}
         onSubmit={handleFormSubmit}
@@ -305,7 +359,7 @@ const ClearanceSheet = ({
                 variant="default"
                 disabled={isSubmitting || !payroll}
               >
-                {isSubmitting ? "Submitting..." : "Submit"}
+                {isSubmitting ? "Submitting..." : existingSettlement ? "Update" : "Submit"}
               </Button>
             </div>
           </form>

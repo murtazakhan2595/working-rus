@@ -19,15 +19,17 @@ const EOSSettlementList = ({ userProfile, employeeId }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  console.log("SelfService/EOS - User Profile:", userProfile);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         const data = await getEOSSettlements();
         
-        console.log("All settlements:", data);
-        console.log("Employee ID passed to component:", employeeId);
-        console.log("User profile employeeId:", userProfile?.employeeId);
+        console.log("SelfService/EOS - All settlements:", data);
+        console.log("SelfService/EOS - Employee ID passed to component:", employeeId);
+        console.log("SelfService/EOS - User profile employeeId:", userProfile?.employeeId);
         
         // Fix the filtering logic
         let filteredData = data;
@@ -44,10 +46,10 @@ const EOSSettlementList = ({ userProfile, employeeId }) => {
         }
         
         // Add debugging to verify IDs match
-        console.log("Current user employeeId:", userProfile?.employeeId);
-        console.log("Settlement IDs in data:", data.map(s => s.employeeId));
+        console.log("SelfService/EOS - Current user employeeId:", userProfile?.employeeId);
+        console.log("SelfService/EOS - Settlement IDs in data:", data.map(s => s.employeeId));
         
-        console.log("Filtered settlements:", filteredData);
+        console.log("SelfService/EOS - Filtered settlements:", filteredData);
         setSettlements(filteredData);
       } catch (error) {
         console.error("Error fetching EOS settlements:", error);
@@ -119,44 +121,47 @@ const EOSSettlementList = ({ userProfile, employeeId }) => {
                     </td>
                   </tr>
                 ) : (
-                  settlements.map((settlement) => (
-                    <tr 
-                      key={settlement.id} 
-                      className="border-b hover:bg-gray-50"
-                    >
-                      <td className="px-4 py-3 text-sm text-neutral-1200">
-                        {settlement.employeeId}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-neutral-1200">
-                        {settlement.employeeName}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-neutral-1200">
-                        {settlement.department}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-neutral-1200">
-                        {renderStatusBadge(settlement.status)}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleViewSettlement(settlement.id)}
-                                className="flex items-center justify-center w-8 h-8 p-0 text-green-600 border border-green-200 rounded-full shadow-sm bg-green-white hover:bg-green-200 hover:text-green-700"
-                              >
-                                <Eye className="w-4 h-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>View</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </td>
-                    </tr>
-                  ))
+                  settlements.map((settlement) => {
+                    console.log("SelfService/EOS - Settlement department:", settlement.department);
+                    return (
+                      <tr 
+                        key={settlement.id} 
+                        className="border-b hover:bg-gray-50"
+                      >
+                        <td className="px-4 py-3 text-sm text-neutral-1200">
+                          {settlement.employeeId}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-neutral-1200">
+                          {settlement.employeeName}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-neutral-1200">
+                          {settlement.department}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-neutral-1200">
+                          {renderStatusBadge(settlement.status)}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleViewSettlement(settlement.id)}
+                                  className="flex items-center justify-center w-8 h-8 p-0 text-green-600 border border-green-200 rounded-full shadow-sm bg-green-white hover:bg-green-200 hover:text-green-700"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>View</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
