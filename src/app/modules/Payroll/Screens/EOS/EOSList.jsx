@@ -24,12 +24,6 @@ const EOSList = () => {
   const departments = useSelector((state) => state.common?.departments);
   const managers = useSelector((state) => state.emp?.reportingManagers);
   
-  // Debug log for departments and managers
-  useEffect(() => {
-    console.log("Payroll/EOS - Departments:", departments);
-    console.log("Payroll/EOS - Managers:", managers);
-  }, [departments, managers]);
-
   useEffect(() => {
     dispatch(fetchEmployeeExitRequests())
       .unwrap()
@@ -132,17 +126,8 @@ const EOSList = () => {
             {eosData.length > 0 ? (
               eosData.map((employee) => {
                 const empId = employee.employee_id || employee.emp_id;
-                const departmentId = employee.department_id || employee.department;
+                const departmentId = parseInt(employee.department_id || employee.department) || null;
                 const managerId = employee.report_to || employee.manager_id;
-                
-                // Debug logs for each employee
-                console.log(`Payroll/EOS - Employee ID: ${empId}, Department ID: ${departmentId}, Manager ID: ${managerId}`);
-                console.log(`Payroll/EOS - Department ID type: ${typeof departmentId}`);
-                console.log(`Payroll/EOS - Department raw value:`, departmentId);
-                
-                // Check if department ID exists in departments array
-                const deptExists = departments.some(dept => dept.value === parseInt(departmentId));
-                console.log(`Payroll/EOS - Department exists in array: ${deptExists}`);
                 
                 return (
                   <TableRow key={employee.id}>
@@ -155,14 +140,10 @@ const EOSList = () => {
                     </TableCell>
                     <TableCell className="text-sm text-center text-gray-1100">{employee.serial_number || empId}</TableCell>
                     <TableCell className="text-sm text-center text-gray-1100 ">
-                      {console.log(`Payroll/EOS - Before rendering DepartmentName with value: ${departmentId}`)}
-                      <DepartmentName value={departmentId} />
-                      {console.log(`Payroll/EOS - After rendering DepartmentName`)}
+                      <DepartmentName value={employee?.department_name} />
                     </TableCell>
                     <TableCell className="text-sm text-center text-gray-1100">
-                      {console.log(`Payroll/EOS - Before rendering ManagerName with value: ${managerId}`)}
                       <ManagerName value={managerId} />
-                      {console.log(`Payroll/EOS - After rendering ManagerName`)}
                     </TableCell>
                     <TableCell className="text-sm text-center text-gray-1100">{employee.notice_period || '1 month'}</TableCell>
                     <TableCell className="text-sm text-center text-gray-1100">{employee.exit_date || 'N/A'}</TableCell>
