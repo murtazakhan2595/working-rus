@@ -16,6 +16,8 @@ export const PayRun = {
   payrun_date: `${moment().startOf("month").format("YYYY-MM-DD")},${moment()
     .endOf("month")
     .format("YYYY-MM-DD")}`,
+  excluded_employees: [],
+  excluded_employees_total_net: null,
 };
 
 export const EmployeePayRoll = {

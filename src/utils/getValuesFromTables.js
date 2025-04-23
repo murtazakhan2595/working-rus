@@ -70,9 +70,26 @@ function TerminationStatus(status) {
 }
 function DepartmentName({ value, fallBackText = "N/A" }) {
   const departments = useSelector((state) => state.common.departments);
+  
+  console.log("DepartmentName component - Value received:", value);
+  console.log("DepartmentName component - Value type:", typeof value);
+  console.log("DepartmentName component - Departments available:", departments);
+  
+  // Add more detailed debug to check parsing
+  let parsedValue;
+  try {
+    parsedValue = parseInt(value);
+    console.log("DepartmentName component - Parsed value:", parsedValue);
+  } catch (error) {
+    console.log("DepartmentName component - Error parsing value:", error);
+  }
+  
   const department = departments.find(
     (option) => option.value === parseInt(value)
   );
+  
+  console.log("DepartmentName component - Found department:", department);
+  
   return department ? department.label : value ?? fallBackText;
 }
 
@@ -170,7 +187,24 @@ function getEmployeeid(value) {
 
 function ManagerName({ value, fallBackText = "N/A" }) {
   const managers = useSelector((state) => state.emp.reportingManagers);
+  
+  console.log("ManagerName component - Value received:", value);
+  console.log("ManagerName component - Value type:", typeof value);
+  console.log("ManagerName component - Managers available:", managers);
+  
+  // Add more detailed debug to check parsing
+  let parsedValue;
+  try {
+    parsedValue = parseInt(value);
+    console.log("ManagerName component - Parsed value:", parsedValue);
+  } catch (error) {
+    console.log("ManagerName component - Error parsing value:", error);
+  }
+  
   const manager = managers.find((option) => option.value === parseInt(value));
+  
+  console.log("ManagerName component - Found manager:", manager);
+  
   return <>{manager ? manager.label : fallBackText}</>;
 }
 export function RenderNameList({
