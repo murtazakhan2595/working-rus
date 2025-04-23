@@ -1,14 +1,23 @@
+import moment from "moment";
+
 export const PayRun = {
-  end_date: null,
+  id: null,
+  end_date: moment().endOf("month").format("YYYY-MM-DD"),
+  salary_on_hold: [],
+  nationalities: null,
+  is_payroll_run: false,
+  departments: null,
+  branches: null,
+  start_date: moment().startOf("month").format("YYYY-MM-DD"),
+  managers: null,
+  religions: null,
+  month: moment().startOf("month").format("YYYY-MM-DD"),
+  genders: null,
+  payrun_date: `${moment().startOf("month").format("YYYY-MM-DD")},${moment()
+    .endOf("month")
+    .format("YYYY-MM-DD")}`,
   excluded_employees: [],
-  gross_amount: null,
-  is_payroll_run: null,
-  net_amount: null,
-  run_date: null,
-  start_date: null,
-  total_amount: null,
-  total_employees: null,
-  title: null,
+  excluded_employees_total_net: null,
 };
 
 export const EmployeePayRoll = {
@@ -53,6 +62,10 @@ export const EmployeeSalarySetup = {
   other_allowance: null,
   transport_allowance: null,
   salary_breakdown_type: "percentage",
+  earning_types: [],
+  earnings: [],
+  deduction_types: [],
+  deductions: [],
 };
 export const EmployeeSalaryRevision = {
   new_salary: null,
@@ -64,4 +77,12 @@ export const EmployeeSalaryRevision = {
   notes: null,
   revision_letter: "DRAFT",
   revision_status: "PENDING",
+};
+
+export const EmployeePayRunPaySlip = {
+  basic_salary: null,
+  total_earnings: [],
+  employeeid:null,
+  reimbursements:null,
+  inflation_effect:null,
 };

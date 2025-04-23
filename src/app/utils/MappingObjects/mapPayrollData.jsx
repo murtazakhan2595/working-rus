@@ -2,17 +2,18 @@ import {
   PayRun,
   EmployeePayRoll,
   EmployeeSalarySetup,
+  EmployeePayRunPaySlip,
 } from "app/utils/Types/Payroll";
 import moment from "moment";
 import { calculatePercentage } from "utils/renderValues";
 export function mapPayRunData(data) {
   const payrunData = Object.keys(PayRun).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
-      if (key === "start_date") {
-        acc["title"] = `Process Pay Run for ${moment(data[key]).format(
-          "MMMM YYYY"
-        )}`;
-      }
+      // if (key === "start_date") {
+      //   acc["title"] = `Process Pay Run for ${moment(data[key]).format(
+      //     "MMMM YYYY"
+      //   )}`;
+      // }
       acc[key] = data[key];
     }
     return acc;
@@ -22,6 +23,7 @@ export function mapPayRunData(data) {
 }
 
 export async function mapPayRunList(data) {
+  console.log("in mapPayRunList", data);
   if (!data || data.length === 0) return [];
   const PayRunList = await data?.map((payrun) => {
     return mapPayRunData(payrun);
@@ -74,6 +76,62 @@ export function mapEmployeeSalarySetupData(data) {
         }
       acc[key] = data[key];
     }
+    return acc;
+  }, {});
+
+  return payrunData;
+}
+
+export function mapPayrunPayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in PayRun) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      // Add the key and its value to the payload
+      if (
+        [
+          "salary_on_hold",
+          "nationalities",
+          "departments",
+          "branches",
+          "managers",
+          "religions",
+          "genders",
+        ].includes(key)
+      ) {
+        if (data[key].length > 0) payload[key] = data[key];
+      } else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+
+export function mapEmployeePayrunPayslipData(data) {
+  if (!data) return {};
+  const payrunData = Object.keys(EmployeePayRunPaySlip).reduce((acc, key) => {
+    if (key === "total_earnings") {
+      const TotalEarningArrays = data[key] || [];
+      // const variable_kpi = TotalEarningArrays.find(
+      //   (obj) => obj.name === "Variable KPI"
+      // );
+      // acc["variable_kpi"] = variable_kpi.amount;
+    } else if (key === "inflation_effect") {
+      const TotalEarningArrays = data[key] || [];
+      // const variable_kpi = TotalEarningArrays.find(
+      //   (obj) => obj.name === "Variable KPI"
+      // );
+      // acc["variable_kpi"] = variable_kpi.amount;
+    } else if (key === "reimbursements") {
+      acc["reimbursements"] = data?.total_reimbursements?.approved;
+    } else acc[key] = data[key];
     return acc;
   }, {});
 

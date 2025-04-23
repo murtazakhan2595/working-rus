@@ -1,73 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "../../../../../../components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../../../../components/ui/card";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../../../../../src/@/components/ui/table";
+import { Button } from "components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { ArrowLeft } from "lucide-react";
-
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import {
-  getEmployeePayrollById,
-  getSalaryRevisionByPayrollId,
-  getEmployeePayrollDetailByEmpId,
-  getEmployeeEarnAndDeduction,
-} from "app/hooks/payroll";
-import RevisedSalarySheet from "./RevisedSalarySheet";
+import { getEmployeePayrollDetailByEmpId } from "app/hooks/payroll";
 import { SalaryTypeOptions } from "data/Data";
-import { getEmployeeData } from "app/hooks/employee";
-import { numberToWords } from "utils/renderValues.js";
 import { PageLoader, SheetUI } from "components";
 import { PayrollAdjustmentTable } from "app/modules/Payroll/Sections";
 import { EmployeeSalaryRevisions } from "app/modules/Payroll/Screens/SalarySetup/EmployeesSalarySetup";
 import {
   NumberInput,
   SelectInputComponent,
-  TextInput,
   RadioGroupInput,
-  TimePicker,
-  DateInput,
-} from "../../../../../../components/FormControl";
-import {
-  getEarnAndDeduction,
-  getEmployeePayroll,
-  getPayslip,
-  saveEmployeePayroll,
-  updateSalaryRevisionStatus,
-} from "../../../../../hooks/payroll";
+} from "components/FormControl";
+import { saveEmployeePayroll } from "app/hooks/payroll";
 import { validateEmployeeSalarySetupForm } from "app/utils/FormSchema/payrollFormSchema";
 import { toast } from "react-toastify";
-import { calculateEarningsAndDeductions } from "../../../Sections/CalculationsHelperFunctions.jsx";
 import { EmployeeOverview } from "components";
 
 const EmployeeSalarySetup = () => {
-  const formRef = React.createRef();
-  const [employeeData, setEmployeeData] = React.useState({});
-  const [payrollId, setPayrollId] = React.useState(null);
   const [payrollForm, setPayrollForm] = useState({});
   const [payrollFormData, setPayrollFormData] = useState({});
   const [CTC, setCTC] = useState(null);
-  const [earnAndDeductionType, setEarnAndDeductionsType] = React.useState([]);
-  const [earnAndDeductions, setEarnAndDeductions] = React.useState([]);
-  const [monthlyGrossSalary, setMonthlyGrossSalary] = useState({});
   const [earnings, setEarnings] = React.useState([]);
   const [deductions, setDeductions] = React.useState([]);
-  const [totalEarnings, setTotalEarnings] = React.useState(0);
-  const [totalDeductions, setTotalDeductions] = React.useState(0);
   const [loading, setLoading] = React.useState(true);
-  const [payrollType, setPayrollType] = React.useState("");
-  const [payslips, setPayslips] = React.useState(null);
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
@@ -78,41 +35,29 @@ const EmployeeSalarySetup = () => {
     setLoading(true);
     const response = await getEmployeePayrollDetailByEmpId(id);
     if (response) {
-      setPayrollId(response.id);
       setPayrollForm(response);
       setCTC(response.ctc);
-      const earnAndDeductions = await getEmployeeEarnAndDeduction({
-        filterData: { employee_payroll: response?.id },
-      });
-      setPayrollType(response?.salary_type);
-      if (earnAndDeductions) {
-        setEarnAndDeductions(earnAndDeductions);
-      }
-    }
-    const empData = await getEmployeeData(id);
-
-    if (empData) {
-      setEmployeeData(empData);
+      const earnings = [
+        ...(response.earning_types || []),
+        ...(response.earnings || []),
+      ];
+      setEarnings(earnings);
+      const deductions = [
+        ...(response.deduction_types || []),
+        ...(response.deductions || []),
+      ];
+      setDeductions(deductions);
     }
 
-    const earnAndDeductionType = await getEarnAndDeduction();
-    if (earnAndDeductionType) {
-      setEarnAndDeductionsType(earnAndDeductionType.results);
-      handleSalaryCalculate(
-        earnAndDeductionType.results,
-        response?.basic_salary
-      );
-    }
-
-    if (isEos) {
-      const payslips = await getPayslip({
-        filterData: { employee_payroll: response?.results[0]?.id },
-      });
-      console.log("Payslips", payslips);
-      if (payslips) {
-        setPayslips(payslips.results[0]);
-      }
-    }
+    // if (isEos) {
+    //   const payslips = await getPayslip({
+    //     filterData: { employee_payroll: response?.results[0]?.id },
+    //   });
+    //   console.log("Payslips", payslips);
+    //   if (payslips) {
+    //     setPayslips(payslips.results[0]);
+    //   }
+    // }
     setLoading(false);
   };
   useEffect(() => {
@@ -123,31 +68,7 @@ const EmployeeSalarySetup = () => {
     navigate(-1);
   };
 
-  const handleSalaryCalculate = (
-    initialEarnAndDeductionType,
-    monthlyGrossSalary
-  ) => {
-    // Check if the necessary values are present
-    if (
-      !monthlyGrossSalary ||
-      !initialEarnAndDeductionType ||
-      initialEarnAndDeductionType.length === 0
-    ) {
-      return;
-    }
-    const { earnings, deductions, totalEarnings, totalDeductions } =
-      calculateEarningsAndDeductions(
-        monthlyGrossSalary,
-        initialEarnAndDeductionType
-      );
-
-    setEarnings(earnings);
-    setDeductions(deductions);
-    setTotalEarnings(totalEarnings);
-    setTotalDeductions(totalDeductions);
-  };
   const handleSubmit = async (values) => {
-    debugger;
     const {
       basic_salary = 0,
       medical_allowance = 0,
@@ -159,6 +80,7 @@ const EmployeeSalarySetup = () => {
     } = values;
     const payload = values;
     payload.is_new = false;
+    payload.employee=id;
     payload.ctc = CTC;
     if (salary_breakdown_type === "percentage") {
       payload.basic_salary =
@@ -205,7 +127,6 @@ const EmployeeSalarySetup = () => {
       setCTC(ctc_amount);
     }
   };
-
   return (
     <div className="container p-4 mx-auto">
       <div className="mb-4">
@@ -225,13 +146,13 @@ const EmployeeSalarySetup = () => {
           <Card className="mb-4">
             <CardContent className="flex justify-between pt-6">
               <EmployeeOverview
-                id={employeeData.id}
+                id={id}
                 showId={true}
                 showDepartment={true}
                 showEmail={true}
                 avatarSize={"16"}
               />
-              {isEos && payslips && (
+              {/* {isEos && payslips && (
                 <Button
                   className="bg-[#1c2024] text-white align-bottom self-end	"
                   onClick={() => {
@@ -240,7 +161,7 @@ const EmployeeSalarySetup = () => {
                 >
                   Download EOS
                 </Button>
-              )}
+              )} */}
             </CardContent>
           </Card>
           <Card className="mb-4">
@@ -419,12 +340,13 @@ const EmployeeSalarySetup = () => {
             />
             <PayrollAdjustmentTable
               AdjustmentTitle="Deductions"
-              AdjustmentRecord={{ results: earnings, count: earnings.length }}
+              AdjustmentRecord={{
+                results: deductions,
+                count: deductions.length,
+              }}
               fallbackText={"No allowance is applicable"}
             />
           </div>
-{console.log(payrollForm,"previousCTC")
-}
           <EmployeeSalaryRevisions
             employee_Id={id}
             editMode={true}

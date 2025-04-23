@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../../../components/Header.jsx";
-import { PageLoader } from "components";
+import { PageLoader, Header } from "components";
 import { connect } from "react-redux";
 import {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "../../../../src/@/components/ui/tabs.jsx";
+} from "src/@/components/ui/tabs.jsx";
 import { Button } from "components/ui/button";
-import PayRunCard from "../../Payroll/Sections/PayRunCard.jsx";
-import PaySlipCard from "../../Payroll/Sections/PaySlipCard.jsx";
-import { getSalarySetupData } from "app/hooks/payroll.jsx";
+import {
+  PayRunList,
+  PaySlipCard,
+  ProceededPayRuns,
+} from "app/modules/Payroll/Screens";
+import ExportPayroll from "./ExportPayroll";
 import { useNavigate } from "react-router-dom";
 import { getPayun } from "app/hooks/payroll.jsx";
 
@@ -37,6 +39,7 @@ const PayRun = () => {
 
   const tabsData = [
     { value: "runPayroll", label: "Run Payroll" },
+    { value: "payrun", label: "Pay Run" },
     { value: "paySlip", label: "Pay Slip" },
   ];
 
@@ -61,18 +64,26 @@ const PayRun = () => {
               </TabsTrigger>
             ))}
           </TabsList>
-          <Button
-            className="bg-black"
-            onClick={() => navigate("/payroll/create-payrun")}
-          >
-            Create New Pay Run
-          </Button>
+          <div>
+            {activeTab === "runPayroll" && (
+              <Button
+                className="bg-black mr-2"
+                onClick={() => navigate("/payroll/create-payrun")}
+              >
+                Create New Payroll
+              </Button>
+            )}
+            <ExportPayroll />
+          </div>
         </div>
         <TabsContent value="runPayroll">
-          {isLoading ? <PageLoader /> : <PayRunCard cardData={payRunData} />}
+          {isLoading ? <PageLoader /> : <PayRunList />}
         </TabsContent>
         <TabsContent value="paySlip">
           {isLoading ? <PageLoader /> : <PaySlipCard cardData={payRunData} />}
+        </TabsContent>
+        <TabsContent value="payrun">
+          <ProceededPayRuns />
         </TabsContent>
       </Tabs>
     </div>

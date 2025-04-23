@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "src/@/lib/utils.js";
-import { Check, X , ChevronsUpDown} from "lucide-react";
+import { Check, X, ChevronsUpDown } from "lucide-react";
 import { SelectMultiInputComponent } from "./SelectMultiInputComponent";
 import {
   Command,
@@ -32,7 +32,7 @@ const SelectedOptionsList = ({
         selectedOptionListClassName
       )}
     >
-      {selectedValues.map((val , index) =>
+      {selectedValues.map((val, index) =>
         useValueAsIdentifier ? (
           <div
             key={index}
@@ -72,6 +72,7 @@ const SelectableOptionsList = ({
   allowNewOption = false, // Whether users can add new options
   newOptionConfig = {}, // Configuration for new options
 }) => {
+  
   return (
     <div className="w-[300px] p-0">
       <Command>
@@ -144,10 +145,11 @@ const SelectableOptionsList = ({
   );
 };
 
-const DropdownIcon = React.memo(({})=>{
-  return <ChevronsUpDown className="w-4 h-4 ml-2 ml-auto opacity-50 shrink-0" />
-})
-
+const DropdownIcon = React.memo(({}) => {
+  return (
+    <ChevronsUpDown className="w-4 h-4 ml-2 ml-auto opacity-50 shrink-0" />
+  );
+});
 
 export {
   SelectMultiInputComponent,

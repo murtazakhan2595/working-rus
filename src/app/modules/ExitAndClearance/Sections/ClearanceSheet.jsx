@@ -3,11 +3,15 @@ import { DateInput, TextInput, TextAreaInput } from "components/FormControl";
 import SheetComponent from "../../../../components/ui/SheetComponent";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
-import { getEmployeePayroll } from "app/hooks/payroll";
-import { saveFinalSettlement } from "app/hooks/payroll";
+import {
+  getEmployeePayroll,
+  saveFinalSettlement,
+  saveEmployeePayroll,
+  getFinalSettlement,
+} from "app/hooks/payroll";
 import { toast } from "react-toastify";
-import { saveEmployeePayroll } from "app/hooks/payroll";
 import { validateClearanceForm } from "app/utils/FormSchema/exitAndClearanceFormSchema";
+import useEOSSettlement from "app/hooks/useEOSSettlement";
 
 const ClearanceSheet = ({
   isOpen,
@@ -16,40 +20,192 @@ const ClearanceSheet = ({
   employeeId,
 }) => {
   const [payroll, setPayroll] = useState(null);
-  const fetchEmployePayrollID = async () => {
-    const payroll = await getEmployeePayroll({
-      filterData: { employee_id: employeeId },
-    });
-    console.log("payroll", payroll);
-    if (payroll) {
-      setPayroll(payroll.results[0]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [existingSettlement, setExistingSettlement] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch employee payroll and existing final settlement data
+  const fetchData = async () => {
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    try {
+      if (!employeeId) {
+        console.error("Employee ID is missing");
+        setIsLoading(false);
+        return;
+      }
+
+      // First, try to get payroll data
+      const payrollData = await getEmployeePayroll({
+        filterData: { employee_id: employeeId },
+      });
+
+      console.log("Fetched payroll data:", payrollData);
+
+      // Check if we have payroll data
+      if (
+        payrollData &&
+        payrollData.results &&
+        payrollData.results.length > 0
+      ) {
+        setPayroll(payrollData.results[0]);
+
+        // Then, check if a final settlement already exists for this employee
+        const settlementData = await getFinalSettlement({
+          filterData: { employee_payroll: payrollData.results[0].id },
+        });
+
+        console.log("Fetched settlement data:", settlementData);
+
+        if (
+          settlementData &&
+          settlementData.results &&
+          settlementData.results.length > 0
+        ) {
+          setExistingSettlement(settlementData.results[0]);
+        } else {
+          setExistingSettlement(null);
+        }
+      } else {
+        console.error("No payroll data found for employee ID:", employeeId);
+        setErrorMessage("No payroll data found for this employee");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setErrorMessage("Failed to fetch employee data");
+    } finally {
+      setIsLoading(false);
     }
   };
+
   useEffect(() => {
-    fetchEmployePayrollID();
-  }, [employeeId]);
-  console.log("payroll", payroll);
+    if (employeeId && isOpen) {
+      fetchData();
+    }
+  }, [employeeId, isOpen]);
+
+  // Helper function to calculate final amount
+  const calculateFinalAmount = (values) => {
+    const remainingSalary = parseFloat(values.remaining_salary) || 0;
+    const earnedLeaveEncashment =
+      parseFloat(values.earned_leave_encashment) || 0;
+    const totalDeductions = parseFloat(values.total_deductions) || 0;
+    const gratuityAmount = parseFloat(values.gratuity_amount) || 0;
+
+    return (
+      remainingSalary +
+      earnedLeaveEncashment -
+      totalDeductions +
+      gratuityAmount
+    ).toFixed(2);
+  };
 
   const formSheetData = {
     triggerText: null,
     title: "Final Settlement",
-
     description: null,
     footer: null,
   };
-  const handleFormSubmit = async (values) => {
-    values = { ...values, employee_payroll: payroll.id };
-    console.log("values", values);
-    const response = await saveFinalSettlement(values);
-    const empPayroll = await saveEmployeePayroll({
-      ...payroll,
-      is_eos_applicable: true,
-    });
-    if (response && empPayroll) {
+
+  const handleFormSubmit = async (values, { resetForm, setSubmitting }) => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
+
+    try {
+      if (!payroll) {
+        throw new Error("Payroll data is missing");
+      }
+
+      // Prepare the final data with payroll ID and include the id if it's an update
+      const finalValues = {
+        ...values,
+        employee_payroll: payroll.id,
+        ...(existingSettlement ? { id: existingSettlement.id } : {}),
+      };
+
+      console.log("Submitting final settlement:", finalValues);
+
+      // Save the final settlement
+      const response = await saveFinalSettlement(finalValues);
+
+      if (!response) {
+        throw new Error("Failed to save final settlement");
+      }
+
+      console.log("Final settlement saved successfully");
+
+      // Then update employee payroll to mark EOS applicable
+      const empPayrollUpdateData = {
+        ...payroll,
+        is_eos_applicable: true,
+      };
+
+      console.log("Updating employee payroll:", empPayrollUpdateData);
+
+      const empPayroll = await saveEmployeePayroll(empPayrollUpdateData);
+
+      if (!empPayroll) {
+        throw new Error("Failed to update employee payroll");
+      }
+
+      console.log("Employee payroll updated successfully");
+
+      // Update status and close the form
       handleOptionSelect("initiated clearance");
       setIsOpen(false);
-      toast.success("Final Settlement saved successfully");
+      toast.success(
+        existingSettlement
+          ? "Final Settlement updated successfully"
+          : "Final Settlement saved successfully"
+      );
+      resetForm();
+    } catch (error) {
+      console.error("Error in final settlement submission:", error);
+      setErrorMessage(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to save final settlement"
+      );
+    } finally {
+      setIsSubmitting(false);
+      setSubmitting(false);
     }
+  };
+
+  const { showEOSSettlement } = useEOSSettlement(
+    { id: employeeId, status: "terminated" },
+    null
+  );
+
+  // Prepare initial values for the form
+  const getInitialValues = () => {
+    if (existingSettlement) {
+      return {
+        last_working_date: existingSettlement.last_working_date || "",
+        remaining_salary: existingSettlement.remaining_salary?.toString() || "",
+        earned_leave_encashment:
+          existingSettlement.earned_leave_encashment?.toString() || "",
+        total_deductions: existingSettlement.total_deductions?.toString() || "",
+        gratuity_amount: existingSettlement.gratuity_amount?.toString() || "",
+        final_amount: existingSettlement.final_amount?.toString() || "",
+        notes: existingSettlement.notes || "",
+      };
+    }
+
+    return {
+      last_working_date: "",
+      remaining_salary: "",
+      earned_leave_encashment: "",
+      total_deductions: "",
+      gratuity_amount: "",
+      final_amount: "",
+      notes: "",
+    };
   };
 
   return (
@@ -58,27 +214,41 @@ const ClearanceSheet = ({
       contentClassName="custom-sheet-width"
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      
     >
+      {errorMessage && (
+        <div className="p-4 mb-4 text-sm text-red-700 border border-red-200 rounded-lg">
+          {errorMessage}
+        </div>
+      )}
+
+      {isLoading && (
+        <div className="p-4 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg">
+          Loading employee data...
+        </div>
+      )}
+
+      {!isLoading && !errorMessage && !payroll && (
+        <div className="p-4 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg">
+          No payroll data found for this employee
+        </div>
+      )}
+
+      {!isLoading && existingSettlement && (
+        <div className="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg">
+          Existing settlement found - you are editing the current settlement
+        </div>
+      )}
+
       <Formik
-        initialValues={{
-          last_working_date: "",
-          remaining_salary: "",
-          earned_leave_encashment: "",
-          total_deductions: "",
-          gratuity_amount: "",
-          final_amount: "",
-          notes: "",
-        }}
+        initialValues={getInitialValues()}
         validate={validateClearanceForm}
         enableReinitialize={true}
         onSubmit={handleFormSubmit}
       >
         {(props) => (
           <form onSubmit={props.handleSubmit} className="my-6 space-y-6">
-            {/* {console.log("props", props)} */}
             <div className={`flex w-full flex-col rounded-lg`}>
-              <div className="font-[inter] flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium  tracking-[0px] text-zinc-900">
+              <div className="font-[inter] flex flex-grow flex-col gap-y-[11px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium tracking-[0px] text-zinc-900">
                 <div className="flex h-[7px] flex-shrink-0 items-end px-px">
                   <div className="text-zinc-950">Details</div>
                 </div>
@@ -104,7 +274,17 @@ const ClearanceSheet = ({
                       label={"Remaining Salary"}
                       onChange={(field, value) => {
                         props.handleChange(field)(value);
+                        // Calculate final amount when this field changes
+                        const updatedValues = {
+                          ...props.values,
+                          remaining_salary: value,
+                        };
+                        props.setFieldValue(
+                          "final_amount",
+                          calculateFinalAmount(updatedValues)
+                        );
                       }}
+                      required={true}
                     />
                   </div>
                   <div className="flex-1 space-y-2">
@@ -116,6 +296,15 @@ const ClearanceSheet = ({
                       label={"Earned Leave Encashment"}
                       onChange={(field, value) => {
                         props.handleChange(field)(value);
+                        // Calculate final amount when this field changes
+                        const updatedValues = {
+                          ...props.values,
+                          earned_leave_encashment: value,
+                        };
+                        props.setFieldValue(
+                          "final_amount",
+                          calculateFinalAmount(updatedValues)
+                        );
                       }}
                     />
                   </div>
@@ -130,6 +319,15 @@ const ClearanceSheet = ({
                       label={"Total Deductions"}
                       onChange={(field, value) => {
                         props.handleChange(field)(value);
+                        // Calculate final amount when this field changes
+                        const updatedValues = {
+                          ...props.values,
+                          total_deductions: value,
+                        };
+                        props.setFieldValue(
+                          "final_amount",
+                          calculateFinalAmount(updatedValues)
+                        );
                       }}
                     />
                   </div>
@@ -142,6 +340,15 @@ const ClearanceSheet = ({
                       label={"Gratuity Amount"}
                       onChange={(field, value) => {
                         props.handleChange(field)(value);
+                        // Calculate final amount when this field changes
+                        const updatedValues = {
+                          ...props.values,
+                          gratuity_amount: value,
+                        };
+                        props.setFieldValue(
+                          "final_amount",
+                          calculateFinalAmount(updatedValues)
+                        );
                       }}
                     />
                   </div>
@@ -157,6 +364,8 @@ const ClearanceSheet = ({
                       onChange={(field, value) => {
                         props.handleChange(field)(value);
                       }}
+                      required={true}
+                      disabled={true}
                     />
                   </div>
                 </div>
@@ -182,6 +391,7 @@ const ClearanceSheet = ({
                 onClick={() => {
                   setIsOpen(false);
                 }}
+                disabled={isSubmitting}
               >
                 Cancel
               </Button>
@@ -189,9 +399,16 @@ const ClearanceSheet = ({
                 type="submit"
                 size="lg"
                 variant="default"
-                // className=" bg-[#1c2024] text-white"
+                disabled={isSubmitting || !payroll}
+                onClick={() => {
+                  props.handleSubmit();
+                }}
               >
-                Submit
+                {isSubmitting
+                  ? "Submitting..."
+                  : existingSettlement
+                  ? "Update"
+                  : "Submit"}
               </Button>
             </div>
           </form>

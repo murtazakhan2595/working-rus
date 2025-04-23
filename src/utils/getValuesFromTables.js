@@ -14,7 +14,7 @@ import {
 } from "data/Data";
 import { useSelector } from "react-redux";
 import moment from "moment";
-import { ReasonForLeaving ,SalaryTypeOptions} from "data/Data";
+import { ReasonForLeaving, SalaryTypeOptions } from "data/Data";
 
 function getCountryFullName(countryCode) {
   const country = countriesList.find((option) => option.value === countryCode);
@@ -72,7 +72,7 @@ function DepartmentName({ value, fallBackText = "N/A" }) {
   const departments = useSelector((state) => state.common.departments);
   const department = departments.find(
     (option) => option.value === parseInt(value)
-  );
+  );  
   return department ? department.label : value ?? fallBackText;
 }
 
@@ -173,6 +173,28 @@ function ManagerName({ value, fallBackText = "N/A" }) {
   const manager = managers.find((option) => option.value === parseInt(value));
   return <>{manager ? manager.label : fallBackText}</>;
 }
+export function RenderNameList({
+  value,
+  fallBackText = "N/A",
+  NameVariant,
+  seperator = ",",
+  className,
+}) {
+  if (!value || value.length === 0) {
+    return fallBackText;
+  }
+
+  return (
+    <>
+      {value.map((dept, index) => (
+        <div key={index} className={className}>
+          <NameVariant value={dept} fallBackText="All" />
+          {seperator}
+        </div>
+      ))}
+    </>
+  );
+}
 function ResignationStatus(status) {
   const response = ResignationStatusOptions.find(
     (option) => option.value === status
@@ -216,8 +238,6 @@ function getExperience(joiningDate) {
   return `${years} years, ${months} months`;
 }
 function getExpenseType(value, expenseTypeOptions) {
-  console.log("value--------------", value);
-  console.log("expenseTypeOptions--------------", expenseTypeOptions);
   const response = expenseTypeOptions?.find((option) => option.value === value);
   return response ? response.label : "N/A";
 }
@@ -227,11 +247,22 @@ function getDepartmentName(value, departments, fallBackText) {
   return department ? department.label : fallBackText ?? "N/A";
 }
 
-export function getLabelByValue(value, options, fallBackText) {
+export function getLabelByValue(value, options=[], fallBackText='N/A') {
+  if (Array.isArray(value)) {
+    const labels = value
+      .map((val) => {
+        const option = options.find((option) => option.value === parseInt(val));
+        return option ? option.label : null;
+      })
+      .filter(Boolean);
+
+    return labels.length ? labels.join(", ") : fallBackText;
+  }
+
   const selectedOption = options.find(
     (option) => option.value === parseInt(value)
   );
-  return selectedOption ? selectedOption.label : fallBackText ?? "N/A";
+  return selectedOption ? selectedOption.label : fallBackText;
 }
 
 function getManagerName(value, managers) {

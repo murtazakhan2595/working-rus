@@ -14,14 +14,15 @@ import {
 const SelectInputComponent = React.memo(
   ({
     name,
-    options, // List of selectable options
+    options = [], // List of selectable options
     error,
     touch,
     value = null, // Current selected values
     label = null, // Label for the select field
-    onChange, // Function to handle selection change
+    onChange = () => {}, // Function to handle selection change
     required = false, // Whether the field is required
     className = "w-full", // Custom styling
+    inputCustomStyle = "", // Custom styling
     icon, // Optional icon inside the button
     allowNewOption = false, // Whether users can add new options
     newOptionConfig = {}, // Configuration for new options
@@ -29,6 +30,7 @@ const SelectInputComponent = React.memo(
     optionsActions = [], // List of action buttons for options
     placeholder = null, // Placeholder text when no value is selected
     disabled = false,
+    SelectAllOption = false,
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     // Toggle selection for a given option
@@ -43,7 +45,22 @@ const SelectInputComponent = React.memo(
       },
       [onChange, name]
     );
+    const DropdownList = React.useMemo(
+      () =>
+        SelectAllOption
+          ? [{ label: "All", value: null }, ...(options || [])]
+          : options || [],
+      [SelectAllOption, options]
+    );
 
+    const SelectedValueLabel = React.useMemo(
+      () =>
+        SelectAllOption && !value
+          ? "All"
+          : DropdownList.find((option) => option.value == value)?.label ??
+            value,
+      [SelectAllOption, value]
+    );
     return (
       <FormField
         name={name}
@@ -59,16 +76,19 @@ const SelectInputComponent = React.memo(
           setOpen={setIsOpen}
           disabled={disabled}
           invalidField={!!(error && touch)}
+          className={inputCustomStyle}
           triggerContent={
             <div className="flex justify-start w-full gap-2 items-center">
               <FormFieldIcon icon={icon} />
-              {value ? (
+              {SelectedValueLabel ? (
                 <span className="max-w-[95%] overflow-hidden">
-                  {options.find((option) => option.value == value)?.label}
+                  {SelectedValueLabel}
                 </span>
               ) : (
                 <FormPlaceholder
-                  placeholder={placeholder ? placeholder : `Select ${label}`}
+                  placeholder={
+                    placeholder ? placeholder : `Select ${label ?? ""}`
+                  }
                 />
               )}
 
@@ -77,7 +97,7 @@ const SelectInputComponent = React.memo(
           }
           popoverContent={
             <SelectableOptionsList
-              options={options}
+              options={DropdownList}
               selectedValues={[value]}
               handleSelectionToggle={handleSelectionToggle}
               showOptionsActions={showOptionsActions}

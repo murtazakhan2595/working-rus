@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { EmployeeID, UserRole } from "utils/getValuesFromTables";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions } from "data/Data";
-import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
+import { EmployeeOverview, StatusLabel, DateUI } from "components";
 import moment from "moment";
 import { renderDate } from "utils/renderValues";
 import { Switch } from "src/@/components/ui/switch";
-import { RenderTerminatedRow } from "app/modules/ExitAndClearance/Sections";
+import { PayrollListActionOptions } from "app/modules/Payroll/Screens";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
 import { SalaryType, DesignationName } from "utils/getValuesFromTables";
 import { Badge } from "components/ui/badge";
@@ -23,7 +23,10 @@ import {
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
 import { format } from "date-fns";
-
+import { FormatID } from "utils/getValuesFromTables";
+import { DepartmentName, RenderNameList } from "utils/getValuesFromTables";
+import { BranchName } from "utils/getValuesFromTables";
+import { ManagerName } from "utils/getValuesFromTables";
 
 export const EmployeePayrollColumns = [
   {
@@ -247,8 +250,16 @@ export const SalarySetupColumns = [
       if (showNewBadge || showEosBadge) {
         return (
           <div class="flex gap-2">
-            {showNewBadge && <Badge variant={"dot-plum"} dot={'bg-plum-1100'}>New</Badge>}
-            {showEosBadge && <Badge variant={"dot-plum"} dot={'bg-plum-1100'}>EOS</Badge>}
+            {showNewBadge && (
+              <Badge variant={"dot-plum"} dot={"bg-plum-1100"}>
+                New
+              </Badge>
+            )}
+            {showEosBadge && (
+              <Badge variant={"dot-plum"} dot={"bg-plum-1100"}>
+                EOS
+              </Badge>
+            )}
           </div>
         );
       }
@@ -261,7 +272,7 @@ class ActionButtonCell extends React.Component {
     super(props);
     this.state = {
       isOpenEdit: false,
-      isOpenDelete: false
+      isOpenDelete: false,
     };
   }
 
@@ -286,7 +297,7 @@ class ActionButtonCell extends React.Component {
       const response = await deleteEarnAndDeduction(this.props.row.id);
       if (response) {
         toast.success("Component deleted successfully");
-        if (typeof this.props.handleReload === 'function') {
+        if (typeof this.props.handleReload === "function") {
           this.props.handleReload();
         }
       }
@@ -302,7 +313,7 @@ class ActionButtonCell extends React.Component {
     const { isOpenEdit, isOpenDelete } = this.state;
 
     return (
-      <div 
+      <div
         className="flex items-center gap-3"
         onClick={(event) => {
           event.stopPropagation();
@@ -311,7 +322,7 @@ class ActionButtonCell extends React.Component {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button 
+              <button
                 className="flex items-center justify-center w-8 h-8 transition-colors border border-blue-300 rounded-full hover:bg-blue-50"
                 onClick={this.handleOpenEdit}
                 aria-label="Edit component"
@@ -324,11 +335,11 @@ class ActionButtonCell extends React.Component {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        
+
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button 
+              <button
                 className="flex items-center justify-center w-8 h-8 transition-colors border border-red-400 rounded-full hover:bg-red-50"
                 onClick={this.handleOpenDelete}
                 aria-label="Delete component"
@@ -349,6 +360,7 @@ class ActionButtonCell extends React.Component {
             setIsOpen={this.handleCloseEdit}
             reload={handleReload}
             onSuccess={handleReload}
+            existingComponents={this.props.allComponents}
           />
         )}
 
@@ -367,7 +379,11 @@ class ActionButtonCell extends React.Component {
   }
 }
 
-export const SalaryComponentColumns = (onCheckedChange, handleReload) => [
+export const SalaryComponentColumns = (
+  onCheckedChange,
+  handleReload,
+  allComponents = []
+) => [
   {
     dataField: "name",
     text: "Component Name",
@@ -434,8 +450,14 @@ export const SalaryComponentColumns = (onCheckedChange, handleReload) => [
   {
     dataField: "actions",
     text: "",
-    formatter: (cell, row) => <ActionButtonCell row={row} handleReload={handleReload} />
-  }
+    formatter: (cell, row) => (
+      <ActionButtonCell
+        row={row}
+        handleReload={handleReload}
+        allComponents={allComponents}
+      />
+    ),
+  },
 ];
 
 export const AdjustmentComponentColumns = [
@@ -484,6 +506,113 @@ export const AdjustmentComponentColumns = [
           )}
         </>
       );
+    },
+  },
+];
+
+export const PayrunPayrollColumns = (reloadData) => [
+  {
+    dataField: "id",
+    text: "Payroll ID",
+    formatter: (cell) => <FormatID value={cell} prefix={"PR-"} />,
+  },
+  {
+    dataField: "month",
+    text: "Month",
+    formatter: (cell, row) => (
+      <DateUI date={cell} fallBackText={"--"} datvariant="month" />
+    ),
+  },
+  {
+    dataField: "departments",
+    text: "Department",
+    formatter: (cell, row) => (
+      <RenderNameList
+        NameVariant={DepartmentName}
+        value={cell}
+        fallBackText="All"
+      />
+    ),
+  },
+
+  {
+    dataField: "branches",
+    text: "Branch",
+    formatter: (cell, row) => (
+      <RenderNameList
+        NameVariant={BranchName}
+        value={cell}
+        fallBackText={"All"}
+      />
+    ),
+  },
+  {
+    dataField: "managers",
+    text: "Manager",
+    formatter: (cell, row) => (
+      <RenderNameList
+        NameVariant={ManagerName}
+        value={cell}
+        fallBackText={"All"}
+      />
+    ),
+  },
+
+  {
+    dataField: "genders",
+    text: "Gender",
+    formatter: (cell, row) => (
+      <RenderNameList
+        NameVariant={ManagerName}
+        value={cell}
+        fallBackText={"All"}
+      />
+    ),
+  },
+  {
+    dataField: "nationalities",
+    text: "Nationality",
+  },
+  {
+    dataField: "",
+    text: "",
+    formatter: (cell, row) => (
+      <PayrollListActionOptions reloadData={reloadData} payrollData={row} />
+    ),
+  },
+];
+
+export const PayRunEmployeesColumns = [
+  {
+    dataField: "serial_number",
+    text: "ID",
+  },
+  {
+    dataField: "employeeid",
+    text: "Employee",
+    formatter: (cell, row) => (
+      <>
+        <EmployeeOverview id={cell} showEmail={true} showDepartment={true} />
+      </>
+    ),
+  },
+  {
+    dataField: "gross_salary",
+    text: "Basic Salary",
+    formatter: (cell) => <>{"AED " + Math.round(cell)}</>,
+  },
+  {
+    dataField: "gross_salary",
+    text: "Allowance",
+    formatter: (cell, row) => {
+      return <>{"AED " + (cell - row.net_salary)}</>;
+    },
+  },
+  {
+    dataField: "",
+    text: "Salary Payable",
+    formatter: (cell, row) => {
+      return <>{row.net_salary > 0 ? "AED " + row.net_salary : "0.00"} </>;
     },
   },
 ];

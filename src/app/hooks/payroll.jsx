@@ -2,7 +2,11 @@ import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { getEmployeeCustomList, HandleLogout } from "./general";
 import moment from "moment";
-import { mapPayRunList ,mapEmployeeSalarySetupData} from "app/utils/MappingObjects/mapPayrollData";
+import {
+  mapPayRunList,
+  mapEmployeeSalarySetupData,
+  mapPayrunPayloadData,
+} from "app/utils/MappingObjects/mapPayrollData";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -46,7 +50,7 @@ export const getEmployeePayrollDetailByEmpId = async (empID) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      const payrollDetail= mapEmployeeSalarySetupData(response.data);
+      const payrollDetail = mapEmployeeSalarySetupData(response.data);
       return payrollDetail;
     }
   } catch (error) {
@@ -207,9 +211,8 @@ const getEmployeeEarnAndDeduction = async (payload) => {
     });
     if (response.status === 200) {
       return response.data;
-    }
-    else{
-      return false
+    } else {
+      return false;
     }
   } catch (error) {
     console.error("Error fetching salary revision data:", error);
@@ -358,8 +361,15 @@ const deleteEarnAndDeduction = async (id) => {
 };
 
 const saveEmployeePayroll = async (payload) => {
+  console.log("Starting saveEmployeePayroll with payload:", payload);
   try {
+    if (!payload) {
+      console.error("Invalid payload provided to saveEmployeePayroll");
+      return false;
+    }
+
     if (payload?.id) {
+      console.log(`Updating employee payroll with ID: ${payload.id}`);
       const response = await axios.patch(
         `${baseUrl}/payroll/employee-payroll/${payload.id}`,
         payload,
@@ -367,10 +377,17 @@ const saveEmployeePayroll = async (payload) => {
           headers: headers(),
         }
       );
+
+      console.log("Employee payroll update response:", response.status);
       if (response.status === 201 || response.status === 200) {
-        return true;
+        console.log("Employee payroll updated successfully");
+        return response.data || true;
+      } else {
+        console.error(`Unexpected response status: ${response.status}`);
+        return false;
       }
     } else {
+      console.log("Creating new employee payroll");
       const response = await axios.post(
         `${baseUrl}/payroll/employee-payroll/`,
         payload,
@@ -378,12 +395,25 @@ const saveEmployeePayroll = async (payload) => {
           headers: headers(),
         }
       );
+
+      console.log("Employee payroll creation response:", response.status);
       if (response.status === 201 || response.status === 200) {
-        return true;
+        console.log("Employee payroll created successfully");
+        return response.data || true;
+      } else {
+        console.error(`Unexpected response status: ${response.status}`);
+        return false;
       }
     }
   } catch (error) {
-    console.error("Error saving employee payroll data:", error);
+    console.error("Error in saveEmployeePayroll:", error);
+    if (error?.response) {
+      console.error(
+        "API error response:",
+        error.response.status,
+        error.response.data
+      );
+    }
     if (error?.response?.status === 401) {
       HandleLogout();
     }
@@ -522,12 +552,14 @@ const getPayrollSummary = async () => {
   }
 };
 
-const savePayrun = async (payload) => {
+const savePayrun = async (payload, id) => {
+  const payrunID = id ?? payload?.id;
+  const finalPayload = mapPayrunPayloadData(payload);
   try {
-    if (payload?.id) {
+    if (payrunID) {
       const response = await axios.patch(
-        `${baseUrl}/payroll/payroll-run/${payload.id}`,
-        payload,
+        `${baseUrl}/payroll/payroll-run/${payrunID}`,
+        finalPayload,
         {
           headers: headers(),
         }
@@ -537,14 +569,13 @@ const savePayrun = async (payload) => {
       }
     } else {
       const response = await axios.post(
-        `${baseUrl}/payroll/payroll-run/`,
-        payload,
+        `${baseUrl}/payroll/payroll/generate/`,
+        finalPayload,
         {
           headers: headers(),
         }
       );
       if (response.status === 201 || response.status === 200) {
-        console.log("response", response.data);
         return response.data;
       }
     }
@@ -582,6 +613,33 @@ const getPayun = async (payload) => {
     return [];
   }
 };
+export const getPayRunEmployees = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/payroll/employees/?ordering=-id&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const PayRunResponse = response.data;
+      // const PayRunList = await mapPayRunList(PayRunResponse.results);
+      const PayRunList = PayRunResponse.results;
+      return { count: PayRunResponse.count, results: PayRunList };
+    }
+  } catch (error) {
+    console.error("Error fetching payrun data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
 const getPayslipByID = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/payroll/payslip/${id}`, {
@@ -601,7 +659,42 @@ const getPayslipByID = async (id) => {
 
 const saveFinalSettlement = async (payload) => {
   try {
+    console.log(
+      "Starting final settlement save operation with payload:",
+      payload
+    );
+
+    if (!payload) {
+      console.error("Final settlement payload is missing");
+      return false;
+    }
+
+    if (!payload.employee_payroll) {
+      console.error(
+        "Employee payroll ID is missing in final settlement payload"
+      );
+      return false;
+    }
+
+    // Convert numeric input values to numbers if they're strings
+    if (payload.remaining_salary) {
+      payload.remaining_salary = Number(payload.remaining_salary);
+    }
+    if (payload.earned_leave_encashment) {
+      payload.earned_leave_encashment = Number(payload.earned_leave_encashment);
+    }
+    if (payload.total_deductions) {
+      payload.total_deductions = Number(payload.total_deductions);
+    }
+    if (payload.gratuity_amount) {
+      payload.gratuity_amount = Number(payload.gratuity_amount);
+    }
+    if (payload.final_amount) {
+      payload.final_amount = Number(payload.final_amount);
+    }
+
     if (payload?.id) {
+      console.log(`Updating existing final settlement with ID: ${payload.id}`);
       const response = await axios.patch(
         `${baseUrl}/payroll/finalsettlement/${payload.id}`,
         payload,
@@ -609,10 +702,16 @@ const saveFinalSettlement = async (payload) => {
           headers: headers(),
         }
       );
+      console.log("Final settlement update response:", response);
       if (response.status === 201 || response.status === 200) {
+        console.log("Final settlement updated successfully");
         return true;
+      } else {
+        console.error("Unexpected response status:", response.status);
+        return false;
       }
     } else {
+      console.log("Creating new final settlement");
       const response = await axios.post(
         `${baseUrl}/payroll/finalsettlement/`,
         payload,
@@ -620,12 +719,21 @@ const saveFinalSettlement = async (payload) => {
           headers: headers(),
         }
       );
+      console.log("Final settlement creation response:", response);
       if (response.status === 201 || response.status === 200) {
+        console.log("Final settlement created successfully");
         return true;
+      } else {
+        console.error("Unexpected response status:", response.status);
+        return false;
       }
     }
   } catch (error) {
     console.error("Error saving final settlement data:", error);
+    console.error("Request payload was:", payload);
+    if (error?.response?.data) {
+      console.error("API error details:", error.response.data);
+    }
     if (error?.response?.status === 401) {
       HandleLogout();
     }
@@ -699,25 +807,22 @@ const getPayRunById = async (id) => {
   }
 };
 
-const claimExpenseChoices = async()=>{
-  try{
-    const response = await axios.get(
-       `${baseUrl}/payroll/expensechoice/`,
-       {
-        headers:headers()
-       }
-    )
-    if(response.status === 200){
-      return response.data
+const claimExpenseChoices = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/payroll/expensechoice/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
     }
-  }catch(error){
-     console.error("Error fetching payrun data:", error);
+  } catch (error) {
+    console.error("Error fetching payrun data:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
     return [];
   }
-}
+};
 
 const deleteEmployeeEarnDeduction = async (id) => {
   try {
@@ -735,7 +840,7 @@ const deleteEmployeeEarnDeduction = async (id) => {
     }
     return false;
   }
-}
+};
 
 const getPayrollAdjustmentTemplate = async () => {
   try {

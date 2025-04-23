@@ -292,6 +292,7 @@ const getEmployeeList = async (payload) => {
         salary_type: employee.salary_type,
         is_eos_applicable: employee.is_eos_applicable,
         is_new: employee.is_new,
+        joining_date: employee.joining_date,
         employee_status: employee.employee_status,
         user_role: employee.user_role,
         name_initials: `${
@@ -321,10 +322,13 @@ const getEmployeeListWithDetail = async () => {
         name: `${employee.first_name} ${employee.last_name}`,
         first_name: employee.first_name,
         direct_report: employee.direct_report,
+        joining_date: employee.joining_date,
         last_name: employee.last_name,
         department_name: employee.department_name,
         department_position: employee.department_position,
+        disbursement_type: employee.disbursement_type,
         work_email: employee.work_email,
+        employee_type: employee.employee_type,
         employee_status: employee.employee_status,
         branch_id: employee.branch_id,
         profile_picture: employee.profile_picture,
@@ -332,6 +336,8 @@ const getEmployeeListWithDetail = async () => {
         serial_number: employee.serial_number,
         nationality: employee.nationality,
         user_role: employee.user_role,
+        contract_start_date: employee.contract_start_date,
+        isContracted: employee.contract_start_date ? true : false,
         name_initials: `${
           employee?.first_name?.charAt(0)?.toUpperCase() || ""
         }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,

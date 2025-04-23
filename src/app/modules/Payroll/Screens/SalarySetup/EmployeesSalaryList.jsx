@@ -21,7 +21,7 @@ const innerTabClassName =
 
 const EmployeesSalaryList = ({ departments }) => {
   const [activeTab, setActiveTab] = useState("Salary Setup");
-  const [filterData, setFilterData] = useState({ is_new: false });
+  const [filterData, setFilterData] = useState({});
 
   // Separate handler for Salary filters
   const handleSalaryFilterChange = (filterName, filterValue) => {
@@ -58,9 +58,6 @@ const EmployeesSalaryList = ({ departments }) => {
               type: "search",
               placeholder: "Employee Name",
               name: "first_name",
-              onChange: (value) => {
-                handleSalaryFilterChange("name", value);
-              }
             },
             // ... existing code ...
             {

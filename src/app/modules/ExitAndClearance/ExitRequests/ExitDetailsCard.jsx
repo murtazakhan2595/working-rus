@@ -121,7 +121,7 @@ const ExitDetailsCard = ({
                   <h1 className="mb-0 text-2xl font-bold text-zinc-800">
                     {resignation?.emp_name}
                   </h1>
-                  <p className="text-base  text-zinc-600">
+                  <p className="text-base text-zinc-600">
                     ID: <EmployeeID value={resignation?.employee_id} /> |{" "}
                     <DesignationName value={resignation?.position} /> |
                     <DepartmentName value={resignation?.department_name} />

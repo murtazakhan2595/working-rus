@@ -181,7 +181,6 @@ export const ExitResignedColumns = [
   },
 ];
 
-
 export const MyClaimsRequestColumns = (expenseTypeOptions) => [
   {
     dataField: "expense_type",
@@ -230,7 +229,7 @@ export const ClaimRequestColumns = (expenseTypeOptions) => [
             // Stop the event propagation to prevent onRowClick from being triggered
             event.stopPropagation();
             event.preventDefault();
-            return false
+            return false;
           }}
         >
           <>{cell}</>
@@ -358,17 +357,15 @@ export const createPayrunColumns = (components) => [
 
 export const downloadPayslipColumns = (components) => [
   {
-    dataField: "employeeid",
+    dataField: "serial_number",
     text: "ID",
   },
   {
-    dataField: "employee",
+    dataField: "employeeid",
     text: "Name",
     formatter: (cell, row) => (
       <>
-        <EmployeeOverview
-id={cell}          showEmail={true}
-        />
+        <EmployeeOverview id={cell} showEmail={true} />
       </>
     ),
   },
@@ -427,13 +424,11 @@ export const LeaveRecordColumns = [
     formatter: (cell) => <EmployeeID value={cell} />,
   },
   {
-    dataField: "employee",
+    dataField: "id",
     text: "Employee",
     formatter: (cell, row) => (
       <>
-       <EmployeeOverview
-id={cell}          showEmail={true}
-        />
+        <EmployeeOverview id={cell} showEmail={true} />
       </>
     ),
   },

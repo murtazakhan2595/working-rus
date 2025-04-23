@@ -26,14 +26,6 @@ import {
   Filter,
 } from "lucide-react";
 import EmployeePayslipDetails  from "app/modules/Payroll/Screens/EmployeeSalaryDetails/EmployeePayslipDetails";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "src/@/components/ui/command";
 import { format } from "date-fns";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {

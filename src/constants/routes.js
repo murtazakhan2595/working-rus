@@ -33,6 +33,7 @@ import ComingSoon from "app/modules/comingSoon/ComingSoon.jsx";
 import Services from "app/shared/templates/Sidebar/Services.jsx";
 import CreateEmployeeProfile from "app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 import { ExitAndClearance, EmployeeExit } from "app/modules/ExitAndClearance";
+import { Exit, EOSSettlementDetails } from "app/modules/SelfService/Exit";
 import {
   Payslip,
   EmployeeSalaryDetails,
@@ -43,6 +44,7 @@ import {
   PayRun,
   CreatePayRun,
   PayRunDetails,
+  PayrollPayrunDetail,
 } from "app/modules/Payroll";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
 import {
@@ -59,6 +61,8 @@ import OrganizationalChart from "app/modules/OfficeSetting/Screens/Organizationa
 import { TeamProfileMangement } from "app/modules/TeamManagment";
 import { Assets, MyAssets } from "app/modules/AssetsManagement";
 import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
+import { OnHoldSalaries, OnHoldSalaryDetails } from "app/modules/Payroll";
+import { EOSList, EOSDetails } from "app/modules/Payroll/Screens/EOS";
 
 const SidebarRoutes = [
   {
@@ -244,6 +248,11 @@ const SidebarRoutes = [
     name: "Pay Slip Details",
   },
   Config.PAYROLL && {
+    path: "/payroll/pay-run/details/:id",
+    component: <PayrollPayrunDetail />,
+    name: "Payroll Details",
+  },
+  Config.PAYROLL && {
     path: "/payroll/salary-setup",
     component: <SalarySetup />,
     name: "Salary Setup",
@@ -252,6 +261,16 @@ const SidebarRoutes = [
     path: "/pay-run",
     component: <PayRun />,
     name: "Pay Run",
+  },
+  Config.PAYROLL && {
+    path: "/payroll/eos",
+    component: <EOSList />,
+    name: "End of Service",
+  },
+  Config.PAYROLL && {
+    path: "/payroll/eos/:id",
+    component: <EOSDetails />,
+    name: "EOS Details",
   },
   Config.ATTENDANCE && {
     path: "/attendance",
@@ -352,6 +371,16 @@ const SidebarRoutes = [
     component: <ClaimRequest />,
     name: "Claim Request",
   },
+  Config.PAYROLL && {
+    path: "/on-hold-salaries",
+    component: <OnHoldSalaries />,
+    name: "On-Hold Salaries",
+  },
+  Config.PAYROLL && {
+    path: "/payroll/on-hold-salaries/:id",
+    component: <OnHoldSalaryDetails />,
+    name: "On-Hold Salary Details",
+  },
   Config.EMPLOYEE_OFFBOARDING && {
     path: "/exit-clearance",
     component: <ExitAndClearance />,
@@ -367,6 +396,12 @@ const SidebarRoutes = [
     component: <Assets />,
     name: "Assets Management",
   },
+  Config.SELF_SERVICE_HUB &&
+    Config.EMPLOYEE_OFFBOARDING && {
+      path: "/self-service/exit/eos-settlement/:id",
+      component: <EOSSettlementDetails />,
+      name: "EOS Settlement Details",
+    },
 ].filter(Boolean); // Filter out undefined routes
 
 const LoginRoutes = [
