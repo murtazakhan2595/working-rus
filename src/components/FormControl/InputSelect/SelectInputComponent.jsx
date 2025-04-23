@@ -49,14 +49,10 @@ const SelectInputComponent = React.memo(
       () =>
         SelectAllOption
           ? [{ label: "All", value: null }, ...(options || [])]
-          : options||[],
+          : options || [],
       [SelectAllOption, options]
     );
-    console.log(
-      DropdownList.find((option) => option.value == value),
-      value,
-      DropdownList
-    );
+
     const SelectedValueLabel = React.useMemo(
       () =>
         SelectAllOption && !value
@@ -90,7 +86,9 @@ const SelectInputComponent = React.memo(
                 </span>
               ) : (
                 <FormPlaceholder
-                  placeholder={placeholder ? placeholder : `Select ${label}`}
+                  placeholder={
+                    placeholder ? placeholder : `Select ${label ?? ""}`
+                  }
                 />
               )}
 

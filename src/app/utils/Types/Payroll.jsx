@@ -1,7 +1,7 @@
 import moment from "moment";
 
 export const PayRun = {
-  id:null,
+  id: null,
   end_date: moment().endOf("month").format("YYYY-MM-DD"),
   salary_on_hold: [],
   nationalities: null,
@@ -11,7 +11,7 @@ export const PayRun = {
   start_date: moment().startOf("month").format("YYYY-MM-DD"),
   managers: null,
   religions: null,
-  month: '2025-07-01',
+  month: moment().startOf("month").format("YYYY-MM-DD"),
   genders: null,
   payrun_date: `${moment().startOf("month").format("YYYY-MM-DD")},${moment()
     .endOf("month")

@@ -30,7 +30,7 @@ import { PageLoader } from "components";
 import AlertDialogue from "components/ui/AlertDialogue";
 import {
   DateInput,
-  SelectInputComponent,
+  MonthInput,
   DateRangeInput,
 } from "components/FormControl";
 import { Formik } from "formik";
@@ -431,7 +431,7 @@ const CreatePayRun = () => {
                     >
                       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                         <div className="space-y-2">
-                          <DateInput
+                          <MonthInput
                             name="month"
                             placeholder="Payroll Month"
                             value={props.values.month}

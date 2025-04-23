@@ -17,6 +17,7 @@ function PayRunList() {
   const [PayRunData, setPayRunData] = useState([]);
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [filterData, setFilterData] = useState({ is_payroll_run: false });
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -32,7 +33,7 @@ function PayRunList() {
   };
 
   const fetchData = async (isMounted) => {
-    const data = await getPayun({ordering,options});
+    const data = await getPayun({ ordering, options, filterData });
     if (data && isMounted) {
       setPayRunData(data);
     }

@@ -613,6 +613,33 @@ const getPayun = async (payload) => {
     return [];
   }
 };
+export const getPayRunEmployees = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/payroll/employees/?ordering=-id&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const PayRunResponse = response.data;
+      // const PayRunList = await mapPayRunList(PayRunResponse.results);
+      const PayRunList = PayRunResponse.results;
+      return { count: PayRunResponse.count, results: PayRunList };
+    }
+  } catch (error) {
+    console.error("Error fetching payrun data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
 const getPayslipByID = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/payroll/payslip/${id}`, {

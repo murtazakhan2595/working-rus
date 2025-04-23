@@ -28,6 +28,7 @@ import {
 import { format, parse, isValid } from "date-fns";
 import { Calendar } from "src/@/components/ui/calendar";
 import TextEditorInputField from "./TextEditorInputField";
+import MonthInput from "./MonthInput";
 import CommentsInputField from "./CommentsInputField";
 import DateRangeFilter from "./DateRangeFilter";
 import SortingFilters from "./SortingFilters";
@@ -734,4 +735,5 @@ export {
   ColorInput,
   DateRangeInput,
   InputSignature,
+  MonthInput,
 };

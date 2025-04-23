@@ -2,20 +2,18 @@ import { Button } from "components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-import { DateInput } from "components/FormControl";
+import { FilterInput } from "components/FormControl";
 import CustomTable from "components/CustomTable";
 import { PayRunEmployeesColumns } from "app/modules/Payroll/Sections";
-import { getEmployeePayroll } from "app/hooks/payroll";
-import { getEarnAndDeduction } from "app/hooks/payroll";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { getPayrollSummary } from "app/hooks/payroll";
-import { CircleCheckBig } from "lucide-react";
+import { DetailBox, SheetCardExtension } from "components/SheetCardExtension";
 import { Download } from "lucide-react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { getPayslip } from "app/hooks/payroll";
+import { getPayRunEmployees } from "app/hooks/payroll";
 import { getPayRunById } from "app/hooks/payroll";
 import moment from "moment";
 
@@ -41,8 +39,8 @@ const PayrollPayrunDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const payslipsData = await getPayslip({
-        filterData: { ...filterData, payroll_run: id },
+      const payslipsData = await getPayRunEmployees({
+        filterData: { ...filterData, payroll_id: id },
         options,
       });
       if (payslipsData) {
@@ -108,6 +106,19 @@ const PayrollPayrunDetail = () => {
     setSelectedRows([]);
   };
 
+  const handleFilterChange = (filterName, filterValue) => {
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
+
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-10 justify-between items-center h-11">
@@ -120,10 +131,10 @@ const PayrollPayrunDetail = () => {
           </button>
           <div>
             <span className="text-neutral-1200 text-xl font-semibold  leading-tight">
-              Pay Run for{" "}
+              Pay Run Details for{" "}
             </span>
             <span className="text-neutral-1200 text-xl font-bold  leading-tight">
-              {moment(payrun?.start_date).format("MMMM YYYY")}
+              {moment(payrun?.month).format("MMMM YYYY")}
             </span>
           </div>
         </div>
@@ -134,13 +145,13 @@ const PayrollPayrunDetail = () => {
             <div className="h-[47px] flex-col justify-center items-start inline-flex">
               <div className="flex-col justify-start items-start flex">
                 <div className="self-stretch text-[#ab4aba] text-2xl font-medium  ">
-                  Download Payslips
+                  Payrolls Employees
                 </div>
               </div>
               <div className="pt-1.5 flex-col justify-start items-start flex">
                 <div className="flex-col justify-start items-start flex">
                   <div className="self-stretch text-[#8b8d98] text-sm  ">
-                    Payrolls of all employees are listed below
+                    All employess in the payroll are listed below
                   </div>
                 </div>
               </div>
@@ -151,6 +162,16 @@ const PayrollPayrunDetail = () => {
                 Download
               </Button>
             )}
+            <FilterInput
+              filters={[
+                {
+                  type: "search",
+                  placeholder: "Employee Name",
+                  name: "first_name",
+                },
+              ]}
+              onChange={handleFilterChange} // Dynamic filter handler
+            />
           </div>
         </CardHeader>
         <CardContent>
@@ -160,12 +181,231 @@ const PayrollPayrunDetail = () => {
             pagination={true}
             dataTotalSize={paySlipsData?.count || 0}
             tableOptions={tableOptions}
-            selectable={true}
-            setSelectedRows={setSelectedRows}
-            selectedRows={selectedRows}
+            rowExpand={true}
+            renderExpandedContent={(row) => (
+              <RenderEmployeePayrunDetails PayrunData={row} />
+            )}
           />
         </CardContent>
       </Card>
+    </div>
+  );
+};
+
+const RenderEmployeePayrunDetails = ({ PayrunData }) => {
+  const labelList = [
+    {
+      label: "ID",
+      value: PayrunData.serial_number,
+    },
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Name",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Designation",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Branch",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Employment Type",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Joining Date",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Currency",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Disbursement Type",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Contracted Salary",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Basic Salary",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Allowances",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Variable",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Total Working Days",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Total Absent Days",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Salary Per Day",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Paid Leave",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Annual Leave Salary",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Previous Month Salary",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Inflation Effect",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Reimbursements",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Salary Payable",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Remarks",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Branch",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData?.viewed_date
+      ? [
+          {
+            label: "Viewed Date",
+            value: PayrunData?.viewed_date,
+          },
+        ]
+      : []),
+    ...(PayrunData?.target_audience
+      ? [
+          {
+            label: "Target Audience",
+            value: PayrunData?.target_audience,
+          },
+        ]
+      : []),
+  ].filter(Boolean);
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-5 md:grid-cols-3 gap-4 px-6 py-4">
+      {labelList &&
+        labelList.map((data, index) => {
+          return (
+            <DetailBox
+              orientation="horizontal"
+              key={index}
+              className=""
+              label={data.label}
+              value={data.value}
+              fallbackText={""}
+            />
+          );
+        })}
     </div>
   );
 };

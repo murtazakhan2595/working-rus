@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { EmployeeID, UserRole } from "utils/getValuesFromTables";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions } from "data/Data";
-import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
+import { EmployeeOverview, StatusLabel, DateUI } from "components";
 import moment from "moment";
 import { renderDate } from "utils/renderValues";
 import { Switch } from "src/@/components/ui/switch";
@@ -24,7 +24,7 @@ import {
 } from "src/@/components/ui/tooltip";
 import { format } from "date-fns";
 import { FormatID } from "utils/getValuesFromTables";
-import { DepartmentName } from "utils/getValuesFromTables";
+import { DepartmentName, RenderNameList } from "utils/getValuesFromTables";
 import { BranchName } from "utils/getValuesFromTables";
 import { ManagerName } from "utils/getValuesFromTables";
 
@@ -519,29 +519,55 @@ export const PayrunPayrollColumns = (reloadData) => [
   {
     dataField: "month",
     text: "Month",
+    formatter: (cell, row) => (
+      <DateUI date={cell} fallBackText={"--"} datvariant="month" />
+    ),
   },
   {
     dataField: "departments",
     text: "Department",
     formatter: (cell, row) => (
-      <DepartmentName value={cell} fallBackText={"All"} />
+      <RenderNameList
+        NameVariant={DepartmentName}
+        value={cell}
+        fallBackText="All"
+      />
     ),
   },
 
   {
     dataField: "branches",
     text: "Branch",
-    formatter: (cell, row) => <BranchName value={cell} fallBackText={"All"} />,
+    formatter: (cell, row) => (
+      <RenderNameList
+        NameVariant={BranchName}
+        value={cell}
+        fallBackText={"All"}
+      />
+    ),
   },
   {
     dataField: "managers",
     text: "Manager",
-    formatter: (cell, row) => <ManagerName value={cell} fallBackText={"All"} />,
+    formatter: (cell, row) => (
+      <RenderNameList
+        NameVariant={ManagerName}
+        value={cell}
+        fallBackText={"All"}
+      />
+    ),
   },
 
   {
     dataField: "genders",
     text: "Gender",
+    formatter: (cell, row) => (
+      <RenderNameList
+        NameVariant={ManagerName}
+        value={cell}
+        fallBackText={"All"}
+      />
+    ),
   },
   {
     dataField: "nationalities",
@@ -563,32 +589,28 @@ export const PayRunEmployeesColumns = [
   },
   {
     dataField: "employeeid",
-    text: "Name",
+    text: "Employee",
     formatter: (cell, row) => (
       <>
-        <EmployeeOverview id={cell} showEmail={true} />
+        <EmployeeOverview id={cell} showEmail={true} showDepartment={true} />
       </>
     ),
   },
   {
-    dataField: "department_name",
-    text: "Department",
-  },
-  {
     dataField: "gross_salary",
-    text: "Salary",
+    text: "Basic Salary",
     formatter: (cell) => <>{"AED " + Math.round(cell)}</>,
   },
   {
     dataField: "gross_salary",
-    text: "Total Deductions",
+    text: "Allowance",
     formatter: (cell, row) => {
       return <>{"AED " + (cell - row.net_salary)}</>;
     },
   },
   {
     dataField: "",
-    text: "Total Earnings",
+    text: "Salary Payable",
     formatter: (cell, row) => {
       return <>{row.net_salary > 0 ? "AED " + row.net_salary : "0.00"} </>;
     },

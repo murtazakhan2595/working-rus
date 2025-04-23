@@ -157,8 +157,12 @@ export function numberToWords(number) {
   return result.trim();
 }
 
-export function renderDate(date, fallbackValue = "N/A") {
-  return date ? moment(date).format("MMM DD, YYYY") : fallbackValue;
+export function renderDate(date, fallbackValue = "N/A", variant = "date") {
+  if (!date) return fallbackValue;
+
+  const format = variant === "month" ? "MMMM YYYY" : "MMM DD, YYYY";
+
+  return moment(date).format(format);
 }
 
 export const formatDuration = (duration, calculateSeconds = false) => {

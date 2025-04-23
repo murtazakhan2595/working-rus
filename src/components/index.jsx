@@ -14,6 +14,7 @@ import OverviewCard from "./OverviewCard";
 import ViewDetailSheetCardExtension from "./ViewDetailSheetCardExtension";
 import DialogBox from "./DialogBox";
 import SheetUI from "./SheetUI";
+import DateUI from './DateUI'
 import { ViewSignature } from "./FormControl/InputSignature";
 export {
   Header,
@@ -26,6 +27,7 @@ export {
   StatusLabel,
   ViewOptions,
   TableCustom,
+  DateUI,
   TextUI,
   TooltipText,
   OverviewCard,
