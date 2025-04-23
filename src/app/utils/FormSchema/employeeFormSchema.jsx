@@ -201,6 +201,23 @@ const validateEmployeeIdentificationForm = (values) => {
     errors.place_of_issuance = "Place of Issuance is required";
   if (!values.id_issuance_date)
     errors.id_issuance_date = "Issuance Date is Required";
+
+  // Add validation for ID dates chronology
+  if (values.id_issuance_date && values.id_expiry_date) {
+    const issuanceDate = new Date(values.id_issuance_date);
+    const expiryDate = new Date(values.id_expiry_date);
+
+    if (!isNaN(issuanceDate.getTime()) && !isNaN(expiryDate.getTime())) {
+      if (issuanceDate.getTime() === expiryDate.getTime()) {
+        errors.id_expiry_date =
+          "Expiry date cannot be the same as issuance date";
+      }
+      if (expiryDate < issuanceDate) {
+        errors.id_expiry_date = "Expiry date must be after issuance date";
+      }
+    }
+  }
+
   return errors;
 };
 const validationPersonalInfoFormSchema = Joi.object({
