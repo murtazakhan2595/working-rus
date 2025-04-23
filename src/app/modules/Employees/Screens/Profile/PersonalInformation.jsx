@@ -100,7 +100,6 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
               initialValues={personalInfo}
               ref={formRef}
               onSubmit={(values, { resetForm }) => {
-                console.log("Form submitted with values:", values);
                 handleSubmit(values, resetForm);
               }}
               validate={(values) => {
@@ -122,8 +121,6 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                     }
                   }}
                 >
-                  {console.log("Form values:", props.values)}
-                  {console.log("Form errors:", props.errors)}
                   <div className="space-y-4">
                     <Card className="p-6">
                       <CardContent>
@@ -209,7 +206,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               error={props.errors.other_email}
                               touch={props.touched.other_email}
                               value={props.values.other_email}
-                              label={"Email"}
+                              label={"Personal/Other Email"}
                               required={true}
                               onChange={(field, value) => {
                                 setIsEdited(true);

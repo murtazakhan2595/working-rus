@@ -17,16 +17,23 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     if (!values.password) errors.password = "Password is required";
     if (!values.residential_address)
       errors.residential_address = "Address is required";
+    if (values.residential_address && values.residential_address.length > 200) {
+      errors.residential_address =
+        "Residential address cannot exceed 200 characters";
+    }
+    if (values.permanent_address && values.permanent_address.length > 255) {
+      errors.permanent_address = "Permanent address cannot exceed 255 characters";
+    }
   }
   if (!values.user_role) errors.user_role = "User role is required";
   if (!values.department_name)
     errors.department_name = "Department is required";
   if (!values.department_position)
     errors.department_position = "Designation is required";
-  if (values.direct_report && values.indirect_report){
-    if(values.indirect_report.includes(values.direct_report))
-    errors.indirect_report = "Direct reporting manager cannot be assigned as an indirect reporting manager.";
-
+  if (values.direct_report && values.indirect_report) {
+    if (values.indirect_report.includes(values.direct_report))
+      errors.indirect_report =
+        "Direct reporting manager cannot be assigned as an indirect reporting manager.";
   }
   if (!values.employee_type) errors.employee_type = "Employee type is required";
   if (!values.employee_work_type)
@@ -88,7 +95,6 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   }
   return errors;
 };
-
 
 const validationEmployeeContactInfoFormSchema = (values) => {
   const errors = {};
@@ -195,6 +201,23 @@ const validateEmployeeIdentificationForm = (values) => {
     errors.place_of_issuance = "Place of Issuance is required";
   if (!values.id_issuance_date)
     errors.id_issuance_date = "Issuance Date is Required";
+
+  // Add validation for ID dates chronology
+  if (values.id_issuance_date && values.id_expiry_date) {
+    const issuanceDate = new Date(values.id_issuance_date);
+    const expiryDate = new Date(values.id_expiry_date);
+
+    if (!isNaN(issuanceDate.getTime()) && !isNaN(expiryDate.getTime())) {
+      if (issuanceDate.getTime() === expiryDate.getTime()) {
+        errors.id_expiry_date =
+          "Expiry date cannot be the same as issuance date";
+      }
+      if (expiryDate < issuanceDate) {
+        errors.id_expiry_date = "Expiry date must be after issuance date";
+      }
+    }
+  }
+
   return errors;
 };
 const validationPersonalInfoFormSchema = Joi.object({
