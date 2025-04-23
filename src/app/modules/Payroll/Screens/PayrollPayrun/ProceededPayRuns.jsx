@@ -1,14 +1,11 @@
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { getPayun } from "app/hooks/payroll.jsx";
+import { PayrunPayrollColumns } from "app/modules/Payroll/Sections";
+import { TableCustom } from "components";
 
 function CardValues({ values }) {
   const items = [
@@ -102,21 +99,17 @@ function ProceededPayRuns({ cardData }) {
   }
   return (
     <>
-      {PayRunData?.results?.map((data, index) => {
-        const processedData = processCardData(data);
-        return (
-          <Card className="mb-4" key={index}>
-            <CardHeader>
-              <CardTitle className="text-plum-900 text-lg sm:text-2xl">
-                {processedData.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-row flex-wrap justify-between w-full items-start gap-4 pt-6">
-              <CardValues values={processedData} />
-            </CardContent>
-          </Card>
-        );
-      })}
+      <Card>
+        <CardContent>
+          <TableCustom
+            data={PayRunData.results || []}
+            columns={PayrunPayrollColumns(fetchData)}
+            pagination={true}
+            dataTotalSize={PayRunData?.count || 0}
+            tableOptions={tableOptions}
+          />
+        </CardContent>
+      </Card>
     </>
   );
 }

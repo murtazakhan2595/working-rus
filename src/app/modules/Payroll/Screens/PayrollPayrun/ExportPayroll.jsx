@@ -25,33 +25,7 @@ const ExportPayroll = () => {
   const Branches = useSelector((state) => state.common.branches);
   const Employees = useSelector((state) => state.emp.employess);
   const Managers = useSelector((state) => state.emp.reportingManagers);
-  const exportAttendanceToExcel = async () => {
-    // const dataToExport = await Promise.all(
-    //   attendanceData?.results?.map(async (row) => ({
-    //     ID: row.employee_serial_number,
-    //     Name: row.emp_name,
-    //     Department: row["employee_department name"],
-    //     Designation: await getLabelByValue(
-    //       row.employee_designation,
-    //       Designations,
-    //       "-"
-    //     ),
-    //     ...(activeTab.toUpperCase() === "DAY"
-    //       ? { Status: row.daily_status }
-    //       : {
-    //           Present: row.attendance_stats.Present,
-    //           Absent: row.attendance_stats.Absent,
-    //           Late: row.attendance_stats.Late,
-    //           Leaves: row.attendance_stats["On Leave"],
-    //         }),
-    //   }))
-    // );
-    // exportRecordToExcel(
-    //   dataToExport,
-    //   "ExportPayroll",
-    //   `Attendance_${dateRange}`
-    // );
-  };
+ 
   const exportPayrollData = async (data, format, month) => {
     const dataToExport = await Promise.all(
       data?.map(async (row) => ({

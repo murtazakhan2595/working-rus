@@ -3,10 +3,7 @@ import { Button } from "components/ui/button";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../../../components/ui/card";
-import moment from "moment";
+} from "components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { getPayun } from "app/hooks/payroll.jsx";
 import { PayrunPayrollColumns } from "app/modules/Payroll/Sections";
@@ -59,33 +56,6 @@ function PayRunList() {
           />
         </CardContent>
       </Card>
-      {/* {cardDataList &&
-        cardDataList?.map((data, index) => {
-          const processedData = processCardData(data);
-          console.log("PROCESSED-DATA", processedData);
-          return (
-            <Card className="mb-4" key={index}>
-              <CardHeader>
-                <CardTitle className="text-plum-900 text-lg sm:text-2xl">
-                  {processedData.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-row flex-wrap justify-between w-full items-start gap-4 pt-6">
-                <CardValues values={processedData} />
-                {processedData.buttonLabel && (
-                  <div className="flex">
-                    <Button
-                      className="bg-black"
-                      onClick={processedData.onBtnClick}
-                    >
-                      {processedData.buttonLabel}
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })} */}
     </>
   );
 }

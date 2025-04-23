@@ -2,6 +2,7 @@ import {
   PayRun,
   EmployeePayRoll,
   EmployeeSalarySetup,
+  EmployeePayRunPaySlip,
 } from "app/utils/Types/Payroll";
 import moment from "moment";
 import { calculatePercentage } from "utils/renderValues";
@@ -111,4 +112,28 @@ export function mapPayrunPayloadData(data, id) {
 
   // Return the constructed payload
   return payload;
+}
+
+export function mapEmployeePayrunPayslipData(data) {
+  if (!data) return {};
+  const payrunData = Object.keys(EmployeePayRunPaySlip).reduce((acc, key) => {
+    if (key === "total_earnings") {
+      const TotalEarningArrays = data[key] || [];
+      // const variable_kpi = TotalEarningArrays.find(
+      //   (obj) => obj.name === "Variable KPI"
+      // );
+      // acc["variable_kpi"] = variable_kpi.amount;
+    } else if (key === "inflation_effect") {
+      const TotalEarningArrays = data[key] || [];
+      // const variable_kpi = TotalEarningArrays.find(
+      //   (obj) => obj.name === "Variable KPI"
+      // );
+      // acc["variable_kpi"] = variable_kpi.amount;
+    } else if (key === "reimbursements") {
+      acc["reimbursements"] = data?.total_reimbursements?.approved;
+    } else acc[key] = data[key];
+    return acc;
+  }, {});
+
+  return payrunData;
 }

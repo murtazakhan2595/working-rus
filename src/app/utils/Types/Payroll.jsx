@@ -78,3 +78,11 @@ export const EmployeeSalaryRevision = {
   revision_letter: "DRAFT",
   revision_status: "PENDING",
 };
+
+export const EmployeePayRunPaySlip = {
+  basic_salary: null,
+  total_earnings: [],
+  employeeid:null,
+  reimbursements:null,
+  inflation_effect:null,
+};

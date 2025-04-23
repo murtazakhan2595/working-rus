@@ -4,18 +4,21 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import CustomTable from "components/CustomTable";
+import { EmployeeDetailUI } from "components";
 import { PayRunEmployeesColumns } from "app/modules/Payroll/Sections";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { getPayrollSummary } from "app/hooks/payroll";
+import { Formik } from "formik";
+import { mapEmployeePayrunPayslipData } from "app/utils/MappingObjects/mapPayrollData";
 import { DetailBox, SheetCardExtension } from "components/SheetCardExtension";
 import { Download } from "lucide-react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { getPayRunEmployees } from "app/hooks/payroll";
+import { getPayslip } from "app/hooks/payroll";
 import { getPayRunById } from "app/hooks/payroll";
 import moment from "moment";
+import { NumberInput } from "components/FormControl";
+import { getWorkingDays } from "utils/renderValues";
 
 const PayrollPayrunDetail = () => {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -39,10 +42,11 @@ const PayrollPayrunDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const payslipsData = await getPayRunEmployees({
+      const payslipsData = await getPayslip({
         filterData: { ...filterData, payroll_id: id },
         options,
       });
+
       if (payslipsData) {
         setPaySlipsData(payslipsData);
       }
@@ -118,7 +122,6 @@ const PayrollPayrunDetail = () => {
     });
   };
 
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-10 justify-between items-center h-11">
@@ -183,7 +186,10 @@ const PayrollPayrunDetail = () => {
             tableOptions={tableOptions}
             rowExpand={true}
             renderExpandedContent={(row) => (
-              <RenderEmployeePayrunDetails PayrunData={row} />
+              <RenderEmployeePayrunDetails
+                PayrunData={row}
+                PayRunDetails={payrun}
+              />
             )}
           />
         </CardContent>
@@ -192,81 +198,55 @@ const PayrollPayrunDetail = () => {
   );
 };
 
-const RenderEmployeePayrunDetails = ({ PayrunData }) => {
+const RenderEmployeePayrunDetails = ({ PayrunData, PayRunDetails }) => {
+  const [editMode, setEditMode] = useState(false);
+  const PayRunUpdatedData = React.useMemo(() => {
+    return mapEmployeePayrunPayslipData(PayrunData);
+  }, [PayrunData]);
+  return (
+    <div className="px-6 py-4">
+      <div className="flex flex-row justify-between pb-2">
+        <div className="text-lg text-plum-900 font-medium">
+          Employee Payroll Details
+        </div>
+        {!editMode && (
+          <Button
+            size="sm"
+            variant="continue"
+            onClick={(e) => {
+              e.preventDefault();
+              setEditMode(!editMode);
+            }}
+          >
+            Edit
+          </Button>
+        )}
+      </div>
+      {!editMode ? (
+        <RenderEmployeePayrunDetailView
+          PayrunData={PayRunUpdatedData}
+          PayRunDetails={PayRunDetails}
+        />
+      ) : (
+        <RenderEmployeePayrunDetailsUpdateForm
+          PayrunData={PayRunUpdatedData}
+          PayRunDetails={PayRunDetails}
+        />
+      )}
+    </div>
+  );
+};
+
+const RenderEmployeePayrunDetailView = ({ PayrunData, PayRunDetails }) => {
+  const TotalWorkingDays = React.useMemo(() => {
+    return getWorkingDays(PayRunDetails.start_date, PayRunDetails.end_date);
+  }, [PayRunDetails]);
   const labelList = [
-    {
-      label: "ID",
-      value: PayrunData.serial_number,
-    },
-    ...(PayrunData.serial_number
-      ? [
-          {
-            label: "Name",
-            value: PayrunData.serial_number,
-          },
-        ]
-      : []),
-    ...(PayrunData.serial_number
-      ? [
-          {
-            label: "Designation",
-            value: PayrunData.serial_number,
-          },
-        ]
-      : []),
-    ...(PayrunData.serial_number
-      ? [
-          {
-            label: "Branch",
-            value: PayrunData.serial_number,
-          },
-        ]
-      : []),
-    ...(PayrunData.serial_number
-      ? [
-          {
-            label: "Employment Type",
-            value: PayrunData.serial_number,
-          },
-        ]
-      : []),
-    ...(PayrunData.serial_number
-      ? [
-          {
-            label: "Joining Date",
-            value: PayrunData.serial_number,
-          },
-        ]
-      : []),
-    ...(PayrunData.serial_number
-      ? [
-          {
-            label: "Currency",
-            value: PayrunData.serial_number,
-          },
-        ]
-      : []),
-    ...(PayrunData.serial_number
-      ? [
-          {
-            label: "Disbursement Type",
-            value: PayrunData.serial_number,
-          },
-        ]
-      : []),
-    ...(PayrunData.serial_number
-      ? [
-          {
-            label: "Contracted Salary",
-            value: PayrunData.serial_number,
-          },
-        ]
-      : []),
-    ...(PayrunData.serial_number
+    ...(PayrunData.basic_salary
       ? [
           {
             label: "Basic Salary",
-            value: PayrunData.serial_number,
+            value: PayrunData.basic_salary,
           },
         ]
       : []),
@@ -286,14 +266,10 @@ const RenderEmployeePayrunDetails = ({ PayrunData }) => {
           },
         ]
       : []),
-    ...(PayrunData.serial_number
-      ? [
-          {
-            label: "Total Working Days",
-            value: PayrunData.serial_number,
-          },
-        ]
-      : []),
+    {
+      label: "Total Working Days",
+      value: TotalWorkingDays,
+    },
     ...(PayrunData.serial_number
       ? [
           {
@@ -334,22 +310,15 @@ const RenderEmployeePayrunDetails = ({ PayrunData }) => {
           },
         ]
       : []),
-    ...(PayrunData.serial_number
-      ? [
-          {
-            label: "Inflation Effect",
-            value: PayrunData.serial_number,
-          },
-        ]
-      : []),
-    ...(PayrunData.serial_number
-      ? [
-          {
-            label: "Reimbursements",
-            value: PayrunData.serial_number,
-          },
-        ]
-      : []),
+    {
+      label: "Inflation Effect",
+      value: `${PayrunData.inflation_effect || "0.00"} AED`,
+    },
+    {
+      label: "Reimbursements",
+      value: `${PayrunData.reimbursements} AED`,
+    },
+
     ...(PayrunData.serial_number
       ? [
           {
@@ -392,7 +361,22 @@ const RenderEmployeePayrunDetails = ({ PayrunData }) => {
       : []),
   ].filter(Boolean);
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-5 md:grid-cols-3 gap-4 px-6 py-4">
+    <div className="grid grid-cols-2 lg:grid-cols-5 md:grid-cols-3 gap-4">
+      <EmployeeDetailUI
+        id={PayrunData.employeeid}
+        InformationKeys={[
+          "id",
+          "name",
+          "position",
+          "department",
+          "branch",
+          "employment_type",
+          "joining_date",
+          "currency",
+          "disbursement_type",
+          "contracted_salary",
+        ]}
+      />
       {labelList &&
         labelList.map((data, index) => {
           return (
@@ -406,6 +390,215 @@ const RenderEmployeePayrunDetails = ({ PayrunData }) => {
             />
           );
         })}
+    </div>
+  );
+};
+const RenderEmployeePayrunDetailsUpdateForm = ({
+  PayrunData,
+  PayRunDetails,
+}) => {
+  const formRef = React.createRef();
+  const labelList = [
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Salary Payable",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Remarks",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData.serial_number
+      ? [
+          {
+            label: "Branch",
+            value: PayrunData.serial_number,
+          },
+        ]
+      : []),
+    ...(PayrunData?.viewed_date
+      ? [
+          {
+            label: "Viewed Date",
+            value: PayrunData?.viewed_date,
+          },
+        ]
+      : []),
+    ...(PayrunData?.target_audience
+      ? [
+          {
+            label: "Target Audience",
+            value: PayrunData?.target_audience,
+          },
+        ]
+      : []),
+  ].filter(Boolean);
+  const FormValues = React.useMemo(() => {
+    return PayrunData;
+  }, [PayrunData]);
+  const TotalWorkingDays = React.useMemo(() => {
+    return getWorkingDays(PayRunDetails.start_date, PayRunDetails.end_date);
+  }, [PayRunDetails]);
+  const handleSubmit = () => {};
+  return (
+    <div>
+      <Formik
+        initialValues={FormValues}
+        enableReinitialize={true}
+        ref={formRef}
+        onSubmit={(values, { resetForm }) => {
+          handleSubmit(values, resetForm);
+        }}
+        validate={(values) => {
+          const errors = {};
+          console.log(values);
+          return errors;
+        }}
+      >
+        {(props) => (
+          <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+            <div className="grid w-full gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <EmployeeDetailUI
+                id={PayrunData.employeeid}
+                InformationKeys={[
+                  "id",
+                  "name",
+                  "position",
+                  "department",
+                  "branch",
+                  "employment_type",
+                  "joining_date",
+                  "currency",
+                  "disbursement_type",
+                  "contracted_salary",
+                ]}
+                variant="FormView"
+              />
+              <div className="space-y-2">
+                <NumberInput
+                  name={"basic_salary"}
+                  label={"Basic Salary"}
+                  value={props.values.basic_salary}
+                  disabled={true}
+                />
+              </div>
+              <div className="space-y-2">
+                <NumberInput
+                  name={"basic_salary"}
+                  label={"Allowances"}
+                  value={props.values.basic_salary}
+                  disabled={true}
+                />
+              </div>
+              <div className="space-y-2">
+                <NumberInput
+                  name={"basic_salary"}
+                  label={"Total Working Days"}
+                  value={TotalWorkingDays}
+                  disabled={true}
+                />
+              </div>
+              <div className="space-y-2">
+                <NumberInput
+                  name={"basic_salary"}
+                  label={"Total Absent Days"}
+                  value={TotalWorkingDays}
+                  disabled={true}
+                />
+              </div>
+              <div className="space-y-2">
+                <NumberInput
+                  name={"basic_salary"}
+                  label={"Salary Per Day"}
+                  value={props.values.basic_salary}
+                  disabled={true}
+                />
+              </div>
+              <div className="space-y-2">
+                <NumberInput
+                  name={"basic_salary"}
+                  label={"Paid Leave"}
+                  value={props.values.basic_salary}
+                  disabled={true}
+                />
+              </div>
+              <div className="space-y-2">
+                <NumberInput
+                  name={"reimbursements"}
+                  label={"Reimbursements"}
+                  value={props.values.reimbursements}
+                  disabled={true}
+                />
+              </div>
+              <div className="space-y-2">
+                <NumberInput
+                  name={"variable_kpi"}
+                  label={"Variable KPI"}
+                  value={props.values.variable_kpi}
+                  onChange={(field, value) => {
+                    props.setFieldValue(field, value);
+                  }}
+                />
+              </div>
+              <div className="space-y-2">
+                <NumberInput
+                  name={"annual_leave_salary"}
+                  label={"Annual Leave Salary"}
+                  value={props.values.annual_leave_salary}
+                  onChange={(field, value) => {
+                    props.setFieldValue(field, value);
+                  }}
+                />
+              </div>
+              <div className="space-y-2">
+                <NumberInput
+                  name={"inflation_effect"}
+                  label={"Inflation Effect"}
+                  value={props.values.inflation_effect}
+                  onChange={(field, value) => {
+                    props.setFieldValue(field, value);
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex flex-row gap-4 justify-end">
+              <Button
+                type="submit"
+                size="lg"
+                variant="default"
+                onClick={(e) => {
+                  e.preventDefault();
+                  props.handleSubmit();
+                }}
+              >
+                Update
+              </Button>
+            </div>
+          </form>
+        )}
+      </Formik>
+      <div className="grid grid-cols-2 lg:grid-cols-5 md:grid-cols-3 gap-4">
+        {labelList &&
+          labelList.map((data, index) => {
+            return (
+              <DetailBox
+                orientation="horizontal"
+                key={index}
+                className=""
+                label={data.label}
+                value={data.value}
+                fallbackText={""}
+              />
+            );
+          })}
+      </div>
     </div>
   );
 };
