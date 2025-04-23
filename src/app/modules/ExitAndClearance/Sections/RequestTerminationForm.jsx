@@ -276,6 +276,7 @@ const RequestTerminationForm = ({
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
                         }}
+                        acceptType=".png,.jpg,.jpeg,.pdf"
                       />
 
                       <div className="p-6 border-t border-gray-200 bg-gray-50">
