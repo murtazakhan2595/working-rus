@@ -17,33 +17,67 @@ const ImageInput = React.memo(
     name = null,
   }) => {
     const [viewImage, setViewImage] = useState(false);
-    const imageURL = value
-      ? typeof value === "string"
-        ? value // If value is a URL, use it directly
-        : URL.createObjectURL(value) // If value is a file object, create a temporary URL
-      : null;
+    // Store both the URL and original file/string value
+    const [previewData, setPreviewData] = useState({
+      url: null,
+      originalValue: null,
+      fileName: null,
+    });
+
+    // Update previewData whenever value changes
+    React.useEffect(() => {
+      if (value) {
+        const isFileObject = value instanceof File;
+        const url = isFileObject ? URL.createObjectURL(value) : value;
+        const fileName = isFileObject ? value.name : getFileNameFromURL(value);
+
+        setPreviewData({
+          url,
+          originalValue: value,
+          fileName,
+        });
+
+        // Clean up object URL when component unmounts or value changes
+        return () => {
+          if (isFileObject && url) {
+            URL.revokeObjectURL(url);
+          }
+        };
+      } else {
+        setPreviewData({
+          url: null,
+          originalValue: null,
+          fileName: null,
+        });
+      }
+    }, [value]);
+
     const ImageFileInputRef = useRef(null);
+
     const handleUpload = (e) => {
       e.preventDefault();
       e.stopPropagation();
       ImageFileInputRef.current.click();
     };
+
     const handlRemove = (e) => {
       e.preventDefault();
       e.stopPropagation();
       onChange(name, null);
     };
+
     const handleImageClick = (event) => {
       event.preventDefault();
       setViewImage(true);
     };
+
     return (
       <>
         <div className="relative flex flex-row items-center justify-start w-full h-full border-solid rounded-3xl">
           <div className="relative overflow-hidden w-[110px]">
-            {value ? (
+            {previewData.url ? (
               <img
-                src={imageURL}
+                src={previewData.url}
                 alt="Preview"
                 className="h-[100px] object-cover border-2 border-gray-400 rounded-full cursor-pointer"
                 width={"100px"}
@@ -58,7 +92,7 @@ const ImageInput = React.memo(
               />
             )}
           </div>
-          <div className=" flex flex-col justify-start gap-2">
+          <div className="flex flex-col justify-start gap-2">
             <div className="flex flex-wrap flex-row gap-3">
               <input
                 id="picture"
@@ -95,7 +129,6 @@ const ImageInput = React.memo(
                   {`Remove`}
                 </Button>
               )}
-              
             </div>
             <span className="text-neutral-800 text-xs font-normal">
               JPEG or PNG. Max size of 100KB
@@ -103,10 +136,10 @@ const ImageInput = React.memo(
             {error && touch && <span className={errorClassName}>{error}</span>}
           </div>
         </div>
-        {viewImage && (
+        {viewImage && previewData.url && (
           <ImageDocPreview
-            attachment={imageURL}
-            name={getFileNameFromURL(imageURL)}
+            attachment={previewData.originalValue}
+            name={previewData.fileName || "Image"}
             isOpen={viewImage}
             setIsOpen={setViewImage}
           />
