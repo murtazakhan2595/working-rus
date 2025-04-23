@@ -269,7 +269,7 @@ const RequestTerminationForm = ({
                       <CoverFileUpload
                         name={"termination_letter"}
                         error={props.errors?.termination_letter}
-                        touch={props.touched?.termination_letter}
+                        touch={props.errors?.termination_letter?true:false}
                         value={props.values?.termination_letter}
                         label={"Upload Termination Letter or drag it here"}
                         required={true}

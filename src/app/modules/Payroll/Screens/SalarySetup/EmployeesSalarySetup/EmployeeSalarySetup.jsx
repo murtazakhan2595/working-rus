@@ -80,6 +80,7 @@ const EmployeeSalarySetup = () => {
     } = values;
     const payload = values;
     payload.is_new = false;
+    payload.employee=id;
     payload.ctc = CTC;
     if (salary_breakdown_type === "percentage") {
       payload.basic_salary =
