@@ -17,7 +17,6 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
   const [formData, setFormData] = useState(edit?.data || DesignationInfo);
   const [organization, setOrganization] = useState([]);
 
-  console.log("reload designation in add design form", reload);
 
   useEffect(() => {
     const fetchLists = async () => {
@@ -66,7 +65,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
         {(props) => (
           <form onSubmit={props?.handleSubmit}>
             <SheetCardExtension title="Designation Details">
-              <SelectInputComponent
+              {/* <SelectInputComponent
                 name={"organization"}
                 options={organization}
                 error={props.errors.organization}
@@ -77,7 +76,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload }) => {
                 onChange={(field, value) => {
                   props.setFieldValue(field, value);
                 }}
-              />
+              /> */}
               <TextInput
                 name="name"
                 label="Designation"
