@@ -906,7 +906,7 @@ const SheetOnBorading = ({
                         label={"Job Description"}
                         required={false}
                         maxRows={5}
-                        maxLength={100}
+                        maxLength={1000}
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
                         }}
@@ -919,7 +919,7 @@ const SheetOnBorading = ({
                         touch={props.touched?.kpi_file}
                         value={props.values?.kpi_file}
                         label={"Job KPIs"}
-                        maxLength={100}
+                        maxLength={1000}
                         required={false}
                         maxRows={5}
                         onChange={(field, value) => {
