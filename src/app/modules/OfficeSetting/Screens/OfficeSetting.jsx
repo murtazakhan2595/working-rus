@@ -45,6 +45,8 @@ const OfficeSetting = () => {
     page: 1,
     sizePerPage: 10,
   });
+
+  
   const [designLoading, setDesignLoading] = useState(true);
   const [designation, setDesignation] = useState(null);
   const [onboardingDocs, setOnboardingDocs] = useState([]);
@@ -145,7 +147,7 @@ const OfficeSetting = () => {
   }, []);
 
   const tabsData = [
-    { value: "offices", label: "Offices" },
+    { value: "offices", label: "Organization" },
     { value: "department", label: "Department" },
     { value: "designation", label: "Designation" },
     { value: "branches", label: "Branches" },
