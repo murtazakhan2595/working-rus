@@ -31,8 +31,8 @@ export default function RevisedSalarySheet({
   state,
   onClose,
   previousCTC,
-  employeeData,
   employee_Id,
+  lastIncrementDate,
 }) {
   const formRef = useRef();
   const [isOpen, setIsOpen] = useState(state === "edit" || state === "view");
@@ -45,9 +45,6 @@ export default function RevisedSalarySheet({
     footer: null,
   };
 
-  // console.log("payrollID", payrollID);
-  // console.log("formState", formState);
-  console.log("selectedRevision", selectedRevision);
   const handleSubmit = async (values, resetForm) => {
     console.log(values);
     values.employee_payroll = payrollID;
@@ -90,7 +87,6 @@ export default function RevisedSalarySheet({
               selectedRevision={selectedRevision}
               onEdit={handleEdit}
               onDelete={onDelete}
-              employeeData={employeeData}
               payrollID={payrollID}
               employee_Id={employee_Id}
             />
@@ -103,9 +99,9 @@ export default function RevisedSalarySheet({
               isEditMode={formState === "edit"}
               isOpen={isOpen}
               setIsOpen={handleSheetClose}
-              employeeData={employeeData}
               employee_Id={employee_Id}
               previousCTC={previousCTC}
+              lastIncrementDate={lastIncrementDate}
             />
           )}
         </SheetComponent>
@@ -120,8 +116,8 @@ const RevisedSalaryView = ({
   selectedRevision,
   onEdit,
   onDelete,
-  employeeData,
   payrollID,
+  employee_Id,
 }) => {
   const [revision, setRevision] = useState(selectedRevision);
   const handleStatusChange = async (name, value, revision) => {
@@ -164,12 +160,7 @@ const RevisedSalaryView = ({
         <div className="flex-grow ">
           <div className="p-0">
             <div className="flex items-center justify-between">
-              <EmployeeDataInfo
-                name={`${employeeData?.first_name} ${employeeData?.last_name}`}
-                email={employeeData?.work_email}
-                src={employeeData?.profile_picture?.file}
-                id={employeeData?.id}
-              />
+              <EmployeeOverview showEmail={true} id={employee_Id} />
               <div className="flex items-center gap-3">
                 <Button
                   onClick={onEdit}
@@ -328,8 +319,8 @@ const RevisedSalaryForm = ({
   isEditMode,
   isOpen,
   setIsOpen,
-  employeeData,
   employee_Id,
+  lastIncrementDate,
 }) => {
   const formData = { ...EmployeeSalaryRevision, previous_salary: previousCTC };
   const updateValues = (value) => {
@@ -438,12 +429,12 @@ const RevisedSalaryForm = ({
                           name={"last_revised_date"}
                           error={props.errors?.last_revised_date}
                           touch={props.touched?.last_revised_date}
-                          value={props.values?.last_revised_date}
-                          required={true}
+                          value={lastIncrementDate}
                           label={"Last Revised Date"}
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
                           }}
+                          disabled={true}
                         />
                       </div>
                       <div className="space-y-2">

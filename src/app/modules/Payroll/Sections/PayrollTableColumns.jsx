@@ -182,7 +182,7 @@ export const EmployeeAllowancesColumns = [
     text: "Component",
   },
   {
-    dataField: "amounts_types",
+    dataField: "amount_type",
     text: "Allowances types",
   },
   {

@@ -15,12 +15,14 @@ import {
 } from "components/FormControl";
 import { saveEmployeePayroll } from "app/hooks/payroll";
 import { validateEmployeeSalarySetupForm } from "app/utils/FormSchema/payrollFormSchema";
+import { mapPayrollAdjustmentList } from "app/utils/MappingObjects/mapPayrollData";
+import { EmployeeSalary } from "app/utils/Types/Payroll";
 import { toast } from "react-toastify";
 import { EmployeeOverview } from "components";
 import { DetailBox, SheetCardExtension } from "components/SheetCardExtension";
 
 const EmployeeSalarySetup = () => {
-  const [payrollForm, setPayrollForm] = useState({});
+  const [payrollForm, setPayrollForm] = useState(EmployeeSalary);
   const [editMode, setEditMode] = useState(false);
   const [payrollFormData, setPayrollFormData] = useState({});
   const [CTC, setCTC] = useState(null);
@@ -39,15 +41,15 @@ const EmployeeSalarySetup = () => {
     if (response && isMounted) {
       setPayrollForm(response);
       setCTC(response.ctc);
-      const earnings = [
+      const earnings = await mapPayrollAdjustmentList([
         ...(response.earning_types || []),
         ...(response.earnings || []),
-      ];
+      ]);
       setEarnings(earnings);
-      const deductions = [
+      const deductions = await mapPayrollAdjustmentList([
         ...(response.deduction_types || []),
         ...(response.deductions || []),
-      ];
+      ]);
       setDeductions(deductions);
     }
     setLoading(false);
@@ -77,7 +79,7 @@ const EmployeeSalarySetup = () => {
     } = values;
     const payload = values;
     payload.is_new = false;
-    payload.employee = id;
+    payload.employee = parseInt(id);
     payload.ctc = CTC;
     if (salary_breakdown_type === "percentage") {
       payload.basic_salary =
@@ -169,15 +171,17 @@ const EmployeeSalarySetup = () => {
             <CardHeader>
               <CardTitle className="text-plum-900 flex justify-between">
                 <div> {isEos ? "EOS Calculation" : "Salary"}</div>
-                <Button
-                  size="sm"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setEditMode(true);
-                  }}
-                >
-                  Edit
-                </Button>
+                {!editMode && (
+                  <Button
+                    size="sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setEditMode(true);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-start gap-4 space-x-4">
@@ -250,9 +254,7 @@ const EmployeeSalarySetup = () => {
                           {
                             InputField: NumberInput,
                             name: "medical_allowance",
-                            required: true,
                             label: "Medical Allowance",
-
                             min: 0,
                             max:
                               payrollFormData.salary_breakdown_type ===
@@ -263,7 +265,6 @@ const EmployeeSalarySetup = () => {
                           {
                             InputField: NumberInput,
                             name: "transport_allowance",
-                            required: true,
                             label: "Transport Allowance",
 
                             min: 0,
@@ -276,7 +277,6 @@ const EmployeeSalarySetup = () => {
                           {
                             InputField: NumberInput,
                             name: "house_allowance",
-                            required: true,
                             label: "House Allowance",
 
                             min: 0,
@@ -289,7 +289,6 @@ const EmployeeSalarySetup = () => {
                           {
                             InputField: NumberInput,
                             name: "other_allowance",
-                            required: true,
                             label: "Other Allowance",
 
                             min: 0,

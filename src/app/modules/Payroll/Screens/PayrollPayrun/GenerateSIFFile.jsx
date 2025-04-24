@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
-import { exportRecordToExcel, exportRecordToCSV,exportRecordToPDF } from "utils/downloadUtils";
+import {
+  exportRecordToExcel,
+  exportRecordToCSV,
+  exportRecordToPDF,
+} from "utils/downloadUtils";
 import { getLabelByValue } from "utils/getValuesFromTables";
 import {
   Dialog,
@@ -19,13 +23,13 @@ import { GenderOptions, countriesList } from "data/Data";
 import { renderDate } from "utils/renderValues";
 import { Employee } from "app/utils/Types/Employee";
 
-const ExportPayroll = () => {
+const GenerateSIFFile = () => {
   const [isOpen, setIsOpen] = useState(false);
   const Departments = useSelector((state) => state.common.departments);
   const Branches = useSelector((state) => state.common.branches);
   const Employees = useSelector((state) => state.emp.employess);
   const Managers = useSelector((state) => state.emp.reportingManagers);
- 
+
   const exportPayrollData = async (data, format, month) => {
     const dataToExport = await Promise.all(
       data?.map(async (row) => ({
@@ -72,7 +76,7 @@ const ExportPayroll = () => {
         `Payroll-${renderDate(month, "-", "month")}`
       );
     if (format === "pdf")
-        exportRecordToPDF(
+      exportRecordToPDF(
         dataToExport,
         "Payroll",
         `Payroll-${renderDate(month, "-", "month")}`
@@ -87,9 +91,9 @@ const ExportPayroll = () => {
           e.preventDefault();
           setIsOpen(true);
         }}
-        variant="continue"
+        className="ml-2"
       >
-        Export
+        Generate SIF File
       </Button>
       <ExportDialog
         isOpen={isOpen}
@@ -102,15 +106,17 @@ const ExportPayroll = () => {
 
 const ExportDialog = ({ isOpen, setIsOpen, exportPayrollData = () => {} }) => {
   const [month, setMonth] = useState(null);
-  const [format, setFormat] = useState("excel");
+  const [disbursementType, setDisbursementType] = useState(null);
   const [errors, setErrors] = useState({});
 
   const fetchData = async (isMounted) => {
-    if (month && format) {
-      const data = await getPayun({ filterData: { month: month } });
+    if (month && disbursementType) {
+      const data = await getPayun({
+        filterData: { month: month, is_payroll_run: true },
+      });
       if (isMounted) {
         if (data && data?.results && data.results.length !== 0)
-          exportPayrollData(data.results, format, month);
+          exportPayrollData(data.results, "csv", month);
         else
           setErrors({
             download: `Payroll does not exist for ${renderDate(
@@ -127,8 +133,8 @@ const ExportDialog = ({ isOpen, setIsOpen, exportPayrollData = () => {} }) => {
     if (!month) {
       errors.month = "Month is required";
     }
-    if (!format) {
-      errors.format = "Format is required";
+    if (!disbursementType) {
+      errors.disbursementType = "Disbursement type is required";
     }
     setErrors(errors);
     fetchData(true);
@@ -142,7 +148,7 @@ const ExportDialog = ({ isOpen, setIsOpen, exportPayrollData = () => {} }) => {
           </DialogTitle>
           <DialogDescription>
             <span className="text-neutral-900">
-              Select payroll month and format to export the payroll
+              Select payroll month and disbursement type to export the payroll
             </span>
           </DialogDescription>
         </DialogHeader>
@@ -152,24 +158,26 @@ const ExportDialog = ({ isOpen, setIsOpen, exportPayrollData = () => {} }) => {
             value={month}
             onChange={(_, value) => {
               setMonth(value);
+              setErrors({});
             }}
           />
           <SelectInputComponent
-            name="format"
+            name="disbursementType"
             options={[
-              { label: "PDF", value: "pdf" },
-              { label: "CSV", value: "csv" },
-              { label: "Excel", value: "excel" },
+              { value: "Bank Transfer", label: "Bank Transfer" },
+              { value: "Exchange", label: "Exchange" },
             ]}
-            value={format}
+            value={disbursementType}
             onChange={(_, value) => {
-              setFormat(value);
+              setDisbursementType(value);
+              setErrors({});
             }}
+            placeholder="Select Disbursement Type"
           />
         </div>
         <div className={`${errorClassName} flex flex-col`}>
           <span> {errors.month}</span>
-          <span> {errors.format}</span>
+          <span> {errors.disbursementType}</span>
           <span> {errors.download}</span>
         </div>
         <div className="flex flex-end">
@@ -186,4 +194,4 @@ const ExportDialog = ({ isOpen, setIsOpen, exportPayrollData = () => {} }) => {
     </Dialog>
   );
 };
-export default ExportPayroll;
+export default GenerateSIFFile;
