@@ -175,7 +175,6 @@ const RevisedSalaryView = ({
                   onClick={onEdit}
                   className="border bg-white border-[#e8e8ec] text-neutral-1200 text-xs font-semibold font-[inter]"
                 >
-                  {" "}
                   Edit
                 </Button>
                 <Button

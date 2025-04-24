@@ -17,9 +17,11 @@ import { saveEmployeePayroll } from "app/hooks/payroll";
 import { validateEmployeeSalarySetupForm } from "app/utils/FormSchema/payrollFormSchema";
 import { toast } from "react-toastify";
 import { EmployeeOverview } from "components";
+import { DetailBox, SheetCardExtension } from "components/SheetCardExtension";
 
 const EmployeeSalarySetup = () => {
   const [payrollForm, setPayrollForm] = useState({});
+  const [editMode, setEditMode] = useState(false);
   const [payrollFormData, setPayrollFormData] = useState({});
   const [CTC, setCTC] = useState(null);
   const [earnings, setEarnings] = React.useState([]);
@@ -31,10 +33,10 @@ const EmployeeSalarySetup = () => {
   const pathname = location.pathname;
   const isEos = pathname.startsWith("/payroll/salary-setup-eos");
 
-  const fetchData = async () => {
+  const fetchData = async (isMounted) => {
     setLoading(true);
     const response = await getEmployeePayrollDetailByEmpId(id);
-    if (response) {
+    if (response && isMounted) {
       setPayrollForm(response);
       setCTC(response.ctc);
       const earnings = [
@@ -48,20 +50,15 @@ const EmployeeSalarySetup = () => {
       ];
       setDeductions(deductions);
     }
-
-    // if (isEos) {
-    //   const payslips = await getPayslip({
-    //     filterData: { employee_payroll: response?.results[0]?.id },
-    //   });
-    //   console.log("Payslips", payslips);
-    //   if (payslips) {
-    //     setPayslips(payslips.results[0]);
-    //   }
-    // }
     setLoading(false);
   };
+
   useEffect(() => {
-    fetchData();
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   const handleBack = () => {
@@ -80,7 +77,7 @@ const EmployeeSalarySetup = () => {
     } = values;
     const payload = values;
     payload.is_new = false;
-    payload.employee=id;
+    payload.employee = id;
     payload.ctc = CTC;
     if (salary_breakdown_type === "percentage") {
       payload.basic_salary =
@@ -102,6 +99,8 @@ const EmployeeSalarySetup = () => {
     const response = await saveEmployeePayroll(payload, values.id);
     if (response) {
       toast.success("Salary Saved Successfully");
+      fetchData(true);
+      setEditMode(false);
     }
   };
   const calculateCTC = (FormData) => {
@@ -127,6 +126,8 @@ const EmployeeSalarySetup = () => {
       setCTC(ctc_amount);
     }
   };
+  const AmountSymbol =
+    payrollForm?.salary_breakdown_type === "fixed" ? " AED" : "%";
   return (
     <div className="container p-4 mx-auto">
       <div className="mb-4">
@@ -166,170 +167,206 @@ const EmployeeSalarySetup = () => {
           </Card>
           <Card className="mb-4">
             <CardHeader>
-              <CardTitle className="text-plum-900">
-                {isEos ? "EOS Calculation" : "Salary"}
+              <CardTitle className="text-plum-900 flex justify-between">
+                <div> {isEos ? "EOS Calculation" : "Salary"}</div>
+                <Button
+                  size="sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setEditMode(true);
+                  }}
+                >
+                  Edit
+                </Button>
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-start gap-4 space-x-4">
-              <SheetUI
-                isOpen={true}
-                variant=""
-                className="w-full"
-                formConfig={{
-                  initialValues: payrollForm,
-                  enableReinitialize: true,
-                  renderUpdatedFormValues: setPayrollFormData,
-                  handleSubmit: handleSubmit,
-                  validateFormSchema: validateEmployeeSalarySetupForm,
-                  submitButtonText: "Save",
-                  onFormChange: calculateCTC,
-                  columns: 3,
-                  formFiels: [
-                    {
-                      sheetCardExtension: false,
-                      InputFiels: [
-                        {
-                          InputField: NumberInput,
-                          name: "gross_salary",
-                          required: true,
-                          label: "Gross Salary",
-                        },
+              {editMode ? (
+                <SheetUI
+                  isOpen={true}
+                  variant=""
+                  className="w-full"
+                  formConfig={{
+                    initialValues: payrollForm,
+                    enableReinitialize: true,
+                    renderUpdatedFormValues: setPayrollFormData,
+                    handleSubmit: handleSubmit,
+                    validateFormSchema: validateEmployeeSalarySetupForm,
+                    submitButtonText: "Save",
+                    onFormChange: calculateCTC,
+                    columns: 3,
+                    formFiels: [
+                      {
+                        sheetCardExtension: false,
+                        InputFiels: [
+                          {
+                            InputField: NumberInput,
+                            name: "gross_salary",
+                            required: true,
+                            label: "Gross Salary",
+                          },
 
-                        {
-                          InputField: SelectInputComponent,
-                          name: "salary_type",
-                          required: true,
-                          label: "Salary Type",
-                          options: SalaryTypeOptions,
-                        },
-                        {
-                          InputField: NumberInput,
-                          name: "ctc",
-                          // required: true,
-                          disabled: true,
-                          label: "CTC",
-                          value: CTC,
-                        },
-                        {
-                          InputField: RadioGroupInput,
-                          name: "salary_breakdown_type",
-                          required: true,
-                          disabled: false,
-                          label: "Amount Type",
-                          options: [
-                            { value: "percentage", label: "Percentage" },
-                            { value: "fixed", label: "Fixed" },
-                          ],
-                          colsSpan: 3,
-                          variant: "stacked",
-                        },
-                        {
-                          InputField: NumberInput,
-                          name: "basic_salary",
-                          required: true,
-                          label: "Basic Salary",
+                          {
+                            InputField: SelectInputComponent,
+                            name: "salary_type",
+                            required: true,
+                            label: "Salary Type",
+                            options: SalaryTypeOptions,
+                          },
+                          {
+                            InputField: NumberInput,
+                            name: "ctc",
+                            // required: true,
+                            disabled: true,
+                            label: "CTC",
+                            value: CTC,
+                          },
+                          {
+                            InputField: RadioGroupInput,
+                            name: "salary_breakdown_type",
+                            required: true,
+                            disabled: false,
+                            label: "Amount Type",
+                            options: [
+                              { value: "percentage", label: "Percentage" },
+                              { value: "fixed", label: "Fixed" },
+                            ],
+                            colsSpan: 3,
+                            variant: "stacked",
+                          },
+                          {
+                            InputField: NumberInput,
+                            name: "basic_salary",
+                            required: true,
+                            label: "Basic Salary",
 
-                          min: 0,
-                          max:
-                            payrollFormData.salary_breakdown_type ===
-                            "percentage"
-                              ? 100
-                              : null,
-                        },
-                        {
-                          InputField: NumberInput,
-                          name: "medical_allowance",
-                          required: true,
-                          label: "Medical Allowance",
+                            min: 0,
+                            max:
+                              payrollFormData.salary_breakdown_type ===
+                              "percentage"
+                                ? 100
+                                : null,
+                          },
+                          {
+                            InputField: NumberInput,
+                            name: "medical_allowance",
+                            required: true,
+                            label: "Medical Allowance",
 
-                          min: 0,
-                          max:
-                            payrollFormData.salary_breakdown_type ===
-                            "percentage"
-                              ? 100
-                              : null,
-                        },
-                        {
-                          InputField: NumberInput,
-                          name: "transport_allowance",
-                          required: true,
-                          label: "Transport Allowance",
+                            min: 0,
+                            max:
+                              payrollFormData.salary_breakdown_type ===
+                              "percentage"
+                                ? 100
+                                : null,
+                          },
+                          {
+                            InputField: NumberInput,
+                            name: "transport_allowance",
+                            required: true,
+                            label: "Transport Allowance",
 
-                          min: 0,
-                          max:
-                            payrollFormData.salary_breakdown_type ===
-                            "percentage"
-                              ? 100
-                              : null,
-                        },
-                        {
-                          InputField: NumberInput,
-                          name: "house_allowance",
-                          required: true,
-                          label: "House Allowance",
+                            min: 0,
+                            max:
+                              payrollFormData.salary_breakdown_type ===
+                              "percentage"
+                                ? 100
+                                : null,
+                          },
+                          {
+                            InputField: NumberInput,
+                            name: "house_allowance",
+                            required: true,
+                            label: "House Allowance",
 
-                          min: 0,
-                          max:
-                            payrollFormData.salary_breakdown_type ===
-                            "percentage"
-                              ? 100
-                              : null,
-                        },
-                        {
-                          InputField: NumberInput,
-                          name: "other_allowance",
-                          required: true,
-                          label: "Other Allowance",
+                            min: 0,
+                            max:
+                              payrollFormData.salary_breakdown_type ===
+                              "percentage"
+                                ? 100
+                                : null,
+                          },
+                          {
+                            InputField: NumberInput,
+                            name: "other_allowance",
+                            required: true,
+                            label: "Other Allowance",
 
-                          min: 0,
-                          max:
-                            payrollFormData.salary_breakdown_type ===
-                            "percentage"
-                              ? 100
-                              : null,
-                        },
-                      ].filter(Boolean),
-                    },
-                  ],
-                }}
-              ></SheetUI>
-              {/* <div className="text-lg font-semibold text-black">
-                {" "}
-                {isEos
-                  ? "Gross Amount"
-                  : payrollType === "hourly"
-                  ? "Hourly Rate"
-                  : "Monthly Gross Salary"}
-              </div> */}
-              {/* <div className="flex items-center w-full gap-6">
-                <TextInput
-                  name={"add_value"}
-                  value={monthlyGrossSalary || ""}
-                  onChange={(name, value) => setMonthlyGrossSalary(value)}
-                />
-                <Button
-                  onClick={() => {
-                    handleSalaryCalculate(
-                      earnAndDeductionType,
-                      monthlyGrossSalary
-                    );
+                            min: 0,
+                            max:
+                              payrollFormData.salary_breakdown_type ===
+                              "percentage"
+                                ? 100
+                                : null,
+                          },
+                        ].filter(Boolean),
+                      },
+                    ],
                   }}
-                >
-                  {" "}
-                  Calculate
-                </Button>
-                {console.log("PAYROLL TYPE", payrollType)}
-                {payrollType === "hourly" ? (
-                  <div class="text-[#8b8d98] text-sm">
-                    Monthly Salary : AED {monthlyGrossSalary * 80}
-                  </div>
-                ) : payrollType === "monthly" ? (
-                  <div class="text-[#8b8d98] text-sm">
-                    Hourly Rate : AED {monthlyGrossSalary / 160}
-                  </div>
-                ) : null}{" "}
-                {!isEos && <Button onClick={handleSalarySave}>Save</Button>}
-              </div> */}
+                ></SheetUI>
+              ) : (
+                <div className="grid grid-cols-2 lg:grid-cols-5 md:grid-cols-3 gap-4 w-full">
+                  <DetailBox
+                    orientation="horizontal"
+                    label={"Gross Salary"}
+                    value={`${payrollForm.gross_salary} AED`}
+                    fallbackText={"N/A"}
+                  />
+                  <DetailBox
+                    orientation="horizontal"
+                    label={"Salary Type"}
+                    value={
+                      SalaryTypeOptions.find(
+                        (obj) => obj.value === payrollForm.salary_type
+                      )?.label || payrollForm.salary_type
+                    }
+                    fallbackText={"N/A"}
+                  />
+                  <DetailBox
+                    orientation="horizontal"
+                    label={"CTC"}
+                    value={`${payrollForm.ctc} AED`}
+                    fallbackText={"N/A"}
+                  />
+                  <DetailBox
+                    orientation="horizontal"
+                    label={"Amount Type"}
+                    className={"text-capitalize mt-3"}
+                    value={payrollForm.salary_breakdown_type}
+                    fallbackText={"N/A"}
+                  />
+                  <DetailBox
+                    orientation="horizontal"
+                    label={"Basic Salary"}
+                    value={`${payrollForm.basic_salary}${AmountSymbol}`}
+                    fallbackText={"N/A"}
+                  />
+                  <DetailBox
+                    orientation="horizontal"
+                    label={"Medical Allowance"}
+                    value={`${payrollForm.medical_allowance}${AmountSymbol}`}
+                    fallbackText={"N/A"}
+                  />
+                  <DetailBox
+                    orientation="horizontal"
+                    label={"Transport Allowance"}
+                    value={`${payrollForm.transport_allowance}${AmountSymbol}`}
+                    fallbackText={"N/A"}
+                  />
+                  <DetailBox
+                    orientation="horizontal"
+                    label={"House Allowance"}
+                    value={`${payrollForm.house_allowance}${AmountSymbol}`}
+                    fallbackText={"N/A"}
+                  />
+                  <DetailBox
+                    orientation="horizontal"
+                    label={"Other Allowance"}
+                    value={`${payrollForm.other_allowance}${AmountSymbol}`}
+                    fallbackText={"N/A"}
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
           <div className="grid grid-cols-2 gap-4 mb-4">
