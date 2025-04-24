@@ -49,6 +49,7 @@ export const EmployeeColumns = [
     text: "Username",
     minWidth: "105px",
     dataSort: true,
+    formatter: (cell) =><div className="max-w-[200px] overflow-hidden text-ellipsis">{cell}</div>
   },
   {
     dataField: "work_email",
