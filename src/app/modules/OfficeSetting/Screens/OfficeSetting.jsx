@@ -27,6 +27,7 @@ import { getDesignationList } from "app/hooks/general";
 import OnboardingChecklist from "./OnboardingChecklist";
 import OnboardingTab from "../sections/OnboardingChecklist/OnboardingTab";
 import { getOnboardingDocument } from "app/hooks/officeSetting";
+import ViewOrganization from "../sections/Organizations/ViewOrganization";
 
 const OfficeSetting = () => {
   const [data, setData] = useState(null);
@@ -47,13 +48,21 @@ const OfficeSetting = () => {
   const [designation, setDesignation] = useState(null);
   const [onboardingDocs, setOnboardingDocs] = useState([]);
   const [onboardingLoading, setOnboardingLoading] = useState(true);
+  const [organizationData, setOrganizationData] = useState(null);
 
   const getOrganization = async () => {
     try {
+      console.log("Fetching organization data...");
       setLoading(true);
       const response = await getOrganizationList(true);
+      console.log("Organization API response in component:", response);
       if (response) {
         setData(response);
+        // Set the first organization as the active one if available
+        if (response.results && response.results.length > 0) {
+          setOrganizationData(response.results[0]);
+          console.log("First organization set:", response.results[0]);
+        }
       }
       setLoading(false);
     } catch (error) {
@@ -134,36 +143,6 @@ const OfficeSetting = () => {
     fetchData();
   }, []);
 
-  const columns = [
-    {
-      dataField: "id",
-      text: "ID",
-    },
-    {
-      dataField: "name",
-      text: "Organization Name",
-    },
-    {
-      dataField: "licensing_authority",
-      text: "Licenseing Authority",
-    },
-    {
-      dataField: "email",
-      text: "Email",
-    },
-    {
-      text: "Action",
-      formatter: (cell, row) => (
-        <OrganizationAction
-          setEdit={setEdit}
-          setEditData={setEditData}
-          data={row}
-          reload={getOrganization}
-        />
-      ),
-    },
-  ];
-
   const tabsData = [
     { value: "offices", label: "Offices" },
     { value: "department", label: "Department" },
@@ -217,14 +196,22 @@ const OfficeSetting = () => {
             <TabsContent value="offices">
               <Card>
                 <CardContent>
-                  <TableCustom
-                    columns={columns}
-                    data={data?.results || []}
-                    dataTotalSize={data?.length || 0}
-                    pagination={true}
-                    itemsPerPage={10}
-                    className="organization-table"
-                  />
+                  {data?.results && data.results.length > 0 ? (
+                    <div className="space-y-10">
+                      {data.results.map((organization, index) => (
+                        <div key={organization.id || index} className="mb-8">
+                          <h3 className="pb-2 mb-4 text-lg font-medium border-b">Organization {index + 1}</h3>
+                          <ViewOrganization
+                            data={organization}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="py-8 text-center">
+                      <p className="text-gray-500">No organization data available. Please add an organization.</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

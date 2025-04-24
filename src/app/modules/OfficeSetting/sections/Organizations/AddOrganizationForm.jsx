@@ -29,7 +29,12 @@ const AddOrganizationForm = ({
   const formRef = createRef();
   const [imageError, setImageError] = useState(null);
   const [formData, setFormData] = useState(
-    edit ? editData : OrganizationInformation
+    edit ? editData : {
+      ...OrganizationInformation,
+      time_zone: "GST", // Default timezone to GST
+      date_format: "%d/%m/%Y", // Default date format
+      payroll_start_date: "10" // Default payroll starting date
+    }
   );
   const [closeSheet, setCloseSheet] = useState(false);
   const [TimeZone, setTimeZone] = useState([]);
@@ -135,6 +140,8 @@ const AddOrganizationForm = ({
                     setImageError(null);
                   }}
                   setImageError={setImageError}
+                  maxFileSize={100} // Max file size in KB
+                  acceptedFileTypes={["image/jpeg", "image/png"]} // Allowed file types
                 />
               </div>
               <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2">
@@ -165,7 +172,7 @@ const AddOrganizationForm = ({
                 <TextAreaInput
                   name="companyDescription"
                   label="Company Description"
-                  required
+                  required={false} // Changed to optional
                   maxRows={3}
                   value={props.values.companyDescription}
                   error={props.errors.companyDescription}
@@ -179,7 +186,7 @@ const AddOrganizationForm = ({
                 <TextInput
                   name="licensing_authority"
                   label="Licensing Authority"
-                  required
+                  required={false} // Changed to optional
                   error={props.errors.licensing_authority}
                   touch={props.touched.licensing_authority}
                   value={props.values.licensing_authority}
@@ -190,7 +197,7 @@ const AddOrganizationForm = ({
                 <TextInput
                   name="registration_number"
                   label="Licensing Number"
-                  required
+                  required={false} // Changed to optional
                   value={props.values.registration_number}
                   error={props.errors.registration_number}
                   touch={props.touched.registration_number}
@@ -250,7 +257,6 @@ const AddOrganizationForm = ({
                   label="Payroll Starting Date"
                   required
                   onChange={(field, value) => {
-                    console.log("MKKK", field, value);
                     if (!value) {
                       console.error("Invalid selection");
                       return;
@@ -344,11 +350,13 @@ const AddOrganizationForm = ({
                   onChange={(field, value) => {
                     props.handleChange(field)(value);
                   }}
+                  placeholder="https://example.com"
+                  type="url" // Ensure URL validation
                 />
                 <TextInput
                   name="contact_person"
                   label="Official Contact Person"
-                  required
+                  required={false} // Changed to optional
                   value={props.values.contact_person}
                   error={props.errors.contact_person}
                   touch={props.touched.contact_person}
@@ -368,6 +376,8 @@ const AddOrganizationForm = ({
                   onChange={(field, value) => {
                     props.handleChange(field)(value);
                   }}
+                  type="tel" // Use tel input type for phone numbers
+                  placeholder="+1234567890" // Example format
                 />
                 <TextInput
                   name="email"
@@ -379,6 +389,8 @@ const AddOrganizationForm = ({
                   onChange={(field, value) => {
                     props.handleChange(field)(value);
                   }}
+                  type="email" // Ensure email validation
+                  placeholder="office@example.com"
                 />
               </div>
             </SheetCardExtension>

@@ -59,7 +59,7 @@ const PersonalInformation = ({ userId, isEditable }) => {
       <Card>
         <CardHeader>
           <div className="flex justify-between">
-            <CardTitle className="text-primary">Personal Information</CardTitle>
+            <CardTitle className="text-primary">Personal Information </CardTitle>
             {isEditable && (
               <div
                 className="flex items-center gap-4"
@@ -76,7 +76,7 @@ const PersonalInformation = ({ userId, isEditable }) => {
           <PageLoader />
         ) : (
           <CardContent className="flex items-center pt-6 space-x-4">
-            <div className="grid w-full lg:grid-cols-3 gap-4 md:grid-cols-2 grid-cols-1">
+            <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-3 md:grid-cols-2">
               {personalInfo.map((info, index) => (
                 <div className="flex flex-row w-full gap-2" key={index}>
                   <div className="flex-1 text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000 ">
