@@ -188,7 +188,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
               {
                 type: "search",
                 placeholder: "Search by ID",
-                name: "serial_number",
+                name: "employee_id",
               },
               ...(activeInnerTab === "Resignations"
                 ? [
