@@ -19,6 +19,15 @@ import { getRegionById } from "app/hooks/officeSetting";
 import { getCityById } from "app/hooks/officeSetting";
 import { getCountryById } from "app/hooks/officeSetting";
 
+const formatDisplayMap = {
+  '%Y-%m-%d': 'YYYY-MM-DD',
+  '%d-%m-%Y': 'DD-MM-YYYY',
+  '%m-%d-%Y': 'MM-DD-YYYY',  // This is your specific case
+  '%d/%m/%Y': 'DD/MM/YYYY',
+  '%m/%d/%Y': 'MM/DD/YYYY',
+  '%Y/%m/%d': 'YYYY/MM/DD'
+};
+
 const AddOrganizationForm = ({
   handleSubmit,
   isOpen,
@@ -170,13 +179,13 @@ const AddOrganizationForm = ({
               </div>
               <div className="col-span-1 space-y-2 xl:col-span-3 lg:col-span-2 md:col-span-2">
                 <TextAreaInput
-                  name="companyDescription"
+                  name="company_description"
                   label="Company Description"
                   required={false} // Changed to optional
                   maxRows={3}
-                  value={props.values.companyDescription}
-                  error={props.errors.companyDescription}
-                  touch={props.touched.companyDescription}
+                  value={props.values.company_description}
+                  error={props.errors.company_description}
+                  touch={props.touched.company_description}
                   onChange={(field, value) => {
                     props.handleChange(field)(value);
                   }}

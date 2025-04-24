@@ -145,7 +145,7 @@ const OfficeSetting = () => {
   }, []);
 
   const tabsData = [
-    { value: "offices", label: "Offices" },
+    { value: "offices", label: "Organization" },
     { value: "department", label: "Department" },
     { value: "designation", label: "Designation" },
     { value: "branches", label: "Branches" },

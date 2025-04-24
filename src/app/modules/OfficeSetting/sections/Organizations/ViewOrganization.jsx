@@ -17,33 +17,20 @@ const ViewOrganization = ({ data }) => {
   const formatDateFormat = (formatString) => {
     console.log("Original date format value:", formatString);
     
-    // Hard-code to return DD-MM-YYYY regardless of input
-    return "DD-MM-YYYY";
-    
-    /* Original code commented for reference
     if (!formatString) return "N/A";
     
-    // Map common date format patterns to readable versions
-    const formatMap = {
-      '%d': 'DD',
-      '%m': 'MM',
-      '%Y': 'YYYY',
-      '%y': 'YY',
-      '%b': 'Mon',
-      '%B': 'Month',
-      '/': '/',
-      '-': '-',
-      '.': '.',
+    // Direct mapping of format strings to display format
+    const formatDisplayMap = {
+      '%Y-%m-%d': 'YYYY-MM-DD',
+      '%d-%m-%Y': 'DD-MM-YYYY',
+      '%m-%d-%Y': 'MM-DD-YYYY',
+      '%d/%m/%Y': 'DD/MM/YYYY',
+      '%m/%d/%Y': 'MM/DD/YYYY',
+      '%Y/%m/%d': 'YYYY/MM/DD'
     };
     
-    // Replace each pattern with its readable equivalent
-    let result = formatString;
-    Object.entries(formatMap).forEach(([pattern, replacement]) => {
-      result = result.replace(new RegExp(pattern.replace(/%/g, '%\\'), 'g'), replacement);
-    });
-    
-    return result;
-    */
+    // Return the mapped display format if it exists, otherwise return the original
+    return formatDisplayMap[formatString] || formatString;
   };
 
   // Helper function to get name values considering various data structures
@@ -69,7 +56,7 @@ const ViewOrganization = ({ data }) => {
   return (
     <div className="space-y-6">
       {/* Main Office Section */}
-      <div className="overflow-hidden bg-white rounded-md shadow-sm">
+      <div className="overflow-hidden bg-white border-b border-gray-700">
         <div className="px-6 py-4 border-b border-gray-100">
           <h2 className="text-xl font-medium text-plum-1100">Main Office Information</h2>
         </div>
@@ -78,7 +65,7 @@ const ViewOrganization = ({ data }) => {
           <div className="grid grid-cols-3 gap-x-6 gap-y-8">
             {renderField("Company Title", data?.name)}
             {renderField("Company's Legal Name", data?.legal_name)}
-            {renderField("Company Description", data?.companyDescription)}
+            {renderField("Company Description", data?.company_description)}
             {renderField("Licensing Authority", data?.licensing_authority)}
             {renderField("Licensing Number", data?.registration_number)}
             {renderField("Timezone", data?.time_zone)}
@@ -90,7 +77,7 @@ const ViewOrganization = ({ data }) => {
       </div>
 
       {/* Address Info Section */}
-      <div className="overflow-hidden bg-white rounded-md shadow-sm">
+      <div className="overflow-hidden bg-white border-b border-gray-700">
         <div className="px-6 py-4 border-b border-gray-100">
           <h2 className="text-xl font-medium text-plum-1100">Address Information</h2>
         </div>
@@ -107,7 +94,7 @@ const ViewOrganization = ({ data }) => {
       </div>
 
       {/* Contact Info Section */}
-      <div className="overflow-hidden bg-white rounded-md shadow-sm">
+      <div className="overflow-hidden bg-white border-b border-gray-700">
         <div className="px-6 py-4 border-b border-gray-100">
           <h2 className="text-xl font-medium text-plum-1100">Contact Information</h2>
         </div>
@@ -124,8 +111,8 @@ const ViewOrganization = ({ data }) => {
 
       {/* Logo display if available */}
       {data?.logo && (
-        <div className="overflow-hidden bg-white rounded-md shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-100">
+        <div className="overflow-hidden ">
+          <div className="px-6 py-4 border-b border-gray-700">
             <h2 className="text-xl font-medium text-plum-1100">Company Logo</h2>
           </div>
           
