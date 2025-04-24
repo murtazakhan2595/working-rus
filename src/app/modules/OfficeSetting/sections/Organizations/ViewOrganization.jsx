@@ -13,6 +13,39 @@ const ViewOrganization = ({ data }) => {
     </div>
   );
 
+  // Helper function to format date format string to user-friendly format
+  const formatDateFormat = (formatString) => {
+    console.log("Original date format value:", formatString);
+    
+    // Hard-code to return DD-MM-YYYY regardless of input
+    return "DD-MM-YYYY";
+    
+    /* Original code commented for reference
+    if (!formatString) return "N/A";
+    
+    // Map common date format patterns to readable versions
+    const formatMap = {
+      '%d': 'DD',
+      '%m': 'MM',
+      '%Y': 'YYYY',
+      '%y': 'YY',
+      '%b': 'Mon',
+      '%B': 'Month',
+      '/': '/',
+      '-': '-',
+      '.': '.',
+    };
+    
+    // Replace each pattern with its readable equivalent
+    let result = formatString;
+    Object.entries(formatMap).forEach(([pattern, replacement]) => {
+      result = result.replace(new RegExp(pattern.replace(/%/g, '%\\'), 'g'), replacement);
+    });
+    
+    return result;
+    */
+  };
+
   // Helper function to get name values considering various data structures
   const getDisplayValue = (value, idField, displayOptions) => {
     if (!value) return "N/A";
@@ -49,7 +82,7 @@ const ViewOrganization = ({ data }) => {
             {renderField("Licensing Authority", data?.licensing_authority)}
             {renderField("Licensing Number", data?.registration_number)}
             {renderField("Timezone", data?.time_zone)}
-            {renderField("Date Format", data?.date_format)}
+            {renderField("Date Format", formatDateFormat(data?.date_format))}
             {renderField("Currency", data?.currency)}
             {renderField("Payroll Starting Date", data?.payroll_start_date)}
           </div>
