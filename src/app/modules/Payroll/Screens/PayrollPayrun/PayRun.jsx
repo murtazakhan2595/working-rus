@@ -14,7 +14,6 @@ import {
   ProceededPayRuns,
 } from "app/modules/Payroll/Screens";
 import ExportPayroll from "./ExportPayroll";
-import GenerateSIFFile from "./GenerateSIFFile";
 import { useNavigate } from "react-router-dom";
 import { getPayun } from "app/hooks/payroll.jsx";
 
@@ -75,7 +74,6 @@ const PayRun = () => {
               </Button>
             )}
             <ExportPayroll />
-            {activeTab === "payrun" && <GenerateSIFFile />}
           </div>
         </div>
         <TabsContent value="runPayroll">

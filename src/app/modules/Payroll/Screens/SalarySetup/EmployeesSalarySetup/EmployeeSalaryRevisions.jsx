@@ -48,6 +48,7 @@ import {
   EmployeeID,
   getExperience,
 } from "utils/getValuesFromTables";
+import { getEmployeeData } from "app/hooks/employee";
 import { numberToWords } from "utils/renderValues.js";
 import { PageLoader, EmployeeOverview } from "components";
 import { revisionLetterOptions, revisionStatusOptions } from "data/Data";
@@ -69,6 +70,7 @@ export default function EmployeeSalaryRevisions({
   previousCTC,
 }) {
   const [salaryRevisions, setSalaryRevisions] = useState([]);
+  const [employeeData, setEmployeeData] = useState({});
   const [selectedRevision, setSelectedRevision] = useState(null);
   const [filterData, setFilterData] = useState({});
   const [approvedRevisions, setApprovedRevisions] = useState(0);
@@ -91,7 +93,11 @@ export default function EmployeeSalaryRevisions({
 
   const fetchData = async () => {
     setLoading(true);
-  
+    const empData = await getEmployeeData(employeeID);
+    if (empData) {
+      setEmployeeData(empData);
+    }
+
     const salaryRevisionData = await getSalaryRevision({
       filterData,
     }); // hardcode for now filter not woking on Backend
@@ -197,8 +203,8 @@ export default function EmployeeSalaryRevisions({
             state={"create"}
             onClose={onClose}
             previousCTC={previousCTC}
+            employeeData={employeeData}
             employee_Id={employee_Id}
-            lastIncrementDate={lastIncrementDate}
           />
         )}
       </CardHeader>
