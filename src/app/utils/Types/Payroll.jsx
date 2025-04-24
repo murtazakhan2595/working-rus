@@ -61,7 +61,7 @@ export const EmployeeSalary = {
   medical_allowance: null,
   other_allowance: null,
   transport_allowance: null,
-  salary_breakdown_type: "percentage",
+  salary_breakdown_type: "fixed",
   earning_types: [],
   earnings: [],
   deduction_types: [],

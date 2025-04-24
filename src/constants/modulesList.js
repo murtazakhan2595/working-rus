@@ -2,17 +2,15 @@ const ModuleList = [
   {
     moduleId: 1,
     moduleName: "Dashboard",
-    parentModuleId: null,
+    key: "DASHBOARD",
   },
   {
     moduleId: 2,
     moduleName: "Create Profile",
-    parentModuleId: null,
   },
   {
     moduleId: 3,
     moduleName: "Team Management",
-    parentModuleId: null,
   },
   {
     moduleId: 4,
@@ -57,7 +55,6 @@ const ModuleList = [
   {
     moduleId: 12,
     moduleName: "Self Service Hub",
-    parentModuleId: null,
   },
   {
     moduleId: 13,
@@ -77,7 +74,7 @@ const ModuleList = [
   {
     moduleId: 16,
     moduleName: "My Payroll",
-    parentModuleId: 12,
+    key: "MY_PAYROLL",
   },
   {
     moduleId: 17,
@@ -97,7 +94,7 @@ const ModuleList = [
   {
     moduleId: 20,
     moduleName: "Payroll",
-    parentModuleId: null,
+    key: "PAYROLL",
   },
   {
     moduleId: 21,
@@ -107,7 +104,7 @@ const ModuleList = [
   {
     moduleId: 22,
     moduleName: "Salary Setup",
-    parentModuleId: 20,
+    key: "PAYROLL_SALARY_SETUP",
   },
   {
     moduleId: 23,
@@ -137,7 +134,6 @@ const ModuleList = [
   {
     moduleId: 27,
     moduleName: "Task Management",
-    parentModuleId: null,
   },
   {
     moduleId: 28,
@@ -162,7 +158,6 @@ const ModuleList = [
   {
     moduleId: 32,
     moduleName: "Leave Tracker",
-    parentModuleId: null,
   },
   {
     moduleId: 33,
@@ -177,7 +172,6 @@ const ModuleList = [
   {
     moduleId: 35,
     moduleName: "Talent Sphere",
-    parentModuleId: null,
   },
   {
     moduleId: 36,
@@ -222,7 +216,6 @@ const ModuleList = [
   {
     moduleId: 44,
     moduleName: "Personal Development",
-    parentModuleId: null,
   },
   {
     moduleId: 45,
@@ -242,12 +235,10 @@ const ModuleList = [
   {
     moduleId: 48,
     moduleName: "Attendance",
-    parentModuleId: null,
   },
   {
     moduleId: 49,
     moduleName: "People Engagement",
-    parentModuleId: null,
   },
   {
     moduleId: 50,
@@ -257,7 +248,6 @@ const ModuleList = [
   {
     moduleId: 51,
     moduleName: "Performance Management",
-    parentModuleId: null,
   },
   {
     moduleId: 54,
@@ -267,7 +257,6 @@ const ModuleList = [
   {
     moduleId: 52,
     moduleName: "Reports",
-    parentModuleId: null,
   },
   {
     moduleId: 53,
@@ -277,7 +266,6 @@ const ModuleList = [
   {
     moduleId: 55,
     moduleName: "Assets Management",
-    parentModuleId: null,
   },
   {
     moduleId: 56,
@@ -287,7 +275,6 @@ const ModuleList = [
   {
     moduleId: 57,
     moduleName: "HR Documents",
-    parentModuleId: null,
   },
 ];
 

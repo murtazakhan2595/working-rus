@@ -28,7 +28,7 @@ import {
 } from "state/slices/EmpSlice";
 import { validationEmployeeInfoFormSchema } from "app/utils/FormSchema/employeeFormSchema";
 import { DisbursementTypeOptions } from "data/Data";
-
+import Config from "constants/config";
 import {
   GenderOptions,
   BloodGroupOptions,
@@ -78,7 +78,7 @@ import { DateRangeInput } from "components/FormControl";
 import { validateOnboardingDocuments } from "app/utils/FormSchema/employeeFormSchema";
 import { getEmployeeDocsChecklist } from "app/hooks/employee";
 import { saveEmpoyeeDocBulk } from "app/hooks/employee";
-
+import { hasAccess } from "utils/PermissionUtils";
 const SheetOnBorading = ({
   isEditMode,
   nextstep,
@@ -95,8 +95,11 @@ const SheetOnBorading = ({
   discard = false,
 }) => {
   const formRef = React.createRef();
+  const SalarySetupAllowed = React.useMemo(() => {
+    return !id && hasAccess("PAYROLL_SALARY_SETUP");
+  }, [id]);
 
-  let dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState(EmployeeInformation);
   const [empId, setEmpId] = useState(0);
@@ -218,26 +221,28 @@ const SheetOnBorading = ({
             nextstep();
           } else navigate("/profile-management");
         } else {
-          let employeePayroll = {};
-          // Determine the payroll data structure based on salary type
-          if (data.salary_type === "hourly") {
-            employeePayroll = {
-              hourly_rate: data.salary,
-              salary_type: data.salary_type,
-              is_new: true,
-            };
-          } else {
-            employeePayroll = {
-              basic_salary: data.salary,
-              salary_type: data.salary_type,
-              is_new: true,
-            };
+          if (SalarySetupAllowed) {
+            const employeePayroll = {};
+            // Determine the payroll data structure based on salary type
+            if (data.salary_type === "hourly") {
+              employeePayroll = {
+                hourly_rate: data.salary,
+                salary_type: data.salary_type,
+                is_new: true,
+              };
+            } else {
+              employeePayroll = {
+                ctc: data.salary,
+                salary_type: data.salary_type,
+                is_new: true,
+              };
+            }
+            // Employee creation flow
+            await saveEmployeePayroll({
+              ...employeePayroll,
+              employee: employeeId,
+            });
           }
-          // Employee creation flow
-          await saveEmployeePayroll({
-            ...employeePayroll,
-            employee: employeeId,
-          });
           toast.success("Employee Added Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
@@ -800,7 +805,7 @@ const SheetOnBorading = ({
                         />
                       </div>
                     </div>
-                    {!id && (
+                    {SalarySetupAllowed && (
                       <div className="space-y-4">
                         <h3 className="text-lg font-semibold">
                           Salary Details

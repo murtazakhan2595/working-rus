@@ -130,7 +130,7 @@ const EmployeeSalarySetup = () => {
     }
   };
   const AmountSymbol =
-    payrollForm?.salary_breakdown_type === "fixed" ? " AED" : "%";
+    payrollForm?.salary_breakdown_type === "percentage" ? "%" : " AED";
   return (
     <div className="container p-4 mx-auto">
       <div className="mb-4">
@@ -322,7 +322,7 @@ const EmployeeSalarySetup = () => {
                   <DetailBox
                     orientation="horizontal"
                     label={"Gross Salary"}
-                    value={`${payrollForm.gross_salary} AED`}
+                    value={`${payrollForm.gross_salary || '0.00'} AED`}
                     fallbackText={"N/A"}
                   />
                   <DetailBox
@@ -338,7 +338,7 @@ const EmployeeSalarySetup = () => {
                   <DetailBox
                     orientation="horizontal"
                     label={"CTC"}
-                    value={`${payrollForm.ctc} AED`}
+                    value={`${payrollForm.ctc  || '0.00'} AED`}
                     fallbackText={"N/A"}
                   />
                   <DetailBox
@@ -351,31 +351,31 @@ const EmployeeSalarySetup = () => {
                   <DetailBox
                     orientation="horizontal"
                     label={"Basic Salary"}
-                    value={`${payrollForm.basic_salary}${AmountSymbol}`}
+                    value={`${payrollForm.basic_salary || '0.00'}${AmountSymbol}`}
                     fallbackText={"N/A"}
                   />
                   <DetailBox
                     orientation="horizontal"
                     label={"Medical Allowance"}
-                    value={`${payrollForm.medical_allowance}${AmountSymbol}`}
+                    value={`${payrollForm.medical_allowance || '0.00'}${AmountSymbol}`}
                     fallbackText={"N/A"}
                   />
                   <DetailBox
                     orientation="horizontal"
                     label={"Transport Allowance"}
-                    value={`${payrollForm.transport_allowance}${AmountSymbol}`}
+                    value={`${payrollForm.transport_allowance || '0.00'}${AmountSymbol}`}
                     fallbackText={"N/A"}
                   />
                   <DetailBox
                     orientation="horizontal"
                     label={"House Allowance"}
-                    value={`${payrollForm.house_allowance}${AmountSymbol}`}
+                    value={`${payrollForm.house_allowance || '0.00'}${AmountSymbol}`}
                     fallbackText={"N/A"}
                   />
                   <DetailBox
                     orientation="horizontal"
                     label={"Other Allowance"}
-                    value={`${payrollForm.other_allowance}${AmountSymbol}`}
+                    value={`${payrollForm.other_allowance || '0.00'}${AmountSymbol}`}
                     fallbackText={"N/A"}
                   />
                 </div>

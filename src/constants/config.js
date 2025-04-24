@@ -1,6 +1,5 @@
-export default {
+const Config = {
   DASHBOARD: true,
-  PAYROLL: true,
   TEAM_MANAGEMENT: true,
   TRANSFER_MANAGEMENT: true,
   TEAM_EXTERNALTRANSFER: true,
@@ -20,7 +19,7 @@ export default {
   DAILY_TASK_REPORT: true,
   OFFICE_SETTING: true,
   ORGANIZATIONAL_CHART: true,
-  HR_DOCUMENTS:true,
+  HR_DOCUMENTS: true,
 
   TS_PERSONAL_REQUISITION: false,
   TS_REFERRALS: false,
@@ -32,6 +31,11 @@ export default {
   MY_DAILY_TASK_REPORT: true,
 
   ASSETS_MANAGEMENT: true,
+
+  //--------PAYROLL MODULE -------------------//
+  PAYROLL: true,
+  PAYROLL_SALARY_SETUP: true,
+  MY_PAYROLL: true,
 };
 
 export const URLS = [
@@ -64,3 +68,4 @@ export const WEBSOCKET_PATHS = [
   // Add more as needed
 ];
 
+export default Config;

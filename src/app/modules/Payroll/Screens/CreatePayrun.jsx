@@ -28,11 +28,7 @@ import { getPayun } from "app/hooks/payroll";
 import { getEmpPayrolDetails } from "app/hooks/payroll";
 import { PageLoader } from "components";
 import AlertDialogue from "components/ui/AlertDialogue";
-import {
-  DateInput,
-  MonthInput,
-  DateRangeInput,
-} from "components/FormControl";
+import { DateInput, MonthInput, DateRangeInput } from "components/FormControl";
 import { Formik } from "formik";
 import { GenderOptions, countriesList } from "data/Data";
 import { PayRun } from "app/utils/Types/Payroll";
@@ -42,7 +38,7 @@ const CreatePayRun = () => {
   const formRef = React.createRef();
   const [Errors, setErrors] = useState({});
   const [employeeData, setEmployeeData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [component, setComponent] = useState([]);
   const [withheldRows, setWithheldRows] = useState([]);
   const [filterData, setFilterData] = useState({});
@@ -80,126 +76,127 @@ const CreatePayRun = () => {
     return () => {
       isMounted = false;
     };
-  }, [filterData]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      const earnAndDeductions = await getEarnAndDeduction({
-        filterData: { is_active: true },
-      });
-      if (earnAndDeductions) {
-        setComponent(earnAndDeductions.results);
-      }
-      const payRunData = await getPayun({
-        filterData: { date_range: `${currentMonthStart},${currentMonthEnd}` },
-      });
-      if (payRunData) {
-        const payRun = payRunData?.results[0];
-        setPayrunDraft(payRun);
-        setWithheldRows(payRun?.excluded_employees || []);
-        setPayrollData([
-          {
-            title: "Payroll Cost",
-            value: payRun?.gross_amount,
-          },
-          {
-            title: "Employees' Net Pay",
-            value: payRun?.net_amount,
-          },
-          {
-            title: "Total Employees'",
-            value: payRun?.total_employees,
-          },
-        ]);
-      }
-      if (payRunData?.count === 0) {
-        const payrollSummary = await getPayrollSummary();
-        if (payrollSummary) {
-          const updatedPayrollData = [
-            {
-              title: "Payroll Cost",
-              value: payrollSummary?.total_gross_salary,
-            },
-            {
-              title: "Employees' Net Pay",
-              value: payrollSummary?.total_net_salary,
-            },
-            {
-              title: "Total Employees'",
-              value: payrollSummary?.total_employees,
-            },
-          ];
-          setPayrollData(updatedPayrollData);
-          setPayrunDraft({
-            total_amount: updatedPayrollData.find(
-              (item) => item.title === "Payroll Cost"
-            )?.value,
-            start_date: currentMonthStart,
-            end_date: currentMonthEnd,
-            is_payroll_run: false,
-            excluded_employees: withheldRows,
-            gross_amount: updatedPayrollData.find(
-              (item) => item.title === "Payroll Cost"
-            ).value,
-            net_amount: updatedPayrollData.find(
-              (item) => item.title === "Employees' Net Pay"
-            ).value,
-            total_employees: updatedPayrollData.find(
-              (item) => item.title === "Total Employees'"
-            ).value,
-          });
-        }
-      }
-      setIsLoading(false);
-    };
-
-    fetchData();
   }, []);
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setIsLoading(true);
+  //     const earnAndDeductions = await getEarnAndDeduction({
+  //       filterData: { is_active: true },
+  //     });
+  //     if (earnAndDeductions) {
+  //       setComponent(earnAndDeductions.results);
+  //     }
+  //     const payRunData = await getPayun({
+  //       filterData: { date_range: `${currentMonthStart},${currentMonthEnd}` },
+  //     });
+  //     if (payRunData) {
+  //       const payRun = payRunData?.results[0];
+  //       setPayrunDraft(payRun);
+  //       setWithheldRows(payRun?.excluded_employees || []);
+  //       setPayrollData([
+  //         {
+  //           title: "Payroll Cost",
+  //           value: payRun?.gross_amount,
+  //         },
+  //         {
+  //           title: "Employees' Net Pay",
+  //           value: payRun?.net_amount,
+  //         },
+  //         {
+  //           title: "Total Employees'",
+  //           value: payRun?.total_employees,
+  //         },
+  //       ]);
+  //     }
+  //     if (payRunData?.count === 0) {
+  //       const payrollSummary = await getPayrollSummary();
+  //       if (payrollSummary) {
+  //         const updatedPayrollData = [
+  //           {
+  //             title: "Payroll Cost",
+  //             value: payrollSummary?.total_gross_salary,
+  //           },
+  //           {
+  //             title: "Employees' Net Pay",
+  //             value: payrollSummary?.total_net_salary,
+  //           },
+  //           {
+  //             title: "Total Employees'",
+  //             value: payrollSummary?.total_employees,
+  //           },
+  //         ];
+  //         setPayrollData(updatedPayrollData);
+  //         setPayrunDraft({
+  //           total_amount: updatedPayrollData.find(
+  //             (item) => item.title === "Payroll Cost"
+  //           )?.value,
+  //           start_date: currentMonthStart,
+  //           end_date: currentMonthEnd,
+  //           is_payroll_run: false,
+  //           excluded_employees: withheldRows,
+  //           gross_amount: updatedPayrollData.find(
+  //             (item) => item.title === "Payroll Cost"
+  //           ).value,
+  //           net_amount: updatedPayrollData.find(
+  //             (item) => item.title === "Employees' Net Pay"
+  //           ).value,
+  //           total_employees: updatedPayrollData.find(
+  //             (item) => item.title === "Total Employees'"
+  //           ).value,
+  //         });
+  //       }
+  //     }
+  //     setIsLoading(false);
+  //   };
+
+  //   fetchData();
+  // }, []);
+
   // Function to handle withholding salary
-  const handleWithholdSalary = () => {
-    const updatedWithheldEmployees = [...selectedRows, ...withheldRows];
-    // Find employees in employeedata.results whose IDs are in updatedWithheldEmployees
-    const withheldEmployeeData = updatedWithheldEmployees
-      .map((withheldEmployeeId) => {
-        return employeeData?.find(
-          (employee) => employee.id === withheldEmployeeId
-        );
-      })
-      .filter((employee) => employee);
-    // Calculate the total withheld salary
-    const totalWithheldSalary = withheldEmployeeData.reduce(
-      (total, employee) => {
-        return total + parseFloat(employee.basic_salary || 0); // Ensure basic_salary is a number
-      },
-      0
-    );
-    const updatedPayrollData = payrollData.map((item) => {
-      if (item.title === "Payroll Cost") {
-        return {
-          ...item,
-          value: (item.value - totalWithheldSalary).toFixed(2),
-        };
-      }
-      if (item.title === "Employees' Net Pay") {
-        return {
-          ...item,
-          value: (item.value - totalWithheldSalary).toFixed(2),
-        };
-      }
-      if (item.title === "Total Employees'") {
-        return { ...item, value: item.value * 1 - selectedRows.length }; // Add the number of employees withheld
-      }
-    });
-    setPayrollData(updatedPayrollData);
-    console.log("UPDATED PAYROLL DATA", updatedPayrollData);
 
-    setWithheldRows(updatedWithheldEmployees);
-    setSelectedRows([]);
+  // const handleWithholdSalary = () => {
+  //   const updatedWithheldEmployees = [...selectedRows, ...withheldRows];
+  //   // Find employees in employeedata.results whose IDs are in updatedWithheldEmployees
+  //   const withheldEmployeeData = updatedWithheldEmployees
+  //     .map((withheldEmployeeId) => {
+  //       return employeeData?.find(
+  //         (employee) => employee.id === withheldEmployeeId
+  //       );
+  //     })
+  //     .filter((employee) => employee);
+  //   // Calculate the total withheld salary
+  //   const totalWithheldSalary = withheldEmployeeData.reduce(
+  //     (total, employee) => {
+  //       return total + parseFloat(employee.basic_salary || 0); // Ensure basic_salary is a number
+  //     },
+  //     0
+  //   );
+  //   const updatedPayrollData = payrollData.map((item) => {
+  //     if (item.title === "Payroll Cost") {
+  //       return {
+  //         ...item,
+  //         value: (item.value - totalWithheldSalary).toFixed(2),
+  //       };
+  //     }
+  //     if (item.title === "Employees' Net Pay") {
+  //       return {
+  //         ...item,
+  //         value: (item.value - totalWithheldSalary).toFixed(2),
+  //       };
+  //     }
+  //     if (item.title === "Total Employees'") {
+  //       return { ...item, value: item.value * 1 - selectedRows.length }; // Add the number of employees withheld
+  //     }
+  //   });
+  //   setPayrollData(updatedPayrollData);
+  //   console.log("UPDATED PAYROLL DATA", updatedPayrollData);
 
-    saveDraft(updatedWithheldEmployees, updatedPayrollData);
-  };
+  //   setWithheldRows(updatedWithheldEmployees);
+  //   setSelectedRows([]);
+
+  //   saveDraft(updatedWithheldEmployees, updatedPayrollData);
+  // };
 
   // Function to handle providing salary back for selected withheld rows
   const handleProvideSalary = () => {
@@ -279,6 +276,7 @@ const CreatePayRun = () => {
       is_payroll_run: false,
     });
     if (reponse) {
+      setPayrunDraft(values);
       setPayrunConfirmationDialog(false);
       setPayrunSubmitDialog(true);
       setTimeout(() => {
@@ -368,6 +366,15 @@ const CreatePayRun = () => {
     });
   };
 
+  const handlePayRunDateChange = (value, props) => {
+    props.setFieldValue("payrun_date", value);
+    const dates = value ? value.split(",") : null;
+    if (dates && dates?.length > 0) {
+      if (dates[0]) props.setFieldValue("start_date", dates[0]);
+      if (dates[1]) props.setFieldValue("end_date", dates[1]);
+    }
+  };
+
   return (
     <>
       {isLoading ? (
@@ -377,7 +384,7 @@ const CreatePayRun = () => {
           <SuccessNotification
             isOpen={payrunSubmitDialog}
             onClose={setPayrunSubmitDialog}
-            date={moment(payrunDraft?.start_date).format("MMMM YYYY")}
+            date={moment(payrunDraft?.month).format("MMMM YYYY")}
           />
 
           <div className="flex flex-wrap gap-10 justify-between items-center h-11">
@@ -396,7 +403,7 @@ const CreatePayRun = () => {
             </div>
           </div>
           <Card>
-            <CardHeader>
+            {/* <CardHeader>
               <div className="flex items-center justify-between mt-5">
                 {showProvideButton && !showWithholdButton && (
                   <Button
@@ -409,7 +416,7 @@ const CreatePayRun = () => {
                   </Button>
                 )}
               </div>
-            </CardHeader>
+            </CardHeader> */}
             <CardContent>
               <div className="space-y-4">
                 <Formik
@@ -437,7 +444,7 @@ const CreatePayRun = () => {
                             value={props.values.month}
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
-                              // setPayrunMonth(value);
+                              handlePayRunDateChange(null, props);
                             }}
                             error={props.errors.month}
                             required={true}
@@ -456,8 +463,8 @@ const CreatePayRun = () => {
                             error={props.errors.payrun_date}
                             touch={props.touched.payrun_date}
                             value={props.values.payrun_date}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
+                            onChange={(_, value) => {
+                              handlePayRunDateChange(value, props);
                             }}
                           />
                         </div>
@@ -536,7 +543,6 @@ const CreatePayRun = () => {
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
                             }}
-                            SelectAllOption={true}
                           />
                         </div>
                       </div>

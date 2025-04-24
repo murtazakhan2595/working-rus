@@ -33,19 +33,37 @@ const SelectMultiInputComponent = React.memo(
     selectedOptionClassName = "", // Add custom style to value labels
     selectedOptionListClassName = "", // Add custom style to value labels List
     showSelectedValuesBelow = false, // Show selected values below the dropdown (Generalized name)
-    disabled=false,
+    disabled = false,
+    SelectAllOption = false,
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectedValues = value && Array.isArray(value) ? value : [];
+    const DropdownList = React.useMemo(
+      () =>
+        SelectAllOption
+          ? [{ label: "All", value: null }, ...(options || [])]
+          : options || [],
+      [SelectAllOption, options]
+    );
 
+    const SelectedValueLabel = React.useMemo(() =>
+      SelectAllOption && (!selectedValues || selectedValues?.length === 0)
+        ? "All"
+        : selectedValues[(SelectAllOption, selectedValues)]
+    );
     // Toggle selection for a given option
     const handleSelectionToggle = useCallback(
       (optionValue) => {
+        if (optionValue === null) {
+          onChange(name, null);
+          return;
+        }
         const updatedSelection = selectedValues.includes(optionValue)
           ? selectedValues.filter((item) => item !== optionValue)
           : [...selectedValues, optionValue];
 
         onChange(name, updatedSelection);
+        return;
       },
       [selectedValues, onChange, name]
     );
@@ -68,7 +86,6 @@ const SelectMultiInputComponent = React.memo(
         touched={touch}
         className={className}
         disabled={disabled}
-
       >
         <FormPopoverButton
           open={isOpen}
@@ -82,11 +99,13 @@ const SelectMultiInputComponent = React.memo(
                 <SelectedOptionsList
                   selectedValues={selectedValues}
                   useValueAsIdentifier={useValueAsIdentifier}
-                  options={options}
+                  options={DropdownList}
                   handleRemove={handleRemove}
                   selectedOptionClassName={selectedOptionClassName}
                   selectedOptionListClassName={selectedOptionListClassName}
                 />
+              ) : SelectAllOption ? (
+                SelectedValueLabel
               ) : (
                 <FormPlaceholder
                   placeholder={placeholder ? placeholder : `Select ${label}`}
@@ -97,7 +116,7 @@ const SelectMultiInputComponent = React.memo(
           }
           popoverContent={
             <SelectableOptionsList
-              options={options}
+              options={DropdownList}
               selectedValues={selectedValues}
               handleSelectionToggle={handleSelectionToggle}
               showOptionsActions={showOptionsActions}
@@ -112,7 +131,7 @@ const SelectMultiInputComponent = React.memo(
           <SelectedOptionsList
             selectedValues={selectedValues}
             useValueAsIdentifier={useValueAsIdentifier}
-            options={options}
+            options={DropdownList}
             handleRemove={handleRemove}
             selectedOptionClassName={selectedOptionClassName}
             selectedOptionListClassName={selectedOptionListClassName}

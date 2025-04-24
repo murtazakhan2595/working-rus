@@ -71,7 +71,7 @@ const PayRun = () => {
                 className="bg-black mr-2"
                 onClick={() => navigate("/payroll/create-payrun")}
               >
-                Create New Payroll
+                Generate Payroll
               </Button>
             )}
             <ExportPayroll />
