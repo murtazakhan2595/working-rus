@@ -128,7 +128,7 @@ const ExportDialog = ({ isOpen, setIsOpen, exportPayrollData = () => {} }) => {
       errors.month = "Month is required";
     }
     if (!format) {
-      errors.format = "Format is required";
+      errors.format = "Month is required";
     }
     setErrors(errors);
     fetchData(true);
@@ -167,7 +167,7 @@ const ExportDialog = ({ isOpen, setIsOpen, exportPayrollData = () => {} }) => {
             }}
           />
         </div>
-        <div className={`${errorClassName} flex flex-col`}>
+        <div className={errorClassName}>
           <span> {errors.month}</span>
           <span> {errors.format}</span>
           <span> {errors.download}</span>

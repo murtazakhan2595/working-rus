@@ -21,9 +21,9 @@ import AddAdjustmentSheet from "../../Sections/AddAdjustmentSheet.jsx";
 import PayrollAdjustment from "../../Sections/PayrollAdjustment.jsx"
 import ImportPayrollAdjustmentsButton from "./ImportPayrollAdjustmentsButton.jsx";
 
-const SalarySetup = ({ ActiveTab='salary' }) => {
+const SalarySetup = ({ departments }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState(ActiveTab);
+  const [activeTab, setActiveTab] = useState("salary");
 
   const tabsData = [
     { value: "salary", label: "Salary" },
