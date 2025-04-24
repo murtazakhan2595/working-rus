@@ -48,6 +48,7 @@ import {
 } from "app/modules/Payroll/Sections/CalculationsHelperFunctions";
 import moment from "moment";
 
+
 export default function SalaryBreakDown({ payrollDetails }) {
   const [earnings, setEarnings] = useState([]);
   const [deductions, setDeduction] = useState([]);

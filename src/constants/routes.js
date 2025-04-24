@@ -258,6 +258,11 @@ const SidebarRoutes = [
     name: "Salary Setup",
   },
   Config.PAYROLL && {
+    path: "/payroll/salary-setup/payroll-adjustment",
+    component: <SalarySetup ActiveTab="payroll-adjustment" />,
+    name: "Salary Setup",
+  },
+  Config.PAYROLL && {
     path: "/pay-run",
     component: <PayRun />,
     name: "Pay Run",

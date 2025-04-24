@@ -128,30 +128,6 @@ export const Notifications_Action_URL = [
   {
     module: "Payroll",
     notification_type: "EarningDeduction",
-    action_url: "#",
+    action_url: "/payroll/salary-setup/payroll-adjustment",
   },
-  // Earning/Deduction Approved/Rejected by Manager - For Employee
-  {
-    module: "Payroll",
-    notification_type: "EarningDeduction",
-    action_url: "#",
-  },
-  // Earning/Deduction Approved/Rejected by Manager - For HR
-  {
-    module: "Payroll",
-    notification_type: "EarningDeduction",
-    action_url: "#",
-  },
-  // Earning/Deduction Approved/Rejected by HR - For Employee
-  {
-    module: "Payroll",
-    notification_type: "EarningDeduction",
-    action_url: "#",
-  },
-  // Earning/Deduction Approved/Rejected by HR - For Manager
-  {
-    module: "Payroll",
-    notification_type: "EarningDeduction",
-    action_url: "#",
-  }
 ];
