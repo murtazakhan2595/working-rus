@@ -6,6 +6,8 @@ import DepartmentAction from "../sections/Departments/DepartmentAction";
 import DesignationAction from "../sections/Designations/DesignationAction";
 import { CardContent } from "components/ui/card";
 import { PageLoader } from "components";
+import { CardHeader } from "components/ui/card";
+import { CardTitle } from "components/ui/card";
 
 const Designations = ({
   loading,
@@ -63,6 +65,9 @@ const Designations = ({
         <PageLoader />
       ) : (
         <Card>
+          <CardHeader>
+            <CardTitle className="text-primary">Designations</CardTitle>
+          </CardHeader>
           <CardContent>
             <TableCustom
               columns={columns}
