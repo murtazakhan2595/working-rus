@@ -99,9 +99,8 @@ export const validateEmployeeSalarySetupForm = (values) => {
       parseFloat(other_allowance || 0) +
       parseFloat(medical_allowance || 0) +
       parseFloat(transport_allowance || 0);
-      console.log(CTC,salary_breakdown_type)
     if (salary_breakdown_type === "fixed") {
-      if (CTC !== parseFloat(values.gross_salary))
+      if (CTC !== values.gross_salary)
         errors.ctc = "CTC must be equal to gross salary";
     }
     if (salary_breakdown_type === "percentage") {

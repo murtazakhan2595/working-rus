@@ -33,7 +33,7 @@ const RadioGroupInput = React.memo(
     className = "w-full",
     variant = "one_line",
   }) => {
-    const defaultValue = value;
+    const defaultValue = value || (options.length > 0 ? options[0].value : "");
     return (
       <FormField
         name={name}
@@ -45,7 +45,7 @@ const RadioGroupInput = React.memo(
         disabled={disabled}
       >
         <RadioGroup
-          // defaultValue={options[0]?.value}
+          defaultValue={options[0]?.value}
           value={defaultValue}
           onValueChange={(value) => {
             onChange(name, value);

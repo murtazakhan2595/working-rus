@@ -14,39 +14,11 @@ const NumberInput = React.memo(
     required,
     min,
     max,
-    step = 1,
+    step,
     placeholder,
-    autoComplete = "off",
-    className = "w-full",
+    autoComplete = "new-password",
+    className = "w-full", // Custom styling
   }) => {
-    const handleChange = (event) => {
-      const inputValue = event.target.value;
-      // Allow only digits and decimal point
-      if (/^\d*\.?\d*$/.test(inputValue) || inputValue === "") {
-        onChange(name, inputValue);
-      }
-    };
-
-    const handleBlur = () => {
-      let numericValue = parseFloat(value);
-      if (isNaN(numericValue)) return;
-
-      if (min !== undefined && numericValue < min) {
-        numericValue = min;
-      }
-
-      if (max !== undefined && numericValue > max) {
-        numericValue = max;
-      }
-
-      // Enforce step rounding if step is defined
-      if (step && step !== "any") {
-        numericValue = Math.round(numericValue / step) * step;
-      }
-
-      onChange(name, numericValue.toString());
-    };
-
     return (
       <FormField
         name={name}
@@ -59,21 +31,26 @@ const NumberInput = React.memo(
       >
         <Input
           type="text"
+          maxLength={"1000"}
           id={name}
           name={name}
-          maxLength={"1000"}
-          autoComplete={autoComplete}
+          autoComplete={autoComplete} // Use "off" for no autocomplete or specify a valid autocomplete token like "name", "email", etc.
           placeholder={placeholder || `Enter ${label || "value"}`}
           value={value ?? ""}
           disabled={disabled}
           className={error && touch ? InvalidInput : "text-neutral-1000"}
-          onChange={handleChange}
-          // onBlur={handleBlur}
-          inputMode="decimal"
+          onChange={(event) => {
+            const inputValue = event.target.value;
+            if (/^\d*\.?\d*$/.test(inputValue) || inputValue === "") {
+              onChange(name, inputValue);
+            }
+          }}
+          min={min}
+          max={max}
+          step={step ?? "any"}
         />
       </FormField>
     );
   }
 );
-
 export default NumberInput;

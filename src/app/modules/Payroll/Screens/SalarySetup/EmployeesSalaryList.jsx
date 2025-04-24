@@ -22,13 +22,9 @@ const innerTabClassName =
 const EmployeesSalaryList = ({ departments }) => {
   const [activeTab, setActiveTab] = useState("Salary Setup");
   const [filterData, setFilterData] = useState({});
-  const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [selectedSalaryType, setSelectedSalaryType] = useState(null);
 
   // Separate handler for Salary filters
   const handleSalaryFilterChange = (filterName, filterValue) => {
-    if (filterName === "department_name") setSelectedDepartment(filterValue);
-    if (filterName === "salary_type") setSelectedSalaryType(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -69,18 +65,15 @@ const EmployeesSalaryList = ({ departments }) => {
               option: departments,
               name: "department_name",
               placeholder: "Department",
-              values: selectedDepartment,
             },
             {
               type: "select-two",
               option: SalaryTypeOptions,
               name: "salary_type",
-              values: selectedSalaryType,
               placeholder: "Salary Type",
             },
           ]}
           onChange={handleSalaryFilterChange} // Dynamic filter handler
-          resetButton={true}
         />
       </div>
       <TabsContent value="Salary Setup">

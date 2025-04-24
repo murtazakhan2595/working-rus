@@ -47,7 +47,7 @@ export const EmployeePayRoll = {
   work_email: null,
 };
 
-export const EmployeeSalary = {
+export const EmployeeSalarySetup = {
   basic_salary: null,
   salary_type: null,
   id: null,
@@ -82,16 +82,7 @@ export const EmployeeSalaryRevision = {
 export const EmployeePayRunPaySlip = {
   basic_salary: null,
   total_earnings: [],
-  employeeid: null,
-  reimbursements: null,
-  inflation_effect: null,
-};
-
-export const PayrollAdjustment = {
-  amount: null,
-  amount_type: null,
-  name: null,
-  scope: null,
-  type: null,
-  calculated_amount: null,
+  employeeid:null,
+  reimbursements:null,
+  inflation_effect:null,
 };
