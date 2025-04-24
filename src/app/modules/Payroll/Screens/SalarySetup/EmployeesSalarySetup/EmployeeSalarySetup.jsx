@@ -20,6 +20,7 @@ import { EmployeeSalary } from "app/utils/Types/Payroll";
 import { toast } from "react-toastify";
 import { EmployeeOverview } from "components";
 import { DetailBox, SheetCardExtension } from "components/SheetCardExtension";
+import { EmployeeDetailUI } from "components";
 
 const EmployeeSalarySetup = () => {
   const [payrollForm, setPayrollForm] = useState(EmployeeSalary);
@@ -204,6 +205,19 @@ const EmployeeSalarySetup = () => {
                         sheetCardExtension: false,
                         InputFiels: [
                           {
+                            InputField: RadioGroupInput,
+                            name: "salary_breakdown_type",
+                            required: true,
+                            disabled: false,
+                            label: "Amount Type",
+                            options: [
+                              { value: "percentage", label: "Percentage" },
+                              { value: "fixed", label: "Fixed" },
+                            ],
+                            colsSpan: 3,
+                            variant: "stacked",
+                          },
+                          {
                             InputField: NumberInput,
                             name: "gross_salary",
                             required: true,
@@ -225,19 +239,7 @@ const EmployeeSalarySetup = () => {
                             label: "CTC",
                             value: CTC,
                           },
-                          {
-                            InputField: RadioGroupInput,
-                            name: "salary_breakdown_type",
-                            required: true,
-                            disabled: false,
-                            label: "Amount Type",
-                            options: [
-                              { value: "percentage", label: "Percentage" },
-                              { value: "fixed", label: "Fixed" },
-                            ],
-                            colsSpan: 3,
-                            variant: "stacked",
-                          },
+
                           {
                             InputField: NumberInput,
                             name: "basic_salary",
@@ -302,9 +304,21 @@ const EmployeeSalarySetup = () => {
                       },
                     ],
                   }}
-                ></SheetUI>
+                >
+                  <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2 gap-4">
+                    <EmployeeDetailUI
+                      id={id}
+                      InformationKeys={["id", "name", "position", "department"]}
+                      variant="FormView"
+                    />
+                  </div>
+                </SheetUI>
               ) : (
                 <div className="grid grid-cols-2 lg:grid-cols-5 md:grid-cols-3 gap-4 w-full">
+                  {/* <EmployeeDetailUI
+                    id={id}
+                    InformationKeys={["id", "name", "position", "department"]}
+                  /> */}
                   <DetailBox
                     orientation="horizontal"
                     label={"Gross Salary"}

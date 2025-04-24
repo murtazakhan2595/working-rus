@@ -30,7 +30,7 @@ const EmployeeDetailUI = React.memo(
         ? [
             {
               name: "serial_number",
-              label: "ID",
+              label: "Employee ID",
               value: userProfile.serial_number,
               name: "serial_number",
             },
@@ -40,7 +40,7 @@ const EmployeeDetailUI = React.memo(
         ? [
             {
               name: "name",
-              label: "Name",
+              label: "Employee Name",
               value: userProfile.name,
             },
           ]
