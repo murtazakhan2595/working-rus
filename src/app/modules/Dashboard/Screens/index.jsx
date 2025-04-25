@@ -13,6 +13,7 @@ import LeaveEmployeeDetails from "./LeaveTrackerOverview/LeaveEmployeeDetails";
 import OnGoingApplications from "./TalentSphere/OnGoingApplications";
 import ExpiredDocuments from "./ExpiredDocuments";
 import MyAttendanceSumary from "./MyAttendanceSumary";
+import ProfileCompletion from "./ProfileCompletion";
 export {
   RecentActivity,
   LeaveEmployeeDetails,
@@ -29,4 +30,5 @@ export {
   TaskProgress,
   ExpiredDocuments,
   MyAttendanceSumary,
+  ProfileCompletion,
 };

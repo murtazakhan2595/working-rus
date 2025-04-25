@@ -12,6 +12,7 @@ import {
   OnGoingApplications,
   ExpiredDocuments,
   MyAttendanceSumary,
+  ProfileCompletion,
 } from "../Screens";
 import EventCalendar from "../Screens/EventCalendar";
 
@@ -138,7 +139,7 @@ const DashboardEmployee = [
     type: "div",
     className: `w-full`,
     content: <MyAttendanceSumary />,
-    value: "My Attendance",
+    value: "MyAttendanceSumary",
   },
   {
     type: "div",
@@ -158,6 +159,12 @@ const DashboardEmployee = [
   //   content: <AllProjects />,
   //   value: "AllProjects",
   // },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <ProfileCompletion />,
+    value: "ProfileCompletion",
+  },
 
   {
     type: "div",
@@ -165,6 +172,7 @@ const DashboardEmployee = [
     content: <MyLeaves />,
     value: "MyLeaves",
   },
+
   // {
   //   type: "div",
   //   className: `w-full`,
