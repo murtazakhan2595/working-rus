@@ -207,11 +207,13 @@ export default function TableCustom({
                       columns.map((column, index) => (
                         <TableCell
                           key={index}
-                          className={`min-w-fit w-fit text-neutral-1200 ${
+                          className={`min-w-fit w-fit text-neutral-1200 overflow-hidden text-ellipsis ${
                             column.onClick || column.rowExpandOnClick
                               ? "cursor-pointer expandable-cell"
                               : ""
-                          } ${column.dataAlign === "center" ? "text-center" : ""}`}
+                          } ${
+                            column.dataAlign === "center" ? "text-center" : ""
+                          }`}
                           style={{
                             ...(column.width
                               ? {
@@ -222,6 +224,9 @@ export default function TableCustom({
                               : {}),
                             ...(column.minWidth
                               ? { minWidth: column.minWidth }
+                              : {}),
+                            ...(column.maxWidth
+                              ? { maxWidth: column.maxWidth }
                               : {}),
                             ...(column.dataAlign
                               ? { textAlign: column.dataAlign }

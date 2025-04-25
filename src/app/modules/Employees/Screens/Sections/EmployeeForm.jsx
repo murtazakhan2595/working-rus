@@ -171,7 +171,7 @@ const SheetOnBorading = ({
 
   const validateEmail = (email) => {
     const employee = employees.filter(
-      (emp) => emp.work_email === email && emp.value !== id
+      (emp) => emp.work_email === email && parseInt(emp.id) !== parseInt(id)
     );
     if (employee && employee.length > 0) {
       setEmailAlreadyExist(true);
@@ -181,7 +181,7 @@ const SheetOnBorading = ({
   };
   const validateUsername = (username) => {
     const employee = employees.filter(
-      (emp) => emp.username === username && emp.id !== id
+      (emp) => emp.username === username && parseInt(emp.id) !== parseInt(id)
     );
     if (employee && employee.length > 0) {
       setUsernameAlreadyExist(true);
@@ -200,6 +200,7 @@ const SheetOnBorading = ({
       );
       // return
       if (response) {
+        debugger;
         const employeeId = response.id;
         // Save document checklist
         const checklistData = mapEmployeeDocsChecklist({
@@ -222,20 +223,16 @@ const SheetOnBorading = ({
           } else navigate("/profile-management");
         } else {
           if (SalarySetupAllowed) {
-            const employeePayroll = {};
+            const employeePayroll = {
+              salary_type: data.salary_type,
+              is_new: true,
+            };
             // Determine the payroll data structure based on salary type
             if (data.salary_type === "hourly") {
-              employeePayroll = {
-                hourly_rate: data.salary,
-                salary_type: data.salary_type,
-                is_new: true,
-              };
+              employeePayroll.hourly_rate = data.salary;
             } else {
-              employeePayroll = {
-                ctc: data.salary,
-                salary_type: data.salary_type,
-                is_new: true,
-              };
+              employeePayroll.ctc = data.salary;
+              employeePayroll.basic_salary = data.salary;
             }
             // Employee creation flow
             await saveEmployeePayroll({
@@ -320,10 +317,10 @@ const SheetOnBorading = ({
                       values?.onboardingDocuments
                     );
 
-                    if (!id && values.work_email && emailAlreadyExist) {
+                    if (values.work_email && emailAlreadyExist) {
                       errors.work_email = "Email already exist";
                     }
-                    if (!id && values.username && usernameAlreadyExist) {
+                    if (values.username && usernameAlreadyExist) {
                       errors.username = "Username already exist";
                     }
                     const finalErrors = {
@@ -953,6 +950,8 @@ const SheetOnBorading = ({
                           variant="default"
                           onClick={(e) => {
                             e.preventDefault();
+                            validateEmail(props.values.work_email);
+                            validateUsername(props.values?.username);
                             props.handleSubmit();
                           }}
                         >

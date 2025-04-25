@@ -1,25 +1,10 @@
-import React, { useRef, useState } from 'react';
-import SheetComponent from './SheetComponent';
-import EmployeeForm from 'app/modules/Employees/Screens/Sections/EmployeeForm';
+import React, { useRef, useState } from "react";
+import SheetComponent from "./SheetComponent";
+import EmployeeForm from "app/modules/Employees/Screens/Sections/EmployeeForm";
 
-const OnBoardingSheet = () => {
+const OnBoardingSheet = ({ reloadData = () => {} }) => {
   const formRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
-
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    username: '',
-    first_name: '',
-    last_name: '',
-    work_email: '',
-  });
-
-  const handleSubmit = (values, resetForm) => {
-    console.log(values);
-    setFormData(values); 
-    resetForm();
-  };
 
   const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     const errors = {};
@@ -32,8 +17,8 @@ const OnBoardingSheet = () => {
   };
 
   const formSheetData = {
-    triggerText: 'Add New Employee',
-    title: 'Add New Employee',
+    triggerText: "Add New Employee",
+    title: "Add New Employee",
     description: null,
     footer: null,
   };
@@ -42,22 +27,23 @@ const OnBoardingSheet = () => {
     <div>
       <SheetComponent
         {...formSheetData}
-        onSubmit={handleSubmit}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         contentClassName="custom-sheet-width"
       >
         <EmployeeForm
-          formData={formData}
           formRef={formRef}
-          handleSubmit={handleSubmit}
           validationEmployeeInfoFormSchema={validationEmployeeInfoFormSchema}
           isEditMode={false}
           emailAlreadyExist={false}
           usernameAlreadyExist={false}
           validateUsername={validateUsername}
           isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          setIsOpen={() => {
+            debugger
+            setIsOpen(false);
+            reloadData(true);
+          }}
         />
       </SheetComponent>
     </div>

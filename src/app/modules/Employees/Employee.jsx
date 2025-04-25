@@ -43,6 +43,7 @@ export default function EmployeeManagement() {
   };
 
   const fetchData = async (isMounted) => {
+    debugger;
     setIsLoading(true);
     try {
       const data = await getEmployeeCustomList({
@@ -114,7 +115,17 @@ export default function EmployeeManagement() {
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
-      <Header content={<SheetOnBoarding />} />
+      <Header
+        content={
+          <SheetOnBoarding
+            reloadData={() => {
+              setOrdering("-id");
+              onPageChange("page", 1);
+              fetchData(true);
+            }}
+          />
+        }
+      />
       <Stats stats={statsData} />
       <div className="flex flex-col justify-between gap-2 lg:flex-row md:flex-row xl:flex-row">
         <div className="flex">
