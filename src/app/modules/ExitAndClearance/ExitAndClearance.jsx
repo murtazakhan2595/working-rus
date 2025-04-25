@@ -22,20 +22,21 @@ import Stats from "components/ui/Stats";
 import { TerminationStatusOptions } from "data/Data";
 import { ExitRequests } from "app/modules/ExitAndClearance/ExitRequests";
 import { ExitRecords } from "app/modules/ExitAndClearance/ExitRecords";
-import EOSSettlementList from '../SelfService/Exit/EOSSettlementList';
-import useEOSSettlement from '../../hooks/useEOSSettlement';
+import EOSSettlementList from "../SelfService/Exit/EOSSettlementList";
+import useEOSSettlement from "../../hooks/useEOSSettlement";
 
 const ExitAndClearance = ({ userProfile, departments }) => {
   const [activeTab, setActiveTab] = useState("Exit Requests");
-  const [activeInnerTab, setActiveInnerTab] = useState("Resignations");
+  const [activeInnerTab, setActiveInnerTab] = useState("Terminations");
   const [totalExit, setTotalExit] = useState(0);
   const [approvedResignation, setApprovedResignation] = useState(0);
   const [rejectedResignation, setRejectedResignation] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [reloadData, setReloadData] = useState(false);
 
   const [filterData, setFilterData] = useState({
-    exit_category: "resignation",
-    status_resignation: StatusList(),
+    exit_category: "termination",
+    status_termination: StatusList(false),
     ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
   });
   const { showEOSSettlement } = useEOSSettlement(
@@ -68,6 +69,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
 
   const closeRequestTerminationCard = () => {
     fetchData();
+    setReloadData(!reloadData);
   };
 
   const handleFilterChange = (filterName, filterValue) => {
@@ -76,8 +78,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
     if (filterName === "departments_name") {
       setSelectedStatus(filterValue);
       filterValue = [filterValue];
-    }
-    else if (
+    } else if (
       filterName === "status_resignation" ||
       (filterName === "status_termination" && filterValue)
     ) {
@@ -141,12 +142,6 @@ const ExitAndClearance = ({ userProfile, departments }) => {
     }
   };
 
-  const filterNameMapping = {
-    Resignations: "status_resignation",
-    Terminations: "status_termination",
-    Resigned: "departments",
-    Terminated: "departments",
-  };
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -234,6 +229,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
                 handleTabChange={handleTabChange}
                 activeTab={activeInnerTab}
                 setActiveTab={setActiveInnerTab}
+                reload={reloadData}
               />
             </TabsContent>
             <TabsContent value="Exit Records">

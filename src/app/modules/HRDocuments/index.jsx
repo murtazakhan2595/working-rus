@@ -64,7 +64,7 @@ function HRDocuments() {
         <Card>
           <CardContent>
             <TabsContent value="Documents">
-              <Documents />
+              <Documents reload={reloadData}/>
             </TabsContent>
             <TabsContent value="Category">
               <Category reload={reloadData}/>
@@ -77,7 +77,7 @@ function HRDocuments() {
           isOpen={OpenUploadDocumentForm}
           setIsOpen={() => {
             setOpenUploadDocumentForm(false);
-            setReloadData(true);
+            setReloadData(!reloadData);
           }}
         />
       )}
@@ -86,7 +86,7 @@ function HRDocuments() {
           isOpen={OpenCategoryForm}
           setIsOpen={() => {
             setOpenCategoryForm(false);
-            setReloadData(true);
+            setReloadData(!reloadData);
           }}
         />
       )}

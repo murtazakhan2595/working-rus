@@ -9,7 +9,7 @@ import { ExitRequestColumns } from "app/modules/ExitAndClearance/Sections";
 
 import TableCustom from "components/CustomTable";
 
-const Terminations = ({ userProfile, filterData }) => {
+const Terminations = ({ userProfile, filterData, reload }) => {
   const [loading, setLoading] = useState(true);
   const [selectedResignationId, setSelectedResignationId] = useState(null);
   const [Terminations, setTerminations] = useState(null);
@@ -37,7 +37,7 @@ const Terminations = ({ userProfile, filterData }) => {
     },
   };
 
-  const fetchData = async () => {
+  const fetchData = async (isMounted) => {
     try {
       setLoading(true);
       const response = await getEmployeesResignations({
@@ -45,7 +45,7 @@ const Terminations = ({ userProfile, filterData }) => {
         options,
         ordering,
       });
-      setTerminations(response);
+      if (isMounted) setTerminations(response);
     } catch (e) {
       console.error(e);
     } finally {
@@ -53,8 +53,22 @@ const Terminations = ({ userProfile, filterData }) => {
     }
   };
   useEffect(() => {
-    fetchData();
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
   }, [options, filterData, ordering]);
+
+  useEffect(() => {
+    let isMounted = true;
+    onPageChange("page", 1);
+    setOrdering("-exit_date");
+    fetchData(true)
+    return () => {
+      isMounted = false;
+    };
+  }, [reload]);
 
   useEffect(() => {
     // When termination changes, ensure the selected resignation is still valid

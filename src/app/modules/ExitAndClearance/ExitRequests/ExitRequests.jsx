@@ -17,6 +17,7 @@ const ExitRequests = ({
   handleTabChange = () => {},
   activeTab,
   setActiveTab = () => {},
+  reload,
 }) => {
   return (
     <Tabs
@@ -29,7 +30,7 @@ const ExitRequests = ({
     >
       <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
         <TabsList className="flex items-center justify-center mb-4">
-          {["Resignations", "Terminations"].map((tab) => (
+          {["Terminations","Resignations"].map((tab) => (
             <TabsTrigger key={tab} value={tab} className={innerTabClassName}>
               {tab}
             </TabsTrigger>
@@ -37,10 +38,10 @@ const ExitRequests = ({
         </TabsList>
       </div>
       <TabsContent value="Resignations">
-        <Resignations filterData={filterData} />
+        <Resignations filterData={filterData} reload={reload} />
       </TabsContent>
       <TabsContent value="Terminations">
-        <Terminations filterData={filterData} />
+        <Terminations filterData={filterData} reload={reload} />
       </TabsContent>
     </Tabs>
   );
