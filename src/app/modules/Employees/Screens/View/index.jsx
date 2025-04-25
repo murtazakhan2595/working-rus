@@ -59,11 +59,8 @@ const ViewEmployee = ({ userProfile, profileView }) => {
     { value: "job", label: "Job" },
     { value: "security", label: "Security" },
     { value: "qualification", label: "Qualification" },
-    ...(userProfile?.role === 3 || userProfile?.role === 1
-      ? [{ value: "onboardingChecklist", label: "Onboarding Checklist" }]
-      : []),
+    { value: "onboardingChecklist", label: "Onboarding Checklist" },
   ];
-  console.log("employeeData", employeeData);
 
   return (
     <>
