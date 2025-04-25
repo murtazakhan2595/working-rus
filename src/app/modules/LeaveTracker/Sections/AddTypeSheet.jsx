@@ -41,38 +41,29 @@ const AddTypeSheet = ({
   };
 
   let dispatch = useDispatch();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(openSheet || false);
   const [isEdit, setIsEdit] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
 
   const [leaveComponentType, setLeaveComponentType] = useState(
     type || (isEmployeeBased ? initialTypeEmployee : initialType)
   );
-  
   const formSheetData = {
     triggerText: triggerText,
     title: "Leave Type",
+
     description: null,
     footer: null,
   };
-  
-  // Effect to handle opening or resetting the sheet
   useEffect(() => {
-    console.log("opensheet value in addtypesheet", openSheet);
-    if (openSheet !== undefined || type) {
-      setIsOpen(Boolean(openSheet || type));
+    if (openSheet || type) {
+      setIsOpen(true);
       setIsEdit(false);
+    } else {
+      setIsOpen(false); // Close the sheet otherwise
     }
+    console.log("opensheet value in addtypesheet", openSheet);
   }, [openSheet, type]);
-
-  // Handle closing the sheet
-  const handleSheetClose = () => {
-    setIsOpen(false);
-    // Reset the openSheet state in parent component
-    if (setOpenSheet) {
-      setOpenSheet(false);
-    }
-  };
 
   const handleSubmit = async (values) => {
     console.log("Form Values:", values);
@@ -84,18 +75,19 @@ const AddTypeSheet = ({
         toast.success("Leave Type added successfully");
       }
       dispatch(fetchLeaveComponents());
-      handleSheetClose();
-      if (reload) reload();
+      setIsOpen(false);
+      reload();
     }
   };
 
   const handleTypeDelete = async (type) => {
     console.log("Delete component:", type);
+    // const response = await deleteEarnAndDeduction(component.id);
     const response = await deleteLeaveComponent(type.id);
     if (response) {
       toast.success("Leave Type deleted successfully");
-      handleSheetClose();
-      if (reload) reload();
+      setIsOpen(false);
+      reload();
     }
   };
 
@@ -107,7 +99,7 @@ const AddTypeSheet = ({
           contentClassName="custom-sheet-width"
           width="568px"
           isOpen={isOpen}
-          setIsOpen={handleSheetClose}
+          setIsOpen={setIsOpen}
         >
           {type && !isEdit ? (
             <ViewComponent
@@ -121,8 +113,9 @@ const AddTypeSheet = ({
             <ComponentForm
               leaveComponentType={leaveComponentType}
               handleSubmit={handleSubmit}
-              setIsOpen={handleSheetClose}
+              setIsOpen={setIsOpen}
               editMode={isEdit}
+              setOpenSheet={setOpenSheet}
             />
           )}
         </SheetComponent>
@@ -138,13 +131,14 @@ const ComponentForm = ({
   handleSubmit,
   setIsOpen,
   editMode,
+  setOpenSheet,
 }) => {
   const [closeSheet, setCloseSheet] = useState(false);
 
   const handleClose = () => {
     setCloseSheet(true);
+    // setOpenSheet(false)
   };
-  
   return (
     <>
       {handleCloseWithConfirmation({
@@ -238,8 +232,8 @@ const ViewComponent = ({
   return (
     <>
       <div className="flex items-center justify-between">
-        <div className="w-[217px] h-9 py-1.5 justify-start items-start gap-3 inline-flex">
-          <div className="text-black text-sm font-semibold">{type.name}</div>
+        <div class="w-[217px] h-9 py-1.5 justify-start items-start gap-3 inline-flex">
+          <div class="text-black text-sm font-semibold  ">{type.name}</div>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -279,7 +273,7 @@ const ViewComponent = ({
         dateTitle="Created On"
       >
         {details.map((detail, index) => (
-          <DetailBox key={index} label={detail?.label} value={detail?.value} />
+          <DetailBox label={detail?.label} value={detail?.value} />
         ))}
       </DetailCard>
     </>
