@@ -77,7 +77,7 @@ const Header = ({ content, userProfile }) => {
       "job-application": "Job Application",
       "job-application-form": "Job Application Form",
       "job-description": "Job Description",
-      "office-settings": "Office Setting",
+      "office-settings": "Organization Setup",
       "my-attendance": "Attendance History",
       "employee-tranfer": "Employee Transfer",
       "my-tranfers": "My Tranfers",

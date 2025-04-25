@@ -295,7 +295,7 @@ export function getMenuList(pathname, userRole) {
   ];
 
   const OfficeSettingMenu = [
-    createMenu("/office-settings", "Office Setting", Settings),
+    createMenu("/office-settings", "Organization Setup", Settings),
     // createMenu("/services", "Services", SquareStack),
   ];
   const organizationalChartMenu = [

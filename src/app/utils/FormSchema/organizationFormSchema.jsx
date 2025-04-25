@@ -1,4 +1,3 @@
-
 const validateOrganizationSchema = (values, isEditMode) => {
   const errors = {};
     if (!values?.name) errors.name= "Company Name is required";
@@ -13,11 +12,24 @@ const validateOrganizationSchema = (values, isEditMode) => {
     if (!values?.date_format) errors.date_format= "Date Format is required";
     if (!values?.country) errors.country= "Country is required";
     if (!values?.payroll_start_date) errors.payroll_start_date= "Payroll Start Date is required";
-    if (!values?.licensing_authority) errors.licensing_authority= "Licensing Authority is required";
-    if (!values?.registration_number) errors.registration_number= "Licensing Number is required";
-    if(!values?.contact_person) errors.contact_person= "Contact Person is required";
-    if(!values?.logo) errors.logo = "Logo is Required"
-
+    if (!values?.currency) errors.currency= "Currency is required";
+    if (!values?.website) errors.website= "Official Website is required";
+    if (!values?.logo) errors.logo = "Logo is Required";
+    
+    // URL validation for website
+    if (values?.website && !/^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+(\/[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]*)?$/.test(values.website)) {
+      errors.website = "Please enter a valid website URL";
+    }
+    
+    // Phone format validation
+    if (values?.phone_number && !/^(\+\d{1,3}[- ]?)?\d{10,}$/.test(values.phone_number)) {
+      errors.phone_number = "Please enter a valid phone number";
+    }
+    
+    // Email format validation
+    if (values?.email && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
+      errors.email = "Please enter a valid email address";
+    }
 
     return errors;
 }
