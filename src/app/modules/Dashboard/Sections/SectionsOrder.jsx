@@ -11,6 +11,7 @@ import {
   LeaveEmployeeDetails,
   OnGoingApplications,
   ExpiredDocuments,
+  MyAttendanceSumary,
 } from "../Screens";
 import EventCalendar from "../Screens/EventCalendar";
 
@@ -135,28 +136,9 @@ const DashboardManager = [
 const DashboardEmployee = [
   {
     type: "div",
-    className: `col-span-2`,
-    content: <MyTasks />,
-    value: "MyTasks",
-  },
-  {
-    type: "div",
     className: `w-full`,
-    content: <AllProjects />,
-    value: "AllProjects",
-  },
-
-  {
-    type: "div",
-    className: "w-full col-span-2",
-    content: <MyLeaves />,
-    value: "MyLeaves",
-  },
-  {
-    type: "div",
-    className: `w-full`,
-    content: <MyTeams />,
-    value: "MyTeam",
+    content: <MyAttendanceSumary />,
+    value: "My Attendance",
   },
   {
     type: "div",
@@ -164,6 +146,31 @@ const DashboardEmployee = [
     content: <EventCalendar />,
     value: "EventCalendar",
   },
+  // {
+  //   type: "div",
+  //   className: `col-span-2`,
+  //   content: <MyTasks />,
+  //   value: "MyTasks",
+  // },
+  // {
+  //   type: "div",
+  //   className: `w-full`,
+  //   content: <AllProjects />,
+  //   value: "AllProjects",
+  // },
+
+  {
+    type: "div",
+    className: "w-full col-span-2",
+    content: <MyLeaves />,
+    value: "MyLeaves",
+  },
+  // {
+  //   type: "div",
+  //   className: `w-full`,
+  //   content: <MyTeams />,
+  //   value: "MyTeam",
+  // },
 ];
 export const getDashboard = (userRole) => {
   if (userRole === 3 || userRole === 1) {
