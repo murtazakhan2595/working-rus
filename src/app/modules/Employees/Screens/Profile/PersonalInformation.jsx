@@ -28,7 +28,7 @@ import {
 } from "app/utils/MappingObjects/mapEmployeeData";
 import { Card, CardContent, CardFooter } from "components/ui/card";
 import ProfileFormFooter from "app/modules/Employees/Screens/Sections/ProfileFormFooter";
-
+import { DisbursementTypeOptions } from "data/Data";
 // Get country options for Select component but do not showing country calling code
 
 // const countryOptions = Object.keys(countries).map((countryCode) => ({
@@ -42,7 +42,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
   const [isEdited, setIsEdited] = useState(false);
   const [imageError, setImageError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  console.log(isEdited,"isEditMode")
+  console.log(isEdited, "isEditMode");
 
   const fetchData = async (isMounted) => {
     try {
@@ -68,7 +68,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
   }, [employeeId]);
 
   const handleSubmit = async (data) => {
-    console.log("handle submit is called")
+    console.log("handle submit is called");
     // Prepare personal information from data
     const payload = mapEmployeePersonalInformationPayloadData(data);
     try {
@@ -84,7 +84,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
       console.error("Error during data submission:", error);
     }
   };
-
+  console.log("personalInfo", personalInfo);
   return (
     <>
       {isLoading ? (
@@ -153,8 +153,10 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                             </span>
                           </div>
                         )}
-
+                        // This is the correct grid layout for the form //
+                        Replace the entire grid div with this structure
                         <div className="grid grid-cols-3 gap-4">
+                          {/* First row */}
                           <div className="space-y-2">
                             <TextInput
                               name={"first_name"}
@@ -183,7 +185,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                                 setIsEdited(true);
                                 props.setFieldValue(field, value);
                               }}
-                              countryOptions={countriesCallingCodes} // Pass the country options here
+                              countryOptions={countriesCallingCodes}
                             />
                           </div>
                           <div className="space-y-2">
@@ -200,6 +202,8 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               }}
                             />
                           </div>
+
+                          {/* Second row */}
                           <div className="space-y-2">
                             <EmailInput
                               name={"other_email"}
@@ -243,6 +247,8 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               }}
                             />
                           </div>
+
+                          {/* Third row */}
                           <div className="space-y-2">
                             <TextInput
                               name={"mother_name"}
@@ -272,62 +278,220 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               }}
                             />
                           </div>
+                          {/* UAE-specific field */}
                           <div className="space-y-2">
-                            <DateInput
-                              name={"date_of_birth"}
-                              error={props.errors.date_of_birth}
-                              touch={props.touched.date_of_birth}
-                              value={props.values.date_of_birth}
-                              label={"Date of Birth"}
-                              onChange={(field, value) => {
-                                setIsEdited(true);
-                                props.setFieldValue(field, value);
-                              }}
-                            />
+                            {props.values.nationality ===
+                            "United Arab Emirates" ? (
+                              <TextInput
+                                name={"family_book_number"}
+                                error={props.errors?.family_book_number}
+                                touch={props.touched?.family_book_number}
+                                value={props.values?.family_book_number}
+                                label={"Family Book Number"}
+                                required={true}
+                                onChange={(field, value) => {
+                                  props.handleChange(field)(value);
+                                }}
+                              />
+                            ) : (
+                              <div className="invisible"></div> /* Invisible placeholder */
+                            )}
                           </div>
+
+                          {/* Fourth row */}
+                          {/* For UAE, show disbursement type */}
                           <div className="space-y-2">
-                            <SelectInputComponent
-                              name={"marital_status"}
-                              options={maritalStatus}
-                              error={props.errors.marital_status}
-                              touch={props.touched.marital_status}
-                              value={props.values.marital_status}
-                              label={"Marital Status"}
-                              onChange={(field, value) => {
-                                setIsEdited(true);
-                                props.setFieldValue(field, value);
-                              }}
-                            />
+                            {props.values.nationality ===
+                            "United Arab Emirates" ? (
+                              <SelectInputComponent
+                                name={"disbursement_type"}
+                                options={DisbursementTypeOptions}
+                                error={props.errors?.disbursement_type}
+                                touch={props.touched.disbursement_type}
+                                value={props.values.disbursement_type}
+                                label={"Disbursement Type"}
+                                required={true}
+                                onChange={(field, value) => {
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            ) : (
+                              <DateInput
+                                name={"date_of_birth"}
+                                error={props.errors.date_of_birth}
+                                touch={props.touched.date_of_birth}
+                                value={props.values.date_of_birth}
+                                label={"Date of Birth"}
+                                onChange={(field, value) => {
+                                  setIsEdited(true);
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            )}
                           </div>
+
+                          {/* For UAE with Bank Transfer, show AGENT_BANK_RTN_CODE */}
                           <div className="space-y-2">
-                            <SelectInputComponent
-                              name={"blood_group"}
-                              options={BloodGroupOptions}
-                              error={props.errors?.blood_group}
-                              touch={props.touched.blood_group}
-                              value={props.values.blood_group}
-                              required={true}
-                              label={"Blood Group"}
-                              onChange={(field, value) => {
-                                setIsEdited(true);
-                                props.setFieldValue(field, value);
-                              }}
-                            />
+                            {props.values.nationality ===
+                              "United Arab Emirates" &&
+                            props.values.disbursement_type ===
+                              "Bank Transfer" ? (
+                              <TextInput
+                                name={"agent_bank_rtn_code"}
+                                error={props.errors?.agent_bank_rtn_code}
+                                touch={props.touched?.agent_bank_rtn_code}
+                                value={props.values?.agent_bank_rtn_code}
+                                label={"AGENT_BANK_RTN_CODE"}
+                                required={false}
+                                onChange={(field, value) => {
+                                  props.handleChange(field)(value);
+                                }}
+                              />
+                            ) : props.values.nationality ===
+                              "United Arab Emirates" ? (
+                              <div className="invisible"></div> /* Invisible placeholder */
+                            ) : (
+                              <SelectInputComponent
+                                name={"marital_status"}
+                                options={maritalStatus}
+                                error={props.errors.marital_status}
+                                touch={props.touched.marital_status}
+                                value={props.values.marital_status}
+                                label={"Marital Status"}
+                                onChange={(field, value) => {
+                                  setIsEdited(true);
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            )}
                           </div>
+
+                          {/* For UAE with Bank Transfer, show MOL_Person_ID */}
                           <div className="space-y-2">
-                            <SelectInputComponent
-                              name={"gender"}
-                              options={GenderOptions}
-                              error={props.errors?.gender}
-                              touch={props.touched.gender}
-                              value={props.values.gender}
-                              required={true}
-                              label={"Gender"}
-                              onChange={(field, value) => {
-                                setIsEdited(true);
-                                props.setFieldValue(field, value);
-                              }}
-                            />
+                            {props.values.nationality ===
+                              "United Arab Emirates" &&
+                            props.values.disbursement_type ===
+                              "Bank Transfer" ? (
+                              <TextInput
+                                name={"mol_person_id"}
+                                error={props.errors?.mol_person_id}
+                                touch={props.touched?.mol_person_id}
+                                value={props.values?.mol_person_id}
+                                label={"MOL Person ID"}
+                                required={false}
+                                onChange={(field, value) => {
+                                  props.handleChange(field)(value);
+                                }}
+                              />
+                            ) : props.values.nationality ===
+                              "United Arab Emirates" ? (
+                              <div className="invisible"></div> /* Invisible placeholder */
+                            ) : (
+                              <SelectInputComponent
+                                name={"blood_group"}
+                                options={BloodGroupOptions}
+                                error={props.errors?.blood_group}
+                                touch={props.touched.blood_group}
+                                value={props.values.blood_group}
+                                required={true}
+                                label={"Blood Group"}
+                                onChange={(field, value) => {
+                                  setIsEdited(true);
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            )}
+                          </div>
+
+                          {/* UAE Date of Birth, moved down for UAE case */}
+                          <div className="space-y-2">
+                            {props.values.nationality ===
+                            "United Arab Emirates" ? (
+                              <DateInput
+                                name={"date_of_birth"}
+                                error={props.errors.date_of_birth}
+                                touch={props.touched.date_of_birth}
+                                value={props.values.date_of_birth}
+                                label={"Date of Birth"}
+                                onChange={(field, value) => {
+                                  setIsEdited(true);
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            ) : (
+                              <SelectInputComponent
+                                name={"gender"}
+                                options={GenderOptions}
+                                error={props.errors?.gender}
+                                touch={props.touched.gender}
+                                value={props.values.gender}
+                                required={true}
+                                label={"Gender"}
+                                onChange={(field, value) => {
+                                  setIsEdited(true);
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            )}
+                          </div>
+
+                          {/* UAE Marital Status */}
+                          <div className="space-y-2">
+                            {props.values.nationality ===
+                            "United Arab Emirates" ? (
+                              <SelectInputComponent
+                                name={"marital_status"}
+                                options={maritalStatus}
+                                error={props.errors.marital_status}
+                                touch={props.touched.marital_status}
+                                value={props.values.marital_status}
+                                label={"Marital Status"}
+                                onChange={(field, value) => {
+                                  setIsEdited(true);
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            ) : null}
+                          </div>
+
+                          {/* UAE Blood Group */}
+                          <div className="space-y-2">
+                            {props.values.nationality ===
+                            "United Arab Emirates" ? (
+                              <SelectInputComponent
+                                name={"blood_group"}
+                                options={BloodGroupOptions}
+                                error={props.errors?.blood_group}
+                                touch={props.touched.blood_group}
+                                value={props.values.blood_group}
+                                required={true}
+                                label={"Blood Group"}
+                                onChange={(field, value) => {
+                                  setIsEdited(true);
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            ) : null}
+                          </div>
+
+                          {/* UAE Gender */}
+                          <div className="space-y-2">
+                            {props.values.nationality ===
+                            "United Arab Emirates" ? (
+                              <SelectInputComponent
+                                name={"gender"}
+                                options={GenderOptions}
+                                error={props.errors?.gender}
+                                touch={props.touched.gender}
+                                value={props.values.gender}
+                                required={true}
+                                label={"Gender"}
+                                onChange={(field, value) => {
+                                  setIsEdited(true);
+                                  props.setFieldValue(field, value);
+                                }}
+                              />
+                            ) : null}
                           </div>
                         </div>
                       </CardContent>
