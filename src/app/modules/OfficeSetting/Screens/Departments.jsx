@@ -4,6 +4,8 @@ import { Card } from "components/ui/card";
 import DepartmentAction from "../sections/Departments/DepartmentAction";
 import { CardContent } from "components/ui/card";
 import PageLoader from './../../../../components/PageLoader';
+import { CardHeader } from "components/ui/card";
+import { CardTitle } from "components/ui/card";
 
 const Departments = ({
   options,
@@ -66,6 +68,9 @@ const Departments = ({
         <PageLoader />
       ) : (
         <Card>
+          <CardHeader>
+            <CardTitle className="text-primary">Departments</CardTitle>
+          </CardHeader>
           <CardContent>
             <TableCustom
               columns={columns}

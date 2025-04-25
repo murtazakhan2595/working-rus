@@ -72,7 +72,12 @@ const SelectableOptionsList = ({
   allowNewOption = false, // Whether users can add new options
   newOptionConfig = {}, // Configuration for new options
 }) => {
-  
+  const OptionSelect = (value, selectedValues) => {
+    if (selectedValues.length === 0 && value === null) return true;
+    else if (selectedValues.includes(value)) return true;
+    else return false;
+  };
+
   return (
     <div className="w-[300px] p-0">
       <Command>
@@ -92,7 +97,7 @@ const SelectableOptionsList = ({
                   <div className="flex items-center">
                     <Check
                       className={`mr-2 h-4 w-4 min-w-4 ${
-                        selectedValues.includes(value)
+                        OptionSelect(value, selectedValues)
                           ? "opacity-100"
                           : "opacity-0"
                       }`}

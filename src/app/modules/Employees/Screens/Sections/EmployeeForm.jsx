@@ -28,7 +28,7 @@ import {
 } from "state/slices/EmpSlice";
 import { validationEmployeeInfoFormSchema } from "app/utils/FormSchema/employeeFormSchema";
 import { DisbursementTypeOptions } from "data/Data";
-
+import Config from "constants/config";
 import {
   GenderOptions,
   BloodGroupOptions,
@@ -78,7 +78,7 @@ import { DateRangeInput } from "components/FormControl";
 import { validateOnboardingDocuments } from "app/utils/FormSchema/employeeFormSchema";
 import { getEmployeeDocsChecklist } from "app/hooks/employee";
 import { saveEmpoyeeDocBulk } from "app/hooks/employee";
-
+import { hasAccess } from "utils/PermissionUtils";
 const SheetOnBorading = ({
   isEditMode,
   nextstep,
@@ -95,8 +95,11 @@ const SheetOnBorading = ({
   discard = false,
 }) => {
   const formRef = React.createRef();
+  const SalarySetupAllowed = React.useMemo(() => {
+    return !id && hasAccess("PAYROLL_SALARY_SETUP");
+  }, [id]);
 
-  let dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState(EmployeeInformation);
   const [empId, setEmpId] = useState(0);
@@ -168,7 +171,7 @@ const SheetOnBorading = ({
 
   const validateEmail = (email) => {
     const employee = employees.filter(
-      (emp) => emp.work_email === email && emp.value !== id
+      (emp) => emp.work_email === email && parseInt(emp.id) !== parseInt(id)
     );
     if (employee && employee.length > 0) {
       setEmailAlreadyExist(true);
@@ -178,7 +181,7 @@ const SheetOnBorading = ({
   };
   const validateUsername = (username) => {
     const employee = employees.filter(
-      (emp) => emp.username === username && emp.id !== id
+      (emp) => emp.username === username && parseInt(emp.id) !== parseInt(id)
     );
     if (employee && employee.length > 0) {
       setUsernameAlreadyExist(true);
@@ -197,6 +200,7 @@ const SheetOnBorading = ({
       );
       // return
       if (response) {
+        debugger;
         const employeeId = response.id;
         // Save document checklist
         const checklistData = mapEmployeeDocsChecklist({
@@ -218,26 +222,24 @@ const SheetOnBorading = ({
             nextstep();
           } else navigate("/profile-management");
         } else {
-          let employeePayroll = {};
-          // Determine the payroll data structure based on salary type
-          if (data.salary_type === "hourly") {
-            employeePayroll = {
-              hourly_rate: data.salary,
+          if (SalarySetupAllowed) {
+            const employeePayroll = {
               salary_type: data.salary_type,
               is_new: true,
             };
-          } else {
-            employeePayroll = {
-              basic_salary: data.salary,
-              salary_type: data.salary_type,
-              is_new: true,
-            };
+            // Determine the payroll data structure based on salary type
+            if (data.salary_type === "hourly") {
+              employeePayroll.hourly_rate = data.salary;
+            } else {
+              employeePayroll.ctc = data.salary;
+              employeePayroll.basic_salary = data.salary;
+            }
+            // Employee creation flow
+            await saveEmployeePayroll({
+              ...employeePayroll,
+              employee: employeeId,
+            });
           }
-          // Employee creation flow
-          await saveEmployeePayroll({
-            ...employeePayroll,
-            employee: employeeId,
-          });
           toast.success("Employee Added Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
@@ -315,10 +317,10 @@ const SheetOnBorading = ({
                       values?.onboardingDocuments
                     );
 
-                    if (!id && values.work_email && emailAlreadyExist) {
+                    if (values.work_email && emailAlreadyExist) {
                       errors.work_email = "Email already exist";
                     }
-                    if (!id && values.username && usernameAlreadyExist) {
+                    if (values.username && usernameAlreadyExist) {
                       errors.username = "Username already exist";
                     }
                     const finalErrors = {
@@ -800,7 +802,7 @@ const SheetOnBorading = ({
                         />
                       </div>
                     </div>
-                    {!id && (
+                    {SalarySetupAllowed && (
                       <div className="space-y-4">
                         <h3 className="text-lg font-semibold">
                           Salary Details
@@ -948,6 +950,8 @@ const SheetOnBorading = ({
                           variant="default"
                           onClick={(e) => {
                             e.preventDefault();
+                            validateEmail(props.values.work_email);
+                            validateUsername(props.values?.username);
                             props.handleSubmit();
                           }}
                         >

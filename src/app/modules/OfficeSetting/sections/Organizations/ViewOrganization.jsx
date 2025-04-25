@@ -1,54 +1,131 @@
-import { DetailBox } from "components/SheetCardExtension";
-import { DetailCard } from "components/SheetCardExtension";
-import SheetComponent from "components/ui/SheetComponent";
-import React from "react";
+import React, { useEffect } from "react";
 
-const ViewOrganization = ({ isOpen, setIsOpen, data }) => {
-  console.log(data, "DATA");
-  const formSheetData = {
-    triggerText: null,
-    title: "View Organization",
-    description: null,
-    footer: null,
+const ViewOrganization = ({ data }) => {
+  useEffect(() => {
+    // Debug: Log the data structure to see what's available
+    console.log("Organization data structure:", data);
+  }, [data]);
+
+  const renderField = (label, value) => (
+    <div className="flex flex-col">
+      <div className="mb-2 text-sm font-medium text-neutral-900">{label}</div>
+      <div className="leading-5 text-neutral-1200">{value || "N/A"}</div>
+    </div>
+  );
+
+  // Helper function to format date format string to user-friendly format
+  const formatDateFormat = (formatString) => {
+    console.log("Original date format value:", formatString);
+    
+    if (!formatString) return "N/A";
+    
+    // Direct mapping of format strings to display format
+    const formatDisplayMap = {
+      '%Y-%m-%d': 'YYYY-MM-DD',
+      '%d-%m-%Y': 'DD-MM-YYYY',
+      '%m-%d-%Y': 'MM-DD-YYYY',
+      '%d/%m/%Y': 'DD/MM/YYYY',
+      '%m/%d/%Y': 'MM/DD/YYYY',
+      '%Y/%m/%d': 'YYYY/MM/DD'
+    };
+    
+    // Return the mapped display format if it exists, otherwise return the original
+    return formatDisplayMap[formatString] || formatString;
+  };
+
+  // Helper function to get name values considering various data structures
+  const getDisplayValue = (value, idField, displayOptions) => {
+    if (!value) return "N/A";
+    
+    // If value is already a string and not a numeric ID
+    if (typeof value === 'string' && isNaN(parseInt(value))) {
+      return value;
+    }
+    
+    // Check for possible name fields in the data
+    for (const option of displayOptions) {
+      if (data && data[option] !== undefined) {
+        return data[option];
+      }
+    }
+    
+    // Return the original value if no better option found
+    return value;
   };
 
   return (
-    <SheetComponent
-      {...formSheetData}
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      width="568px"
-    >
-      <DetailCard detailCardTitle="Basic Information">
-        <DetailBox label="Company Name" value={data?.name} />
-        <DetailBox label="Legal Name" value={data?.legal_name} />
-        <DetailBox label="Description" value={data?.description} />
-        <DetailBox
-          label="Licensing Authority"
-          value={data?.licensing_authority}
-        />
-        <DetailBox label="Licensing Number" value={data?.licensing_number} />
-        <DetailBox label="Timezone" value={data?.timezone} />
-        <DetailBox label="Date Format" value={data?.date_format} />
-        <DetailBox label="Currency" value={data?.currency} />
-      </DetailCard>
+    <div className="space-y-6">
+      {/* Main Office Section */}
+      <div className="overflow-hidden bg-white border-b border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h2 className="text-xl font-medium text-plum-1100">Main Office Information</h2>
+        </div>
+        
+        <div className="p-6">
+          <div className="grid grid-cols-3 gap-x-6 gap-y-8">
+            {renderField("Company Title", data?.name)}
+            {renderField("Company's Legal Name", data?.legal_name)}
+            {renderField("Company Description", data?.company_description)}
+            {renderField("Licensing Authority", data?.licensing_authority)}
+            {renderField("Licensing Number", data?.registration_number)}
+            {renderField("Timezone", data?.time_zone)}
+            {renderField("Date Format", formatDateFormat(data?.date_format))}
+            {renderField("Currency", data?.currency)}
+            {renderField("Payroll Starting Date", data?.payroll_start_date)}
+          </div>
+        </div>
+      </div>
 
-      <DetailCard detailCardTitle="Address">
-        <DetailBox label="City" value={data?.city} />
-        <DetailBox label="State" value={data?.state} />
-        <DetailBox label="Country" value={data?.country} />
-        <DetailBox label="Zip/ Postal Code" value={data?.zipcode} />
-        <DetailBox label="Address" value={data?.address} />
-      </DetailCard>
+      {/* Address Info Section */}
+      <div className="overflow-hidden bg-white border-b border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h2 className="text-xl font-medium text-plum-1100">Address Information</h2>
+        </div>
+        
+        <div className="p-6">
+          <div className="grid grid-cols-3 gap-x-6 gap-y-8">
+            {renderField("Country", getDisplayValue(data?.country, 'country', ['country_name', 'countryName', 'countryLabel']))}
+            {renderField("State", getDisplayValue(data?.state, 'state', ['state_name', 'stateName', 'stateLabel']))}
+            {renderField("City", getDisplayValue(data?.city, 'city', ['city_name', 'cityName', 'cityLabel']))}
+            {renderField("Zip/Postal Code", data?.po_box)}
+            {renderField("Address", data?.address)}
+          </div>
+        </div>
+      </div>
 
-      <DetailCard detailCardTitle="Contact Information">
-        <DetailBox label="Official Website" value={data?.website} />
-        <DetailBox label="Office Number (Landline)" value={data?.phone_number} />
-        <DetailBox label="Contact Person Number (Mobile)" value={data?.contact_person_number} />
-        <DetailBox label="Contact Person Name" value={data?.contact_person} />
-        <DetailBox label="Official Email" value={data?.email} />
-      </DetailCard>
-    </SheetComponent>
+      {/* Contact Info Section */}
+      <div className="overflow-hidden bg-white border-b border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h2 className="text-xl font-medium text-plum-1100">Contact Information</h2>
+        </div>
+        
+        <div className="p-6">
+          <div className="grid grid-cols-3 gap-x-6 gap-y-8">
+            {renderField("Official Website", data?.website)}
+            {renderField("Official Contact Person", data?.contact_person)}
+            {renderField("Office Contact Number", data?.phone_number)}
+            {renderField("Official Email", data?.email)}
+          </div>
+        </div>
+      </div>
+
+      {/* Logo display if available */}
+      {data?.logo && (
+        <div className="overflow-hidden ">
+          <div className="px-6 py-4 border-b border-gray-700">
+            <h2 className="text-xl font-medium text-plum-1100">Company Logo</h2>
+          </div>
+          
+          <div className="flex justify-center p-6">
+            <img 
+              src={data.logo} 
+              alt="Company Logo" 
+              className="object-contain max-h-40"
+            />
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -22,9 +22,9 @@ import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
  */
 export const EmployeeColumns = [
   {
-    dataField: "serial_number",
+    dataField: "id",
     text: "ID",
-    formatter: (cell, row) => <EmployeeID value={cell || row?.id} />,
+    formatter: (cell, row) => row.serial_number ?? <EmployeeID value={cell} />,
     dataSort: true,
     minWidth: "105px",
   },
@@ -43,12 +43,17 @@ export const EmployeeColumns = [
     text: "Role",
     formatter: (cell, row) => <UserRole value={cell} />,
     dataSort: true,
+    maxWidth:'120px'
   },
   {
     dataField: "username",
     text: "Username",
     minWidth: "105px",
+    maxWidth:'120px',
     dataSort: true,
+    formatter: (cell) => (
+      <div className="overflow-hidden text-ellipsis">{cell}</div>
+    ),
   },
   {
     dataField: "work_email",

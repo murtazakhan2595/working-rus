@@ -3,12 +3,14 @@ import React, { useEffect, useRef, useState } from "react";
 import AddOrganizationForm from "./AddOrganizationForm";
 import { saveOrganization } from "app/hooks/officeSetting";
 import { toast } from "react-toastify";
+import AlertDialogue from "components/ui/AlertDialogue";
 
 const AddOrganization = ({ reload, editData, setEditData, edit, setEdit}) => {
   const formRef = useRef();
   const [isOpen, setIsOpen] = useState(edit??false);
-
-
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [formData, setFormData] = useState(null);
+  const [resetFormFn, setResetFormFn] = useState(null);
 
   useEffect(() => {
     if((!isOpen && edit)){
@@ -24,9 +26,13 @@ const AddOrganization = ({ reload, editData, setEditData, edit, setEdit}) => {
     footer: null,
   };
 
+  const handleFormSubmit = (data, resetForm) => {
+    setFormData(data);
+    setResetFormFn(() => resetForm);
+    setShowConfirmation(true);
+  };
 
-
-  const handleSubmit = async (formData, resetForm) => {
+  const handleConfirmSubmit = async () => {
     console.log("Form submitted:", formData);
   
     const preparedFormData = new FormData();
@@ -43,36 +49,58 @@ const AddOrganization = ({ reload, editData, setEditData, edit, setEdit}) => {
       }
     });
   
+    // Set confirmation dialog to false first
+    setShowConfirmation(false);
+    
     // Pass the FormData to saveOrganization
-    const response = await saveOrganization(formData?.id , preparedFormData);
+    const response = await saveOrganization(formData?.id, preparedFormData);
     if (response) {
-      resetForm();
+      resetFormFn();
+      // Close the sheet
       setIsOpen(false);
-      toast.success("Organization saved successfully");
-      reload();
+      // After the sheet is closed, trigger the reload
+      setTimeout(() => {
+        toast.success("Organization saved successfully");
+        reload();
+      }, 100);
     } else {
-      resetForm();
       toast.error("Error saving organization");
     }
   };
   
-
-
   return (
-    <SheetComponent
-      {...formSheetData}
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      width="600px"
-    >
-      <AddOrganizationForm
+    <>
+      <SheetComponent
+        {...formSheetData}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        handleSubmit={handleSubmit}
-        editData={editData}
-        edit={edit}
+        width="600px"
+      >
+        <AddOrganizationForm
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          handleSubmit={handleFormSubmit}
+          editData={editData}
+          edit={edit}
+        />
+      </SheetComponent>
+
+      <AlertDialogue
+        isOpen={showConfirmation}
+        setIsOpen={setShowConfirmation}
+        title="Confirm Update"
+        description="Are you sure you want to save these changes?"
+        handleContinue={handleConfirmSubmit}
+        continueText="Save"
+        cancelText="Cancel"
+        buttonType="custom"
+        className="font-medium text-primary-1100"
+        customStyles={{
+          continueButton: "bg-green-600 text-white hover:bg-green-700 px-4 py-2 rounded-full font-medium",
+          cancelButton: "bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded-full font-medium"
+        }}
       />
-    </SheetComponent>
+    </>
   );
 };
 
