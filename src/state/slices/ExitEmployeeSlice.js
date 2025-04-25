@@ -9,6 +9,7 @@ const baseUrl = userInitialState.baseUrl;
 const initialState = {
   TerminationReasons: [],
   exitRequests: [],
+  count: 0, // Add count for pagination
   apiStatus: "idle",
   loading: false,
   error: null,
@@ -27,12 +28,44 @@ export const fetchTerminationReasons = createAsyncThunk(
   }
 );
 
+// Helper function to build query string from filters
+const buildQueryString = (options, filterData, ordering) => {
+  const params = new URLSearchParams();
+
+  // Add pagination parameters
+  if (options) {
+    params.append('page', options.page);
+    params.append('page_size', options.sizePerPage);
+  }
+
+  // Add ordering
+  if (ordering) {
+    params.append('ordering', ordering);
+  }
+
+  // Add filter parameters
+  if (filterData) {
+    Object.entries(filterData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.append(key, value);
+      }
+    });
+  }
+
+  return params.toString();
+};
+
 // Async thunk for fetching employee exit data
 export const fetchEmployeeExitRequests = createAsyncThunk(
   'exit_emp/fetchEmployeeExitRequests',
-  async (_, { rejectWithValue }) => {
+  async ({ options, filterData, ordering } = {}, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${baseUrl}/employeeExit`, {
+      const queryString = buildQueryString(options, filterData, ordering);
+      const url = `${baseUrl}/employeeExit${queryString ? `?${queryString}` : ''}`;
+      
+      console.log('Fetching URL:', url); // For debugging
+      
+      const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "application/json",
@@ -40,8 +73,11 @@ export const fetchEmployeeExitRequests = createAsyncThunk(
       });
       
       if (response.status === 200) {
-        const results = response.data.results?.result || [];
-        return results;
+        // Assuming the API returns { count: number, results: array }
+        return {
+          results: response.data.results?.result || [],
+          count: response.data.count || 0
+        };
       } else {
         return rejectWithValue('Failed to fetch exit requests');
       }
@@ -58,6 +94,7 @@ const exitEmployeeSlice = createSlice({
   reducers: {
     clearExitRequests: (state) => {
       state.exitRequests = [];
+      state.count = 0;
     }
   },
   extraReducers: (builder) => {
@@ -81,7 +118,8 @@ const exitEmployeeSlice = createSlice({
       })
       .addCase(fetchEmployeeExitRequests.fulfilled, (state, action) => {
         state.loading = false;
-        state.exitRequests = action.payload;
+        state.exitRequests = action.payload.results;
+        state.count = action.payload.count;
       })
       .addCase(fetchEmployeeExitRequests.rejected, (state, action) => {
         state.loading = false;
