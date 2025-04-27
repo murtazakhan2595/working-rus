@@ -112,11 +112,11 @@ const ViewOrganization = ({ data }) => {
       {/* Logo display if available */}
       {data?.logo && (
         <div className="overflow-hidden ">
-          <div className="px-6 py-4 border-b border-gray-700">
+          <div className="px-6 py-4">
             <h2 className="text-xl font-medium text-plum-1100">Company Logo</h2>
           </div>
           
-          <div className="flex justify-center p-6">
+          <div className="flex justify-start p-6">
             <img 
               src={data.logo} 
               alt="Company Logo" 
