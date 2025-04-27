@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import TableCustom from "components/CustomTable";
 import { Card } from "components/ui/card";
 import DepartmentAction from "../sections/Departments/DepartmentAction";
@@ -6,6 +6,7 @@ import { CardContent } from "components/ui/card";
 import PageLoader from './../../../../components/PageLoader';
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
+import { CardDescription } from "components/ui/card";
 
 const Departments = ({
   options,
@@ -60,7 +61,8 @@ const Departments = ({
 
   useEffect(() => {
     getDepartments();
-  }, [options]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options.page, options.sizePerPage]);
 
   return (
     <>
@@ -70,6 +72,9 @@ const Departments = ({
         <Card>
           <CardHeader>
             <CardTitle className="text-primary">Departments</CardTitle>
+          <CardDescription>
+            this is the description
+          </CardDescription>
           </CardHeader>
           <CardContent>
             <TableCustom
