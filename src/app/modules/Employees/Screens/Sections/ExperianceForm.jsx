@@ -99,7 +99,7 @@ const Experience = ({
                 onChange(field, value);
               }}
               maxRows={4}
-              maxLength={'1000'}
+              maxLength={'700'}
             />
           </div>
           <div className="col-span-2 space-y-2">

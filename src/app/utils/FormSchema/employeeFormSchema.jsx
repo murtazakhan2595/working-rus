@@ -143,10 +143,10 @@ const validationEmployeeExperienceFormSchema = (values) => {
       const experienceErrors = {};
       if (!value.disableEndDate && !value.exp_end_date && index !== 0) {
         experienceErrors.exp_end_date = "End Date is required";
-      } else {
-        if (!values.exp_letter)
-          experienceErrors.exp_letter = "Resume is required";
       }
+      if (index === 0 && !value.exp_letter)
+        experienceErrors.exp_letter = "Resume is required";
+
       if (!value.exp_start_date)
         experienceErrors.exp_start_date = "Start Date is required";
       if (!value.exp_organization)
@@ -161,6 +161,7 @@ const validationEmployeeExperienceFormSchema = (values) => {
       }
     });
   }
+  console.log(values, errors);
   return errors;
 };
 

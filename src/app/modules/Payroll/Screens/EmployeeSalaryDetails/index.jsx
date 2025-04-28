@@ -248,10 +248,10 @@ export default function EmployeeSalaryDetails() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-plum-900">
-              {Number(payrollDetails?.basic_salary)} AED
+              {Number(payrollDetails?.ctc)} AED
             </div>
             <p className="text-xs text-muted-foreground">
-              {numberToWords(Number(payrollDetails?.basic_salary))}
+              {numberToWords(Number(payrollDetails?.ctc))}
             </p>
           </CardContent>
         </Card>
@@ -278,14 +278,13 @@ export default function EmployeeSalaryDetails() {
             <CardTitle className="text-plum-900">Bank Details</CardTitle>
           </CardHeader>
           <CardContent className="flex items-center justify-between">
-            <div class="grid grid-cols-1 gap-4 w-full">
+            <div class="grid grid-cols-2 gap-4 w-full">
               {BankDetails &&
                 BankDetails.map((data, index) => {
                   return (
                     <DetailBox
-                      // orientation="horizontal"
+                      orientation="horizontal"
                       key={index}
-                      className=""
                       label={data.label}
                       value={data.value}
                       fallbackText={""}
