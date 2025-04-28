@@ -15,12 +15,49 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-const getDepartmentList = async (payload) => {
+// const getDepartmentList = async (payload) => {
+//   const pageNo = payload?.options?.page ?? "";
+//   const pageSize = payload?.options?.sizePerPage ?? "";
+//   const filterData = payload?.filterData ?? {};
+//   try {
+//     const URL = `/department/?ordering=-created_at&${
+//       pageNo ? `page=${pageNo}&` : ""
+//     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+//       JSON.stringify(filterData)
+//     )}`;
+//     const response = await axios.get(`${baseUrl}${URL}`, {
+//       headers: headers(),
+//     });
+//     if (response.status === 200) {
+//       const departmentResponse = response.data;
+//       const departmentList = await departmentResponse?.results?.map(
+//         (department) => ({
+//           value: department.id,
+//           label: department.name,
+//           created_at: department.created_at,
+//           description: department.description,
+//           id: department.id,
+//           name: department.name,
+//           organization: department.organization,
+//           updated_at: department.updated_at,
+//           parent_department: department.parent_department,
+//         })
+//       );
+//       return { results: departmentList, count: departmentResponse.count };
+//     } else return [];
+//   } catch (error) {
+//     console.error("Error fetching Personal Info data :", error);
+//   }
+//   return [];
+// };
+ const getDepartmentList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "created_at";
   try {
-    const URL = `/department/?ordering=-created_at&${
+
+    const URL = `/department/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
@@ -30,27 +67,28 @@ const getDepartmentList = async (payload) => {
     });
     if (response.status === 200) {
       const departmentResponse = response.data;
+      // const departmentList = await mapDepartmentList(departmentResponse?.results);
       const departmentList = await departmentResponse?.results?.map(
-        (department) => ({
-          value: department.id,
-          label: department.name,
-          created_at: department.created_at,
-          description: department.description,
-          id: department.id,
-          name: department.name,
-          organization: department.organization,
-          updated_at: department.updated_at,
-          parent_department: department.parent_department,
-        })
-      );
-      return { results: departmentList, count: departmentResponse.count };
+                (department) => ({
+                  value: department.id,
+                  label: department.name,
+                  created_at: department.created_at,
+                  description: department.description,
+                  id: department.id,
+                  name: department.name,
+                  organization: department.organization,
+                  updated_at: department.updated_at,
+                  parent_department: department.parent_department,
+                })
+              );
+              return { results: departmentList, count: departmentResponse.count };
+      
     } else return [];
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
   }
   return [];
 };
-
 export const getBranchList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";

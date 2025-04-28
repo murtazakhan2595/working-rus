@@ -3,7 +3,11 @@ import { toast } from "react-toastify";
 import { Attendance } from "app/utils/Types/Attendance";
 import { validateUpdateAttendanceFormSchema } from "app/utils/FormSchema/AttendanceFormSchema";
 import { SheetUI } from "components";
-import { saveAttendance,getAttendanceData } from "app/hooks/attendance";
+import {
+  saveAttendance,
+  getAttendanceData,
+  getAttendance,
+} from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import {
   RadioGroupInput,
@@ -34,6 +38,7 @@ const UpdateEmployeeAttendance = ({
   const [formData, setFormData] = useState(Attendance);
   const [formValues, setFormValues] = useState(Attendance);
   const [selectedEmployee, setSelectedEmployee] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchData = async (isMounted) => {
     try {
@@ -49,6 +54,35 @@ const UpdateEmployeeAttendance = ({
       console.error(error);
     }
   };
+
+  const fetchAttendanceData = async (isMounted, date) => {
+    setIsLoading(true);
+    try {
+      const response = await getAttendance({
+        filterData: { date: date, employee_id: selectedEmployee.id },
+      });
+      if (isMounted && response) {
+        if (response.results && response.results.length > 0) {
+          setFormData(response.results[0]);
+          setFormValues(response.results[0]);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (formValues.date && selectedEmployee.id) {
+      fetchAttendanceData(isMounted, formValues.date);
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [formValues.date]);
 
   useEffect(() => {
     let isMounted = true;
@@ -161,20 +195,6 @@ const UpdateEmployeeAttendance = ({
             sheetCardTitle: "Attendance Details",
             InputFiels: [
               {
-                InputField: RadioGroupInput,
-                name: "status",
-                required: true,
-                disabled: false,
-                label: "Status",
-                options: [
-                  { value: "Present", label: "Present" },
-                  { value: "Absent", label: "Absent" },
-                  { value: "Late", label: "Late" },
-                  { value: "Weekend", label: "Weekend" },
-                ],
-                colsSpan: 3,
-              },
-              {
                 InputField: DateInput,
                 name: "date",
                 required: true,
@@ -202,6 +222,20 @@ const UpdateEmployeeAttendance = ({
                     },
                   ]
                 : []),
+              {
+                InputField: RadioGroupInput,
+                name: "status",
+                required: true,
+                disabled: false,
+                label: "Status",
+                options: [
+                  { value: "Present", label: "Present" },
+                  { value: "Absent", label: "Absent" },
+                  { value: "Late", label: "Late" },
+                  { value: "Weekend", label: "Weekend" },
+                ],
+                colsSpan: 3,
+              },
             ].filter(Boolean),
           },
         ],

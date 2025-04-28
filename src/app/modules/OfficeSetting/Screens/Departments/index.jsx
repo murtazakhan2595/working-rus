@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import TableCustom from "components/CustomTable";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
@@ -7,14 +7,18 @@ import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
 import { DepartmentColumn } from "../../sections/OfficeSettingTableColumns";
+import { FilterInput } from "components/FormControl";
+import { getDepartmentList } from "app/hooks/general";
 
 const Departments = ({
-  options,
-  setOptions,
   loading,
-  getDepartments,
-  department,
+  reload,
 }) => {
+  const [Departments, setDepartments] = useState({});
+  const [filterData, setFilterData] = useState({});
+  const [ordering, setOrdering] = useState("-id");
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -23,40 +27,89 @@ const Departments = ({
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
   };
 
- 
+  const fetchData = async (isMounted) => {
+    try {
+      const response = await getDepartmentList({filterData,options,ordering});
+      if (isMounted && response) {
+        setDepartments(response);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    getDepartments();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [options.page, options.sizePerPage]);
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [filterData,ordering,options,reload]);
+
+  const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
 
   return (
-    <>
+    <div className="flex flex-col justify-end gap-4">
+      <FilterInput
+        filters={[
+          {
+            type: "search",
+            placeholder: "Search Branch Name",
+            name: "branch_name",
+          },
+          {
+            type: "search",
+            placeholder: "Search Branch Number",
+            name: "branch_number",
+          },
+          {
+            type: "search",
+            placeholder: "Search Branch Address",
+            name: "branch_address",
+          },
+        ]}
+        className='justify-end'
+        onChange={handleFilterChange}
+      />
       {loading ? (
         <PageLoader />
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle className="text-primary">Departments</CardTitle>
-          <CardDescription className="text-neutral-1100">
-            Here you can manage your departments. Add, edit, or delete departments as needed.
-          </CardDescription>
+            <CardTitle className="text-primary">Department List</CardTitle>
+            <CardDescription className="text-neutral-1100">
+              Here you can manage your departments. Add, edit, or delete departments as needed.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <TableCustom
-              columns={DepartmentColumn(getDepartments)}
-              data={department?.results || []}
+              columns={DepartmentColumn(fetchData)}
+              data={Departments?.results || []}
               tableOptions={tableOptions}
-              dataTotalSize={department?.count || 0}
+              dataTotalSize={Departments?.count || 0}
               pagination={true}
               className="organization-table"
             />
           </CardContent>
         </Card>
       )}
-    </>
+    </div>
   );
 };
 
