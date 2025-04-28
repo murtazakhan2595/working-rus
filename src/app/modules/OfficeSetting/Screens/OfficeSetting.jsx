@@ -50,9 +50,11 @@ const OfficeSetting = () => {
 
   // Get user details from Redux store
   const userDetails = useSelector((state) => state.emp?.user_details);
-  const userOrganizationId = userDetails?.organization_id;
+  console.log("User details Or:", userDetails);
+  const userOrganizationId = userDetails?.organization_id || userDetails?.organization;
   
   console.log("User organization ID:", userOrganizationId);
+  console.log("Full organization field from user:", userDetails?.organization);
   
   const [filteredOrganizations, setFilteredOrganizations] = useState([]);
   
@@ -68,17 +70,17 @@ const OfficeSetting = () => {
   const getOrganization = async () => {
     try {
       console.log("Fetching organization data...");
+      console.log("Current user organization ID from Redux:", userOrganizationId);
       setLoading(true);
       const response = await getOrganizationList(true);
       console.log("Organization API response in component:", response);
       if (response) {
-        // Filter organizations based on user's organization ID
         if (response.results && response.results.length > 0) {
           console.log("All organizations:", response.results.map(org => ({ id: org.id, name: org.name })));
           
           let orgToShow = [];
           
-          // If userOrganizationId exists, find the matching organization
+          // Find user's organization if userOrganizationId exists
           if (userOrganizationId) {
             const userOrg = response.results.find(
               org => String(org.id) === String(userOrganizationId)
@@ -100,7 +102,7 @@ const OfficeSetting = () => {
             fetchLocationDetails(response.results[0]);
           }
           
-          // Set filtered organizations
+          // Set filtered organizations to only show user's organization
           setFilteredOrganizations(orgToShow);
         }
       }
@@ -130,9 +132,21 @@ const OfficeSetting = () => {
   const getDepartments = async () => {
     try {
       setDepLoading(true);
+      // Create filter data with organization ID if available
+      const filterData = {};
+      
+      // When showing all organizations, use the user's organization ID if available
+      if (userOrganizationId) {
+        console.log("Filtering departments by user's organization ID:", userOrganizationId);
+        filterData.organization = userOrganizationId;
+      }
+      
       const departmentResponse = await getDepartmentList({
         options: depOptions,
+        filterData: filterData
       });
+      
+      console.log("Department data retrieved:", departmentResponse);
       setDepartments(departmentResponse);
     } catch (error) {
       console.error("Error fetching lists:", error);
@@ -209,9 +223,25 @@ const OfficeSetting = () => {
     }
   };
 
+  // Function to check if an organization is the user's organization
+  const isUserOrganization = (organizationId) => {
+    if (!userOrganizationId) return false;
+    return String(organizationId) === String(userOrganizationId);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
+      console.log("Initial component load - User details:", userDetails);
+      console.log("User organization ID before fetching:", userOrganizationId);
+      console.log("Organization property:", userDetails?.organization);
+      
+      // First get organization data
       await getOrganization();
+      
+      // Log after fetching
+      console.log("After fetching - filtered organizations:", filteredOrganizations);
+      
+      // Then fetch the rest of the data that depends on organization
       await fetchShifts();
       await getDepartments();
       await getDesignations();
@@ -220,6 +250,15 @@ const OfficeSetting = () => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Add another useEffect to update departments when filteredOrganizations changes
+  useEffect(() => {
+    if (filteredOrganizations.length > 0) {
+      console.log("Organization changed, updating departments...");
+      getDepartments();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredOrganizations]);
 
   // Helper function to get location names
   const getLocationName = (type, id, orgId) => {
@@ -302,15 +341,21 @@ const OfficeSetting = () => {
             </div>
             <TabsContent value="offices">
               {filteredOrganizations.length > 0 ? (
-                <div className="space-y-10">
-                  {/* Show only the filtered organizations */}
+                <div className="space-y-8">
+                  <h2 className="mb-4 text-2xl font-medium text-primary">Organization Details</h2>
+                  {/* Show user's organization */}
                   {filteredOrganizations.map((organization, index) => (
-                    <Card key={organization.id || index} className="mb-8">
+                    <Card 
+                      key={organization.id || index} 
+                      className="mb-8"
+                    >
                       <CardHeader className="flex flex-col items-start justify-between pb-2 border-b">
                         <div className="flex flex-row items-start justify-between w-full">
-                          <CardTitle className="text-2xl font-medium text-primary">
-                            Organization Details
-                          </CardTitle>
+                          <div>
+                            <CardTitle className="text-2xl font-medium text-primary">
+                              {organization.name}
+                            </CardTitle>
+                          </div>
                           <Button
                             variant="outline"
                             size="sm"

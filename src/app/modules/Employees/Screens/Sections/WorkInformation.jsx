@@ -9,6 +9,7 @@ import {
 import { SelectInputComponent, SelectMultiInputComponent, DateInput } from 'components/form-control'
 import { getDepartmentList, getManagersList, getDesignationList,getOrganizationList } from 'app/hooks/general';
 import {getManagerSelected,countryOptions} from 'data/Data'
+import { countriesList } from 'data/Data';
 
 
 const WorkInformation = ({ errors, touched, values, onChange, baseUrl, token }) => {
