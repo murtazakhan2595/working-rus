@@ -1,19 +1,12 @@
-import { Button } from "components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "src/@/components/ui/dropdown-menu";
 import React, { useState } from "react";
-import { MoreHorizontal } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
 import SheetComponent from "components/ui/SheetComponent";
 import AddBranchForm from "./AddBranchForm";
 import ViewBranch from "app/modules/OfficeSetting/Screens/Branches/ViewBranch";
+import ActionButtons from "components/ActionButtons";
 
-const DepartmentAction = ({ data, reload = () => {} }) => {
+const BranchAction = ({ data, reload = () => {} }) => {
   const [view, setView] = useState(null);
   const [OpenDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [EditBranch, setEditBranch] = useState(false);
@@ -25,18 +18,18 @@ const DepartmentAction = ({ data, reload = () => {} }) => {
     footer: null,
   };
 
-  const handleView = (data) => {
+  const handleView = () => {
     setView({
       visible: true,
       data: data,
     });
   };
 
-  const handleEdit = (data) => {
+  const handleEdit = () => {
     setEditBranch(true);
   };
 
-  const handleDelete = (data) => {
+  const handleDelete = () => {
     setOpenDeleteAlert(true);
   };
 
@@ -51,25 +44,14 @@ const DepartmentAction = ({ data, reload = () => {} }) => {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button aria-haspopup="true" size="icon" variant="ghost">
-            <MoreHorizontal className="w-4 h-4" />
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => handleEdit(data)}>
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleView(data)}>
-            View
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleDelete(data)}>
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <ActionButtons 
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        viewTooltip="View Branch Details"
+        editTooltip="Edit Branch"
+        deleteTooltip="Delete Branch"
+      />
 
       {OpenDeleteAlert && (
         <AlertDialogue
@@ -107,10 +89,11 @@ const DepartmentAction = ({ data, reload = () => {} }) => {
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
           data={view.data}
+          reload={reload}
         />
       )}
     </>
   );
 };
 
-export default DepartmentAction;
+export default BranchAction;

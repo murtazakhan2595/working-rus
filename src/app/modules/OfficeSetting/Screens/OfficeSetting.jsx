@@ -1,7 +1,7 @@
 import { Header } from "components";
 import { Card } from "components/ui/card";
 import React, { useEffect, useState } from "react";
-import AddOrganization from "../sections/Organizations/AddOrganization";
+import AddOrganization from "./Organizations/AddOrganization";
 import { getWorkingHours } from "app/hooks/general";
 import {
   Tabs,
@@ -12,20 +12,20 @@ import {
 import Departments from "./Departments";
 import Branches from "./Branches";
 import Designations from "./Designations";
-import AddDepartment from "../sections/Departments/AddDepartment";
+import AddDepartment from "./Departments/AddDepartment";
 import AddBranch from "./Branches/AddBranch";
 import { getOrganizationList } from "app/hooks/general";
 import { CardContent } from "components/ui/card";
-import AddDesignation from "../sections/Designations/AddDesignation";
+import AddDesignation from "./Designations/AddDesignation";
 import WorkingHours from "./WorkingHours";
 import Shift from "../sections/Shift/Shift";
 import { PageLoader } from "components";
 import { getDepartmentList } from "app/hooks/general";
 import { getDesignationList } from "app/hooks/general";
 import OnboardingChecklist from "./OnboardingChecklist";
-import OnboardingTab from "../sections/OnboardingChecklist/OnboardingTab";
+import OnboardingTab from "./OnboardingChecklist/OnboardingTab";
 import { getOnboardingDocument } from "app/hooks/officeSetting";
-import ViewOrganization from "../sections/Organizations/ViewOrganization";
+import ViewOrganization from "./Organizations/ViewOrganization";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
 import { CardHeader } from "components/ui/card";

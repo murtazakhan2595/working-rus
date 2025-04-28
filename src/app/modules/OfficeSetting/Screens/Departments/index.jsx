@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import TableCustom from "components/CustomTable";
 import { Card } from "components/ui/card";
-import DepartmentAction from "../sections/Departments/DepartmentAction";
 import { CardContent } from "components/ui/card";
-import PageLoader from './../../../../components/PageLoader';
+import PageLoader from '../../../../../components/PageLoader';
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
+import { DepartmentColumn } from "../../sections/OfficeSettingTableColumns";
 
 const Departments = ({
   options,
@@ -25,39 +25,7 @@ const Departments = ({
     onPageChange: onPageChange,
   };
 
-  const columns = [
-    {
-      dataField: "id",
-      text: "ID",
-    },
-    {
-      dataField: "name",
-      text: "Name",
-    },
-    {
-      dataField: "description",
-      text: "Description",
-    },
-    {
-      dataField: "Parent Department",
-      text: "Parent Department",
-    },
-    {
-      dataField: "organization",
-      text: "Organization",
-    },
-    {
-      text: "Action",
-      formatter: (cell, row) => (
-        <DepartmentAction
-          // setEdit={setEdit}
-          // setEditData={setEditData}
-          reload={getDepartments}
-          data={row}
-        />
-      ),
-    },
-  ];
+ 
 
   useEffect(() => {
     getDepartments();
@@ -72,13 +40,13 @@ const Departments = ({
         <Card>
           <CardHeader>
             <CardTitle className="text-primary">Departments</CardTitle>
-          <CardDescription>
-            this is the description
+          <CardDescription className="text-neutral-1100">
+            Here you can manage your departments. Add, edit, or delete departments as needed.
           </CardDescription>
           </CardHeader>
           <CardContent>
             <TableCustom
-              columns={columns}
+              columns={DepartmentColumn(getDepartments)}
               data={department?.results || []}
               tableOptions={tableOptions}
               dataTotalSize={department?.count || 0}

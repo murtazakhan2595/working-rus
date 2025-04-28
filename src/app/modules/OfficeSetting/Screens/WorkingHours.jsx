@@ -1,46 +1,25 @@
-import { Switch } from 'src/@/components/ui/switch';
+
 import TableCustom from 'components/CustomTable';
 import { CardTitle, CardHeader, CardContent, Card } from 'components/ui/card';
-import React, { useEffect, useState } from 'react';
-import dayjs from 'dayjs';
-import ShiftActions from '../sections/Shift/ShiftActions';
+import { WorkingHoursColumn } from '../sections/OfficeSettingTableColumns';
+import { CardDescription } from 'components/ui/card';
+
+
+
 
 const WorkingHours = ({ data, reload }) => {
-  const columns = [
-    {
-      dataField: "name",
-      text: "Shift Name",
-    },
-    {
-      dataField: "type",
-      text: "Shift Type",
-    },
-    {
-      dataField: "starttime",
-      text: "Start Time",
-      formatter: (cell) =>
-        dayjs(cell).isValid() ? dayjs(cell).format("hh:mm A") : "--",
-    },
-    {
-      dataField: "endtime",
-      text: "End Time",
-      formatter: (cell) =>
-        dayjs(cell).isValid() ? dayjs(cell).format("hh:mm A") : "--",
-    },
-    {
-      text: "Action",
-      formatter: (cell, row) => <ShiftActions data={row} reload={reload} />,
-    },
-  ];
-
+ 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-primary">Working Hours</CardTitle>
+        <CardDescription className="text-neutral-1100">
+          Here you can manage your working hours. Add, edit, or delete working hours as needed.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <TableCustom
-          columns={columns}
+          columns={WorkingHoursColumn(reload)}
           data={data}
           pagination={false}
           itemsPerPage={100}

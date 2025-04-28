@@ -1,8 +1,9 @@
-import { Switch } from "src/@/components/ui/switch";
+
 import TableCustom from "components/CustomTable";
 import { CardTitle, CardHeader, CardContent, Card } from "components/ui/card";
-import React, { useEffect, useState } from "react";
-import OnboardingActions from "../sections/OnboardingChecklist/OnboardingActions";
+
+import OnboardingActions from "./OnboardingActions";
+import { CardDescription } from "components/ui/card";
 
 const OnboardingChecklist = ({ data, reload }) => {
   const columns = [
@@ -24,6 +25,9 @@ const OnboardingChecklist = ({ data, reload }) => {
         <CardTitle className="text-primary">
           Onboarding Document Checklist
         </CardTitle>
+        <CardDescription className="text-neutral-1100">
+          Here you can manage your onboarding document checklist. Add, edit, or delete onboarding document checklist as needed.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <TableCustom
