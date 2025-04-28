@@ -6,6 +6,7 @@ import { getDepartmentNames } from "app/hooks/employee";
 import DesignationAction from "../Screens/Designations/DesignationAction";
 import { getDesignations } from "app/hooks/employee";
 import OnboardingActions from "../Screens/OnboardingChecklist/OnboardingActions";
+import { FormatID } from "utils/getValuesFromTables";
 
 // 
 export const BranchColumn = (reload) => [
@@ -13,6 +14,7 @@ export const BranchColumn = (reload) => [
     dataField: "id",
     text: "ID",
     dataSort: true,
+    formatter: (cell, row) => <FormatID value={cell} prefix={'BR-'} />,
   },
   {
     dataField: "branch_name",
@@ -67,6 +69,7 @@ export const DepartmentColumn = (reload) => [
   {
     dataField: "id",
     text: "ID",
+    formatter: (cell, row) => <FormatID value={cell} prefix={'DPT-'} />,
   },
   {
     dataField: "name",
@@ -102,6 +105,7 @@ export const DesignationColumn = (reload) => [
   {
     dataField: "id",
     text: "ID",
+    formatter: (cell, row) => <FormatID value={cell} prefix={'DSG-'} />,
   },
   {
     dataField: "name",

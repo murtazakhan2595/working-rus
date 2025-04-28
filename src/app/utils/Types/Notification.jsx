@@ -46,7 +46,7 @@ export const Notifications_Action_URL = [
   {
     module: "user_management",
     notification_type: "Transfer Request",
-    action_url: "#",
+    action_url: "/employee-tranfer",
   },
   {
     module: "user_management",
