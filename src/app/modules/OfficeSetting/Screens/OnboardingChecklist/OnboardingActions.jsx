@@ -13,26 +13,36 @@ import SheetComponent from "components/ui/SheetComponent";
 import ViewOnboarding from "./ViewOnboarding";
 import AddOnboardingForm from "./AddOnboardingForm";
 import { deleteOnboardingDocument } from "app/hooks/officeSetting";
+import ActionButtons from "components/ActionButtons";
 
 const OnboardingActions = ({ data, reload }) => {
-  console.log("DATA", data);
-  const [isEdit, setIsEdit] = useState(false);
-  const [isView, setIsView] = useState(false);
-  const [deleteDocument, setDeleteDocument] = useState(null);
+  const [view, setView] = useState(null);
+  const [deleteDept, setDeleteDept] = useState(null);
+  const [edit, setEdit] = useState(null);
 
   const formSheetData = {
     triggerText: null,
-    title: "Update Document Details",
+    title: "Update Department",
     description: null,
     footer: null,
   };
 
+  const handleView = () => {
+    setView({
+      visible: true,
+      data: data,
+    });
+  };
 
+  const handleEdit = () => {
+    setEdit({
+      open: true,
+      data: data,
+    });
+  };
 
-
-
-  const handleDelete = (data) => {
-    setDeleteDocument({
+  const handleDelete = () => {
+    setDeleteDept({
       open: true,
       data: data,
     });
@@ -40,11 +50,11 @@ const OnboardingActions = ({ data, reload }) => {
 
   const confirmDelete = async () => {
     try {
-      // Replace with your actual API endpoint
-      const response = await deleteOnboardingDocument(deleteDocument.data.id);
-      if (response) {
-        reload();
-      }
+      await deleteRecord(
+        `/department/${deleteDept?.data?.id}`,
+        deleteDept?.data?.name
+      );
+      reload();
     } catch (error) {
       console.log("ERROR", error);
     }
@@ -52,49 +62,56 @@ const OnboardingActions = ({ data, reload }) => {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button aria-haspopup="true" size="icon" variant="ghost">
-            <MoreHorizontal className="w-4 h-4" />
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setIsEdit(true)}>
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsView(true)}>
-            View
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleDelete(data)}>
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <ActionButtons 
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        viewTooltip="View Document Details"
+        editTooltip="Edit Document"
+        deleteTooltip="Delete Document"
+      />
 
-      {deleteDocument?.open && (
+      {deleteDept?.open && (
         <AlertDialogue
           title="Confirm Delete?"
-          description="This action can't be undone. All information associated with this document will be lost."
-          isOpen={deleteDocument.open}
+          description="This action can't be undone. All information associated with this will be lost."
+          isOpen={deleteDept.open}
           setIsOpen={(isOpen) =>
-            setDeleteDocument((prev) => ({ ...prev, open: isOpen }))
+            setDeleteDept((prev) => ({ ...prev, open: isOpen }))
           }
           handleContinue={() => {
             confirmDelete();
-            setDeleteDocument(null);
+            setDeleteDept(null);
           }}
         />
       )}
 
-      {isEdit && <AddOnboardingForm isOpen={isEdit} setIsOpen={setIsEdit} onboardingItem={data}/>}
+      {edit?.open && (
+        <SheetComponent
+          {...formSheetData}
+          isOpen={edit?.open}
+          setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
+          width="568px"
+        >
+          <AddOnboardingForm
+            isOpen={edit.open}
+            setIsOpen={(isOpen) =>
+              setEdit((prev) => ({ ...prev, open: isOpen }))
+            }
+            edit={edit}
+            setEdit={setEdit}
+            reload={reload}
+          />
+        </SheetComponent>
+      )}
 
-      {isView && (
+      {view?.visible && (
         <ViewOnboarding
-          isOpen={isView}
-          setIsOpen={setIsView
+          isOpen={view.visible}
+          setIsOpen={(isOpen) =>
+            setView((prev) => ({ ...prev, visible: isOpen }))
           }
-          data={data}
+          data={view.data}
         />
       )}
     </>

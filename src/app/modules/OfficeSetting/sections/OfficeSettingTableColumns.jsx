@@ -5,8 +5,9 @@ import DepartmentAction from "../Screens/Departments/DepartmentAction";
 import { getDepartmentNames } from "app/hooks/employee";
 import DesignationAction from "../Screens/Designations/DesignationAction";
 import { getDesignations } from "app/hooks/employee";
+import OnboardingActions from "../Screens/OnboardingChecklist/OnboardingActions";
 
-
+// 
 export const BranchColumn = (reload) => [
   {
     dataField: "id",
@@ -34,7 +35,7 @@ export const BranchColumn = (reload) => [
       width: '200px',
   },
 ];
-
+// 
 export const WorkingHoursColumn = (reload) => [
   {
     dataField: "name",
@@ -61,7 +62,7 @@ export const WorkingHoursColumn = (reload) => [
     formatter: (cell, row) => <ShiftActions data={row} reload={reload} />,
   },
 ];
-
+// Department Column
 export const DepartmentColumn = (reload) => [
   {
     dataField: "id",
@@ -96,6 +97,7 @@ export const DepartmentColumn = (reload) => [
     ),
   },
 ];
+// Designation Column
 export const DesignationColumn = (reload) => [
   {
     dataField: "id",
@@ -120,5 +122,16 @@ export const DesignationColumn = (reload) => [
     ),
   },
 ];
-
-
+// Onboarding Checklist Column
+export const OnboardingChecklistColumn = (reload) => [
+  {
+    dataField: "name",
+    text: "Document Name",
+  },
+  {
+    text: "Action",
+    formatter: (cell, row) => (
+      <OnboardingActions data={row} reload={reload} />
+    ),
+  },
+];

@@ -12,6 +12,7 @@ import { deleteRecord } from "app/hooks/general";
 import SheetComponent from "components/ui/SheetComponent";
 import ViewShift from "./ViewShift";
 import AddShiftForm from "./AddShiftForm";
+import ActionButtons from "components/ActionButtons";
 
 const ShiftActions = ({ data, reload }) => {
   const [view, setView] = useState(null);
@@ -62,26 +63,14 @@ const ShiftActions = ({ data, reload }) => {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button aria-haspopup="true" size="icon" variant="ghost">
-            <MoreHorizontal className="w-4 h-4" />
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => handleEdit(data)}>
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleView(data)}>
-            View
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleDelete(data)}>
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
+      <ActionButtons 
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        viewTooltip="View Shift Details"
+        editTooltip="Edit Shift"
+        deleteTooltip="Delete Shift"
+      />
       {deleteShift?.open && (
         <AlertDialogue
           title="Confirm Delete?"

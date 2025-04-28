@@ -13,6 +13,7 @@ import AddDesignationForm from "./AddDesignationForm";
 import SheetComponent from "components/ui/SheetComponent";
 import ViewDepartment from "../Departments/ViewDepartment";
 import ViewDesignation from "./ViewDesignation";
+import ActionButtons from "components/ActionButtons";
 
 const DesignationAction = ({ data, reload }) => {
   const [view, setView] = useState(null);
@@ -61,24 +62,14 @@ const DesignationAction = ({ data, reload }) => {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button aria-haspopup="true" size="icon" variant="ghost">
-            <MoreHorizontal className="w-4 h-4" />
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => handleEdit(data)}>
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={()=> handleView(data)}>View</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleDelete(data)}>
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
+      <ActionButtons 
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        viewTooltip="View Designation Details"
+        editTooltip="Edit Designation"
+        deleteTooltip="Delete Designation"
+      />
       {deleteDesignation?.open && (
         <AlertDialogue
           title="Confirm Delete?"
