@@ -5,9 +5,9 @@ export function mapShiftData(data) {
   const shiftDetails = Object.keys(Shift).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
       if (key === "starttime")
-        acc['shiftStartTime'] = moment(data[key]).format("hh:mm A")
+        acc["shiftStartTime"] = moment(data[key]).format("hh:mm A");
       if (key === "endtime")
-        acc['shiftEndTime'] = moment(data[key]).format("hh:mm A")
+        acc["shiftEndTime"] = moment(data[key]).format("hh:mm A");
       acc[key] = data[key];
     }
     return acc;
@@ -15,8 +15,11 @@ export function mapShiftData(data) {
   return shiftDetails;
 }
 export function mapAttendanceData(data, shiftDetails) {
+  const startTime = moment(shiftDetails.starttime);
+  const endTime = moment(shiftDetails.endtime);
+  const totalHours = endTime.diff(startTime, "hours", true);
   // Initialize an empty payload object
-  const payload = {};
+  const payload = { total_hours: parseFloat(totalHours) };
   // Iterate over the keys in the Task object
   for (const key in Attendance) {
     // Check if the key exists in the data object
@@ -41,21 +44,18 @@ export function mapAttendanceData(data, shiftDetails) {
         const checkInTime = moment(data[key]);
         payload[key] = data[key];
         if (shiftDetails) {
-          const startTime = moment(shiftDetails.starttime);
-          const endTime = moment(shiftDetails.endtime);
-          const totalHours = endTime.diff(startTime, "hours", true);
-          payload["total_hours"] = totalHours;
           payload.is_absent = false;
         }
         payload.is_weekend = [0, 6].includes(checkInTime.day());
       } else if (key === "checkout") {
-        debugger;
         const checkin = moment(payload.checkin);
         payload[key] = data[key];
         payload["payable_hours"] = parseFloat(
           moment(payload.checkout).diff(checkin, "hours", true)
         ).toFixed(2);
-        if (payload.payable_hours > payload.total_hours) {
+        if (
+          parseFloat(payload.payable_hours) > parseFloat(payload.total_hours)
+        ) {
           payload["overtime_hours"] = parseFloat(
             parseFloat(payload.payable_hours) - parseFloat(payload.total_hours)
           ).toFixed(2);
