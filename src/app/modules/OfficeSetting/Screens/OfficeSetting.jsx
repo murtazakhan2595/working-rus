@@ -1,9 +1,7 @@
 import { Header } from "components";
 import { Card } from "components/ui/card";
 import React, { useEffect, useState } from "react";
-import TableCustom from "components/CustomTable";
-import OrganizationAction from "../sections/Organizations/OrganizationAction";
-import AddOrganization from "../sections/Organizations/AddOrganization";
+import AddOrganization from "./Organizations/AddOrganization";
 import { getWorkingHours } from "app/hooks/general";
 import {
   Tabs,
@@ -14,24 +12,28 @@ import {
 import Departments from "./Departments";
 import Branches from "./Branches";
 import Designations from "./Designations";
-import AddDepartment from "../sections/Departments/AddDepartment";
+import AddDepartment from "./Departments/AddDepartment";
 import AddBranch from "./Branches/AddBranch";
 import { getOrganizationList } from "app/hooks/general";
 import { CardContent } from "components/ui/card";
-import AddDesignation from "../sections/Designations/AddDesignation";
+import AddDesignation from "./Designations/AddDesignation";
 import WorkingHours from "./WorkingHours";
 import Shift from "../sections/Shift/Shift";
 import { PageLoader } from "components";
 import { getDepartmentList } from "app/hooks/general";
 import { getDesignationList } from "app/hooks/general";
 import OnboardingChecklist from "./OnboardingChecklist";
-import OnboardingTab from "../sections/OnboardingChecklist/OnboardingTab";
+import OnboardingTab from "./OnboardingChecklist/OnboardingTab";
 import { getOnboardingDocument } from "app/hooks/officeSetting";
-import ViewOrganization from "../sections/Organizations/ViewOrganization";
+import ViewOrganization from "./Organizations/ViewOrganization";
 import { Button } from "components/ui/button";
+import { useSelector } from "react-redux";
+import { CardHeader } from "components/ui/card";
+import { CardTitle } from "components/ui/card";
+import { CardDescription } from "components/ui/card";
+import { getCountryById, getRegionById, getCityById } from "app/hooks/officeSetting";
 
 const OfficeSetting = () => {
-  const [data, setData] = useState(null);
   const [dataShift, setDataShift] = useState(null);
   const [edit, setEdit] = useState(false);
   const [editData, setEditData] = useState(null);
@@ -46,12 +48,22 @@ const OfficeSetting = () => {
     sizePerPage: 10,
   });
 
+  // Get user details from Redux store
+  const userDetails = useSelector((state) => state.emp?.user_details);
+  const userOrganizationId = userDetails?.organization_id;
+  
+  console.log("User organization ID:", userOrganizationId);
+  
+  const [filteredOrganizations, setFilteredOrganizations] = useState([]);
   
   const [designLoading, setDesignLoading] = useState(true);
   const [designation, setDesignation] = useState(null);
   const [onboardingDocs, setOnboardingDocs] = useState([]);
   const [onboardingLoading, setOnboardingLoading] = useState(true);
-  const [organizationData, setOrganizationData] = useState(null);
+  
+  const [countryData, setCountryData] = useState({});
+  const [stateData, setStateData] = useState({});
+  const [cityData, setCityData] = useState({});
 
   const getOrganization = async () => {
     try {
@@ -60,16 +72,42 @@ const OfficeSetting = () => {
       const response = await getOrganizationList(true);
       console.log("Organization API response in component:", response);
       if (response) {
-        setData(response);
-        // Set the first organization as the active one if available
+        // Filter organizations based on user's organization ID
         if (response.results && response.results.length > 0) {
-          setOrganizationData(response.results[0]);
-          console.log("First organization set:", response.results[0]);
+          console.log("All organizations:", response.results.map(org => ({ id: org.id, name: org.name })));
+          
+          let orgToShow = [];
+          
+          // If userOrganizationId exists, find the matching organization
+          if (userOrganizationId) {
+            const userOrg = response.results.find(
+              org => String(org.id) === String(userOrganizationId)
+            );
+            
+            if (userOrg) {
+              console.log("Found user's organization:", userOrg);
+              orgToShow = [userOrg];
+              fetchLocationDetails(userOrg);
+            } else {
+              console.log("User organization not found. Showing first organization.");
+              orgToShow = [response.results[0]];
+              fetchLocationDetails(response.results[0]);
+            }
+          } else {
+            // No user organization ID, just show the first organization
+            console.log("No user organization ID. Showing first organization.");
+            orgToShow = [response.results[0]];
+            fetchLocationDetails(response.results[0]);
+          }
+          
+          // Set filtered organizations
+          setFilteredOrganizations(orgToShow);
         }
       }
       setLoading(false);
     } catch (error) {
       console.error("ERROR", error);
+      setLoading(false);
     }
   };
 
@@ -131,20 +169,86 @@ const OfficeSetting = () => {
     }
   };
 
-  const handleSubmit = (values) => {
-    console.log(values, "FORM SUBMMTIED VALUES");
+  // Function to fetch location details
+  const fetchLocationDetails = async (organization) => {
+    try {
+      // Fetch country data if available
+      if (organization?.country) {
+        const countryResponse = await getCountryById(organization.country);
+        if (countryResponse) {
+          setCountryData(prev => ({
+            ...prev,
+            [organization.id]: countryResponse
+          }));
+        }
+      }
+      
+      // Fetch state/region data if available
+      if (organization?.state) {
+        const stateResponse = await getRegionById(organization.state);
+        if (stateResponse) {
+          setStateData(prev => ({
+            ...prev,
+            [organization.id]: stateResponse
+          }));
+        }
+      }
+      
+      // Fetch city data if available
+      if (organization?.city) {
+        const cityResponse = await getCityById(organization.city);
+        if (cityResponse) {
+          setCityData(prev => ({
+            ...prev,
+            [organization.id]: cityResponse
+          }));
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching location details:", error);
+    }
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      getOrganization();
-      fetchShifts();
-      getDepartments();
-      getDesignations();
-      getOnboardingDocuments();
+      await getOrganization();
+      await fetchShifts();
+      await getDepartments();
+      await getDesignations();
+      await getOnboardingDocuments();
     };
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Helper function to get location names
+  const getLocationName = (type, id, orgId) => {
+    if (!id) return "N/A";
+    
+    if (type === "country") {
+      return countryData[orgId]?.name || "Loading...";
+    } else if (type === "state") {
+      return stateData[orgId]?.name || "Loading...";
+    } else if (type === "city") {
+      return cityData[orgId]?.name || "Loading...";
+    }
+    
+    return "N/A";
+  };
+
+  // Helper function to handle edit button click
+  const handleEditClick = (organization) => {
+    // Enhance organization data with location names before setting to edit
+    const enhancedData = {
+      ...organization,
+      country_name: getLocationName("country", organization.country, organization.id),
+      state_name: getLocationName("state", organization.state, organization.id),
+      city_name: getLocationName("city", organization.city, organization.id)
+    };
+    
+    setEditData(enhancedData);
+    setEdit(true);
+  };
 
   const tabsData = [
     { value: "offices", label: "Organization" },
@@ -197,60 +301,74 @@ const OfficeSetting = () => {
               </TabsList>
             </div>
             <TabsContent value="offices">
-              <Card>
-                <CardContent>
-                  {data?.results && data.results.length > 0 ? (
-                    <div className="space-y-10">
-                      {data.results.map((organization, index) => (
-                        <div key={organization.id || index} className="mb-8">
-                          <div className="flex items-center justify-between pb-2 mb-4 border-b">
-                            <h3 className="text-lg font-medium">Organization {index + 1}</h3>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="px-2 py-1 hover:bg-primary hover:text-white hover:border-primary"
-                              onClick={() => {
-                                setEdit(true);
-                                setEditData(organization);
-                              }}
-                              title="Edit Organization"
+              {filteredOrganizations.length > 0 ? (
+                <div className="space-y-10">
+                  {/* Show only the filtered organizations */}
+                  {filteredOrganizations.map((organization, index) => (
+                    <Card key={organization.id || index} className="mb-8">
+                      <CardHeader className="flex flex-col items-start justify-between pb-2 border-b">
+                        <div className="flex flex-row items-start justify-between w-full">
+                          <CardTitle className="text-2xl font-medium text-primary">
+                            Organization Details
+                          </CardTitle>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="px-2 py-1 hover:bg-primary hover:text-white hover:border-primary"
+                            onClick={() => handleEditClick(organization)}
+                            title="Edit Organization"
+                          >
+                            <svg 
+                              xmlns="http://www.w3.org/2000/svg" 
+                              width="16" 
+                              height="16" 
+                              viewBox="0 0 24 24" 
+                              fill="none" 
+                              stroke="currentColor" 
+                              strokeWidth="2" 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round" 
+                              className="mr-1 lucide lucide-pencil"
                             >
-                              <svg 
-                                xmlns="http://www.w3.org/2000/svg" 
-                                width="16" 
-                                height="16" 
-                                viewBox="0 0 24 24" 
-                                fill="none" 
-                                stroke="currentColor" 
-                                strokeWidth="2" 
-                                strokeLinecap="round" 
-                                strokeLinejoin="round" 
-                                className="mr-1 lucide lucide-pencil"
-                              >
-                                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-                                <path d="m15 5 4 4"/>
-                              </svg>
-                              Edit
-                            </Button>
-                          </div>
-                          <ViewOrganization
-                            data={organization}
-                          />
+                              <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                              <path d="m15 5 4 4" />
+                            </svg>
+                            Edit
+                          </Button>
                         </div>
-                      ))}
-                    </div>
-                  ) : (
+                        <CardDescription className="text-neutral-1100">
+                          {organization.company_description || "Organization details and information"}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="py-4">
+                        <ViewOrganization 
+                          data={{
+                            ...organization,
+                            country_name: getLocationName("country", organization.country, organization.id),
+                            state_name: getLocationName("state", organization.state, organization.id),
+                            city_name: getLocationName("city", organization.city, organization.id)
+                          }} 
+                        />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Card>
+                  <CardContent>
                     <div className="py-8 text-center">
                       <p className="text-gray-500">No organization data available. Please add an organization.</p>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
             <TabsContent value="department">
               <Departments
                 loading={depLoading}
                 options={depOptions}
+                reload={getDepartments}
+                organizationId={userOrganizationId}
                 setOPtions={setdepOptions}
                 getDepartments={getDepartments}
                 department={department}
@@ -261,6 +379,7 @@ const OfficeSetting = () => {
                 loading={depLoading}
                 options={depOptions}
                 reload={reloadBranchesData}
+                organizationId={userOrganizationId}
                 setOPtions={setdepOptions}
                 getDepartments={getDepartments}
                 department={department}
@@ -271,13 +390,19 @@ const OfficeSetting = () => {
                 loading={designLoading}
                 options={desigOptions}
                 setOptions={setDesigOptions}
+                reload={getDesignations}
+                organizationId={userOrganizationId}
                 designation={designation}
                 setDesignation={setDesignation}
                 getDesignations={getDesignations}
               />
             </TabsContent>
             <TabsContent value="working-hours">
-              <WorkingHours data={dataShift} reload={fetchShifts} />
+              <WorkingHours
+               data={dataShift}
+               reload={fetchShifts}
+               organizationId={userOrganizationId}
+               />
             </TabsContent>
             <TabsContent value="onboarding">
               {onboardingLoading ? (
@@ -286,6 +411,7 @@ const OfficeSetting = () => {
                 <OnboardingChecklist
                   data={onboardingDocs}
                   reload={getOnboardingDocuments}
+                  organizationId={userOrganizationId}
                 />
               )}
             </TabsContent>
@@ -297,6 +423,9 @@ const OfficeSetting = () => {
               editData={editData}
               setEdit={setEdit}
               setEditData={setEditData}
+              countryData={countryData}
+              stateData={stateData}
+              cityData={cityData}
             />
           )}
         </div>

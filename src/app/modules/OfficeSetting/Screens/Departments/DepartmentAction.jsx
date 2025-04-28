@@ -1,17 +1,10 @@
-import { Button } from "components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "src/@/components/ui/dropdown-menu";
 import React, { useState } from "react";
-import { MoreHorizontal } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
 import SheetComponent from "components/ui/SheetComponent";
 import AddDepartmentForm from "./AddDepartmentForm";
 import ViewDepartment from "./ViewDepartment";
+import ActionButtons from "components/ActionButtons";
 
 const DepartmentAction = ({ data, reload }) => {
   const [view, setView] = useState(null);
@@ -25,21 +18,21 @@ const DepartmentAction = ({ data, reload }) => {
     footer: null,
   };
 
-  const handleView = (data) => {
+  const handleView = () => {
     setView({
       visible: true,
       data: data,
     });
   };
 
-  const handleEdit = (data) => {
+  const handleEdit = () => {
     setEdit({
       open: true,
       data: data,
     });
   };
 
-  const handleDelete = (data) => {
+  const handleDelete = () => {
     setDeleteDept({
       open: true,
       data: data,
@@ -60,25 +53,14 @@ const DepartmentAction = ({ data, reload }) => {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button aria-haspopup="true" size="icon" variant="ghost">
-            <MoreHorizontal className="w-4 h-4" />
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => handleEdit(data)}>
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleView(data)}>
-            View
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleDelete(data)}>
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <ActionButtons 
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        viewTooltip="View Department Details"
+        editTooltip="Edit Department"
+        deleteTooltip="Delete Department"
+      />
 
       {deleteDept?.open && (
         <AlertDialogue

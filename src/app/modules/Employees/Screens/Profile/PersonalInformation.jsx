@@ -153,8 +153,6 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                             </span>
                           </div>
                         )}
-                        // This is the correct grid layout for the form //
-                        Replace the entire grid div with this structure
                         <div className="grid grid-cols-3 gap-4">
                           {/* First row */}
                           <div className="space-y-2">
