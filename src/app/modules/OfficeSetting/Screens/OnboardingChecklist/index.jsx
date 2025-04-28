@@ -2,22 +2,12 @@
 import TableCustom from "components/CustomTable";
 import { CardTitle, CardHeader, CardContent, Card } from "components/ui/card";
 
-import OnboardingActions from "./OnboardingActions";
+
 import { CardDescription } from "components/ui/card";
+import { OnboardingChecklistColumn } from "../../sections/OfficeSettingTableColumns";
 
 const OnboardingChecklist = ({ data, reload }) => {
-  const columns = [
-    {
-      dataField: "name",
-      text: "Document Name",
-    },
-    {
-      text: "Action",
-      formatter: (cell, row) => (
-        <OnboardingActions data={row} reload={reload} />
-      ),
-    },
-  ];
+ 
 
   return (
     <Card>
@@ -31,7 +21,7 @@ const OnboardingChecklist = ({ data, reload }) => {
       </CardHeader>
       <CardContent>
         <TableCustom
-          columns={columns}
+          columns={OnboardingChecklistColumn(reload)}
           data={data || []}
           pagination={false}
           itemsPerPage={100}
