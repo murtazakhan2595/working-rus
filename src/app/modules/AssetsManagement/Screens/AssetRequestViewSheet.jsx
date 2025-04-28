@@ -17,17 +17,29 @@ import { getDesignationName } from "utils/getValuesFromTables";
 import { EmployeeOverview } from "components";
 import { getDepartmentName } from "utils/getValuesFromTables";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "src/@/components/ui/dialog";
+import { TextAreaInput } from "components/FormControl";
 const AssetRequestViewSheet = ({
   request, // Updated from assetRequest to match what's being passed
   isOpen,
   setIsOpen,
   isMyRequest = false,
   reload,
-  d,
 }) => {
   // For compatibility with the existing prop structure
   const assetRequest = request;
   const [attachments, setAttachments] = useState([]);
+  const [showRejectReason, setShowRejectReason] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [isSubmittingRejection, setIsSubmittingRejection] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       // Handle attachments if they exist in the asset
@@ -57,12 +69,16 @@ const AssetRequestViewSheet = ({
       userProfile.role === 3 ||
       userProfile.role === 1);
 
+  const isApproved =
+    assetRequest?.asset_status === "Approved" ||
+    assetRequest?.asset_status === "Accepted";
+
   const detailItems = [
-    {
+    // Only show Asset ID if not my request OR if approved
+    (!isMyRequest || isApproved) && {
       label: "Asset ID",
       value: assetRequest?.asset?.id || "Not specified",
     },
-    // Existing fields
     {
       label: "Asset Name",
       value: assetRequest?.asset?.asset_name || assetRequest?.asset_name,
@@ -71,34 +87,32 @@ const AssetRequestViewSheet = ({
       label: "Asset Type",
       value: assetRequest?.asset?.asset_type || "Not specified",
     },
-    // New fields - Model & Specifications
-    {
+    // Only show Model if not my request OR if approved
+    (!isMyRequest || isApproved) && {
       label: "Model",
       value: assetRequest?.asset?.asset_model || "Not specified",
     },
-    {
+    // Only show Specifications if not my request OR if approved
+    (!isMyRequest || isApproved) && {
       label: "Specifications",
       value: assetRequest?.asset?.asset_description || "Not specified",
     },
-    // Existing field
-    {
+    // Only show Serial Number if not my request OR if approved
+    (!isMyRequest || isApproved) && {
       label: "Serial Number",
       value: assetRequest?.asset?.asset_serial_number || "Not specified",
     },
-    // New field - Location
     {
       label: "Location",
       value: assetRequest?.asset?.asset_location_name || "Not specified",
     },
-    // New field - Purchase Date
-    {
+    !isMyRequest && {
       label: "Purchase Date",
       value: assetRequest?.asset?.asset_purchase_date
         ? moment(assetRequest?.asset?.asset_purchase_date).format("MMM D, YYYY")
         : "Not specified",
     },
-    // New field - Warranty Expiry
-    {
+    !isMyRequest && {
       label: "Warranty Expiry",
       value: assetRequest?.asset?.asset_warranty_expiry
         ? moment(assetRequest?.asset?.asset_warranty_expiry).format(
@@ -106,19 +120,16 @@ const AssetRequestViewSheet = ({
           )
         : "Not specified",
     },
-    // New field - Initial Condition
     {
       label: "Initial Condition",
       value: assetRequest?.asset?.asset_initial_condition || "Not specified",
     },
-    // New field - Purchase Cost
-    {
+    !isMyRequest && {
       label: "Purchase Cost",
       value: assetRequest?.asset?.asset_purchase_price
         ? `$${assetRequest?.asset?.asset_purchase_price.toFixed(2)}`
         : "Not specified",
     },
-    // Existing fields
     {
       label: "Request Date",
       value: moment(assetRequest?.created_at).format("MMM D, YYYY"),
@@ -133,15 +144,11 @@ const AssetRequestViewSheet = ({
       label: "Return Date",
       value: moment(assetRequest?.asset_return_date).format("MMM D, YYYY"),
     },
-    {
-      label: "Reason",
-      value: assetRequest?.reason || "No reason provided",
-    },
     assetRequest?.additional_notes && {
       label: "Additional Notes",
       value: assetRequest?.additional_notes,
     },
-  ].filter(Boolean); // Remove undefined items
+  ].filter(Boolean); // Filter out any false entries
 
   const approvalSteps = [
     {
@@ -165,35 +172,63 @@ const AssetRequestViewSheet = ({
   };
 
   const handleStatusChange = async (status) => {
+    
     console.log("handle status change", status, assetRequest);
-
+    setIsSubmittingRejection(true);
     if (assetRequest?.asset_status !== "Pending") {
       return;
     }
 
     try {
-      const updatedRequest = {
-        ...assetRequest,
-        asset_status: status,
-        asset_assigned_by: userProfile.id,
-        asset_assigned_date:
-          status === "Accepted" ? moment().format("YYYY-MM-DD") : null,
-      };
+      let updatedRequest = {};
+      if (isMyRequest) {
+        updatedRequest = {
+          ...assetRequest,
+          asset_status: status,
+        };
+      } else {
+        updatedRequest = {
+          ...assetRequest,
+          asset_status: status,
+          asset_assigned_by: userProfile.id,
+          asset_assigned_date:
+            status === "Accepted" ? moment().format("YYYY-MM-DD") : null,
+        };
+      }
+      if (status === "Rejected") {
+        updatedRequest.rejection_reason = rejectionReason;
+      }
       console.log("updatedRequest", updatedRequest);
 
       const response = await requestAsset(updatedRequest);
 
       if (response) {
+        setIsSubmittingRejection(false);
+        setRejectionReason("");
+        setShowRejectReason(false);
         toast.success("Asset request updated successfully");
+
         setIsOpen(false);
         reload();
+
       } else {
+         setIsSubmittingRejection(false);
+         setRejectionReason("");
+         setShowRejectReason(false);
         toast.error("Error updating asset request");
       }
     } catch (error) {
       console.error("Error updating request:", error);
       toast.error("Error updating request: " + error.message);
     }
+  };
+  // Handle rejection submission
+  const handleReject = async () => {
+    if (!rejectionReason.trim()) {
+      toast.error("Rejection reason is required");
+      return;
+    }
+    handleStatusChange("Rejected");
   };
 
   return (
@@ -205,15 +240,26 @@ const AssetRequestViewSheet = ({
         setIsOpen={setIsOpen}
         width="600px"
       >
-        {/* Employee Information Section */}
-        <EmployeeOverview
-          id={assetRequest?.employee?.id}
-          showEmail={true}
-          showDepartment={true}
-          showPosition={true}
-          showId={true}
-          showBranchName={true}
-        />
+        <div className="flex items-center justify-between w-full gap-4 ">
+          <EmployeeOverview
+            id={assetRequest?.employee?.id}
+            showEmail={true}
+            showDepartment={true}
+            showPosition={true}
+            showId={true}
+            showBranchName={true}
+          />
+          {isMyRequest && (
+            <Button
+              variant="destructiveOutline"
+              onClick={(status) => {
+                handleStatusChange("Withdrawal");
+              }}
+            >
+              Withdraw Asset
+            </Button>
+          )}
+        </div>
 
         {/* Details Section */}
         <DetailCard
@@ -253,34 +299,39 @@ const AssetRequestViewSheet = ({
 
         {/* Approval Status Section */}
         <DetailCard detailCardTitle="Request Status">
-          <section className="flex relative flex-col max-w-[382px] mt-3">
-            <div className="flex absolute -bottom-0.5 z-0 justify-center items-start w-6 h-[150px] left-[5px] min-h-[150px]" />
-            {approvalSteps.map((step, index) => (
-              <div
-                key={index}
-                className="z-0 flex items-center justify-between w-full gap-10"
-              >
-                <div className="flex gap-4 self-stretch my-auto w-[194px]">
-                  <div className="flex justify-center items-center px-1 bg-white h-[33px] w-[33px]">
-                    <img
-                      loading="lazy"
-                      src={step.icon}
-                      alt=""
-                      className="object-contain self-stretch my-auto aspect-square w-[25px]"
-                    />
+          <div className="flex items-center justify-between w-full gap-4">
+            <section className="flex relative flex-col max-w-[382px] mt-3">
+              <div className="flex absolute -bottom-0.5 z-0 justify-center items-start w-6 h-[150px] left-[5px] min-h-[150px]" />
+              {approvalSteps.map((step, index) => (
+                <div
+                  key={index}
+                  className="z-0 flex items-center justify-between w-full gap-10"
+                >
+                  <div className="flex gap-4 self-stretch my-auto w-[194px]">
+                    <div className="flex justify-center items-center px-1 bg-white h-[33px] w-[33px]">
+                      <img
+                        loading="lazy"
+                        src={step.icon}
+                        alt=""
+                        className="object-contain self-stretch my-auto aspect-square w-[25px]"
+                      />
+                    </div>
+                    <div className="py-0.5 my-auto text-xs leading-loose text-[#6B7280] min-h-[24px]">
+                      {step.text}
+                    </div>
                   </div>
-                  <div className="py-0.5 my-auto text-xs leading-loose text-[#6B7280] min-h-[24px]">
-                    {step.text}
-                  </div>
+                  {step.time && (
+                    <div className="self-stretch py-0.5 my-auto text-xs leading-loose text-[#6B7280]">
+                      {step.time}
+                    </div>
+                  )}
                 </div>
-                {step.time && (
-                  <div className="self-stretch py-0.5 my-auto text-xs leading-loose text-[#6B7280]">
-                    {step.time}
-                  </div>
-                )}
-              </div>
-            ))}
-          </section>
+              ))}
+            </section>
+            <div>
+              rejection reason here
+            </div>
+          </div>
         </DetailCard>
 
         {/* Approval Buttons */}
@@ -290,12 +341,20 @@ const AssetRequestViewSheet = ({
               variant="outline"
               type="button"
               size="lg"
+              onClick={() => setShowRejectReason(true)}
+            >
+              Reject with Reason
+            </Button>
+            {/* <Button
+              variant="outline"
+              type="button"
+              size="lg"
               onClick={() => {
                 handleStatusChange("Rejected");
               }}
             >
               Reject
-            </Button>
+            </Button> */}
             <Button
               type="button"
               size="lg"
@@ -323,8 +382,78 @@ const AssetRequestViewSheet = ({
           </div>
         )}
       </SheetComponent>
+      <RejectionReasonDialog
+        open={showRejectReason}
+        onOpenChange={setShowRejectReason}
+        onSubmit={handleReject}
+        isSubmitting={isSubmittingRejection}
+        reason={rejectionReason}
+        setReason={setRejectionReason}
+      />
     </div>
   );
 };
 
+const RejectionReasonDialog = ({
+  open,
+  onOpenChange,
+  onSubmit,
+  isSubmitting,
+  reason,
+  setReason,
+}) => {
+  const [touched, setTouched] = useState(false);
+
+
+  const handleOpenChange = (newOpen) => {
+    if (!newOpen) {
+      setReason("");
+      setTouched(false);
+    }
+    onOpenChange(newOpen);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Rejection Reason</DialogTitle>
+          <DialogDescription>
+            Please provide a reason for rejecting this request
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <TextAreaInput
+            name="rejection_reason"
+            error={touched && reason.trim() === ""}
+            touch={touched}
+            value={reason}
+            label={"Rejection Reason"}
+            required={true}
+            onChange={(field, value) => {
+              setReason(value);
+            }}
+            maxRows={3}
+            placeholder={"Please provide a reason for rejecting this request"}
+          />
+        </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={onSubmit}
+            disabled={reason.trim() === "" || isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Submit"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
 export default AssetRequestViewSheet;

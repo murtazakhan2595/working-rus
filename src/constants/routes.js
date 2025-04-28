@@ -63,6 +63,7 @@ import { Assets, MyAssets } from "app/modules/AssetsManagement";
 import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
 import { OnHoldSalaries, OnHoldSalaryDetails } from "app/modules/Payroll";
 import { EOSList, EOSDetails } from "app/modules/Payroll/Screens/EOS";
+import { RequestAndAssign } from "app/modules/AssetsManagement";
 
 const SidebarRoutes = [
   {
@@ -395,6 +396,11 @@ const SidebarRoutes = [
     path: "/assets",
     component: <Assets />,
     name: "Assets Management",
+  },
+  Config.ASSETS_MANAGEMENT && {
+    path: "/request-and-assign",
+    component: <RequestAndAssign />,
+    name: "Request and Assign",
   },
   Config.SELF_SERVICE_HUB &&
     Config.EMPLOYEE_OFFBOARDING && {

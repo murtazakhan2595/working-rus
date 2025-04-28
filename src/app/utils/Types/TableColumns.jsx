@@ -739,7 +739,10 @@ export const MyAssetRequestColumns = [
               ? "bg-red-50 text-red-700"
               : cell === "Returned"
               ? "bg-blue-50 text-blue-700"
-              : "bg-[#f0f0f3] text-[#7f838d]" // Default for Pending or any other status
+              : cell === "Withdrawal"
+              ? "bg-yellow-50 text-yellow-700"
+
+              : "bg-[#f0f0f3] text-[#7f838d]" 
           }`}
         >
           {cell || "N/A"}
@@ -874,6 +877,8 @@ export const AssetRequestColumns = [
               ? "bg-emerald-50 text-teal-700"
               : cell === "Rejected"
               ? "bg-red-50 text-red-700"
+              : cell === "Withdrawal"
+              ? "bg-yellow-50 text-yellow-700"
               : "bg-[#f0f0f3] text-[#7f838d]" // Default for Pending or any other status
           }`}
         >

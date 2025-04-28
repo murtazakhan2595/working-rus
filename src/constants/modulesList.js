@@ -273,6 +273,11 @@ const ModuleList = [
     parentModuleId: 55,
   },
   {
+    moduleId: 59,
+    moduleName: "Request and Assign",
+    parentModuleId: 55,
+  },
+  {
     moduleId: 57,
     moduleName: "HR Documents",
   },
