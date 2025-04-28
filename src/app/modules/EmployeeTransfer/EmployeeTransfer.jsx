@@ -143,16 +143,16 @@ export default function EmployeeTransfer() {
     setFilterData((prevFilter) => ({
       ...prevFilter,
       ...(activeExternalTab === "Internal" && activeInternalTab === "Requests"
-        ? { status: "PENDING,ACCEPTED BY MANAGER", transfer_type: "INTERNAL" }
+        ? { status_transfer: "PENDING,ACCEPTED BY MANAGER", transfer_type: "INTERNAL" }
         : {}),
       ...(activeExternalTab === "External" && activeInternalTab === "Requests"
-        ? { status: "PENDING,ACCEPTED BY MANAGER", transfer_type: "EXTERNAL" }
+        ? { status_transfer: "PENDING,ACCEPTED BY MANAGER", transfer_type: "EXTERNAL" }
         : {}),
       ...(activeExternalTab === "Internal" && activeInternalTab === "Records"
-        ? { status: "REJECTED,REJECTED BY MANAGER", transfer_type: "INTERNAL" }
+        ? { status_transfer: "REJECTED,REJECTED BY MANAGER", transfer_type: "INTERNAL" }
         : {}),
       ...(activeExternalTab === "External" && activeInternalTab === "Records"
-        ? { status: "REJECTED,REJECTED BY MANAGER", transfer_type: "EXTERNAL" }
+        ? { status_transfer: "REJECTED,REJECTED BY MANAGER", transfer_type: "EXTERNAL" }
         : {}),
     }));
   }, [activeExternalTab, activeInternalTab]);
