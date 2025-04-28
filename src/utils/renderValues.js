@@ -158,10 +158,8 @@ export function numberToWords(number) {
 }
 
 export function renderDate(date, fallbackValue = "N/A", variant = "date") {
-  if (!date) return fallbackValue;
-
+  if (!date || !moment(date).isValid()) return fallbackValue;
   const format = variant === "month" ? "MMMM YYYY" : "MMM DD, YYYY";
-
   return moment(date).format(format);
 }
 

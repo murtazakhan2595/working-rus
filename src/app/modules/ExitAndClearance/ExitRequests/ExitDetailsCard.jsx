@@ -1,6 +1,9 @@
 import moment from "moment";
 import React, { useState, useRef } from "react";
-import { RenderResignationAction,RenderTerminationAction } from "app/modules/ExitAndClearance/ExitRequests";
+import {
+  RenderResignationAction,
+  RenderTerminationAction,
+} from "app/modules/ExitAndClearance/ExitRequests";
 import {
   DepartmentName,
   DesignationName,
@@ -17,11 +20,7 @@ import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 import { ExitStatusCurrentStep } from "app/modules/ExitAndClearance/Sections";
 import { TerminationReason } from "utils/getValuesFromTables";
 import { Labels } from "components/StatusLabel";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-} from "src/@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader } from "src/@/components/ui/sheet";
 import {
   ViewDetailHeader,
   ViewDetailBox,
@@ -29,6 +28,9 @@ import {
 } from "app/modules/ExitAndClearance/Sections/DetailViewPanel";
 import { Button } from "components/ui/button";
 import { CoverFileUpload } from "components/FormControl";
+import { EmployeeOverview } from "components";
+import { StatusLabel } from "components";
+import { renderDate } from "utils/renderValues";
 const ExitDetailsCard = ({
   onClose,
   resignationId,
@@ -99,7 +101,7 @@ const ExitDetailsCard = ({
       console.error("Error updating application status:", error);
     }
   };
-
+  console.log(resignation, "resignationresignation");
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetContent side="right" className="w-full p-6 sm:max-w-4xl ">
@@ -111,21 +113,27 @@ const ExitDetailsCard = ({
             />
           </SheetHeader>
           <div className="mt-4">
-            <section className="flex flex-col items-start justify-start w-full gap-2 mt-10 max-md:max-w-full">
-              <Labels
-                label={`${isResignation ? "Resignation" : "Termination"}`}
-                backgroungColor={`bg-[#f4e4eb]`}
-              />
+            <section className="flex flex-col items-start justify-start w-full gap-4 mt-10 max-md:max-w-full">
+              <StatusLabel>
+                {isResignation ? "Resignation" : "Termination"}
+              </StatusLabel>
               <div className="flex flex-wrap items-center justify-between w-full">
                 <div className="flex flex-col gap-2 justify-start max-w-[70%]">
-                  <h1 className="mb-0 text-2xl font-bold text-zinc-800">
+                  <EmployeeOverview
+                    id={resignation?.employee_id}
+                    showId={true}
+                    showDepartment={true}
+                    showPosition={true}
+                    avatarSize={16}
+                  />
+                  {/* <h1 className="mb-0 text-2xl font-bold text-zinc-800">
                     {resignation?.emp_name}
                   </h1>
                   <p className="text-base text-zinc-600">
                     ID: <EmployeeID value={resignation?.employee_id} /> |{" "}
                     <DesignationName value={resignation?.position} /> |
                     <DepartmentName value={resignation?.department_name} />
-                  </p>
+                  </p> */}
                 </div>
                 {isResignation ? (
                   <RenderResignationAction row={resignation} viewMode={true} />
@@ -139,9 +147,7 @@ const ExitDetailsCard = ({
                 labelList={[
                   {
                     label: "Joining date",
-                    value: moment(resignation?.joining_date).format(
-                      "DD-MM-YYYY"
-                    ),
+                    value: renderDate(resignation?.joining_date),
                   },
                   {
                     label: "Status",
@@ -166,7 +172,7 @@ const ExitDetailsCard = ({
 
                   {
                     label: "Exit date",
-                    value: moment(resignation?.exit_date).format("DD-MM-YYYY"),
+                    value: renderDate(resignation?.exit_date)
                   },
 
                   {
@@ -175,7 +181,7 @@ const ExitDetailsCard = ({
                   },
                   {
                     label: "Phone no.",
-                    value: `${resignation?.country_code || ""}${
+                    value: `+${resignation?.country_code || ""}${
                       resignation?.mobile_no || ""
                     }`,
                   },

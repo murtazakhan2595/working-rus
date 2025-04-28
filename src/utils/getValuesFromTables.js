@@ -72,7 +72,7 @@ function DepartmentName({ value, fallBackText = "N/A" }) {
   const departments = useSelector((state) => state.common.departments);
   const department = departments.find(
     (option) => option.value === parseInt(value)
-  );  
+  );
   return department ? department.label : value ?? fallBackText;
 }
 
@@ -205,11 +205,10 @@ function ResignationReason(value) {
   const response = ReasonForLeaving.find((option) => option.value === value);
   return response ? response.label : "N/A";
 }
-function TerminationReason(value) {
-  const reason = terminationReasonsOptions.find(
-    (option) => option.value === value
-  );
-  return reason ? reason.label : "Unknown Reason";
+function TerminationReason({ value, fallBackText = "Unknown Reason" }) {
+  const Reasons = useSelector((state) => state.exit_emp.TerminationReasons);
+  const Reason = Reasons.find((option) => option.value === parseInt(value));
+  return <>{Reason ? Reason.label : fallBackText ?? value}</>;
 }
 
 function getExperience(joiningDate) {
@@ -247,7 +246,7 @@ function getDepartmentName(value, departments, fallBackText) {
   return department ? department.label : fallBackText ?? "N/A";
 }
 
-export function getLabelByValue(value, options=[], fallBackText='N/A') {
+export function getLabelByValue(value, options = [], fallBackText = "N/A") {
   if (Array.isArray(value)) {
     const labels = value
       .map((val) => {

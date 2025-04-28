@@ -1,4 +1,3 @@
-
 import { Formik } from "formik";
 import React, { useEffect } from "react";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
@@ -7,7 +6,6 @@ import { TextInput } from "components/FormControl";
 
 import { DateInput } from "components/FormControl";
 import { SelectInputComponent } from "components/FormControl";
-import { terminationReasonsOptions } from "data/Data";
 import { getEmployeeData } from "app/hooks/employee";
 
 import moment from "moment";
@@ -141,7 +139,7 @@ const RequestTerminationForm = ({
 
   const handleReset = (resetForm) => {
     setEmployeeData([[]]);
-    resetForm(); 
+    resetForm();
   };
 
   return (
@@ -252,6 +250,7 @@ const RequestTerminationForm = ({
                           onChange={(field, value) => {
                             props.setFieldValue(field, value);
                           }}
+                          // minDate={moment().format("YYYY-MM-DD")}
                         />
                         <SelectInputComponent
                           name={"reason_for_terminating"}
@@ -269,7 +268,7 @@ const RequestTerminationForm = ({
                       <CoverFileUpload
                         name={"termination_letter"}
                         error={props.errors?.termination_letter}
-                        touch={props.errors?.termination_letter?true:false}
+                        touch={props.errors?.termination_letter ? true : false}
                         value={props.values?.termination_letter}
                         label={"Upload Termination Letter or drag it here"}
                         required={true}
