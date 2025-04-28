@@ -43,21 +43,18 @@ export const EmployeesAttendanceColumns = (
   reload = () => {}
 ) => [
   {
-    dataField: "employee_id",
+    dataField: "emp_name",
     text: "Employees",
     formatter: (cell, row) => (
-      <EmployeeOverview id={cell} showId showPosition />
+      <EmployeeOverview id={row.employee_id} showId showPosition />
     ),
+    dataSort: true,
   },
 
   {
     dataField: "attendance_stats",
     text: "Present Days",
-    formatter: (cell, row) => (
-      <span>
-        {parseInt(cell?.Present)}
-      </span>
-    ),
+    formatter: (cell, row) => <span>{parseInt(cell?.Present)}</span>,
   },
   {
     dataField: "attendance_stats",

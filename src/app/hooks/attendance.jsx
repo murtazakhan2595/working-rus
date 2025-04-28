@@ -142,7 +142,7 @@ const getAttendance = async (payload) => {
 };
 
 const getAttendanceSummary = async (payload) => {
-  console.log(payload, "PAYLOAD OF ATTENDANCE");
+  const ordering = payload?.ordering ?? "-emp_name";
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -150,7 +150,7 @@ const getAttendanceSummary = async (payload) => {
   const end_date = dateRange[1] && dateRange[1] !== "null" ? dateRange[1] : "";
   const start_date =
     dateRange[0] && dateRange[0] !== "null" ? dateRange[0] : "";
-  let URL = `/attendance/summary/?${pageNo ? `page=${pageNo}&` : ""}${
+  let URL = `/attendance/summary/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}${
     end_date ? `&end_date=${end_date}` : ""

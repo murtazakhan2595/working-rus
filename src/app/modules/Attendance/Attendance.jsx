@@ -31,6 +31,7 @@ const Attendance = () => {
   const [dateRange, setDateRange] = useState(
     `${moment().format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`
   );
+  const [ordering, setOrdering] = useState("-emp_name");
   useEffect(() => {
     if (dateRange) {
       const date_range = dateRange.split(",");
@@ -59,6 +60,7 @@ const Attendance = () => {
       const attendanceData = await getAttendanceSummary({
         filterData,
         dateRange,
+        ordering,
       });
       if (isMounted) {
         if (attendanceData) {
@@ -71,14 +73,18 @@ const Attendance = () => {
       setIsLoading(false);
     }
   };
-
+  const tableOptions = {
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
+  };
   useEffect(() => {
     let isMounted = true;
     getAttendanceList(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [filterData, dateRange]);
+  }, [filterData, dateRange, ordering]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -127,7 +133,7 @@ const Attendance = () => {
           <DepartmentOverview />
         </div>
         <StatsCards />
-        <div className="flex flex-col justify-end gap-3 lg:flex-row md:flex-row xl:flex-row">
+        <div className="flex justify-end gap-3 flex-row flex-wrap">
           <FilterInput
             filters={[
               {
@@ -184,16 +190,13 @@ const Attendance = () => {
 
         <Card>
           <CardContent>
-            {isLoading ? (
-              <PageLoader />
-            ) : (
-              <TableCustom
-                data={attendanceData.results || []}
-                columns={EmployeesAttendanceColumns(TotalDays)}
-                pagination={false}
-                dataTotalSize={attendanceData.count || 0}
-              />
-            )}
+            <TableCustom
+              data={attendanceData.results || []}
+              columns={EmployeesAttendanceColumns(TotalDays)}
+              pagination={false}
+              dataTotalSize={attendanceData.count || 0}
+              tableOptions={tableOptions}
+            />
           </CardContent>
         </Card>
       </div>
