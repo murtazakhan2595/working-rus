@@ -3,6 +3,7 @@ import {
   Calendar as CalendarIcon,
   ChevronLeft,
   ChevronRight,
+  Clock,
 } from "lucide-react";
 import {
   Card,
@@ -48,6 +49,8 @@ export default function EventCalendar() {
   const [leaveInfo, setLeaveInfo] = useState({});
   const [loading, setLoading] = useState(true);
   const [leaveTransaction, setLeaveTransaction] = useState([]);
+
+  console.log("shiftData", shiftData);
 
   useEffect(() => {
     const getEmpShift = async () => {
@@ -230,12 +233,7 @@ export default function EventCalendar() {
       case "working":
         let shiftTimes = "";
         if (shiftData) {
-          const startTime = new Date(shiftData.starttime);
-          const endTime = new Date(shiftData.endtime);
-          shiftTimes = ` (${format(startTime, "h:mm a")} - ${format(
-            endTime,
-            "h:mm a"
-          )})`;
+          shiftTimes = ` (${shiftData.shiftStartTime} - ${shiftData.shiftEndTime})`;
         }
         return `Working Day - ${formattedDate}${shiftTimes}`;
       case "absent":
@@ -243,6 +241,12 @@ export default function EventCalendar() {
       default:
         return `${formattedDate}`;
     }
+  };
+
+  // Format days of the week for display
+  const formatWeekdays = (weekdays) => {
+    if (!weekdays || weekdays.length === 0) return "N/A";
+    return weekdays.join(", ");
   };
 
   return (
@@ -262,6 +266,42 @@ export default function EventCalendar() {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4">
+        {/* Shift Details Section */}
+        {showAll &&<>
+          {shiftData ? (
+            <div className="mb-4 p-3 bg-blue-50 rounded-md border border-blue-100">
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center">
+                  <span className="font-medium text-sm mr-2">Shift Name:</span>
+                  <span className="text-sm bg-blue-100 px-2 py-1 rounded">
+                    {shiftData.name}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <Clock className="h-4 w-4 mr-1 text-blue-500" />
+                  <span className="text-sm">
+                    {shiftData.shiftStartTime} - {shiftData.shiftEndTime}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <span className="font-medium text-sm mr-2">Type:</span>
+                  <span className="text-sm">{shiftData.type}</span>
+                </div>
+              </div>
+              <div className="mt-2">
+                <span className="font-medium text-sm mr-2">Working Days:</span>
+                <span className="text-sm">
+                  {formatWeekdays(shiftData.weekdays)}
+                </span>
+              </div>
+            </div>
+          ) : !loading ? (
+            <div className="mb-4 p-3 bg-gray-50 rounded-md border border-gray-200">
+              <p className="text-sm text-gray-500">No shift assigned</p>
+            </div>
+          ) : null}
+        </>}
+
         <div className="flex justify-between items-center mb-4">
           <Button
             variant="ghost"
