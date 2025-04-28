@@ -35,7 +35,7 @@ const AttendanceSummaryWidget = () => {
   const [attendance, setAttendance] = useState(null);
   const [onBreak, setOnBreak] = useState(false);
   const [payableHours, setPayableHours] = useState("0h 0min");
-  const [currentTime, setCurrentTime] = useState(moment().format("h:mm:ss A"));
+  const [currentTime, setCurrentTime] = useState(moment().format("h:mm A"));
   const [isLoading, setIsLoading] = useState(true);
 
   console.log("payableHours", payableHours);
@@ -83,7 +83,7 @@ const AttendanceSummaryWidget = () => {
 
     const checkInDate = moment(attendance.checkin);
     const now = moment();
-    setCurrentTime(now.format("h:mm:ss A"));
+    setCurrentTime(now.format("h:mm A"));
 
     // Parse break duration (in hours) and convert to milliseconds
     const breakMs = parseFloat(attendance?.break_duration || 0) * 3600 * 1000;

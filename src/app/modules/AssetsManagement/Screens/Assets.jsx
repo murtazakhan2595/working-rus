@@ -21,6 +21,7 @@ import {
   AssetRequestColumns,
 } from "app/utils/Types/TableColumns";
 import { getEmployeeAssets } from "app/hooks/assets";
+import { AssetCategories } from "data/Data";
 
 const Assets = ({ userProfile, departments }) => {
   const [activeTab, setActiveTab] = useState("assets");
@@ -268,12 +269,7 @@ const Assets = ({ userProfile, departments }) => {
           },
           {
             type: "select-one",
-            option: [
-              { value: "Computer", label: "Computer" },
-              { value: "Mobile", label: "Mobile" },
-              { value: "Furniture", label: "Furniture" },
-              { value: "Other", label: "Other" },
-            ],
+            option: AssetCategories,
             name: "asset_type",
             placeholder: "Asset Type",
             values: selectedAssetType,
