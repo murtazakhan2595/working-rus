@@ -22,7 +22,8 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
         "Residential address cannot exceed 200 characters";
     }
     if (values.permanent_address && values.permanent_address.length > 255) {
-      errors.permanent_address = "Permanent address cannot exceed 255 characters";
+      errors.permanent_address =
+        "Permanent address cannot exceed 255 characters";
     }
   }
   if (!values.user_role) errors.user_role = "User role is required";
@@ -75,7 +76,6 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
       errors.contract_end_date = "End date is required";
   }
 
-
   // Optional validations for PO Box (if provided, ensure it's in correct format)
   if (values.po_box_number && !/^\d+$/.test(values.po_box_number)) {
     errors.po_box_number = "PO Box Number must contain only numbers";
@@ -127,12 +127,12 @@ const validateEmployeePersonalInfoForm = (values) => {
     errors.family_book_number =
       "Family Book Number is required for UAE Nationals";
   }
-   if (values.nationality === "United Arab Emirates") {
-     // Validate disbursement type (required only for UAE employees)
-     if (!values.disbursement_type) {
-       errors.disbursement_type = "Disbursement type is required";
-     }
-   }
+  if (values.nationality === "United Arab Emirates") {
+    // Validate disbursement type (required only for UAE employees)
+    if (!values.disbursement_type) {
+      errors.disbursement_type = "Disbursement type is required";
+    }
+  }
   return errors;
 };
 
@@ -141,8 +141,12 @@ const validationEmployeeExperienceFormSchema = (values) => {
   if (values.experiences) {
     values.experiences.forEach((value, index) => {
       const experienceErrors = {};
-      if (!value.disableEndDate && !value.exp_end_date && index !== 0)
+      if (!value.disableEndDate && !value.exp_end_date && index !== 0) {
         experienceErrors.exp_end_date = "End Date is required";
+      } else {
+        if (!values.exp_letter)
+          experienceErrors.exp_letter = "Resume is required";
+      }
       if (!value.exp_start_date)
         experienceErrors.exp_start_date = "Start Date is required";
       if (!value.exp_organization)

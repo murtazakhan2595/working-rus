@@ -99,7 +99,7 @@ const Experience = ({
                 onChange(field, value);
               }}
               maxRows={4}
-              maxLength={1000}
+              maxLength={'1000'}
             />
           </div>
           <div className="col-span-2 space-y-2">
@@ -114,7 +114,7 @@ const Experience = ({
               error={errors?.exp_letter}
               touch={touched?.exp_letter}
               value={values?.exp_letter}
-              required={true}
+              required={isCurrentExperience || values.disableEndDate}
               onChange={(field, value) => {
                 onChange(field, value);
                 if (isCurrentExperience) {

@@ -31,6 +31,7 @@ import TextEditorInputField from "./TextEditorInputField";
 import MonthInput from "./MonthInput";
 import CommentsInputField from "./CommentsInputField";
 import DateRangeFilter from "./DateRangeFilter";
+import TextAreaInput from "./TextAreaInput";
 import SortingFilters from "./SortingFilters";
 import TimePicker from "./TimePicker";
 import { InputSignature } from "./InputSignature";
@@ -411,64 +412,67 @@ export const FormFieldIcon = memo(
 //   );
 // };
 
-const TextAreaInput = ({
-  name,
-  value,
-  error,
-  touch,
-  onChange,
-  label,
-  disabled,
-  required,
-  regEx,
-  maxLength,
-  maxRows,
-  onBlur,
-  placeholder,
-}) => {
-  return (
-    <>
-      <div className="flex flex-col">
-        {label && (
-          <Label
-            className={`text-baseGray mb-4 ${value ? "active" : ""}`}
-            htmlFor={name}
-          >
-            {required && <span className="text-red-600">* </span>}
-            {label}
-          </Label>
-        )}
+// const TextAreaInput = ({
+//   name,
+//   value,
+//   error,
+//   touch,
+//   onChange,
+//   label,
+//   disabled,
+//   required,
+//   regEx,
+//   maxLength,
+//   maxRows,
+//   onBlur,
+//   placeholder,
+// }) => {
+//   console.log(typeof maxLength);
+//   console.log(typeof maxRows);
 
-        <Input
-          type="textarea"
-          maxLength={maxLength ?? "5000"}
-          id={name}
-          name={name}
-          autoComplete="Off"
-          placeholder={label ? "Enter " + label : placeholder}
-          value={value}
-          rows={maxRows ?? 3}
-          disabled={disabled}
-          className={`h-auto ${error && touch ? "is-invalid" : ""}`}
-          onChange={(option) => {
-            const value = option.target.value;
-            if (regEx) {
-              if (!value || regEx.test(value)) onChange(name, value);
-            } else {
-              onChange(name, value);
-            }
-          }}
-          onBlur={(event) => {
-            if (onBlur) {
-              onBlur(event);
-            }
-          }}
-        />
-        {error && touch && <div className={errorClassName}>{error}</div>}
-      </div>
-    </>
-  );
-};
+//   return (
+//     <>
+//       <div className="flex flex-col">
+//         {label && (
+//           <Label
+//             className={`text-baseGray mb-4 ${value ? "active" : ""}`}
+//             htmlFor={name}
+//           >
+//             {required && <span className="text-red-600">* </span>}
+//             {label}
+//           </Label>
+//         )}
+
+//         <Input
+//           type="textarea"
+//           maxLength={maxLength ?? "5000"}
+//           id={name}
+//           name={name}
+//           autoComplete="Off"
+//           placeholder={label ? "Enter " + label : placeholder}
+//           value={value}
+//           rows={maxRows ?? 3}
+//           disabled={disabled}
+//           className={`h-auto ${error && touch ? "is-invalid" : ""}`}
+//           onChange={(option) => {
+//             const value = option.target.value;
+//             if (regEx) {
+//               if (!value || regEx.test(value)) onChange(name, value);
+//             } else {
+//               onChange(name, value);
+//             }
+//           }}
+//           onBlur={(event) => {
+//             if (onBlur) {
+//               onBlur(event);
+//             }
+//           }}
+//         />
+//         {error && touch && <div className={errorClassName}>{error}</div>}
+//       </div>
+//     </>
+//   );
+// };
 
 const FilterInput = ({
   filters,
