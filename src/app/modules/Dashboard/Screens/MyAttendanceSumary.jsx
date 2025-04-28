@@ -38,7 +38,23 @@ const AttendanceSummaryWidget = () => {
   const [currentTime, setCurrentTime] = useState(moment().format("h:mm A"));
   const [isLoading, setIsLoading] = useState(true);
 
-  console.log("payableHours", payableHours);
+  // Calculate total shift hours (shift end - shift start)
+  const getTotalShiftHours = () => {
+    if (EmployeeShiftData?.shiftStartTime && EmployeeShiftData?.shiftEndTime) {
+      const startTime = moment(EmployeeShiftData.shiftStartTime, "h:mm A");
+      const endTime = moment(EmployeeShiftData.shiftEndTime, "h:mm A");
+
+      // Handle case where end time is next day
+      let diffHours = endTime.diff(startTime, "hours", true);
+      if (diffHours < 0) {
+        diffHours += 24;
+      }
+
+      return formatDuration(diffHours, true);
+    }
+    return "Not assigned";
+  };
+
   // Fetch current attendance data for today
   const fetchTodayAttendanceData = async () => {
     try {
@@ -258,7 +274,6 @@ const AttendanceSummaryWidget = () => {
     }
   }, [attendance, onBreak]);
 
-
   return (
     <section className="bg-white rounded-md shadow-sm p-6">
       {/* Header with status */}
@@ -269,46 +284,93 @@ const AttendanceSummaryWidget = () => {
         <StatusLabelAttendance status={attendance?.status} />
       </div>
 
-      {/* Time information */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="flex flex-col">
-          <span className="text-sm text-slate-1200">Check-In Time</span>
-          <span className="text-base font-medium">
-            {attendance?.checkin
-              ? moment(attendance.checkin).format("h:mm A")
-              : "Not checked in"}
-          </span>
-        </div>
-
-        <div className="flex flex-col">
-          <span className="text-sm text-slate-1200">Check-Out Time</span>
-          <span className="text-base font-medium">
-            {attendance?.checkout
-              ? moment(attendance.checkout).format("h:mm A")
-              : "Not checked out"}
-          </span>
-        </div>
-
-        <div className="flex flex-col">
-          <span className="text-sm text-slate-1200">Total Working Hours</span>
-          <span className="text-base font-medium">
-            {attendance?.checkin ? payableHours : "0h 0min"}
-          </span>
-        </div>
-      </div>
-
-      {/* Current time display */}
-      <div className="flex justify-center items-center mb-6">
-        <div className=" px-4 py-2 rounded-md text-center">
-          <div className="text-sm  mb-1 ">Current Time</div>
-          <div className="text-xl font-semibold text-plum-1100">
-            {currentTime}
+      {/* Two-column layout for better space usage */}
+      <div className="">
+        {/* Left column: Circle timer */}
+        <div className="flex items-center flex-row flex-wrap justify-center mt-4">
+          <div className="relative">
+            <svg className="w-32 h-32">
+              <circle
+                className="text-gray-200"
+                strokeWidth="5"
+                stroke="currentColor"
+                fill="transparent"
+                r="58"
+                cx="64"
+                cy="64"
+              />
+              <circle
+                className="text-plum-900"
+                strokeWidth="5"
+                strokeDasharray={365}
+                strokeDashoffset={
+                  attendance?.payable_hours > 0 && attendance?.total_hours > 0
+                    ? 365 *
+                      (1 - attendance.payable_hours / attendance.total_hours)
+                    : 365 // Full offset for 0 hours or invalid state
+                }
+                strokeLinecap="round"
+                stroke="currentColor"
+                fill="transparent"
+                r="58"
+                cx="64"
+                cy="64"
+              />
+            </svg>
+            <div className="absolute text-xl font-semibold transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2 align-middle text-center">
+              {payableHours}
+            </div>
           </div>
+        </div>
+
+        {/* Right column: Time information */}
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <span className="text-sm text-slate-1200">Check-In Time</span>
+              <span className="text-base font-medium">
+                {attendance?.checkin
+                  ? moment(attendance.checkin).format("h:mm A")
+                  : "Not checked in"}
+              </span>
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-sm text-slate-1200">Check-Out Time</span>
+              <span className="text-base font-medium">
+                {attendance?.checkout
+                  ? moment(attendance.checkout).format("h:mm A")
+                  : "Not checked out"}
+              </span>
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-sm text-slate-1200">Current Time</span>
+              <span className="text-base font-medium">{currentTime}</span>
+            </div>
+
+            <div className="flex flex-col">
+              <span className="text-sm text-slate-1200">Total Shift Hours</span>
+              <span className="text-base font-medium">
+                {getTotalShiftHours()}
+              </span>
+            </div>
+          </div>
+
+          {/* Break duration info if applicable */}
+          {attendance?.break_duration > 0 && (
+            <div className="mt-2">
+              <span className="text-sm text-slate-1200">Break Duration:</span>
+              <span className="text-base font-medium ml-2">
+                {formatDuration(attendance.break_duration)}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Action buttons */}
-      <div className="flex flex-wrap justify-center gap-3">
+      <div className="flex flex-wrap justify-center gap-3 mt-6">
         {/* Check-in button */}
         {!attendance?.checkin && (
           <Button onClick={handleCheckIn} variant="default" size="sm">
@@ -349,14 +411,6 @@ const AttendanceSummaryWidget = () => {
           </Button>
         )}
       </div>
-
-      {/* Break duration info if applicable */}
-      {attendance?.break_duration > 0 && (
-        <div className="text-center mt-4 text-sm ">
-          Total break duration today:{" "}
-          {formatDuration(attendance.break_duration)}
-        </div>
-      )}
     </section>
   );
 };
