@@ -6,6 +6,9 @@ import { CardContent } from "components/ui/card";
 import PageLoader from "../../../../../components/PageLoader";
 import { BranchColumn } from "app/modules/OfficeSetting/sections/OfficeSettingTableColumns";
 import { FilterInput } from "components/FormControl";
+import { CardHeader } from "components/ui/card";
+import { CardTitle } from "components/ui/card";
+import { CardDescription } from "components/ui/card";
 
 const Branches = ({
   loading,
@@ -50,11 +53,6 @@ const Branches = ({
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    // if (filterName === "department_name") setSelectedDepartment(filterValue);
-    // if (filterName === "department_position")
-    //   setSelectedDesignation(filterValue);
-    // if (filterName === "user_role") setSelectedRole(filterValue);
-
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -67,7 +65,7 @@ const Branches = ({
   };
 
   return (
-    <div className="flex flex-col gap-4 justify-end">
+    <div className="flex flex-col justify-end gap-4">
       <FilterInput
         filters={[
           {
@@ -93,6 +91,12 @@ const Branches = ({
         <PageLoader />
       ) : (
         <Card>
+          <CardHeader>
+            <CardTitle className="text-primary">Branch List</CardTitle>
+            <CardDescription className="text-neutral-1100">
+              Here you can manage your branches. Add, edit, or delete branches as needed.
+            </CardDescription>
+          </CardHeader>
           <CardContent>
             <TableCustom
               columns={BranchColumn(fetchData)}

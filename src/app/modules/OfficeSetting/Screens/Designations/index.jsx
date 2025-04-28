@@ -1,13 +1,14 @@
-import { getDepartmentList } from "app/hooks/general";
-import React, { useEffect, useState } from "react";
+
+import React, { useEffect } from "react";
 import TableCustom from "components/CustomTable";
 import { Card } from "components/ui/card";
-import DepartmentAction from "../sections/Departments/DepartmentAction";
-import DesignationAction from "../sections/Designations/DesignationAction";
+
+import DesignationAction from "./DesignationAction";
 import { CardContent } from "components/ui/card";
 import { PageLoader } from "components";
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
+import { CardDescription } from "components/ui/card";
 
 const Designations = ({
   loading,
@@ -30,31 +31,7 @@ const Designations = ({
     onPageChange: onPageChange,
   };
 
-  const columns = [
-    {
-      dataField: "id",
-      text: "ID",
-    },
-    {
-      dataField: "name",
-      text: "Name",
-    },
-    {
-      dataField: "description",
-      text: "Description",
-    },
-    {
-      dataField: "organization",
-      text: "Organization",
-    },
-    {
-      text: "Action",
-      formatter: (cell, row) => (
-        <DesignationAction reload={getDesignations} data={row} />
-      ),
-    },
-  ];
-
+  
   useEffect(() => {
     getDesignations();
   }, [options]);
@@ -67,6 +44,9 @@ const Designations = ({
         <Card>
           <CardHeader>
             <CardTitle className="text-primary">Designations</CardTitle>
+            <CardDescription className="text-neutral-1100">
+              Here you can manage your designations. Add, edit, or delete designations as needed.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <TableCustom
