@@ -9,6 +9,7 @@ import { PageLoader } from "components";
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
+import { DesignationColumn } from "../../sections/OfficeSettingTableColumns";
 
 const Designations = ({
   loading,
@@ -50,7 +51,7 @@ const Designations = ({
           </CardHeader>
           <CardContent>
             <TableCustom
-              columns={columns}
+              columns={DesignationColumn(getDesignations)}
               data={designation?.results || []}
               // tableOptions={tableOptions}
               dataTotalSize={designation?.count || 0}
