@@ -41,6 +41,14 @@ const PersonalInformation = ({ userId, isEditable }) => {
           title: "Contact No",
           data: `+${userData?.country_code}${userData?.mobile_no}`,
         },
+        {
+          title: "Permanent Address",
+          data: userData?.residential_address,
+        },
+        {
+          title: "Present Address",
+          data: userData?.current_address,
+        },
       ]);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -59,7 +67,9 @@ const PersonalInformation = ({ userId, isEditable }) => {
       <Card>
         <CardHeader>
           <div className="flex justify-between">
-            <CardTitle className="text-primary">Personal Information </CardTitle>
+            <CardTitle className="text-primary">
+              Personal Information{" "}
+            </CardTitle>
             {isEditable && (
               <div
                 className="flex items-center gap-4"

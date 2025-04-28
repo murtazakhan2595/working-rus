@@ -69,7 +69,7 @@ export default function MyDocuments() {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "category") setSelectedCategory(filterValue);
+    if (filterName === "document_category") setSelectedCategory(filterValue);
     else if (filterName === "status") setSelectedStatus(filterValue);
 
     setFilterData((prevFilters) => {

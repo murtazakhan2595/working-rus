@@ -91,15 +91,11 @@ const validationEmployeeContactInfoFormSchema = (values) => {
     errors.emergency_relation = "Contact Relation is required";
   if (!values.emergency_phone_no)
     errors.emergency_phone_no = "Phone number is required";
-  if (!values.residential_address)
-    errors.residential_address = "Permanent Address is required";
-  if (!values.current_address)
-    errors.current_address = "Current Address is required";
+ 
   return errors;
 };
 
 const validateEmployeePersonalInfoForm = (values) => {
-  console.log("values", values);
   const errors = {};
   if (!values.profile_picture)
     errors.profile_picture = "Profile image is required";
@@ -133,6 +129,10 @@ const validateEmployeePersonalInfoForm = (values) => {
       errors.disbursement_type = "Disbursement type is required";
     }
   }
+  if (!values.residential_address)
+    errors.residential_address = "Permanent Address is required";
+  if (!values.emergency_current_address)
+    errors.current_address = "Current Address is required";
   return errors;
 };
 
