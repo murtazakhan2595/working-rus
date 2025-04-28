@@ -50,7 +50,6 @@ export default function EventCalendar() {
   const [loading, setLoading] = useState(true);
   const [leaveTransaction, setLeaveTransaction] = useState([]);
 
-  console.log("shiftData", shiftData);
 
   useEffect(() => {
     const getEmpShift = async () => {

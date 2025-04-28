@@ -1,6 +1,5 @@
 import RecentActivity from "./RecentActivity";
 import ProfileManagement from "./ProfileManagement";
-import LeaveBalance from "./LeaveBalance";
 import EmployeeOverview from "./EmployeeOverview";
 import TalentSphere from "./TalentSphere";
 import LeaveTrackerOverview from "./LeaveTrackerOverview";
@@ -20,7 +19,6 @@ export {
   OnGoingApplications,
   EmployeeOverview,
   ProfileManagement,
-  LeaveBalance,
   TalentSphere,
   LeaveTrackerOverview,
   MyTasks,
