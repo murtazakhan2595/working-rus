@@ -2,6 +2,6 @@
 
 import Assets from "./Screens/Assets";
 import MyAssets from "./Screens/MyAssets";
-
-export { Assets, MyAssets };
+import RequestAndAssign from "./Screens/RequestAndAssign";
+export { Assets, MyAssets, RequestAndAssign };
 

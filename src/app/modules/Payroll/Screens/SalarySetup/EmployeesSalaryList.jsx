@@ -56,9 +56,15 @@ const EmployeesSalaryList = ({ departments }) => {
           filters={[
             {
               type: "search",
+              placeholder: "Employee ID",
+              name: "serial_number",
+            },
+            {
+              type: "search",
               placeholder: "Employee Name",
               name: "first_name",
             },
+
             // ... existing code ...
             {
               type: "select-one",

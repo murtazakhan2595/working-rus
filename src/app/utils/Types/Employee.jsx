@@ -18,15 +18,17 @@ const EmployeePersonalInformation = {
   disbursement_type: null,
   agent_bank_rtn_code: null,
   mol_person_id: null,
+  current_address: null,
+  residential_address: null,
 };
 const EmployeeContactInformation = {
   emergency_phone_no: null,
   emergency_first_name: null,
   emergency_last_name: null,
   emergency_relation: null,
-  current_address: null,
-  residential_address: null,
   emergency_country_code: null,
+  emergency_permanent_address: null,
+  emergency_current_address: null,
 };
 
 const EmployeeVisaDetails = {
@@ -60,7 +62,7 @@ const EmployeeVisaDetails = {
   license_Issuance_Date: null,
   license_expiry_date: null,
   license_copy: null,
-  id:null,
+  id: null,
 };
 
 const EmployeeCVDetails = {

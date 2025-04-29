@@ -2,6 +2,7 @@ import pdfIcon from "assets/images/pdfIcon.svg";
 import { AiOutlineDownload } from "react-icons/ai";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { downloadAttachmentDirectLink } from "utils/fileUtils";
+import { DetailBox } from "components/SheetCardExtension";
 
 export const ViewDetailBox = ({ labelList }) => {
   return (
@@ -10,10 +11,13 @@ export const ViewDetailBox = ({ labelList }) => {
         {labelList &&
           labelList.map((data, index) => {
             return (
-              <div className="text-left" key={index}>
-                <p class="text-[14px] font-normal">{data?.label}</p>
-                <p class="text-[14px] font-semibold">{data?.value ?? "N/A"}</p>
-              </div>
+              <DetailBox
+                orientation="horizontal"
+                label={data?.label}
+                value={data?.value}
+                fallbackText={"--"}
+                key={index}
+              />
             );
           })}
       </div>
@@ -58,7 +62,9 @@ export const ViewAttachmentDetail = ({ title, attachments }) => {
                   );
                 }}
               >
-                <div className="text-[#5c5e64] text-base font-normal">Download</div>
+                <div className="text-[#5c5e64] text-base font-normal">
+                  Download
+                </div>
                 <AiOutlineDownload />
               </button>
             </div>

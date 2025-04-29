@@ -40,7 +40,7 @@ const ContactInformation = ({
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   const contactInformation = [
     {
-      titile: "Emergency Contact",
+      title: "Emergency Contact",
       fields: [
         {
           title: "Full Name",
@@ -51,14 +51,14 @@ const ContactInformation = ({
       ],
     },
     {
-      titile: "Permanent Address",
+      title: "Permanent Address",
       fields: [
-        { title: "Address", data: userData?.residential_address },
+        { title: "Address", data: userData?.emergency_current_address },
       ],
     },
     {
-      titile: "Present Address",
-      fields: [{ title: "Address", data: userData?.current_address }],
+      title: "Present Address",
+      fields: [{ title: "Address", data: userData?.emergency_permanent_address }],
     },
   ];
   return (
@@ -84,7 +84,7 @@ const ContactInformation = ({
             {contactInformation.map((contactInfo, index) => (
               <div key={index}>
                 <div className="text-[#111827] text-sm font-semibold whitespace-nowrap py-3">
-                  {contactInfo.titile}
+                  {contactInfo.title}
                 </div>
                 <div className="grid grid-cols-1 gap-4">
                   {contactInfo &&

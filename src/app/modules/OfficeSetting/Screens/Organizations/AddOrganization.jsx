@@ -1,12 +1,20 @@
 import SheetComponent from "components/ui/SheetComponent";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddOrganizationForm from "./AddOrganizationForm";
 import { saveOrganization } from "app/hooks/officeSetting";
 import { toast } from "react-toastify";
 import AlertDialogue from "components/ui/AlertDialogue";
 
-const AddOrganization = ({ reload, editData, setEditData, edit, setEdit}) => {
-  const formRef = useRef();
+const AddOrganization = ({ 
+  reload, 
+  editData, 
+  setEditData, 
+  edit, 
+  setEdit, 
+  countryData, 
+  stateData, 
+  cityData 
+}) => {
   const [isOpen, setIsOpen] = useState(edit??false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [formData, setFormData] = useState(null);
@@ -17,6 +25,7 @@ const AddOrganization = ({ reload, editData, setEditData, edit, setEdit}) => {
       setEdit(false);
       setEditData({});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   const formSheetData = {
@@ -39,6 +48,11 @@ const AddOrganization = ({ reload, editData, setEditData, edit, setEdit}) => {
   
     // Loop through formData and append keys and values to FormData
     Object.entries(formData).forEach(([key, value]) => {
+      // Skip the location name properties which are only for display
+      if (['country_name', 'state_name', 'city_name'].includes(key)) {
+        return;
+      }
+      
       if (key === "logo") {
         if (value instanceof File)
           // Handle file fields
@@ -82,6 +96,9 @@ const AddOrganization = ({ reload, editData, setEditData, edit, setEdit}) => {
           handleSubmit={handleFormSubmit}
           editData={editData}
           edit={edit}
+          countryData={countryData}
+          stateData={stateData}
+          cityData={cityData}
         />
       </SheetComponent>
 

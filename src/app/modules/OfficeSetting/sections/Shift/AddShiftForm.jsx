@@ -17,12 +17,12 @@ import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 const AddShiftForm = ({
   isOpen,
   setIsOpen,
-  edit,
+  shiftData,
   setEdit,
   reload = () => {},
   setEmployeeShift = () => {},
 }) => {
-  const formData = edit?.data ?? ShiftInformation;
+  const formData = shiftData ?? ShiftInformation;
   // setFormData] = useState(() => {
   //   if (edit?.data) {
   //     const localStartTime = moment(edit.data.starttime)
@@ -56,7 +56,7 @@ const AddShiftForm = ({
 
       const response = await saveShift(updatedValues?.id, updatedValues);
       if (response) {
-        toast.success(`Shift ${edit ? "Updated" : "Added"} Successfully!`, {
+        toast.success(`Shift ${shiftData ? "Updated" : "Added"} Successfully!`, {
           position: toast.POSITION.TOP_RIGHT,
         });
         console.log("response", response);
@@ -90,7 +90,9 @@ const AddShiftForm = ({
       })}
       <Formik
         initialValues={formData}
-        onSubmit={handleSubmit}
+        onSubmit={(values, { resetForm }) => {
+          handleSubmit(values, resetForm);
+        }}
         validate={validateShiftFormSchema}
       >
         {(props) => (
@@ -158,7 +160,7 @@ const AddShiftForm = ({
                     props.handleSubmit();
                   }}
                 >
-                  {edit ? "Update" : "Add"}
+                  {shiftData ? "Update" : "Add"}
                 </Button>
               </div>
             </div>

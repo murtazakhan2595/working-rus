@@ -26,6 +26,7 @@ const DateInput = React.memo(
     disabled = false,
     dateFormat = "yyyy-MM-dd", // Default format for the value
     showMonthYearPicker = false, // Whether to show only month/year picker
+    minDate,
   }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -103,6 +104,10 @@ const DateInput = React.memo(
         try {
           const parsedDate = parse(formattedValue, inputPattern, new Date());
           if (isValid(parsedDate)) {
+            // ✅ Add check: if selected date >= minDate
+            if (minDate && parsedDate < new Date(minDate)) {
+              return; // Don't allow setting date earlier than minDate
+            }
             setDate(parsedDate);
             setCalendarDate(parsedDate); // Sync with the calendar
             onChange(name, format(parsedDate, dateFormat));
@@ -117,6 +122,10 @@ const DateInput = React.memo(
     // Handle date selection from the calendar and sync with input
     const handleCalendarSelect = (selectedDate) => {
       if (selectedDate) {
+        // ✅ Add check: if selected date >= minDate
+        if (minDate && selectedDate < new Date(minDate)) {
+          return; // Ignore selection if before minDate
+        }
         setDate(selectedDate);
         setInputValue(format(selectedDate, inputPattern));
         setCalendarDate(selectedDate);
@@ -191,6 +200,8 @@ const DateInput = React.memo(
                 // For month-year picker, don't allow day selection
                 // This works if the Calendar component supports it
                 showMonthYearPicker={showMonthYearPicker}
+                // ✅ Block past dates
+                disabled={(date) => minDate ? date < new Date(minDate) : false}
               />
             </div>
           }

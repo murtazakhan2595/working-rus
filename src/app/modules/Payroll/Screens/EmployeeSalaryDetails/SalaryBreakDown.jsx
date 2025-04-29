@@ -2,21 +2,7 @@ import React, { useEffect, useState } from "react";
 import { DetailBox } from "components/SheetCardExtension";
 import { Button } from "components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "src/@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "src/@/components/ui/table";
+import { SalaryTypeOptions } from "data/Data";
 import {
   DollarSign,
   TrendingUp,
@@ -82,7 +68,7 @@ export default function SalaryBreakDown({ payrollDetails }) {
       isMounted = false;
     };
   }, [payrollDetails]);
-
+  const AmountSymbol = " AED";
   return (
     <Card className="h-full">
       <CardHeader>
@@ -92,16 +78,64 @@ export default function SalaryBreakDown({ payrollDetails }) {
         {/* <h3 className="mb-4 text-lg font-semibold text-black">
           CTC Components
         </h3> */}
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col gap-2">
           <div className="flex flex-row font-bold">
             <div className="flex flex-row font-bold text-left">
-              Basic Salary
+              Gross Salary
             </div>
-            <div className="flex-1 text-right">
-              AED {payrollDetails?.basic_salary}
-            </div>
+            <div className="flex-1 text-right">{payrollDetails?.ctc}{AmountSymbol}</div>
+          </div> */}
+          <div className="grid grid-cols-2 gap-4 w-full">
+           
+          <DetailBox
+              orientation="horizontal"
+              label={"Gross Salary"}
+              value={`${payrollDetails.ctc||'0.00'}${AmountSymbol}`}
+              fallbackText={"N/A"}
+            />
+            <DetailBox
+              orientation="horizontal"
+              label={"Salary Type"}
+              value={
+                SalaryTypeOptions.find(
+                  (obj) => obj.value === payrollDetails.salary_type
+                )?.label || payrollDetails.salary_type
+              }
+              fallbackText={"N/A"}
+            />
+           
+            <DetailBox
+              orientation="horizontal"
+              label={"Basic Salary"}
+              value={`${payrollDetails.basic_salary||'0.00'}${AmountSymbol}`}
+              fallbackText={"N/A"}
+            />
+            <DetailBox
+              orientation="horizontal"
+              label={"Medical Allowance"}
+              value={`${payrollDetails.medical_allowance||'0.00'}${AmountSymbol}`}
+              fallbackText={"N/A"}
+            />
+            <DetailBox
+              orientation="horizontal"
+              label={"Transport Allowance"}
+              value={`${payrollDetails.transport_allowance||'0.00'}${AmountSymbol}`}
+              fallbackText={"N/A"}
+            />
+            <DetailBox
+              orientation="horizontal"
+              label={"House Allowance"}
+              value={`${payrollDetails.house_allowance||'0.00'}${AmountSymbol}`}
+              fallbackText={"N/A"}
+            />
+            <DetailBox
+              orientation="horizontal"
+              label={"Other Allowance"}
+              value={`${payrollDetails.other_allowance||'0.00'}${AmountSymbol}`}
+              fallbackText={"N/A"}
+            />
           </div>
-          {totalEarnings > 0 && (
+          {/* {totalEarnings > 0 && (
             <SalaryComponent
               componentName="Earnings"
               componentList={earnings || []}
@@ -114,8 +148,8 @@ export default function SalaryBreakDown({ payrollDetails }) {
               componentList={deductions || []}
               totalValue={totalDeduction}
             />
-          )}
-        </div>
+          )} */}
+        {/* </div> */}
       </CardContent>
     </Card>
   );

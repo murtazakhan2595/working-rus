@@ -25,7 +25,7 @@ const DocumentTabs = ["All", "Signed", "Pending", "Expired"].filter(Boolean);
 const innerTabClassName =
   "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
 
-export default function Documents() {
+export default function Documents({ reload }) {
   const userRole = useSelector((state) => state.user.userProfile.role);
   const userID = useSelector((state) => state.user.userProfile.id);
   const Document_Category = useSelector((state) => state.doc_category.category);
@@ -34,12 +34,11 @@ export default function Documents() {
     results: [],
     count: 0,
   });
-  const [employeeTransferStat, setEmployeeTransferStat] = useState({});
   const [activeDocumentTab, setActiveDocumentTab] = useState("All");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
-    const [OpenDocumentID, setOpenDocumentID] = useState(false);
+  const [OpenDocumentID, setOpenDocumentID] = useState(false);
   const [filterData, setFilterData] = useState(
     userRole === 2 ? { new_reporting_manager: userID } : {}
   );
@@ -78,22 +77,6 @@ export default function Documents() {
     }
   };
 
-  const fetchStatData = async (isMounted) => {
-    setIsLoading(true);
-    try {
-      const data = await getEmployeeTransferStats({
-        filterData: { transfer_type: filterData.transfer_type },
-      });
-      if (isMounted) {
-        setEmployeeTransferStat(data);
-      }
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-    } finally {
-      if (isMounted) setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
     let isMounted = true;
     fetchData(isMounted);
@@ -104,34 +87,15 @@ export default function Documents() {
 
   useEffect(() => {
     let isMounted = true;
-    fetchStatData(isMounted);
+    onPageChange("page", 1);
+    setOrdering("-id");
+    fetchData(true)
     return () => {
       isMounted = false;
     };
-  }, [filterData.transfer_type]);
+  }, [reload]);
 
-  const statsData = [
-    {
-      label: "Total",
-      value: employeeTransferStat.total_transfers || 0,
-      icon: UsersRound,
-    },
-    {
-      label: "Approved",
-      value: employeeTransferStat.approved_transfers || 0,
-      icon: Contact,
-    },
-    {
-      label: "Rejected",
-      value: employeeTransferStat.rejected_transfers || 0,
-      icon: UserRoundCheck,
-    },
-    {
-      label: "Pending",
-      value: employeeTransferStat.pending_transfers || 0,
-      icon: UserRoundCheck,
-    },
-  ];
+
   useEffect(() => {
     setFilterData((prevFilter) => {
       const updatedFilter = { ...prevFilter };
@@ -182,11 +146,7 @@ export default function Documents() {
         <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
           <TabsList className="flex items-center justify-center mb-4">
             {DocumentTabs.map((tab) => (
-              <TabsTrigger
-                key={tab}
-                value={tab}
-                className={innerTabClassName}
-              >
+              <TabsTrigger key={tab} value={tab} className={innerTabClassName}>
                 {tab}
               </TabsTrigger>
             ))}
@@ -213,18 +173,18 @@ export default function Documents() {
           tableOptions={tableOptions}
         />
       </Tabs>
-       {OpenDocumentID && (
-              <DocumentDetails
-                documentID={OpenDocumentID}
-                isOpen={!!OpenDocumentID}
-                setIsOpen={() => {
-                  setOpenDocumentID(null);
-                }}
-                DocumentList={employeeTransferData.results}
-                reloadData={fetchData}
-                // readOnlyMode={true}
-              />
-            )}
+      {OpenDocumentID && (
+        <DocumentDetails
+          documentID={OpenDocumentID}
+          isOpen={!!OpenDocumentID}
+          setIsOpen={() => {
+            setOpenDocumentID(null);
+          }}
+          DocumentList={employeeTransferData.results}
+          reloadData={fetchData}
+          // readOnlyMode={true}
+        />
+      )}
     </div>
   );
 }

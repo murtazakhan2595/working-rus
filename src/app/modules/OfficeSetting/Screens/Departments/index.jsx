@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 import TableCustom from "components/CustomTable";
 import { Card } from "components/ui/card";
-import { getBranchList } from "app/hooks/general";
 import { CardContent } from "components/ui/card";
-import PageLoader from "../../../../../components/PageLoader";
-import { BranchColumn } from "app/modules/OfficeSetting/sections/OfficeSettingTableColumns";
-import { FilterInput } from "components/FormControl";
+import PageLoader from '../../../../../components/PageLoader';
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
+import { DepartmentColumn } from "../../sections/OfficeSettingTableColumns";
+import { FilterInput } from "components/FormControl";
+import { getDepartmentList } from "app/hooks/general";
 
-const Branches = ({
+const Departments = ({
   loading,
   reload,
 }) => {
-  const [Branches, setBranches] = useState({});
+  const [Departments, setDepartments] = useState({});
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -34,9 +34,9 @@ const Branches = ({
 
   const fetchData = async (isMounted) => {
     try {
-      const response = await getBranchList({filterData,options,ordering});
+      const response = await getDepartmentList({filterData,options,ordering});
       if (isMounted && response) {
-        setBranches(response);
+        setDepartments(response);
       }
     } catch (error) {
       console.error(error);
@@ -92,17 +92,17 @@ const Branches = ({
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle className="text-primary">Branch List</CardTitle>
+            <CardTitle className="text-primary">Department List</CardTitle>
             <CardDescription className="text-neutral-1100">
-              Here you can manage your branches. Add, edit, or delete branches as needed.
+              Here you can manage your departments. Add, edit, or delete departments as needed.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <TableCustom
-              columns={BranchColumn(fetchData)}
-              data={Branches?.results || []}
+              columns={DepartmentColumn(fetchData)}
+              data={Departments?.results || []}
               tableOptions={tableOptions}
-              dataTotalSize={Branches?.count || 0}
+              dataTotalSize={Departments?.count || 0}
               pagination={true}
               className="organization-table"
             />
@@ -113,4 +113,4 @@ const Branches = ({
   );
 };
 
-export default Branches;
+export default Departments;

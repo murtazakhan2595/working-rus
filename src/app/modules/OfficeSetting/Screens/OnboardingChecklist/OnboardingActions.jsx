@@ -4,20 +4,21 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "../../../../../src/@/components/ui/dropdown-menu";
+} from "src/@/components/ui/dropdown-menu";
 import React, { useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import AddDesignationForm from "./AddDesignationForm";
 import SheetComponent from "components/ui/SheetComponent";
-import ViewDepartment from "../Departments/ViewDepartment";
-import ViewDesignation from "./ViewDesignation";
+import ViewOnboarding from "./ViewOnboarding";
+import AddOnboardingForm from "./AddOnboardingForm";
+import { deleteOnboardingDocument } from "app/hooks/officeSetting";
+import ActionButtons from "components/ActionButtons";
 
-const DesignationAction = ({ data, reload }) => {
+const OnboardingActions = ({ data, reload }) => {
   const [view, setView] = useState(null);
+  const [deleteDept, setDeleteDept] = useState(null);
   const [edit, setEdit] = useState(null);
-  const [deleteDesignation, setDeleteDesignation] = useState(null);
 
   const formSheetData = {
     triggerText: null,
@@ -26,22 +27,22 @@ const DesignationAction = ({ data, reload }) => {
     footer: null,
   };
 
-  const handleEdit = (data) => {
-    setEdit({
-      open: true,
-      data: data,
-    });
-  };
-
-  const handleView = (data) => {
+  const handleView = () => {
     setView({
       visible: true,
       data: data,
     });
   };
 
-  const handleDelete = (data) => {
-    setDeleteDesignation({
+  const handleEdit = () => {
+    setEdit({
+      open: true,
+      data: data,
+    });
+  };
+
+  const handleDelete = () => {
+    setDeleteDept({
       open: true,
       data: data,
     });
@@ -50,10 +51,10 @@ const DesignationAction = ({ data, reload }) => {
   const confirmDelete = async () => {
     try {
       await deleteRecord(
-        `/designation/${deleteDesignation?.data?.id}`,
-        deleteDesignation?.data?.name
+        `/department/${deleteDept?.data?.id}`,
+        deleteDept?.data?.name
       );
-      reload()
+      reload();
     } catch (error) {
       console.log("ERROR", error);
     }
@@ -61,35 +62,26 @@ const DesignationAction = ({ data, reload }) => {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button aria-haspopup="true" size="icon" variant="ghost">
-            <MoreHorizontal className="w-4 h-4" />
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => handleEdit(data)}>
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={()=> handleView(data)}>View</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleDelete(data)}>
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <ActionButtons 
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        viewTooltip="View Document Details"
+        editTooltip="Edit Document"
+        deleteTooltip="Delete Document"
+      />
 
-      {deleteDesignation?.open && (
+      {deleteDept?.open && (
         <AlertDialogue
           title="Confirm Delete?"
           description="This action can't be undone. All information associated with this will be lost."
-          isOpen={deleteDesignation?.open}
+          isOpen={deleteDept.open}
           setIsOpen={(isOpen) =>
-            setDeleteDesignation((prev) => ({ ...prev, open: isOpen }))
+            setDeleteDept((prev) => ({ ...prev, open: isOpen }))
           }
           handleContinue={() => {
             confirmDelete();
-            setDeleteDesignation(null);
+            setDeleteDept(null);
           }}
         />
       )}
@@ -101,7 +93,7 @@ const DesignationAction = ({ data, reload }) => {
           setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
           width="568px"
         >
-          <AddDesignationForm
+          <AddOnboardingForm
             isOpen={edit.open}
             setIsOpen={(isOpen) =>
               setEdit((prev) => ({ ...prev, open: isOpen }))
@@ -112,8 +104,9 @@ const DesignationAction = ({ data, reload }) => {
           />
         </SheetComponent>
       )}
+
       {view?.visible && (
-        <ViewDesignation
+        <ViewOnboarding
           isOpen={view.visible}
           setIsOpen={(isOpen) =>
             setView((prev) => ({ ...prev, visible: isOpen }))
@@ -125,4 +118,4 @@ const DesignationAction = ({ data, reload }) => {
   );
 };
 
-export default DesignationAction;
+export default OnboardingActions;

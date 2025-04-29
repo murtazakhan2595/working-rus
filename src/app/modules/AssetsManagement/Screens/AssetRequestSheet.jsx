@@ -106,6 +106,7 @@ const AssetRequestSheet = ({
               // Request-specific fields
               asset_status: "Pending",
               asset_employee_id: userProfile.id,
+              asset_request_status: "Requested",
             }
           : {
               // Assignment-specific fields
@@ -124,6 +125,7 @@ const AssetRequestSheet = ({
               ...(values.location && {
                 asset_location: values.location.value || values.location,
               }),
+              asset_request_status: "Assigned",
             }),
       };
 

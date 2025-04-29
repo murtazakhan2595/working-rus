@@ -8,6 +8,7 @@ import {
   PhoneNumberInput,
   SelectInputComponent,
   TextInput,
+  TextAreaInput
 } from "components/FormControl";
 import { PageLoader } from "components";
 import {
@@ -473,9 +474,9 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                           </div>
 
                           {/* UAE Gender */}
-                          <div className="space-y-2">
-                            {props.values.nationality ===
-                            "United Arab Emirates" ? (
+                          {props.values.nationality ===
+                            "United Arab Emirates" ? (  <div className="space-y-2">
+                            
                               <SelectInputComponent
                                 name={"gender"}
                                 options={GenderOptions}
@@ -489,7 +490,36 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                                   props.setFieldValue(field, value);
                                 }}
                               />
-                            ) : null}
+                           
+                          </div> ) : null}
+
+                          <div className="col-span-3 space-y-2">
+                            <TextAreaInput
+                              name="residential_address"
+                              error={props.errors.residential_address}
+                              touch={props.touched.residential_address}
+                              value={props.values.residential_address}
+                              label="Permanent Address"
+                              required
+                              onChange={(field, value) => {
+                                setIsEdited(true);
+                                props.handleChange(field)(value);
+                              }}
+                            />
+                          </div>
+                          <div className="col-span-3 space-y-2">
+                            <TextAreaInput
+                              name="current_address"
+                              error={props.errors.current_address}
+                              touch={props.touched.current_address}
+                              value={props.values.current_address}
+                              label="Current Address"
+                              required
+                              onChange={(field, value) => {
+                                setIsEdited(true);
+                                props.handleChange(field)(value);
+                              }}
+                            />
                           </div>
                         </div>
                       </CardContent>

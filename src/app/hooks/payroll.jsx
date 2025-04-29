@@ -6,7 +6,10 @@ import {
   mapPayRunList,
   mapEmployeeSalarySetupData,
   mapPayrunPayloadData,
+  mapEmployeeSalaryPayloadData,
 } from "app/utils/MappingObjects/mapPayrollData";
+import { toast } from "react-toastify";
+import {renderErrorMessages} from 'utils/renderErrors';
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -22,7 +25,6 @@ const getEmployeePayroll = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  console.log("filterData", filterData);
   const URL = `/payroll/employee-payroll/?ordering=-id&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
@@ -360,45 +362,38 @@ const deleteEarnAndDeduction = async (id) => {
   }
 };
 
-const saveEmployeePayroll = async (payload) => {
-  console.log("Starting saveEmployeePayroll with payload:", payload);
+const saveEmployeePayroll = async (payload, id) => {
+  const finalPaylaod = mapEmployeeSalaryPayloadData(payload);
+  const payrollId = payload.id || id;
   try {
-    if (!payload) {
+    if (!finalPaylaod) {
       console.error("Invalid payload provided to saveEmployeePayroll");
       return false;
     }
-
-    if (payload?.id) {
-      console.log(`Updating employee payroll with ID: ${payload.id}`);
+    if (payrollId) {
       const response = await axios.patch(
-        `${baseUrl}/payroll/employee-payroll/${payload.id}`,
-        payload,
+        `${baseUrl}/payroll/employee-payroll/${payrollId}`,
+        finalPaylaod,
         {
           headers: headers(),
         }
       );
-
-      console.log("Employee payroll update response:", response.status);
       if (response.status === 201 || response.status === 200) {
-        console.log("Employee payroll updated successfully");
         return response.data || true;
       } else {
         console.error(`Unexpected response status: ${response.status}`);
         return false;
       }
     } else {
-      console.log("Creating new employee payroll");
       const response = await axios.post(
         `${baseUrl}/payroll/employee-payroll/`,
-        payload,
+        finalPaylaod,
         {
           headers: headers(),
         }
       );
 
-      console.log("Employee payroll creation response:", response.status);
       if (response.status === 201 || response.status === 200) {
-        console.log("Employee payroll created successfully");
         return response.data || true;
       } else {
         console.error(`Unexpected response status: ${response.status}`);
@@ -406,6 +401,7 @@ const saveEmployeePayroll = async (payload) => {
       }
     }
   } catch (error) {
+    debugger
     console.error("Error in saveEmployeePayroll:", error);
     if (error?.response) {
       console.error(
@@ -416,10 +412,15 @@ const saveEmployeePayroll = async (payload) => {
     }
     if (error?.response?.status === 401) {
       HandleLogout();
+      return false;
     }
+    renderErrorMessages(error?.response?.data)
+    // toast.error(`Unexpected response status: ${error?.response.status}`);
+
     return false;
   }
 };
+
 
 const saveEmployeeEarnDeduction = async (payload) => {
   try {

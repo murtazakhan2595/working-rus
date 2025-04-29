@@ -1,8 +1,9 @@
 import {
   PayRun,
   EmployeePayRoll,
-  EmployeeSalarySetup,
+  EmployeeSalary,
   EmployeePayRunPaySlip,
+  PayrollAdjustment
 } from "app/utils/Types/Payroll";
 import moment from "moment";
 import { calculatePercentage } from "utils/renderValues";
@@ -45,7 +46,7 @@ export function mapEmployeePayRollData(data) {
 }
 export function mapEmployeeSalarySetupData(data) {
   if (!data) return {};
-  const payrunData = Object.keys(EmployeeSalarySetup).reduce((acc, key) => {
+  const payrunData = Object.keys(EmployeeSalary).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
       if (key === "ctc") acc["gross_salary"] = data[key];
       if (key === "salary_breakdown_type")
@@ -80,6 +81,26 @@ export function mapEmployeeSalarySetupData(data) {
   }, {});
 
   return payrunData;
+}
+
+export function mapEmployeeSalaryPayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in EmployeeSalary) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      // Add the key and its value to the payload
+      payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
 }
 
 export function mapPayrunPayloadData(data, id) {
@@ -137,3 +158,30 @@ export function mapEmployeePayrunPayslipData(data) {
 
   return payrunData;
 }
+
+
+export function mapPayrollAdjustmentData(data) {
+  const PayrollAdjustmentData = Object.keys(PayrollAdjustment).reduce(
+    (acc, key) => {
+      if (key === "amount_type") {
+        acc[key] = data["amounts_types"] || data["amount_type"];
+      } else if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
+
+  return PayrollAdjustmentData;
+}
+
+export async function mapPayrollAdjustmentList(data) {
+  if (!data || data.length === 0) return [];
+  const PayrollAdjustmentList = await data?.map((payrollAdjustment) => {
+    return mapPayrollAdjustmentData(payrollAdjustment);
+  });
+
+  return PayrollAdjustmentList;
+}
+

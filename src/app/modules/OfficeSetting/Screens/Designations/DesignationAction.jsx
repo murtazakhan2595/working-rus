@@ -4,47 +4,45 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "src/@/components/ui/dropdown-menu";
+} from "../../../../../src/@/components/ui/dropdown-menu";
 import React, { useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
+import AddDesignationForm from "./AddDesignationForm";
 import SheetComponent from "components/ui/SheetComponent";
-import ViewShift from "./ViewShift";
-import AddShiftForm from "./AddShiftForm";
+import ViewDepartment from "../Departments/ViewDepartment";
+import ViewDesignation from "./ViewDesignation";
 import ActionButtons from "components/ActionButtons";
 
-const ShiftActions = ({ data, reload }) => {
+const DesignationAction = ({ data, reload }) => {
   const [view, setView] = useState(null);
-  const [deleteShift, setDeleteShift] = useState(null);
   const [edit, setEdit] = useState(null);
+  const [deleteDesignation, setDeleteDesignation] = useState(null);
 
   const formSheetData = {
     triggerText: null,
-    title: "Update Shift Details",
+    title: "Update Department",
     description: null,
     footer: null,
   };
 
-  const handleView = (event) => {
-    event.preventDefault();
-    setView({
-      visible: true,
-      data: data,
-    });
-  };
-
-  const handleEdit = (event) => {
-    event.preventDefault();
+  const handleEdit = (data) => {
     setEdit({
       open: true,
       data: data,
     });
   };
 
-  const handleDelete = (event) => {
-    event.preventDefault();
-    setDeleteShift({
+  const handleView = (data) => {
+    setView({
+      visible: true,
+      data: data,
+    });
+  };
+
+  const handleDelete = (data) => {
+    setDeleteDesignation({
       open: true,
       data: data,
     });
@@ -52,13 +50,11 @@ const ShiftActions = ({ data, reload }) => {
 
   const confirmDelete = async () => {
     try {
-      const response = await deleteRecord(
-        `/shift/${deleteShift?.data?.id}`,
-        deleteShift?.data?.name
+      await deleteRecord(
+        `/designation/${deleteDesignation?.data?.id}`,
+        deleteDesignation?.data?.name
       );
-      if (response) {
-        reload();
-      }
+      reload()
     } catch (error) {
       console.log("ERROR", error);
     }
@@ -70,21 +66,21 @@ const ShiftActions = ({ data, reload }) => {
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        viewTooltip="View Shift Details"
-        editTooltip="Edit Shift"
-        deleteTooltip="Delete Shift"
+        viewTooltip="View Designation Details"
+        editTooltip="Edit Designation"
+        deleteTooltip="Delete Designation"
       />
-      {deleteShift?.open && (
+      {deleteDesignation?.open && (
         <AlertDialogue
           title="Confirm Delete?"
           description="This action can't be undone. All information associated with this will be lost."
-          isOpen={deleteShift.open}
+          isOpen={deleteDesignation?.open}
           setIsOpen={(isOpen) =>
-            setDeleteShift((prev) => ({ ...prev, open: isOpen }))
+            setDeleteDesignation((prev) => ({ ...prev, open: isOpen }))
           }
           handleContinue={() => {
             confirmDelete();
-            setDeleteShift(null);
+            setDeleteDesignation(null);
           }}
         />
       )}
@@ -96,20 +92,19 @@ const ShiftActions = ({ data, reload }) => {
           setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
           width="568px"
         >
-          <AddShiftForm
+          <AddDesignationForm
             isOpen={edit.open}
             setIsOpen={(isOpen) =>
               setEdit((prev) => ({ ...prev, open: isOpen }))
             }
-            shiftData={edit.data}
+            edit={edit}
             setEdit={setEdit}
             reload={reload}
           />
         </SheetComponent>
       )}
-
       {view?.visible && (
-        <ViewShift
+        <ViewDesignation
           isOpen={view.visible}
           setIsOpen={(isOpen) =>
             setView((prev) => ({ ...prev, visible: isOpen }))
@@ -121,4 +116,4 @@ const ShiftActions = ({ data, reload }) => {
   );
 };
 
-export default ShiftActions;
+export default DesignationAction;

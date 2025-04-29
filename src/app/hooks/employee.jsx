@@ -25,6 +25,7 @@ import {
 import { initialState } from "state/slices/UserSlice";
 import { toast } from "react-toastify";
 import { HandleLogout } from "./general";
+import {renderErrorMessages} from 'utils/renderErrors';
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -843,6 +844,7 @@ const employeeExit = async (payload) => {
       HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
+    renderErrorMessages(error?.response?.data)
     return false;
   }
 };
