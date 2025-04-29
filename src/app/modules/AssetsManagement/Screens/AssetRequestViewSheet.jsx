@@ -328,12 +328,14 @@ const AssetRequestViewSheet = ({
                 </div>
               ))}
             </section>
-            <div>
-              rejection reason here
-            </div>
           </div>
         </DetailCard>
-
+        {assetRequest?.rejection_reason && (
+          <div className="mt-4 p-3 border rounded-md bg-gray-50 text-sm text-gray-1100">
+            <div className="font-medium mb-1">Rejection Reason:</div>
+            <div>{assetRequest.rejection_reason}</div>
+          </div>
+        )}
         {/* Approval Buttons */}
         {!isMyRequest && showButtons && (
           <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
