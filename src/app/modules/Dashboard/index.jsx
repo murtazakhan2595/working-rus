@@ -14,7 +14,6 @@ const filters = {
   RecentActivity: "RecentActivity",
   TaskProgress: "TaskProgress",
   ProfileManagement: "ProfileManagement",
-  LeaveBalance: "LeaveBalance",
 };
 
 const Dashboard = ({ userProfile }) => {

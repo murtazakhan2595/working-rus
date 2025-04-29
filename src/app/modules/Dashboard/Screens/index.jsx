@@ -1,6 +1,5 @@
 import RecentActivity from "./RecentActivity";
 import ProfileManagement from "./ProfileManagement";
-import LeaveBalance from "./LeaveBalance";
 import EmployeeOverview from "./EmployeeOverview";
 import TalentSphere from "./TalentSphere";
 import LeaveTrackerOverview from "./LeaveTrackerOverview";
@@ -12,13 +11,16 @@ import TaskProgress from "./TaskProgress";
 import LeaveEmployeeDetails from "./LeaveTrackerOverview/LeaveEmployeeDetails";
 import OnGoingApplications from "./TalentSphere/OnGoingApplications";
 import ExpiredDocuments from "./ExpiredDocuments";
+import MyAttendanceSumary from "./MyAttendanceSumary";
+import ProfileCompletion from "./ProfileCompletion";
+import ShiftDetailsWidget from "./ShiftDetailsWidget";
+import MonthlyAttendanceCalendar from "./MonthlyAttendanceCalendar";
 export {
   RecentActivity,
   LeaveEmployeeDetails,
   OnGoingApplications,
   EmployeeOverview,
   ProfileManagement,
-  LeaveBalance,
   TalentSphere,
   LeaveTrackerOverview,
   MyTasks,
@@ -27,4 +29,8 @@ export {
   MyTeams,
   TaskProgress,
   ExpiredDocuments,
+  MyAttendanceSumary,
+  ProfileCompletion,
+  ShiftDetailsWidget,
+  MonthlyAttendanceCalendar,
 };

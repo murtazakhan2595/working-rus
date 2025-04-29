@@ -1,3 +1,4 @@
+import Notifications from "app/modules/Notifications";
 import {
   RecentActivity,
   MyTasks,
@@ -11,6 +12,10 @@ import {
   LeaveEmployeeDetails,
   OnGoingApplications,
   ExpiredDocuments,
+  MyAttendanceSumary,
+  ProfileCompletion,
+  ShiftDetailsWidget,
+  MonthlyAttendanceCalendar,
 } from "../Screens";
 import EventCalendar from "../Screens/EventCalendar";
 
@@ -135,15 +140,21 @@ const DashboardManager = [
 const DashboardEmployee = [
   {
     type: "div",
-    className: `col-span-2`,
-    content: <MyTasks />,
-    value: "MyTasks",
+    className: `w-full`,
+    content: <MyAttendanceSumary />,
+    value: "MyAttendanceSumary",
   },
   {
     type: "div",
     className: `w-full`,
-    content: <AllProjects />,
-    value: "AllProjects",
+    content: <EventCalendar />,
+    value: "EventCalendar",
+  },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <ProfileCompletion />,
+    value: "ProfileCompletion",
   },
 
   {
@@ -154,15 +165,27 @@ const DashboardEmployee = [
   },
   {
     type: "div",
-    className: `w-full`,
-    content: <MyTeams />,
-    value: "MyTeam",
+    className: "w-full",
+    content: <ShiftDetailsWidget />,
+    value: "ShiftDetailsWidget",
+  },
+  {
+    type: "div",
+    className: "w-full",
+    content: <ExpiredDocuments />,
+    value: "ExpiredDocuments",
   },
   {
     type: "div",
     className: `w-full`,
-    content: <EventCalendar />,
-    value: "EventCalendar",
+    content: <RecentActivity />,
+    value: "RecentActivity",
+  },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <MonthlyAttendanceCalendar />,
+    value: "MonthlyAttendanceCalendar",
   },
 ];
 export const getDashboard = (userRole) => {
