@@ -278,7 +278,20 @@ const RenderLogInButton = ({
     }
     if (!attendance) {
       const checkInTime = moment().utc().toISOString();
-      const is_late = moment(checkInTime).isAfter(employeeShift.starttime);
+      const checkInMoment = moment(checkInTime);
+      const shiftStartMoment = moment(employeeShift.starttime);
+      // Extract only hours and minutes for both times
+      const checkInTimeOnly = moment.utc(
+        `${checkInMoment.format("HH:mm")}`,
+        "HH:mm"
+      );
+      const shiftStartTimeOnly = moment.utc(
+        `${shiftStartMoment.format("HH:mm")}`,
+        "HH:mm"
+      );
+
+      // Compare time only
+      const is_late = checkInTimeOnly.isAfter(shiftStartTimeOnly);
       const payload = {
         checkin: checkInTime,
         status: is_late ? "Late" : "Present",

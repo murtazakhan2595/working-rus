@@ -26,21 +26,24 @@ const ShiftActions = ({ data, reload }) => {
     footer: null,
   };
 
-  const handleView = (data) => {
+  const handleView = (event) => {
+    event.preventDefault();
     setView({
       visible: true,
       data: data,
     });
   };
 
-  const handleEdit = (data) => {
+  const handleEdit = (event) => {
+    event.preventDefault();
     setEdit({
       open: true,
       data: data,
     });
   };
 
-  const handleDelete = (data) => {
+  const handleDelete = (event) => {
+    event.preventDefault();
     setDeleteShift({
       open: true,
       data: data,
@@ -98,7 +101,7 @@ const ShiftActions = ({ data, reload }) => {
             setIsOpen={(isOpen) =>
               setEdit((prev) => ({ ...prev, open: isOpen }))
             }
-            edit={edit}
+            shiftData={edit.data}
             setEdit={setEdit}
             reload={reload}
           />

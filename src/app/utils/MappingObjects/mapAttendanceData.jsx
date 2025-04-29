@@ -1,4 +1,5 @@
 import { Attendance, Shift } from "app/utils/Types/Attendance";
+import { CalculateTotalWorkingHours } from "utils/renderValues";
 import moment from "moment";
 
 export function mapShiftData(data) {
@@ -17,9 +18,9 @@ export function mapShiftData(data) {
 export function mapAttendanceData(data, shiftDetails) {
   const startTime = moment(shiftDetails.starttime);
   const endTime = moment(shiftDetails.endtime);
-  const totalHours = endTime.diff(startTime, "hours", true);
   // Initialize an empty payload object
-  const payload = { total_hours: parseFloat(totalHours) };
+  const Hours = CalculateTotalWorkingHours(startTime,endTime,'day')
+  const payload = { total_hours: Hours };
   // Iterate over the keys in the Task object
   for (const key in Attendance) {
     // Check if the key exists in the data object

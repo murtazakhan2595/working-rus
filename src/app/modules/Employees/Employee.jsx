@@ -43,7 +43,6 @@ export default function EmployeeManagement() {
   };
 
   const fetchData = async (isMounted) => {
-    debugger;
     setIsLoading(true);
     try {
       const data = await getEmployeeCustomList({
