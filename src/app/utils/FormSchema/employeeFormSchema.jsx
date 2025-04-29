@@ -131,7 +131,7 @@ const validateEmployeePersonalInfoForm = (values) => {
   }
   if (!values.residential_address)
     errors.residential_address = "Permanent Address is required";
-  if (!values.emergency_current_address)
+  if (!values.current_address)
     errors.current_address = "Current Address is required";
   return errors;
 };

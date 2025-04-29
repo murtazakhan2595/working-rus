@@ -50,6 +50,11 @@ export const Notifications_Action_URL = [
   },
   {
     module: "user_management",
+    notification_type: "transfer_request_initiated_for_employee",
+    action_url: "/employee-tranfer",
+  },
+  {
+    module: "user_management",
     notification_type: "Rejection",
     action_url: "#",
   },
@@ -76,7 +81,6 @@ export const Notifications_Action_URL = [
   {
     module: "Project Management",
     notification_type: "Project Addition",
-    action_url: "/projects/{project_id}",
   },
   {
     module: "Task Management",
@@ -87,12 +91,6 @@ export const Notifications_Action_URL = [
     module: "Project Management",
     notification_type: "Join Request",
     action_url: "/projects/{project_id}/join_request",
-  },
-  // Salary Structure Update - For Employee
-  {
-    module: "Payroll",
-    notification_type: "Salary",
-    action_url: "/my-payroll",
   },
   // Salary Structure Setup - For HR
   {

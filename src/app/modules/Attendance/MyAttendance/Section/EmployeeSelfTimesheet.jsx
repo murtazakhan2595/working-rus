@@ -50,11 +50,8 @@ export default function EmployeeSelfTimesheet({
     // Convert to hours
     const durationInHours = durationMs / (1000 * 60 * 60);
 
-    // Format duration (optional: your custom formatter)
-    const formattedDuration = formatDuration(durationInHours, true);
-
     // You can set this to state if you want to display it
-    setPayableHours(formattedDuration); // Assuming you have a useState hook for this
+    setPayableHours(durationInHours); // Assuming you have a useState hook for this
   };
 
   useEffect(() => {
@@ -73,7 +70,7 @@ export default function EmployeeSelfTimesheet({
         <CardTitle className="flex items-center justify-between">
           <span className="text-plum-900">Time Log</span>
           <span className="text-sm text-slate-1200">
-            {moment().format("MMM/D/YYYY")}
+            {renderDate(moment())}
           </span>
         </CardTitle>
       </CardHeader>
@@ -112,9 +109,9 @@ export default function EmployeeSelfTimesheet({
                   strokeWidth="5"
                   strokeDasharray={365}
                   strokeDashoffset={
-                    attendance?.payable_hours > 0 && attendance?.total_hours > 0
+                    payableHours > 0 && parseFloat(attendance?.total_hours) > 0
                       ? 365 *
-                        (1 - attendance.payable_hours / attendance.total_hours)
+                        (1 - payableHours / parseFloat(attendance.total_hours))
                       : 365 // Full offset for 0 hours or invalid state
                   }
                   strokeLinecap="round"
@@ -126,7 +123,7 @@ export default function EmployeeSelfTimesheet({
                 />
               </svg>
               <div className="absolute text-xl font-semibold transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2 align-middle text-center">
-                {payableHours}
+                {formatDuration(payableHours,true)}
               </div>
             </div>
           </div>
