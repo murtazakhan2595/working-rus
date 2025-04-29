@@ -233,8 +233,8 @@ export function getMenuList(pathname, userRole) {
     createMenu(
       "",
       "Assets Management",
-      Laptop, // Import Laptop icon from lucide-react
-      [createMenu("/assets", "Assets")],
+      Laptop,
+      [createMenu("/assets", "Assets"), createMenu("/request-and-assign", "Request and Assign")],
       pathname === "/assets"
     ),
   ];
