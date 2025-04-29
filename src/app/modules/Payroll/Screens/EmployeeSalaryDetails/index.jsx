@@ -244,7 +244,7 @@ export default function EmployeeSalaryDetails() {
             <CardTitle className="text-base font-medium text-black">
               Cost to Company
             </CardTitle>
-            <DollarSign className="w-4 h-4 text-muted-foreground" />
+            {/* <DollarSign className="w-4 h-4 text-muted-foreground" /> */}
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-plum-900">

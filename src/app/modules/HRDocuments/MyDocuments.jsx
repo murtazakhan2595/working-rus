@@ -131,6 +131,7 @@ export default function MyDocuments() {
           isOpen={!!OpenDocumentID}
           setIsOpen={() => {
             setOpenDocumentID(null);
+            fetchData(true)
           }}
           DocumentList={HRDocumentsData.results}
           reloadData={fetchData}
