@@ -154,6 +154,7 @@ const EmployeeInformation = {
   onboardingDocuments: [],
   permanent_address: null,
   po_box_number: null,
+  nationality:null,
 };
 const EmployeeProfessionalExperiance = {
   id: null,
