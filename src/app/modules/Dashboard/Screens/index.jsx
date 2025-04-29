@@ -13,6 +13,7 @@ import OnGoingApplications from "./TalentSphere/OnGoingApplications";
 import ExpiredDocuments from "./ExpiredDocuments";
 import MyAttendanceSumary from "./MyAttendanceSumary";
 import ProfileCompletion from "./ProfileCompletion";
+import ShiftDetailsWidget from "./ShiftDetailsWidget";
 export {
   RecentActivity,
   LeaveEmployeeDetails,
@@ -29,4 +30,5 @@ export {
   ExpiredDocuments,
   MyAttendanceSumary,
   ProfileCompletion,
+  ShiftDetailsWidget,
 };

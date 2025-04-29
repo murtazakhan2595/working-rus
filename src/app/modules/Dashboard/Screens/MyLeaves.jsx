@@ -44,6 +44,7 @@ const MyLeaves = ({ userProfile }) => {
   const [page, setPage] = useState(1);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedLeaveType, setSelectedLeaveType] = useState("");
+  const [showLeaveBalance, setShowLeaveBalance] = useState(true);
 
   const fetchLeaveTransaction = async () => {
     setIsLeaveTransactionLoading(true);
@@ -181,26 +182,39 @@ const MyLeaves = ({ userProfile }) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {/* Leave Balance Section - Simplified */}
+        {/* Leave Balance Section with Toggle */}
         <div className="p-4 my-4 bg-white border rounded-lg border-zinc-200">
-          <h3 className="mb-3 text-sm font-semibold text-neutral-800">
-            Leave Balance
-          </h3>
-          <div className="space-y-3">
-            {componentsWithUsed.map((leave) => (
-              <div key={leave.name} className="flex items-center gap-3">
-                <div className="w-32 text-sm text-neutral-900 truncate">
-                  {leave.name}
-                </div>
-                <div className="flex-1">
-                  <LeaveBar used={leave.used} total={leave.total} />
-                </div>
-                <div className="text-sm font-medium text-neutral-900 w-12 text-right">
-                  {leave.used}/{leave.total}
-                </div>
-              </div>
-            ))}
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-sm font-semibold text-neutral-800">
+              Leave Balance
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-neutral-600 hover:text-neutral-800"
+              onClick={() => setShowLeaveBalance(!showLeaveBalance)}
+            >
+              {showLeaveBalance ? "Hide Details" : "View Details"}
+            </Button>
           </div>
+
+          {showLeaveBalance && (
+            <div className="space-y-3">
+              {componentsWithUsed.map((leave) => (
+                <div key={leave.name} className="flex items-center gap-3">
+                  <div className="w-32 text-sm text-neutral-900 truncate">
+                    {leave.name}
+                  </div>
+                  <div className="flex-1">
+                    <LeaveBar used={leave.used} total={leave.total} />
+                  </div>
+                  <div className="text-sm font-medium text-neutral-900 w-12 text-right">
+                    {leave.used}/{leave.total}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Leave Applications Table */}

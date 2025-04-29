@@ -1,3 +1,4 @@
+import Notifications from "app/modules/Notifications";
 import {
   RecentActivity,
   MyTasks,
@@ -13,6 +14,7 @@ import {
   ExpiredDocuments,
   MyAttendanceSumary,
   ProfileCompletion,
+  ShiftDetailsWidget,
 } from "../Screens";
 import EventCalendar from "../Screens/EventCalendar";
 
@@ -147,18 +149,6 @@ const DashboardEmployee = [
     content: <EventCalendar />,
     value: "EventCalendar",
   },
-  // {
-  //   type: "div",
-  //   className: `col-span-2`,
-  //   content: <MyTasks />,
-  //   value: "MyTasks",
-  // },
-  // {
-  //   type: "div",
-  //   className: `w-full`,
-  //   content: <AllProjects />,
-  //   value: "AllProjects",
-  // },
   {
     type: "div",
     className: `w-full`,
@@ -172,13 +162,24 @@ const DashboardEmployee = [
     content: <MyLeaves />,
     value: "MyLeaves",
   },
-
-  // {
-  //   type: "div",
-  //   className: `w-full`,
-  //   content: <MyTeams />,
-  //   value: "MyTeam",
-  // },
+  {
+    type: "div",
+    className: "w-full",
+    content: <ShiftDetailsWidget />,
+    value: "ShiftDetailsWidget",
+  },
+  {
+    type: "div",
+    className: "w-full",
+    content: <ExpiredDocuments />,
+    value: "ExpiredDocuments",
+  },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <RecentActivity />,
+    value: "RecentActivity",
+  },
 ];
 export const getDashboard = (userRole) => {
   if (userRole === 3 || userRole === 1) {
