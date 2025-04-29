@@ -574,6 +574,20 @@ const SheetOnBorading = ({
                         </div>
                         <div className="space-y-2">
                           <SelectInputComponent
+                            name={"nationality"}
+                            options={countriesList}
+                            error={props.errors.nationality}
+                            touch={props.touched.nationality}
+                            value={props.values.nationality}
+                            required={true}
+                            label={"Nationality"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectInputComponent
                             name={"department_position"}
                             options={designations}
                             error={props.errors?.department_position}
