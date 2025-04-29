@@ -14,6 +14,7 @@ import ExpiredDocuments from "./ExpiredDocuments";
 import MyAttendanceSumary from "./MyAttendanceSumary";
 import ProfileCompletion from "./ProfileCompletion";
 import ShiftDetailsWidget from "./ShiftDetailsWidget";
+import MonthlyAttendanceCalendar from "./MonthlyAttendanceCalendar";
 export {
   RecentActivity,
   LeaveEmployeeDetails,
@@ -31,4 +32,5 @@ export {
   MyAttendanceSumary,
   ProfileCompletion,
   ShiftDetailsWidget,
+  MonthlyAttendanceCalendar,
 };

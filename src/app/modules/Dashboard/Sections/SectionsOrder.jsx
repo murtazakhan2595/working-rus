@@ -15,6 +15,7 @@ import {
   MyAttendanceSumary,
   ProfileCompletion,
   ShiftDetailsWidget,
+  MonthlyAttendanceCalendar,
 } from "../Screens";
 import EventCalendar from "../Screens/EventCalendar";
 
@@ -179,6 +180,12 @@ const DashboardEmployee = [
     className: `w-full`,
     content: <RecentActivity />,
     value: "RecentActivity",
+  },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <MonthlyAttendanceCalendar />,
+    value: "MonthlyAttendanceCalendar",
   },
 ];
 export const getDashboard = (userRole) => {
