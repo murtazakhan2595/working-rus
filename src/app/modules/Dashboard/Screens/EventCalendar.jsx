@@ -60,6 +60,12 @@ const validateEventForm = (values) => {
   if (!values.name) {
     errors.name = "Event name is required";
   }
+  if(!values.start_date) {
+    errors.start_date = "Start date is required";
+  }
+  if (!values.end_date) {
+    errors.end_date = "End date is required";
+  }
 
   // Optional validations for start/end time
   if (values.start_date && values.end_date) {
@@ -88,20 +94,37 @@ const validateEventForm = (values) => {
 
 
 const getEvents = async (month, year) => {
-  const events = await getEventList();
+  // Create start and end dates for the current month view
+  const startDate = new Date(year, month, 1);
+  const endDate = new Date(year, month + 1, 0); // Last day of current month
+
+  // Format dates for API request
+  const formattedStartDate = format(startDate, "yyyy-MM-dd");
+  const formattedEndDate = format(endDate, "yyyy-MM-dd");
+
+  // Create filter object for API
+  const filterData = {
+    start_range: formattedStartDate,
+    end_range: formattedEndDate,
+  };
+
+  // Call the API with filter params
+  const events = await getEventList({
+    filterData: filterData,
+  });
+
   console.log("Fetching events for month:", month, "year:", year, events);
-  if(events?.results?.length === 0) return [];
-  
+  if (events?.results?.length === 0) return [];
+
   // Map API events to our internal format
-  return events.results.map(event => ({
+  return events.results.map((event) => ({
     id: event.id,
     name: event.name,
-    date: parseISO(event.start_date),  // Use start_date as the primary date
+    date: parseISO(event.start_date), // Use start_date as the primary date
     start_date: event.start_date,
     end_date: event.end_date,
     event_location: event.event_location,
     type: EVENT_TYPES.EVENT,
-    // Add any additional fields necessary
   }));
 };
 
@@ -871,7 +894,7 @@ export default function EventCalendarWidget() {
                         touch={props.touched?.end_date}
                         value={props.values?.end_date}
                         label="End Date"
-                        required={false}
+                        required={true}
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
                         }}
