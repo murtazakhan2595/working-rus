@@ -1,11 +1,15 @@
+import { SheetCardExtension } from 'components/SheetCardExtension';
 import SheetComponent from 'components/ui/SheetComponent'
 import React, { useState } from 'react'
-import AddDesignationForm from './AddDesignationForm';
+import DesignationForm from './AddDesignationForm';
+import useUserOrganization from 'app/hooks/useUserOrganization';
 
 const AddDesignation = ({reload}) => {
   const [isOpen, setIsOpen] = useState(false)
 
   console.log("reload in add desig", reload)
+
+  const userOrganization = useUserOrganization();
 
   const formSheetData = {
     triggerText: "Add New Designation",
@@ -21,7 +25,12 @@ const AddDesignation = ({reload}) => {
       setIsOpen={setIsOpen}
       width="600px"
     >
-      <AddDesignationForm isOpen={isOpen} setIsOpen={setIsOpen} reload={reload}/>
+      <DesignationForm 
+        isOpen={isOpen} 
+        setIsOpen={setIsOpen} 
+        reload={reload}
+        userOrganization={userOrganization}
+      />
     </SheetComponent>
   );
 }
