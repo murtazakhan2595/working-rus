@@ -136,7 +136,7 @@ const ExpiredDocuments = () => {
         <CardTitle className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
           {isHROrAdmin ? "Expired Documents" : "My Expired Documents"}
         </CardTitle>
-        <Button onClick={handleViewAll} variant="outline">
+        <Button onClick={handleViewAll} variant="outline" size="sm">
           View All
         </Button>
       </CardHeader>
