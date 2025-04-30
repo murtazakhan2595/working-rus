@@ -182,7 +182,11 @@ export const addUpdateBranch = async (payload, id = null) => {
 
 const saveDesignation = async (designationId, payload) => {
   try {
+    console.log("saveDesignation called with ID:", designationId);
+    console.log("Payload:", payload);
+    
     if (designationId) {
+      console.log(`Making PATCH request to ${baseUrl}/designation/${designationId}`);
       const response = await axios.patch(
         `${baseUrl}/designation/${designationId}`,
         payload,
@@ -190,22 +194,44 @@ const saveDesignation = async (designationId, payload) => {
           headers: headers(),
         }
       );
+      console.log("PATCH response status:", response.status);
+      console.log("PATCH response data:", response.data);
+      
       if (response.status === 200) {
         return response?.data;
       }
     } else {
+      console.log(`Making POST request to ${baseUrl}/designation/`);
       const response = await axios.post(`${baseUrl}/designation/`, payload, {
         headers: headers(),
       });
+      console.log("POST response status:", response.status);
+      console.log("POST response data:", response.data);
+      
       if (response.status === 201) {
         return response?.data;
       }
     }
+    // If we get here, neither condition returned a response
+    console.warn("API call succeeded but with unexpected status code");
+    return false;
   } catch (error) {
+    console.error("API error in saveDesignation:", error);
+    console.error("Error response:", error.response);
+    
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    console.error("Error fetching Personal Info data :", error);
+    
+    // Return the error response for better error handling
+    if (error.response) {
+      return {
+        success: false,
+        error: error.response.data,
+        status: error.response.status
+      };
+    }
+    
     return false;
   }
 };

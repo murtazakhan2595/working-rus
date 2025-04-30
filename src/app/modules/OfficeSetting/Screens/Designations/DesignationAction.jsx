@@ -28,10 +28,24 @@ const DesignationAction = ({ data, reload }) => {
   };
 
   const handleEdit = (data) => {
-    console.log("Edit data:", data);
+    console.log("Edit button clicked for designation:", data);
+    // Make sure we have all required fields, especially the ID
+    if (!data.id) {
+      console.error("Cannot edit: Missing ID in the data", data);
+      return;
+    }
+    
+    // Ensure we create a clean object with all needed properties
     setEdit({
       open: true,
-      data: data,
+      data: {
+        id: data.id,
+        name: data.name || "",
+        description: data.description || "",
+        organization: data.organization,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      },
     });
   };
 
@@ -94,14 +108,18 @@ const DesignationAction = ({ data, reload }) => {
         <SheetComponent
           {...formSheetData}
           isOpen={edit?.open}
-          setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
+          setIsOpen={(isOpen) => {
+            console.log("Setting edit sheet open state to:", isOpen);
+            setEdit((prev) => ({ ...prev, open: isOpen }));
+          }}
           width="568px"
         >
           <AddDesignationForm
             isOpen={edit.open}
-            setIsOpen={(isOpen) =>
-              setEdit((prev) => ({ ...prev, open: isOpen }))
-            }
+            setIsOpen={(isOpen) => {
+              console.log("Setting form open state to:", isOpen);
+              setEdit((prev) => ({ ...prev, open: isOpen }));
+            }}
             edit={edit}
             setEdit={setEdit}
             reload={reload}
