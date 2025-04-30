@@ -69,23 +69,28 @@ export const DepartmentColumn = (reload) => [
   {
     dataField: "id",
     text: "ID",
+    dataSort: true,
     formatter: (cell, row) => <FormatID value={cell} prefix={'DPT-'} />,
   },
   {
     dataField: "name",
     text: "Name",
+    dataSort: true,
   },
   {
     dataField: "description",
     text: "Description",
+    dataSort: true,
   },
   {
     dataField: "Parent Department",
     text: "Parent Department",
+    dataSort: true,
   },
   {
     dataField: "organization",
     text: "Organization",
+    dataSort: true,
   },
   {
     text: "Action",
