@@ -82,24 +82,19 @@ export const DepartmentColumn = (reload) => [
     text: "Description",
     dataSort: true,
   },
-  {
-    dataField: "Parent Department",
-    text: "Parent Department",
-    dataSort: true,
-  },
-  {
-    dataField: "organization",
-    text: "Organization",
-    dataSort: true,
-  },
+  // {
+  //   dataField: "Parent Department",
+  //   text: "Parent Department",
+  //   dataSort: true,
+  // },
+ 
   {
     text: "Action",
     formatter: (cell, row) => (
       <DepartmentAction
         // setEdit={setEdit}
         // setEditData={setEditData}
-        reload={getDepartmentNames}
-        
+        reload={reload}
         data={row}
       />
     ),

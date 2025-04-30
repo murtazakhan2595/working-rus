@@ -5,11 +5,13 @@ import SheetComponent from "components/ui/SheetComponent";
 import AddDepartmentForm from "./AddDepartmentForm";
 import ViewDepartment from "./ViewDepartment";
 import ActionButtons from "components/ActionButtons";
+import useUserOrganization from "app/hooks/useUserOrganization";
 
 const DepartmentAction = ({ data, reload }) => {
   const [view, setView] = useState(null);
   const [deleteDept, setDeleteDept] = useState(null);
   const [edit, setEdit] = useState(null);
+  const userOrganization = useUserOrganization();
 
   const formSheetData = {
     triggerText: null,
@@ -45,7 +47,11 @@ const DepartmentAction = ({ data, reload }) => {
         `/department/${deleteDept?.data?.id}`,
         deleteDept?.data?.name
       );
-      reload();
+      
+      // Ensure table is reloaded by calling reload function
+      if (typeof reload === 'function') {
+        reload();
+      }
     } catch (error) {
       console.log("ERROR", error);
     }
@@ -92,6 +98,7 @@ const DepartmentAction = ({ data, reload }) => {
             edit={edit}
             setEdit={setEdit}
             reload={reload}
+            userOrganization={userOrganization}
           />
         </SheetComponent>
       )}

@@ -125,22 +125,27 @@ const saveDepartment = async (departmentId, payload) => {
           headers: headers(),
         }
       );
+      
       if (response.status === 200) {
         return response?.data;
+      } else {
+        return false;
       }
     } else {
       const response = await axios.post(`${baseUrl}/department/`, payload, {
         headers: headers(),
       });
+      
       if (response.status === 201) {
         return response?.data;
+      } else {
+        return false;
       }
     }
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    console.error("Error fetching Personal Info data :", error);
     return false;
   }
 };
