@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import TableCustom from "components/CustomTable";
 import { Card } from "components/ui/card";
@@ -18,6 +17,7 @@ const Designations = ({
   options,
   setOptions,
   getDesignations,
+  reload,
 }) => {
   //
   // const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -26,10 +26,28 @@ const Designations = ({
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
+  const onSortChange = (sortParam) => {
+    // Parse sortParam: if it starts with '-', it's descending order
+    let sortField = sortParam;
+    let sortOrder = 'asc';
+    
+    if (sortParam.startsWith('-')) {
+      sortField = sortParam.substring(1); // Remove the '-' prefix
+      sortOrder = 'desc';
+    }
+    
+    setOptions((prevOptions) => ({ 
+      ...prevOptions, 
+      sortField, 
+      sortOrder 
+    }));
+  };
+
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
+    onSortChange: onSortChange,
   };
 
   
@@ -51,7 +69,7 @@ const Designations = ({
           </CardHeader>
           <CardContent>
             <TableCustom
-              columns={DesignationColumn(getDesignations)}
+              columns={DesignationColumn(reload)}
               data={designation?.results || []}
               // tableOptions={tableOptions}
               dataTotalSize={designation?.count || 0}
