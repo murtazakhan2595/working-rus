@@ -31,7 +31,7 @@ const Attendance = () => {
   const [dateRange, setDateRange] = useState(
     `${moment().format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`
   );
-  const [ordering, setOrdering] = useState("-emp_name");
+  const [ordering, setOrdering] = useState("emp_name");
   useEffect(() => {
     if (dateRange) {
       const date_range = dateRange.split(",");

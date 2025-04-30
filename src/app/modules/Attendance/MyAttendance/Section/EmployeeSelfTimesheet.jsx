@@ -34,7 +34,7 @@ export default function EmployeeSelfTimesheet({
   reloadData,
 }) {
   const [payableHours, setPayableHours] = useState(
-    formatDuration(attendance?.payable_hours, true)
+    parseFloat(attendance?.payable_hours) || 0
   );
 
   const updateTimer = () => {
@@ -123,7 +123,7 @@ export default function EmployeeSelfTimesheet({
                 />
               </svg>
               <div className="absolute text-xl font-semibold transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2 align-middle text-center">
-                {formatDuration(payableHours,true)}
+                {formatDuration(payableHours, true)}
               </div>
             </div>
           </div>
