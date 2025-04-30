@@ -70,19 +70,10 @@ const Departments = ({
         filters={[
           {
             type: "search",
-            placeholder: "Search Branch Name",
-            name: "branch_name",
+            placeholder: "Search Department Name",
+            name: "name",
           },
-          {
-            type: "search",
-            placeholder: "Search Branch Number",
-            name: "branch_number",
-          },
-          {
-            type: "search",
-            placeholder: "Search Branch Address",
-            name: "branch_address",
-          },
+          
         ]}
         className='justify-end'
         onChange={handleFilterChange}
