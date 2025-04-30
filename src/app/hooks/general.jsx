@@ -213,10 +213,18 @@ const saveDesignation = async (designationId, payload) => {
 const getDesignationList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
+  const sortField = payload?.options?.sortField ?? "";
+  const sortOrder = payload?.options?.sortOrder ?? "";
   const filterData = payload?.filterData ?? {};
 
   try {
-    const URL = `/designation/?ordering=-created_at&${
+    // Create ordering parameter based on sortField and sortOrder
+    let ordering = "-created_at"; // Default ordering
+    if (sortField) {
+      ordering = sortOrder === "desc" ? `-${sortField}` : sortField;
+    }
+
+    const URL = `/designation/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)
