@@ -208,7 +208,6 @@ export const CalculateTotalWorkingHours = (shiftStartTime, shiftEndTime) => {
   }
 
   const totalHours = parseFloat(end.diff(start, "hours", true)).toFixed(2);
-  console.log("Total working hours:", totalHours);
   return parseFloat(totalHours);
 };
 export const GetShiftTotalHours = (shiftStartTime, shiftEndTime, period) => {

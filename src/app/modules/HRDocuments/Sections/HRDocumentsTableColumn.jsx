@@ -57,6 +57,7 @@ export const MyHRDocumentsColumns = [
   {
     dataField: "document_name",
     text: "Name",
+    dataSort: true,
     minWidth: "120px",
   },
   {
@@ -66,6 +67,7 @@ export const MyHRDocumentsColumns = [
       <DocCategoryName value={cell} fallBackText={"-"} />
     ),
     minWidth: "110px",
+    dataSort: true,
   },
   {
     dataField: "due_date",

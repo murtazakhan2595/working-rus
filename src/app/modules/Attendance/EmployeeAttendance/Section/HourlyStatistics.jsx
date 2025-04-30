@@ -1,28 +1,51 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { getAttendance, getShiftById } from "app/hooks/attendance";
 import moment from "moment";
 import { CalculateHoursWorked } from "app/modules/Attendance/Sections/CalculateWorkHours";
 import { Progress } from "src/@/components/ui/progress";
-import { PageLoader } from "components";
-import { GetDateRange, GetShiftTotalHours } from "utils/renderValues";
+import { useSelector } from "react-redux";
+import {
+  GetDateRange,
+  getWorkingDays,
+  CalculateTotalWorkingHours,
+} from "utils/renderValues";
 import { formatDuration, calculateTotal } from "utils/renderValues";
 
 const calculateAttendanceStats = (attendance) => {
   const totalHours = CalculateHoursWorked(attendance);
-  const total = calculateTotal(attendance, "total_hours");
-  return {
-    value: totalHours.totalWorkedHours,
-    total: total,
-  };
+  return totalHours.totalWorkedHours;
 };
 
 const HourlyStatistics = ({ userId }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [todayAttendanceData, setTodayAttendanceData] = useState({});
-  const [weeklyAttendanceData, setWeeklyAttendanceData] = useState({});
-  const [monthlyAttendanceData, setMonthlyAttendanceData] = useState({});
-  const [remainingAttendanceData, setRemainingAttendanceData] = useState({});
-  const [overtimeAttendanceData, setOvertimeAttendanceData] = useState({});
+  const [todayAttendanceData, setTodayAttendanceData] = useState(0);
+  const [weeklyAttendanceData, setWeeklyAttendanceData] = useState(0);
+  const [monthlyAttendanceData, setMonthlyAttendanceData] = useState(0);
+  const [remainingAttendanceData, setRemainingAttendanceData] = useState(0);
+  const [overtimeAttendanceData, setOvertimeAttendanceData] = useState(0);
+  const EmployeeShiftData = useSelector(
+    (state) => state.attendance.assignedShiftData
+  );
+  const TotalWorkingHours = useMemo(() => {
+    return CalculateTotalWorkingHours(
+      EmployeeShiftData.starttime,
+      EmployeeShiftData.endtime
+    );
+  }, [EmployeeShiftData.starttime, EmployeeShiftData.endtime]);
+
+  const WeeklyWorkingHours = useMemo(() => {
+    return (
+      getWorkingDays(moment().startOf("isoWeek"), moment().endOf("isoWeek")) *
+      TotalWorkingHours
+    );
+  }, [TotalWorkingHours]);
+
+  const MonthlyWorkingHours = useMemo(() => {
+    return (
+      getWorkingDays(moment().startOf("month"), moment().endOf("month")) *
+      TotalWorkingHours
+    );
+  }, [TotalWorkingHours]);
 
   const fetchAttendanceData = async (filterData, rangeType) => {
     try {
@@ -67,14 +90,10 @@ const HourlyStatistics = ({ userId }) => {
 
     const monthlytAttendanceStats = calculateAttendanceStats(monthlyAttendance);
     setMonthlyAttendanceData(monthlytAttendanceStats);
-    setRemainingAttendanceData({
-      value: monthlytAttendanceStats.total - monthlytAttendanceStats.value,
-      total: monthlytAttendanceStats.total,
-    });
-    setOvertimeAttendanceData({
-      value: calculateTotal(monthlyAttendance, "overtime_hours"),
-      total: monthlytAttendanceStats.total,
-    });
+    setRemainingAttendanceData(MonthlyWorkingHours - monthlytAttendanceStats);
+    setOvertimeAttendanceData(
+      calculateTotal(monthlyAttendance, "overtime_hours")
+    );
   };
 
   const loadUserData = async (isMounted) => {
@@ -111,29 +130,29 @@ const HourlyStatistics = ({ userId }) => {
   return (
     <div className="space-y-4">
       <Statistics
-        value={todayAttendanceData.value || 0}
+        value={todayAttendanceData || 0}
         label={"Today"}
-        total={todayAttendanceData.total || 0}
+        total={TotalWorkingHours || 0}
       />
       <Statistics
-        value={weeklyAttendanceData.value || 0}
+        value={weeklyAttendanceData || 0}
         label={"This Week"}
-        total={weeklyAttendanceData.total || 0}
+        total={WeeklyWorkingHours || 0}
       />
       <Statistics
-        value={monthlyAttendanceData.value || 0}
+        value={monthlyAttendanceData || 0}
         label={"This Month"}
-        total={monthlyAttendanceData.total || 0}
+        total={MonthlyWorkingHours || 0}
       />
       <Statistics
-        value={remainingAttendanceData.value || 0}
+        value={remainingAttendanceData || 0}
         label={"Remaining"}
-        total={remainingAttendanceData.total || 0}
+        total={MonthlyWorkingHours || 0}
       />
       <Statistics
-        value={overtimeAttendanceData.value || 0}
+        value={overtimeAttendanceData || 0}
         label={"Overtime"}
-        total={overtimeAttendanceData.total || 0}
+        total={WeeklyWorkingHours || 0}
         showTotal={false}
       />
     </div>
@@ -145,8 +164,8 @@ const Statistics = ({ value, total, label, showTotal = true }) => (
     <div className="flex justify-between mb-1">
       <span className="text-slate-900">{label}</span>
       <span>
-        <span className="text-slate-1200">{formatDuration(value)}</span>
-        {showTotal ? `/${total}h` : ""}
+        <span>{formatDuration(value)}</span>
+        {/* {showTotal ? ` / ${formatDuration(total)}` : ""} */}
       </span>
     </div>
     <Progress
