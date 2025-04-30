@@ -1,16 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "components/ui/button";
 import { PageLoader } from "components";
-import { BadgeCheck, CheckCircle, Clock, Eye } from "lucide-react";
+import { BadgeCheck, CheckCircle, Clock, Eye, Plus } from "lucide-react";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchEmployeeExitRequests } from "state/slices/ExitEmployeeSlice";
+import { fetchDepartments } from "state/slices/CommonSlice";
 import { EmployeeOverview } from "components";
 import { DepartmentName, ManagerName } from "utils/getValuesFromTables";
 import { FilterInput, SelectInputComponent } from "components/FormControl";
 import TableCustom from "components/CustomTable";
 import { Card, CardContent } from "components/ui/card";
+import { getDepartmentList, getManagersList } from "app/hooks/general";
+import { initialState as userInitialState } from 'state/slices/UserSlice';
+import axios from "axios";
+
+// Get baseUrl from user initial state
+const baseUrl = userInitialState.baseUrl;
+
+// Headers function for API requests
+const headers = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  "Content-Type": "application/json",
+});
+
+// API Service functions
+const updateEOSStatus = async (id, status) => {
+  try {
+    const response = await axios.patch(`${baseUrl}/payroll/payroll/${id}/status/`, { status }, {
+      headers: headers(),
+    });
+    return { success: true, message: `Status updated to ${status} successfully`, data: response.data };
+  } catch (error) {
+    return { success: false, message: "Failed to update status: " + (error.response?.data?.message || error.message) };
+  }
+};
+
+// Add a new API function to check if EOS data exists for an employee
+const checkEOSDataExists = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/payroll/payroll/${id}/`, {
+      headers: headers(),
+    });
+    return { exists: true, data: response.data };
+  } catch (error) {
+    return { exists: false, error: error.message };
+  }
+};
 
 // Define status options for the filter dropdown
 const eosStatusOptions = [
@@ -28,9 +65,84 @@ const exitTypeOptions = [
   // Add other types if they exist
 ];
 
+// Create a separate component for the action buttons
+const ActionCell = ({ cell, row, onViewDetails, onSetupEOS }) => {
+  const [actionLoading, setActionLoading] = useState(false);
+  const [dataExists, setDataExists] = useState(null);
+  
+  useEffect(() => {
+    const checkData = async () => {
+      setActionLoading(true);
+      const employeeId = row.employee_id || row.emp_id || cell;
+      if (!employeeId) {
+         console.warn("Missing employee ID for row:", row);
+         setActionLoading(false);
+         setDataExists(false);
+         return;
+      }
+      const result = await checkEOSDataExists(employeeId);
+      setDataExists(result.exists);
+      setActionLoading(false);
+    };
+    
+    checkData();
+  }, [cell, row.employee_id, row.emp_id, row.status]);
+  
+  if (actionLoading) {
+    return <span className="text-sm text-gray-500">Checking...</span>;
+  }
+  
+  if (dataExists === true) {
+    // If employee already has EOS data, show View Details button
+    // And automatically mark as Approved if it's Pending
+    if (row.status === "Pending") {
+      const employeeId = row.employee_id || row.emp_id || cell;
+      updateEOSStatus(employeeId, "Approved")
+        .then(response => {
+          if (response.success) {
+            toast.success("EOS status updated to Approved");
+          }
+        })
+        .catch(error => {
+          console.error("Error updating status:", error);
+        });
+    }
+    
+    return (
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => onViewDetails(cell, row)}
+        className="flex items-center space-x-1 text-green-600 hover:text-green-700"
+        aria-label={`View details for record ${cell}`}
+      >
+        <Eye className="w-4 h-4" />
+        <span>View Details</span>
+      </Button>
+    );
+  } else {
+    return (
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => onSetupEOS(cell, row)}
+        className="flex items-center space-x-1 text-blue-600 hover:text-blue-700"
+        aria-label={`Setup EOS for record ${cell}`}
+      >
+        <Plus className="w-4 h-4" />
+        <span>Setup EOS</span>
+      </Button>
+    );
+  }
+};
+
 const EOSList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  
+  // Get user info for organization
+  const userProfile = useSelector((state) => state.user.userProfile);
+  const organizationId = userProfile?.organization;
   
   // State for filters, pagination, and sorting
   const [filterData, setFilterData] = useState({});
@@ -39,6 +151,9 @@ const EOSList = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedType, setSelectedType] = useState("");
+  const [departmentsList, setDepartmentsList] = useState([]);
+  const [managersList, setManagersList] = useState([]);
+  const [payrollExistenceCache, setPayrollExistenceCache] = useState({});
   
   const allEmployees = useSelector((state) => state.emp.employees);
   const eosData = useSelector((state) => state.exit_emp?.exitRequests || []);
@@ -49,7 +164,89 @@ const EOSList = () => {
   // Check if departments and managers are loaded in Redux store
   const departments = useSelector((state) => state.common?.departments);
   const managers = useSelector((state) => state.emp?.reportingManagers);
+
+  // Update filter data with organization ID when it becomes available
+  useEffect(() => {
+    if (organizationId) {
+      setFilterData(prev => ({
+        ...prev,
+        organization: organizationId
+      }));
+    }
+  }, [organizationId]);
+
+  // Fetch departments directly from API
+  const fetchDepartmentsData = async () => {
+    if (!organizationId) {
+      return;
+    }
+    
+    try {
+      // Add organization filter to ensure we only get departments from the correct organization
+      const response = await getDepartmentList({
+        filterData: { organization: organizationId }
+      });
+      if (response && response.results) {
+        setDepartmentsList(response.results);
+      }
+    } catch (error) {
+      // Silently handle error
+    }
+  };
   
+  // Fetch managers directly from API
+  const fetchManagersData = async () => {
+    try {
+      const response = await getManagersList();
+      if (response) {
+        setManagersList(response);
+      }
+    } catch (error) {
+      // Silently handle error
+    }
+  };
+  
+  // Fetch departments and managers when organizationId changes
+  useEffect(() => {
+    if (organizationId) {
+      fetchDepartmentsData();
+      fetchManagersData();
+    }
+  }, [organizationId]);
+
+  // Effect to check payroll existence for visible employees
+  useEffect(() => {
+    const checkPayrollForAll = async () => {
+      if (!eosData || eosData.length === 0) return;
+
+      const checks = eosData.map(async (item) => {
+        const employeeId = item.employee_id || item.emp_id || item.id;
+        if (!employeeId || payrollExistenceCache.hasOwnProperty(employeeId)) {
+          return { id: employeeId, exists: payrollExistenceCache[employeeId] };
+        }
+        try {
+          const result = await checkEOSDataExists(employeeId);
+          return { id: employeeId, exists: result.exists };
+        } catch (error) {
+          console.error(`Failed to check payroll data for employee ${employeeId}:`, error);
+          return { id: employeeId, exists: false };
+        }
+      });
+
+      const results = await Promise.all(checks);
+      const newCache = results.reduce((acc, { id, exists }) => {
+        if (id) {
+           acc[id] = exists;
+        }
+        return acc;
+      }, { ...payrollExistenceCache });
+
+      setPayrollExistenceCache(newCache);
+    };
+
+    checkPayrollForAll();
+  }, [eosData]);
+
   // Handler for page changes (number or size)
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -57,7 +254,9 @@ const EOSList = () => {
 
   // Handler for sort changes
   const onSortChange = (sortName) => {
-    setOrdering(sortName);
+    if (sortName) {
+      setOrdering(sortName);
+    }
   };
 
   // Combine options and sort handler into tableOptions object
@@ -70,7 +269,6 @@ const EOSList = () => {
 
   // Handler for general filter changes
   const handleFilterChange = (filterName, filterValue) => {
-    console.log("Filter Changed:", { filterName, filterValue }); // Log input
     onPageChange("page", 1); // Reset to page 1 when filter changes
     
     // Update selected values for controlled components
@@ -88,7 +286,12 @@ const EOSList = () => {
           { [filterName]: filterValue };
         Object.assign(updatedFilters, mappedValue);
       }
-      console.log("Updated Filter Data State:", updatedFilters);
+      
+      // Always maintain organization filter if available
+      if (organizationId) {
+        updatedFilters.organization = organizationId;
+      }
+      
       return updatedFilters;
     });
   };
@@ -118,13 +321,244 @@ const EOSList = () => {
       ordering
     };
     
-    console.log("Fetching EOS Data with payload:", payload);
     dispatch(fetchEmployeeExitRequests(payload))
       .unwrap()
+      .then(response => {
+        // Processing happens silently
+      })
       .catch((error) => {
-        console.error("Error fetching EOS data:", error);
+        // Error is handled by Redux
       });
-  }, [dispatch, options, filterData, ordering]);
+  }, [dispatch, options, filterData, ordering, departmentsList, managersList]);
+  
+  // Format the EOSData with department names directly
+  const processedEOSData = eosData.map(record => {
+    // Get department name
+    let departmentName = null;
+    const deptId = record.department_id || record.department;
+    
+    if (deptId) {
+      // Try to find in our fetched list
+      const foundDept = departmentsList.find(dept => 
+        dept.value === parseInt(deptId) || dept.id === parseInt(deptId)
+      );
+      
+      if (foundDept) {
+        departmentName = foundDept.label || foundDept.name;
+      } else if (typeof deptId === 'string' && isNaN(parseInt(deptId))) {
+        // If it's already a string like "CEO", use it directly
+        departmentName = deptId;
+      }
+    }
+    
+    // Get manager name
+    let managerName = null;
+    const managerId = record.report_to || record.manager_id;
+    
+    if (managerId) {
+      const foundManager = managersList.find(mgr => 
+        mgr.value === parseInt(managerId) || mgr.id === parseInt(managerId)
+      );
+      
+      if (foundManager) {
+        managerName = foundManager.label || foundManager.name;
+      }
+    }
+    
+    // Return enhanced record
+    return {
+      ...record,
+      // Add pre-resolved names to the data object
+      department_name_resolved: departmentName,
+      manager_name_resolved: managerName
+    };
+  });
+
+  // Define columns for TableCustom
+  const EOSColumns = [
+    {
+      dataField: 'employee_id',
+      text: 'Employee',
+      dataSort: true,
+      formatter: (cell, row) => {
+        // Try different possible ID fields
+        const employeeId = cell || row.emp_id || row.id;
+        const serialNumber = row.serial_number || '';
+        
+        return (
+          <EmployeeOverview
+            id={employeeId}
+            showPosition={true}
+            showDepartment={false}
+            fallbackData={{
+              name: row.employee_name || `${row.first_name || ''} ${row.last_name || ''}`.trim() || serialNumber,
+              position: row.designation || row.position || row.department_position || '',
+              profilePicture: row.profile_picture,
+              serial_number: serialNumber
+            }}
+          />
+        );
+      },
+      headerClasses: "text-sm text-gray-1100",
+      classes:"min-w-[200px]" // Example min-width
+    },
+    {
+      dataField: 'serial_number',
+      text: 'ID',
+      dataSort: true,
+      headerAlign: 'center',
+      align: 'center',
+      headerClasses: "text-sm text-center text-gray-1100",
+      classes: "text-sm text-center text-gray-1100",
+      formatter: (cell, row) => cell || row.emp_id, // Fallback if serial_number is missing
+    },
+    {
+      dataField: 'department_id',
+      text: 'Department',
+      dataSort: true,
+      formatter: (cell, row) => {
+        // Simply use the pre-processed department name
+        if (row.department_name_resolved) {
+          return row.department_name_resolved;
+        }
+        
+        // DIRECT STRING VALUES - If we have a string like "CEO", use it directly
+        if (typeof cell === 'string' && isNaN(parseInt(cell))) {
+          return cell;
+        }
+        if (typeof row.department === 'string' && isNaN(parseInt(row.department))) {
+          return row.department;
+        }
+        if (typeof row.department_name === 'string' && isNaN(parseInt(row.department_name))) {
+          return row.department_name;
+        }
+        
+        // Try to get a valid ID value to look up
+        let departmentId = null;
+        if (cell && !isNaN(parseInt(cell))) {
+          departmentId = parseInt(cell);
+        } else if (row.department && !isNaN(parseInt(row.department))) {
+          departmentId = parseInt(row.department);
+        } else if (row.department_name && !isNaN(parseInt(row.department_name))) {
+          departmentId = parseInt(row.department_name);
+        }
+        
+        // If we have an ID, look it up in our departments list
+        if (departmentId !== null) {
+          const foundDepartment = departmentsList.find(
+            dept => dept.value === departmentId || dept.id === departmentId
+          );
+          
+          if (foundDepartment) {
+            return foundDepartment.label || foundDepartment.name;
+          }
+        }
+        
+        // If all else fails, try any value that might be available
+        const departmentValue = cell || row.department || row.department_name;
+        return departmentValue || 'N/A';
+      },
+      headerAlign: 'center',
+      align: 'center',
+      headerClasses: "text-sm text-center text-gray-1100",
+      classes: "text-sm text-center text-gray-1100",
+    },
+    {
+      dataField: 'report_to',
+      text: 'Report To',
+      dataSort: true,
+      formatter: (cell, row) => {
+        // Simply use the pre-processed manager name
+        if (row.manager_name_resolved) {
+          return row.manager_name_resolved;
+        }
+        
+        const managerValue = cell || row.manager_id;
+        
+        // Try to find manager in our directly fetched list
+        const foundManager = managersList.find(
+          manager => manager.value === parseInt(managerValue) || manager.id === parseInt(managerValue)
+        );
+        
+        if (foundManager) {
+          return foundManager.label || foundManager.name;
+        }
+        
+        // Fall back to the ManagerName component
+        return <ManagerName value={managerValue} />;
+      },
+      headerAlign: 'center',
+      align: 'center',
+      headerClasses: "text-sm text-center text-gray-1100",
+      classes: "text-sm text-center text-gray-1100",
+    },
+    {
+      dataField: 'notice_period',
+      text: 'Notice Period',
+      dataSort: true,
+      headerAlign: 'center',
+      align: 'center',
+      headerClasses: "text-sm text-center text-gray-1100",
+      classes: "text-sm text-center text-gray-1100",
+      formatter: (cell) => cell || '1 month',
+    },
+    {
+      dataField: 'exit_date',
+      text: 'Last Working Date',
+      dataSort: true,
+      headerAlign: 'center',
+      align: 'center',
+      headerClasses: "text-sm text-center text-gray-1100",
+      classes: "text-sm text-center text-gray-1100",
+      formatter: (cell) => cell || 'N/A',
+    },
+    {
+      dataField: 'exit_category',
+      text: 'Offboarding Type',
+      dataSort: true,
+      formatter: (cell, row) => getTypeLabel(cell || row.type || 'N/A'),
+      headerAlign: 'center',
+      align: 'center',
+      headerClasses: "text-sm text-center text-gray-1100",
+      classes: "text-sm text-center text-gray-1100",
+    },
+    {
+      dataField: 'status',
+      text: 'Status',
+      dataSort: true,
+      formatter: (cell, row) => {
+        const employeeId = row.employee_id || row.emp_id || row.id;
+        const payrollExists = payrollExistenceCache[employeeId];
+        const currentStatus = cell || "Pending";
+        
+        if (payrollExists === true && currentStatus === "Pending") {
+          return renderStatusBadge("Approved");
+        }
+        
+        return renderStatusBadge(currentStatus);
+      },
+      headerAlign: 'center',
+      align: 'center',
+      headerClasses: "text-sm text-center text-gray-1100",
+      classes: "text-sm text-center text-gray-1100",
+    },
+    {
+      dataField: 'id',
+      text: 'Actions',
+      formatter: (cell, row) => (
+        <ActionCell 
+          cell={cell} 
+          row={row} 
+          onViewDetails={handleViewDetails} 
+          onSetupEOS={handleSetupEOS} 
+        />
+      ),
+      headerAlign: 'center',
+      align: 'center',
+      headerClasses: "text-sm text-center text-gray-1100",
+      classes: "text-sm text-center text-gray-1100",
+    },
+  ];
 
   useEffect(() => {
     if (error) {
@@ -132,14 +566,18 @@ const EOSList = () => {
     }
   }, [error]);
 
-  useEffect(() => {
-    if (eosData.length > 0) {
-      console.log("Payroll/EOS - EOS Data Sample:", eosData[0]);
-    }
-  }, [eosData]);
+  const handleViewDetails = (id, row) => {
+    // Use employee_id or emp_id, falling back to id if needed
+    const employeeId = row.employee_id || row.emp_id || id;
+    
+    // Navigate to the details page
+    navigate(`/payroll/eos/${employeeId}`);
+  };
 
-  const handleViewDetails = (id) => {
-    navigate(`/payroll/eos/${id}`);
+  const handleSetupEOS = (id, row) => {
+    const employeeId = row.employee_id || row.emp_id || id;
+    toast.info("Redirecting to EOS setup page...");
+    navigate(`/payroll/salary-setup-eos/${employeeId}`);
   };
 
   const renderStatusBadge = (status) => {
@@ -180,113 +618,6 @@ const EOSList = () => {
     }
   };
 
-  // Define columns for TableCustom
-  const EOSColumns = [
-    {
-      dataField: 'employee_id',
-      text: 'Employee',
-      formatter: (cell, row) => (
-        <EmployeeOverview
-          id={cell || row.emp_id}
-          showPosition={true}
-          showDepartment={false}
-        />
-      ),
-      headerClasses: "text-sm text-gray-1100",
-      classes:"min-w-[200px]" // Example min-width
-    },
-    {
-      dataField: 'serial_number',
-      text: 'ID',
-      sort: true,
-      headerAlign: 'center',
-      align: 'center',
-      headerClasses: "text-sm text-center text-gray-1100",
-      classes: "text-sm text-center text-gray-1100",
-      formatter: (cell, row) => cell || row.emp_id, // Fallback if serial_number is missing
-    },
-    {
-      dataField: 'department_id',
-      text: 'Department',
-      sort: true, // Make sure backend supports sorting by department_id or name
-      formatter: (cell, row) => <DepartmentName value={row?.department_name || cell} />,
-      headerAlign: 'center',
-      align: 'center',
-      headerClasses: "text-sm text-center text-gray-1100",
-      classes: "text-sm text-center text-gray-1100",
-    },
-    {
-      dataField: 'report_to',
-      text: 'Report To',
-      sort: true, // Make sure backend supports sorting by manager ID or name
-      formatter: (cell, row) => <ManagerName value={cell || row.manager_id} />,
-      headerAlign: 'center',
-      align: 'center',
-      headerClasses: "text-sm text-center text-gray-1100",
-      classes: "text-sm text-center text-gray-1100",
-    },
-    {
-      dataField: 'notice_period',
-      text: 'Notice Period',
-      sort: true,
-      headerAlign: 'center',
-      align: 'center',
-      headerClasses: "text-sm text-center text-gray-1100",
-      classes: "text-sm text-center text-gray-1100",
-      formatter: (cell) => cell || '1 month',
-    },
-    {
-      dataField: 'exit_date',
-      text: 'Last Working Date',
-      sort: true,
-      headerAlign: 'center',
-      align: 'center',
-      headerClasses: "text-sm text-center text-gray-1100",
-      classes: "text-sm text-center text-gray-1100",
-      formatter: (cell) => cell || 'N/A',
-    },
-    {
-      dataField: 'exit_category',
-      text: 'Offboarding Type',
-      sort: true,
-      formatter: (cell, row) => getTypeLabel(cell || row.type || 'N/A'),
-      headerAlign: 'center',
-      align: 'center',
-      headerClasses: "text-sm text-center text-gray-1100",
-      classes: "text-sm text-center text-gray-1100",
-    },
-    {
-      dataField: 'status',
-      text: 'Status',
-      sort: true,
-      formatter: (cell, row) => renderStatusBadge(cell || "Pending"),
-      headerAlign: 'center',
-      align: 'center',
-      headerClasses: "text-sm text-center text-gray-1100",
-      classes: "text-sm text-center text-gray-1100",
-    },
-    {
-      dataField: 'id',
-      text: 'Actions',
-      formatter: (cell, row) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => handleViewDetails(cell)}
-          className="flex items-center space-x-1 text-green-600 hover:text-green-700"
-          aria-label={`View details for record ${cell}`}
-        >
-          <Eye className="w-4 h-4" />
-          <span>View Details</span>
-        </Button>
-      ),
-      headerAlign: 'center',
-      align: 'center',
-      headerClasses: "text-sm text-center text-gray-1100",
-      classes: "text-sm text-center text-gray-1100",
-    },
-  ];
-
   return (
     <div className="flex flex-col gap-4 p-6">
       <div className="mb-2">
@@ -316,7 +647,9 @@ const EOSList = () => {
              },
              {
                type: "select-one",
-               option: departments.map(dep => ({ value: dep.id, label: dep.name })),
+               option: departmentsList.length > 0 
+                ? departmentsList.map(dep => ({ value: dep.id || dep.value, label: dep.name || dep.label }))
+                : departments.map(dep => ({ value: dep.id || dep.value, label: dep.name || dep.label })),
                name: "department_id",
                placeholder: "Department",
                values: selectedDepartment,
@@ -337,9 +670,9 @@ const EOSList = () => {
         <PageLoader />
       ) : (
          <Card>
-           <CardContent className="p-0">
+           <CardContent className="p-6">
              <TableCustom
-               data={eosData}
+               data={processedEOSData}
                columns={EOSColumns}
                pagination={true}
                dataTotalSize={eosCount}

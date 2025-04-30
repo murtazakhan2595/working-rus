@@ -18,6 +18,7 @@ const Departments = ({
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [reloadCounter, setReloadCounter] = useState(0);
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -49,7 +50,7 @@ const Departments = ({
     return () => {
       isMounted = false;
     };
-  }, [filterData,ordering,options,reload]);
+  }, [filterData, ordering, options, reload, reloadCounter]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
@@ -64,25 +65,21 @@ const Departments = ({
     });
   };
 
+  // Function to force a table reload
+  const forceReload = () => {
+    setReloadCounter(prev => prev + 1);
+  };
+
   return (
     <div className="flex flex-col justify-end gap-4">
       <FilterInput
         filters={[
           {
             type: "search",
-            placeholder: "Search Branch Name",
-            name: "branch_name",
+            placeholder: "Search Department Name",
+            name: "name",
           },
-          {
-            type: "search",
-            placeholder: "Search Branch Number",
-            name: "branch_number",
-          },
-          {
-            type: "search",
-            placeholder: "Search Branch Address",
-            name: "branch_address",
-          },
+          
         ]}
         className='justify-end'
         onChange={handleFilterChange}
@@ -99,7 +96,7 @@ const Departments = ({
           </CardHeader>
           <CardContent>
             <TableCustom
-              columns={DepartmentColumn(fetchData)}
+              columns={DepartmentColumn(forceReload)}
               data={Departments?.results || []}
               tableOptions={tableOptions}
               dataTotalSize={Departments?.count || 0}

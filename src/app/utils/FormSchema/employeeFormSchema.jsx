@@ -80,6 +80,9 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   if (values.po_box_number && !/^\d+$/.test(values.po_box_number)) {
     errors.po_box_number = "PO Box Number must contain only numbers";
   }
+  if (!values.nationality){
+    errors.nationality = "Nationality is required"
+  } 
   return errors;
 };
 

@@ -401,7 +401,7 @@ const saveEmployeePayroll = async (payload, id) => {
       }
     }
   } catch (error) {
-    debugger
+    
     console.error("Error in saveEmployeePayroll:", error);
     if (error?.response) {
       console.error(

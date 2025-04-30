@@ -158,12 +158,28 @@ const OfficeSetting = () => {
   const getDesignations = async () => {
     setDesignLoading(true);
     try {
+      // Create filter data with organization ID if available
+      const filterData = {};
+      
+      // When showing all organizations, use the user's organization ID if available
+      if (userOrganizationId) {
+        console.log("Filtering designations by user's organization ID:", userOrganizationId);
+        filterData.organization = userOrganizationId;
+      }
+      
+      // Merge with any existing filter data from desigOptions
+      const mergedFilterData = {
+        ...filterData,
+        ...(desigOptions.filterData || {})
+      };
+      
       const response = await getDesignationList({
         options: desigOptions,
+        filterData: mergedFilterData
       });
       setDesignation(response);
     } catch (error) {
-      console.error("Error fetching lists:", error);
+      console.error("Error fetching designations:", error);
     } finally {
       setDesignLoading(false);
     }

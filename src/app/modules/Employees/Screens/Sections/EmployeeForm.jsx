@@ -200,7 +200,6 @@ const SheetOnBorading = ({
       );
       // return
       if (response) {
-        debugger;
         const employeeId = response.id;
         // Save document checklist
         const checklistData = mapEmployeeDocsChecklist({
@@ -567,6 +566,20 @@ const SheetOnBorading = ({
                             value={props.values.employee_location}
                             required={true}
                             label={"Employee Location"}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <SelectInputComponent
+                            name={"nationality"}
+                            options={countriesList}
+                            error={props.errors.nationality}
+                            touch={props.touched.nationality}
+                            value={props.values.nationality}
+                            required={true}
+                            label={"Nationality"}
                             onChange={(field, value) => {
                               props.setFieldValue(field, value);
                             }}

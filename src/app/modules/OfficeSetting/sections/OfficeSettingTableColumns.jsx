@@ -69,32 +69,32 @@ export const DepartmentColumn = (reload) => [
   {
     dataField: "id",
     text: "ID",
+    dataSort: true,
     formatter: (cell, row) => <FormatID value={cell} prefix={'DPT-'} />,
   },
   {
     dataField: "name",
     text: "Name",
+    dataSort: true,
   },
   {
     dataField: "description",
     text: "Description",
+    dataSort: true,
   },
-  {
-    dataField: "Parent Department",
-    text: "Parent Department",
-  },
-  {
-    dataField: "organization",
-    text: "Organization",
-  },
+  // {
+  //   dataField: "Parent Department",
+  //   text: "Parent Department",
+  //   dataSort: true,
+  // },
+ 
   {
     text: "Action",
     formatter: (cell, row) => (
       <DepartmentAction
         // setEdit={setEdit}
         // setEditData={setEditData}
-        reload={getDepartmentNames}
-        
+        reload={reload}
         data={row}
       />
     ),
@@ -105,24 +105,28 @@ export const DesignationColumn = (reload) => [
   {
     dataField: "id",
     text: "ID",
+    dataSort: true,
     formatter: (cell, row) => <FormatID value={cell} prefix={'DSG-'} />,
   },
   {
     dataField: "name",
     text: "Name",
+    dataSort: true,
   },
   {
     dataField: "description",
     text: "Description",
+    dataSort: true,
   },
-  {
-    dataField: "organization",
-    text: "Organization",
-  },
+  // {
+  //   dataField: "organization",
+  //   text: "Organization",
+  //   dataSort: true,
+  // },
   {
     text: "Action",
     formatter: (cell, row) => (
-      <DesignationAction reload={getDesignations} data={row} />
+      <DesignationAction reload={reload} data={row} />
     ),
   },
 ];

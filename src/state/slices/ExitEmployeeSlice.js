@@ -40,6 +40,7 @@ const buildQueryString = (options, filterData, ordering) => {
 
   // Add ordering
   if (ordering) {
+    console.log("Adding ordering parameter:", ordering);
     params.append('ordering', ordering);
   }
 
@@ -47,12 +48,15 @@ const buildQueryString = (options, filterData, ordering) => {
   if (filterData) {
     Object.entries(filterData).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
+        console.log(`Adding filter parameter: ${key}=${value}`);
         params.append(key, value);
       }
     });
   }
 
-  return params.toString();
+  const queryString = params.toString();
+  console.log("Final query string:", queryString);
+  return queryString;
 };
 
 // Async thunk for fetching employee exit data
@@ -72,6 +76,9 @@ export const fetchEmployeeExitRequests = createAsyncThunk(
         }
       });
       
+      console.log('API Response status:', response.status);
+      console.log('API Response data:', response.data);
+      
       if (response.status === 200) {
         // Assuming the API returns { count: number, results: array }
         return {
@@ -82,6 +89,7 @@ export const fetchEmployeeExitRequests = createAsyncThunk(
         return rejectWithValue('Failed to fetch exit requests');
       }
     } catch (error) {
+      console.error('API Error details:', error.response || error);
       return rejectWithValue(error.message || 'Network error');
     }
   }

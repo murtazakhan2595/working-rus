@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import moment from "moment-timezone";
 
 const ViewOrganization = ({ data }) => {
   useEffect(() => {
@@ -13,14 +14,9 @@ const ViewOrganization = ({ data }) => {
     </div>
   );
 
-  // Helper function to format date format string to user-friendly format
-  const formatDateFormat = (formatString) => {
-    console.log("Original date format value:", formatString);
-    
-    if (!formatString) return "N/A";
-    
-    // Direct mapping of format strings to display format
-    const formatDisplayMap = {
+  // Helper function to get human-readable date format
+  const formatDateFormat = (format) => {
+    const formatMap = {
       '%Y-%m-%d': 'YYYY-MM-DD',
       '%d-%m-%Y': 'DD-MM-YYYY',
       '%m-%d-%Y': 'MM-DD-YYYY',
@@ -29,8 +25,20 @@ const ViewOrganization = ({ data }) => {
       '%Y/%m/%d': 'YYYY/MM/DD'
     };
     
-    // Return the mapped display format if it exists, otherwise return the original
-    return formatDisplayMap[formatString] || formatString;
+    // Return user-friendly format or the original if not found
+    return formatMap[format] || format;
+  };
+
+  // Helper function to get timezone display name
+  const formatTimeZone = (timezone) => {
+    try {
+      const zone = moment.tz(timezone);
+      const offset = zone.format('Z');
+      return `${timezone} (UTC${offset})`;
+    } catch (error) {
+      console.error("Timezone formatting error:", error);
+      return timezone;
+    }
   };
 
   // Helper function to get name values considering various data structures
@@ -68,7 +76,7 @@ const ViewOrganization = ({ data }) => {
             {renderField("Company Description", data?.company_description)}
             {renderField("Licensing Authority", data?.licensing_authority)}
             {renderField("Licensing Number", data?.registration_number)}
-            {renderField("Timezone", data?.time_zone)}
+            {renderField("Timezone", formatTimeZone(data?.time_zone))}
             {renderField("Date Format", formatDateFormat(data?.date_format))}
             {renderField("Currency", data?.currency)}
             {renderField("Payroll Starting Date", data?.payroll_start_date)}

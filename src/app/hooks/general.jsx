@@ -8,6 +8,8 @@ import {
   mapBranchList,
   mapBranchPayloadData,
 } from "app/utils/MappingObjects/mapOfficeSettingData";
+import { useDispatch } from "react-redux";
+import { fetchDepartments } from "state/slices/CommonSlice";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -56,7 +58,6 @@ const headers = () => ({
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "created_at";
   try {
-
     const URL = `/department/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
@@ -124,22 +125,27 @@ const saveDepartment = async (departmentId, payload) => {
           headers: headers(),
         }
       );
+      
       if (response.status === 200) {
         return response?.data;
+      } else {
+        return false;
       }
     } else {
       const response = await axios.post(`${baseUrl}/department/`, payload, {
         headers: headers(),
       });
+      
       if (response.status === 201) {
         return response?.data;
+      } else {
+        return false;
       }
     }
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    console.error("Error fetching Personal Info data :", error);
     return false;
   }
 };
@@ -207,10 +213,18 @@ const saveDesignation = async (designationId, payload) => {
 const getDesignationList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
+  const sortField = payload?.options?.sortField ?? "";
+  const sortOrder = payload?.options?.sortOrder ?? "";
   const filterData = payload?.filterData ?? {};
 
   try {
-    const URL = `/designation/?ordering=-created_at&${
+    // Create ordering parameter based on sortField and sortOrder
+    let ordering = "-created_at"; // Default ordering
+    if (sortField) {
+      ordering = sortOrder === "desc" ? `-${sortField}` : sortField;
+    }
+
+    const URL = `/designation/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
       JSON.stringify(filterData)

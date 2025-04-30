@@ -2,9 +2,12 @@ import { SheetCardExtension } from 'components/SheetCardExtension';
 import SheetComponent from 'components/ui/SheetComponent'
 import React, { useState } from 'react'
 import AddDepartmentForm from './AddDepartmentForm';
+import useUserOrganization from 'app/hooks/useUserOrganization';
 
 const AddDepartment = ({ reload }) => {
   const [isOpen, setIsOpen] = useState(false);
+  
+  const userOrganization = useUserOrganization();
 
   const formSheetData = {
     triggerText: "Add New Department",
@@ -20,7 +23,12 @@ const AddDepartment = ({ reload }) => {
       setIsOpen={setIsOpen}
       width="600px"
     >
-      <AddDepartmentForm isOpen={isOpen} setIsOpen={setIsOpen} reload={reload}/>
+      <AddDepartmentForm
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        reload={reload}
+        userOrganization={userOrganization}
+      />
     </SheetComponent>
   );
 };

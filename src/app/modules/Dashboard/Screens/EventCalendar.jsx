@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
-  Calendar as CalendarIcon,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import {
-  Card,
   CardHeader,
   CardTitle,
   CardContent,
@@ -31,46 +26,20 @@ import {
   isSameDay,
   isWithinInterval,
 } from "date-fns";
-import { getShiftById } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
-import { getEmployeeWorkInformationData } from "app/hooks/employee";
-import { getEmployeeData } from "app/hooks/employee";
 import { getLeaveTransaction } from "app/hooks/leaveTracker";
 
-export default function EventCalendar() {
+export default function EventCalendarWidget() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [showAll, setShowAll] = useState(false);
   const userProfile = useSelector((state) => state.user.userProfile);
-  const [shiftData, setShiftData] = useState(null);
-  const [workingDays, setWorkingDays] = useState([]);
-  const [absentDays, setAbsentDays] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState([]);
+  const [eventDays, setEventDays] = useState([]);
+  const [eventInfo, setEventInfo] = useState({});
   const [leaveDays, setLeaveDays] = useState([]);
   const [leaveInfo, setLeaveInfo] = useState({});
-  const [loading, setLoading] = useState(true);
   const [leaveTransaction, setLeaveTransaction] = useState([]);
-
-  useEffect(() => {
-    const getEmpShift = async () => {
-      try {
-        setLoading(true);
-        const workInfo = await getEmployeeData(userProfile.id);
-        if (workInfo && workInfo.shift_assignment) {
-          const res = await getShiftById(workInfo.shift_assignment);
-          setShiftData(res);
-
-          if (res) {
-            calculateWorkingDays(res, currentMonth);
-          }
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching shift data:", error);
-        setLoading(false);
-      }
-    };
-
-    getEmpShift();
-  }, [userProfile.id]);
 
   // Fetch leave transaction data
   useEffect(() => {
@@ -81,7 +50,7 @@ export default function EventCalendar() {
         };
         const leaves = await getLeaveTransaction({
           filterData,
-          options: { page: 1, sizePerPage: 100 }, // Get more leaves to ensure all are visible
+          options: { page: 1, sizePerPage: 100 },
         });
 
         if (leaves) {
@@ -95,15 +64,58 @@ export default function EventCalendar() {
     fetchLeaveTransaction();
   }, [userProfile.id]);
 
-  // Calculate working days and leave days whenever the month, shift data, or leave transactions change
+  // Process leave data and other events when month changes
   useEffect(() => {
-    if (shiftData) {
-      calculateWorkingDays(shiftData, currentMonth);
-    }
-
-    // Process leave data for the current month
     processLeaveData(currentMonth);
-  }, [currentMonth, shiftData, leaveTransaction]);
+    fetchEvents(currentMonth);
+    setLoading(false);
+  }, [currentMonth, leaveTransaction]);
+
+  // Mock function to fetch events - to be implemented with actual event API
+  const fetchEvents = (month) => {
+    // This is a placeholder. In reality, you would fetch events from your API
+    // Temporary mock data for demonstration
+    const mockEvents = [
+      {
+        id: 1,
+        title: "Public Holiday - Labor Day",
+        date: new Date(month.getFullYear(), month.getMonth(), 1),
+        type: "holiday",
+      },
+      {
+        id: 2,
+        title: "Team Building",
+        date: new Date(month.getFullYear(), month.getMonth(), 15),
+        type: "event",
+      },
+      {
+        id: 3,
+        title: "John's Birthday",
+        date: new Date(month.getFullYear(), month.getMonth(), 22),
+        type: "birthday",
+      },
+    ];
+
+    // Process events for the current month
+    const eventsByDay = {};
+    const daysWithEvents = [];
+
+    mockEvents.forEach((event) => {
+      const day = getDate(event.date);
+      daysWithEvents.push(day);
+
+      if (!eventsByDay[day]) {
+        eventsByDay[day] = {
+          type: event.type,
+          title: event.title,
+        };
+      }
+    });
+
+    setEvents(mockEvents);
+    setEventDays(daysWithEvents);
+    setEventInfo(eventsByDay);
+  };
 
   const processLeaveData = (month) => {
     const startDate = startOfMonth(month);
@@ -158,37 +170,6 @@ export default function EventCalendar() {
     setLeaveInfo(leaveMap);
   };
 
-  const calculateWorkingDays = (shift, month) => {
-    const daysInMonth = eachDayOfInterval({
-      start: startOfMonth(month),
-      end: endOfMonth(month),
-    });
-
-    const workDays = [];
-    const absents = [];
-
-    daysInMonth.forEach((day) => {
-      const dayName = format(day, "EEEE"); // Get day name (Monday, Tuesday, etc.)
-
-      // Check if this day is in the shift's weekdays
-      if (shift.weekdays.includes(dayName)) {
-        workDays.push(getDate(day));
-      } else {
-        // If it's a weekday but not in shift's weekdays, consider it absent
-        if (
-          ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].includes(
-            dayName
-          )
-        ) {
-          absents.push(getDate(day));
-        }
-      }
-    });
-
-    setWorkingDays(workDays);
-    setAbsentDays(absents);
-  };
-
   const nextMonth = () => {
     setCurrentMonth(addMonths(currentMonth, 1));
   };
@@ -209,13 +190,30 @@ export default function EventCalendar() {
     <div key={`empty-${i}`} className="h-10 w-10" />
   ));
 
-  // Determine day type (working, absent, leave, or regular)
+  // Determine day type (event, leave, or regular)
   const getDayType = (day) => {
     const dayOfMonth = day.getDate();
+    if (eventDays.includes(dayOfMonth)) return "event";
     if (leaveDays.includes(dayOfMonth)) return "leave";
-    if (workingDays.includes(dayOfMonth)) return "working";
-    if (absentDays.includes(dayOfMonth)) return "absent";
     return "regular";
+  };
+
+  // Get event type specific color
+  const getEventColor = (day) => {
+    const dayOfMonth = day.getDate();
+    if (!eventDays.includes(dayOfMonth)) return "";
+
+    const eventType = eventInfo[dayOfMonth]?.type;
+    switch (eventType) {
+      case "holiday":
+        return "bg-green-100 text-green-800";
+      case "event":
+        return "bg-amber-100 text-amber-800";
+      case "birthday":
+        return "bg-indigo-100 text-indigo-800";
+      default:
+        return "bg-gray-100";
+    }
   };
 
   // Get tooltip content based on day type
@@ -224,22 +222,11 @@ export default function EventCalendar() {
     const formattedDate = format(day, "MMMM dd, yyyy");
 
     switch (type) {
+      case "event":
+        return `${eventInfo[dayOfMonth]?.title} - ${formattedDate}`;
       case "leave":
         const leave = leaveInfo[dayOfMonth];
         return `Leave: ${leave.type} (${leave.startDate} - ${leave.endDate})`;
-      case "working":
-        let shiftTimes = "";
-        if (shiftData) {
-          const startTime = new Date(shiftData.starttime);
-          const endTime = new Date(shiftData.endtime);
-          shiftTimes = ` (${format(startTime, "h:mm a")} - ${format(
-            endTime,
-            "h:mm a"
-          )})`;
-        }
-        return `Working Day - ${formattedDate}${shiftTimes}`;
-      case "absent":
-        return `Non-working Day - ${formattedDate}`;
       default:
         return `${formattedDate}`;
     }
@@ -305,6 +292,7 @@ export default function EventCalendar() {
             {daysInMonth.map((day) => {
               const dayType = getDayType(day);
               const isCurrentDay = isToday(day);
+              const eventColor = getEventColor(day);
 
               return (
                 <TooltipProvider key={day.toString()}>
@@ -313,16 +301,7 @@ export default function EventCalendar() {
                       <div
                         className={`
                           h-10 w-10 rounded-full flex items-center justify-center text-sm cursor-pointer
-                          ${
-                            dayType === "working"
-                              ? "bg-blue-100 text-blue-800"
-                              : ""
-                          }
-                          ${
-                            dayType === "absent"
-                              ? "bg-[#fee2e2] text-red-800"
-                              : ""
-                          }
+                          ${dayType === "event" ? eventColor : ""}
                           ${
                             dayType === "leave"
                               ? "bg-purple-100 text-purple-800"
@@ -347,44 +326,35 @@ export default function EventCalendar() {
 
         {showAll && (
           <div className="mt-4 pt-4 border-t border-gray-200">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <h3 className="text-sm font-medium mb-2">Working Days</h3>
-                <div className="flex flex-wrap gap-2">
-                  {workingDays.map((day) => (
-                    <span
-                      key={`working-${day}`}
-                      className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-md"
+                <h3 className="text-sm font-medium mb-2">Upcoming Events</h3>
+                <div className="flex flex-col gap-2">
+                  {events.map((event) => (
+                    <div
+                      key={`event-${event.id}`}
+                      className={`
+                        px-3 py-2 text-xs rounded-md flex justify-between items-center
+                        ${
+                          event.type === "holiday"
+                            ? "bg-green-100 text-green-800"
+                            : ""
+                        }
+                        ${
+                          event.type === "event"
+                            ? "bg-amber-100 text-amber-800"
+                            : ""
+                        }
+                        ${
+                          event.type === "birthday"
+                            ? "bg-indigo-100 text-indigo-800"
+                            : ""
+                        }
+                      `}
                     >
-                      {format(
-                        new Date(
-                          currentMonth.getFullYear(),
-                          currentMonth.getMonth(),
-                          day
-                        ),
-                        "MMM d"
-                      )}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium mb-2">Non-Working Days</h3>
-                <div className="flex flex-wrap gap-2">
-                  {absentDays.map((day) => (
-                    <span
-                      key={`absent-${day}`}
-                      className="px-2 py-1 text-xs bg-[#fee2e2] text-red-800 rounded-md"
-                    >
-                      {format(
-                        new Date(
-                          currentMonth.getFullYear(),
-                          currentMonth.getMonth(),
-                          day
-                        ),
-                        "MMM d"
-                      )}
-                    </span>
+                      <span>{event.title}</span>
+                      <span>{format(event.date, "MMM d")}</span>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -415,12 +385,16 @@ export default function EventCalendar() {
 
         <div className="flex items-center gap-4 mt-4 flex-wrap">
           <div className="flex items-center">
-            <div className="w-3 h-3 rounded-full bg-blue-100 mr-2"></div>
-            <span className="text-xs text-muted-foreground">Working Day</span>
+            <div className="w-3 h-3 rounded-full bg-green-100 mr-2"></div>
+            <span className="text-xs text-muted-foreground">Holiday</span>
           </div>
           <div className="flex items-center">
-            <div className="w-3 h-3 rounded-full bg-[#fee2e2] mr-2"></div>
-            <span className="text-xs text-muted-foreground">Non-Working</span>
+            <div className="w-3 h-3 rounded-full bg-amber-100 mr-2"></div>
+            <span className="text-xs text-muted-foreground">Event</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 rounded-full bg-indigo-100 mr-2"></div>
+            <span className="text-xs text-muted-foreground">Birthday</span>
           </div>
           <div className="flex items-center">
             <div className="w-3 h-3 rounded-full bg-purple-100 mr-2"></div>

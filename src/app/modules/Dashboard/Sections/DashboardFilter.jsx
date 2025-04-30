@@ -49,9 +49,4 @@ export const DashboardFilters = [
     name: "ProfileManagement",
     options: [{ label: "Profile Management", value: "ProfileManagement" }],
   },
-  {
-    label: "",
-    name: "LeaveBalance",
-    options: [{ label: "Leave Balance", value: "LeaveBalance" }],
-  },
 ];

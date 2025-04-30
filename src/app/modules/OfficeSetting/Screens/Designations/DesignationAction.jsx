@@ -22,12 +22,13 @@ const DesignationAction = ({ data, reload }) => {
 
   const formSheetData = {
     triggerText: null,
-    title: "Update Department",
+    title: "Update Designation",
     description: null,
     footer: null,
   };
 
   const handleEdit = (data) => {
+    console.log("Edit data:", data);
     setEdit({
       open: true,
       data: data,
@@ -54,7 +55,11 @@ const DesignationAction = ({ data, reload }) => {
         `/designation/${deleteDesignation?.data?.id}`,
         deleteDesignation?.data?.name
       );
-      reload()
+      if (typeof reload === 'function') {
+        reload();
+      } else {
+        console.error("Reload is not a function:", reload);
+      }
     } catch (error) {
       console.log("ERROR", error);
     }
@@ -63,9 +68,9 @@ const DesignationAction = ({ data, reload }) => {
   return (
     <>
       <ActionButtons 
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onView={() => handleView(data)}
+        onEdit={() => handleEdit(data)}
+        onDelete={() => handleDelete(data)}
         viewTooltip="View Designation Details"
         editTooltip="Edit Designation"
         deleteTooltip="Delete Designation"
