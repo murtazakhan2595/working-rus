@@ -40,7 +40,7 @@ const OnBoardingSheet = ({ reloadData = () => {} }) => {
           validateUsername={validateUsername}
           isOpen={isOpen}
           setIsOpen={() => {
-            debugger
+            
             setIsOpen(false);
             reloadData(true);
           }}

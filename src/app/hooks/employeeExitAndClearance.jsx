@@ -20,13 +20,7 @@ const getEmployeesExitCount = async (payload, activeTab, activeInnerTab) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
 
-  console.log("getEmployeesExitCount - Request params:", {
-    filterData,
-    activeTab,
-    activeInnerTab,
-    pageNo,
-    pageSize
-  });
+
 
   try {
     // Constructing the URL based on provided pagination and filter data
@@ -36,22 +30,19 @@ const getEmployeesExitCount = async (payload, activeTab, activeInnerTab) => {
       JSON.stringify(filterData)
     )}`;
 
-    console.log("getEmployeesExitCount - Full URL:", `${baseUrl}${URL}`);
+
 
     // Making the GET request to the constructed URL
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
 
-    console.log("getEmployeesExitCount - Response status:", response.status);
+
 
     if (response.status === 200) {
       const resignationData = response.data?.results || [];
       
-      console.log("---------------------------------------------");
-      console.log("📈 EMPLOYEE EXIT COUNT SUMMARY 📈");
-      console.log("---------------------------------------------");
-      console.log("Full response data:", response.data);
+    
       
       // Extract and log the counts
       const totalExit = resignationData?.total_exit || 0;
@@ -62,14 +53,7 @@ const getEmployeesExitCount = async (payload, activeTab, activeInnerTab) => {
       const totalApproved = approvedTermination + approvedResignation;
       const totalRejected = rejectedTermination + rejectedResignation;
       
-      console.log("Total Exit Records:", totalExit);
-      console.log("Approved Terminations:", approvedTermination);
-      console.log("Approved Resignations:", approvedResignation);
-      console.log("Rejected Terminations:", rejectedTermination);
-      console.log("Rejected Resignations:", rejectedResignation);
-      console.log("Total Approved:", totalApproved);
-      console.log("Total Rejected:", totalRejected);
-      console.log("---------------------------------------------");
+  
       
       // Returning the calculated values
       return {
@@ -100,13 +84,7 @@ const getEmployeesResignations = async (payload) => {
   const ordering = payload?.ordering ?? "-exit_date";
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
-  
-  console.log("getEmployeesResignations - Request params:", {
-    filterData,
-    ordering,
-    pageNo,
-    pageSize
-  });
+
   
   try {
     const URL = `/employeeExit?order=${ordering}&${
@@ -115,25 +93,22 @@ const getEmployeesResignations = async (payload) => {
       JSON.stringify(filterData)
     )}`;
     
-    console.log("getEmployeesResignations - Full URL:", `${baseUrl}${URL}`);
+ 
     
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     
-    console.log("getEmployeesResignations - Response status:", response.status);
+  
     
     if (response.status === 200) {
       const resignationData = response.data;
       
-      console.log("---------------------------------------------");
-      console.log("🔍 EMPLOYEE RESIGNATIONS API RESULTS 🔍");
-      console.log("---------------------------------------------");
-      console.log("Total count:", resignationData.count || 'Not available');
+      
       
       if (resignationData?.results?.result) {
         const results = resignationData.results.result;
-        console.log("Total resignation/termination records:", results.length);
+       
         
         // Count by type (resignation vs termination)
         const typeCount = {
@@ -142,16 +117,15 @@ const getEmployeesResignations = async (payload) => {
           other: results.filter(item => !item.type && !item.reason_resignation && !item.reason_termination).length
         };
         
-        console.log("Results by type:", typeCount);
+     
         
         // Show sample of first record if available
         if (results.length > 0) {
-          console.log("Sample record:", results[0]);
+        
         }
       } else {
-        console.log("No results array found in the response");
+        
       }
-      console.log("---------------------------------------------");
       
       return {
         count: resignationData.count,

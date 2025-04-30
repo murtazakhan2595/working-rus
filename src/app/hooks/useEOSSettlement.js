@@ -1,5 +1,30 @@
 import { useState, useEffect } from 'react';
-import { getEOSSettlements } from 'app/utils/MockData/eosSettlementMockData';
+import axios from 'axios';
+import { initialState } from 'state/slices/UserSlice';
+
+// Define baseUrl from UserSlice initial state
+const baseUrl = initialState.baseUrl;
+
+// Create proper API function for getting EOS settlements
+const getEOSSettlements = async (employeeId) => {
+  try {
+    const response = await axios.get(`${baseUrl}/payroll/payroll/`, {
+      headers: {
+        Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      params: employeeId ? { employee_id: employeeId } : {}
+    });
+    
+    if (response.status === 200) {
+      return response.data.results || [];
+    }
+    return [];
+  } catch (error) {
+    console.error('Error fetching EOS settlements:', error);
+    return [];
+  }
+};
 
 /**
  * Custom hook to determine if EOS settlements should be shown
@@ -41,9 +66,9 @@ const useEOSSettlement = (employee, userProfile) => {
         }
         
         // Check if settlements exist
-        const settlements = await getEOSSettlements();
+        const settlements = await getEOSSettlements(employee?.id);
         const filteredSettlements = settlements.filter(s => 
-          s.employeeId === employee?.id
+          s.employeeId === employee?.id || s.employee_id === employee?.id
         );
         
         setHasSettlements(filteredSettlements.length > 0);

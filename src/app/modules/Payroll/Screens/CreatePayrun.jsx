@@ -285,7 +285,6 @@ const CreatePayRun = () => {
     }
   };
   const handleConfirmSubmit = async () => {
-    debugger;
     console.log("IN HANDLE CONFIRM SUBMIT", payrunDraft);
     const reponse = await savePayrun({
       ...payrunDraft,

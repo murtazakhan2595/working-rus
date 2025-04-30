@@ -508,7 +508,6 @@ const TaskEditAddViewDetails = ({
 
         // Notify parent component of the new task
         if (parentTaskId && isSubtask) {
-          debugger;
           // Get current parent task
           const parentTask = await getTaskById(parentTaskId);
           // Update parent task's sub_task array

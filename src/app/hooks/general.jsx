@@ -8,6 +8,8 @@ import {
   mapBranchList,
   mapBranchPayloadData,
 } from "app/utils/MappingObjects/mapOfficeSettingData";
+import { useDispatch } from "react-redux";
+import { fetchDepartments } from "state/slices/CommonSlice";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -56,7 +58,6 @@ const headers = () => ({
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "created_at";
   try {
-
     const URL = `/department/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(

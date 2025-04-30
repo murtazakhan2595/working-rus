@@ -70,9 +70,24 @@ function TerminationStatus(status) {
 }
 function DepartmentName({ value, fallBackText = "N/A" }) {
   const departments = useSelector((state) => state.common.departments);
+  
+  // If value is falsy, return fallback
+  if (!value) return fallBackText;
+  
+  // Handle case where value is already a string (like "CEO")
+  if (typeof value === 'string' && isNaN(parseInt(value))) {
+    return value;
+  }
+  
+  // Try to find department by ID
+  const parsedValue = parseInt(value);
   const department = departments.find(
-    (option) => option.value === parseInt(value)
+    (option) => option.value === parsedValue
   );
+  
+  console.log(`DepartmentName: value=${value}, parsed=${parsedValue}, found=${department?.label || 'not found'}`);
+  
+  // Return department label if found, otherwise original value or fallback
   return department ? department.label : value ?? fallBackText;
 }
 

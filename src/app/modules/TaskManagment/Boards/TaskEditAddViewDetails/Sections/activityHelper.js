@@ -344,7 +344,6 @@ export const trackTaskActivities = async (
             JSON.stringify(updatedTaskData.label || []) !==
             JSON.stringify(previousTaskData?.label || [])
           ) {
-            // debugger;
             const previousLabels = previousTaskData?.label_name || [];
             const updatedLabels = updatedTaskData.label_name || [];
 
