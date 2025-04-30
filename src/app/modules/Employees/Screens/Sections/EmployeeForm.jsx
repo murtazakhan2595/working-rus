@@ -200,7 +200,6 @@ const SheetOnBorading = ({
       );
       // return
       if (response) {
-        debugger;
         const employeeId = response.id;
         // Save document checklist
         const checklistData = mapEmployeeDocsChecklist({

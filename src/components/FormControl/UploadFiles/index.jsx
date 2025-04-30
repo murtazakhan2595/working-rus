@@ -52,7 +52,6 @@ const CoverFileUpload = ({
       const reader = new FileReader();
       reader.onload = () => {
         setFiles((prevFiles) => {
-          // debugger;
           let updatedFiles;
           if (attachmentId) {
             // Replace existing file with the same attachmentId

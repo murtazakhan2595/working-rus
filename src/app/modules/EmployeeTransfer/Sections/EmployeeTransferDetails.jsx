@@ -335,7 +335,6 @@ const EmployeeTransferDetails = ({
             id={currentTranferId}
             isOpen={OpenTransferForm}
             setIsOpen={() => {
-              debugger;
               setOpenConfirmRejection(false);
               handleSubmit(null, "rejected");
             }}
