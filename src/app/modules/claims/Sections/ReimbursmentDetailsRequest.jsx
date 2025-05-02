@@ -179,7 +179,7 @@ const handleFormSubmit = async (values) => {
                     props.setFieldValue(field, value);
                   }}
                   placeholder={
-                    expenseTypeOptions.length
+                    expenseTypeOptions.length>0
                       ? "Select"
                       : "Loading expense types..."
                   }
