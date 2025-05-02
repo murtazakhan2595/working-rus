@@ -150,11 +150,13 @@ const getAttendanceSummary = async (payload) => {
   const end_date = dateRange[1] && dateRange[1] !== "null" ? dateRange[1] : "";
   const start_date =
     dateRange[0] && dateRange[0] !== "null" ? dateRange[0] : "";
-  let URL = `/attendance/summary/?ordering=${ordering}&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}${
-    end_date ? `&end_date=${end_date}` : ""
-  }${start_date ? `&start_date=${start_date}` : ""}`;
+  let URL = `/attendance/summary/?ordering=${ordering}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}${end_date ? `&end_date=${end_date}` : ""}${
+    start_date ? `&start_date=${start_date}` : ""
+  }`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -435,9 +437,20 @@ const getShiftById = async (id) => {
   } else return {};
 };
 
-const getAttendanceStats = async () => {
+const getAttendanceStats = async (payload) => {
   try {
-    const response = await axios.get(`${baseUrl}/attendance/summary/overall/`, {
+    const pageNo = payload?.options?.page ?? "";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    const ordering = payload?.ordering ?? '';
+
+    const URL = `/attendance/summary/overall?${
+      ordering ? `ordering=${ordering}&` : ""
+    }${pageNo ? `page=${pageNo}&` : ""}${
+      pageSize ? `page_size=${pageSize}&` : ""
+    }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+
+    const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     const attendanceSummary = response.data;

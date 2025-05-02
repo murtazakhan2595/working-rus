@@ -19,6 +19,7 @@ import { getLabelByValue } from "utils/getValuesFromTables";
 const Attendance = () => {
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
+  const userProfile = useSelector((state) => state.user.userProfile);
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [openUpdateEmployeeAttendance, setOpenUpdateEmployeeAttendance] =
@@ -27,7 +28,9 @@ const Attendance = () => {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [activeTab, setActiveTab] = useState("Day");
   const [TotalDays, setTotalDays] = useState(1);
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState(
+    userProfile.role === 2 ? { direct_report: userProfile.id } : {}
+  );
   const [dateRange, setDateRange] = useState(
     `${moment().format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`
   );
@@ -121,7 +124,7 @@ const Attendance = () => {
   };
 
   return (
-    <div>
+    <>
       <div
         className={`flex flex-col gap-4 ${window.location.pathname.substring(
           1
@@ -188,7 +191,7 @@ const Attendance = () => {
           </Button>
         </div>
 
-        <Card>
+        <Card className="mb-10">
           <CardContent>
             <TableCustom
               data={attendanceData.results || []}
@@ -209,7 +212,7 @@ const Attendance = () => {
           }}
         />
       )}
-    </div>
+    </>
   );
 };
 

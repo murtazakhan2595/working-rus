@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "components/ui/card";
 import { useSelector } from "react-redux";
 import { getAttendanceStats } from "app/hooks/attendance";
-import { getEmployeeCustomList } from "app/hooks/general";
 
 export function StatsCards() {
+  const userProfile = useSelector((state) => state.user.userProfile);
   const employees = useSelector((state) => state.emp.employees);
   const [loading, setLoading] = useState(false);
   const [cardStats, setCardStats] = useState({
@@ -17,10 +17,15 @@ export function StatsCards() {
   const attendanceStats = async (isMounted) => {
     setLoading(true);
     try {
-      const response = await getAttendanceStats();
+      const response = await getAttendanceStats({
+        filterData:
+          userProfile.role === 2 ? { report_to: userProfile.id } : {},
+      });
       if (response && isMounted) {
         setCardStats({
-          present: parseInt(response?.daily_stats?.Present) + parseInt(response?.daily_stats?.Late),
+          present:
+            parseInt(response?.daily_stats?.Present) +
+            parseInt(response?.daily_stats?.Late),
           absent: response?.daily_stats?.Absent,
           late: response?.daily_stats?.Late,
         });
@@ -33,10 +38,10 @@ export function StatsCards() {
   };
 
   const statsData = [
-    { title: "Total Employees", value: employees?.length ||0},
-    { title: "Present", value: cardStats?.present||0 },
-    { title: "Late", value: cardStats?.late ||0},
-    { title: "Absent", value: cardStats?.absent ||0},
+    { title: "Total Employees", value: employees?.length || 0 },
+    { title: "Present", value: cardStats?.present || 0 },
+    { title: "Late", value: cardStats?.late || 0 },
+    { title: "Absent", value: cardStats?.absent || 0 },
     {
       title: "Not Arrived",
       value:
