@@ -148,6 +148,10 @@ const AssetRequestViewSheet = ({
       label: "Additional Notes",
       value: assetRequest?.additional_notes,
     },
+    assetRequest?.reason && {
+      label: "Reason",
+      value: assetRequest?.reason,
+    },
   ].filter(Boolean); // Filter out any false entries
 
   const approvalSteps = [
@@ -160,7 +164,14 @@ const AssetRequestViewSheet = ({
             assetRequest?.asset_status === "Declined"
           ? statusRejectedIcon
           : statusPendingIcon,
-      text: "Request Approval",
+      text:
+        assetRequest?.asset_status === "Approved" ||
+        assetRequest?.asset_status === "Accepted"
+          ? "Request Approved"
+          : assetRequest?.asset_status === "Rejected" ||
+            assetRequest?.asset_status === "Declined"
+          ? "Request Rejected"
+          : "Request Pending",
     },
   ];
 
