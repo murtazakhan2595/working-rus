@@ -49,6 +49,7 @@ function App() {
         return;
       }
     } catch (error) {
+      debugger
       if (
         error.response &&
         (error.response.status === 401 || error.response.status === 403)

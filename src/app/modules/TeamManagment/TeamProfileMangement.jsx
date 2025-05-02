@@ -119,7 +119,7 @@ export default function TeamProfileMangement() {
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
       <Header />
-      <Stats stats={statsData} />
+      {/* <Stats stats={statsData} /> */}
       <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row gap-2">
         <div className="flex">
           <SelectInputComponent
