@@ -37,8 +37,6 @@ function MonthInput({
   placeholder = null, // Placeholder text when no value is selected
   showReset = false,
   disabled = false,
-  dateFormat = "yyyy-MM-dd", // Default format for the value
-  showMonthYearPicker = false, // Whether to show only month/year picker
 }) {
   const displayPattern = "MMMM yyyy";
   const [selectedDate, setSelectedDate] = useState("");
@@ -144,13 +142,7 @@ function MonthInput({
                 </div>
               ) : (
                 <FormPlaceholder
-                  placeholder={
-                    placeholder
-                      ? placeholder
-                      : showMonthYearPicker
-                      ? "Select Month-Year"
-                      : "Pick a date"
-                  }
+                  placeholder={placeholder ? placeholder : "Select Month"}
                 />
               )}
             </div>

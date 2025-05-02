@@ -43,13 +43,7 @@ import {
   getEmployeeEarnAndDeduction,
 } from "app/hooks/payroll";
 import { RevisedSalarySheet } from "app/modules/Payroll/Screens/SalarySetup/EmployeesSalarySetup";
-import {
-  DesignationName,
-  EmployeeID,
-  getExperience,
-} from "utils/getValuesFromTables";
-import { getEmployeeData } from "app/hooks/employee";
-import { numberToWords } from "utils/renderValues.js";
+
 import { PageLoader, EmployeeOverview } from "components";
 import { revisionLetterOptions, revisionStatusOptions } from "data/Data";
 import { FilterInput, SelectInputComponent } from "components/FormControl";
@@ -68,15 +62,16 @@ export default function EmployeeSalaryRevisions({
   editMode = true,
   payrollId,
   previousCTC,
+  payrollData,
+  reloadData=()=>{},
+  lastIncrementDate,
 }) {
   const [salaryRevisions, setSalaryRevisions] = useState([]);
-  const [employeeData, setEmployeeData] = useState({});
   const [selectedRevision, setSelectedRevision] = useState(null);
   const [filterData, setFilterData] = useState({});
   const [approvedRevisions, setApprovedRevisions] = useState(0);
   const [pendingRevisions, setPendingRevisions] = useState(0);
   const [rejectedRevisions, setRejectedRevisions] = useState(0);
-  const [lastIncrementDate, setLastIncrementDate] = useState(null);
   const [payslips, setPayslips] = useState([]);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [months, setMonths] = useState([]);
@@ -87,17 +82,14 @@ export default function EmployeeSalaryRevisions({
 
   const { id } = useParams();
   const location = useLocation();
-  const employeeID = new URLSearchParams(location.search).get("employeeID");
+  const employeeID = parseInt(
+    new URLSearchParams(location.search).get("employeeID")
+  );
   const fromMyPayroll =
     new URLSearchParams(location.search).get("fromMyPayroll") === "true";
 
   const fetchData = async () => {
     setLoading(true);
-    const empData = await getEmployeeData(employeeID);
-    if (empData) {
-      setEmployeeData(empData);
-    }
-
     const salaryRevisionData = await getSalaryRevision({
       filterData,
     }); // hardcode for now filter not woking on Backend
@@ -118,7 +110,6 @@ export default function EmployeeSalaryRevisions({
       setApprovedRevisions(approvedRevisions);
       setPendingRevisions(pendingRevisions);
       setRejectedRevisions(rejectedRevisions);
-      setLastIncrementDate(salaryRevisionData?.lastIncrementDate);
     }
 
     const approvedRevisions = salaryRevisionData?.revision?.filter(
@@ -177,6 +168,7 @@ export default function EmployeeSalaryRevisions({
   };
 
   const handleStatusChange = async (name, value, revision) => {
+    debugger;
     if (name === "revision_status") {
       revision.revision_status = value;
     } else if (name === "revision_letter") {
@@ -186,10 +178,18 @@ export default function EmployeeSalaryRevisions({
     if (response) {
       fetchData();
       if (revision.revision_status === "APPROVED") {
-        await saveEmployeePayroll({
-          id,
-          basic_salary: revision.new_salary,
-        });
+        await saveEmployeePayroll(
+          {
+            id: payrollId,
+            ctc: revision.new_salary,
+            is_new: true,
+            basic_salary:
+              parseFloat(payrollData?.basic_salary) +
+              parseFloat(revision.revision_difference),
+          },
+          payrollId
+        );
+        reloadData(true);
       }
     }
   };
@@ -203,8 +203,8 @@ export default function EmployeeSalaryRevisions({
             state={"create"}
             onClose={onClose}
             previousCTC={previousCTC}
-            employeeData={employeeData}
             employee_Id={employee_Id}
+            lastIncrementDate={lastIncrementDate}
           />
         )}
       </CardHeader>

@@ -4,7 +4,7 @@ import { getEmployeeCustomList, HandleLogout } from "./general";
 import moment from "moment";
 import {
   mapPayRunList,
-  mapEmployeeSalarySetupData,
+  mapEmployeePayRollData,
   mapPayrunPayloadData,
   mapEmployeeSalaryPayloadData,
 } from "app/utils/MappingObjects/mapPayrollData";
@@ -52,7 +52,7 @@ export const getEmployeePayrollDetailByEmpId = async (empID) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      const payrollDetail = mapEmployeeSalarySetupData(response.data);
+      const payrollDetail = mapEmployeePayRollData(response.data);
       return payrollDetail;
     }
   } catch (error) {
