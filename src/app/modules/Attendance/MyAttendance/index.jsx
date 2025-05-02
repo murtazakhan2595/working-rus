@@ -126,7 +126,7 @@ const Attendance = () => {
   return (
     <>
       <div className="p-4 space-y-4">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           <EmployeeSelfTimesheet
             employeeShift={EmployeeShiftData}
             attendance={attendance}

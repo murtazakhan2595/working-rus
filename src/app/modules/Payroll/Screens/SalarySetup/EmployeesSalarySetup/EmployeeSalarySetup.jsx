@@ -15,7 +15,10 @@ import {
 } from "components/FormControl";
 import { saveEmployeePayroll } from "app/hooks/payroll";
 import { validateEmployeeSalarySetupForm } from "app/utils/FormSchema/payrollFormSchema";
-import { mapPayrollAdjustmentList } from "app/utils/MappingObjects/mapPayrollData";
+import {
+  mapPayrollAdjustmentList,
+  mapEmployeeSalarySetupData,
+} from "app/utils/MappingObjects/mapPayrollData";
 import { EmployeeSalary } from "app/utils/Types/Payroll";
 import { toast } from "react-toastify";
 import { EmployeeOverview } from "components";
@@ -24,6 +27,8 @@ import { EmployeeDetailUI } from "components";
 
 const EmployeeSalarySetup = () => {
   const [payrollForm, setPayrollForm] = useState(EmployeeSalary);
+  const [payrollID, setPayrollID] = useState(null);
+  const [lastIncrementDate, setLastIncrementDate] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [payrollFormData, setPayrollFormData] = useState({});
   const [CTC, setCTC] = useState(null);
@@ -40,7 +45,9 @@ const EmployeeSalarySetup = () => {
     setLoading(true);
     const response = await getEmployeePayrollDetailByEmpId(id);
     if (response && isMounted) {
-      setPayrollForm(response);
+      setPayrollForm(mapEmployeeSalarySetupData(response));
+      setPayrollID(response.id);
+      setLastIncrementDate(response.latest_effective_date);
       setCTC(response.ctc);
       const earnings = await mapPayrollAdjustmentList([
         ...(response.earning_types || []),
@@ -322,7 +329,7 @@ const EmployeeSalarySetup = () => {
                   <DetailBox
                     orientation="horizontal"
                     label={"Gross Salary"}
-                    value={`${payrollForm.gross_salary} AED`}
+                    value={`${payrollForm.gross_salary || 0} AED`}
                     fallbackText={"N/A"}
                   />
                   <DetailBox
@@ -338,7 +345,7 @@ const EmployeeSalarySetup = () => {
                   <DetailBox
                     orientation="horizontal"
                     label={"CTC"}
-                    value={`${payrollForm.ctc} AED`}
+                    value={`${payrollForm.ctc || 0} AED`}
                     fallbackText={"N/A"}
                   />
                   <DetailBox
@@ -351,31 +358,35 @@ const EmployeeSalarySetup = () => {
                   <DetailBox
                     orientation="horizontal"
                     label={"Basic Salary"}
-                    value={`${payrollForm.basic_salary}${AmountSymbol}`}
+                    value={`${payrollForm.basic_salary || 0}${AmountSymbol}`}
                     fallbackText={"N/A"}
                   />
                   <DetailBox
                     orientation="horizontal"
                     label={"Medical Allowance"}
-                    value={`${payrollForm.medical_allowance}${AmountSymbol}`}
+                    value={`${
+                      payrollForm.medical_allowance || 0
+                    }${AmountSymbol}`}
                     fallbackText={"N/A"}
                   />
                   <DetailBox
                     orientation="horizontal"
                     label={"Transport Allowance"}
-                    value={`${payrollForm.transport_allowance}${AmountSymbol}`}
+                    value={`${
+                      payrollForm.transport_allowance || 0
+                    }${AmountSymbol}`}
                     fallbackText={"N/A"}
                   />
                   <DetailBox
                     orientation="horizontal"
                     label={"House Allowance"}
-                    value={`${payrollForm.house_allowance}${AmountSymbol}`}
+                    value={`${payrollForm.house_allowance || 0}${AmountSymbol}`}
                     fallbackText={"N/A"}
                   />
                   <DetailBox
                     orientation="horizontal"
                     label={"Other Allowance"}
-                    value={`${payrollForm.other_allowance}${AmountSymbol}`}
+                    value={`${payrollForm.other_allowance || 0}${AmountSymbol}`}
                     fallbackText={"N/A"}
                   />
                 </div>
@@ -400,8 +411,11 @@ const EmployeeSalarySetup = () => {
           <EmployeeSalaryRevisions
             employee_Id={id}
             editMode={true}
-            payrollId={payrollForm.id}
+            payrollId={payrollID}
             previousCTC={payrollForm.ctc}
+            payrollData={payrollForm}
+            reloadData={fetchData}
+            lastIncrementDate={lastIncrementDate}
           />
         </>
       )}

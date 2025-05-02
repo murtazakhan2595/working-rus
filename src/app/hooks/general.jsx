@@ -373,6 +373,7 @@ const getEmployeeListWithDetail = async () => {
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
         first_name: employee.first_name,
+        date_of_birth: employee.date_of_birth,
         direct_report: employee.direct_report,
         joining_date: employee.joining_date,
         last_name: employee.last_name,

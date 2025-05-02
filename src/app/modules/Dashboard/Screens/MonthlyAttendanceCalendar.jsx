@@ -196,7 +196,7 @@ export default function MonthlyAttendanceCalendar() {
           {record.total_hours > 0 && (
             <p>
               <span className="font-medium">Hours:</span>{" "}
-              {record.total_hours.toFixed(2)}
+              {record.total_hours}
             </p>
           )}
         </div>

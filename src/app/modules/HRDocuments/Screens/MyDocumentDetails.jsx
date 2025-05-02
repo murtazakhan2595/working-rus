@@ -11,7 +11,7 @@ import { saveEmployeePersonalInfoData } from "app/hooks/employee";
 import { useSelector } from "react-redux";
 import { mapEmployeeTransferInfo } from "app/utils/MappingObjects/mapEmployeeTransferData";
 import AttachmentUI from "components/ui/AttachmentUI";
-import { DetailBox } from "components/SheetCardExtension";
+import { DetailBox ,SheetCardExtension} from "components/SheetCardExtension";
 import { ViewDetailSheetCardExtension, StatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
 
@@ -213,22 +213,24 @@ const MyDocumentDetails = ({
             </div>
           </section>
           <section>
-            <div className="mt-3">
-              <div class="grid grid-cols-3 gap-8 my-4 border border-gray-400 rounded-lg pr-3 pl-4 py-4">
-                {labelList &&
-                  labelList.map((data, index) => {
-                    return (
-                      <DetailBox
-                        orientation="horizontal"
-                        key={index}
-                        className=""
-                        label={data.label}
-                        value={data.value}
-                        fallbackText={""}
-                      />
-                    );
-                  })}
-              </div>
+            <div className="mt-6">
+              <SheetCardExtension title="Document Details">
+                <div class="grid grid-cols-3 gap-4">
+                  {labelList &&
+                    labelList.map((data, index) => {
+                      return (
+                        <DetailBox
+                          orientation="horizontal"
+                          key={index}
+                          className=""
+                          label={data.label}
+                          value={data.value}
+                          fallbackText={""}
+                        />
+                      );
+                    })}
+                </div>
+              </SheetCardExtension>
             </div>
           </section>
           <section className="min-h-[75vh]">

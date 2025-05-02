@@ -14,7 +14,7 @@ import {
   TabsTrigger,
   TabsContent,
 } from "src/@/components/ui/tabs";
-import Stats from "components/ui/Stats";
+import { HRDocumentTargetAudience } from "data/Data";
 import TableCustom from "components/CustomTable";
 import { useSelector } from "react-redux";
 import { Button } from "components/ui/button";
@@ -36,6 +36,7 @@ export default function Documents({ reload }) {
   });
   const [activeDocumentTab, setActiveDocumentTab] = useState("All");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedTargetAudience, setSelectedTargetAudience] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
   const [OpenDocumentID, setOpenDocumentID] = useState(false);
@@ -89,12 +90,11 @@ export default function Documents({ reload }) {
     let isMounted = true;
     onPageChange("page", 1);
     setOrdering("-id");
-    fetchData(true)
+    fetchData(true);
     return () => {
       isMounted = false;
     };
   }, [reload]);
-
 
   useEffect(() => {
     setFilterData((prevFilter) => {
@@ -118,6 +118,7 @@ export default function Documents({ reload }) {
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
     if (filterName === "category") setSelectedCategory(filterValue);
+    if (filterName === "target_audience") setSelectedTargetAudience(filterValue);
 
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -151,10 +152,24 @@ export default function Documents({ reload }) {
               </TabsTrigger>
             ))}
           </TabsList>
+        </div>
+        <div className="flex flex-row flex-wrap justify-end mb-5">
           <FilterInput
             filters={[
               {
+                type: "search",
+                placeholder: "Search by name",
+                name: "name",
+              },
+              {
                 type: "select-one",
+                option: HRDocumentTargetAudience,
+                name: "target_audience",
+                placeholder: "Target Audience",
+                values: selectedTargetAudience,
+              },
+              {
+                type: "select-two",
                 option: Document_Category,
                 name: "category",
                 placeholder: "Category",
@@ -164,7 +179,6 @@ export default function Documents({ reload }) {
             onChange={handleFilterChange}
           />
         </div>
-
         <TableCustom
           data={employeeTransferData.results}
           columns={HRDocumentsColumns}
