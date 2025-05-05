@@ -533,60 +533,7 @@ const EOSList = () => {
       dataField: 'department_id',
       text: 'Department',
       dataSort: true,
-      formatter: (cell, row) => {
-        // First try the pre-processed department name
-        if (row.department_name_resolved) {
-          return row.department_name_resolved;
-        }
-        
-        // Then try direct department_name field which is most reliable
-        if (row.department_name) {
-          return row.department_name;
-        }
-        
-        // Then look for string values in any department field
-        if (typeof cell === 'string' && isNaN(parseInt(cell))) {
-          return cell;
-        }
-        if (typeof row.department === 'string' && isNaN(parseInt(row.department))) {
-          return row.department;
-        }
-        
-        // Try to get a valid ID value to look up
-        let departmentId = null;
-        if (cell && !isNaN(parseInt(cell))) {
-          departmentId = parseInt(cell);
-        } else if (row.department && !isNaN(parseInt(row.department))) {
-          departmentId = parseInt(row.department);
-        }
-        
-        // If we have an ID, look it up in our departments list
-        if (departmentId !== null) {
-          // Look in departments list from redux first
-          const deptFromRedux = departments?.find(
-            dept => (dept.value === departmentId || dept.id === departmentId)
-          );
-          
-          if (deptFromRedux) {
-            return deptFromRedux.label || deptFromRedux.name;
-          }
-          
-          // Then try local departments list
-          const foundDepartment = departmentsList.find(
-            dept => (dept.value === departmentId || dept.id === departmentId)
-          );
-          
-          if (foundDepartment) {
-            return foundDepartment.label || foundDepartment.name;
-          }
-          
-          // If not found in either list, use DepartmentName component
-          return <DepartmentName value={departmentId} fallBackText={`Dept. ${departmentId}`} />;
-        }
-        
-        // If all else fails, try any value that might be available
-        return cell || row.department || 'N/A';
-      },
+      formatter: (cell, row) => <DepartmentName value={cell || row.department || row.department_name} fallBackText="N/A" />,
       headerAlign: 'center',
       align: 'center',
       headerClasses: "text-sm text-center text-gray-1100",
