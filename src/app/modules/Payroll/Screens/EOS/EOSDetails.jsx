@@ -523,11 +523,7 @@ const EOSDetails = () => {
   }, [id, location.pathname, isPayrollRoute]);
 
   const handleBack = () => {
-    if (isPayrollRoute) {
-      navigate("/payroll/eos");
-    } else {
-      navigate("/self-service/exit");
-    }
+    navigate(-1);
   };
 
   const handleInputChange = (section, field, value) => {

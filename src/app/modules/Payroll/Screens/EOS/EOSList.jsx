@@ -49,6 +49,58 @@ const checkEOSDataExists = async (id) => {
   }
 };
 
+// Add function to fetch departments directly from API
+const fetchDepartmentsDirectly = async (organizationId) => {
+  try {
+    const response = await axios.get(`${baseUrl}/department/`, {
+      headers: headers(),
+      params: { 
+        ordering: 'created_at',
+        organization: organizationId 
+      }
+    });
+    
+    console.log("Departments API response:", response.data);
+    
+    if (response.data && response.data.results) {
+      return response.data.results.map(dept => ({
+        id: dept.id,
+        value: dept.id,
+        name: dept.name,
+        label: dept.name
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching departments directly:", error);
+    return [];
+  }
+};
+
+// Add function to fetch managers directly from API
+const fetchManagersDirectly = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/employee/managers/`, {
+      headers: headers()
+    });
+    
+    console.log("Managers API response:", response.data);
+    
+    if (response.data) {
+      return response.data.map(manager => ({
+        id: manager.id,
+        value: manager.id,
+        name: manager.name || `${manager.first_name || ''} ${manager.last_name || ''}`.trim(),
+        label: manager.name || `${manager.first_name || ''} ${manager.last_name || ''}`.trim()
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching managers directly:", error);
+    return [];
+  }
+};
+
 // Define status options for the filter dropdown
 const eosStatusOptions = [
   { value: "", label: "All Statuses" },
@@ -175,14 +227,23 @@ const EOSList = () => {
     }
   }, [organizationId]);
 
-  // Fetch departments directly from API
+  // Fetch departments directly from API - updated to use new direct API function
   const fetchDepartmentsData = async () => {
     if (!organizationId) {
       return;
     }
     
     try {
-      // Add organization filter to ensure we only get departments from the correct organization
+      // First try the new direct API call
+      const departmentsFromAPI = await fetchDepartmentsDirectly(organizationId);
+      
+      if (departmentsFromAPI && departmentsFromAPI.length > 0) {
+        console.log("Departments fetched directly from API:", departmentsFromAPI);
+        setDepartmentsList(departmentsFromAPI);
+        return;
+      }
+      
+      // Fallback to the existing method
       const response = await getDepartmentList({
         filterData: { organization: organizationId }
       });
@@ -190,18 +251,30 @@ const EOSList = () => {
         setDepartmentsList(response.results);
       }
     } catch (error) {
+      console.error("Error fetching departments:", error);
       // Silently handle error
     }
   };
   
-  // Fetch managers directly from API
+  // Fetch managers directly from API - updated to use new direct API function
   const fetchManagersData = async () => {
     try {
+      // First try the new direct API call
+      const managersFromAPI = await fetchManagersDirectly();
+      
+      if (managersFromAPI && managersFromAPI.length > 0) {
+        console.log("Managers fetched directly from API:", managersFromAPI);
+        setManagersList(managersFromAPI);
+        return;
+      }
+      
+      // Fallback to the existing method
       const response = await getManagersList();
       if (response) {
         setManagersList(response);
       }
     } catch (error) {
+      console.error("Error fetching managers:", error);
       // Silently handle error
     }
   };
@@ -281,10 +354,16 @@ const EOSList = () => {
         delete updatedFilters[filterName];
       } else {
         // Map frontend filter names to backend expected names if needed
-        const mappedValue = filterName === "emp_search" ? 
-          { search: filterValue } : 
-          { [filterName]: filterValue };
-        Object.assign(updatedFilters, mappedValue);
+        let mappedFieldName = filterName;
+        
+        // Fix specific field mappings
+        if (filterName === "emp_search") {
+          mappedFieldName = "search";
+        } else if (filterName === "department_id") {
+          mappedFieldName = "department";
+        }
+        
+        updatedFilters[mappedFieldName] = filterValue;
       }
       
       // Always maintain organization filter if available
@@ -292,6 +371,7 @@ const EOSList = () => {
         updatedFilters.organization = organizationId;
       }
       
+      console.log("Updated filter data:", updatedFilters);
       return updatedFilters;
     });
   };
@@ -321,18 +401,22 @@ const EOSList = () => {
       ordering
     };
     
+    console.log("Dispatching fetchEmployeeExitRequests with payload:", payload);
+    
     dispatch(fetchEmployeeExitRequests(payload))
       .unwrap()
       .then(response => {
-        // Processing happens silently
+        console.log("API Response from exitRequests:", response);
       })
       .catch((error) => {
-        // Error is handled by Redux
+        console.error("Error fetching exit requests:", error);
       });
   }, [dispatch, options, filterData, ordering, departmentsList, managersList]);
   
   // Format the EOSData with department names directly
   const processedEOSData = eosData.map(record => {
+    console.log("Processing record:", record);
+    
     // Get department name
     let departmentName = null;
     const deptId = record.department_id || record.department;
@@ -351,9 +435,14 @@ const EOSList = () => {
       }
     }
     
+    // If we still don't have a department name, try the department_name field directly
+    if (!departmentName && record.department_name) {
+      departmentName = record.department_name;
+    }
+    
     // Get manager name
     let managerName = null;
-    const managerId = record.report_to || record.manager_id;
+    const managerId = record.report_to || record.manager_id || record.reporting_manager_id;
     
     if (managerId) {
       const foundManager = managersList.find(mgr => 
@@ -362,7 +451,13 @@ const EOSList = () => {
       
       if (foundManager) {
         managerName = foundManager.label || foundManager.name;
+      } else if (record.reporting_manager_name) {
+        // If manager ID not found in list but we have the name directly
+        managerName = record.reporting_manager_name;
       }
+    } else if (record.reporting_manager_name) {
+      // If we have the name directly but no ID
+      managerName = record.reporting_manager_name;
     }
     
     // Return enhanced record
@@ -410,27 +505,36 @@ const EOSList = () => {
       align: 'center',
       headerClasses: "text-sm text-center text-gray-1100",
       classes: "text-sm text-center text-gray-1100",
-      formatter: (cell, row) => cell || row.emp_id, // Fallback if serial_number is missing
+      formatter: (cell, row) => cell || row.emp_id || row.id || 'N/A', // Fallback if serial_number is missing
     },
     {
       dataField: 'department_id',
       text: 'Department',
       dataSort: true,
       formatter: (cell, row) => {
-        // Simply use the pre-processed department name
+        console.log('Department data:', { 
+          department_name_resolved: row.department_name_resolved,
+          department_id: cell, 
+          department: row.department,
+          department_name: row.department_name
+        });
+        
+        // First try the pre-processed department name
         if (row.department_name_resolved) {
           return row.department_name_resolved;
         }
         
-        // DIRECT STRING VALUES - If we have a string like "CEO", use it directly
+        // Then try direct department_name field which is most reliable
+        if (row.department_name) {
+          return row.department_name;
+        }
+        
+        // Then look for string values in any department field
         if (typeof cell === 'string' && isNaN(parseInt(cell))) {
           return cell;
         }
         if (typeof row.department === 'string' && isNaN(parseInt(row.department))) {
           return row.department;
-        }
-        if (typeof row.department_name === 'string' && isNaN(parseInt(row.department_name))) {
-          return row.department_name;
         }
         
         // Try to get a valid ID value to look up
@@ -439,24 +543,25 @@ const EOSList = () => {
           departmentId = parseInt(cell);
         } else if (row.department && !isNaN(parseInt(row.department))) {
           departmentId = parseInt(row.department);
-        } else if (row.department_name && !isNaN(parseInt(row.department_name))) {
-          departmentId = parseInt(row.department_name);
         }
         
         // If we have an ID, look it up in our departments list
         if (departmentId !== null) {
+          // Try both value and id properties in the departments list
           const foundDepartment = departmentsList.find(
-            dept => dept.value === departmentId || dept.id === departmentId
+            dept => (dept.value === departmentId || dept.id === departmentId)
           );
           
           if (foundDepartment) {
             return foundDepartment.label || foundDepartment.name;
           }
+          
+          // If not found in the direct list, try the DepartmentName component
+          return <DepartmentName value={departmentId} />;
         }
         
         // If all else fails, try any value that might be available
-        const departmentValue = cell || row.department || row.department_name;
-        return departmentValue || 'N/A';
+        return cell || row.department || 'N/A';
       },
       headerAlign: 'center',
       align: 'center',
@@ -468,24 +573,46 @@ const EOSList = () => {
       text: 'Report To',
       dataSort: true,
       formatter: (cell, row) => {
+        // Log all possible fields that might contain manager info
+        console.log("Report To field values:", { 
+          cell, 
+          reporting_manager: row.reporting_manager, 
+          reporting_manager_name: row.reporting_manager_name,
+          manager: row.manager,
+          manager_id: row.manager_id,
+          report_to: row.report_to,
+          manager_name_resolved: row.manager_name_resolved
+        });
+        
         // Simply use the pre-processed manager name
         if (row.manager_name_resolved) {
           return row.manager_name_resolved;
         }
         
-        const managerValue = cell || row.manager_id;
-        
-        // Try to find manager in our directly fetched list
-        const foundManager = managersList.find(
-          manager => manager.value === parseInt(managerValue) || manager.id === parseInt(managerValue)
-        );
-        
-        if (foundManager) {
-          return foundManager.label || foundManager.name;
+        // Try the reporting_manager_name field directly
+        if (row.reporting_manager_name) {
+          return row.reporting_manager_name;
         }
         
-        // Fall back to the ManagerName component
-        return <ManagerName value={managerValue} />;
+        // Get manager ID from any available field
+        const managerValue = cell || row.manager_id || row.reporting_manager_id;
+        
+        // Try to find manager in our directly fetched list
+        if (managerValue) {
+          const foundManager = managersList.find(
+            manager => manager.value === parseInt(managerValue) || manager.id === parseInt(managerValue)
+          );
+          
+          if (foundManager) {
+            return foundManager.label || foundManager.name;
+          }
+          
+          // Fall back to the ManagerName component
+          return <ManagerName value={managerValue} />;
+        }
+        
+        // If nothing worked, return N/A
+        return 'N/A';
       },
       headerAlign: 'center',
       align: 'center',
