@@ -201,12 +201,9 @@ const getOrganizationTree = async () => {
 
 const getEmployeeReportingLine = async (id) => {
   try {
-    const response = await axios.get(
-      `${baseUrl}/employee_hierarchy/${id}/`,
-      {
-        headers: headers(),
-      }
-    );
+    const response = await axios.get(`${baseUrl}/api/team-hierarchy/${id}/`, {
+      headers: headers(),
+    });
     if (response.status === 200) {
       return response.data;
     }

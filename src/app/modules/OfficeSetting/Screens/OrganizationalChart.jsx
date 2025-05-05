@@ -16,24 +16,20 @@ import Avatar from "components/ui/Avatar";
 const OrganizationalChart = ({ initialData = null }) => {
   const [organizationData, setOrganizationData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState("organization"); // 'organization' or 'reporting'
-  const [expandedNodes, setExpandedNodes] = useState({}); // Track expanded nodes
+  const [viewMode, setViewMode] = useState("organization");
+  const [expandedNodes, setExpandedNodes] = useState({});
   const userProfile = useSelector((state) => state.user.userProfile);
 
-  // Define view mode tabs
   const viewModeTabsData = [
     { value: "organization", label: "Organization Tree" },
     { value: "reporting", label: "My Reporting Line" },
   ];
 
-  // Helper function to transform API data to chart format for the full organization tree
   const transformApiData = (apiNode, managerId = null) => {
-    // Generate a node border color based on department
     const getDepartmentColor = (department) => {
       return "#9C27B0";
     };
 
-    // Generate initials for avatar fallback
     const getInitials = (firstName, lastName) => {
       return `${firstName.charAt(0)}${lastName.charAt(0)}`;
     };
@@ -59,133 +55,105 @@ const OrganizationalChart = ({ initialData = null }) => {
     };
   };
 
-  // Helper function to transform reporting line API data to chart format
-  // Enhanced function to transform reporting line API data to chart format including team members
-  const transformReportingLineData = (reportingData) => {
-    if (!reportingData) return null;
-
-    // Generate initials for avatar fallback
-    const getInitials = (firstName, lastName) => {
-      return `${firstName.charAt(0)}${lastName.charAt(0)}`;
+  const convertHierarchyToApiFormat = (employeeData, hierarchyData) => {
+    const getNameParts = (fullName) => {
+      if (!fullName) return { first_name: "", last_name: "" };
+      const parts = fullName.split(" ");
+      if (parts.length === 1) return { first_name: parts[0], last_name: "" };
+      const lastName = parts[parts.length - 1];
+      const firstName = parts.slice(0, parts.length - 1).join(" ");
+      return { first_name: firstName, last_name: lastName };
     };
 
-    // First, let's create a flattened array of the reporting chain (from employee up to CEO)
-    const reportingChain = [];
-    let currentPerson = reportingData;
-
-    // Create a map to store team member information by their manager's ID
-    const teamMembersByManager = {};
-
-    // If the current person has team members, store them by direct report ID
-    if (currentPerson.team_members && currentPerson.team_members.length > 0) {
-      currentPerson.team_members.forEach((member) => {
-        const directReportId = member.direct_report;
-        if (directReportId) {
-          if (!teamMembersByManager[directReportId]) {
-            teamMembersByManager[directReportId] = [];
-          }
-          teamMembersByManager[directReportId].push(member);
-        }
-      });
-    }
-
-    // Build the reporting chain
-    while (currentPerson) {
-      reportingChain.push({
-        id: currentPerson.id.toString(),
-        first_name: currentPerson.first_name,
-        last_name: currentPerson.last_name,
-        designation_name: currentPerson.designation_name,
-        profile_picture: currentPerson.profile_picture,
-      });
-      currentPerson = currentPerson.reporting_manager;
-    }
-
-    // Reverse the array to have CEO at the top (index 0)
-    reportingChain.reverse();
-
-    // Now construct the tree structure (CEO → Manager → Employee)
-    const buildReportingTree = (index) => {
-      if (index >= reportingChain.length) return null;
-
-      const person = reportingChain[index];
-      const personId = person.id.toString();
-
-      // Create the node for the current person in the reporting chain
-      const node = {
-        id: personId,
-        data: {
-          imageURL: person.profile_picture,
-          name: `${person.first_name} ${person.last_name}`,
-          role: person.designation_name,
-          department: "", // Not included in reporting line data
-          initials: getInitials(person.first_name, person.last_name),
-          // Store the manager ID if not at the top level
-          managerId: index > 0 ? reportingChain[index - 1].id.toString() : null,
-        },
-        children: [],
+    const createPersonNode = (personData) => {
+      if (!personData) return null;
+      const { first_name, last_name } = getNameParts(personData.name);
+      return {
+        id: personData.id.toString(),
+        first_name,
+        last_name,
+        profile_picture: personData.profile_picture,
+        designation_name: personData.designation,
+        department_name: "",
       };
-
-      // Add the next person in the chain as a child, if there is one
-      const childNode = buildReportingTree(index + 1);
-      if (childNode) {
-        node.children.push(childNode);
-      }
-
-      // Add team members who report to this person
-      if (teamMembersByManager[personId]) {
-        teamMembersByManager[personId].forEach((member) => {
-          // Skip if the team member is already in the reporting chain
-          if (
-            !reportingChain.some(
-              (p) => p.id.toString() === member.id.toString()
-            )
-          ) {
-            const teamMemberNode = {
-              id: member.id.toString(),
-              data: {
-                imageURL: member.profile_picture,
-                name: `${member.first_name} ${member.last_name}`,
-                role: member.designation_name,
-                department: "",
-                initials: getInitials(member.first_name, member.last_name),
-                managerId: personId,
-              },
-              children: [], // Team members typically don't have children in this view
-            };
-
-            node.children.push(teamMemberNode);
-          }
-        });
-      }
-
-      return node;
     };
 
-    // Build the tree starting from the CEO (index 0)
-    return buildReportingTree(0);
+    const processDirectReports = (reports) => {
+      if (!reports || !reports.length) return [];
+
+      return reports.map((report) => {
+        const node = createPersonNode(report);
+        if (report.direct_reports && report.direct_reports.length > 0) {
+          node.subordinates = processDirectReports(report.direct_reports);
+        } else {
+          node.subordinates = [];
+        }
+        return node;
+      });
+    };
+
+    const processTeamMembers = (members, currentEmployeeId) => {
+      if (!members || !members.length) return [];
+
+      return members
+        .filter(
+          (member) => member.id.toString() !== currentEmployeeId.toString()
+        )
+        .map((member) => {
+          const node = createPersonNode(member);
+          node.subordinates = [];
+          return node;
+        });
+    };
+
+    const employeeNode = createPersonNode(employeeData);
+
+    if (!hierarchyData.manager) {
+      employeeNode.subordinates = processDirectReports(
+        hierarchyData.direct_reports || []
+      );
+      return employeeNode;
+    } else {
+      const managerNode = createPersonNode(hierarchyData.manager);
+      managerNode.subordinates = [];
+
+      const teamMemberNodes = processTeamMembers(
+        hierarchyData.team_members,
+        employeeData.id
+      );
+
+      const allSubordinates = [
+        {
+          ...employeeNode,
+          subordinates: processDirectReports(
+            hierarchyData.direct_reports || []
+          ),
+        },
+        ...teamMemberNodes,
+      ];
+
+      managerNode.subordinates = allSubordinates;
+
+      return managerNode;
+    }
   };
-  // Initialize data
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         if (viewMode === "organization") {
           if (initialData) {
-            // If initial data is provided, use it
             const transformedData = transformApiData(initialData.results[0]);
             setOrganizationData(transformedData);
 
-            // Initialize expanded state for the root node only
             if (transformedData) {
               setExpandedNodes({ [transformedData.id]: true });
             }
           } else {
-            // Otherwise fetch from API
             const organizationTree = await getOrganizationTree();
             console.log(organizationTree, "organizationTree");
 
-            // Transform the first result (assuming structure matches what we expect)
             if (
               organizationTree &&
               organizationTree.results &&
@@ -196,7 +164,6 @@ const OrganizationalChart = ({ initialData = null }) => {
               );
               setOrganizationData(transformedData);
 
-              // Initialize expanded state for the root node only
               if (transformedData) {
                 setExpandedNodes({ [transformedData.id]: true });
               }
@@ -208,21 +175,20 @@ const OrganizationalChart = ({ initialData = null }) => {
             }
           }
         } else if (viewMode === "reporting" && userProfile && userProfile.id) {
-          // Fetch reporting line data for the current user
           const reportingLineData = await getEmployeeReportingLine(
             userProfile.id
           );
           console.log("Reporting line data:", reportingLineData);
 
-          // Transform the reporting line data
-          if (reportingLineData) {
-            // For the reporting line view, we start with the employee and then show their managers
-            // We need to reverse the chain to show the hierarchy from top to bottom
-            const transformedData =
-              transformReportingLineData(reportingLineData);
+          if (reportingLineData && reportingLineData.employee_data) {
+            const convertedData = convertHierarchyToApiFormat(
+              reportingLineData.employee_data,
+              reportingLineData.hierarchy
+            );
+
+            const transformedData = transformApiData(convertedData);
             setOrganizationData(transformedData);
 
-            // Initialize expanded state for the root node only
             if (transformedData) {
               setExpandedNodes({ [transformedData.id]: true });
             }
@@ -243,11 +209,9 @@ const OrganizationalChart = ({ initialData = null }) => {
     fetchData();
   }, [initialData, viewMode, userProfile]);
 
-  // Function to handle view mode change
   const handleViewModeChange = (newMode) => {
     setViewMode(newMode);
-    setExpandedNodes({}); // Reset expanded nodes when changing view mode
-    // Data will be fetched by the useEffect
+    setExpandedNodes({});
   };
 
   const toggleNodeExpansion = (nodeId, e, parentId = null) => {
@@ -256,25 +220,18 @@ const OrganizationalChart = ({ initialData = null }) => {
     setExpandedNodes((prev) => {
       const newExpandedNodes = { ...prev };
 
-      // If we're expanding this node (it was previously collapsed)
       if (!prev[nodeId]) {
-        // If we have a parent ID, we need to find and close siblings
         if (parentId) {
-          // Find all expanded nodes that share the same parent
-          // We'll get all node IDs from organizationData
           const closeNodesWithSameParent = (nodes, targetParentId) => {
             if (!nodes) return;
 
             nodes.forEach((node) => {
-              // If this node has the target parent and is currently expanded, close it
-              // But don't close the node we're trying to expand
               if (
                 node.data?.managerId === targetParentId &&
                 node.id !== nodeId
               ) {
                 delete newExpandedNodes[node.id];
 
-                // Also close any children of this node that might be expanded
                 const closeChildrenRecursively = (childNodes) => {
                   if (!childNodes) return;
                   childNodes.forEach((child) => {
@@ -288,7 +245,6 @@ const OrganizationalChart = ({ initialData = null }) => {
             });
           };
 
-          // Find the parent node in the tree and close its children except the one being expanded
           const findParentAndCloseSiblings = (nodes) => {
             if (!nodes) return;
 
@@ -298,7 +254,6 @@ const OrganizationalChart = ({ initialData = null }) => {
                 return true;
               }
 
-              // Recursively search deeper in the tree
               if (node.children && findParentAndCloseSiblings(node.children)) {
                 return true;
               }
@@ -307,20 +262,17 @@ const OrganizationalChart = ({ initialData = null }) => {
             return false;
           };
 
-          // Start the search from the root of the tree
           if (organizationData) {
             findParentAndCloseSiblings([organizationData]);
           }
         }
       }
 
-      // Toggle the current node
       newExpandedNodes[nodeId] = !prev[nodeId];
       return newExpandedNodes;
     });
   };
 
-  // Modified renderOrganizationNode function to pass parent ID
   const renderOrganizationNode = (node) => {
     if (!node) return null;
 
@@ -346,7 +298,6 @@ const OrganizationalChart = ({ initialData = null }) => {
                     alt={node.data.name}
                   />
 
-                  {/* Expand/collapse indicator for nodes with children */}
                   {hasChildren && (
                     <div
                       className="expand-toggle"
@@ -376,24 +327,18 @@ const OrganizationalChart = ({ initialData = null }) => {
           </Tooltip>
         </TooltipProvider>
 
-        {/* Only render children if the node is expanded */}
         {node.children && node.children.length > 0 && isExpanded && (
           <>
-            {/* Connector stem from parent to children */}
             <div className="connector-stem"></div>
 
-            {/* Container for children with connector lines */}
             <div className="children-container">
-              {/* Horizontal connector line */}
               {node.children.length > 1 && (
                 <div className="connector-horizontal"></div>
               )}
 
-              {/* Children nodes */}
               <div className="org-node-children">
                 {node.children.map((child) => (
                   <div key={child.id} className="child-wrapper">
-                    {/* Vertical connector to child */}
                     <div className="connector-vertical"></div>
                     {renderOrganizationNode(child)}
                   </div>
@@ -405,7 +350,7 @@ const OrganizationalChart = ({ initialData = null }) => {
       </div>
     );
   };
-  // Loading state
+
   if (loading) {
     return <PageLoader />;
   }
@@ -415,7 +360,6 @@ const OrganizationalChart = ({ initialData = null }) => {
       <div className="mb-4">
         <h1 className="text-xl font-bold mb-2">Organizational Chart</h1>
         <div className="flex justify-start gap-4 mb-4">
-          {/* View Mode Tabs */}
           <div className="flex space-x-2">
             {viewModeTabsData.map((tab) => (
               <button
@@ -451,7 +395,6 @@ const OrganizationalChart = ({ initialData = null }) => {
         </div>
       </div>
 
-      {/* Styling for the organization chart */}
       <style jsx global>{`
         .org-node-container {
           display: flex;
@@ -494,7 +437,6 @@ const OrganizationalChart = ({ initialData = null }) => {
         .org-node-children {
           display: flex;
           flex-direction: row;
-          /* margin-top: 15px; */
           gap: 25px;
           position: relative;
         }
