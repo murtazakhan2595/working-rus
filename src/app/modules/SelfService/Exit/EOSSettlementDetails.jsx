@@ -282,10 +282,10 @@ const EOSSettlementDetails = ({ userProfile }) => {
                   <h3 className="mb-2 text-sm font-medium text-neutral-900">Department</h3>
                   <p className="text-base font-medium">
                     {typeof settlement.department === 'string' && isNaN(parseInt(settlement.department))
-                      ? settlement.department 
+                      ? (settlement.department === 'Department' ? settlement.department_name || 'Unknown' : settlement.department)
                       : typeof settlement.department === 'number' || 
                         (typeof settlement.department === 'string' && !isNaN(parseInt(settlement.department)))
-                        ? <DepartmentName value={settlement.department} debug={true} /> 
+                        ? <DepartmentName value={settlement.department} debug={false} /> 
                         : settlement.department_name || 'N/A'}
                   </p>
                 </div>
