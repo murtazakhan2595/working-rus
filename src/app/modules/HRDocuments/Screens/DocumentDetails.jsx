@@ -18,6 +18,7 @@ import {
   EmployeeOverview,
 } from "components";
 import { renderDate } from "utils/renderValues";
+import { TextInput } from "components/FormControl";
 
 const DocumentDetails = ({
   documentID = null,
@@ -31,6 +32,7 @@ const DocumentDetails = ({
   const [DocumentAssignees, setDocumentAssignees] = useState([]);
   const [currentDocumentId, setCurrentDocumentId] = useState(documentID);
   const [OpenSignationForm, setOpenSignationForm] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchData = async (isMounted, documentId) => {
     try {
@@ -145,6 +147,14 @@ const DocumentDetails = ({
         ]
       : []),
   ].filter(Boolean);
+
+  // Filter employee based on search
+  const FilterDocumentAssignees = React.useMemo(() => {
+    return DocumentAssignees?.filter((documentAssignee) =>
+      documentAssignee.assigned_to_name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [DocumentAssignees, searchQuery]);
+  console.log(DocumentAssignees);
   return (
     <>
       <ViewDetailSheetCardExtension
@@ -216,6 +226,12 @@ const DocumentDetails = ({
               )}
             </div>
           </section>
+          <section className="mt-5">
+            <AttachmentUI
+              attachment={currentDocument.file}
+              viewOnly={true}
+            />
+          </section>
           <section>
             <div className="mt-6">
               <SheetCardExtension title="Document Details">
@@ -233,28 +249,30 @@ const DocumentDetails = ({
                         />
                       );
                     })}
-                  <DetailBox
-                    orientation="horizontal"
-                    className=""
-                    label={"Description"}
-                    value={currentDocument.description}
-                    fallbackText={""}
-                  />
                 </div>
+                <DetailBox
+                  orientation="horizontal"
+                  className=""
+                  label={"Description"}
+                  value={currentDocument.description}
+                  fallbackText={""}
+                />
               </SheetCardExtension>
             </div>
           </section>
+
           <section>
-            <AttachmentUI
-              attachment={currentDocument.file}
-              name={`${currentDocument?.file} - Document`}
-              viewOnly={true}
-            />
-          </section>
-          <section>
-            <div className="mt-6">
+            <div className="mt-6 mb-4">
               <SheetCardExtension title="Document Assignees">
-                {DocumentAssignees?.map((assignee, index) => {
+                <TextInput
+                  name="search"
+                  placeholder="Search Employee"
+                  onChange={(_, value) => {
+                    setSearchQuery(value);
+                  }}
+                  value={searchQuery}
+                />
+                {FilterDocumentAssignees?.map((assignee, index) => {
                   return (
                     <div key={index} className="flex flex-row justify-between">
                       <EmployeeOverview

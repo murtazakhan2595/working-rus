@@ -40,7 +40,7 @@ import Config from "constants/config";
 export function getMenuList(pathname, userRole) {
   const userRolesMap = {
     isPeopleTeam: userRole === 1 || userRole === 3,
-    isTeamManagement: userRole === 2,
+    isTeamManagement: userRole === 2 || userRole === 1 || userRole === 3,
     isOfficeSetting: userRole === 1 || userRole === 3,
     isSelfServiceHub:
       userRole === 1 || userRole === 2 || userRole === 3 || userRole === 4,
@@ -116,12 +116,14 @@ export function getMenuList(pathname, userRole) {
           createMenu("/team-profile-management", "Team Profile"),
         // createMenu("/settings", "Profile Settings"),
         // createMenu("/travel-details", "Travel Details"),
-        Config.EMPLOYEE_OFFBOARDING &&
-          createMenu("/exit-clearance", "Exit & Clearance"),
+        // Config.EMPLOYEE_OFFBOARDING &&
+        //   createMenu("/team-exit-clearance", "Exit & Clearance"),
         // createMenu("/edit-employee", "Customize Employee"),
         // createMenu("/relocation", "Relocation"),
-        Config.TRANSFER_MANAGEMENT &&
-          createMenu("/employee-tranfer", "Employee Transfer"),
+        // Config.TRANSFER_MANAGEMENT &&
+        //   createMenu("/employee-tranfer", "Employee Transfer"),
+        Config.LEAVE_MANAGMENT &&
+          createMenu("/team-leave-request", "Leave Request"),
       ].filter(Boolean)
     ),
   ];
@@ -178,7 +180,9 @@ export function getMenuList(pathname, userRole) {
         ? [createMenu("/on-hold-salaries", "On-Hold Salaries")]
         : []),
       // Add the EOS menu item for HR/Payroll officers (userRole 1 or 3)
-      ...(userRole === 1 || userRole === 3 ? [createMenu("/payroll/eos", "End of Service")] : []),
+      ...(userRole === 1 || userRole === 3
+        ? [createMenu("/payroll/eos", "End of Service")]
+        : []),
       // createMenu("/salary-setup", "Salary Setup"),
       // createMenu("/loans", "Loans"),
       // createMenu("/pay-run", "Pay Run"),
@@ -234,7 +238,10 @@ export function getMenuList(pathname, userRole) {
       "",
       "Assets Management",
       Laptop,
-      [createMenu("/assets", "Assets"), createMenu("/request-and-assign", "Request and Assign")],
+      [
+        createMenu("/assets", "Assets"),
+        createMenu("/request-and-assign", "Request and Assign"),
+      ],
       pathname === "/assets"
     ),
   ];

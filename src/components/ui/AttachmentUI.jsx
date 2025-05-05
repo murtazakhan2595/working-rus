@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { imageFileType } from "app/utils/Types/General";
 import ImageDocPreview from "components/ui/ImageDocPreview";
+import { getFileNameFromURL } from "utils/downloadUtils";
 
 export default function AttachmentUI({
   attachment,
@@ -14,6 +15,10 @@ export default function AttachmentUI({
   viewOnly = false,
 }) {
   const [viewAttachment, setViewAttachment] = useState(false);
+  const FileName = React.useMemo(() => {
+    return name ? name : attachment ? getFileNameFromURL(attachment) : null;
+  }, [name, attachment]);
+  console.log(FileName, name,attachment, "FileNameFileNameFileName");
   if (!attachment) return null;
 
   const getFileType = (file) => {
@@ -41,7 +46,7 @@ export default function AttachmentUI({
             {imageFileType.includes(fileType) ? (
               <img
                 src={fileURL}
-                alt={name || "Attachment"}
+                alt={FileName || "Attachment"}
                 className="w-9 h-9"
               />
             ) : (
@@ -58,7 +63,7 @@ export default function AttachmentUI({
               }}
               className="hover:text-gray-700"
             >
-              {name || "Attachment"}
+              {FileName || "Attachment"}
             </span>
           </span>
         </div>
@@ -90,7 +95,7 @@ export default function AttachmentUI({
       {viewAttachment && (
         <ImageDocPreview
           attachment={attachment}
-          name={name}
+          name={FileName || "Attachment"}
           isOpen={viewAttachment}
           setIsOpen={setViewAttachment}
         />

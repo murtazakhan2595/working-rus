@@ -22,6 +22,7 @@ const ViewLeaveSheet = ({
   isMyLeave,
   onClose,
   reload,
+  isTeamView = false,
 }) => {
   const [attachment, setAttachment] = useState(null);
   useEffect(() => {
@@ -39,9 +40,10 @@ const ViewLeaveSheet = ({
     fetchData();
   }, []);
   const userProfile = useSelector((state) => state.user.userProfile);
+  const userRole = isTeamView ? 2 : userProfile.role;
   const showButtons =
-    (userProfile.role === 2 && leaveApplication.action_manager === "Pending") ||
-    (userProfile.role === 3 && leaveApplication.action_hr === "Pending");
+    (userRole === 2 && leaveApplication.action_manager === "Pending") ||
+    (userRole === 3 && leaveApplication.action_hr === "Pending");
 
   const detailItems = [
     {
@@ -94,16 +96,16 @@ const ViewLeaveSheet = ({
   const handleStatusChange = async (status) => {
     console.log("handle status change", status, leaveApplication);
     if (
-      (userProfile.role === 2 &&
+      (userRole === 2 &&
         leaveApplication.action_manager !== "Pending") ||
-      (userProfile.role === 3 && leaveApplication.action_hr !== "Pending")
+      (userRole === 3 && leaveApplication.action_hr !== "Pending")
     ) {
       return;
     }
-    if (userProfile.role === 3 || userProfile.role === 1) {
+    if (userRole === 3 || userRole === 1) {
       leaveApplication.action_hr = status;
     }
-    if (userProfile.role === 2) {
+    if (userRole === 2) {
       leaveApplication.action_manager = status;
     }
     const response = await saveLeaveTransaction(leaveApplication);

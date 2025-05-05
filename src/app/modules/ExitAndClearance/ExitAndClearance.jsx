@@ -27,7 +27,7 @@ import useEOSSettlement from "../../hooks/useEOSSettlement";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDepartments, setDepartments } from "state/slices/CommonSlice";
 import axios from "axios";
-import { initialState as userInitialState } from 'state/slices/UserSlice';
+import { initialState as userInitialState } from "state/slices/UserSlice";
 
 // Get baseUrl from user initial state
 const baseUrl = userInitialState.baseUrl;
@@ -43,18 +43,18 @@ const fetchDepartmentsDirectly = async (organizationId) => {
   try {
     const response = await axios.get(`${baseUrl}/department/`, {
       headers: headers(),
-      params: { 
-        ordering: 'created_at',
-        organization: organizationId 
-      }
+      params: {
+        ordering: "created_at",
+        organization: organizationId,
+      },
     });
-    
+
     if (response.data && response.data.results) {
-      return response.data.results.map(dept => ({
+      return response.data.results.map((dept) => ({
         id: dept.id,
         value: dept.id,
         name: dept.name,
-        label: dept.name
+        label: dept.name,
       }));
     }
     return [];
@@ -64,7 +64,7 @@ const fetchDepartmentsDirectly = async (organizationId) => {
   }
 };
 
-const ExitAndClearance = ({ userProfile, departments }) => {
+const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
   const [activeTab, setActiveTab] = useState("Exit Requests");
   const [activeInnerTab, setActiveInnerTab] = useState("Terminations");
   const [totalExit, setTotalExit] = useState(0);
@@ -75,7 +75,9 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   const [filterData, setFilterData] = useState({
     exit_category: "termination",
     status_termination: StatusList(false),
-    ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
+    ...(userProfile.role === 2 || isTeamView
+      ? { reporting_to: userProfile.id }
+      : {}),
   });
   const [filterInnerData, setFilterInnerData] = useState({});
   const [reloadCounter, setReloadCounter] = useState(0);
@@ -93,9 +95,14 @@ const ExitAndClearance = ({ userProfile, departments }) => {
       const loadDepartments = async () => {
         try {
           // First try direct API call
-          const departmentsFromAPI = await fetchDepartmentsDirectly(organizationId);
+          const departmentsFromAPI = await fetchDepartmentsDirectly(
+            organizationId
+          );
           if (departmentsFromAPI && departmentsFromAPI.length > 0) {
-            console.log("Departments fetched for Exit Management:", departmentsFromAPI.length);
+            console.log(
+              "Departments fetched for Exit Management:",
+              departmentsFromAPI.length
+            );
             dispatch(setDepartments(departmentsFromAPI));
           } else {
             // Fallback to redux action
@@ -107,7 +114,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
           dispatch(fetchDepartments());
         }
       };
-      
+
       loadDepartments();
     }
   }, [organizationId, dispatch]);
@@ -115,7 +122,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   const fetchData = async () => {
     try {
       const response = await getEmployeesExitCount(
-        userProfile.role === 2
+        userProfile.role === 2 || isTeamView
           ? { filterData: { reporting_to: userProfile.id } }
           : {},
         activeTab,
@@ -133,7 +140,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   };
   useEffect(() => {
     fetchData();
-  }, [activeTab, activeInnerTab]);
+  }, [activeTab, activeInnerTab, isTeamView]);
 
   const closeRequestTerminationCard = () => {
     fetchData();
@@ -166,24 +173,32 @@ const ExitAndClearance = ({ userProfile, departments }) => {
     if (tab === "Resignations" || tab === "Exit Requests") {
       setFilterData({
         status_resignation: StatusList(),
-        ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
+        ...(userProfile.role === 2 || isTeamView
+          ? { reporting_to: userProfile.id }
+          : {}),
         exit_category: "resignation",
       });
     } else if (tab === "Terminations") {
       setFilterData({
         status_termination: StatusList(false),
-        ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
+        ...(userProfile.role === 2 || isTeamView
+          ? { reporting_to: userProfile.id }
+          : {}),
         exit_category: "termination",
       });
     } else if (tab === "Resigned" || tab === "Exit Records") {
       setFilterData({
-        ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
+        ...(userProfile.role === 2 || isTeamView
+          ? { reporting_to: userProfile.id }
+          : {}),
         exit_category: "resignation",
         status_resignation: "exit interview",
       });
     } else if (tab === "Terminated") {
       setFilterData({
-        ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
+        ...(userProfile.role === 2 || isTeamView
+          ? { reporting_to: userProfile.id }
+          : {}),
         exit_category: "termination",
         status_termination: "exit interview",
       });
@@ -221,7 +236,7 @@ const ExitAndClearance = ({ userProfile, departments }) => {
           ) : null
         }
       />
-      <Stats stats={statsData} />
+      {!isTeamView && <Stats stats={statsData} />}
       <Tabs
         defaultValue="Exit Requests"
         className="w-full"

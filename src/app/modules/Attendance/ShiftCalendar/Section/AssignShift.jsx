@@ -221,24 +221,32 @@ const AssignShift = ({ employees }) => {
                   </Button>
                 </div>
               </div>
+              {addShift && (
+                <ShiftAction
+                  isOpen={addShift}
+                  setIsOpen={setAddShift}
+                  reload={getShiftList}
+                  setEmployeeShift={(value) => {
+                    props.setFieldValue("shift_assignment", parseInt(value));
+                    setShiftSelect(true);
+                  }}
+                />
+              )}
             </form>
           )}
         </Formik>
       </SheetComponent>
-
-      {addShift && (
-        <ShiftAction
-          isOpen={addShift}
-          setIsOpen={setAddShift}
-          reload={getShiftList}
-        />
-      )}
     </>
   );
 };
 
 // ShiftAction component
-const ShiftAction = ({ isOpen, setIsOpen, reload }) => {
+const ShiftAction = ({
+  isOpen,
+  setIsOpen,
+  reload,
+  setEmployeeShift = () => {},
+}) => {
   const formSheetData = {
     triggerText: null,
     title: "Add Shift Details",
@@ -259,6 +267,7 @@ const ShiftAction = ({ isOpen, setIsOpen, reload }) => {
           reload();
           setIsOpen(value);
         }}
+        setEmployeeShift={setEmployeeShift}
       />
     </SheetComponent>
   );

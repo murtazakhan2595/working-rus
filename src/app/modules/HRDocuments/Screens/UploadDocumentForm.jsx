@@ -185,12 +185,18 @@ const UploadDocumentForm = ({
                 label: "Expiration Date",
               },
               {
+                InputField: DateInput,
+                name: "due_date",
+                label: "Due Date",
+              },
+              {
                 InputField: TextAreaInput,
                 name: "description",
                 required: true,
                 label: "Note",
                 colsSpan: 2,
                 maxRows: 5,
+                maxLength: 1000,
               },
               {
                 InputField: CoverFileUpload,

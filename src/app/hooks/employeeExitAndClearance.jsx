@@ -45,7 +45,7 @@ const getEmployeesExitCount = async (payload, activeTab, activeInnerTab) => {
     
       
       // Extract and log the counts
-      const totalExit = resignationData?.total_exit || 0;
+      const totalExit = response.data.count || 0;
       const approvedTermination = resignationData?.approved_termination || 0;
       const approvedResignation = resignationData?.approved_resignation || 0;
       const rejectedTermination = resignationData?.rejected_termination || 0;

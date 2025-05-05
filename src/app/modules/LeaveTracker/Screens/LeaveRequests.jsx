@@ -1,10 +1,6 @@
 import { Button } from "components/ui/button";
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
- 
-} from "../../../../components/ui/card";
+import { Card, CardContent } from "../../../../components/ui/card";
 import { FilterInput } from "components/FormControl";
 import CustomTable from "components/CustomTable";
 import { connect } from "react-redux";
@@ -22,7 +18,8 @@ import { Header } from "components";
 import Stats from "../../../../components/ui/Stats";
 import { UserRoundCheck, UsersRound } from "lucide-react";
 
-const LeaveRequests = ({ userProfile, departments }) => {
+const LeaveRequests = ({ userProfile, departments, isTeamView = false }) => {
+  const userRole = isTeamView ? 2 : userProfile.role;
   const [selectedLeaveApplication, setSelectedLeaveApplication] =
     useState(null);
   const [filterData, setFilterData] = useState({});
@@ -57,7 +54,6 @@ const LeaveRequests = ({ userProfile, departments }) => {
     { label: "Accepted Requests", value: 0, icon: UserRoundCheck },
   ]);
 
-  
   const fetchData = async () => {
     setLoading(true);
     const statsData = await getLeavestats({});
@@ -66,17 +62,17 @@ const LeaveRequests = ({ userProfile, departments }) => {
         {
           label: "Total Applications",
           value: statsData?.total_applications,
-          icon: UsersRound
+          icon: UsersRound,
         },
         {
           label: "Pending Requests",
           value: statsData?.pending_applications,
-          icon: UserRoundCheck
+          icon: UserRoundCheck,
         },
         {
           label: "Accepted Requests",
           value: statsData?.accepted_applications,
-          icon: UserRoundCheck
+          icon: UserRoundCheck,
         },
       ]);
     }
@@ -90,7 +86,7 @@ const LeaveRequests = ({ userProfile, departments }) => {
   const fetchLeaveTransaction = async () => {
     setIsLeaveTransactionLoading(true);
     let filter = {};
-    if (userProfile.role === 2) {
+    if (userRole === 2) {
       filter = { managers: userProfile.id, ...filterData };
     } else {
       filter = { ...filterData };
@@ -113,11 +109,10 @@ const LeaveRequests = ({ userProfile, departments }) => {
   }, [filterData, options]);
 
   const handleFilterChange = (filterName, filterValue) => {
-    
     onPageChange("page", 1);
     if (filterName === "departmentt") setSelectedDepartment(filterValue);
     if (filterName === "status") setSelectedStatus(filterValue);
-    if (filterName === "leave_component_id") setSelectedLeaveType(filterValue); 
+    if (filterName === "leave_component_id") setSelectedLeaveType(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
 
@@ -164,7 +159,7 @@ const LeaveRequests = ({ userProfile, departments }) => {
                   width: "max-w-[130px]",
                   placeholder: "Department",
                   values: selectedDepartment,
-                  value: selectedDepartment
+                  value: selectedDepartment,
                 },
                 {
                   type: "select-two",
@@ -173,7 +168,7 @@ const LeaveRequests = ({ userProfile, departments }) => {
                   width: "max-w-[130px]",
                   placeholder: "Status",
                   values: selectedStatus,
-                  value: selectedStatus
+                  value: selectedStatus,
                 },
                 {
                   type: "select-three",
@@ -185,7 +180,7 @@ const LeaveRequests = ({ userProfile, departments }) => {
                   name: "leave_component_id",
                   placeholder: "Leave Type",
                   values: selectedLeaveType,
-                  value: selectedLeaveType
+                  value: selectedLeaveType,
                 },
               ]}
               onChange={handleFilterChange}
@@ -212,6 +207,7 @@ const LeaveRequests = ({ userProfile, departments }) => {
               isOpen={isOpen}
               setIsOpen={setIsOpen}
               isMyLeave={false}
+              isTeamView={isTeamView}
               reload={fetchData}
               onClose={() => {
                 setIsOpen(false);

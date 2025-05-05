@@ -28,8 +28,8 @@ export const downloadFiles = async (file, name) => {
 
 export const getFileNameFromURL = (url) => {
   if (!url) return null;
-  const parts = url.split("/");
-  const name = parts[parts.length - 1];
+  const parts = url?.split("/");
+  const name = parts.length ? parts[parts.length - 1] : null;
   return name && typeof name === "string"
     ? name.replace(/_/g, " ")
     : "Attachment Document";
@@ -83,9 +83,7 @@ export const exportRecordToExcel = (
   const columnWidths = Object.keys(dataToExport[0]).map((key) => {
     const maxLength = Math.max(
       key.length,
-      ...dataToExport.map((row) =>
-        row[key] ? String(row[key]).length : 0
-      )
+      ...dataToExport.map((row) => (row[key] ? String(row[key]).length : 0))
     );
     return { wch: maxLength + 2 }; // Adding 2 for padding
   });
@@ -109,7 +107,6 @@ export const exportRecordToExcel = (
 
   saveAs(dataBlob, fileName);
 };
-
 
 export const exportRecordToCSV = (
   dataToExport,
@@ -150,8 +147,6 @@ export const exportRecordToCSV = (
   saveAs(csvBlob, fileName);
 };
 
-
-
 export const exportRecordToPDF = (
   dataToExport,
   module = "Company Record",
@@ -174,7 +169,9 @@ export const exportRecordToPDF = (
 
   // Convert data to rows for PDF
   const dataRows = dataToExport.map((row) =>
-    headers.map((key) => (row[key] !== null && row[key] !== undefined ? row[key] : ""))
+    headers.map((key) =>
+      row[key] !== null && row[key] !== undefined ? row[key] : ""
+    )
   );
 
   // Title
@@ -203,4 +200,3 @@ export const exportRecordToPDF = (
   // Save PDF
   doc.save(fileName);
 };
-

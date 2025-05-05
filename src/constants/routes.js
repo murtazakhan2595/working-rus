@@ -363,6 +363,11 @@ const SidebarRoutes = [
     name: "Leave Request",
   },
   Config.LEAVE_MANAGMENT && {
+    path: "/team-leave-request",
+    component: <LeaveRequests isTeamView={true} />,
+    name: "Leave Request",
+  },
+  Config.LEAVE_MANAGMENT && {
     path: "/leave-records",
     component: <LeaveTracker />,
     name: "Leave Records",
@@ -385,6 +390,11 @@ const SidebarRoutes = [
   Config.EMPLOYEE_OFFBOARDING && {
     path: "/exit-clearance",
     component: <ExitAndClearance />,
+    name: "Exit Clearance",
+  },
+  Config.EMPLOYEE_OFFBOARDING && {
+    path: "/team-exit-clearance",
+    component: <ExitAndClearance isTeamView={true} />,
     name: "Exit Clearance",
   },
   {
