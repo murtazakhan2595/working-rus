@@ -15,43 +15,37 @@ import { useSelector } from "react-redux";
 
 const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrganization }) => {
   const [closeSheet, setCloseSheet] = useState(false);
-  const [formData, setFormData] = useState(edit?.data || DesignationInfo);
-  const [organization, setOrganization] = useState([]);
-  const formikRef = useRef(null);
+  const isEditMode = Boolean(edit?.data);
   
   // Get user details from Redux store to access organization ID
   const userDetails = useSelector((state) => state.emp?.user_details);
   const userOrganizationId = userDetails?.organization_id || userDetails?.organization;
 
-  // Update formData when edit data changes
+  // Initialize form data with designation values if in edit mode
+  const [formData, setFormData] = useState({
+    ...DesignationInfo,
+    ...(edit?.data || {}),
+  });
+
+  // Log when component mounts and when edit data changes
   useEffect(() => {
+    console.log("AddDesignationForm mounted, isEditMode:", isEditMode);
+    console.log("Initial edit data:", edit?.data);
+    
     if (edit?.data) {
-      setFormData(edit.data);
-      // If Formik is initialized, update its values
-      if (formikRef.current) {
-        formikRef.current.setValues(edit.data);
-      }
+      console.log("Setting form data with edit data:", edit.data);
+      setFormData({
+        ...DesignationInfo,
+        ...(edit.data || {}),
+      });
     }
-  }, [edit?.data]);
-
-  useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        const response = await getOrganizationList();
-        setOrganization(response);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchLists();
-  }, []);
+  }, [edit?.data, isEditMode]);
 
   const handleClose = () => {
     setCloseSheet(true);
   };
 
-  // Form validation without Yup
+  // Form validation
   const validateForm = (values) => {
     const errors = {};
     
@@ -75,36 +69,57 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrga
   };
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+    console.log("Submit button clicked");
+    console.log("Is edit mode:", isEditMode);
+    console.log("Form values:", values);
+    console.log("Edit data:", edit?.data);
+    
     try {
       // Add organization ID to the payload
       const payload = {
-        ...values,
+        name: values.name,
+        description: values.description,
         organization: userOrganizationId || userOrganization
       };
       
-      console.log("Submitting payload:", payload);
+      // For update operations, get the ID from edit.data
+      const designationId = isEditMode ? edit.data.id : null;
       
-      const response = await saveDesignation(values?.id, payload);
+      console.log("Submitting payload:", payload);
+      console.log("Designation ID for API call:", designationId);
+      console.log("API URL will be:", designationId ? 
+        `PATCH /designation/${designationId}` : 
+        "POST /designation/");
+      
+      const response = await saveDesignation(designationId, payload);
+      console.log("API Response:", response);
+      
       if (response) {
         toast.success(
-          `Designation ${edit?.data ? "Updated" : "Added"} Successfully!`,
+          `Designation ${isEditMode ? "Updated" : "Added"} Successfully!`,
           {
             position: toast.POSITION.TOP_RIGHT,
           }
         );
+        // Ensure table is reloaded by calling reload function
         if (typeof reload === 'function') {
-          // Ensure reload is called
+          console.log("Calling reload function");
           reload();
+        } else {
+          console.warn("Reload is not a function:", reload);
         }
         setIsOpen(false);
       } else {
         // Handle API error response
+        console.error("API returned falsy response:", response);
         toast.error("Failed to save designation. Please try again.", {
           position: toast.POSITION.TOP_RIGHT,
         });
       }
     } catch (error) {
-      console.log("ERROR", error);
+      console.log("API call error:", error);
+      console.log("Error response data:", error.response?.data);
+      
       // Set form errors if they come from the API
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
@@ -112,7 +127,8 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrga
         // Handle Django REST framework error format
         setErrors(error.response.data);
       }
-      toast.error("An error occurred while saving designation", {
+      const errorMessage = error?.response?.data?.message || `Failed to ${isEditMode ? "update" : "add"} designation.`;
+      toast.error(errorMessage, {
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
@@ -133,24 +149,11 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrga
         validate={validateForm}
         validateOnChange={true}
         validateOnBlur={true}
-        enableReinitialize={true} 
-        innerRef={formikRef}
+        enableReinitialize={true}
       >
         {(props) => (
           <form onSubmit={props?.handleSubmit}>
-            <SheetCardExtension title="Designation Details">
-              {/* <SelectInputComponent
-                name={"organization"}
-                options={organization}
-                error={props.errors.organization}
-                touch={props.touched.organization}
-                value={props.values.organization}
-                label={"Organization"}
-                required
-                onChange={(field, value) => {
-                  props.setFieldValue(field, value);
-                }}
-              /> */}
+            <SheetCardExtension title={`${isEditMode ? 'Edit' : 'Add'} Designation`}>
               <TextInput
                 name="name"
                 label="Designation"
@@ -159,7 +162,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrga
                 touch={props.touched.name}
                 value={props.values.name}
                 onChange={(field, value) => {
-                  props.handleChange(field)(value);
+                  props.setFieldValue(field, value);
                 }}
                 onBlur={props.handleBlur}
               />
@@ -171,7 +174,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrga
                 touch={props.touched.description}
                 value={props.values.description}
                 onChange={(field, value) => {
-                  props.handleChange(field)(value);
+                  props.setFieldValue(field, value);
                 }}
                 onBlur={props.handleBlur}
               />
@@ -191,8 +194,16 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrga
                   size="lg"
                   variant="default"
                   disabled={props.isSubmitting || !props.isValid}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    console.log("Submit button clicked manually");
+                    console.log("Current values:", props.values);
+                    console.log("isEditMode:", isEditMode);
+                    console.log("edit.data:", edit?.data);
+                    props.handleSubmit();
+                  }}
                 >
-                  {edit?.data ? "Update" : "Add"}
+                  {props.isSubmitting ? 'Saving...' : (isEditMode ? "Update" : "Add")}
                 </Button>
               </div>
             </div>
