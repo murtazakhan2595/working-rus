@@ -20,11 +20,21 @@ const EOSSettlementList = ({ userProfile, employeeId }) => {
   const navigate = useNavigate();
 
   console.log("SelfService/EOS - User Profile:", userProfile);
+  
+  // Check if user has EOS-sarly-setup
+  const hasEOSSetup = userProfile?.settings?.hasEOSSarlySetup || false;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        
+        // If user doesn't have EOS setup, don't fetch data
+        if (!hasEOSSetup) {
+          setLoading(false);
+          return;
+        }
+        
         const data = await getEOSSettlements();
         
         console.log("SelfService/EOS - All settlements:", data);
@@ -59,7 +69,7 @@ const EOSSettlementList = ({ userProfile, employeeId }) => {
     };
 
     fetchData();
-  }, [userProfile, employeeId]);
+  }, [userProfile, employeeId, hasEOSSetup]);
 
   const handleViewSettlement = (id) => {
     navigate(`/self-service/exit/eos-settlement/${id}`);
@@ -84,90 +94,102 @@ const EOSSettlementList = ({ userProfile, employeeId }) => {
       </div>
     );
   };
+  
+  // If user doesn't have EOS setup, don't render anything
+  if (!hasEOSSetup) {
+    return null;
+  }
 
   return (
     <div className="mt-4">
-      
-      <div>
-        {loading ? (
-          <PageLoader />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b bg-gray-50">
-                  <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
-                    Employee ID
-                  </th>
-                  <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
-                    Employee Name
-                  </th>
-                  <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
-                    Department
-                  </th>
-                  <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
-                    Status
-                  </th>
-                  <th className="px-4 py-3 text-sm font-medium text-center text-neutral-900">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {settlements.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="px-4 py-8 text-center text-gray-500">
-                      No EOS settlements found
-                    </td>
+      <Card>
+        <CardHeader>
+          <h2 className="text-xl font-semibold text-primary-1100">End of Service Settlement</h2>
+          <p className="text-sm text-gray-500">
+            View and manage your end of service settlements
+          </p>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <PageLoader />
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="border-b bg-gray-50">
+                    <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
+                      Employee ID
+                    </th>
+                    <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
+                      Employee Name
+                    </th>
+                    <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
+                      Department
+                    </th>
+                    <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
+                      Status
+                    </th>
+                    <th className="px-4 py-3 text-sm font-medium text-center text-neutral-900">
+                      Action
+                    </th>
                   </tr>
-                ) : (
-                  settlements.map((settlement) => {
-                    console.log("SelfService/EOS - Settlement department:", settlement.department);
-                    return (
-                      <tr 
-                        key={settlement.id} 
-                        className="border-b hover:bg-gray-50"
-                      >
-                        <td className="px-4 py-3 text-sm text-neutral-1200">
-                          {settlement.employeeId}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-neutral-1200">
-                          {settlement.employeeName}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-neutral-1200">
-                          {settlement.department}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-neutral-1200">
-                          {renderStatusBadge(settlement.status)}
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleViewSettlement(settlement.id)}
-                                  className="flex items-center justify-center w-8 h-8 p-0 text-green-600 border border-green-200 rounded-full shadow-sm bg-green-white hover:bg-green-200 hover:text-green-700"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>View</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                </thead>
+                <tbody>
+                  {settlements.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="px-4 py-8 text-center text-gray-500">
+                        No EOS settlements found
+                      </td>
+                    </tr>
+                  ) : (
+                    settlements.map((settlement) => {
+                      console.log("SelfService/EOS - Settlement department:", settlement.department);
+                      return (
+                        <tr 
+                          key={settlement.id} 
+                          className="border-b hover:bg-gray-50"
+                        >
+                          <td className="px-4 py-3 text-sm text-neutral-1200">
+                            {settlement.employeeId}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-neutral-1200">
+                            {settlement.employeeName}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-neutral-1200">
+                            {settlement.department}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-neutral-1200">
+                            {renderStatusBadge(settlement.status)}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleViewSettlement(settlement.id)}
+                                    className="flex items-center justify-center w-8 h-8 p-0 text-green-600 border border-green-200 rounded-full shadow-sm bg-green-white hover:bg-green-200 hover:text-green-700"
+                                  >
+                                    <Eye className="w-4 h-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>View</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

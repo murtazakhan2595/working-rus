@@ -24,6 +24,45 @@ import { ExitRequests } from "app/modules/ExitAndClearance/ExitRequests";
 import { ExitRecords } from "app/modules/ExitAndClearance/ExitRecords";
 import EOSSettlementList from "../SelfService/Exit/EOSSettlementList";
 import useEOSSettlement from "../../hooks/useEOSSettlement";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchDepartments, setDepartments } from "state/slices/CommonSlice";
+import axios from "axios";
+import { initialState as userInitialState } from 'state/slices/UserSlice';
+
+// Get baseUrl from user initial state
+const baseUrl = userInitialState.baseUrl;
+
+// Headers function for API requests
+const headers = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  "Content-Type": "application/json",
+});
+
+// Add function to fetch departments directly from API
+const fetchDepartmentsDirectly = async (organizationId) => {
+  try {
+    const response = await axios.get(`${baseUrl}/department/`, {
+      headers: headers(),
+      params: { 
+        ordering: 'created_at',
+        organization: organizationId 
+      }
+    });
+    
+    if (response.data && response.data.results) {
+      return response.data.results.map(dept => ({
+        id: dept.id,
+        value: dept.id,
+        name: dept.name,
+        label: dept.name
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching departments directly:", error);
+    return [];
+  }
+};
 
 const ExitAndClearance = ({ userProfile, departments }) => {
   const [activeTab, setActiveTab] = useState("Exit Requests");
@@ -33,16 +72,45 @@ const ExitAndClearance = ({ userProfile, departments }) => {
   const [rejectedResignation, setRejectedResignation] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [reloadData, setReloadData] = useState(false);
-
   const [filterData, setFilterData] = useState({
     exit_category: "termination",
     status_termination: StatusList(false),
     ...(userProfile.role === 2 ? { reporting_to: userProfile.id } : {}),
   });
+  const [filterInnerData, setFilterInnerData] = useState({});
+  const [reloadCounter, setReloadCounter] = useState(0);
+  const dispatch = useDispatch();
+  const organizationId = userProfile?.organization;
+
   const { showEOSSettlement } = useEOSSettlement(
     { id: userProfile?.employeeId, status: userProfile?.status },
     userProfile
   );
+
+  // Fetch departments on component mount
+  useEffect(() => {
+    if (organizationId) {
+      const loadDepartments = async () => {
+        try {
+          // First try direct API call
+          const departmentsFromAPI = await fetchDepartmentsDirectly(organizationId);
+          if (departmentsFromAPI && departmentsFromAPI.length > 0) {
+            console.log("Departments fetched for Exit Management:", departmentsFromAPI.length);
+            dispatch(setDepartments(departmentsFromAPI));
+          } else {
+            // Fallback to redux action
+            dispatch(fetchDepartments());
+          }
+        } catch (error) {
+          console.error("Error loading departments:", error);
+          // Fallback to redux action
+          dispatch(fetchDepartments());
+        }
+      };
+      
+      loadDepartments();
+    }
+  }, [organizationId, dispatch]);
 
   const fetchData = async () => {
     try {

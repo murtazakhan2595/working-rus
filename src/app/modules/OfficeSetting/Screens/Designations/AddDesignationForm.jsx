@@ -12,46 +12,64 @@ import { Formik } from "formik";
 import React, { useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import { Input } from "components/ui/input";
+import { Loader2, UploadCloud, Download } from "lucide-react";
+import axios from "axios";
+import { initialState } from "state/slices/UserSlice";
+import BulkUploadSection from "components/BulkUploadSection";
 
-const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrganization }) => {
+const baseUrl = initialState.baseUrl;
+const headers = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  "Content-Type": "application/json",
+});
+
+const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdateSuccess = null }) => {
   const [closeSheet, setCloseSheet] = useState(false);
-  const [formData, setFormData] = useState(edit?.data || DesignationInfo);
-  const [organization, setOrganization] = useState([]);
-  const formikRef = useRef(null);
   
   // Get user details from Redux store to access organization ID
   const userDetails = useSelector((state) => state.emp?.user_details);
   const userOrganizationId = userDetails?.organization_id || userDetails?.organization;
 
-  // Update formData when edit data changes
+  // Debug the incoming edit data
   useEffect(() => {
-    if (edit?.data) {
-      setFormData(edit.data);
-      // If Formik is initialized, update its values
-      if (formikRef.current) {
-        formikRef.current.setValues(edit.data);
-      }
+    console.log("AddDesignationForm edit prop:", edit);
+    console.log("Is edit an object?", typeof edit === 'object');
+    console.log("Edit has data property?", edit?.data !== undefined);
+    console.log("Edit has open property?", edit?.open !== undefined);
+  }, [edit]);
+
+  // Determine if we're in edit mode - handle both structures
+  const isEditMode = Boolean(edit?.data) || Boolean(edit?.id);
+  
+  // Extract the actual data based on the structure provided
+  const editData = edit?.data || edit;
+
+  // Initialize form data with designation values if in edit mode
+  const [formData, setFormData] = useState({
+    ...DesignationInfo,
+    ...(editData || {}),
+  });
+
+  // Log when component mounts and when edit data changes
+  useEffect(() => {
+    console.log("AddDesignationForm mounted, isEditMode:", isEditMode);
+    console.log("Initial edit data:", editData);
+    
+    if (editData) {
+      console.log("Setting form data with edit data:", editData);
+      setFormData({
+        ...DesignationInfo,
+        ...(editData || {}),
+      });
     }
-  }, [edit?.data]);
-
-  useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        const response = await getOrganizationList();
-        setOrganization(response);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchLists();
-  }, []);
+  }, [editData, isEditMode]);
 
   const handleClose = () => {
     setCloseSheet(true);
   };
 
-  // Form validation without Yup
+  // Form validation
   const validateForm = (values) => {
     const errors = {};
     
@@ -74,37 +92,66 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrga
     return errors;
   };
 
-  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+  const handleSubmit = async (values, formikHelpers) => {
+    const { setSubmitting, setErrors, resetForm } = formikHelpers;
+    
+    // Get the ID from the appropriate source
+    const designationId = editData?.id;
+    
+    // Debug submission
+    console.log("Submitting form with designationId:", designationId);
+    console.log("Edit mode:", isEditMode);
+    
+    // Make sure organization is included
+    const submitData = {
+      ...values,
+      organization: values.organization || editData?.organization || userOrganizationId
+    };
+
+    console.log("Submitting data with organization:", submitData);
+
     try {
-      // Add organization ID to the payload
-      const payload = {
-        ...values,
-        organization: userOrganizationId || userOrganization
-      };
+      let response;
       
-      console.log("Submitting payload:", payload);
-      
-      const response = await saveDesignation(values?.id, payload);
+      if (isEditMode && designationId) {
+        // Update existing designation
+        console.log(`Making PUT request to /designation/${designationId}`);
+        response = await axios.put(
+          `/designation/${designationId}`,
+          submitData
+        );
+      } else {
+        // Create new designation
+        console.log("Making POST request to /designation");
+        response = await axios.post("/designation", submitData);
+      }
+
+      console.log("API response:", response);
+
       if (response) {
         toast.success(
-          `Designation ${edit?.data ? "Updated" : "Added"} Successfully!`,
+          `Designation ${isEditMode ? "Updated" : "Added"} Successfully!`,
           {
             position: toast.POSITION.TOP_RIGHT,
           }
         );
-        if (typeof reload === 'function') {
-          // Ensure reload is called
-          reload();
+
+        if (typeof reload === "function") {
+          reload(true);
         }
+
+        // Call the update success callback if provided
+        if (onUpdateSuccess && typeof onUpdateSuccess === 'function') {
+          await onUpdateSuccess(submitData);
+        }
+
+        resetForm();
         setIsOpen(false);
-      } else {
-        // Handle API error response
-        toast.error("Failed to save designation. Please try again.", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
       }
     } catch (error) {
-      console.log("ERROR", error);
+      console.log("API call error:", error);
+      console.log("Error response data:", error.response?.data);
+      
       // Set form errors if they come from the API
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
@@ -112,7 +159,9 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrga
         // Handle Django REST framework error format
         setErrors(error.response.data);
       }
-      toast.error("An error occurred while saving designation", {
+      
+      const errorMessage = error?.response?.data?.message || `Failed to ${isEditMode ? "update" : "add"} designation.`;
+      toast.error(errorMessage, {
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
@@ -133,24 +182,23 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrga
         validate={validateForm}
         validateOnChange={true}
         validateOnBlur={true}
-        enableReinitialize={true} 
-        innerRef={formikRef}
+        enableReinitialize={true}
       >
         {(props) => (
           <form onSubmit={props?.handleSubmit}>
-            <SheetCardExtension title="Designation Details">
-              {/* <SelectInputComponent
-                name={"organization"}
-                options={organization}
-                error={props.errors.organization}
-                touch={props.touched.organization}
-                value={props.values.organization}
-                label={"Organization"}
-                required
-                onChange={(field, value) => {
-                  props.setFieldValue(field, value);
-                }}
-              /> */}
+            {!isEditMode && (
+              <BulkUploadSection 
+                title="Bulk Upload Designations"
+                module="designation"
+                templateEndpoint={null}
+                uploadEndpoint={`${baseUrl}/designation/upload/`}
+                onUploadSuccess={reload}
+                organizationId={userOrganizationId}
+                showDivider={true}
+              />
+            )}
+            
+            <SheetCardExtension title={`${isEditMode ? 'Edit' : 'Add'} Designation`}>
               <TextInput
                 name="name"
                 label="Designation"
@@ -159,7 +207,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrga
                 touch={props.touched.name}
                 value={props.values.name}
                 onChange={(field, value) => {
-                  props.handleChange(field)(value);
+                  props.setFieldValue(field, value);
                 }}
                 onBlur={props.handleBlur}
               />
@@ -171,9 +219,15 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrga
                 touch={props.touched.description}
                 value={props.values.description}
                 onChange={(field, value) => {
-                  props.handleChange(field)(value);
+                  props.setFieldValue(field, value);
                 }}
                 onBlur={props.handleBlur}
+              />
+              {/* Hidden field for organization */}
+              <input 
+                type="hidden" 
+                name="organization" 
+                value={props.values.organization || editData?.organization || userOrganizationId} 
               />
             </SheetCardExtension>
             <div className="p-6 border-t border-gray-200 bg-gray-50">
@@ -192,7 +246,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrga
                   variant="default"
                   disabled={props.isSubmitting || !props.isValid}
                 >
-                  {edit?.data ? "Update" : "Add"}
+                  {props.isSubmitting ? 'Saving...' : (isEditMode ? "Update" : "Add")}
                 </Button>
               </div>
             </div>

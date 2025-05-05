@@ -4,7 +4,7 @@ import { deleteRecord } from "app/hooks/general";
 import SheetComponent from "components/ui/SheetComponent";
 import AddBranchForm from "./AddBranchForm";
 import ViewBranch from "app/modules/OfficeSetting/Screens/Branches/ViewBranch";
-import ActionButtons from "components/ActionButtons";
+import DropdownActionMenu from "components/DropdownActionMenu";
 
 const BranchAction = ({ data, reload = () => {} }) => {
   const [view, setView] = useState(null);
@@ -44,13 +44,14 @@ const BranchAction = ({ data, reload = () => {} }) => {
 
   return (
     <>
-      <ActionButtons 
+      <DropdownActionMenu 
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        viewTooltip="View Branch Details"
-        editTooltip="Edit Branch"
-        deleteTooltip="Delete Branch"
+        viewText="View Branch"
+        editText="Edit Branch"
+        deleteText="Delete Branch"
+        menuTooltip="Branch Actions"
       />
 
       {OpenDeleteAlert && (

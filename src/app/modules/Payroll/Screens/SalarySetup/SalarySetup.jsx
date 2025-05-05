@@ -48,6 +48,7 @@ const SalarySetup = ({ departments }) => {
           ))
         }
       />
+      
 
       <Tabs
         value={activeTab}

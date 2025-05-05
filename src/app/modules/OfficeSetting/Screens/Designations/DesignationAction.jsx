@@ -1,19 +1,10 @@
-import { Button } from "components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "../../../../../src/@/components/ui/dropdown-menu";
 import React, { useState } from "react";
-import { MoreHorizontal } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import AddDesignationForm from "./AddDesignationForm";
 import SheetComponent from "components/ui/SheetComponent";
-import ViewDepartment from "../Departments/ViewDepartment";
+import AddDesignationForm from "./AddDesignationForm";
 import ViewDesignation from "./ViewDesignation";
-import ActionButtons from "components/ActionButtons";
+import DropdownActionMenu from "components/DropdownActionMenu";
 
 const DesignationAction = ({ data, reload }) => {
   const [view, setView] = useState(null);
@@ -28,10 +19,24 @@ const DesignationAction = ({ data, reload }) => {
   };
 
   const handleEdit = (data) => {
-    console.log("Edit data:", data);
+    console.log("Edit button clicked for designation:", data);
+    // Make sure we have all required fields, especially the ID
+    if (!data.id) {
+      console.error("Cannot edit: Missing ID in the data", data);
+      return;
+    }
+    
+    // Ensure we create a clean object with all needed properties
     setEdit({
       open: true,
-      data: data,
+      data: {
+        id: data.id,
+        name: data.name || "",
+        description: data.description || "",
+        organization: data.organization,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      },
     });
   };
 
@@ -67,14 +72,16 @@ const DesignationAction = ({ data, reload }) => {
 
   return (
     <>
-      <ActionButtons 
+      <DropdownActionMenu 
         onView={() => handleView(data)}
         onEdit={() => handleEdit(data)}
         onDelete={() => handleDelete(data)}
-        viewTooltip="View Designation Details"
-        editTooltip="Edit Designation"
-        deleteTooltip="Delete Designation"
+        viewText="View Designation"
+        editText="Edit Designation"
+        deleteText="Delete Designation"
+        menuTooltip="Designation Actions"
       />
+      
       {deleteDesignation?.open && (
         <AlertDialogue
           title="Confirm Delete?"
@@ -94,20 +101,25 @@ const DesignationAction = ({ data, reload }) => {
         <SheetComponent
           {...formSheetData}
           isOpen={edit?.open}
-          setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
+          setIsOpen={(isOpen) => {
+            console.log("Setting edit sheet open state to:", isOpen);
+            setEdit((prev) => ({ ...prev, open: isOpen }));
+          }}
           width="568px"
         >
           <AddDesignationForm
             isOpen={edit.open}
-            setIsOpen={(isOpen) =>
-              setEdit((prev) => ({ ...prev, open: isOpen }))
-            }
+            setIsOpen={(isOpen) => {
+              console.log("Setting form open state to:", isOpen);
+              setEdit((prev) => ({ ...prev, open: isOpen }));
+            }}
             edit={edit}
             setEdit={setEdit}
             reload={reload}
           />
         </SheetComponent>
       )}
+      
       {view?.visible && (
         <ViewDesignation
           isOpen={view.visible}

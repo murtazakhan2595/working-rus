@@ -68,27 +68,47 @@ function TerminationStatus(status) {
   );
   return response ? response.label : status ?? "N/A";
 }
-function DepartmentName({ value, fallBackText = "N/A" }) {
+function DepartmentName({ value, fallBackText = "N/A", debug = false }) {
   const departments = useSelector((state) => state.common.departments);
   
   // If value is falsy, return fallback
-  if (!value) return fallBackText;
+  if (!value) {
+    if (debug) console.log('DepartmentName: Returning fallback for empty value');
+    return fallBackText;
+  }
   
   // Handle case where value is already a string (like "CEO")
   if (typeof value === 'string' && isNaN(parseInt(value))) {
+    if (debug) console.log(`DepartmentName: Returning string value directly: ${value}`);
     return value;
   }
   
   // Try to find department by ID
   const parsedValue = parseInt(value);
+  
+  // Check if departments array exists and has items
+  if (!departments || !Array.isArray(departments) || departments.length === 0) {
+    if (debug) console.warn(`DepartmentName: No departments available in redux store for ID: ${value}`);
+    // If departments are not available, return the fallback with ID
+    return `${fallBackText}`;
+  }
+  
+  // Try to find by both value and id properties
   const department = departments.find(
-    (option) => option.value === parsedValue
+    (option) => option.value === parsedValue || option.id === parsedValue
   );
   
-  console.log(`DepartmentName: value=${value}, parsed=${parsedValue}, found=${department?.label || 'not found'}`);
+  if (debug) {
+    console.log(`DepartmentName: value=${value}, parsed=${parsedValue}, found=${department?.label || department?.name || 'not found'}, departments count: ${departments.length}`);
+  }
   
   // Return department label if found, otherwise original value or fallback
-  return department ? department.label : value ?? fallBackText;
+  if (department) {
+    return department.label || department.name;
+  }
+  
+  // If not found and we want to show a meaningful fallback
+  return fallBackText;
 }
 
 export function DocCategoryName({ value, fallBackText = "N/A" }) {

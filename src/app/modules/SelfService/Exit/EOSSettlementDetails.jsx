@@ -22,20 +22,96 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
+import { connect, useDispatch } from "react-redux";
+import { DepartmentName } from "utils/getValuesFromTables";
+import { fetchDepartments, setDepartments } from "state/slices/CommonSlice";
+import axios from "axios";
+import { initialState as userInitialState } from 'state/slices/UserSlice';
 
-const EOSSettlementDetails = () => {
+// Get baseUrl from user initial state
+const baseUrl = userInitialState.baseUrl;
+
+// Headers function for API requests
+const headers = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  "Content-Type": "application/json",
+});
+
+// Add function to fetch departments directly from API
+const fetchDepartmentsDirectly = async (organizationId) => {
+  try {
+    const response = await axios.get(`${baseUrl}/department/`, {
+      headers: headers(),
+      params: { 
+        ordering: 'created_at',
+        organization: organizationId 
+      }
+    });
+    
+    if (response.data && response.data.results) {
+      return response.data.results.map(dept => ({
+        id: dept.id,
+        value: dept.id,
+        name: dept.name,
+        label: dept.name
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching departments directly:", error);
+    return [];
+  }
+};
+
+const EOSSettlementDetails = ({ userProfile }) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [settlement, setSettlement] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showSignatureDialog, setShowSignatureDialog] = useState(false);
   const [acknowledging, setAcknowledging] = useState(false);
   const [signatureComplete, setSignatureComplete] = useState(false);
+  
+  // Check if user has EOS-sarly-setup
+  const hasEOSSetup = userProfile?.settings?.hasEOSSarlySetup || false;
+  const organizationId = userProfile?.organization;
+
+  // Fetch departments on component mount to ensure they're available
+  useEffect(() => {
+    if (organizationId) {
+      const loadDepartments = async () => {
+        try {
+          // First try direct API call
+          const departmentsFromAPI = await fetchDepartmentsDirectly(organizationId);
+          if (departmentsFromAPI && departmentsFromAPI.length > 0) {
+            console.log("Departments fetched for EOSSettlementDetails:", departmentsFromAPI.length);
+            dispatch(setDepartments(departmentsFromAPI));
+          } else {
+            // Fallback to redux action
+            dispatch(fetchDepartments());
+          }
+        } catch (error) {
+          console.error("Error loading departments:", error);
+          // Fallback to redux action
+          dispatch(fetchDepartments());
+        }
+      };
+      
+      loadDepartments();
+    }
+  }, [organizationId, dispatch]);
 
   useEffect(() => {
     const fetchSettlement = async () => {
       try {
         setLoading(true);
+        // If user doesn't have EOS setup, no need to fetch
+        if (!hasEOSSetup) {
+          setLoading(false);
+          return;
+        }
+        
         console.log("SelfService/EOSDetails - Fetching settlement with ID:", id);
         
         // First try with parse ID
@@ -65,7 +141,7 @@ const EOSSettlementDetails = () => {
     };
 
     fetchSettlement();
-  }, [id]);
+  }, [id, hasEOSSetup]);
 
   const handleAcknowledge = async () => {
     try {
@@ -126,6 +202,20 @@ const EOSSettlementDetails = () => {
 
   if (loading) {
     return <PageLoader />;
+  }
+  
+  // If user doesn't have EOS setup, show message
+  if (!hasEOSSetup) {
+    return (
+      <div className="p-6 text-center">
+        <h2 className="mb-4 text-xl font-semibold">End of Service Settlement is not available</h2>
+        <p className="mb-6 text-gray-600">You don't have EOS-sarly-setup enabled in your account.</p>
+        <Button onClick={handleBack} variant="outline" className="flex items-center">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
+      </div>
+    );
   }
 
   if (!settlement) {
@@ -190,8 +280,14 @@ const EOSSettlementDetails = () => {
                 </div>
                 <div>
                   <h3 className="mb-2 text-sm font-medium text-neutral-900">Department</h3>
-                  <p className="text-base font-medium">{settlement.department}</p>
-                  {console.log("SelfService/EOSDetails - Department in render:", settlement.department)}
+                  <p className="text-base font-medium">
+                    {typeof settlement.department === 'string' && isNaN(parseInt(settlement.department))
+                      ? settlement.department 
+                      : typeof settlement.department === 'number' || 
+                        (typeof settlement.department === 'string' && !isNaN(parseInt(settlement.department)))
+                        ? <DepartmentName value={settlement.department} debug={true} /> 
+                        : settlement.department_name || 'N/A'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -364,4 +460,10 @@ const EOSSettlementDetails = () => {
   );
 };
 
-export default EOSSettlementDetails; 
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+  };
+};
+
+export default connect(mapStateToProps)(EOSSettlementDetails); 
