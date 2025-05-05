@@ -119,6 +119,10 @@ function App() {
         {GeneralRoutes.map((route) => {
           return <Route path={route.path} element={route.component} />;
         })}
+        
+        {/* Test routes for error pages */}
+        <Route path="/test-401" element={<Err401 />} />
+        
         <Route path="*" element={<Err404 />} />
       </Routes>
     </>
