@@ -22,8 +22,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
+import { connect } from "react-redux";
 
-const EOSSettlementDetails = () => {
+const EOSSettlementDetails = ({ userProfile }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [settlement, setSettlement] = useState(null);
@@ -31,11 +32,20 @@ const EOSSettlementDetails = () => {
   const [showSignatureDialog, setShowSignatureDialog] = useState(false);
   const [acknowledging, setAcknowledging] = useState(false);
   const [signatureComplete, setSignatureComplete] = useState(false);
+  
+  // Check if user has EOS-sarly-setup
+  const hasEOSSetup = userProfile?.settings?.hasEOSSarlySetup || false;
 
   useEffect(() => {
     const fetchSettlement = async () => {
       try {
         setLoading(true);
+        // If user doesn't have EOS setup, no need to fetch
+        if (!hasEOSSetup) {
+          setLoading(false);
+          return;
+        }
+        
         console.log("SelfService/EOSDetails - Fetching settlement with ID:", id);
         
         // First try with parse ID
@@ -65,7 +75,7 @@ const EOSSettlementDetails = () => {
     };
 
     fetchSettlement();
-  }, [id]);
+  }, [id, hasEOSSetup]);
 
   const handleAcknowledge = async () => {
     try {
@@ -126,6 +136,20 @@ const EOSSettlementDetails = () => {
 
   if (loading) {
     return <PageLoader />;
+  }
+  
+  // If user doesn't have EOS setup, show message
+  if (!hasEOSSetup) {
+    return (
+      <div className="p-6 text-center">
+        <h2 className="mb-4 text-xl font-semibold">End of Service Settlement is not available</h2>
+        <p className="mb-6 text-gray-600">You don't have EOS-sarly-setup enabled in your account.</p>
+        <Button onClick={handleBack} variant="outline" className="flex items-center">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back
+        </Button>
+      </div>
+    );
   }
 
   if (!settlement) {
@@ -364,4 +388,10 @@ const EOSSettlementDetails = () => {
   );
 };
 
-export default EOSSettlementDetails; 
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+  };
+};
+
+export default connect(mapStateToProps)(EOSSettlementDetails); 
