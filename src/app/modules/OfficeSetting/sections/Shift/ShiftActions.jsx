@@ -1,18 +1,10 @@
-import { Button } from "components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "src/@/components/ui/dropdown-menu";
 import React, { useState } from "react";
-import { MoreHorizontal } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
 import SheetComponent from "components/ui/SheetComponent";
 import ViewShift from "./ViewShift";
 import AddShiftForm from "./AddShiftForm";
-import ActionButtons from "components/ActionButtons";
+import DropdownActionMenu from "components/DropdownActionMenu";
 
 const ShiftActions = ({ data, reload }) => {
   const [view, setView] = useState(null);
@@ -66,14 +58,16 @@ const ShiftActions = ({ data, reload }) => {
 
   return (
     <>
-      <ActionButtons 
+      <DropdownActionMenu 
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        viewTooltip="View Shift Details"
-        editTooltip="Edit Shift"
-        deleteTooltip="Delete Shift"
+        viewText="View Shift"
+        editText="Edit Shift"
+        deleteText="Delete Shift"
+        menuTooltip="Shift Actions"
       />
+      
       {deleteShift?.open && (
         <AlertDialogue
           title="Confirm Delete?"

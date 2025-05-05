@@ -87,7 +87,10 @@ const commonSlice = createSlice({
   name: "common",
   initialState,
   reducers: {
-    // Any synchronous actions can be added here
+    // Add a reducer to set departments directly
+    setDepartments: (state, action) => {
+      state.departments = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -156,6 +159,9 @@ const commonSlice = createSlice({
       });
   },
 });
+
+// Export actions
+export const { setDepartments } = commonSlice.actions;
 
 // Export the reducer
 export default commonSlice.reducer;

@@ -4,7 +4,7 @@ import { deleteRecord } from "app/hooks/general";
 import SheetComponent from "components/ui/SheetComponent";
 import AddDepartmentForm from "./AddDepartmentForm";
 import ViewDepartment from "./ViewDepartment";
-import ActionButtons from "components/ActionButtons";
+import DropdownActionMenu from "components/DropdownActionMenu";
 import useUserOrganization from "app/hooks/useUserOrganization";
 
 const DepartmentAction = ({ data, reload }) => {
@@ -59,13 +59,14 @@ const DepartmentAction = ({ data, reload }) => {
 
   return (
     <>
-      <ActionButtons 
+      <DropdownActionMenu 
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        viewTooltip="View Department Details"
-        editTooltip="Edit Department"
-        deleteTooltip="Delete Department"
+        viewText="View Department"
+        editText="Edit Department"
+        deleteText="Delete Department"
+        menuTooltip="Department Actions"
       />
 
       {deleteDept?.open && (

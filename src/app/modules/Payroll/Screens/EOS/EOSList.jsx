@@ -6,7 +6,7 @@ import { BadgeCheck, CheckCircle, Clock, Eye, Plus } from "lucide-react";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchEmployeeExitRequests } from "state/slices/ExitEmployeeSlice";
-import { fetchDepartments } from "state/slices/CommonSlice";
+import { fetchDepartments, setDepartments } from "state/slices/CommonSlice";
 import { EmployeeOverview } from "components";
 import { DepartmentName, ManagerName } from "utils/getValuesFromTables";
 import { FilterInput, SelectInputComponent } from "components/FormControl";
@@ -239,6 +239,11 @@ const EOSList = () => {
       
       if (departmentsFromAPI && departmentsFromAPI.length > 0) {
         console.log("Departments fetched directly from API:", departmentsFromAPI);
+        
+        // First dispatch to Redux store so DepartmentName can use it
+        dispatch(setDepartments(departmentsFromAPI));
+        
+        // Then set in local state
         setDepartmentsList(departmentsFromAPI);
         return;
       }
@@ -248,6 +253,10 @@ const EOSList = () => {
         filterData: { organization: organizationId }
       });
       if (response && response.results) {
+        // First dispatch to Redux store so DepartmentName can use it
+        dispatch(setDepartments(response.results));
+        
+        // Then set in local state
         setDepartmentsList(response.results);
       }
     } catch (error) {
@@ -415,22 +424,35 @@ const EOSList = () => {
   
   // Format the EOSData with department names directly
   const processedEOSData = eosData.map(record => {
-    console.log("Processing record:", record);
-    
     // Get department name
     let departmentName = null;
     const deptId = record.department_id || record.department;
     
     if (deptId) {
-      // Try to find in our fetched list
-      const foundDept = departmentsList.find(dept => 
-        dept.value === parseInt(deptId) || dept.id === parseInt(deptId)
-      );
+      // First try Redux store departments
+      if (departments && departments.length > 0) {
+        const deptFromRedux = departments.find(dept => 
+          dept.value === parseInt(deptId) || dept.id === parseInt(deptId)
+        );
+        
+        if (deptFromRedux) {
+          departmentName = deptFromRedux.label || deptFromRedux.name;
+        }
+      }
       
-      if (foundDept) {
-        departmentName = foundDept.label || foundDept.name;
-      } else if (typeof deptId === 'string' && isNaN(parseInt(deptId))) {
-        // If it's already a string like "CEO", use it directly
+      // If not found in Redux, try local departments list
+      if (!departmentName && departmentsList.length > 0) {
+        const foundDept = departmentsList.find(dept => 
+          dept.value === parseInt(deptId) || dept.id === parseInt(deptId)
+        );
+        
+        if (foundDept) {
+          departmentName = foundDept.label || foundDept.name;
+        }
+      }
+      
+      // If it's already a string like "CEO", use it directly
+      if (!departmentName && typeof deptId === 'string' && isNaN(parseInt(deptId))) {
         departmentName = deptId;
       }
     }
@@ -512,13 +534,6 @@ const EOSList = () => {
       text: 'Department',
       dataSort: true,
       formatter: (cell, row) => {
-        console.log('Department data:', { 
-          department_name_resolved: row.department_name_resolved,
-          department_id: cell, 
-          department: row.department,
-          department_name: row.department_name
-        });
-        
         // First try the pre-processed department name
         if (row.department_name_resolved) {
           return row.department_name_resolved;
@@ -547,7 +562,16 @@ const EOSList = () => {
         
         // If we have an ID, look it up in our departments list
         if (departmentId !== null) {
-          // Try both value and id properties in the departments list
+          // Look in departments list from redux first
+          const deptFromRedux = departments?.find(
+            dept => (dept.value === departmentId || dept.id === departmentId)
+          );
+          
+          if (deptFromRedux) {
+            return deptFromRedux.label || deptFromRedux.name;
+          }
+          
+          // Then try local departments list
           const foundDepartment = departmentsList.find(
             dept => (dept.value === departmentId || dept.id === departmentId)
           );
@@ -556,8 +580,8 @@ const EOSList = () => {
             return foundDepartment.label || foundDepartment.name;
           }
           
-          // If not found in the direct list, try the DepartmentName component
-          return <DepartmentName value={departmentId} />;
+          // If not found in either list, use DepartmentName component
+          return <DepartmentName value={departmentId} fallBackText={`Dept. ${departmentId}`} />;
         }
         
         // If all else fails, try any value that might be available
