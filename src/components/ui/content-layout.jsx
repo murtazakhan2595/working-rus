@@ -16,7 +16,9 @@ export function ContentLayout({ title, children, isSidebarOpen, userRole }) {
       <div className="main-content rounded-[24px] h-[calc(100vh_-_70px)]">
         <ScrollArea className="[&>div>div[style]]:!block">
           <div className="h-[calc(100vh_-_70px)] pr-4">
+            <div className="pb-10">
             <Outlet isSidebarOpen={isSidebarOpen} />
+            </div>
           </div>
         </ScrollArea>
       </div>

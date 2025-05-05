@@ -7,6 +7,12 @@ export function StatsCards() {
   const userProfile = useSelector((state) => state.user.userProfile);
   const employees = useSelector((state) => state.emp.employees);
   const [loading, setLoading] = useState(false);
+  const TotalEmployees = React.useMemo(() => {
+    return (employees?.filter(
+      (employee) =>
+        parseInt(employee.direct_report) === parseInt(userProfile.id)
+    )).length;
+  }, [employees,userProfile]);
   const [cardStats, setCardStats] = useState({
     total: 0,
     present: 0,
@@ -18,14 +24,11 @@ export function StatsCards() {
     setLoading(true);
     try {
       const response = await getAttendanceStats({
-        filterData:
-          userProfile.role === 2 ? { report_to: userProfile.id } : {},
+        filterData: userProfile.role === 2 ? { report_to: userProfile.id } : {},
       });
       if (response && isMounted) {
         setCardStats({
-          present:
-            parseInt(response?.daily_stats?.Present) +
-            parseInt(response?.daily_stats?.Late),
+          present: parseInt(response?.daily_stats?.Present),
           absent: response?.daily_stats?.Absent,
           late: response?.daily_stats?.Late,
         });
@@ -38,15 +41,15 @@ export function StatsCards() {
   };
 
   const statsData = [
-    { title: "Total Employees", value: employees?.length || 0 },
+    { title: "Total Employees", value: TotalEmployees || 0 },
     { title: "Present", value: cardStats?.present || 0 },
     { title: "Late", value: cardStats?.late || 0 },
     { title: "Absent", value: cardStats?.absent || 0 },
     {
       title: "Not Arrived",
       value:
-        (parseInt(employees?.length) || 0) -
-        (parseInt(cardStats?.present) || 0 + parseInt(cardStats?.late) || 0),
+        (parseInt(TotalEmployees) || 0) -
+        (parseInt(cardStats?.present) || 0),
     },
   ];
   useEffect(() => {

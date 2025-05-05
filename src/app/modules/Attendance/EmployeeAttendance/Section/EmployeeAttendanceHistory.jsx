@@ -34,7 +34,7 @@ const EmployeeAttendanceHistory = ({
   };
   console.log(attendanceData, "attendanceData");
   return (
-    <div>
+    <>
       <div className="flex justify-between mb-5">
         <h3 className=" text-2xl font-semibold leading-none tracking-tight flex items-center space-y-1.5 px-6 text-plum-900">
           Attendance History
@@ -72,7 +72,7 @@ const EmployeeAttendanceHistory = ({
           />
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 };
 
