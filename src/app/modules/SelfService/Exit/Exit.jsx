@@ -1,8 +1,12 @@
 import React from "react";
 import { Card, CardContent, CardHeader } from "components/ui/card.jsx";
 import EOSSettlementList from "./EOSSettlementList";
+import { connect } from "react-redux";
 
-const Exit = () => {
+const Exit = ({ userProfile }) => {
+  // Check if user has EOS-sarly-setup
+  const hasEOSSetup = userProfile?.settings?.hasEOSSarlySetup || false;
+
   return (
     <div className="p-6 space-y-6">
       <Card>
@@ -24,10 +28,16 @@ const Exit = () => {
         </CardContent>
       </Card>
 
-      {/* EOS Settlement List Component */}
-      <EOSSettlementList />
+      {/* EOS Settlement List Component - only show if user has EOS-sarly-setup */}
+      {hasEOSSetup && <EOSSettlementList />}
     </div>
   );
 };
 
-export default Exit; 
+const mapStateToProps = (state) => {
+  return {
+    userProfile: state.user.userProfile,
+  };
+};
+
+export default connect(mapStateToProps)(Exit); 

@@ -12,6 +12,17 @@ import { Formik } from "formik";
 import React, { useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import { Input } from "components/ui/input";
+import { Loader2, UploadCloud, Download } from "lucide-react";
+import axios from "axios";
+import { initialState } from "state/slices/UserSlice";
+import BulkUploadSection from "components/BulkUploadSection";
+
+const baseUrl = initialState.baseUrl;
+const headers = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  "Content-Type": "application/json",
+});
 
 const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrganization }) => {
   const [closeSheet, setCloseSheet] = useState(false);
@@ -153,6 +164,18 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, userOrga
       >
         {(props) => (
           <form onSubmit={props?.handleSubmit}>
+            {!isEditMode && (
+              <BulkUploadSection 
+                title="Bulk Upload Designations"
+                module="designation"
+                templateEndpoint={null}
+                uploadEndpoint={`${baseUrl}/designation/upload/`}
+                onUploadSuccess={reload}
+                organizationId={userOrganizationId || userOrganization}
+                showDivider={true}
+              />
+            )}
+            
             <SheetCardExtension title={`${isEditMode ? 'Edit' : 'Add'} Designation`}>
               <TextInput
                 name="name"
