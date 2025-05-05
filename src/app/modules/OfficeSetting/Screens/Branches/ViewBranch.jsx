@@ -1,15 +1,21 @@
 import { DetailBox } from "components/SheetCardExtension";
 import { DetailCard } from "components/SheetCardExtension";
 import SheetComponent from "components/ui/SheetComponent";
-import { useState } from "react";
-import ActionButtons from "components/ActionButtons";
+import { useState, useEffect } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
 import AddBranchForm from "./AddBranchForm";
+import CircularActionButtons from "components/CircularActionButtons";
+import axios from "axios";
 
 const ViewBranch = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
   const [OpenDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [EditBranch, setEditBranch] = useState(false);
+  const [viewData, setViewData] = useState(data);
+
+  useEffect(() => {
+    setViewData(data);
+  }, [data]);
 
   const formSheetData = {
     triggerText: null,
@@ -35,7 +41,7 @@ const ViewBranch = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
 
   const confirmDelete = async () => {
     try {
-      await deleteRecord(`/branch/${data?.id}`, data?.branch_name);
+      await deleteRecord(`/branch/${viewData?.id}`, viewData?.branch_name);
       setIsOpen(false);
       reload(true);
     } catch (error) {
@@ -43,28 +49,66 @@ const ViewBranch = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
     }
   };
 
+  const refreshData = async () => {
+    try {
+      const response = await axios.get(`/branch/${viewData.id}`);
+      if (response.data) {
+        console.log("Fetched updated branch data:", response.data);
+        setViewData(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch updated branch data:", error);
+    }
+  };
+
+  const handleEditClose = async (updated = false) => {
+    setEditBranch(false);
+    
+    if (updated) {
+      await refreshData();
+      // Also reload the table
+      if (typeof reload === 'function') {
+        reload(true);
+      }
+    }
+  };
+
+  const handleFormUpdate = async (formData) => {
+    // This function will be called after successful form submission
+    console.log("Branch updated with data:", formData);
+    setViewData({
+      ...viewData,
+      ...formData
+    });
+    return true;
+  };
+
   return (
     <>
       <SheetComponent
         {...formSheetData}
         isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        setIsOpen={(open) => {
+          setIsOpen(open);
+          if (!open && typeof reload === 'function') {
+            reload(true); // Ensure table is reloaded when view is closed
+          }
+        }}
         width="568px"
       >
         <div className="flex justify-end mb-4 space-x-2">
-          <ActionButtons 
+          <CircularActionButtons 
             onEdit={handleEdit}
             onDelete={handleDelete}
-            hideView={true}
             editTooltip="Edit Branch"
             deleteTooltip="Delete Branch"
           />
         </div>
-        <DetailCard detailCardTitle="Branch Details" date={data?.created_at} dateTitle="Created At">
-          <DetailBox label="Id" value={data?.id} />
-          <DetailBox label="Name" value={data?.branch_name} />
-          <DetailBox label="Branch Number" value={data?.branch_number} />
-          <DetailBox label="Address" value={data?.branch_address} />
+        <DetailCard detailCardTitle="Branch Details" date={viewData?.created_at} dateTitle="Created At">
+          <DetailBox label="Id" value={viewData?.id} />
+          <DetailBox label="Name" value={viewData?.branch_name} />
+          <DetailBox label="Branch Number" value={viewData?.branch_number} />
+          <DetailBox label="Address" value={viewData?.branch_address} />
           {/* <DetailBox label="Parent Department" value={data?.parent_department} /> */}
         </DetailCard>
       </SheetComponent>
@@ -86,14 +130,15 @@ const ViewBranch = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
         <SheetComponent
           {...updateSheetData}
           isOpen={EditBranch}
-          setIsOpen={setEditBranch}
+          setIsOpen={handleEditClose}
           width="568px"
         >
           <AddBranchForm
-            setIsOpen={setEditBranch}
+            setIsOpen={handleEditClose}
             editMode={true}
             reload={reload}
-            branchData={data}
+            branchData={viewData}
+            onUpdateSuccess={handleFormUpdate}
           />
         </SheetComponent>
       )}

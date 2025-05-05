@@ -1,19 +1,11 @@
-import { Button } from "components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "src/@/components/ui/dropdown-menu";
 import React, { useState } from "react";
-import { MoreHorizontal } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
 import SheetComponent from "components/ui/SheetComponent";
 import ViewOnboarding from "./ViewOnboarding";
 import AddOnboardingForm from "./AddOnboardingForm";
 import { deleteOnboardingDocument } from "app/hooks/officeSetting";
-import ActionButtons from "components/ActionButtons";
+import DropdownActionMenu from "components/DropdownActionMenu";
 
 const OnboardingActions = ({ data, reload }) => {
   const [view, setView] = useState(null);
@@ -62,13 +54,14 @@ const OnboardingActions = ({ data, reload }) => {
 
   return (
     <>
-      <ActionButtons 
+      <DropdownActionMenu 
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        viewTooltip="View Document Details"
-        editTooltip="Edit Document"
-        deleteTooltip="Delete Document"
+        viewText="View Document"
+        editText="Edit Document"
+        deleteText="Delete Document"
+        menuTooltip="Document Actions"
       />
 
       {deleteDept?.open && (

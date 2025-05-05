@@ -43,7 +43,7 @@ const EmployeeOverview = React.memo(
             ? [displayData?.position || <DesignationName value={displayData?.department_position} />]
             : []), // Ensure it's an array
           ...(showDepartment
-            ? [<DepartmentName value={displayData?.department_name} />]
+            ? [<DepartmentName value={displayData?.department || displayData?.department_id || displayData?.department_name} />]
             : []), // Ensure it's an array
           ...(showBranchName
             ? [<BranchName value={displayData?.branch_id} fallbackText="" />]

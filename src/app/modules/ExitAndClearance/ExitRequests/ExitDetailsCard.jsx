@@ -132,7 +132,7 @@ const ExitDetailsCard = ({
                   <p className="text-base text-zinc-600">
                     ID: <EmployeeID value={resignation?.employee_id} /> |{" "}
                     <DesignationName value={resignation?.position} /> |
-                    <DepartmentName value={resignation?.department_name} />
+                    <DepartmentName value={resignation?.department || resignation?.department_id || resignation?.department_name} />
                   </p> */}
                 </div>
                 {isResignation ? (

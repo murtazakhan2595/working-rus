@@ -1,19 +1,10 @@
-import { Button } from "components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "../../../../../src/@/components/ui/dropdown-menu";
 import React, { useState } from "react";
-import { MoreHorizontal } from "lucide-react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import AddDesignationForm from "./AddDesignationForm";
 import SheetComponent from "components/ui/SheetComponent";
-import ViewDepartment from "../Departments/ViewDepartment";
+import AddDesignationForm from "./AddDesignationForm";
 import ViewDesignation from "./ViewDesignation";
-import ActionButtons from "components/ActionButtons";
+import DropdownActionMenu from "components/DropdownActionMenu";
 
 const DesignationAction = ({ data, reload }) => {
   const [view, setView] = useState(null);
@@ -81,14 +72,16 @@ const DesignationAction = ({ data, reload }) => {
 
   return (
     <>
-      <ActionButtons 
+      <DropdownActionMenu 
         onView={() => handleView(data)}
         onEdit={() => handleEdit(data)}
         onDelete={() => handleDelete(data)}
-        viewTooltip="View Designation Details"
-        editTooltip="Edit Designation"
-        deleteTooltip="Delete Designation"
+        viewText="View Designation"
+        editText="Edit Designation"
+        deleteText="Delete Designation"
+        menuTooltip="Designation Actions"
       />
+      
       {deleteDesignation?.open && (
         <AlertDialogue
           title="Confirm Delete?"
@@ -126,6 +119,7 @@ const DesignationAction = ({ data, reload }) => {
           />
         </SheetComponent>
       )}
+      
       {view?.visible && (
         <ViewDesignation
           isOpen={view.visible}

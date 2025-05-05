@@ -22,11 +22,51 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
+import { DepartmentName } from "utils/getValuesFromTables";
+import { fetchDepartments, setDepartments } from "state/slices/CommonSlice";
+import axios from "axios";
+import { initialState as userInitialState } from 'state/slices/UserSlice';
+
+// Get baseUrl from user initial state
+const baseUrl = userInitialState.baseUrl;
+
+// Headers function for API requests
+const headers = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  "Content-Type": "application/json",
+});
+
+// Add function to fetch departments directly from API
+const fetchDepartmentsDirectly = async (organizationId) => {
+  try {
+    const response = await axios.get(`${baseUrl}/department/`, {
+      headers: headers(),
+      params: { 
+        ordering: 'created_at',
+        organization: organizationId 
+      }
+    });
+    
+    if (response.data && response.data.results) {
+      return response.data.results.map(dept => ({
+        id: dept.id,
+        value: dept.id,
+        name: dept.name,
+        label: dept.name
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching departments directly:", error);
+    return [];
+  }
+};
 
 const EOSSettlementDetails = ({ userProfile }) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [settlement, setSettlement] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showSignatureDialog, setShowSignatureDialog] = useState(false);
@@ -35,6 +75,32 @@ const EOSSettlementDetails = ({ userProfile }) => {
   
   // Check if user has EOS-sarly-setup
   const hasEOSSetup = userProfile?.settings?.hasEOSSarlySetup || false;
+  const organizationId = userProfile?.organization;
+
+  // Fetch departments on component mount to ensure they're available
+  useEffect(() => {
+    if (organizationId) {
+      const loadDepartments = async () => {
+        try {
+          // First try direct API call
+          const departmentsFromAPI = await fetchDepartmentsDirectly(organizationId);
+          if (departmentsFromAPI && departmentsFromAPI.length > 0) {
+            console.log("Departments fetched for EOSSettlementDetails:", departmentsFromAPI.length);
+            dispatch(setDepartments(departmentsFromAPI));
+          } else {
+            // Fallback to redux action
+            dispatch(fetchDepartments());
+          }
+        } catch (error) {
+          console.error("Error loading departments:", error);
+          // Fallback to redux action
+          dispatch(fetchDepartments());
+        }
+      };
+      
+      loadDepartments();
+    }
+  }, [organizationId, dispatch]);
 
   useEffect(() => {
     const fetchSettlement = async () => {
@@ -214,8 +280,14 @@ const EOSSettlementDetails = ({ userProfile }) => {
                 </div>
                 <div>
                   <h3 className="mb-2 text-sm font-medium text-neutral-900">Department</h3>
-                  <p className="text-base font-medium">{settlement.department}</p>
-                  {console.log("SelfService/EOSDetails - Department in render:", settlement.department)}
+                  <p className="text-base font-medium">
+                    {typeof settlement.department === 'string' && isNaN(parseInt(settlement.department))
+                      ? settlement.department 
+                      : typeof settlement.department === 'number' || 
+                        (typeof settlement.department === 'string' && !isNaN(parseInt(settlement.department)))
+                        ? <DepartmentName value={settlement.department} debug={true} /> 
+                        : settlement.department_name || 'N/A'}
+                  </p>
                 </div>
               </div>
             </div>
