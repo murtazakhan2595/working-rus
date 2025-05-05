@@ -68,11 +68,31 @@ const getEOSData = async (employeeId) => {
   }
 };
 
+// Function to fetch employee data
+const getEmployeeData = async (employeeId) => {
+  try {
+    const response = await axios.get(`${baseUrl}/people/employee/${employeeId}/`, {
+      headers: headers(),
+    });
+    
+    if (response.status === 200) {
+      console.log("Employee data fetched successfully:", response.data);
+      return response.data;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error("Error fetching employee data:", error);
+    return null;
+  }
+};
+
 function ExitDetails({ exitData, reloadData = () => {} }) {
   const navigate = useNavigate();
   const [eosSettlements, setEosSettlements] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasEOSSetup, setHasEOSSetup] = useState(false);
+  const [employeeDetails, setEmployeeDetails] = useState(null);
   
   const employeeApproval = Status(exitData.status_termination, 0);
   const exitDetails = [
@@ -89,6 +109,26 @@ function ExitDetails({ exitData, reloadData = () => {} }) {
     },
     { label: "Notice period", value: exitData.notice_period },
   ];
+
+  // Fetch complete employee details to get reporting manager info
+  useEffect(() => {
+    const fetchEmployeeDetails = async () => {
+      const employeeId = exitData?.employee_id || exitData?.employeeId || exitData?.id;
+      if (employeeId) {
+        try {
+          const empData = await getEmployeeData(employeeId);
+          if (empData) {
+            console.log("Setting employee details:", empData);
+            setEmployeeDetails(empData);
+          }
+        } catch (error) {
+          console.error("Error fetching employee details:", error);
+        }
+      }
+    };
+    
+    fetchEmployeeDetails();
+  }, [exitData]);
 
   // First, check if the employee actually has EOS data
   useEffect(() => {
@@ -147,19 +187,25 @@ function ExitDetails({ exitData, reloadData = () => {} }) {
             // If no data is found, create format matching the image with proper columns
             console.log("Creating formatted EOS data based on exit data");
             
+            // Prepare report_to from employee details or fallback
+            const reportingManagerName = employeeDetails?.reporting_manager_name || 
+                                       employeeDetails?.manager?.name || 
+                                       exitData.report_to || 
+                                       "Manager";
+            
             const formattedData = [{
               id: 1,
               employeeId: employeeId,
               employee_id: employeeId,
               emp_id: employeeId,
               serial_number: employeeId,
-              employee_name: exitData.employee_name || exitData.name || "Employee Name",
-              report_to: exitData.report_to || "Manager",
+              employee_name: exitData.employee_name || exitData.name || employeeDetails?.name || "Employee Name",
+              report_to: reportingManagerName,
               notice_period: exitData.notice_period || "1 month",
               last_working_date: exitData.exit_date || new Date().toISOString().split('T')[0],
               offboarding_type: exitData.exit_type || "End of Contract",
               status: "Approved",
-              department: exitData.department || "Department",
+              department: exitData.department || employeeDetails?.department?.name || "Department",
               exit_category: exitData.exit_category || "resignation"
             }];
             
@@ -175,7 +221,7 @@ function ExitDetails({ exitData, reloadData = () => {} }) {
     };
     
     fetchEOSData();
-  }, [exitData, hasEOSSetup]);
+  }, [exitData, hasEOSSetup, employeeDetails]);
 
   const handleSubmit = async (event, status) => {
     event.preventDefault();
@@ -232,8 +278,22 @@ function ExitDetails({ exitData, reloadData = () => {} }) {
       headerClasses: "text-sm text-center text-gray-1100",
       classes: "text-sm text-center text-gray-1100",
       formatter: (cell, row) => {
-        // Use any available ID field
-        return cell || row.employeeId || row.employee_id || row.emp_id || 'N/A';
+        // Show the actual ID field that exactly matches the format in the image
+        console.log("Serial number/ID field values:", { 
+          cell, 
+          serial_number: row.serial_number, 
+          employeeId: row.employeeId, 
+          employee_id: row.employee_id, 
+          emp_id: row.emp_id 
+        });
+        
+        // Try to find the best match for ID field
+        return row.serial_number || 
+               row.employeeId || 
+               row.employee_id || 
+               row.emp_id || 
+               cell || 
+               'N/A';
       }
     },
     {
@@ -253,6 +313,23 @@ function ExitDetails({ exitData, reloadData = () => {} }) {
       align: 'center',
       headerClasses: "text-sm text-center text-gray-1100",
       classes: "text-sm text-center text-gray-1100",
+      formatter: (cell, row) => {
+        // Log all possible fields that might contain manager info
+        console.log("Report To field values:", { 
+          cell, 
+          reporting_manager: row.reporting_manager, 
+          reporting_manager_name: row.reporting_manager_name,
+          manager: row.manager,
+          report_to: row.report_to
+        });
+        
+        // Try to use the most specific field first, falling back to more general ones
+        return cell || 
+               row.reporting_manager_name || 
+               (row.manager?.name || row.manager) || 
+               row.report_to || 
+               "-";
+      }
     },
     {
       dataField: 'notice_period',
