@@ -215,9 +215,92 @@ export const getTerminationReason = async (payload) => {
     };
   }
 };
+ const getMonthlyAttritionData = async () => {
+  try {
+    const monthlyData = [];
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+
+    // Get current date
+    const now = new Date();
+
+    // For the last 6 months
+    for (let i = 5; i >= 0; i--) {
+      const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthEnd = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+
+      // Format dates for API
+      const startDate = month.toISOString().split("T")[0];
+      const endDate = monthEnd.toISOString().split("T")[0];
+
+      // Get new hires for this month
+      const newHiresResponse = await axios.get(`${baseUrl}/employee/`, {
+        headers: headers(),
+        params: {
+          joining_date_after: startDate,
+          joining_date_before: endDate,
+        },
+      });
+
+      // Get resignations for this month (need to check API structure)
+      const resignationsResponse = await axios.get(
+        `${baseUrl}/employee-exit/`,
+        {
+          headers: headers(),
+          params: {
+            exit_date_after: startDate,
+            exit_date_before: endDate,
+            exit_category: "resignation",
+            status_resignation: "exit interview", // Completed resignation process
+          },
+        }
+      );
+
+      // Get terminations for this month (need to check API structure)
+      const terminationsResponse = await axios.get(
+        `${baseUrl}/employee-exit/`,
+        {
+          headers: headers(),
+          params: {
+            exit_date_after: startDate,
+            exit_date_before: endDate,
+            exit_category: "termination",
+            status_termination: "exit interview", // Completed termination process
+          },
+        }
+      );
+
+      // Add data to the monthly array
+      monthlyData.push({
+        month: monthNames[month.getMonth()],
+        newHires: newHiresResponse.data.count || 0,
+        resignations: resignationsResponse.data.count || 0,
+        terminations: terminationsResponse.data.count || 0,
+      });
+    }
+
+    return monthlyData;
+  } catch (error) {
+    console.error("Error fetching monthly attrition data:", error);
+    return [];
+  }
+};
 
 export {
   getEmployeesResignations,
   saveEmployeeExitDetail,
   getEmployeesExitCount,
+  getMonthlyAttritionData,
 };

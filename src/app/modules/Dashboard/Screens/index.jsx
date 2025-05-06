@@ -15,6 +15,8 @@ import MyAttendanceSumary from "./MyAttendanceSumary";
 import ProfileCompletion from "./ProfileCompletion";
 import ShiftDetailsWidget from "./ShiftDetailsWidget";
 import MonthlyAttendanceCalendar from "./MonthlyAttendanceCalendar";
+import EventCalendar from "./EventCalender"
+import AttritionAndNewJoinersWidget from "./AttritionAndNewJoinersWidget";
 export {
   RecentActivity,
   LeaveEmployeeDetails,
@@ -33,4 +35,6 @@ export {
   ProfileCompletion,
   ShiftDetailsWidget,
   MonthlyAttendanceCalendar,
+  EventCalendar,
+  AttritionAndNewJoinersWidget,
 };

@@ -16,8 +16,9 @@ import {
   ProfileCompletion,
   ShiftDetailsWidget,
   MonthlyAttendanceCalendar,
+  EventCalendar,
+  AttritionAndNewJoinersWidget,
 } from "../Screens";
-import EventCalendar from "../Screens/EventCalendar";
 
 const DashboardHR = [
   {
@@ -95,6 +96,18 @@ const DashboardHR = [
     className: `w-full`,
     content: <ExpiredDocuments />,
     value: "ExpiredDocuments",
+  },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <EventCalendar />,
+    value: "EventCalendar",
+  },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <AttritionAndNewJoinersWidget />,
+    value: "AttritionAndNewJoinersWidget",
   },
 ];
 
