@@ -31,6 +31,7 @@ export default function EmployeeSelfTimesheet({
   OnBreak,
   disable,
   reloadData,
+  isDashboard = false,
 }) {
   const [payableHours, setPayableHours] = useState(
     parseFloat(attendance?.payable_hours) || 0
@@ -64,8 +65,10 @@ export default function EmployeeSelfTimesheet({
   }, [attendance, OnBreak]);
 
   return (
-    <div className="">
-      <div className="">
+    // if isDashboard is false, then the div will  have border and shadow
+    <div className={isDashboard ? "" : " rounded-lg shadow-sm bg-white"}>
+      {/* if isDashboard is true, then the div will not have border and shadow */}
+      <div className={isDashboard ? "" : "p-4 "}>
         <div className="flex items-center justify-between text-lg font-semibold">
           <span className="text-plum-900">Time Log</span>
           <span className="text-sm text-slate-1200">
@@ -73,7 +76,7 @@ export default function EmployeeSelfTimesheet({
           </span>
         </div>
       </div>
-      <div className="">
+      <div className={isDashboard ? "" : "p-4"}>
         <div className="space-y-2">
           <div className="flex justify-between">
             <span className="text-slate-1200">Checkin Time</span>
