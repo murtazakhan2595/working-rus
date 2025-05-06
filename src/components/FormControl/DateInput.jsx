@@ -10,6 +10,7 @@ import { format, parse, isValid } from "date-fns";
 import { Input } from "components/ui/input";
 import { Calendar } from "src/@/components/ui/calendar";
 import { PatternFormat } from "react-number-format";
+import moment from "moment";
 
 const DateInput = React.memo(
   ({
@@ -29,7 +30,9 @@ const DateInput = React.memo(
     minDate,
   }) => {
     const [isOpen, setIsOpen] = useState(false);
-
+    const MinDate = React.useMemo(() => {
+      return moment(minDate).startOf("day");
+    }, [minDate]);
     // Determine input and display formats based on showMonthYearPicker
     const inputPattern = showMonthYearPicker ? "MM/yyyy" : "dd/MM/yyyy";
     const displayPattern = showMonthYearPicker ? "MMMM yyyy" : "d MMMM yyyy";
@@ -105,7 +108,7 @@ const DateInput = React.memo(
           const parsedDate = parse(formattedValue, inputPattern, new Date());
           if (isValid(parsedDate)) {
             // ✅ Add check: if selected date >= minDate
-            if (minDate && parsedDate < new Date(minDate)) {
+            if (minDate && moment(parsedDate).isBefore(MinDate)) {
               return; // Don't allow setting date earlier than minDate
             }
             setDate(parsedDate);
@@ -123,7 +126,7 @@ const DateInput = React.memo(
     const handleCalendarSelect = (selectedDate) => {
       if (selectedDate) {
         // ✅ Add check: if selected date >= minDate
-        if (minDate && selectedDate < new Date(minDate)) {
+        if (minDate && moment(selectedDate).isBefore(MinDate)) {
           return; // Ignore selection if before minDate
         }
         setDate(selectedDate);
@@ -201,7 +204,9 @@ const DateInput = React.memo(
                 // This works if the Calendar component supports it
                 showMonthYearPicker={showMonthYearPicker}
                 // ✅ Block past dates
-                disabled={(date) => minDate ? date < new Date(minDate) : false}
+                disabled={(date) =>
+                  minDate ? moment(date).isBefore(MinDate) : false
+                }
               />
             </div>
           }

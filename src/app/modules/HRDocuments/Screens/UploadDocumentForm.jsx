@@ -21,6 +21,7 @@ import {
 } from "app/hooks/hrDocuments";
 import { useSelector } from "react-redux";
 import SheetComponent from "components/ui/CustomSheet";
+import moment from "moment";
 
 const FormSheetData = {
   triggerText: "Submit",
@@ -181,8 +182,8 @@ const UploadDocumentForm = ({
               {
                 InputField: DateInput,
                 name: "expiration_date",
-                required: true,
                 label: "Expiration Date",
+                minDate:moment(),
               },
               {
                 InputField: DateInput,

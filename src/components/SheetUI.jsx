@@ -110,6 +110,7 @@ const SheetUI = forwardRef(
                             allowUpdate,
                             min,
                             max,
+                            minDate,
                           }) => {
                             return (
                               <div
@@ -141,6 +142,7 @@ const SheetUI = forwardRef(
                                   multiple={multiple}
                                   min={min}
                                   max={max}
+                                  minDate={minDate}
                                 />
                               </div>
                             );

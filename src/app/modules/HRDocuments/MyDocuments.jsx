@@ -22,7 +22,7 @@ export default function MyDocuments() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [ordering, setOrdering] = useState("-id");
+  const [ordering, setOrdering] = useState("id");
   const [filterData, setFilterData] = useState({ emp: userID });
 
   const onPageChange = (name, value) => {

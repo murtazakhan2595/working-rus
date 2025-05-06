@@ -59,6 +59,10 @@ export const URLS = [
     Frontend: "https://hrmsblob-fsc9g0a0b5axcufm.z02.azurefd.net",
     Backend: "https://staging-hrms-be.tecbrix.cloud/api",
   },
+  {
+    Frontend: "https://staging.cohrus.com",
+    Backend: "https://staging-be.cohrus.com/api",
+  },
 ];
 
 export const WEBSOCKET_PATHS = [

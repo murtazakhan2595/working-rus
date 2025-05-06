@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const validationHRDocumentFormSchema = (values) => {
   const errors = {};
   if (!values.acknowledgment_type)
@@ -13,22 +15,16 @@ export const validationHRDocumentFormSchema = (values) => {
     if (values.target_audience === "Specific Employee" && !values.object_id)
       errors.object_id = "Employee is required";
   }
-    // Check if expiration_date exists
-  if (!values.expiration_date) {
-    errors.expiration_date = "Date is required";
-  } else {
+  // Check if expiration_date exists
+  if (values.expiration_date) {
     // Prevent selecting today's or past dates
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time to beginning of the day for accurate comparison
-    
-    const expiryDate = new Date(values.expiration_date);
-    expiryDate.setHours(0, 0, 0, 0); // Reset time to beginning of the day for accurate comparison
-    
-    if (expiryDate <= today) {
+    const today = moment().startOf("day");
+    const expiryDate = moment(values.expiration_date);
+    if (expiryDate.isBefore(today)) {
       errors.expiration_date = "Expiration date must be a future date";
     }
   }
-    if (!values.file) {
+  if (!values.file) {
     errors.file = "Document is required";
   }
   return errors;
