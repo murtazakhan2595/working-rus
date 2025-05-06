@@ -8,6 +8,7 @@ import { PageLoader } from "components";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
+
 import { 
   ArrowLeft, 
   Download, 
@@ -40,6 +41,7 @@ import {
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { exportRecordToExcel, exportRecordToPDF } from "utils/downloadUtils";
+import { DepartmentName } from "utils/getValuesFromTables";
 
 // Get baseUrl from UserSlice initial state
 const baseUrl = initialState.baseUrl;
@@ -724,7 +726,12 @@ const EOSDetails = () => {
       // Employee Info
       { Section: "Employee Information", Item: "Employee ID", Value: employee.employeeId },
       { Section: "Employee Information", Item: "Employee Name", Value: employee.employeeName },
-      { Section: "Employee Information", Item: "Department", Value: employee.department || employee.branch }, // Use branch if department is missing
+      { Section: "Employee Information", Item: "Department", Value: typeof employee.department === 'string' && isNaN(parseInt(employee.department))
+        ? employee.department 
+        : typeof employee.department === 'number' || 
+          (typeof employee.department === 'string' && !isNaN(parseInt(employee.department)))
+          ? <DepartmentName value={employee.department} /> 
+          : employee.department_name || employee.branch || 'N/A' },
       
       // Service Info
       { Section: "Service Information", Item: "Joining Date", Value: formatDate(employee.joiningDate) },
@@ -1127,7 +1134,14 @@ const EOSDetails = () => {
                 </div>
                 <div>
                   <h3 className="mb-2 text-sm font-medium text-neutral-900">Department</h3>
-                  <p className="text-base font-medium">{employee.branch}</p>
+                  <p className="text-base font-medium">
+                    {typeof employee.department === 'string' && isNaN(parseInt(employee.department))
+                      ? employee.department 
+                      : typeof employee.department === 'number' || 
+                        (typeof employee.department === 'string' && !isNaN(parseInt(employee.department)))
+                        ? <DepartmentName value={employee.department} /> 
+                        : employee.department_name || employee.branch || 'N/A'}
+                  </p>
                 </div>
               </div>
             </div>

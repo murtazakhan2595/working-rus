@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import moment from "moment";
 import {
   CalendarIcon,
@@ -32,6 +31,7 @@ export default function EmployeeSelfTimesheet({
   OnBreak,
   disable,
   reloadData,
+  isDashboard = false,
 }) {
   const [payableHours, setPayableHours] = useState(
     parseFloat(attendance?.payable_hours) || 0
@@ -65,16 +65,18 @@ export default function EmployeeSelfTimesheet({
   }, [attendance, OnBreak]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
+    // if isDashboard is false, then the div will  have border and shadow
+    <div className={isDashboard ? "" : " rounded-lg shadow-sm bg-white"}>
+      {/* if isDashboard is true, then the div will not have border and shadow */}
+      <div className={isDashboard ? "" : "p-4 "}>
+        <div className="flex items-center justify-between text-lg font-semibold">
           <span className="text-plum-900">Time Log</span>
           <span className="text-sm text-slate-1200">
             {renderDate(moment())}
           </span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </div>
+      </div>
+      <div className={isDashboard ? "" : "p-4"}>
         <div className="space-y-2">
           <div className="flex justify-between">
             <span className="text-slate-1200">Checkin Time</span>
@@ -92,7 +94,7 @@ export default function EmployeeSelfTimesheet({
               "No shift assigned"
             )}
           </div>
-          <div className="flex items-center flex-row flex-wrap justify-center mt-4">
+          <div className="flex flex-row flex-wrap items-center justify-center mt-4">
             <div className="relative">
               <svg className="w-32 h-32">
                 <circle
@@ -122,7 +124,7 @@ export default function EmployeeSelfTimesheet({
                   cy="64"
                 />
               </svg>
-              <div className="absolute text-xl font-semibold transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2 align-middle text-center">
+              <div className="absolute text-xl font-semibold text-center align-middle transform -translate-x-1/2 -translate-y-1/2 text-plum-900 top-1/2 left-1/2">
                 {formatDuration(payableHours, true)}
               </div>
             </div>
@@ -157,8 +159,8 @@ export default function EmployeeSelfTimesheet({
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 

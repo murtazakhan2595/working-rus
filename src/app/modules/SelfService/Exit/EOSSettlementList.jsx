@@ -1,33 +1,38 @@
 import React, { useState, useEffect } from "react";
-import { getEOSSettlements } from "app/utils/MockData/eosSettlementMockData";
 import { Card, CardContent, CardHeader } from "components/ui/card.jsx";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { PageLoader } from "components";
 import { connect } from "react-redux";
-import { Eye } from "lucide-react";
-import { BadgeCheck, Clock } from "lucide-react";
+import { Eye, CheckCircle, Clock, Plus } from "lucide-react";
+import { BadgeCheck } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
+import { DepartmentName } from "utils/getValuesFromTables";
+import { getEOSSettlements } from "app/services/eosSettlementService";
+import { toast } from "react-toastify";
 
 const EOSSettlementList = ({ userProfile, employeeId }) => {
   const [settlements, setSettlements] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   console.log("SelfService/EOS - User Profile:", userProfile);
   
   // Check if user has EOS-sarly-setup
   const hasEOSSetup = userProfile?.settings?.hasEOSSarlySetup || false;
+  const organizationId = userProfile?.organization;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setError(null);
         
         // If user doesn't have EOS setup, don't fetch data
         if (!hasEOSSetup) {
@@ -35,55 +40,79 @@ const EOSSettlementList = ({ userProfile, employeeId }) => {
           return;
         }
         
-        const data = await getEOSSettlements();
+        // Prepare query parameters
+        const params = { organization: organizationId };
         
-        console.log("SelfService/EOS - All settlements:", data);
-        console.log("SelfService/EOS - Employee ID passed to component:", employeeId);
-        console.log("SelfService/EOS - User profile employeeId:", userProfile?.employeeId);
-        
-        // Fix the filtering logic
-        let filteredData = data;
+        // Add employee filter if available
         if (employeeId) {
-          // Filter by provided employeeId prop
-          filteredData = data.filter(settlement => 
-            String(settlement.employeeId).toLowerCase() === String(employeeId).toLowerCase()
-          );
+          params.employee = employeeId;
         } else if (userProfile?.employeeId) {
-          // Filter by current user's employeeId from Redux state
-          filteredData = data.filter(settlement => 
-            String(settlement.employeeId).toLowerCase() === String(userProfile.employeeId).toLowerCase()
-          );
+          params.employee = userProfile.employeeId;
         }
         
-        // Add debugging to verify IDs match
-        console.log("SelfService/EOS - Current user employeeId:", userProfile?.employeeId);
-        console.log("SelfService/EOS - Settlement IDs in data:", data.map(s => s.employeeId));
+        // Fetch data from API
+        const data = await getEOSSettlements(params);
         
-        console.log("SelfService/EOS - Filtered settlements:", filteredData);
-        setSettlements(filteredData);
+        console.log("SelfService/EOS - Settlements from API:", data);
+        setSettlements(data);
       } catch (error) {
         console.error("Error fetching EOS settlements:", error);
+        setError("Failed to load settlements. Please try again later.");
+        toast.error("Failed to load settlements");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [userProfile, employeeId, hasEOSSetup]);
+  }, [userProfile, employeeId, hasEOSSetup, organizationId]);
 
   const handleViewSettlement = (id) => {
     navigate(`/self-service/exit/eos-settlement/${id}`);
+  };
+
+  const handleSetupEOS = (id) => {
+    // Navigate to setup page or start the setup process
+    navigate(`/self-service/exit/setup-eos/${id}`);
+  };
+
+  const getInitials = (name) => {
+    if (!name) return "NA";
+    return name
+      .split(' ')
+      .map(part => part.charAt(0))
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  };
+
+  const getAvatarColorClass = (name) => {
+    const colors = [
+      'bg-blue-100 text-blue-800',
+      'bg-green-100 text-green-800',
+      'bg-yellow-100 text-yellow-800',
+      'bg-red-100 text-red-800',
+      'bg-purple-100 text-purple-800',
+      'bg-pink-100 text-pink-800'
+    ];
     
-    // Alternative: Use this direct URL if routing issues persist
-    // window.location.href = `/self-service/exit/eos-settlement/${id}`;
+    const hash = name?.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0;
+    return colors[hash % colors.length];
   };
 
   const renderStatusBadge = (status) => {
-    if (status === "Acknowledged") {
+    if (status === "Acknowledged" || status === "Approved") {
       return (
         <div className="flex items-center text-green-600">
-          <BadgeCheck className="w-4 h-4 mr-1" />
-          <span>Acknowledged</span>
+          <CheckCircle className="w-4 h-4 mr-1" />
+          <span>Approved</span>
+        </div>
+      );
+    } else if (status === "Pending") {
+      return (
+        <div className="flex items-center text-amber-600">
+          <Clock className="w-4 h-4 mr-1" />
+          <span>Pending</span>
         </div>
       );
     }
@@ -118,67 +147,165 @@ const EOSSettlementList = ({ userProfile, employeeId }) => {
                 <thead>
                   <tr className="border-b bg-gray-50">
                     <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
-                      Employee ID
+                      Employee
                     </th>
                     <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
-                      Employee Name
+                      ID
                     </th>
                     <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
                       Department
                     </th>
                     <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
+                      Report To
+                    </th>
+                    <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
+                      Notice Period
+                    </th>
+                    <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
+                      Last Working Date
+                    </th>
+                    <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
+                      Offboarding Type
+                    </th>
+                    <th className="px-4 py-3 text-sm font-medium text-left text-neutral-900">
                       Status
                     </th>
                     <th className="px-4 py-3 text-sm font-medium text-center text-neutral-900">
-                      Action
+                      Actions
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {settlements.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="px-4 py-8 text-center text-gray-500">
+                      <td colSpan="9" className="px-4 py-8 text-center text-gray-500">
                         No EOS settlements found
                       </td>
                     </tr>
                   ) : (
                     settlements.map((settlement) => {
                       console.log("SelfService/EOS - Settlement department:", settlement.department);
+                      const avatarClass = getAvatarColorClass(settlement.employeeName);
+                      const initials = getInitials(settlement.employeeName);
+                      const isApproved = settlement.status === "Acknowledged" || settlement.status === "Approved";
                       return (
                         <tr 
                           key={settlement.id} 
                           className="border-b hover:bg-gray-50"
                         >
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-3">
+                              <div className={`flex items-center justify-center w-10 h-10 text-sm font-medium rounded-full ${avatarClass}`}>
+                                {initials}
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-neutral-1200">{settlement.employeeName}</div>
+                                <div className="text-xs text-neutral-500">{settlement.position || 'N/A'}</div>
+                              </div>
+                            </div>
+                          </td>
                           <td className="px-4 py-3 text-sm text-neutral-1200">
                             {settlement.employeeId}
                           </td>
                           <td className="px-4 py-3 text-sm text-neutral-1200">
-                            {settlement.employeeName}
+                            {typeof settlement.department === 'string' && isNaN(parseInt(settlement.department))
+                              ? (settlement.department === 'Department' ? settlement.department_name || 'Unknown' : settlement.department)
+                              : typeof settlement.department === 'number' || 
+                                (typeof settlement.department === 'string' && !isNaN(parseInt(settlement.department)))
+                                ? <DepartmentName value={settlement.department} debug={false} /> 
+                                : settlement.department_name || 'N/A'}
                           </td>
                           <td className="px-4 py-3 text-sm text-neutral-1200">
-                            {settlement.department}
+                            {settlement.reportTo || 'N/A'}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-neutral-1200">
+                            {settlement.noticePeriod || '1 month'}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-neutral-1200">
+                            {new Date(settlement.lastWorkingDate || settlement.resignationDate).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit'
+                            })}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-neutral-1200">
+                            {settlement.resignationType || 'Terminated'}
                           </td>
                           <td className="px-4 py-3 text-sm text-neutral-1200">
                             {renderStatusBadge(settlement.status)}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleViewSettlement(settlement.id)}
-                                    className="flex items-center justify-center w-8 h-8 p-0 text-green-600 border border-green-200 rounded-full shadow-sm bg-green-white hover:bg-green-200 hover:text-green-700"
-                                  >
-                                    <Eye className="w-4 h-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>View</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
+                            <div className="flex items-center justify-center gap-2">
+                              {isApproved ? (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">
+                                        <CheckCircle className="w-3 h-3" />
+                                        <span>Approved</span>
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Settlement approved</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              ) : (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full text-amber-700 bg-amber-100">
+                                        <Clock className="w-3 h-3" />
+                                        <span>Pending</span>
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Awaiting approval</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                              
+                              {isApproved ? (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleViewSettlement(settlement.id)}
+                                        className="flex items-center gap-1 text-xs text-green-700 border-green-200 hover:bg-green-50"
+                                      >
+                                        <Eye className="w-3 h-3" />
+                                        <span>View Details</span>
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>View settlement details</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              ) : (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleSetupEOS(settlement.id)}
+                                        className="flex items-center gap-1 text-xs text-blue-700 border-blue-200 hover:bg-blue-50"
+                                      >
+                                        <Plus className="w-3 h-3" />
+                                        <span>Setup EOS</span>
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Setup end of service settlement</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       );

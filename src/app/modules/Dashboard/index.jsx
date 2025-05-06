@@ -60,7 +60,7 @@ const Dashboard = ({ userProfile }) => {
     <>
       <div className="dashboard ">
         <Header />
-        <div className="grid gap-4 grid-col-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0  gap-y-4 xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-2">
+        <div className="flex flex-col gap-4 sm:grid sm:gap-4 sm:grid-cols-1 lg:gap-x-4 md:gap-x-4 sm:gap-x-0 gap-y-4 xl:grid-cols-3 md:grid-cols-2 lg:grid-cols-2">
           {DashBoardSections.map((section, index) => {
             return (
               <div key={index} className={section.className}>

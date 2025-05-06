@@ -84,8 +84,8 @@ export default function AttendanceSummaryWidget() {
   }, [attendance]);
 
   return (
-    <section className="bg-white rounded-md shadow-sm">
-      <div className="flex justify-between items-center p-4">
+    <section className="bg-white ">
+      <div className="flex items-center justify-between p-4">
         <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
           My Attendance
         </div>
@@ -93,17 +93,16 @@ export default function AttendanceSummaryWidget() {
       </div>
 
       {/* Using EmployeeSelfTimesheet component */}
-      <Card className="border-0 shadow-none">
-        <CardContent>
-          <EmployeeSelfTimesheet
-            employeeShift={EmployeeShiftData}
-            attendance={attendance}
-            OnBreak={onBreak}
-            disable={isLoading}
-            reloadData={reloadData}
-          />
-        </CardContent>
-      </Card>
+      <div className="p-4">
+        <EmployeeSelfTimesheet
+          employeeShift={EmployeeShiftData}
+          attendance={attendance}
+          OnBreak={onBreak}
+          disable={isLoading}
+          reloadData={reloadData}
+          isDashboard={true}
+        />
+      </div>
     </section>
   );
 }

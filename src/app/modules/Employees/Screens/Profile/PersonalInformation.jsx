@@ -8,7 +8,8 @@ import {
   PhoneNumberInput,
   SelectInputComponent,
   TextInput,
-  TextAreaInput
+  TextAreaInput,
+  NumberInput
 } from "components/FormControl";
 import { PageLoader } from "components";
 import {
@@ -218,7 +219,7 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                             />
                           </div>
                           <div className="space-y-2">
-                            <TextInput
+                            <NumberInput
                               name={"nic"}
                               error={props.errors.nic}
                               touch={props.touched.nic}
@@ -227,9 +228,8 @@ const PersonalInfo = ({ nextstep, employeeId, isEditMode }) => {
                               required={true}
                               onChange={(field, value) => {
                                 setIsEdited(true);
-                                props.handleChange(field)(value);
+                                props.setFieldValue(field, value);
                               }}
-                              regEx={/^[0-9]+$/}
                             />
                           </div>
                           <div className="space-y-2">
