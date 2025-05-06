@@ -100,6 +100,7 @@ export default function AttendanceSummaryWidget() {
           OnBreak={onBreak}
           disable={isLoading}
           reloadData={reloadData}
+          isDashboard={true}
         />
       </div>
     </section>
