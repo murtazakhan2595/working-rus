@@ -7,7 +7,10 @@ export function mapTaskPayloadData(data) {
     // Check if the key exists in the data object
     if (data.hasOwnProperty(key) && data[key]) {
       // Add the key and its value to the payload
-      payload[key] = data[key];
+      if (key === "assigned_to" || key === "attachment") {
+        if (Array.isArray(data[key]) && data[key].length > 0)
+          payload[key] = data[key];
+      } else payload[key] = data[key];
     }
   }
 
@@ -16,21 +19,20 @@ export function mapTaskPayloadData(data) {
 }
 
 export function mapProjectPayloadData(data) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in Project) {
+    // Check if the key exists in the data object
+    if (data.hasOwnProperty(key) && data[key]) {
+      // Add the key and its value to the payload
+      payload[key] = data[key];
+    }
+  }
 
-   // Initialize an empty payload object
-   const payload = {};
-   // Iterate over the keys in the Task object
-   for (const key in Project) {
-     // Check if the key exists in the data object
-     if (data.hasOwnProperty(key) && data[key]) {
-       // Add the key and its value to the payload
-       payload[key] = data[key];
-     }
-   }
- 
-   // Return the constructed payload
-   return payload;
- 
+  // Return the constructed payload
+  return payload;
+
   // const formData = new FormData();
   // for (const key in Project) {
   //   if (data.hasOwnProperty(key) && data[key]) {

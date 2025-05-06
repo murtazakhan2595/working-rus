@@ -11,9 +11,10 @@ import { saveEmployeePersonalInfoData } from "app/hooks/employee";
 import { useSelector } from "react-redux";
 import { mapEmployeeTransferInfo } from "app/utils/MappingObjects/mapEmployeeTransferData";
 import AttachmentUI from "components/ui/AttachmentUI";
-import { DetailBox ,SheetCardExtension} from "components/SheetCardExtension";
+import { DetailBox, SheetCardExtension } from "components/SheetCardExtension";
 import { ViewDetailSheetCardExtension, StatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
+import { EmployeeOverview } from "components";
 
 const MyDocumentDetails = ({
   documentID = null,
@@ -22,6 +23,7 @@ const MyDocumentDetails = ({
   isOpen = true,
   setIsOpen = () => {},
   readOnlyMode = false,
+  HRView = false,
 }) => {
   const [currentDocument, setCurrentDocument] = useState({});
   const [currentDocumentId, setCurrentDocumentId] = useState(documentID);
@@ -111,30 +113,22 @@ const MyDocumentDetails = ({
       label: "Category",
       value: <DocCategoryName value={currentDocument?.document_category} />,
     },
-    ...(currentDocument?.due_date
-      ? [
-          {
-            label: "Due Date",
-            value: renderDate(currentDocument?.due_date),
-          },
-        ]
-      : []),
-    ...(currentDocument?.viewed_date
-      ? [
-          {
-            label: "Viewed Date",
-            value: renderDate(currentDocument?.viewed_date),
-          },
-        ]
-      : []),
-    ...(currentDocument?.signature_data
-      ? [
-          {
-            label: "Signature Date",
-            value: renderDate(currentDocument?.signature_data),
-          },
-        ]
-      : []),
+    {
+      label: "Due Date",
+      value: renderDate(currentDocument?.due_date, "--"),
+    },
+    {
+      label: "Viewed Date",
+      value: renderDate(currentDocument?.viewed_date, "--"),
+    },
+    {
+      label: "Acknowledged Date",
+      value: renderDate(currentDocument?.acknowledged_date, "--"),
+    },
+    {
+      label: "Signature Date",
+      value: renderDate(currentDocument?.signature_data, "--"),
+    },
   ].filter(Boolean);
 
   return (
@@ -148,12 +142,22 @@ const MyDocumentDetails = ({
       >
         <div className="mt-4">
           <section className="flex flex-col items-start justify-start w-full gap-2 mt-10 max-md:max-w-full">
-            <div className="flex flex-wrap items-center justify-between w-full">
+            <div className="flex flex-wrap items-center justify-between w-full gap-4">
               <div className="ml-1">
-                <div className="text-xl text-neutral-1200 font-bold mb-3">
-                  {currentDocument?.document_name}
-                </div>
-                <div className="flex flex-row gap-1 flex-wrap overflow-hidden">
+                {HRView ? (
+                  <EmployeeOverview
+                    id={currentDocument.object_id}
+                    showId={true}
+                    showDepartment={true}
+                    showPosition={true}
+                    avatarSize={14}
+                  />
+                ) : (
+                  <div className="text-xl text-neutral-1200 font-bold">
+                    {currentDocument?.document_name}
+                  </div>
+                )}
+                <div className="flex flex-row gap-1 flex-wrap overflow-hidden mt-3">
                   <StatusLabel
                     className="cursor-pointer"
                     status={currentDocument.status}
@@ -202,19 +206,19 @@ const MyDocumentDetails = ({
                         Sign Document
                       </Button>
                     )}
-                  {currentDocument.signature_file && (
-                    <img
-                      src={currentDocument.signature_file}
-                      className="w-16 h-16"
-                    />
-                  )}
                 </div>
+              )}
+              {currentDocument.signature_file && (
+                <img
+                  src={currentDocument.signature_file}
+                  className="w-16 h-16"
+                />
               )}
             </div>
           </section>
           <section>
             <div className="mt-6">
-              <SheetCardExtension title="Document Details">
+              <SheetCardExtension title="Assigned Document Details">
                 <div class="grid grid-cols-3 gap-4">
                   {labelList &&
                     labelList.map((data, index) => {
@@ -233,13 +237,15 @@ const MyDocumentDetails = ({
               </SheetCardExtension>
             </div>
           </section>
-          <section className="min-h-[75vh]">
-            <AttachmentUI
-              attachment={currentDocument.document_file}
-              name={`${currentDocument?.document_name} - Document`}
-              viewOnly={true}
-            />
-          </section>
+          {!HRView && (
+            <section className="min-h-[75vh]">
+              <AttachmentUI
+                attachment={currentDocument.document_file}
+                name={`${currentDocument?.document_name} - Document`}
+                viewOnly={true}
+              />
+            </section>
+          )}
           <section>
             <div className="flex flex-row justify-end gap-4 flex-wrap"></div>
           </section>

@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import Documents from "app/modules/HRDocuments/Documents";
 import MyDocuments from "app/modules/HRDocuments/MyDocuments";
 import Category from "app/modules/HRDocuments/Category";
-import { UploadDocumentForm,CategoryForm } from "app/modules/HRDocuments/Screens";
+import {
+  UploadDocumentForm,
+  CategoryForm,
+  DocumentDetails,
+} from "app/modules/HRDocuments/Screens";
 import {
   Tabs,
   TabsList,
@@ -64,10 +68,10 @@ function HRDocuments() {
         <Card>
           <CardContent>
             <TabsContent value="Documents">
-              <Documents reload={reloadData}/>
+              <Documents reload={reloadData} />
             </TabsContent>
             <TabsContent value="Category">
-              <Category reload={reloadData}/>
+              <Category reload={reloadData} />
             </TabsContent>
           </CardContent>
         </Card>
@@ -94,4 +98,10 @@ function HRDocuments() {
   );
 }
 
-export { Documents, UploadDocumentForm, MyDocuments, HRDocuments };
+export {
+  Documents,
+  UploadDocumentForm,
+  MyDocuments,
+  HRDocuments,
+  DocumentDetails,
+};

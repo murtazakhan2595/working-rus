@@ -20,12 +20,14 @@ import { useSelector } from "react-redux";
 import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
 import Config from "constants/config";
+import { useNavigate, useParams } from "react-router-dom";
 
 const DocumentTabs = ["All", "Signed", "Pending", "Expired"].filter(Boolean);
 const innerTabClassName =
   "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
 
 export default function Documents({ reload }) {
+  const navigate = useNavigate();
   const userRole = useSelector((state) => state.user.userProfile.role);
   const userID = useSelector((state) => state.user.userProfile.id);
   const Document_Category = useSelector((state) => state.doc_category.category);
@@ -57,6 +59,12 @@ export default function Documents({ reload }) {
     },
     onRowClick: (row) => {
       setOpenDocumentID(row.id);
+      navigate(`/documents/detail`, {
+        state: {
+          GOTO_URLS: `/documents/`,
+          document_id: row.id,
+        },
+      });
     },
   };
 
@@ -118,7 +126,8 @@ export default function Documents({ reload }) {
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
     if (filterName === "category") setSelectedCategory(filterValue);
-    if (filterName === "target_audience") setSelectedTargetAudience(filterValue);
+    if (filterName === "target_audience")
+      setSelectedTargetAudience(filterValue);
 
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
