@@ -33,9 +33,6 @@ const innerTabClassName =
   "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
 
 export default function Documents({ reload }) {
-  const navigate = useNavigate();
-  const userRole = useSelector((state) => state.user.userProfile.role);
-  const userID = useSelector((state) => state.user.userProfile.id);
   const Document_Category = useSelector((state) => state.doc_category.category);
   const [isLoading, setIsLoading] = useState(true);
   const [employeeTransferData, setEmployeeTransferData] = useState({
@@ -48,9 +45,7 @@ export default function Documents({ reload }) {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
   const [OpenDocumentID, setOpenDocumentID] = useState(false);
-  const [filterData, setFilterData] = useState(
-    userRole === 2 ? { new_reporting_manager: userID } : {}
-  );
+  const [filterData, setFilterData] = useState({ exclude_expired: true });
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
