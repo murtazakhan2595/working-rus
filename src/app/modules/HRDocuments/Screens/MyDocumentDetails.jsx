@@ -114,6 +114,10 @@ const MyDocumentDetails = ({
       value: <DocCategoryName value={currentDocument?.document_category} />,
     },
     {
+      label: "Assigned Date",
+      value: renderDate(currentDocument?.assigned_date, "--"),
+    },
+    {
       label: "Due Date",
       value: renderDate(currentDocument?.due_date, "--"),
     },
@@ -194,6 +198,7 @@ const MyDocumentDetails = ({
                     </Button>
                   )}
                   {currentDocument?.status === "ACKNOWLEDGED" &&
+                    currentDocument?.acknowledgment_type === "MANDATORY" &&
                     !currentDocument.signature_file && (
                       <Button
                         variant="outline"

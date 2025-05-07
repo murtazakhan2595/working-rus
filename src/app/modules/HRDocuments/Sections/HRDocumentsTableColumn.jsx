@@ -2,6 +2,7 @@ import { StatusLabel, ViewSignature, EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
 import { DocCategoryName } from "utils/getValuesFromTables";
 import { CategoryActions } from "app/modules/HRDocuments/Sections";
+import { DocumentActions } from "app/modules/HRDocuments/Screens";
 import DueDateUI from "components/ui/DueDateUI";
 /**
  * HRDocumentsColumns
@@ -10,7 +11,10 @@ import DueDateUI from "components/ui/DueDateUI";
  *
  * @returns {array} An array of column definitions.
  */
-export const HRDocumentsColumns = [
+export const HRDocumentsColumns = (
+  showAction = false,
+  reloadData = () => {}
+) => [
   {
     dataField: "name",
     text: "Name",
@@ -25,26 +29,47 @@ export const HRDocumentsColumns = [
     minWidth: "110px",
   },
   {
-    dataField: "target_audience",
-    text: "Target Audience",
-    dataSort: true,
-    minWidth: "110px",
-  },
-  {
     dataField: "expiration_date",
     text: "Expiration Date",
     formatter: (cell, row) => renderDate(cell),
     dataSort: true,
     minWidth: "110px",
   },
-  // {
-  //   dataField: "status",
-  //   text: "Type",
-  //   dataSort: true,
-  //   formatter: (cell, row) => (
-  //     <EmployeeTransferStatusView status={cell || "PENDING"} />
-  //   ),
-  // },
+  ...(!showAction
+    ? [
+        {
+          dataField: "doc_status",
+          text: "Status",
+          formatter: (cell, row) => (
+            <StatusLabel status={cell}>
+              {cell?.charAt(0) + cell?.slice(1).toLowerCase()}
+            </StatusLabel>
+          ),
+          dataSort: true,
+          minWidth: "110px",
+        },
+      ]
+    : []),
+  ...(showAction
+    ? [
+        {
+          dataField: "",
+          text: "",
+          formatter: (cell, row) => (
+            <DocumentActions variant="assign_document" document={row} />
+          ),
+          width: "175px",
+        },
+      ]
+    : []),
+  {
+    dataField: "",
+    text: "",
+    formatter: (cell, row) => (
+      <DocumentActions variant="view_detail" document={row} />
+    ),
+    width: "175px",
+  },
 ];
 
 /**
@@ -69,16 +94,9 @@ export const HRDocumentAssigneesColumns = [
     ),
   },
   {
-    dataField: "due_date",
-    text: "Due Date",
-    formatter: (cell, row) => (
-      <DueDateUI
-        dueDate={renderDate(cell)}
-        tooltipMessagePrefix={"This document"}
-        completionState={row.status}
-        className={"bg-transparent p-0 text-sm"}
-      />
-    ),
+    dataField: "assigned_date",
+    text: "Assigned Date",
+    formatter: (cell, row) => renderDate(cell),
     dataSort: true,
     minWidth: "110px",
   },

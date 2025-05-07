@@ -199,12 +199,6 @@ export const addUpdateHRDocumentDetails = async (payload, id = 16) => {
 
     // Check response status
     if (response.status === 201 || response.status === 200) {
-      if (!id) {
-        const assignmentResponse = await addUpdateDocumentAssignment({
-          ...payload,
-          document: response.data.id,
-        });
-      }
       return response.data;
     }
   } catch (error) {

@@ -43,6 +43,7 @@ const SheetUI = forwardRef(
       renderUpdatedFormValues = () => {},
       columns,
       onFormChange,
+      disableSubmit=false,
     } = formConfig;
 
     const handleClose = () => {
@@ -170,6 +171,7 @@ const SheetUI = forwardRef(
                     size="lg"
                     variant="default"
                     onClick={props.handleSubmit}
+                    disabled={disableSubmit}
                   >
                     {submitButtonText}
                   </Button>

@@ -62,10 +62,7 @@ const SelectInputComponent = React.memo(
 
       return selectedOption ? selectedOption.label : value;
     }, [SelectAllOption, value, DropdownList]);
-    console.log(
-      DropdownList.find((option) => option.value == value),
-      "DropdownList.find((option) => option.value == value)"
-    );
+   
     return (
       <FormField
         name={name}

@@ -25,4 +25,6 @@ export const DocumentAssignment = {
   document_file:null,
   signature_data:null,
   signature_file:null,
+  acknowledgment_type:null,
+  assigned_date:null,
 };
