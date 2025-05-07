@@ -25,16 +25,14 @@ import {
   ChartConfig,
   ChartContainer,
 } from "../../../../src/@/components/ui/chart";
-import { getMonthlyAttritionData } from "app/hooks/employeeExitAndClearance";
-import { getEmployeesExitCount } from "app/hooks/employeeExitAndClearance";
 import { getEmployeeMonthlySummary } from "app/hooks/employee";
 
 export default function AttritionAndNewJoinersWidget() {
   const userProfile = useSelector((state) => state.user.userProfile);
   const [attritionData, setAttritionData] = useState({
-    resignations: 2,
-    terminations: 11,
-    newHires: 11,
+    resignations: 0,
+    terminations: 0,
+    newHires: 0,
     monthlyData: [],
   });
   const [loading, setLoading] = useState(true);
@@ -47,24 +45,46 @@ export default function AttritionAndNewJoinersWidget() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await getEmployeeMonthlySummary()
+      const response = await getEmployeeMonthlySummary();
       console.log("Employee Monthly Summary:", response);
-      // Get resignation and termination counts (commented out for now, using hard-coded data)
-      // const exitResponse = await getEmployeesExitCount(
-      //   {},
-      //   "Exit Requests",
-      //   "Resignations"
-      // );
 
-      // Generate mock data for monthly chart
-      const mockMonthlyData = generateMockData();
+      if (response && response.length > 0) {
+        // Get current month data (first item in the array)
+        const currentMonthData = response[0];
 
-      setAttritionData({
-        resignations: 2, // Hard-coded as per screenshot
-        terminations: 11, // Hard-coded as per screenshot
-        newHires: 11, // Hard-coded as per screenshot
-        monthlyData: mockMonthlyData,
-      });
+        // Format the data for the chart
+        const formattedData = response.map((item) => {
+          // Extract month name from "Month YYYY" format
+          const monthParts = item.month.split(" ");
+          const monthName = monthParts[0];
+
+          return {
+            month: monthName.substring(0, 3), // Abbreviate month name to first 3 letters
+            resignations: item.resigned,
+            terminations: item.terminated,
+            newHires: item.joined,
+          };
+        });
+
+        // Reverse the data to show oldest months first (left to right)
+        const sortedData = formattedData.reverse();
+
+        setAttritionData({
+          resignations: currentMonthData.resigned,
+          terminations: currentMonthData.terminated,
+          newHires: currentMonthData.joined,
+          monthlyData: sortedData,
+        });
+
+        // Update current month and year from API data
+        if (currentMonthData.month) {
+          const dateParts = currentMonthData.month.split(" ");
+          if (dateParts.length === 2) {
+            setCurrentMonth(dateParts[0]);
+            setCurrentYear(dateParts[1]);
+          }
+        }
+      }
     } catch (err) {
       console.error("Error fetching attrition data:", err);
     } finally {
@@ -72,58 +92,25 @@ export default function AttritionAndNewJoinersWidget() {
     }
   };
 
-  // Generate mock data for the chart demonstration
-  const generateMockData = () => {
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-    const mockData = [];
-
-    // Create realistic looking data with some variance
-    for (let i = 0; i < 6; i++) {
-      const resignations = i === 5 ? 2 : Math.floor(Math.random() * 5) + 1;
-      const terminations = i === 5 ? 11 : Math.floor(Math.random() * 12) + 5;
-      const newHires = i === 5 ? 11 : Math.floor(Math.random() * 15) + 5;
-
-      mockData.push({
-        month: monthNames[i],
-        resignations,
-        terminations,
-        newHires,
-      });
-    }
-
-    return mockData;
-  };
-
-  // For real implementation, uncomment this
-  // const fetchMonthlyData = async () => {
-  //   try {
-  //     const monthlyData = await getMonthlyAttritionData();
-  //     return monthlyData;
-  //   } catch (error) {
-  //     console.error("Error fetching monthly data:", error);
-  //     return [];
-  //   }
-  // };
-
   useEffect(() => {
     if (userProfile) {
       fetchData();
     }
   }, [userProfile]);
 
-  // FIXED: Use direct color values instead of CSS variables
+  // Direct color values for the chart
   const chartConfig = {
     resignations: {
       label: "Resignations",
-      color: "#9d4edd", // Direct purple color for resignations
+      color: "#9d4edd", // Purple color for resignations
     },
     terminations: {
       label: "Terminations",
-      color: "#f59e0b", // Direct amber color for terminations
+      color: "#f59e0b", // Amber color for terminations
     },
     newHires: {
       label: "New Hires",
-      color: "#10b981", // Direct green color for new hires
+      color: "#10b981", // Green color for new hires
     },
   };
 
@@ -171,7 +158,6 @@ export default function AttritionAndNewJoinersWidget() {
       </CardHeader>
       <CardContent className="px-2">
         <div className="grid grid-cols-3 gap-4 mb-1">
-          {/* FIXED: Use direct color values in the span elements too */}
           <div className="flex flex-col items-center px-3 py-2 bg-white hover:bg-gray-50 rounded-md shadow-sm">
             <span className="text-xl font-bold" style={{ color: "#9d4edd" }}>
               {attritionData.resignations}
