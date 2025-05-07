@@ -29,6 +29,8 @@ import { Link } from "react-router-dom";
 
 export default function Component() {
   const userProfile = useSelector((state) => state.user.userProfile);
+  const Departments = useSelector((state) => state.common.departments);
+  const Designations = useSelector((state) => state.common.designations);
   const [employeeData, setEmployeeData] = useState({
     total: 0,
     active: 0,
@@ -38,6 +40,12 @@ export default function Component() {
   const fetchData = async () => {
     try {
       const response = await getEmployeeCustomList();
+      console.log(
+        response,
+        "EMPLOYEE DATA custom list",
+        Departments,
+        Designations
+      );
       setEmployeeData({
         total: response?.count || 0,
         active: response?.ActiveEmployee || 0,

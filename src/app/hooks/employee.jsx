@@ -1135,7 +1135,28 @@ const getEmployeeDocsChecklist = async (payload) => {
   }
 }
 
+const getEmployeeMonthlySummary = async (payload) => {
+  const filterData = payload?.filterData ?? {};
+  try {
+    let URL = `${baseUrl}/emp/monthly-summary/?search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(URL, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+}
+
 export {
+  getEmployeeMonthlySummary,
   getDownloadTemplate,
   uploadEmployeesData,
   getDocumentChecklist,
