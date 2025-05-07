@@ -5,14 +5,16 @@ import { getAttendanceStats } from "app/hooks/attendance";
 
 export function StatsCards() {
   const userProfile = useSelector((state) => state.user.userProfile);
+  const userRole = useSelector((state) => state.user.userProfile.role);
   const employees = useSelector((state) => state.emp.employees);
   const [loading, setLoading] = useState(false);
   const TotalEmployees = React.useMemo(() => {
-    return (employees?.filter(
-      (employee) =>
-        parseInt(employee.direct_report) === parseInt(userProfile.id)
+    return (employees?.filter((employee) =>
+      userRole === 2
+        ? parseInt(employee.direct_report) === parseInt(userProfile.id)
+        : true
     )).length;
-  }, [employees,userProfile]);
+  }, [employees, userProfile]);
   const [cardStats, setCardStats] = useState({
     total: 0,
     present: 0,
@@ -48,8 +50,7 @@ export function StatsCards() {
     {
       title: "Not Arrived",
       value:
-        (parseInt(TotalEmployees) || 0) -
-        (parseInt(cardStats?.present) || 0),
+        (parseInt(TotalEmployees) || 0) - (parseInt(cardStats?.present) || 0),
     },
   ];
   useEffect(() => {
