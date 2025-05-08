@@ -16,12 +16,18 @@ import CustomTable from "components/CustomTable";
 import { FilterInput } from "components/FormControl";
 import { LeaveTrackerOptions } from "data/Data";
 import { getLeaveComponents } from "app/hooks/leaveTracker";
+import moment from "moment";
 
 const LeaveTrackerOverview = ({ userProfile }) => {
   const [isLeaveTransactionLoading, setIsLeaveTransactionLoading] =
     useState(true);
   const [leaveTransaction, setLeaveTransaction] = useState([]);
-  const [filterData, setFilterData] = useState({});
+// const [filterData, setFilterData] = useState({
+//   range_date: `${moment().startOf("month").format("YYYY-MM-DD")},${moment()
+//     .endOf("month")
+//     .format("YYYY-MM-DD")}`,
+// });
+const [filterData, setFilterData] = useState({});
   const [leaveTypesData, setLeaveTypesData] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedLeaveType, setSelectedLeaveType] = useState("");

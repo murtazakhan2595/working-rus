@@ -46,9 +46,6 @@ const ShiftComplianceWidget = () => {
 
       // Get all shifts
       const shiftsResponse = await getShift();
-
-      console.log("Attendance Response:", attendanceResponse);
-      console.log("Shifts Response:", shiftsResponse);
       
       
       if (attendanceResponse && shiftsResponse && employeesResponse) {

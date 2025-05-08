@@ -100,7 +100,6 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
           );
           if (departmentsFromAPI && departmentsFromAPI.length > 0) {
             console.log(
-              "Departments fetched for Exit Management:",
               departmentsFromAPI.length
             );
             dispatch(setDepartments(departmentsFromAPI));

@@ -46,7 +46,6 @@ export default function AttritionAndNewJoinersWidget() {
     try {
       setLoading(true);
       const response = await getEmployeeMonthlySummary();
-      console.log("Employee Monthly Summary:", response);
 
       if (response && response.length > 0) {
         // Get current month data (first item in the array)
@@ -144,7 +143,7 @@ export default function AttritionAndNewJoinersWidget() {
           {(userProfile.role === 1 || userProfile.role === 3) && (
             <div className="flex gap-2">
               <Button variant="outline" size="sm">
-                <Link to="/exit-and-clearance">View Exits</Link>
+                <Link to="/exit-clearance">View Exits</Link>
               </Button>
             </div>
           )}

@@ -24,7 +24,6 @@ export const getEvents = async (month, year, getEventList) => {
     filterData: filterData,
   });
 
-  console.log("Fetching events for month:", month, "year:", year, events);
   if (events?.results?.length === 0) return [];
 
   // Map API events to our internal format

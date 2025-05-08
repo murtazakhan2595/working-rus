@@ -528,7 +528,6 @@ const getEmployeeCustomList = async (payload) => {
     });
     if (response.status === 200) {
       const employeeDataResponse = response.data.results;
-      console.log("employeeDataResponse", employeeDataResponse);
       const employeeData = {
         count: employeeDataResponse.total_count,
         results: employeeDataResponse.employees,

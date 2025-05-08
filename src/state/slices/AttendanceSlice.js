@@ -36,7 +36,6 @@ const AttendanceSlice = createSlice({
       .addCase(fetchShiftById.fulfilled, (state, action) => {
         state.apiStatus = "succeeded";
         state.assignedShiftData = action.payload;
-        console.log("Team DTR data:", action.payload);
       })
       // When the fetchShiftById thunk is rejected
       .addCase(fetchShiftById.rejected, (state, action) => {
