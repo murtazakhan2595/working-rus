@@ -37,7 +37,10 @@ const CompanyAttendanceOverview = () => {
     try {
       const response = await getAttendanceStats({ filterData: {} });
       if (response) {
-        setAttendanceStats(response);
+        setAttendanceStats({
+          total_employees: response?.valid_employee_count || 0,
+          daily_stats: response?.daily_stats,
+        });
       }
     } catch (error) {
       console.error("Error fetching attendance statistics:", error);

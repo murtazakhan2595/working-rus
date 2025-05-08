@@ -60,7 +60,7 @@ const DepartmentAttendanceWidget = () => {
     const totalEmployees = dept.total_employees || 0;
     const presentCount = dept.present_count || 0;
     const lateCount = dept.late_count || 0;
-    const onLeaveCount = dept.on_leave_count || 0; // New field from updated API
+    const onLeaveCount = dept.leave_count || 0; 
 
     // Calculate absent count
     const absentCount =
@@ -145,7 +145,7 @@ const DepartmentAttendanceWidget = () => {
           <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
             Department-wise Attendance
           </div>
-          <FilterInput
+          {/* <FilterInput
             filters={[
               {
                 type: "select-one",
@@ -157,7 +157,7 @@ const DepartmentAttendanceWidget = () => {
               },
             ]}
             onChange={handleFilterChange}
-          />
+          /> */}
         </div>
       </CardHeader>
       <CardContent>
