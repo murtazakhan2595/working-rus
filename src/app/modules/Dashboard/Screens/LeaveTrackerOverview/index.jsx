@@ -33,39 +33,20 @@ const LeaveTrackerOverview = ({ userProfile }) => {
 
   const fetchLeaveTransaction = async () => {
     setIsLeaveTransactionLoading(true);
-    const leaveTransaction = await getLeaveTransaction({
+    const response = await getLeaveTransaction({
       filterData,
       options: { page: 1, sizePerPage: 5 },
     });
-    if (leaveTransaction) {
+    const leaveTransaction =  response?.results
+    const statusCounts = response?.status_counts || {};
+    if (leaveTransaction && statusCounts) {
       setLeaveTransaction(leaveTransaction);
 
-      // Calculate summary counts
-      // Note: In the future, this will come from API directly
-      const pending =
-        leaveTransaction.results?.filter(
-          (leave) =>
-            leave.action_hr !== "Approved" &&
-            leave.action_hr !== "Declined" &&
-            leave.action_manager !== "Approved" &&
-            leave.action_manager !== "Declined"
-        ).length || 0;
-
-      const approved =
-        leaveTransaction.results?.filter(
-          (leave) =>
-            leave.action_hr === "Approved" &&
-            leave.action_manager === "Approved"
-        ).length || 0;
-
-      const declined =
-        leaveTransaction.results?.filter(
-          (leave) =>
-            leave.action_hr === "Declined" ||
-            leave.action_manager === "Declined"
-        ).length || 0;
-
-      setLeaveSummary({ pending, approved, declined });
+      setLeaveSummary({
+        pending: statusCounts.pending_count || 0,
+        approved: statusCounts.approved_count || 0,
+        declined: statusCounts.declined_count || 0,
+      });
     }
     setIsLeaveTransactionLoading(false);
   };

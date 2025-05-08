@@ -52,8 +52,9 @@ const MyLeaves = ({ userProfile }) => {
       filterData,
       options: { page: 1, sizePerPage: 7 },
     });
-    if (leaveTransaction) {
-      setLeaveTransaction(leaveTransaction);
+    console.log("Leave Transaction-----------", leaveTransaction);
+    if (leaveTransaction?.results) {
+      setLeaveTransaction(leaveTransaction?.results);
     }
     setIsLeaveTransactionLoading(false);
   };
