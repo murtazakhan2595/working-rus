@@ -65,9 +65,6 @@ const PayRunDetails = () => {
     fetchData();
   }, [options, filterData, id]);
 
-  console.log("paySlipsData", paySlipsData);
-
-
   const handleBack = () => {
     navigate(-1);
   };

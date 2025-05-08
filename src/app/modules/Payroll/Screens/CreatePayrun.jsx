@@ -190,7 +190,6 @@ const CreatePayRun = () => {
   //     }
   //   });
   //   setPayrollData(updatedPayrollData);
-  //   console.log("UPDATED PAYROLL DATA", updatedPayrollData);
 
   //   setWithheldRows(updatedWithheldEmployees);
   //   setSelectedRows([]);
@@ -234,7 +233,6 @@ const CreatePayRun = () => {
         return { ...item, value: item.value * 1 + selectedRows.length }; // Subtract the number of employees provided salary back
       }
     });
-    console.log("UPDATED PAYROLL DATA", updatedPayrollData);
     setPayrollData(updatedPayrollData);
 
     // Remove selected withheld rows from withheldRows state
@@ -285,7 +283,6 @@ const CreatePayRun = () => {
     }
   };
   const handleConfirmSubmit = async () => {
-    console.log("IN HANDLE CONFIRM SUBMIT", payrunDraft);
     const reponse = await savePayrun({
       ...payrunDraft,
       is_payroll_run: true,
@@ -300,7 +297,6 @@ const CreatePayRun = () => {
   };
 
   const saveDraft = async (updatedWithheldEmployees, updatedPayrollData) => {
-    console.log("IN SAVE DRAFT", payrollData);
     if (payrunDraft) {
       const response = await savePayrun({
         ...payrunDraft,
@@ -315,14 +311,12 @@ const CreatePayRun = () => {
           (item) => item.title === "Total Employees'"
         ).value,
       });
-      console.log("SAVE DRAFT", response);
       if (!response) {
         toast.error("Something went wrong!");
       } else {
         setPayrunDraft(response);
       }
     } else {
-      console.log("IN ELSE");
       const payRunDraftData = {
         total_amount: updatedPayrollData.find(
           (item) => item.title === "Payroll Cost"

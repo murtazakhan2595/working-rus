@@ -227,7 +227,6 @@ const MyLeaves = ({ userProfile }) => {
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
-          {console.log(leaveTransaction,'leaveTransactionDASHBOARD')}
           {isLeaveTransactionLoading ? (
             <TableBody>
               <TableRow>
