@@ -146,9 +146,11 @@ const LeaveRequests = ({ userProfile, departments, isTeamView = false }) => {
       ) : (
         <div className="flex flex-col gap-4">
           <Header />
-          <div className="p-6">
-            <Stats stats={LeaveTrackerStats} />
-          </div>
+          {!isTeamView && (
+            <div className="p-6">
+              <Stats stats={LeaveTrackerStats} />
+            </div>
+          )}
           <div className="self-end">
             <FilterInput
               filters={[

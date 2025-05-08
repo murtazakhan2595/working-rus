@@ -311,19 +311,21 @@ const TaskEditAddViewDetails = ({
     try {
       const getAttachmentFileIds = async (files) => {
         console.log("files", files);
-
         const isImageFile = (file) => {
-          const imageExtensions = [
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".gif",
-            ".webp",
-            ".bmp",
-          ];
-          return imageExtensions.some((ext) =>
-            file.name.toLowerCase().endsWith(ext)
-          );
+          if (file instanceof File) {
+            const imageExtensions = [
+              ".jpg",
+              ".jpeg",
+              ".png",
+              ".gif",
+              ".webp",
+              ".bmp",
+            ];
+            return imageExtensions.some((ext) =>
+              file.name.toLowerCase().endsWith(ext)
+            );
+          }
+          return false;
         };
 
         const existingFiles = files.filter((file) => file.id);
@@ -643,7 +645,6 @@ const TaskEditAddViewDetails = ({
                                 fetchBoardListByProjectId(true, value);
                                 fetchCustomFieldsByProjectId(true, value);
                                 fetchProject(true, value);
-                                
                               }}
                             />
                           )}

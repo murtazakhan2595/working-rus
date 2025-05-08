@@ -7,14 +7,6 @@ export const validationHRDocumentFormSchema = (values) => {
   if (!values.name) errors.name = "Name is required";
   if (!values.category) errors.category = "Category is required";
   if (!values.description) errors.description = "Note is required";
-  if (!values.target_audience)
-    errors.target_audience = "Target Audience is required";
-  if (values.target_audience) {
-    if (values.target_audience === "Department" && !values.object_id)
-      errors.object_id = "Department is required";
-    if (values.target_audience === "Specific Employee" && !values.object_id)
-      errors.object_id = "Employee is required";
-  }
   // Check if expiration_date exists
   if (values.expiration_date) {
     // Prevent selecting today's or past dates
@@ -26,6 +18,18 @@ export const validationHRDocumentFormSchema = (values) => {
   }
   if (!values.file) {
     errors.file = "Document is required";
+  }
+  return errors;
+};
+export const validationAssignHRDocumentFormSchema = (values) => {
+  const errors = {};
+  if (!values.target_audience)
+    errors.target_audience = "Target Audience is required";
+  if (values.target_audience) {
+    if (values.target_audience === "Department" && Array.isArray(values.object_id) && values.object_id.length === 0)
+      errors.object_id = "Department is required";
+    if (values.target_audience === "Specific Employee" && Array.isArray(values.object_id) && values.object_id.length === 0)
+      errors.object_id = "Employee is required";
   }
   return errors;
 };

@@ -11,9 +11,9 @@ const validationTaskFormSchema = (values) => {
   // if (!values.description) errors.description = "Description is required";
   // if (!values.priority) errors.priority = "Priority is required";
   // if (!values.end_date) errors.end_date = "Due date is required";
-  if (!values.assigned_by) errors.assigned_by = "Assigned by is required";
-  if (values.assigned_to && values.assigned_to.length === 0)
-    errors.assigned_to = "At least one assignee is required";
+  // if (!values.assigned_by) errors.assigned_by = "Assigned by is required";
+  // if (values.assigned_to && values.assigned_to.length === 0)
+  //   errors.assigned_to = "At least one assignee is required";
 
   // Validate Attachments
   if (values.attachment && values.attachment.length > 0&& Array.isArray(values.attachment) )  {

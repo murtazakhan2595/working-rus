@@ -1,7 +1,9 @@
-import {  StatusLabel, ViewSignature } from "components";
+import { StatusLabel, ViewSignature, EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
 import { DocCategoryName } from "utils/getValuesFromTables";
 import { CategoryActions } from "app/modules/HRDocuments/Sections";
+import { DocumentActions } from "app/modules/HRDocuments/Screens";
+import DueDateUI from "components/ui/DueDateUI";
 /**
  * HRDocumentsColumns
  *
@@ -9,7 +11,10 @@ import { CategoryActions } from "app/modules/HRDocuments/Sections";
  *
  * @returns {array} An array of column definitions.
  */
-export const HRDocumentsColumns = [
+export const HRDocumentsColumns = (
+  showAction = false,
+  reloadData = () => {}
+) => [
   {
     dataField: "name",
     text: "Name",
@@ -24,15 +29,99 @@ export const HRDocumentsColumns = [
     minWidth: "110px",
   },
   {
-    dataField: "target_audience",
-    text: "Target Audience",
+    dataField: "expiration_date",
+    text: "Expiration Date",
+    formatter: (cell, row) => renderDate(cell),
+    dataSort: true,
+    minWidth: "110px",
+  },
+  ...(!showAction
+    ? [
+        {
+          dataField: "doc_status",
+          text: "Status",
+          formatter: (cell, row) => (
+            <StatusLabel status={cell}>
+              {cell?.charAt(0) + cell?.slice(1).toLowerCase()}
+            </StatusLabel>
+          ),
+          dataSort: true,
+          minWidth: "110px",
+        },
+      ]
+    : []),
+  ...(showAction
+    ? [
+        {
+          dataField: "",
+          text: "",
+          formatter: (cell, row) => (
+            <DocumentActions variant="assign_document" document={row} />
+          ),
+          width: "175px",
+        },
+      ]
+    : []),
+  {
+    dataField: "",
+    text: "",
+    formatter: (cell, row) => (
+      <DocumentActions variant="view_detail" document={row} />
+    ),
+    width: "175px",
+  },
+];
+
+/**
+ * HRDocumentAssigneesColumns
+ *
+ * Returns an array of column definitions for the InternalTransfer table.
+ *
+ * @returns {array} An array of column definitions.
+ */
+export const HRDocumentAssigneesColumns = [
+  {
+    dataField: "assigned_to_name",
+    text: "Employee",
+    dataSort: true,
+    formatter: (cell, row) => (
+      <EmployeeOverview
+        id={row.object_id}
+        showId={true}
+        showDepartment={true}
+        showPosition={true}
+      />
+    ),
+  },
+  {
+    dataField: "assigned_date",
+    text: "Assigned Date",
+    formatter: (cell, row) => renderDate(cell),
     dataSort: true,
     minWidth: "110px",
   },
   {
-    dataField: "expiration_date",
-    text: "Expiration Date",
-    formatter: (cell, row) => renderDate(cell),
+    dataField: "acknowledged_date",
+    text: "Acknowledged Date",
+    formatter: (cell, row) => renderDate(cell, "--"),
+    dataSort: true,
+    minWidth: "110px",
+  },
+  {
+    dataField: "signature_file",
+    text: "Signature",
+    formatter: (cell, row) => (
+      <ViewSignature signature={cell} className="w-14 h-12" />
+    ),
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell, row) => (
+      <StatusLabel status={cell}>
+        {cell?.charAt(0) + cell?.slice(1).toLowerCase()}
+      </StatusLabel>
+    ),
     dataSort: true,
     minWidth: "110px",
   },
@@ -72,7 +161,14 @@ export const MyHRDocumentsColumns = [
   {
     dataField: "due_date",
     text: "Due Date",
-    formatter: (cell, row) => renderDate(cell),
+    formatter: (cell, row) => (
+      <DueDateUI
+        dueDate={renderDate(cell)}
+        tooltipMessagePrefix={"This document"}
+        completionState={row.status}
+        className={"bg-transparent p-0 text-sm"}
+      />
+    ),
     dataSort: true,
     minWidth: "110px",
   },
@@ -89,7 +185,9 @@ export const MyHRDocumentsColumns = [
   {
     dataField: "signature_file",
     text: "Signature",
-    formatter: (cell, row) => <ViewSignature signature={cell} className='w-14 h-12'/>,
+    formatter: (cell, row) => (
+      <ViewSignature signature={cell} className="w-14 h-12" />
+    ),
   },
 ];
 
@@ -114,6 +212,6 @@ export const DocCategoryColumns = (reload) => [
   {
     text: "Action",
     formatter: (cell, row) => <CategoryActions reload={reload} data={row} />,
-    width:'90px'
+    width: "90px",
   },
 ];

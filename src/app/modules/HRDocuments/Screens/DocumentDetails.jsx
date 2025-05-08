@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { SignatureForm } from "app/modules/HRDocuments/Sections";
 import { DocCategoryName } from "utils/getValuesFromTables";
 import { Button } from "components/ui/button";
+import { TableCustom } from "components";
 import {
   addUpdateDocumentAssignment,
   getHRDocumentData,
@@ -12,6 +13,9 @@ import { saveEmployeePersonalInfoData } from "app/hooks/employee";
 import { mapEmployeeTransferInfo } from "app/utils/MappingObjects/mapEmployeeTransferData";
 import AttachmentUI from "components/ui/AttachmentUI";
 import { DetailBox, SheetCardExtension } from "components/SheetCardExtension";
+import { HRDocumentAssigneesColumns } from "app/modules/HRDocuments/Sections";
+import { MyDocumentDetails } from "app/modules/HRDocuments/Screens";
+
 import {
   ViewDetailSheetCardExtension,
   StatusLabel,
@@ -19,31 +23,69 @@ import {
 } from "components";
 import { renderDate } from "utils/renderValues";
 import { TextInput } from "components/FormControl";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { Card, CardContent, CardTitle } from "components/ui/card";
+import { SelectInputComponent } from "components/FormControl";
+import { HRDocumentsStatus } from "data/Data";
+import { calculateTotalCount } from "utils/renderValues";
 
-const DocumentDetails = ({
-  documentID = null,
-  DocumentList = [],
-  reloadData = () => {},
-  isOpen = true,
-  setIsOpen = () => {},
-  readOnlyMode = false,
-}) => {
+const DocumentDetails = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { GOTO_URLS, document_id } = location.state || {};
   const [currentDocument, setCurrentDocument] = useState({});
   const [DocumentAssignees, setDocumentAssignees] = useState([]);
-  const [currentDocumentId, setCurrentDocumentId] = useState(documentID);
-  const [OpenSignationForm, setOpenSignationForm] = useState(false);
+  const [acknowledgedDocument, setAcknowledgedDocument] = useState(0);
+  const [pendingDocument, setPendingDocument] = useState(0);
+  const [OpenDocumentID, setOpenDocumentID] = useState(false);
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [ordering, setOrdering] = useState("-id");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedAssigneeStatus, setSelectedAssigneeStatus] = useState(null);
 
-  const fetchData = async (isMounted, documentId) => {
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
+    onRowClick: (row) => {
+      setOpenDocumentID(row.id);
+      // navigate(`/documents/detail`, {
+      //   state: {
+      //     GOTO_URLS: `/documents/`,
+      //     document_id: row.id,
+      //   },
+      // });
+    },
+  };
+
+  const fetchDocumentAssigneeData = async (isMounted) => {
     try {
-      const response = await getHRDocumentData(documentId);
       const assigneeResponse = await getDocumentAssignmentList({
-        filterData: { document: documentId },
+        filterData: { document: document_id },
+        ordering,
       });
-      if (isMounted && response) {
-        setCurrentDocument(response);
-        setCurrentDocumentId(documentId);
-        setDocumentAssignees(assigneeResponse?.results);
+      if (isMounted && assigneeResponse) {
+        setDocumentAssignees(assigneeResponse?.results || []);
+        const acknowledgedDocument = calculateTotalCount(
+          assigneeResponse?.results,
+          "status",
+          "ACKNOWLEDGED"
+        );
+        const pendingDocument = calculateTotalCount(
+          assigneeResponse?.results,
+          "status",
+          "PENDING"
+        );
+        setPendingDocument(pendingDocument);
+        setAcknowledgedDocument(acknowledgedDocument);
       }
     } catch (error) {
       console.error(error);
@@ -52,70 +94,34 @@ const DocumentDetails = ({
 
   useEffect(() => {
     let isMounted = true;
-    if (currentDocumentId) {
-      fetchData(isMounted, currentDocumentId);
+    if (document_id) {
+      fetchDocumentAssigneeData(isMounted);
     }
     return () => {
       isMounted = false;
     };
-  }, [currentDocumentId]);
+  }, [ordering]);
 
-  const handleNext = () => {
-    const currentIndex = DocumentList.findIndex(
-      (item) => item.id === currentDocumentId
-    );
-    if (currentIndex < DocumentList.length - 1) {
-      const currentDocument = DocumentList[currentIndex + 1];
-      setCurrentDocumentId(currentDocument?.id);
-    } else {
-      const currentDocument = DocumentList[0];
-      setCurrentDocumentId(currentDocument?.id);
-    }
-  };
-
-  const handlePrevious = () => {
-    const currentIndex = DocumentList.findIndex(
-      (item) => item.id === currentDocumentId
-    );
-    if (currentIndex > 0) {
-      const currentDocument = DocumentList[currentIndex - 1];
-      setCurrentDocumentId(currentDocument?.id);
-    } else {
-      const currentDocument = DocumentList[DocumentList.length - 1];
-      setCurrentDocumentId(currentDocument?.id);
-    }
-  };
-  const handleSubmit = async (event, status) => {
-    if (event) event.preventDefault();
+  const fetchData = async (isMounted, documentId) => {
     try {
-      const payload = {
-        status: status,
-        ...(status === "VIEWED"
-          ? { viewed_date: moment().format("YYYY-MM-DD") }
-          : {}),
-        ...(status === "ACKNOWLEDGED"
-          ? { acknowledged_date: moment().format("YYYY-MM-DD") }
-          : {}),
-      };
-      const response = await addUpdateDocumentAssignment(
-        payload,
-        currentDocumentId
-      );
-      if (response) {
-        if (payload.status === "APPROVED") {
-          const empInfo = mapEmployeeTransferInfo(currentDocument);
-          await saveEmployeePersonalInfoData(
-            currentDocument.employee_id,
-            empInfo
-          );
-        }
-        fetchData(true, currentDocumentId);
-        reloadData(true);
+      const response = await getHRDocumentData(documentId);
+      if (isMounted && response) {
+        setCurrentDocument(response);
       }
     } catch (error) {
-      console.error("Error updating application status:", error);
+      console.error(error);
     }
   };
+
+  useEffect(() => {
+    let isMounted = true;
+    if (document_id) {
+      fetchData(isMounted, document_id);
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [document_id]);
 
   const labelList = [
     {
@@ -125,184 +131,174 @@ const DocumentDetails = ({
     ...(currentDocument?.expiration_date
       ? [
           {
-            label: "Due Date",
+            label: "Expiration Date",
             value: renderDate(currentDocument?.expiration_date),
           },
         ]
       : []),
-    ...(currentDocument?.viewed_date
-      ? [
-          {
-            label: "Viewed Date",
-            value: renderDate(currentDocument?.viewed_date),
-          },
-        ]
-      : []),
-    ...(currentDocument?.target_audience
-      ? [
-          {
-            label: "Target Audience",
-            value: currentDocument?.target_audience,
-          },
-        ]
-      : []),
+    // ...(currentDocument?.target_audience
+    //   ? [
+    //       {
+    //         label: "Target Audience",
+    //         value: currentDocument?.target_audience,
+    //       },
+    //     ]
+    //   : []),
   ].filter(Boolean);
 
   // Filter employee based on search
   const FilterDocumentAssignees = React.useMemo(() => {
-    return DocumentAssignees?.filter((documentAssignee) =>
-      documentAssignee.assigned_to_name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [DocumentAssignees, searchQuery]);
-  console.log(DocumentAssignees);
+    if (!DocumentAssignees) return [];
+    const query = searchQuery.toLowerCase();
+    return DocumentAssignees.filter(({ assigned_to_name, status }) => {
+      const matchesQuery = assigned_to_name.toLowerCase().includes(query);
+      const matchesStatus = selectedAssigneeStatus
+        ? status === selectedAssigneeStatus
+        : true;
+      return matchesQuery && matchesStatus;
+    });
+  }, [DocumentAssignees, searchQuery, selectedAssigneeStatus]);
+
   return (
     <>
-      <ViewDetailSheetCardExtension
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        title="Document Details"
-        handlePrevious={handlePrevious}
-        handleNext={handleNext}
-      >
-        <div className="mt-4">
-          <section className="flex flex-col items-start justify-start w-full gap-2 mt-10 max-md:max-w-full">
-            <div className="flex flex-wrap items-center justify-between w-full">
-              <div className="ml-1">
-                <div className="text-xl text-neutral-1200 font-bold mb-3">
-                  {currentDocument?.name}
-                </div>
-                <div className="flex flex-row gap-1 flex-wrap overflow-hidden">
-                  <StatusLabel status={currentDocument.doc_status}>
-                    {currentDocument.doc_status?.charAt(0) +
-                      currentDocument.doc_status?.slice(1).toLowerCase()}
-                  </StatusLabel>
-                  <StatusLabel status={currentDocument.acknowledgment_type}>
-                    {currentDocument.acknowledgment_type?.charAt(0) +
-                      currentDocument.acknowledgment_type
-                        ?.slice(1)
-                        .toLowerCase()}
-                  </StatusLabel>
+      <div className="container p-4 mx-auto">
+        {/* if the pathname starts with /user/ then show the go back button */}
+        <div className="mb-4">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              navigate(GOTO_URLS);
+            }}
+            className="p-4 text-xl text-balance"
+          >
+            <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
+            Go Back
+          </Button>
+        </div>
+        {/* if the pathname is /my-profile then show the header */}
+        {/* <Header /> */}
+        <div className="my-5">
+          <Card>
+            <CardContent className="flex flex-col items-start justify-start w-full gap-2 mt-10 max-md:max-w-full ">
+              <div className="flex flex-wrap items-center justify-between w-full">
+                <div className="ml-1">
+                  <div className="text-xl text-neutral-1200 font-bold mb-3">
+                    {currentDocument?.name}
+                  </div>
+                  <div className="flex flex-row gap-1 flex-wrap overflow-hidden">
+                    <StatusLabel status={currentDocument.doc_status}>
+                      {currentDocument.doc_status?.charAt(0) +
+                        currentDocument.doc_status?.slice(1).toLowerCase()}
+                    </StatusLabel>
+                    <StatusLabel status={currentDocument.acknowledgment_type}>
+                      {currentDocument.acknowledgment_type?.charAt(0) +
+                        currentDocument.acknowledgment_type
+                          ?.slice(1)
+                          .toLowerCase()}
+                    </StatusLabel>
+                    <StatusLabel status={'acknowledged'}>
+                      {acknowledgedDocument} Acknowledged
+                    </StatusLabel>
+                    <StatusLabel status={'rejected'}>
+                      {pendingDocument} Pending
+                    </StatusLabel>
+                  </div>
                 </div>
               </div>
-              {!readOnlyMode && (
-                <div className="flex flex-row flex-wrap max-w-[50%] items-center gap-2">
-                  {currentDocument?.status === "PENDING" && (
-                    <Button
-                      variant="outline"
-                      onClick={(e) => {
-                        handleSubmit(e, "VIEWED");
-                      }}
-                      type="button"
-                      size="sm"
-                    >
-                      Mark as Viewed
-                    </Button>
-                  )}
-                  {currentDocument?.status === "VIEWED" && (
-                    <Button
-                      variant="outline"
-                      onClick={(e) => {
-                        handleSubmit(e, "ACKNOWLEDGED");
-                      }}
-                      size="sm"
-                      type="button"
-                    >
-                      Acknowledge
-                    </Button>
-                  )}
-                  {currentDocument?.status === "ACKNOWLEDGED" && (
-                    <Button
-                      variant="outline"
-                      onClick={(e) => {
-                        setOpenSignationForm(e, "ACKNOWLEDGED");
-                      }}
-                      size="sm"
-                      type="button"
-                    >
-                      Sign Document
-                    </Button>
-                  )}
-                </div>
-              )}
+            </CardContent>
+          </Card>
+        </div>
+        <Card className="mb-4">
+          <CardTitle className="text-plum-900 pt-6 px-6">
+            Document Detail
+          </CardTitle>
+          <CardContent className="py-4">
+            <div className="mt-6 flex flex-col gap-8">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {labelList &&
+                  labelList.map((data, index) => {
+                    return (
+                      <DetailBox
+                        // orientation="horizontal"
+                        key={index}
+                        className=""
+                        label={data.label}
+                        value={data.value}
+                        fallbackText={""}
+                      />
+                    );
+                  })}
+              </div>
+              <DetailBox
+                // orientation="horizontal"
+                className=""
+                label={"Description"}
+                value={currentDocument.description}
+                fallbackText={""}
+              />
+              <DetailBox
+                // orientation="horizontal"
+                className=""
+                label={"Attachment"}
+                value={
+                  <AttachmentUI
+                    attachment={currentDocument.file}
+                    viewOnly={true}
+                  />
+                }
+                fallbackText={""}
+              />
             </div>
-          </section>
-          <section className="mt-5">
-            <AttachmentUI
-              attachment={currentDocument.file}
-              viewOnly={true}
-            />
-          </section>
-          <section>
-            <div className="mt-6">
-              <SheetCardExtension title="Document Details">
-                <div class="grid grid-cols-3 gap-8">
-                  {labelList &&
-                    labelList.map((data, index) => {
-                      return (
-                        <DetailBox
-                          orientation="horizontal"
-                          key={index}
-                          className=""
-                          label={data.label}
-                          value={data.value}
-                          fallbackText={""}
-                        />
-                      );
-                    })}
-                </div>
-                <DetailBox
-                  orientation="horizontal"
-                  className=""
-                  label={"Description"}
-                  value={currentDocument.description}
-                  fallbackText={""}
-                />
-              </SheetCardExtension>
-            </div>
-          </section>
-
-          <section>
-            <div className="mt-6 mb-4">
-              <SheetCardExtension title="Document Assignees">
+          </CardContent>
+        </Card>
+        <Card className="mb-4">
+          <CardTitle className="text-plum-900 pt-6 px-6">
+            Document Assignees
+          </CardTitle>
+          <CardContent className="py-4">
+            <div className="flex flex-col gap-8 mb-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <TextInput
-                  name="search"
+                  name="document_name"
                   placeholder="Search Employee"
                   onChange={(_, value) => {
                     setSearchQuery(value);
                   }}
                   value={searchQuery}
                 />
-                {FilterDocumentAssignees?.map((assignee, index) => {
-                  return (
-                    <div key={index} className="flex flex-row justify-between">
-                      <EmployeeOverview
-                        id={assignee.object_id}
-                        showId={true}
-                        showDepartment={true}
-                        showPosition={true}
-                      />
-                      <div>
-                        <StatusLabel status={assignee.status}>
-                          {assignee.status?.charAt(0) +
-                            assignee.status?.slice(1).toLowerCase()}
-                        </StatusLabel>
-                      </div>
-                    </div>
-                  );
-                })}
-              </SheetCardExtension>
+                <SelectInputComponent
+                  name="status"
+                  value={selectedAssigneeStatus}
+                  onChange={(_, value) => {
+                    setSelectedAssigneeStatus(value);
+                  }}
+                  options={HRDocumentsStatus}
+                />
+              </div>
+
+              <TableCustom
+                data={FilterDocumentAssignees}
+                columns={HRDocumentAssigneesColumns}
+                pagination={false}
+                dataTotalSize={FilterDocumentAssignees.length || 0}
+                tableOptions={tableOptions}
+              />
             </div>
-          </section>
-        </div>
-      </ViewDetailSheetCardExtension>
-      {OpenSignationForm && (
-        <SignatureForm
-          id={currentDocumentId}
-          isOpen={OpenSignationForm}
+          </CardContent>
+        </Card>
+      </div>
+      {OpenDocumentID && (
+        <MyDocumentDetails
+          documentID={OpenDocumentID}
+          isOpen={!!OpenDocumentID}
           setIsOpen={() => {
-            setOpenSignationForm(false);
-            fetchData(true, currentDocumentId);
+            setOpenDocumentID(null);
+            fetchDocumentAssigneeData(true);
           }}
+          DocumentList={DocumentAssignees}
+          reloadData={fetchDocumentAssigneeData}
+          readOnlyMode={true}
+          HRView={true}
         />
       )}
     </>

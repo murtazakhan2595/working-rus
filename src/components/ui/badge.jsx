@@ -16,9 +16,9 @@ const badgeVariants = cva(
           "border-transparent bg-red-500 text-slate-50  dark:bg-red-900 dark:text-slate-50 dark:hover:bg-red-900/80",
         outline: "text-slate-900 dark:text-slate-50",
         plum: "bg-plum-300 text-plum-1100",
-        error: "bg-red-100 text-red-500",
-        warning: "bg-amber-100 text-amber-500",
-        success: "bg-emerald-100 text-emerald-500",
+        error: "bg-red-50 text-red-700",
+        warning: "bg-amber-50 text-amber-500",
+        success: "bg-emerald-50 text-emerald-700",
         neutral: "bg-neutral-300 text-neutral-1100",
         "dot-plum":
           "bg-white border-neutral-300 flex items-center gap-2 text-neutral-1100",

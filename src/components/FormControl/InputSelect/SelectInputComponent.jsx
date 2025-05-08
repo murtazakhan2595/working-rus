@@ -53,14 +53,16 @@ const SelectInputComponent = React.memo(
       [SelectAllOption, options]
     );
 
-    const SelectedValueLabel = React.useMemo(
-      () =>
-        SelectAllOption && !value
-          ? "All"
-          : DropdownList.find((option) => option.value == value)?.label ??
-            value,
-      [SelectAllOption, value]
-    );
+    const SelectedValueLabel = React.useMemo(() => {
+      if (SelectAllOption && !value) return "All";
+
+      const selectedOption = DropdownList.find(
+        (option) => String(option.value) === String(value)
+      );
+
+      return selectedOption ? selectedOption.label : value;
+    }, [SelectAllOption, value, DropdownList]);
+   
     return (
       <FormField
         name={name}

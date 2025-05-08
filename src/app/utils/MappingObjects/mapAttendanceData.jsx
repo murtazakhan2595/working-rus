@@ -16,10 +16,11 @@ export function mapShiftData(data) {
   return shiftDetails;
 }
 export function mapAttendanceData(data, shiftDetails) {
+  debugger;
   const startTime = moment(shiftDetails.starttime);
   const endTime = moment(shiftDetails.endtime);
   // Initialize an empty payload object
-  const Hours = CalculateTotalWorkingHours(startTime,endTime,'day')
+  const Hours = CalculateTotalWorkingHours(startTime, endTime, "day");
   const payload = { total_hours: Hours };
   // Iterate over the keys in the Task object
   for (const key in Attendance) {
@@ -54,12 +55,15 @@ export function mapAttendanceData(data, shiftDetails) {
         payload["payable_hours"] = parseFloat(
           moment(payload.checkout).diff(checkin, "hours", true)
         ).toFixed(2);
-        if (
-          parseFloat(payload.payable_hours) > parseFloat(payload.total_hours)
-        ) {
-          payload["overtime_hours"] = parseFloat(
-            parseFloat(payload.payable_hours) - parseFloat(payload.total_hours)
-          ).toFixed(2);
+        if (Hours > 0) {
+          if (
+            parseFloat(payload.payable_hours) > parseFloat(payload.total_hours)
+          ) {
+            payload["overtime_hours"] = parseFloat(
+              parseFloat(payload.payable_hours) -
+                parseFloat(payload.total_hours)
+            ).toFixed(2);
+          }
         }
       } else payload[key] = data[key];
     }

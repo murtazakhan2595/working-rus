@@ -8,6 +8,7 @@ export const CoverFileInput = ({
   handleFile,
   handleRemoveFile,
   handleUpdateFileClick = () => {},
+  disabled=false,
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
@@ -91,6 +92,7 @@ export const CoverFileInput = ({
             type="button"
             onClick={handleUpdateFileClick}
             className="text-sm font-medium text-primary hover:text-plum-700"
+            disabled={disabled}
           >
             Update
           </button>
@@ -98,6 +100,7 @@ export const CoverFileInput = ({
             type="button"
             onClick={() => handleRemoveFile(index)}
             className="text-sm font-medium text-neutral-900 hover:text-neutral-700"
+            disabled={disabled}
           >
             Remove
           </button>

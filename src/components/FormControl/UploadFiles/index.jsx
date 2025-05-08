@@ -19,6 +19,7 @@ const CoverFileUpload = ({
   deleteAttachment = () => {},
   allowUpdate = true,
   className = "w-full", // Custom styling
+  disabled=false
 }) => {
   const [files, setFiles] = useState([]); // Store multiple files
   // Initialize files from value
@@ -121,6 +122,7 @@ const CoverFileUpload = ({
           handleRemoveFile={handleRemoveFile}
           handleUpdateFileClick={handleUpdateFileClick}
           allowUpdate={allowUpdate}
+          disabled={disabled}
         />
       )}
       {variant === "AttachmentFileUpload" && (
@@ -132,6 +134,7 @@ const CoverFileUpload = ({
           handleRemoveFile={handleRemoveFile}
           handleUpdateFileClick={handleUpdateFileClick}
           allowUpdate={allowUpdate}
+          disabled={disabled}
         />
       )}
     </FormField>
