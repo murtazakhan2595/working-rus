@@ -14,6 +14,7 @@ import { getDepartmentPercentage } from "app/hooks/attendance";
 import { FilterInput } from "components/FormControl";
 import { PageLoader } from "components";
 import { ScrollArea } from "src/@/components/ui/scroll-area";
+import { Button } from "components/ui/button"; // Add this import
 
 // Color scheme matching your existing components
 const COLORS = {
@@ -28,6 +29,8 @@ const DepartmentAttendanceWidget = () => {
   const [loading, setLoading] = useState(false);
   const [filteredDepartment, setFilteredDepartment] = useState("");
   const Departments = useSelector((state) => state.common.departments);
+  // Add state for table visibility
+  const [showTable, setShowTable] = useState(false);
 
   const fetchDepartmentData = async () => {
     setLoading(true);
@@ -60,7 +63,7 @@ const DepartmentAttendanceWidget = () => {
     const totalEmployees = dept.total_employees || 0;
     const presentCount = dept.present_count || 0;
     const lateCount = dept.late_count || 0;
-    const onLeaveCount = dept.leave_count || 0; 
+    const onLeaveCount = dept.leave_count || 0;
 
     // Calculate absent count
     const absentCount =
@@ -145,19 +148,12 @@ const DepartmentAttendanceWidget = () => {
           <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
             Department-wise Attendance
           </div>
-          {/* <FilterInput
-            filters={[
-              {
-                type: "select-one",
-                option: Departments,
-                name: "department",
-                placeholder: "All Departments",
-                values: filteredDepartment,
-                width: "w-[175px]",
-              },
-            ]}
-            onChange={handleFilterChange}
-          /> */}
+          <div className="flex items-center gap-2">
+            {/* Add toggle button for table visibility */}
+            <Button variant="ghost" onClick={() => setShowTable(!showTable)}>
+              {showTable ? "Hide Details" : "View Details"}
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -210,48 +206,48 @@ const DepartmentAttendanceWidget = () => {
           )}
         </div>
 
-        {/* Department Details Table - Scrollable */}
-        <div className="mt-4">
-          <div className="font-semibold mb-2">Department Details</div>
-          <ScrollArea className="h-48">
-            {" "}
-            {/* Fixed height with scrolling */}
-            <table className="w-full text-sm">
-              <thead className="sticky top-0 bg-white z-10">
-                <tr className="bg-gray-100 border-b">
-                  <th className="text-left py-1 px-2">Department</th>
-                  <th className="text-right py-1 px-2">Total</th>
-                  <th className="text-right py-1 px-2">Present</th>
-                  <th className="text-right py-1 px-2">Absent</th>
-                  <th className="text-right py-1 px-2">Late</th>
-                  <th className="text-right py-1 px-2">On Leave</th>
-                </tr>
-              </thead>
-              <tbody>
-                {chartData.map((dept, index) => (
-                  <tr key={index} className="border-b hover:bg-gray-50">
-                    <td className="py-1 px-2">{dept.name}</td>
-                    <td className="text-right py-1 px-2">
-                      {dept.totalEmployees}
-                    </td>
-                    <td className="text-right py-1 px-2">
-                      {dept.presentCount} ({dept.Present}%)
-                    </td>
-                    <td className="text-right py-1 px-2">
-                      {dept.absentCount} ({dept.Absent}%)
-                    </td>
-                    <td className="text-right py-1 px-2">
-                      {dept.lateCount} ({dept.Late}%)
-                    </td>
-                    <td className="text-right py-1 px-2">
-                      {dept.onLeaveCount} ({dept["On Leave"]}%)
-                    </td>
+        {/* Department Details Table - Collapsible */}
+        {showTable && (
+          <div className="mt-4">
+            <div className="font-semibold mb-2">Department Details</div>
+            <ScrollArea className="h-48">
+              <table className="w-full text-sm">
+                <thead className="sticky top-0 bg-white z-10">
+                  <tr className="bg-gray-100 border-b">
+                    <th className="text-left py-1 px-2">Department</th>
+                    <th className="text-right py-1 px-2">Total</th>
+                    <th className="text-right py-1 px-2">Present</th>
+                    <th className="text-right py-1 px-2">Absent</th>
+                    <th className="text-right py-1 px-2">Late</th>
+                    <th className="text-right py-1 px-2">On Leave</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </ScrollArea>
-        </div>
+                </thead>
+                <tbody>
+                  {chartData.map((dept, index) => (
+                    <tr key={index} className="border-b hover:bg-gray-50">
+                      <td className="py-1 px-2">{dept.name}</td>
+                      <td className="text-right py-1 px-2">
+                        {dept.totalEmployees}
+                      </td>
+                      <td className="text-right py-1 px-2">
+                        {dept.presentCount} ({dept.Present}%)
+                      </td>
+                      <td className="text-right py-1 px-2">
+                        {dept.absentCount} ({dept.Absent}%)
+                      </td>
+                      <td className="text-right py-1 px-2">
+                        {dept.lateCount} ({dept.Late}%)
+                      </td>
+                      <td className="text-right py-1 px-2">
+                        {dept.onLeaveCount} ({dept["On Leave"]}%)
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </ScrollArea>
+          </div>
+        )}
       </CardContent>
     </>
   );

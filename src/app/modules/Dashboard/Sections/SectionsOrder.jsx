@@ -27,6 +27,36 @@ const DashboardHR = [
   {
     type: "div",
     className: `w-full`,
+    content: <CompanyAttendanceOverview />,
+    value: "CompanyAttendanceOverview",
+  },
+  {
+    type: "div",
+    className: `col-span-2`,
+    content: <DepartmentAttendanceWidget />,
+    value: "DepartmentAttendanceWidget",
+  },
+  {
+    type: "div",
+    className: `col-span-2`,
+    content: <LeaveTrackerOverview />,
+    value: "LeaveTracker",
+  },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <EventCalendar />,
+    value: "EventCalendar",
+  },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <AttritionAndNewJoinersWidget />,
+    value: "AttritionAndNewJoinersWidget",
+  },
+  {
+    type: "div",
+    className: `w-full`,
     content: <EmployeeOverview />,
     value: "EmployeeOverview",
   },
@@ -41,13 +71,6 @@ const DashboardHR = [
     className: `w-full`,
     content: <RecentActivity />,
     value: "RecentActivity",
-  },
-
-  {
-    type: "div",
-    className: `col-span-2`,
-    content: <LeaveTrackerOverview />,
-    value: "LeaveTracker",
   },
 
   // {
@@ -82,12 +105,12 @@ const DashboardHR = [
   //   value: "AllProjects",
   // },
 
-  {
-    type: "div",
-    className: `col-span-2`,
-    content: <MyLeaves />,
-    value: "MyLeaves",
-  },
+  // {
+  //   type: "div",
+  //   className: `col-span-2`,
+  //   content: <MyLeaves />,
+  //   value: "MyLeaves",
+  // },
   // {
   //   type: "div",
   //   className: `w-full`,
@@ -100,30 +123,7 @@ const DashboardHR = [
     content: <ExpiredDocuments />,
     value: "ExpiredDocuments",
   },
-  {
-    type: "div",
-    className: `w-full`,
-    content: <EventCalendar />,
-    value: "EventCalendar",
-  },
-  {
-    type: "div",
-    className: `w-full`,
-    content: <AttritionAndNewJoinersWidget />,
-    value: "AttritionAndNewJoinersWidget",
-  },
-  {
-    type: "div",
-    className: `w-full`,
-    content: <CompanyAttendanceOverview />,
-    value: "CompanyAttendanceOverview",
-  },
-  {
-    type: "div",
-    className: `col-span-2`,
-    content: <DepartmentAttendanceWidget />,
-    value: "DepartmentAttendanceWidget",
-  },
+
   {
     type: "div",
     className: `col-span-2`,

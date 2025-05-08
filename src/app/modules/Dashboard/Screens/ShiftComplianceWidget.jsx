@@ -237,7 +237,7 @@ const ShiftComplianceWidget = () => {
     );
   };
   return (
-    <Card className="shadow-lg border rounded-xl bg-white">
+    <>
       <CardHeader className="pb-2">
         <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
           Shift Compliance Report
@@ -380,7 +380,7 @@ const ShiftComplianceWidget = () => {
           </div>
         )}
       </CardContent>
-    </Card>
+    </>
   );
 };
 
