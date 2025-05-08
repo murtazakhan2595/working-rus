@@ -11,6 +11,7 @@ function AttachmentFileInput({
   handleRemoveFile = () => {},
   handleUpdateFileClick = () => {},
   allowUpdate = true,
+  disabled = false,
 }) {
   const [dragActive, setDragActive] = useState(false);
   const AttachmentFileInputRef = useRef(null);
@@ -52,6 +53,7 @@ function AttachmentFileInput({
         id={fileData.id}
         key={index}
         allowUpdate={allowUpdate}
+        viewOnly={disabled}
       />
     ));
   };
@@ -89,6 +91,7 @@ function AttachmentFileInput({
                 e.stopPropagation();
                 AttachmentFileInputRef.current.click();
               }}
+              disabled={disabled}
               size={"sm"}
             >
               Upload

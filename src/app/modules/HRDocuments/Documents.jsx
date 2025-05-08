@@ -22,29 +22,30 @@ import { FilterInput } from "components/FormControl";
 import Config from "constants/config";
 import { useNavigate, useParams } from "react-router-dom";
 
-const DocumentTabs = ["All", "Signed", "Pending", "Expired"].filter(Boolean);
+const DocumentTabs = [
+  "All Documents",
+  "Assigned",
+  // "Signed",
+  // "Pending",
+  "Expired",
+].filter(Boolean);
 const innerTabClassName =
   "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
 
 export default function Documents({ reload }) {
-  const navigate = useNavigate();
-  const userRole = useSelector((state) => state.user.userProfile.role);
-  const userID = useSelector((state) => state.user.userProfile.id);
   const Document_Category = useSelector((state) => state.doc_category.category);
   const [isLoading, setIsLoading] = useState(true);
   const [employeeTransferData, setEmployeeTransferData] = useState({
     results: [],
     count: 0,
   });
-  const [activeDocumentTab, setActiveDocumentTab] = useState("All");
+  const [activeDocumentTab, setActiveDocumentTab] = useState("All Documents");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedTargetAudience, setSelectedTargetAudience] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
   const [OpenDocumentID, setOpenDocumentID] = useState(false);
-  const [filterData, setFilterData] = useState(
-    userRole === 2 ? { new_reporting_manager: userID } : {}
-  );
+  const [filterData, setFilterData] = useState({ exclude_expired: true });
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -56,15 +57,6 @@ export default function Documents({ reload }) {
     onPageChange: onPageChange,
     onSortChange: (sortName) => {
       setOrdering(sortName);
-    },
-    onRowClick: (row) => {
-      setOpenDocumentID(row.id);
-      navigate(`/documents/detail`, {
-        state: {
-          GOTO_URLS: `/documents/`,
-          document_id: row.id,
-        },
-      });
     },
   };
 
@@ -107,9 +99,14 @@ export default function Documents({ reload }) {
   useEffect(() => {
     setFilterData((prevFilter) => {
       const updatedFilter = { ...prevFilter };
-      if (activeDocumentTab === "All") {
+      if (activeDocumentTab === "All Documents") {
         delete updatedFilter.doc_status; // Remove the status key
+        updatedFilter.exclude_expired = true;
+      } else if (activeDocumentTab === "Assigned") {
+        delete updatedFilter.doc_status; // Remove the status key
+        updatedFilter.exclude_expired = true;
       } else {
+        delete updatedFilter.exclude_expired; // Remove the status key
         updatedFilter.doc_status =
           activeDocumentTab === "Signed"
             ? "Signed"
@@ -146,7 +143,7 @@ export default function Documents({ reload }) {
     >
       {/* <Stats stats={statsData} /> */}
       <Tabs
-        defaultValue="All"
+        defaultValue="All Documents"
         className="w-full"
         onValueChange={(tab) => {
           setActiveDocumentTab(tab);
@@ -171,13 +168,6 @@ export default function Documents({ reload }) {
                 name: "name",
               },
               {
-                type: "select-one",
-                option: HRDocumentTargetAudience,
-                name: "target_audience",
-                placeholder: "Target Audience",
-                values: selectedTargetAudience,
-              },
-              {
                 type: "select-two",
                 option: Document_Category,
                 name: "category",
@@ -190,7 +180,10 @@ export default function Documents({ reload }) {
         </div>
         <TableCustom
           data={employeeTransferData.results}
-          columns={HRDocumentsColumns}
+          columns={HRDocumentsColumns(
+            activeDocumentTab === "All Documents",
+            fetchData
+          )}
           pagination={true}
           dataTotalSize={employeeTransferData.count || 0}
           tableOptions={tableOptions}
