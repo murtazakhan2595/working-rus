@@ -1118,7 +1118,6 @@ const deleteComment = async (commentId) => {
 };
 
 const updateBoardPosition = async (boardId, ordering) => {
-  console.log(boardId, ordering, "HELLO KASHIF");
   try {
     const response = await axios.patch(
       `${baseUrl}/board/${boardId}`,

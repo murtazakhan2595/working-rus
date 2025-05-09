@@ -52,7 +52,6 @@ const HeadcountSummaryWidget = ({ departments, designations }) => {
     setIsLoading(true);
     try {
       const response = await getEmployeeCustomList({filterData});
-      console.log("Employee Overview Response:", response);
 
       setEmployeeData({
         total: response?.count || 0,
@@ -95,7 +94,6 @@ const HeadcountSummaryWidget = ({ departments, designations }) => {
   useEffect(() => {
     fetchData();
   }, [filterData, userProfile]);
-  console.log("Employee Data:", employeeData);
   const handleFilterChange = (filterName, filterValue) => {
     if (filterName === "department_name") setSelectedDepartment(filterValue);
     if (filterName === "department_position")

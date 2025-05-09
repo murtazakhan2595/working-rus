@@ -10,7 +10,6 @@ const ProfileManagement = () => {
   const fetchData = async () => {
     try {
       const response = await getEmployeeData(userProfile.id);
-      console.log(response)
       setProfileData({
         name: `${response?.first_name} ${response?.last_name}`,
         id: userProfile.id,
