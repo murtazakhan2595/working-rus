@@ -193,9 +193,9 @@ export const GetDateRange = (period) => {
     return moment().format("YYYY-MM-DD"); // Default case: single day
   else return period;
 };
-export const CalculateTotalWorkingHours = (shiftStartTime, shiftEndTime) => {
-  const startTime = moment.utc(shiftStartTime).format("HH:mm:ss");
-  const endTime = moment.utc(shiftEndTime).format("HH:mm:ss");
+export const CalculateTotalWorkingHours = (start_time, end_time) => {
+  const startTime = moment.utc(start_time).format("HH:mm:ss");
+  const endTime = moment.utc(end_time).format("HH:mm:ss");
 
   // Parse both times on the same reference date (e.g., today)
   const today = moment().format("YYYY-MM-DD");
@@ -206,7 +206,6 @@ export const CalculateTotalWorkingHours = (shiftStartTime, shiftEndTime) => {
   if (end.isBefore(start)) {
     end = end.add(1, "day");
   }
-
   const totalHours = parseFloat(end.diff(start, "hours", true)).toFixed(2);
   return parseFloat(totalHours);
 };
