@@ -52,9 +52,10 @@ export function mapAttendanceData(data, shiftDetails) {
       } else if (key === "checkout") {
         const checkin = moment(payload.checkin);
         payload[key] = data[key];
-        payload["payable_hours"] = parseFloat(
-          moment(payload.checkout).diff(checkin, "hours", true)
-        ).toFixed(2);
+        payload["payable_hours"] = CalculateTotalWorkingHours(
+          checkin,
+          payload.checkout
+        );
         if (Hours > 0) {
           if (
             parseFloat(payload.payable_hours) > parseFloat(payload.total_hours)
