@@ -75,7 +75,6 @@ const TaskEditAddViewDetails = ({
   const navigate = useNavigate();
   const loggedInUserId = useSelector((state) => state.user.userProfile.id);
   const Projects = useSelector((state) => state.common.projects);
-  console.log(Projects, "stateproject");
   const currentTaskId = subtaskId ? subtaskId : taskId;
   const [isLoading, setIsLoading] = useState(false);
   const [BoardList, setBoardList] = useState([]);
@@ -311,7 +310,6 @@ const TaskEditAddViewDetails = ({
     setIsLoading(true);
     try {
       const getAttachmentFileIds = async (files) => {
-        console.log("files", files);
         const isImageFile = (file) => {
           if (file instanceof File) {
             const imageExtensions = [
@@ -414,7 +412,6 @@ const TaskEditAddViewDetails = ({
       if (isSubtask) {
         finalData.is_subtask = true;
       }
-      console.log("cover photo ", values.cover_photo);
       finalData.cover_photo =
         values?.attachment?.length > 0 ? values.cover_photo : null;
 

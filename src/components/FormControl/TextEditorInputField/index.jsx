@@ -350,11 +350,9 @@ function TextEditorInputField({
   );
 
   const handlePaste = async (e) => {
-    debugger;
     e.preventDefault();
     const clipboardData = e.clipboardData || window.Clipboard;
     const items = clipboardData.items;
-    let TextAdded = "";
 
     for (let item of items) {
       const itemType = item.type;

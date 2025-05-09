@@ -314,7 +314,6 @@ const getBreakStatus = async (payload) => {
 };
 
 const endBreak = async (payload, endtime) => {
-  // console.log("endbreak", payload, endtime);
   const lastBreak = await getBreak(payload);
   const lastBreakId = lastBreak?.results[0]?.id;
   const lastBreakEnd = lastBreak?.results[0]?.endtime;
@@ -324,7 +323,6 @@ const endBreak = async (payload, endtime) => {
       endtime: endtime,
     };
 
-    // console.log("breakPayload last break", breakPayload, lastBreakEnd);
     return await saveBreak(breakPayload);
   }
   return false;
@@ -358,7 +356,6 @@ const getLocalTime = () => {
 };
 
 function convertUTCToLocal(timeString) {
-  // console.log("input", timeString);
   // Parse the UTC string (timestamp with 'Z')
   const date = new Date(timeString); // Date object will automatically interpret the Z as UTC
 
@@ -371,7 +368,6 @@ function convertUTCToLocal(timeString) {
   const localDate = new Date(localDateString);
   const formattedDate = localDate.toISOString().slice(0, 19); // Format: YYYY-MM-DDTHH:mm:ss
 
-  // console.log("output", formattedDate);
   return formattedDate;
 }
 

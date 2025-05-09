@@ -17,7 +17,6 @@ const InputTaskCustomFields = ({
   )?.value || null;
 
   const handleOnChangeField = (field, value) => {
-    debugger
     // Create a shallow copy of customFieldValues to avoid directly mutating the original array
     const values = [...customFieldValues];
     // Check if the field already exists in the array
