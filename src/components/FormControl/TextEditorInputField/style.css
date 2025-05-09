@@ -13,12 +13,6 @@
   width: auto;
 }
 
-.textEditorText a{
-  color:#953EA3;
-}
-.textEditorText a:hover{
-  text-decoration: underline;
-}
 .image-none img{
 display: none;
 }

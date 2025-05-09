@@ -6,7 +6,7 @@ import {
   Assignee,
   TaskRelation,
 } from "app/modules/TaskManagment/Sections";
-import { TextInput,NumberInput } from "components/FormControl";
+import { TextInput } from "components/FormControl";
 import { DateInput } from "components/FormControl";
 import { SelectInputComponent } from "components/FormControl";
 import TaskShare from "app/modules/TaskManagment/Sections/TaskShare";
@@ -50,7 +50,7 @@ const InputTaskDetailFields = React.memo(
             }}
           />
           {/* <div className="grid grid-cols-2 gap-2"> */}
-          <NumberInput
+          <TextInput
             name="estimated_time"
             error={errors.estimated_time}
             label={"Estimated Time"}
@@ -61,7 +61,7 @@ const InputTaskDetailFields = React.memo(
               onChange(field, value);
             }}
           />
-          <NumberInput
+          <TextInput
             label={"Time Spent"}
             name="actual_time"
             placeholder="Time Spent (hr)"

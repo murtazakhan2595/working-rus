@@ -182,7 +182,11 @@ export const addUpdateBranch = async (payload, id = null) => {
 
 const saveDesignation = async (designationId, payload) => {
   try {
+    console.log("saveDesignation called with ID:", designationId);
+    console.log("Payload:", payload);
+    
     if (designationId) {
+      console.log(`Making PATCH request to ${baseUrl}/designation/${designationId}`);
       const response = await axios.patch(
         `${baseUrl}/designation/${designationId}`,
         payload,
@@ -190,13 +194,20 @@ const saveDesignation = async (designationId, payload) => {
           headers: headers(),
         }
       );
+      console.log("PATCH response status:", response.status);
+      console.log("PATCH response data:", response.data);
+      
       if (response.status === 200) {
         return response?.data;
       }
     } else {
+      console.log(`Making POST request to ${baseUrl}/designation/`);
       const response = await axios.post(`${baseUrl}/designation/`, payload, {
         headers: headers(),
       });
+      console.log("POST response status:", response.status);
+      console.log("POST response data:", response.data);
+      
       if (response.status === 201) {
         return response?.data;
       }
@@ -420,10 +431,12 @@ const getEmployeeListWithDetail = async () => {
 
 const getOrganizationList = async (allData = false) => {
   try {
+    console.log(`API Request: ${baseUrl}/organization/`);
     const response = await axios.get(`${baseUrl}/organization/`, {
       headers: headers(),
     });
     if (response.status === 200) {
+      console.log('API Response:', response.data);
       const organizationResponse = response.data;
       const organizationList = organizationResponse?.results?.map(
         (organization) => ({
