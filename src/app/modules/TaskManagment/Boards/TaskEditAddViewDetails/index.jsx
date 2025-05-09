@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import moment from "moment";
 import { connect } from "react-redux";
 import { getTaskById, getAllBoards } from "app/hooks/taskManagment";
@@ -75,7 +75,6 @@ const TaskEditAddViewDetails = ({
   const navigate = useNavigate();
   const loggedInUserId = useSelector((state) => state.user.userProfile.id);
   const Projects = useSelector((state) => state.common.projects);
-  console.log(Projects, "stateproject");
   const currentTaskId = subtaskId ? subtaskId : taskId;
   const [isLoading, setIsLoading] = useState(false);
   const [BoardList, setBoardList] = useState([]);
@@ -95,14 +94,15 @@ const TaskEditAddViewDetails = ({
   const [targetRelationship, setTargetRelationship] = useState([]);
   const [removedRelationships, setRemovedRelationships] = useState([]);
   const isSubtask = subtask || initialValues.is_subtask;
-  const taskProjectId = projectId ?? initialValues.project_id;
+  const taskProjectId = useMemo(() => {
+    return projectId ?? initialValues.project_id;
+  }, [projectId, initialValues.project_id]);
   const [uniqueRelationCount, setUniqueRelationCount] = useState(0);
 
   const toggleActivities = () => {
     setShowActivities(!showActivities);
   };
   const handleCloseTaskEditor = () => {
-    console.log(taskProjectId);
     if (GOTO_URLS)
       navigate(GOTO_URLS, {
         state: {
@@ -111,7 +111,7 @@ const TaskEditAddViewDetails = ({
         },
       });
     else {
-      navigate(`/project-board/${projectId}`, {
+      navigate(`/project-board/${taskProjectId}`, {
         state: {
           activeView: activeView,
           projectId: taskProjectId,
@@ -310,7 +310,6 @@ const TaskEditAddViewDetails = ({
     setIsLoading(true);
     try {
       const getAttachmentFileIds = async (files) => {
-        console.log("files", files);
         const isImageFile = (file) => {
           if (file instanceof File) {
             const imageExtensions = [
@@ -413,7 +412,6 @@ const TaskEditAddViewDetails = ({
       if (isSubtask) {
         finalData.is_subtask = true;
       }
-      console.log("cover photo ", values.cover_photo);
       finalData.cover_photo =
         values?.attachment?.length > 0 ? values.cover_photo : null;
 
@@ -668,7 +666,7 @@ const TaskEditAddViewDetails = ({
                           )}
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-8 px-6">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-6">
                         <div className="flex flex-col gap-6">
                           <div className="space-y-4">
                             <div className="text-neutral-1200 text-sm font-semibold">

@@ -38,7 +38,7 @@ function TextEditorInputField({
   allowMentions = false, // New prop to control mention functionality
   editMode = false,
   replyToUser = null,
-  commentHeight="h-[300px]"
+  commentHeight = "h-[300px]",
 }) {
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
@@ -353,7 +353,6 @@ function TextEditorInputField({
     e.preventDefault();
     const clipboardData = e.clipboardData || window.Clipboard;
     const items = clipboardData.items;
-    let TextAdded = "";
 
     for (let item of items) {
       const itemType = item.type;
@@ -376,17 +375,18 @@ function TextEditorInputField({
           if (text.startsWith("http")) {
             execCommand(
               "insertHTML",
-              `<a href="${text}" target="_blank">${text}</a>`
+              `<a href="${text}" target="_blank" class="text-plum-900 hover:underline">${text}</a> `
             );
             return;
           } else {
-            if (html && html !== TextAdded) {
+            if (html) {
               execCommand("insertHTML", html);
-              TextAdded = html;
-            } else if (text && text !== TextAdded) {
+            } else if (text) {
               execCommand("insertText", text);
-              TextAdded = text;
             }
+
+            // Break after inserting one type to prevent duplication
+            break;
           }
         }
       }
@@ -470,7 +470,7 @@ function TextEditorInputField({
             />
           </label>
         </div>
-{/* 
+        {/* 
         {attachments.length > 0 && displayAttachments && (
           <div className="p-1">
             {attachments.map((file, index) => (

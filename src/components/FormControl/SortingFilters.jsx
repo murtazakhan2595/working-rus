@@ -74,7 +74,7 @@ const SortingFilters = React.memo(({ lists, onChange, filterButton }) => {
                         {list.options?.map((option, optionIndex) => (
                           <div
                             key={optionIndex}
-                            className="flex items-center space-x-2"
+                            className="flex items-center space-x-2 my-2"
                           >
                             <CheckBoxInput
                               name={list.label}

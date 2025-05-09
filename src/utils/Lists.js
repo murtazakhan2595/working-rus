@@ -248,25 +248,37 @@ export function getTaskFilteredData(tasksList, filterData) {
 }
 
 /**
- * Converts an array of objects with "field" and "value" keys
- * into an array of strings in the format: "field: value".
+ * Converts an array of objects into an array of strings in the format "label:value",
+ * ensuring that each unique label appears only once in the result.
  *
- * @param {Array} data - The array of objects to convert.
- * @returns {Array} - An array of strings in "field: value" format.
+ * @param {Array<Object>} data - Array of objects to convert.
+ * @param {string} labelKey - The key used to extract the label (default: "name").
+ * @param {string} valueKey - The key used to extract the value (default: "value").
+ * @returns {Array<string>} An array of formatted strings with unique labels.
  */
-export function convertJSONArrayToStringsArray(
-  data,
-  label = "name",
-  value = "value"
-) {
-  // Check if the input is valid
+export function convertJSONArrayToStringsArray(data, labelKey = "name", valueKey = "value") {
+  // Return an empty array if the input is not a valid array or is empty
   if (!Array.isArray(data) || data.length === 0) {
-    return []; // Return an empty array if data is not valid
+    return [];
   }
 
-  // Map each object to a string in the desired format
-  return data.map((item) => `${item[label]}:${item[value]}`);
+  const uniqueLabels = new Set(); // Track seen labels to prevent duplicates
+  const formattedStrings = [];    // Store the result strings
+
+  for (const item of data) {
+    const label = item[labelKey];
+    const value = item[valueKey];
+
+    // Only add the string if the label hasn't been seen before
+    if (!uniqueLabels.has(label)) {
+      uniqueLabels.add(label);
+      formattedStrings.push(`${label}:${value}`);
+    }
+  }
+
+  return formattedStrings;
 }
+
 
 /**
  * Converts an array of strings in the format "field: value"
