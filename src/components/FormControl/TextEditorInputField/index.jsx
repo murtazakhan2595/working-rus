@@ -375,7 +375,7 @@ function TextEditorInputField({
           if (text.startsWith("http")) {
             execCommand(
               "insertHTML",
-              `<a href="${text}" target="_blank">${text}</a>`
+              `<a href="${text}" target="_blank" class="text-plum-900 hover:underline">${text}</a> `
             );
             return;
           } else {
