@@ -31,7 +31,9 @@ export function mapAttendanceData(data, shiftDetails) {
       data[key] !== null
     ) {
       // Add the key and its value to the payload
-      if (key === "status") {
+      if (key === "total_hours" && data.shift_id === shiftDetails.id) {
+        payload["total_hours"] = Hours;
+      } else if (key === "status") {
         if (data[key] === "Absent") payload["is_absent"] = true;
         else if (data[key] === "Present") payload["is_absent"] = false;
         else if (data[key] === "Late") {

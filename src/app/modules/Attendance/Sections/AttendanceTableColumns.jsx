@@ -122,15 +122,16 @@ export const MyAttendanceColumn = (reload) => [
     formatter: (cell, row) => <>{row.checkout ? formatDuration(cell) : "--"}</>,
   },
   {
+    text: "Total Shift Hours",
+    dataField: "total_hours",
+    formatter: (cell) => <>{formatDuration(cell)}</>,
+  },
+  {
     text: "Productivity",
     dataField: "payable_hours",
     formatter: (cell, row) => <>{row.checkout ? formatDuration(cell) : "--"}</>,
   },
-  {
-    text: "Total Hours",
-    dataField: "total_hours",
-    formatter: (cell) => <>{formatDuration(cell)}</>,
-  },
+
   {
     dataField: "status",
     text: "Status",
