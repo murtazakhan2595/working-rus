@@ -49,7 +49,7 @@ export const URLS = [
   },
   {
     Frontend: "http://localhost:3000",
-    Backend: "https://hrms-be.tecbrix.cloud/api",
+    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
   },
   {
     Frontend: "https://production-hdfnfucnc9gpcaaw.z02.azurefd.net",
