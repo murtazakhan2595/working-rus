@@ -16,11 +16,13 @@ const getAssetList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  let URL = `/asset_management?ordering=-id&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  const sortField = payload?.options?.sortField ?? "id";
+  const sortOrder = payload?.options?.sortOrder ?? "desc";
+  let URL = `/asset_management?ordering=${
+    sortOrder === "desc" ? "-" : ""
+  }${sortField}&${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -249,12 +251,13 @@ const getEmployeeAssets = async (payload) => {
    const pageNo = payload?.options?.page ?? "";
    const pageSize = payload?.options?.sizePerPage ?? "";
    const filterData = payload?.filterData ?? {};
-
-   let URL = `/asset_assignment?ordering=-created_at&${
-     pageNo ? `page=${pageNo}&` : ""
-   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-     JSON.stringify(filterData)
-   )}`;
+   const sortField = payload?.options?.sortField ?? "created_at";
+   const sortOrder = payload?.options?.sortOrder ?? "desc";
+   let URL = `/asset_requests?ordering=${
+     sortOrder === "desc" ? "-" : ""
+   }${sortField}&${pageNo ? `page=${pageNo}&` : ""}${
+     pageSize ? `page_size=${pageSize}&` : ""
+   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -270,7 +273,70 @@ const getEmployeeAssets = async (payload) => {
     return false;
   }
 }
+const getAssetCategories = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  let URL = `/asset_categories?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching asset categories:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
 
+const addAssetCategory = async (payload) => {
+  try {
+    if (payload.id) {
+      const response = await axios.put(
+        `${baseUrl}/asset_categories/${payload.id}/`,
+        payload,
+        { headers: headers() }
+      );
+      return response.status === 200 ? response.data : false;
+    } else {
+      const response = await axios.post(
+        `${baseUrl}/asset_categories/`,
+        payload,
+        { headers: headers() }
+      );
+      return response.status === 201 ? response.data : false;
+    }
+  } catch (error) {
+    console.error("Error saving asset category:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+const deleteAssetCategory = async (categoryId) => {
+  try {
+    const response = await axios.delete(
+      `${baseUrl}/asset_categories/${categoryId}/`,
+      { headers: headers() }
+    );
+    return response.status === 204;
+  } catch (error) {
+    console.error("Error deleting asset category:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
 export {
   getAssetList,
   addAsset,
@@ -280,4 +346,7 @@ export {
   getLocations,
   requestAsset,
   getEmployeeAssets,
+  getAssetCategories,
+  addAssetCategory,
+  deleteAssetCategory,
 };

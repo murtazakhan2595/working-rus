@@ -8,7 +8,12 @@ import {
   DateInput,
 } from "components/FormControl";
 import { connect } from "react-redux";
-import { getAssetList, requestAsset, getLocations } from "app/hooks/assets";
+import {
+  getAssetList,
+  requestAsset,
+  getLocations,
+  getAssetCategories,
+} from "app/hooks/assets";
 import { toast } from "react-toastify";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
@@ -26,17 +31,21 @@ const AssetRequestSheet = ({
   const [closeSheet, setCloseSheet] = useState(false);
   const [loading, setLoading] = useState(false);
   const [availableAssets, setAvailableAssets] = useState([]);
+  const [categories, setCategories] = useState([]); // NEW: Categories state
+  const [selectedCategory, setSelectedCategory] = useState(null); // NEW: Selected category
   const [assetsLoading, setAssetsLoading] = useState(true);
   const [locationOptions, setLocationOptions] = useState([]);
 
   // Initial form values
   const initialValues = {
-    asset_name: "",
+    category_id: "", // NEW: Category ID instead of asset_name for requests
+    asset_id: "", // NEW: Asset ID for assignments
     reason: "",
     additional_notes: "",
+    preferred_specifications: {}, // NEW: Preferred specifications
     // Assignment-specific fields
     employee: "",
-    assign_date: new Date().toISOString().split("T")[0], // Today's date
+    assign_date: new Date().toISOString().split("T")[0],
     return_date: null,
     location: "",
   };
@@ -47,29 +56,46 @@ const AssetRequestSheet = ({
     footer: null,
   };
 
-
-  // Fetch available assets and locations when component mounts
+  // Fetch data when component mounts
   useEffect(() => {
     const fetchData = async () => {
       setAssetsLoading(true);
       try {
-        // Fetch available assets
-        const assetsResponse = await getAssetList({
-          options: { page: 1, sizePerPage: 100 },
-        });
+        if (mode === "request") {
+          // NEW: Fetch categories for request mode
+          const categoriesResponse = await getAssetCategories({
+            options: { page: 1, sizePerPage: 100 },
+            filterData: { is_active: true },
+          });
 
-        if (assetsResponse && assetsResponse.results) {
-          const formattedAssets = assetsResponse.results.map((asset) => ({
-            value: asset.id,
-            label: asset.asset_name,
-            type: asset.asset_type,
-            location: asset.asset_location,
-          }));
-          setAvailableAssets(formattedAssets);
-        }
+          if (categoriesResponse?.results) {
+            const formattedCategories = categoriesResponse.results.map(
+              (category) => ({
+                value: category.id,
+                label: category.name,
+                dynamic_fields: category.dynamic_fields,
+              })
+            );
+            setCategories(formattedCategories);
+          }
+        } else {
+          // For assign mode, fetch available assets
+          const assetsResponse = await getAssetList({
+            options: { page: 1, sizePerPage: 100 },
+            filterData: { asset_status: "Available" }, // Only available assets
+          });
 
-        // Fetch locations if in assign mode
-        if (mode === "assign") {
+          if (assetsResponse && assetsResponse.results) {
+            const formattedAssets = assetsResponse.results.map((asset) => ({
+              value: asset.id,
+              label: asset.asset_name,
+              category_id: asset.category_id,
+              location: asset.asset_location,
+            }));
+            setAvailableAssets(formattedAssets);
+          }
+
+          // Fetch locations for assign mode
           const locationsData = await getLocations();
           if (locationsData && locationsData.length > 0) {
             setLocationOptions(locationsData);
@@ -88,35 +114,92 @@ const AssetRequestSheet = ({
     }
   }, [isOpen, mode]);
 
+  // NEW: Handle category selection and show preference fields
+  const handleCategoryChange = (categoryId, setFieldValue) => {
+    const category = categories.find((cat) => cat.value === categoryId);
+    setSelectedCategory(category);
+    setFieldValue("preferred_specifications", {});
+  };
+
+  // NEW: Render preference fields for selected category
+  const renderPreferenceFields = (props) => {
+    if (mode !== "request" || !selectedCategory?.dynamic_fields) return null;
+
+    return (
+      <div className="mt-4 p-4 border rounded-lg bg-gray-50">
+        <h4 className="text-sm font-semibold mb-3">Preferences (Optional)</h4>
+        {selectedCategory.dynamic_fields
+          .filter(
+            (field) =>
+              field.field_type === "select" || field.field_type === "text"
+          )
+          .map((field, index) => {
+            const fieldName = `pref_${field.field_name}`;
+
+            if (field.field_type === "select") {
+              return (
+                <SelectInputComponent
+                  key={index}
+                  name={fieldName}
+                  error={props.errors?.[fieldName]}
+                  touch={props.touched?.[fieldName]}
+                  value={props.values?.[fieldName]}
+                  label={`Preferred ${field.field_name}`}
+                  required={false}
+                  options={
+                    field.field_options?.map((opt) => ({
+                      value: opt,
+                      label: opt,
+                    })) || []
+                  }
+                  onChange={(field, value) => {
+                    props.setFieldValue(field, value);
+                    // Update preferred_specifications
+                    const currentPrefs =
+                      props.values.preferred_specifications || {};
+                    currentPrefs[field.field_name] = value;
+                    props.setFieldValue(
+                      "preferred_specifications",
+                      currentPrefs
+                    );
+                  }}
+                  placeholder={`Select preferred ${field.field_name}`}
+                />
+              );
+            }
+
+            return null;
+          })}
+      </div>
+    );
+  };
+
   const handleFormSubmit = async (values) => {
     setLoading(true);
 
     try {
-      // Prepare the payload based on the mode
+      // NEW: Prepare payload based on mode
       const payload = {
-        asset_name:
-          typeof values.asset_name === "object"
-            ? values.asset_name.label
-            : values.asset_name,
         reason: values.reason,
         additional_notes: values.additional_notes,
         ...(mode === "request"
           ? {
               // Request-specific fields
+              category_id: values.category_id, // NEW: Send category_id instead of asset_name
+              preferred_specifications: values.preferred_specifications || {}, // NEW: Send preferences
               asset_status: "Pending",
               asset_employee_id: userProfile.id,
               asset_request_status: "Requested",
             }
           : {
               // Assignment-specific fields
+              assigned_asset_id: values.asset_id, // NEW: Send asset_id for assignment
               asset_status: "Accepted",
               asset_employee_id:
                 typeof values.employee === "object"
                   ? values.employee.value
                   : values.employee,
               asset_assigned_date: values.assign_date,
-              asset_returned: false,
-              asset_returned_date: null,
               asset_assigned_by: userProfile.id,
               ...(values.return_date && {
                 asset_return_date: values.return_date,
@@ -128,7 +211,6 @@ const AssetRequestSheet = ({
             }),
       };
 
-      // Call the API function
       const response = await requestAsset(payload);
 
       if (response) {
@@ -157,7 +239,6 @@ const AssetRequestSheet = ({
   const handleClose = () => {
     setCloseSheet(true);
   };
-
 
   return (
     <div>
@@ -201,32 +282,62 @@ const AssetRequestSheet = ({
                 </SheetCardExtension>
               )}
 
-              {/* Common Asset Request/Assignment Fields */}
+              {/* Asset Selection - Different for request vs assign */}
               <SheetCardExtension
                 title={
                   mode === "request" ? "Asset Request Details" : "Asset Details"
                 }
               >
-                <SelectInputComponent
-                  name="asset_name"
-                  error={props.errors?.asset_name}
-                  touch={props.touched?.asset_name}
-                  value={props.values?.asset_name}
-                  label="Asset Name"
-                  required={true}
-                  options={availableAssets}
-                  onChange={(field, value) => {
-                    props.setFieldValue(field, value);
-                    // If asset has a location, default to that location (for assign mode)
-                    if (mode === "assign" && value && value.location) {
-                      props.setFieldValue("location", value.location);
+                {mode === "request" ? (
+                  // NEW: Category selection for requests
+                  <SelectInputComponent
+                    name="category_id"
+                    error={props.errors?.category_id}
+                    touch={props.touched?.category_id}
+                    value={props.values?.category_id}
+                    label="Asset Category"
+                    required={true}
+                    options={categories}
+                    onChange={(field, value) => {
+                      props.setFieldValue(field, value);
+                      handleCategoryChange(value, props.setFieldValue);
+                    }}
+                    placeholder={
+                      assetsLoading
+                        ? "Loading categories..."
+                        : "Select a category"
                     }
-                  }}
-                  placeholder={
-                    assetsLoading ? "Loading assets..." : "Select an asset"
-                  }
-                  isLoading={assetsLoading}
-                />
+                    isLoading={assetsLoading}
+                  />
+                ) : (
+                  // Asset selection for assignments
+                  <SelectInputComponent
+                    name="asset_id"
+                    error={props.errors?.asset_id}
+                    touch={props.touched?.asset_id}
+                    value={props.values?.asset_id}
+                    label="Asset Name"
+                    required={true}
+                    options={availableAssets}
+                    onChange={(field, value) => {
+                      props.setFieldValue(field, value);
+                      // If asset has a location, default to that location
+                      const selectedAsset = availableAssets.find(
+                        (asset) => asset.value === value
+                      );
+                      if (selectedAsset && selectedAsset.location) {
+                        props.setFieldValue("location", selectedAsset.location);
+                      }
+                    }}
+                    placeholder={
+                      assetsLoading ? "Loading assets..." : "Select an asset"
+                    }
+                    isLoading={assetsLoading}
+                  />
+                )}
+
+                {/* NEW: Show preference fields for requests */}
+                {renderPreferenceFields(props)}
 
                 {/* Additional fields for assign mode */}
                 {mode === "assign" && (

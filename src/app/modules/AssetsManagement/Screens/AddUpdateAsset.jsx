@@ -9,7 +9,12 @@ import {
   DateInput,
   TextInput,
 } from "components/FormControl";
-import { addAsset, getLocations, deleteAsset } from "app/hooks/assets";
+import {
+  addAsset,
+  getLocations,
+  deleteAsset,
+  getAssetCategories,
+} from "app/hooks/assets";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
 import { validateAssetFormSchema } from "app/utils/FormSchema/AssetsFormSchema";
@@ -17,10 +22,11 @@ import {
   handleCloseWithConfirmation,
   SheetCardExtension,
 } from "components/SheetCardExtension";
-import { AssetCondition, AssetCategories } from "data/Data";
+import { AssetCondition } from "data/Data";
 import { Attachments } from "app/modules/TaskManagment/Sections";
 import { Asset } from "app/utils/Types/Asset";
 import AssetView from "./AssetView";
+import { uploadAttachment } from "app/hooks/assets";
 
 const AddUpdateAsset = ({
   userProfile,
@@ -34,12 +40,13 @@ const AddUpdateAsset = ({
   const [initialValues, setInitialValues] = useState(assetToEdit || Asset);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [locations, setLocations] = useState([]);
+  const [categories, setCategories] = useState([]); // NEW: Categories state
+  const [selectedCategory, setSelectedCategory] = useState(null); // NEW: Selected category
   const [mode, setMode] = useState(
     viewMode && assetToEdit ? "view" : assetToEdit ? "edit" : "add"
   );
 
   const formSheetData = {
-    triggerText: "Save",
     title:
       mode === "view"
         ? "Asset Details"
@@ -50,21 +57,39 @@ const AddUpdateAsset = ({
     footer: null,
   };
 
-  // Fetch locations when component mounts
+  // Fetch locations and categories when component mounts
   useEffect(() => {
-    const fetchLocations = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch locations
         const locationsData = await getLocations();
         if (locationsData && locationsData.length > 0) {
           setLocations(locationsData);
         }
+
+        // NEW: Fetch categories
+        const categoriesResponse = await getAssetCategories({
+          options: { page: 1, sizePerPage: 100 },
+          filterData: { is_active: true },
+        });
+
+        if (categoriesResponse?.results) {
+          const formattedCategories = categoriesResponse.results.map(
+            (category) => ({
+              value: category.id,
+              label: category.name,
+              dynamic_fields: category.dynamic_fields,
+            })
+          );
+          setCategories(formattedCategories);
+        }
       } catch (error) {
-        console.error("Error fetching locations:", error);
-        toast.error("Failed to load locations");
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load required data");
       }
     };
 
-    fetchLocations();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -73,28 +98,28 @@ const AddUpdateAsset = ({
 
       let processedAttachments = [];
 
-      // Process attachments array if it exists (detailed attachment objects)
+      // Process attachments array if it exists
       if (assetToEdit.attachments && Array.isArray(assetToEdit.attachments)) {
         processedAttachments = assetToEdit.attachments
-          .filter((att) => att.attachment) // Only include attachments with actual URLs
+          .filter((att) => att.attachment)
           .map((att) => ({
             id: att.id,
             name: att.attachment
               ? att.attachment.split("/").pop()
               : `Attachment ${att.id}`,
-            attachment: att.attachment, // The attachment component likely expects this property
+            attachment: att.attachment,
           }));
       }
 
-      // Map API data to form fields when editing an asset
-      setInitialValues({
+      // Extract dynamic field values
+      const dynamicFieldValues = assetToEdit.dynamic_field_values || {};
+
+      // NEW: Map API data to form fields with dynamic values
+      const newInitialValues = {
         ...Asset,
         id: assetToEdit.id,
         asset_name: assetToEdit.asset_name,
-        category: assetToEdit.asset_type,
-        specifications:
-          assetToEdit.asset_description || assetToEdit.asset_model,
-        serial_number: assetToEdit.asset_serial_number,
+        category: assetToEdit.category_id, // Changed from asset_type
         purchase_date: assetToEdit.asset_purchase_date,
         purchase_cost: assetToEdit.asset_purchase_price,
         notes: assetToEdit.asset_notes,
@@ -104,33 +129,218 @@ const AddUpdateAsset = ({
             : null,
         condition: assetToEdit.asset_initial_condition,
         location: assetToEdit.asset_location,
-        // Format attachments as expected by the component
         attachment: processedAttachments,
+      };
+
+      // NEW: Add dynamic field values to initial values
+      Object.entries(dynamicFieldValues).forEach(([key, value]) => {
+        newInitialValues[`dynamic_${key}`] = value;
       });
+
+      setInitialValues(newInitialValues);
+
+      // NEW: Set selected category for editing
+      if (assetToEdit.category_id) {
+        const category = categories.find(
+          (cat) => cat.value === assetToEdit.category_id
+        );
+        setSelectedCategory(category);
+      }
     } else {
       // Reset to default values when adding a new asset
       setInitialValues(Asset);
+      setSelectedCategory(null);
     }
-  }, [assetToEdit]);
+  }, [assetToEdit, categories]);
+
+  // NEW: Handle category change
+  const handleCategoryChange = (categoryId, setFieldValue) => {
+    const category = categories.find((cat) => cat.value === categoryId);
+    setSelectedCategory(category);
+
+    // Clear dynamic field values when category changes
+    if (category?.dynamic_fields) {
+      category.dynamic_fields.forEach((field) => {
+        setFieldValue(`dynamic_${field.field_name}`, "");
+      });
+    }
+  };
+
+  // NEW: Render dynamic fields based on selected category
+  const renderDynamicFields = (props) => {
+    if (!selectedCategory?.dynamic_fields) return null;
+
+    return selectedCategory.dynamic_fields.map((field, index) => {
+      const fieldName = `dynamic_${field.field_name}`;
+
+      switch (field.field_type) {
+        case "text":
+          return (
+            <TextInput
+              key={index}
+              name={fieldName}
+              error={props.errors?.[fieldName]}
+              touch={props.touched?.[fieldName]}
+              value={props.values?.[fieldName] || ""}
+              label={field.field_name}
+              required={field.is_required}
+              placeholder={field.placeholder || `Enter ${field.field_name}`}
+              onChange={(field, value) => {
+                props.handleChange(field)(value);
+              }}
+            />
+          );
+        case "textarea":
+          return (
+            <TextAreaInput
+              key={index}
+              name={fieldName}
+              error={props.errors?.[fieldName]}
+              touch={props.touched?.[fieldName]}
+              value={props.values?.[fieldName] || ""}
+              label={field.field_name}
+              required={field.is_required}
+              placeholder={field.placeholder || `Enter ${field.field_name}`}
+              onChange={(field, value) => {
+                props.handleChange(field)(value);
+              }}
+              maxRows={3}
+            />
+          );
+        case "select":
+          return (
+            <SelectInputComponent
+              key={index}
+              name={fieldName}
+              error={props.errors?.[fieldName]}
+              touch={props.touched?.[fieldName]}
+              value={props.values?.[fieldName]}
+              label={field.field_name}
+              required={field.is_required}
+              options={
+                field.field_options?.map((opt) => ({
+                  value: opt,
+                  label: opt,
+                })) || []
+              }
+              onChange={(field, value) => {
+                props.setFieldValue(field, value);
+              }}
+              placeholder={`Select ${field.field_name}`}
+            />
+          );
+        case "number":
+          return (
+            <NumberInput
+              key={index}
+              name={fieldName}
+              error={props.errors?.[fieldName]}
+              touch={props.touched?.[fieldName]}
+              value={props.values?.[fieldName] || ""}
+              label={field.field_name}
+              required={field.is_required}
+              placeholder={field.placeholder || `Enter ${field.field_name}`}
+              onChange={(field, value) => {
+                props.handleChange(field)(value);
+              }}
+              min={field.validation_rules?.min}
+              max={field.validation_rules?.max}
+            />
+          );
+        case "date":
+          return (
+            <DateInput
+              key={index}
+              name={fieldName}
+              error={props.errors?.[fieldName]}
+              touch={props.touched?.[fieldName]}
+              value={props.values?.[fieldName]}
+              label={field.field_name}
+              required={field.is_required}
+              placeholder={`Select ${field.field_name}`}
+              onChange={(field, value) => {
+                props.setFieldValue(field, value);
+              }}
+            />
+          );
+        default:
+          return null;
+      }
+    });
+  };
 
   const handleFormSubmit = async (values) => {
     setIsSubmitting(true);
 
     try {
-      // Add the ID to the values if we are updating
+      // NEW: Collect dynamic field values
+      const dynamicFieldValues = {};
+
+      if (selectedCategory?.dynamic_fields) {
+        selectedCategory.dynamic_fields.forEach((field) => {
+          const fieldName = `dynamic_${field.field_name}`;
+          if (values[fieldName] !== undefined) {
+            dynamicFieldValues[field.field_name] = values[fieldName];
+          }
+        });
+      }
+
+      // Handle attachments (existing logic remains the same)
+      let attachmentIds = [];
+      if (values.attachment && Array.isArray(values.attachment)) {
+        attachmentIds = values.attachment
+          .filter((att) => att && att.id)
+          .map((att) => att.id);
+      }
+
+      // Handle new files
+      const newFiles = [];
+      if (Array.isArray(values.attachment)) {
+        values.attachment.forEach((item) => {
+          if (item instanceof File) {
+            newFiles.push(item);
+          } else if (item && item.attachment instanceof File) {
+            newFiles.push(item.attachment);
+          }
+        });
+      }
+
+      // Upload any new files
+      if (newFiles.length > 0) {
+        const uploadPromises = newFiles.map((file) => uploadAttachment(file));
+        const newIds = await Promise.all(uploadPromises);
+        attachmentIds = [...attachmentIds, ...newIds];
+      }
+
+      // NEW: Prepare payload with new structure
       const payload = {
-        ...values,
-        id: assetToEdit?.id, // Include ID for update operations
+        asset_name: values.asset_name,
+        category_id: values.category, // Changed from asset_type
+        asset_purchase_date: values.purchase_date,
+        asset_purchase_price: values.purchase_cost,
+        asset_notes: values.notes,
+        asset_warranty: values.warranty_expiry ? "Yes" : "No",
+        asset_warranty_expiry: values.warranty_expiry || null,
+        asset_initial_condition: values.condition,
+        asset_location: values.location?.value || values.location,
+        attachment: attachmentIds,
+        dynamic_field_values: dynamicFieldValues, // NEW: Add dynamic field values
       };
+
+      if (assetToEdit?.id) {
+        payload.id = assetToEdit.id;
+      }
 
       const response = await addAsset(payload);
 
       if (response) {
-        toast.success(`Asset ${values.id ? "updated" : "added"} successfully`);
+        toast.success(
+          `Asset ${assetToEdit?.id ? "updated" : "added"} successfully`
+        );
         setIsOpen(false);
-        reload(); // Reload the assets list
+        reload();
       } else {
-        toast.error(`Error ${values.id ? "updating" : "adding"} asset`);
+        toast.error(`Error ${assetToEdit?.id ? "updating" : "adding"} asset`);
       }
     } catch (error) {
       toast.error(`Error: ${error.message || "Something went wrong"}`);
@@ -192,7 +402,9 @@ const AddUpdateAsset = ({
         ) : (
           <Formik
             initialValues={initialValues}
-            validate={validateAssetFormSchema}
+            validate={(values) =>
+              validateAssetFormSchema(values, selectedCategory)
+            }
             enableReinitialize={true}
             onSubmit={handleFormSubmit}
           >
@@ -221,9 +433,10 @@ const AddUpdateAsset = ({
                         value={props.values?.category}
                         label={"Asset Category"}
                         required={true}
-                        options={AssetCategories}
+                        options={categories} // Changed from AssetCategories
                         onChange={(field, value) => {
                           props.setFieldValue(field, value);
+                          handleCategoryChange(value, props.setFieldValue); // NEW: Handle category change
                         }}
                         placeholder="Select category"
                       />
@@ -245,31 +458,8 @@ const AddUpdateAsset = ({
                     </div>
                   </div>
 
-                  <TextInput
-                    name={"specifications"}
-                    error={props.errors?.specifications}
-                    touch={props.touched?.specifications}
-                    value={props.values?.specifications}
-                    label={"Model & Specifications"}
-                    required={true}
-                    onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                    }}
-                    placeholder="Enter model & specifications"
-                  />
-
-                  <TextInput
-                    name={"serial_number"}
-                    error={props.errors?.serial_number}
-                    touch={props.touched?.serial_number}
-                    value={props.values?.serial_number}
-                    label={"Serial Number/IMEI"}
-                    required={true}
-                    onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                    }}
-                    placeholder="Enter serial number or IMEI"
-                  />
+                  {/* NEW: Render dynamic fields based on selected category */}
+                  {renderDynamicFields(props)}
                 </SheetCardExtension>
 
                 <SheetCardExtension title="Purchase Information">
@@ -355,7 +545,6 @@ const AddUpdateAsset = ({
                     attachmentSelected={props.values.attachment || []}
                     onChange={async (attachment) => {
                       console.log("changing attachment", attachment);
-                      // The Attachments component should handle both existing and new files
                       props.setFieldValue("attachment", attachment);
                     }}
                     acceptedFileTypes=".pdf,.png,.jpg,.jpeg"

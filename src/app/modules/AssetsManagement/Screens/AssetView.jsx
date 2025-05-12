@@ -13,14 +13,34 @@ const AssetView = ({ assetData, onEdit, onDelete, onClose }) => {
     return `AED ${parseFloat(value).toFixed(2)}`;
   };
 
-  // Organize asset details into sections
+  // NEW: Organize asset details to include category and dynamic fields
   const assetDetails = [
     { label: "Asset Name", value: assetData.asset_name },
-    { label: "Asset Type", value: assetData.asset_type },
-    { label: "Serial Number", value: assetData.asset_serial_number },
-    { label: "Model", value: assetData.asset_model },
-    { label: "Description", value: assetData.asset_description },
-  ];
+    {
+      label: "Category",
+      value: assetData.category?.name || assetData.asset_type, // Support both new and old structure
+    },
+    // NEW: Show dynamic field values
+    ...Object.entries(assetData.dynamic_field_values || {}).map(
+      ([key, value]) => ({
+        label: key,
+        value: value || "N/A",
+      })
+    ),
+    // Keep old fields for backward compatibility during migration
+    assetData.asset_serial_number && {
+      label: "Serial Number",
+      value: assetData.asset_serial_number,
+    },
+    assetData.asset_model && {
+      label: "Model",
+      value: assetData.asset_model,
+    },
+    assetData.asset_description && {
+      label: "Description",
+      value: assetData.asset_description,
+    },
+  ].filter(Boolean);
 
   const purchaseDetails = [
     {
@@ -54,19 +74,26 @@ const AssetView = ({ assetData, onEdit, onDelete, onClose }) => {
     },
   ];
 
+  // NEW: Updated location details to support office branches
   const locationDetails = [
     {
       label: "Location",
       value:
         typeof assetData.asset_location === "object"
           ? assetData.asset_location?.name
-          : `Location ${assetData.asset_location}`,
+          : assetData.asset_location_name ||
+            `Location ${assetData.asset_location}`,
       icon: <MapPin size={16} className="text-muted-foreground" />,
     },
     {
       label: "Category",
-      value: assetData.asset_type,
+      value: assetData.category?.name || assetData.asset_type,
       icon: <Tag size={16} className="text-muted-foreground" />,
+    },
+    {
+      label: "Status",
+      value: assetData.asset_status,
+      icon: <Info size={16} className="text-muted-foreground" />,
     },
   ];
 
