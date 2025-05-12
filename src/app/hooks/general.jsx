@@ -664,6 +664,103 @@ function HandleLogout() {
   }
 }
 
+// Delete role
+const deleteRole = async (roleId, roleName) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/userrole/${roleId}`, {
+      headers: headers(),
+    });
+    if (response.status === 204 || response.status === 200) {
+      toast.success(`Role "${roleName}" deleted successfully`, {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1000,
+      });
+      return true;
+    } else {
+      toast.error(`Unexpected response status: ${response.status}`);
+      return false;
+    }
+  } catch (error) {
+    console.error("ERROR deleting role:", error);
+    toast.error(error?.response?.data?.message || error.message, {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 1000,
+    });
+    return false;
+  }
+};
+
+// Get roles list
+const getRolesList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+  try {
+    const URL = `/userrole/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const rolesResponse = response.data;
+      const rolesList = rolesResponse?.results?.map(role => ({
+        value: role.id,
+        label: role.name,
+        id: role.id,
+        name: role.name,
+        description: role.description,
+        created_at: role.created_at,
+        updated_at: role.updated_at,
+        permissions: role.permissions || {}
+      }));
+      return { results: rolesList, count: rolesResponse.count };
+    } else return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching roles data:", error);
+    return { results: [], count: 0 };
+  }
+};
+
+// Save/Update role
+const saveRole = async (roleId, payload) => {
+  try {
+    if (roleId) {
+      // Update existing role
+      const response = await axios.patch(
+        `${baseUrl}/userrole/${roleId}`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200) {
+        return response?.data;
+      }
+    } else {
+      // Create new role
+      const response = await axios.post(`${baseUrl}/userrole/`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201) {
+        return response?.data;
+      }
+    }
+    // If we get here, neither condition returned a response
+    console.warn("API call succeeded but with unexpected status code");
+    return false;
+  } catch (error) {
+    console.error("API error in saveRole:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    throw error; // Re-throw to allow handling in the component
+  }
+};
+
 export {
   getDepartmentList,
   getManagersList,
@@ -682,4 +779,7 @@ export {
   getEmployeeListWithDetail,
   saveShift,
   HandleLogout,
+  deleteRole,
+  getRolesList,
+  saveRole,
 };
