@@ -5,39 +5,46 @@ import { getRolesList, saveRole, deleteRole } from "./general";
 // Get permissions schema
 export const getPermissionsSchema = async () => {
   try {
-    // Mock permissions schema data instead of API call
-    const mockPermissionsSchema = [
+    // Using a simplified but comprehensive permissions schema based on the actual modules
+    const permissionsSchema = [
       {
-        name: "Employees",
-        features: [
-          {
-            key: "employees.view",
-            name: "View Employees",
-            supportedPermissions: ["View"]
-          },
-        ],
+        name: "Dashboard",
+        subModules: []
+      },
+      {
+        name: "Self Service Hub",
         subModules: [
           {
-            name: "Management",
+            name: "My Profile",
             features: [
               {
-                key: "employees.management.view",
-                name: "View Employee Details",
-                supportedPermissions: ["View", "Add", "Edit", "Delete"]
+                key: "MY_PROFILE.VIEW_PERSONAL_INFORMATION",
+                name: "View Personal Information",
+                supportedPermissions: ["View"]
               },
               {
-                key: "employees.management.create",
-                name: "Create Employee",
-                supportedPermissions: ["View", "Add"]
+                key: "MY_PROFILE.EDIT_PERSONAL_INFORMATION",
+                name: "Edit Personal Information",
+                supportedPermissions: ["Edit"]
+              },
+              {
+                key: "MY_PROFILE.VIEW_JOB_INFORMATION",
+                name: "View Job Information",
+                supportedPermissions: ["View"]
               }
             ]
           },
           {
-            name: "Team",
+            name: "My Attendance",
             features: [
               {
-                key: "employees.team.view",
-                name: "View Team Members",
+                key: "MY_ATTENDANCE.MARK_ATTENDANCE",
+                name: "Mark My Attendance",
+                supportedPermissions: ["Add"]
+              },
+              {
+                key: "MY_ATTENDANCE.VIEW_ATTENDANCE",
+                name: "View Attendance Records",
                 supportedPermissions: ["View"]
               }
             ]
@@ -45,151 +52,100 @@ export const getPermissionsSchema = async () => {
         ]
       },
       {
-        name: "Attendance",
-        features: [
-          {
-            key: "attendance.view",
-            name: "View Attendance Dashboard",
-            supportedPermissions: ["View"]
-          }
-        ],
+        name: "People Team",
         subModules: [
           {
-            name: "Management",
+            name: "Profile Management",
             features: [
               {
-                key: "attendance.management.view",
-                name: "View Attendance Reports",
-                supportedPermissions: ["View", "Add", "Edit"]
-              }
-            ]
-          },
-          {
-            name: "Self",
-            features: [
+                key: "PROFILE_MANAGEMENT.ADD_EMPLOYEE",
+                name: "Add Employee",
+                supportedPermissions: ["Add"]
+              },
               {
-                key: "attendance.self.view",
-                name: "View Own Attendance",
+                key: "PROFILE_MANAGEMENT.VIEW_EMPLOYEES",
+                name: "View Employees",
                 supportedPermissions: ["View"]
+              },
+              {
+                key: "PROFILE_MANAGEMENT.EDIT_EMPLOYEE",
+                name: "Edit Employee",
+                supportedPermissions: ["Edit"]
               }
             ]
           },
           {
-            name: "Team",
+            name: "HR Documents",
             features: [
               {
-                key: "attendance.team.view",
-                name: "View Team Attendance",
-                supportedPermissions: ["View", "Approve"]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        name: "Leaves",
-        features: [
-          {
-            key: "leaves.view",
-            name: "View Leave Dashboard",
-            supportedPermissions: ["View"]
-          }
-        ],
-        subModules: [
-          {
-            name: "Management",
-            features: [
+                key: "HR_DOCUMENTS.UPLOAD_HR_DOCUMENT",
+                name: "Upload HR Document",
+                supportedPermissions: ["Add"]
+              },
               {
-                key: "leaves.management.view",
-                name: "Manage Leaves",
-                supportedPermissions: ["View", "Add", "Edit", "Approve"]
-              }
-            ]
-          },
-          {
-            name: "Self",
-            features: [
-              {
-                key: "leaves.self.create",
-                name: "Apply for Leave",
-                supportedPermissions: ["View", "Add"]
-              }
-            ]
-          },
-          {
-            name: "Team",
-            features: [
-              {
-                key: "leaves.team.approve",
-                name: "Approve Team Leaves",
-                supportedPermissions: ["View", "Approve"]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        name: "Tasks",
-        features: [
-          {
-            key: "tasks.view",
-            name: "View Tasks Dashboard",
-            supportedPermissions: ["View"]
-          }
-        ],
-        subModules: [
-          {
-            name: "Team",
-            features: [
-              {
-                key: "tasks.team.create",
-                name: "Manage Team Tasks",
-                supportedPermissions: ["View", "Add", "Edit", "Delete"]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        name: "Roles",
-        subModules: [
-          {
-            name: "Management",
-            features: [
-              {
-                key: "roles.management.view",
-                name: "Manage Roles",
-                supportedPermissions: ["View", "Add", "Edit", "Delete"]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        name: "Departments",
-        subModules: [
-          {
-            name: "Management",
-            features: [
-              {
-                key: "departments.management.view",
-                name: "Manage Departments",
-                supportedPermissions: ["View", "Add", "Edit", "Delete"]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        name: "Profile",
-        subModules: [
-          {
-            name: "Management",
-            features: [
-              {
-                key: "profile.management.view",
-                name: "View Profile",
+                key: "HR_DOCUMENTS.VIEW_HR_DOCUMENT",
+                name: "View HR Document",
                 supportedPermissions: ["View"]
+              },
+              {
+                key: "HR_DOCUMENTS.ASSIGN_HR_DOCUMENT",
+                name: "Assign HR Document",
+                supportedPermissions: ["Add", "Edit"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        name: "Organizational Setup",
+        subModules: [
+          {
+            name: "Departments",
+            features: [
+              {
+                key: "DEPARTMENTS.ADD_DEPARTMENTS",
+                name: "Add Departments",
+                supportedPermissions: ["Add"]
+              },
+              {
+                key: "DEPARTMENTS.VIEW_DEPARTMENTS",
+                name: "View Departments",
+                supportedPermissions: ["View"]
+              },
+              {
+                key: "DEPARTMENTS.EDIT_DEPARTMENTS",
+                name: "Edit Departments",
+                supportedPermissions: ["Edit"]
+              },
+              {
+                key: "DEPARTMENTS.DELETE_DEPARTMENTS",
+                name: "Delete Departments",
+                supportedPermissions: ["Delete"]
+              }
+            ]
+          },
+          {
+            name: "Roles & Permissions",
+            features: [
+              {
+                key: "ROLES.ADD_ROLE",
+                name: "Add Role",
+                supportedPermissions: ["Add"]
+              },
+              {
+                key: "ROLES.VIEW_ROLES",
+                name: "View Roles",
+                supportedPermissions: ["View"]
+              },
+              {
+                key: "ROLES.EDIT_ROLES",
+                name: "Edit Roles",
+                supportedPermissions: ["Edit"]
+              },
+              {
+                key: "ROLES.DELETE_ROLES",
+                name: "Delete Roles",
+                supportedPermissions: ["Delete"]
               }
             ]
           }
@@ -197,7 +153,7 @@ export const getPermissionsSchema = async () => {
       }
     ];
 
-    return mockPermissionsSchema;
+    return permissionsSchema;
   } catch (error) {
     console.error("Failed to fetch permissions schema:", error);
     throw error;

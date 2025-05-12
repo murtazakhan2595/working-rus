@@ -255,7 +255,7 @@ const AddRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                 />
               </div>
               
-              <div className="max-h-[400px] overflow-y-auto">
+              <div className="max-h-[auto] overflow-y-auto">
                 <PermissionsTree 
                   schema={filteredSchema}
                   selectedPermissions={props.values.permissions}
