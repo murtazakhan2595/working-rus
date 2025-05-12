@@ -1,14 +1,19 @@
 import { saveDepartment } from "app/hooks/general";
 import { DepartmentsInformation } from "app/utils/Types/Departments";
-import { SelectInputComponent, TextAreaInput, TextInput } from "components/FormControl";
+import { SelectInputComponent, TextAreaInput, TextInput, FilterInput } from "components/FormControl";
 import { handleCloseWithConfirmation, SheetCardExtension } from "components/SheetCardExtension";
 import { Button } from "components/ui/button";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { Checkbox } from "src/@/components/ui/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "src/@/components/ui/collapsible";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization }) => {
   const [closeSheet, setCloseSheet] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [permissions, setPermissions] = useState({});
   const isEditMode = Boolean(edit?.data);
 
   // Initialize form data with department values if in edit mode
@@ -16,6 +21,38 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization }
     ...DepartmentsInformation,
     ...(edit?.data || {}),
   });
+
+  // Mock permission modules
+  const permissionModules = [
+    {
+      name: "Employees",
+      permissions: ["View", "Add", "Edit", "Delete"]
+    },
+    {
+      name: "Attendance",
+      permissions: ["View", "Add", "Edit", "Approve"]
+    },
+    {
+      name: "Leaves",
+      permissions: ["View", "Add", "Edit", "Approve"]
+    },
+    {
+      name: "Tasks",
+      permissions: ["View", "Add", "Edit", "Delete"]
+    },
+    {
+      name: "Roles",
+      permissions: ["View", "Add", "Edit", "Delete"]
+    },
+    {
+      name: "Departments",
+      permissions: ["View", "Add", "Edit", "Delete"]
+    },
+    {
+      name: "Profiles",
+      permissions: ["View", "Edit"]
+    }
+  ];
 
   // Update form data when edit data changes
   useEffect(() => {
@@ -52,6 +89,7 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization }
         name: values.name,
         description: values.description, // Keep description, even if null
         organization: userOrganization.id, // Assign the organization ID
+        permissions: permissions // Add permissions
       };
 
       // Pass the department ID (if editing) and the structured payload
@@ -95,6 +133,37 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization }
     }
   };
 
+  // Handle permission change
+  const handlePermissionChange = (module, permission, checked) => {
+    setPermissions(prev => {
+      const newPermissions = { ...prev };
+      
+      if (!newPermissions[module]) {
+        newPermissions[module] = [];
+      }
+      
+      if (checked) {
+        if (!newPermissions[module].includes(permission)) {
+          newPermissions[module] = [...newPermissions[module], permission];
+        }
+      } else {
+        newPermissions[module] = newPermissions[module].filter(p => p !== permission);
+        if (newPermissions[module].length === 0) {
+          delete newPermissions[module];
+        }
+      }
+      
+      return newPermissions;
+    });
+  };
+
+  // Filter modules based on search term
+  const filteredModules = searchTerm.trim() === "" 
+    ? permissionModules 
+    : permissionModules.filter(module => 
+        module.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
   return (
     <>
       {handleCloseWithConfirmation({
@@ -134,6 +203,68 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization }
                 }}
               />
             </SheetCardExtension>
+
+            <SheetCardExtension title="Permissions">
+              <div className="mb-4">
+                <FilterInput
+                  filters={[
+                    {
+                      type: "search",
+                      placeholder: "Search modules...",
+                      name: "search",
+                    },
+                  ]}
+                  onChange={(filterName, filterValue) => {
+                    if (filterName === "search") {
+                      setSearchTerm(filterValue);
+                    }
+                  }}
+                />
+              </div>
+
+              <div className="max-h-[400px] overflow-y-auto space-y-2">
+                {filteredModules.length > 0 ? (
+                  filteredModules.map((module, index) => (
+                    <Collapsible key={index} className="border rounded-md overflow-hidden">
+                      <div className="flex items-center justify-between p-4 bg-gray-50 cursor-pointer">
+                        <div className="font-medium">{module.name}</div>
+                        <CollapsibleTrigger className="p-1 hover:bg-gray-200 rounded-full">
+                          {open => (
+                            open ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />
+                          )}
+                        </CollapsibleTrigger>
+                      </div>
+                      <CollapsibleContent>
+                        <div className="p-4 border-t grid grid-cols-2 gap-3">
+                          {module.permissions.map((permission, i) => (
+                            <div key={i} className="flex items-center space-x-2">
+                              <Checkbox 
+                                id={`${module.name}-${permission}`}
+                                checked={permissions[module.name]?.includes(permission) || false}
+                                onCheckedChange={(checked) => 
+                                  handlePermissionChange(module.name, permission, checked)
+                                }
+                              />
+                              <label 
+                                htmlFor={`${module.name}-${permission}`}
+                                className="text-sm cursor-pointer"
+                              >
+                                {permission}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    No modules match your search
+                  </div>
+                )}
+              </div>
+            </SheetCardExtension>
+
             <div className="p-6 border-t border-gray-200 bg-gray-50">
               <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
                 <Button
