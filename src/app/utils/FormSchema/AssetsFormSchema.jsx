@@ -13,6 +13,18 @@ const validateAssetFormSchema = (values) => {
   if (!values.condition) errors.condition = "Initial condition is required";
   if (!values.purchase_cost) errors.purchase_cost = "Purchase cost is required";
 
+  // Warranty date validation (only if warranty date is provided)
+  if (values.warranty_expiry && values.purchase_date) {
+    const purchaseDate = new Date(values.purchase_date);
+    const warrantyDate = new Date(values.warranty_expiry);
+
+    // Check if warranty date is less than purchase date
+    if (warrantyDate < purchaseDate) {
+      errors.warranty_expiry =
+        "Warranty expiry date cannot be before purchase date";
+    }
+  }
+
   return errors;
 };
 

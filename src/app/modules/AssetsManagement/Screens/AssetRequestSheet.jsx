@@ -42,7 +42,6 @@ const AssetRequestSheet = ({
   };
 
   const formSheetData = {
-    triggerText: mode === "request" ? "Request Asset" : "Assign Asset",
     title: mode === "request" ? "Asset Request" : "Assign Asset to Employee",
     description: null,
     footer: null,
