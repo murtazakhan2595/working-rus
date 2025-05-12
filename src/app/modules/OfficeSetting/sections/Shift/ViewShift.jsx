@@ -61,6 +61,7 @@ const ViewShift = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
     try {
       const response = await axios.get(`/shift/${viewData.id}`);
       if (response.data) {
+        console.log("Fetched updated shift data:", response.data);
         setViewData(response.data);
       }
     } catch (error) {
@@ -82,6 +83,7 @@ const ViewShift = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
 
   const handleFormUpdate = async (formData) => {
     // This function will be called after successful form submission
+    console.log("Shift updated with data:", formData);
     setViewData({
       ...viewData,
       ...formData

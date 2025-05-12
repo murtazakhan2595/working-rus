@@ -150,7 +150,7 @@ const TaskColumn = ({ reloadData, board, filterData }) => {
   const { projectId, viewStyle } = useParams();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
-  const [ordering, setOrdering] = useState("-id");
+  const [ordering, setOrdering] = useState("-start_date");
 
   const fetchData = async (isMounted) => {
     try {

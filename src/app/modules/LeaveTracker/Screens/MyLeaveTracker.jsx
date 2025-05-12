@@ -55,7 +55,7 @@ const MyLeaveTracker = ({ userProfile }) => {
     });
     if (leaveTransaction) {
       console.log("leaveTransaction", leaveTransaction);
-      setLeaveTransaction(leaveTransaction);
+      setLeaveTransaction(leaveTransaction?.results);
     }
     setIsLeaveTransactionLoading(false);
   };

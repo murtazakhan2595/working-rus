@@ -61,9 +61,7 @@ const getLocations = async () => {
 
 const uploadAttachment = async (file) => {
   try {
-    // console.log("File being uploaded:", file);
-    // console.log("File type:", typeof file, file instanceof File);
-    
+
     const formData = new FormData();
     // Match the working pattern exactly
     formData.append("attachment", file);

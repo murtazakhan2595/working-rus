@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import SheetComponent from "../../../../components/ui/SheetComponent";
 import moment from "moment";
 import { Button } from "components/ui/button";
@@ -7,6 +7,8 @@ import AttachmentUI from "components/ui/AttachmentUI";
 import statusApprovedIcon from "assets/images/status-approved.png";
 import statusPendingIcon from "assets/images/status-pending.svg";
 import statusRejectedIcon from "assets/images/status-rejected.svg";
+import statusWithdrawalIcon from "assets/images/status-withdrawal.svg";
+
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { getAttachmentById } from "app/hooks/assets"; // Assuming similar function exists for assets
@@ -16,6 +18,7 @@ import { DesignationName } from "utils/getValuesFromTables";
 import { getDesignationName } from "utils/getValuesFromTables";
 import { EmployeeOverview } from "components";
 import { getDepartmentName } from "utils/getValuesFromTables";
+import { FileMinus } from "lucide-react";
 
 import {
   Dialog,
@@ -163,6 +166,8 @@ const AssetRequestViewSheet = ({
           : assetRequest?.asset_status === "Rejected" ||
             assetRequest?.asset_status === "Declined"
           ? statusRejectedIcon
+          : assetRequest?.asset_status === "Withdrawal"
+          ? statusWithdrawalIcon
           : statusPendingIcon,
       text:
         assetRequest?.asset_status === "Approved" ||
@@ -171,6 +176,8 @@ const AssetRequestViewSheet = ({
           : assetRequest?.asset_status === "Rejected" ||
             assetRequest?.asset_status === "Declined"
           ? "Request Rejected"
+          : assetRequest?.asset_status === "Withdrawal"
+          ? "Request Withdrawn"
           : "Request Pending",
     },
   ];
@@ -260,16 +267,18 @@ const AssetRequestViewSheet = ({
             showId={true}
             showBranchName={true}
           />
-          {isMyRequest && (
-            <Button
-              variant="destructiveOutline"
-              onClick={(status) => {
-                handleStatusChange("Withdrawal");
-              }}
-            >
-              Withdraw Asset
-            </Button>
-          )}
+          {(isMyRequest &&
+            assetRequest?.asset_status ===
+              "Pending") &&(
+                <Button
+                  variant="destructiveOutline"
+                  onClick={(status) => {
+                    handleStatusChange("Withdrawal");
+                  }}
+                >
+                  Withdraw Asset
+                </Button>
+              )}
         </div>
 
         {/* Details Section */}

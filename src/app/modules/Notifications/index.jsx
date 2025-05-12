@@ -212,7 +212,6 @@ const Notifications = () => {
       });
     }
   };
-  console.log(notifications, "NOTIFIVATION");
   return (
     <TooltipProvider>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>

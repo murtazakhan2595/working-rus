@@ -92,8 +92,7 @@ const AssetView = ({ assetData, onEdit, onDelete, onClose }) => {
       <div className="flex flex-col">
         <div className="flex-grow">
           <div className="p-0">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold">Asset Details</h3>
+            <div className="flex items-center justify-end mb-6">
               <div className="flex items-center gap-3">
                 <Button
                   onClick={onEdit}

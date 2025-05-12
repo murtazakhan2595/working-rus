@@ -182,6 +182,8 @@ export const addUpdateBranch = async (payload, id = null) => {
 
 const saveDesignation = async (designationId, payload) => {
   try {
+   
+    
     if (designationId) {
       const response = await axios.patch(
         `${baseUrl}/designation/${designationId}`,
@@ -190,6 +192,7 @@ const saveDesignation = async (designationId, payload) => {
           headers: headers(),
         }
       );
+      
       if (response.status === 200) {
         return response?.data;
       }
@@ -197,6 +200,7 @@ const saveDesignation = async (designationId, payload) => {
       const response = await axios.post(`${baseUrl}/designation/`, payload, {
         headers: headers(),
       });
+      
       if (response.status === 201) {
         return response?.data;
       }
@@ -420,10 +424,12 @@ const getEmployeeListWithDetail = async () => {
 
 const getOrganizationList = async (allData = false) => {
   try {
+    console.log(`API Request: ${baseUrl}/organization/`);
     const response = await axios.get(`${baseUrl}/organization/`, {
       headers: headers(),
     });
     if (response.status === 200) {
+      console.log('API Response:', response.data);
       const organizationResponse = response.data;
       const organizationList = organizationResponse?.results?.map(
         (organization) => ({

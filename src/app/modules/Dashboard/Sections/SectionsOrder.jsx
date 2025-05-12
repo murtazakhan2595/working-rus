@@ -16,22 +16,56 @@ import {
   ProfileCompletion,
   ShiftDetailsWidget,
   MonthlyAttendanceCalendar,
+  EventCalendar,
+  AttritionAndNewJoinersWidget,
+  DepartmentAttendanceWidget,
+  CompanyAttendanceOverview,
+  ShiftComplianceWidget,
 } from "../Screens";
-import EventCalendar from "../Screens/EventCalendar";
 
 const DashboardHR = [
+  {
+    type: "div",
+    className: `w-full`,
+    content: <CompanyAttendanceOverview />,
+    value: "CompanyAttendanceOverview",
+  },
+  {
+    type: "div",
+    className: `col-span-2`,
+    content: <DepartmentAttendanceWidget />,
+    value: "DepartmentAttendanceWidget",
+  },
+  {
+    type: "div",
+    className: `col-span-2`,
+    content: <LeaveTrackerOverview />,
+    value: "LeaveTracker",
+  },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <EventCalendar />,
+    value: "EventCalendar",
+  },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <AttritionAndNewJoinersWidget />,
+    value: "AttritionAndNewJoinersWidget",
+  },
   {
     type: "div",
     className: `w-full`,
     content: <EmployeeOverview />,
     value: "EmployeeOverview",
   },
-  {
-    type: "div",
-    className: `w-full`,
-    content: <TaskProgress />,
-    value: "TaskProgress",
-  },
+  // {
+  //   type: "div",
+  //   className: `w-full`,
+  //   content: <TaskProgress />,
+  //   value: "TaskProgress",
+  // },
   {
     type: "div",
     className: `w-full`,
@@ -39,62 +73,62 @@ const DashboardHR = [
     value: "RecentActivity",
   },
 
-  {
-    type: "div",
-    className: `col-span-2`,
-    content: <LeaveTrackerOverview />,
-    value: "LeaveTracker",
-  },
+  // {
+  //   type: "div",
+  //   className: `w-full`,
+  //   content: <LeaveEmployeeDetails />,
+  //   value: "LeaveEmployeeDetails",
+  // },
+  // {
+  //   type: "div",
+  //   className: `col-span-2`,
+  //   content: <TalentSphere />,
+  //   value: "TalentSphere",
+  // },
+  // {
+  //   type: "div",
+  //   className: `w-full`,
+  //   content: <OnGoingApplications />,
+  //   value: "OnGoingApplications",
+  // },
 
-  {
-    type: "div",
-    className: `w-full`,
-    content: <LeaveEmployeeDetails />,
-    value: "LeaveEmployeeDetails",
-  },
-  {
-    type: "div",
-    className: `col-span-2`,
-    content: <TalentSphere />,
-    value: "TalentSphere",
-  },
-  {
-    type: "div",
-    className: `w-full`,
-    content: <OnGoingApplications />,
-    value: "OnGoingApplications",
-  },
+  // {
+  //   type: "div",
+  //   className: `col-span-2`,
+  //   content: <MyTasks />,
+  //   value: "MyTasks",
+  // },
+  // {
+  //   type: "div",
+  //   className: `w-full`,
+  //   content: <AllProjects />,
+  //   value: "AllProjects",
+  // },
 
-  {
-    type: "div",
-    className: `col-span-2`,
-    content: <MyTasks />,
-    value: "MyTasks",
-  },
-  {
-    type: "div",
-    className: `w-full`,
-    content: <AllProjects />,
-    value: "AllProjects",
-  },
-
-  {
-    type: "div",
-    className: `col-span-2`,
-    content: <MyLeaves />,
-    value: "MyLeaves",
-  },
-  {
-    type: "div",
-    className: `w-full`,
-    content: <MyTeams />,
-    value: "MyTeam",
-  },
+  // {
+  //   type: "div",
+  //   className: `col-span-2`,
+  //   content: <MyLeaves />,
+  //   value: "MyLeaves",
+  // },
+  // {
+  //   type: "div",
+  //   className: `w-full`,
+  //   content: <MyTeams />,
+  //   value: "MyTeam",
+  // },
   {
     type: "div",
     className: `w-full`,
     content: <ExpiredDocuments />,
     value: "ExpiredDocuments",
+  },
+
+  {
+    type: "div",
+    className: `col-span-2`,
+    content: <ShiftComplianceWidget />,
+    value: "ShiftComplianceWidget",
   },
 ];
 
