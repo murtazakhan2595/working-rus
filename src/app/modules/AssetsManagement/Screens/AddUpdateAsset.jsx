@@ -317,6 +317,7 @@ const AddUpdateAsset = ({
                         placeholder="Enter purchase cost"
                         label="Purchase Cost"
                         required={true}
+                        min={1}
                       />
                     </div>
                     <div className="flex-1 space-y-2">
@@ -355,7 +356,7 @@ const AddUpdateAsset = ({
                     onChange={async (attachment) => {
                       console.log("changing attachment", attachment);
                       // The Attachments component should handle both existing and new files
-                       props.setFieldValue("attachment", attachment);
+                      props.setFieldValue("attachment", attachment);
                     }}
                     acceptedFileTypes=".pdf,.png,.jpg,.jpeg"
                     error={props.errors.attachment}
