@@ -321,73 +321,52 @@ export function getMenuList(pathname, userRole) {
 
   const menuList = [
     { groupLabel: "", menus: commonMenus },
-    userRolesMap.isSelfServiceHub &&
-      Config.SELF_SERVICE_HUB && {
-        groupLabel: "",
-        menus: selfServiceHubMenus,
-      },
-    userRolesMap.isTeamManagement &&
-      Config.TEAM_MANAGEMENT && { groupLabel: "", menus: teamManagmentMenus },
-    userRolesMap.isPeopleTeam &&
-      Config.PROFIL_MANAGMENT && { groupLabel: "", menus: peopleTeamMenus },
-    userRolesMap.isPayrollAttendance &&
-      Config.ATTENDANCE && {
-        groupLabel: "",
-        menus: AndAttendanceMenus,
-      },
-    userRolesMap.isLeaveTracker &&
-      Config.LEAVE_MANAGMENT && {
-        groupLabel: "",
-        menus: leaveTrackerMenus,
-      },
-    userRolesMap.isPayroll &&
-      Config.PAYROLL && {
-        groupLabel: "",
-        menus: payrollMenus,
-      },
-    userRolesMap.isTaskManagement &&
-      Config.TASK_MANAGMENT && {
-        groupLabel: "",
-        menus: taskManagementMenus,
-      },
-    userRolesMap.isTalentSphere &&
-      Config.TALENT_SPHERE && { groupLabel: "", menus: talentSphereMenus },
+    Config.SELF_SERVICE_HUB && {
+      groupLabel: "",
+      menus: selfServiceHubMenus,
+    },
+    Config.TEAM_MANAGEMENT && { groupLabel: "", menus: teamManagmentMenus },
+    Config.PROFIL_MANAGMENT && { groupLabel: "", menus: peopleTeamMenus },
+    Config.ATTENDANCE && {
+      groupLabel: "",
+      menus: AndAttendanceMenus,
+    },
+    Config.LEAVE_MANAGMENT && {
+      groupLabel: "",
+      menus: leaveTrackerMenus,
+    },
+    Config.PAYROLL && {
+      groupLabel: "",
+      menus: payrollMenus,
+    },
+    Config.TASK_MANAGMENT && {
+      groupLabel: "",
+      menus: taskManagementMenus,
+    },
+    Config.TALENT_SPHERE && { groupLabel: "", menus: talentSphereMenus },
 
-    userRolesMap.isAssetsManagement &&
-      Config.ASSETS_MANAGEMENT && {
-        groupLabel: "",
-        menus: assetsManagementMenus,
-      },
-    userRolesMap.organizationalChart &&
-      Config.ORGANIZATIONAL_CHART && {
-        groupLabel: "",
-        menus: organizationalChartMenu,
-      },
-    userRolesMap.performanceManagementMenus &&
-      Config.PERFORMANCE_MANAGEMENT && {
-        groupLabel: "",
-        menus: performanceManagementMenus,
-      },
-
-    // userRolesMap.dailyTaskReportMenus &&
-    //   Config.DAILY_TASK_REPORT && {
-    //     groupLabel: "",
-    //     menus: dailyTaskReportMenus,
-    //   },
-    userRolesMap.personalDevelopmentMenus &&
-      Config.PERSONAL_DEVELOPMENT && {
-        groupLabel: "",
-        menus: personalDevelopmentMenus,
-      },
-    userRolesMap.peopleEngagementMenus &&
-      Config.PEOPLE_ENGAGEMENT && {
-        groupLabel: "",
-        menus: peopleEngagementMenus,
-      },
-    userRolesMap.isReportsMenu &&
-      Config.REPORTS && { groupLabel: "", menus: reportsMenus },
-    userRolesMap.isOfficeSetting &&
-      Config.OFFICE_SETTING && { groupLabel: "", menus: OfficeSettingMenu },
+    Config.ASSETS_MANAGEMENT && {
+      groupLabel: "",
+      menus: assetsManagementMenus,
+    },
+    Config.ORGANIZATIONAL_CHART && {
+      groupLabel: "",
+      menus: organizationalChartMenu,
+    },
+    Config.PERFORMANCE_MANAGEMENT && {
+      groupLabel: "",
+      menus: performanceManagementMenus,
+    },
+    Config.PERSONAL_DEVELOPMENT && {
+      groupLabel: "",
+      menus: personalDevelopmentMenus,
+    },
+    Config.PEOPLE_ENGAGEMENT && {
+      groupLabel: "",
+      menus: peopleEngagementMenus,
+    },
+    Config.REPORTS && { groupLabel: "", menus: reportsMenus },
+    Config.OFFICE_SETTING && { groupLabel: "", menus: OfficeSettingMenu },
   ].filter(Boolean);
 
   return menuList;

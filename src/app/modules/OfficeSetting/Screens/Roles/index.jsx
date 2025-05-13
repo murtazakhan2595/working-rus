@@ -9,7 +9,7 @@ import { CardDescription } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import RoleAction from "./RoleAction";
 import AddRole from "./AddRole";
-import { getRolesList } from "app/hooks/roles";
+import { getRolesList } from "app/hooks/rolesPermisions";
 import { RoleColumn } from "../../sections/OfficeSettingTableColumns";
 
 const Roles = ({

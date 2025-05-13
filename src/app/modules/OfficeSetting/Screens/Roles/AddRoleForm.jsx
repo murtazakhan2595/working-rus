@@ -1,4 +1,4 @@
-import { saveRole, getPermissionsSchema, checkRoleNameUniqueness } from "app/hooks/roles";
+import { saveRole, getPermissionsSchema, checkRoleNameUniqueness } from "app/hooks/rolesPermisions";
 import { RoleInformation, PermissionTypes } from "./RoleTypes";
 import { TextAreaInput, TextInput, FilterInput } from "components/FormControl";
 import { handleCloseWithConfirmation, SheetCardExtension } from "components/SheetCardExtension";

@@ -13,7 +13,7 @@ import { PriorityList, status2Options, statusOptions, typeOptions } from "../../
 import Select from "react-select";
 import { updateTask } from "../../../state/slices/UpdateDtrSlice";
 import { fetchDTRByEmployeeId } from "../../../state/slices/GetDtrSlice";
-import { getDTRAll } from "../../../state/slices/GetDtrAllSlice";
+import { getDTRAll } from "../../../state/slices/RolePermissionSlice";
 
 
 const UpdateModal = ({ task, getReportingManager, setAssignToSearchQuery, filteredAssignToUsers, onClose, handleDtrClick }) => {

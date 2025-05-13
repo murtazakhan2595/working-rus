@@ -1,7 +1,13 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import { getRolesList, saveRole, deleteRole } from "./general";
-
+import { initialState } from "state/slices/UserSlice";
+import { mapModuleListData } from "app/utils/MappingObjects/mapRolesPermissionData";
+const baseUrl = initialState.baseUrl;
+const headers = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  "Content-Type": "application/json",
+});
 // Get permissions schema
 export const getPermissionsSchema = async () => {
   try {
@@ -9,7 +15,7 @@ export const getPermissionsSchema = async () => {
     const permissionsSchema = [
       {
         name: "Dashboard",
-        subModules: []
+        subModules: [],
       },
       {
         name: "Self Service Hub",
@@ -20,19 +26,19 @@ export const getPermissionsSchema = async () => {
               {
                 key: "MY_PROFILE.VIEW_PERSONAL_INFORMATION",
                 name: "View Personal Information",
-                supportedPermissions: ["View"]
+                supportedPermissions: ["View"],
               },
               {
                 key: "MY_PROFILE.EDIT_PERSONAL_INFORMATION",
                 name: "Edit Personal Information",
-                supportedPermissions: ["Edit"]
+                supportedPermissions: ["Edit"],
               },
               {
                 key: "MY_PROFILE.VIEW_JOB_INFORMATION",
                 name: "View Job Information",
-                supportedPermissions: ["View"]
-              }
-            ]
+                supportedPermissions: ["View"],
+              },
+            ],
           },
           {
             name: "My Attendance",
@@ -40,16 +46,16 @@ export const getPermissionsSchema = async () => {
               {
                 key: "MY_ATTENDANCE.MARK_ATTENDANCE",
                 name: "Mark My Attendance",
-                supportedPermissions: ["Add"]
+                supportedPermissions: ["Add"],
               },
               {
                 key: "MY_ATTENDANCE.VIEW_ATTENDANCE",
                 name: "View Attendance Records",
-                supportedPermissions: ["View"]
-              }
-            ]
-          }
-        ]
+                supportedPermissions: ["View"],
+              },
+            ],
+          },
+        ],
       },
       {
         name: "People Team",
@@ -60,19 +66,19 @@ export const getPermissionsSchema = async () => {
               {
                 key: "PROFILE_MANAGEMENT.ADD_EMPLOYEE",
                 name: "Add Employee",
-                supportedPermissions: ["Add"]
+                supportedPermissions: ["Add"],
               },
               {
                 key: "PROFILE_MANAGEMENT.VIEW_EMPLOYEES",
                 name: "View Employees",
-                supportedPermissions: ["View"]
+                supportedPermissions: ["View"],
               },
               {
                 key: "PROFILE_MANAGEMENT.EDIT_EMPLOYEE",
                 name: "Edit Employee",
-                supportedPermissions: ["Edit"]
-              }
-            ]
+                supportedPermissions: ["Edit"],
+              },
+            ],
           },
           {
             name: "HR Documents",
@@ -80,21 +86,21 @@ export const getPermissionsSchema = async () => {
               {
                 key: "HR_DOCUMENTS.UPLOAD_HR_DOCUMENT",
                 name: "Upload HR Document",
-                supportedPermissions: ["Add"]
+                supportedPermissions: ["Add"],
               },
               {
                 key: "HR_DOCUMENTS.VIEW_HR_DOCUMENT",
                 name: "View HR Document",
-                supportedPermissions: ["View"]
+                supportedPermissions: ["View"],
               },
               {
                 key: "HR_DOCUMENTS.ASSIGN_HR_DOCUMENT",
                 name: "Assign HR Document",
-                supportedPermissions: ["Add", "Edit"]
-              }
-            ]
-          }
-        ]
+                supportedPermissions: ["Add", "Edit"],
+              },
+            ],
+          },
+        ],
       },
       {
         name: "Organizational Setup",
@@ -105,24 +111,24 @@ export const getPermissionsSchema = async () => {
               {
                 key: "DEPARTMENTS.ADD_DEPARTMENTS",
                 name: "Add Departments",
-                supportedPermissions: ["Add"]
+                supportedPermissions: ["Add"],
               },
               {
                 key: "DEPARTMENTS.VIEW_DEPARTMENTS",
                 name: "View Departments",
-                supportedPermissions: ["View"]
+                supportedPermissions: ["View"],
               },
               {
                 key: "DEPARTMENTS.EDIT_DEPARTMENTS",
                 name: "Edit Departments",
-                supportedPermissions: ["Edit"]
+                supportedPermissions: ["Edit"],
               },
               {
                 key: "DEPARTMENTS.DELETE_DEPARTMENTS",
                 name: "Delete Departments",
-                supportedPermissions: ["Delete"]
-              }
-            ]
+                supportedPermissions: ["Delete"],
+              },
+            ],
           },
           {
             name: "Roles & Permissions",
@@ -130,27 +136,27 @@ export const getPermissionsSchema = async () => {
               {
                 key: "ROLES.ADD_ROLE",
                 name: "Add Role",
-                supportedPermissions: ["Add"]
+                supportedPermissions: ["Add"],
               },
               {
                 key: "ROLES.VIEW_ROLES",
                 name: "View Roles",
-                supportedPermissions: ["View"]
+                supportedPermissions: ["View"],
               },
               {
                 key: "ROLES.EDIT_ROLES",
                 name: "Edit Roles",
-                supportedPermissions: ["Edit"]
+                supportedPermissions: ["Edit"],
               },
               {
                 key: "ROLES.DELETE_ROLES",
                 name: "Delete Roles",
-                supportedPermissions: ["Delete"]
-              }
-            ]
-          }
-        ]
-      }
+                supportedPermissions: ["Delete"],
+              },
+            ],
+          },
+        ],
+      },
     ];
 
     return permissionsSchema;
@@ -167,7 +173,7 @@ export const checkRoleNameUniqueness = async (name) => {
     const response = await getRolesList({
       filterData: { name: name },
     });
-    
+
     // If any results are returned with the same name, it's not unique
     return response.results.length === 0;
   } catch (error) {
@@ -175,6 +181,30 @@ export const checkRoleNameUniqueness = async (name) => {
     throw error;
   }
 };
-
+export const getModuleList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "order";
+  try {
+    const URL = `/modules/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const moduleResponse = response.data;
+      // const moduleList = await mapmoduleList(moduleResponse?.results);
+      const moduleList = await mapModuleListData(moduleResponse?.results);
+      return { results: moduleList, count: moduleResponse.count };
+    } else return [];
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
 // Re-export functions from general.js
 export { getRolesList, saveRole, deleteRole };
