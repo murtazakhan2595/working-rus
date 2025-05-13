@@ -25,7 +25,7 @@ import moment from "moment";
 
 const FormSheetData = {
   triggerText: "Submit",
-  title: "Upload New Document",
+  title: "Add Document",
   description: null,
   footer: null,
 };
