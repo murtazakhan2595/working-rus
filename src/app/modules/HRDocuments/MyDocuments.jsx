@@ -89,7 +89,8 @@ export default function MyDocuments() {
     >
       <Header />
 
-      <div className="flex flex-col items-start justify-end lg:flex-row md:flex-row xl:flex-row">
+      {/* Responsive filters container - original style on desktop */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-end">
         <FilterInput
           filters={[
             {
@@ -98,6 +99,7 @@ export default function MyDocuments() {
               name: "document_category",
               placeholder: "Category",
               values: selectedCategory,
+              width: "w-full sm:w-56", // Full width on mobile, fixed width on larger screens
             },
             {
               type: "select-two",
@@ -105,11 +107,14 @@ export default function MyDocuments() {
               name: "status",
               placeholder: "Status",
               values: selectedStatus,
+              width: "w-full sm:w-56", // Full width on mobile, fixed width on larger screens
             },
           ]}
           onChange={handleFilterChange}
+          className="w-full flex flex-col sm:flex-row gap-2"
         />
       </div>
+      
       <Card>
         <CardContent>
           {isLoading ? (
@@ -125,6 +130,7 @@ export default function MyDocuments() {
           )}
         </CardContent>
       </Card>
+      
       {OpenDocumentID && (
         <MyDocumentDetails
           documentID={OpenDocumentID}
@@ -135,7 +141,6 @@ export default function MyDocuments() {
           }}
           DocumentList={HRDocumentsData.results}
           reloadData={fetchData}
-          // readOnlyMode={true}
         />
       )}
     </div>
