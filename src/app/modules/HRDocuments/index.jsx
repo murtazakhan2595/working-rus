@@ -39,8 +39,8 @@ function HRDocuments() {
             }}
           >
             {activeHRDocumentsTab === "Documents"
-              ? "Upload New Document"
-              : "Add New Category"}
+              ? "Add Document"
+              : "Add Category"}
           </Button>
         }
       />
@@ -52,18 +52,20 @@ function HRDocuments() {
         }}
         value={activeHRDocumentsTab}
       >
-        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
-          <TabsList className="flex items-center justify-center mb-4">
-            {HRDocumentsTab.map((tab) => (
-              <TabsTrigger
-                key={tab}
-                value={tab}
-                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-              >
-                {tab}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between w-full">
+          <div className="w-full sm:w-auto overflow-hidden mb-4">
+            <TabsList className="flex flex-nowrap w-full overflow-x-auto overflow-y-hidden sm:overflow-visible">
+              {HRDocumentsTab.map((tab) => (
+                <TabsTrigger
+                  key={tab}
+                  value={tab}
+                  className="data-[state=active]:bg-primary-200 flex-1 sm:flex-initial whitespace-nowrap sm:w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                >
+                  {tab}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
         </div>
         <Card>
           <CardContent>

@@ -6,30 +6,27 @@ import moment from "moment";
 
 export function getNotificationActionURL(module, notification_type) {
   if (!module || !notification_type) return null;
-  const URL_Object = Notifications_Action_URL.find(
+  const URL = Notifications_Action_URL.find(
     (obj) =>
       obj.module === module && obj.notification_type === notification_type
   );
-  return URL_Object && URL_Object.action_url ? URL_Object.action_url : null;
+  return URL ? URL.action_url ?? null : null;
 }
 
 export function mapNotificationData(data) {
   const NotificationData = Object.keys(Notification).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
       if (key === "notification_type") {
-        const action_url =
+        acc["action_url"] =
           getNotificationActionURL(data.module, data[key]) ||
           data.action_url ||
           "#";
-        acc["action_url"] = action_url.replace(
-          "{related_id}",
-          data.related_id || ""
-        );
       }
       acc[key] = data[key];
     }
     return acc;
   }, {});
+
   return NotificationData;
 }
 

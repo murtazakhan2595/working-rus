@@ -52,8 +52,8 @@ const MyLeaves = ({ userProfile }) => {
       filterData,
       options: { page: 1, sizePerPage: 7 },
     });
-    if (leaveTransaction) {
-      setLeaveTransaction(leaveTransaction);
+    if (leaveTransaction?.results) {
+      setLeaveTransaction(leaveTransaction?.results);
     }
     setIsLeaveTransactionLoading(false);
   };
@@ -239,41 +239,40 @@ const MyLeaves = ({ userProfile }) => {
             </TableBody>
           ) : (
             <TableBody>
-              {leaveTransaction?.results?.results &&
-                leaveTransaction?.results?.results?.map((leave, index) => (
-                  <TableRow key={index} className="cursor-pointer">
-                    <TableCell>{leave?.component_name}</TableCell>
-                    <TableCell>{leave?.leave_request?.no_of_days}</TableCell>
-                    <TableCell>
-                      {`${moment(leave?.leave_request?.start_date).format(
-                        "MMM D"
-                      )} - ${moment(leave?.leave_request?.end_date).format(
-                        "MMM D"
-                      )}`}
-                    </TableCell>
-                    <TableCell>
-                      <span
-                        className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
-                          leave?.action_hr === "Approved" &&
-                          leave?.action_manager === "Approved"
-                            ? "bg-emerald-50 text-teal-700"
-                            : leave?.action_hr === "Declined" ||
-                              leave?.action_manager === "Declined"
-                            ? "bg-red-50 text-red-700"
-                            : "bg-[#f0f0f3] text-[#7f838d]"
-                        }`}
-                      >
-                        {leave?.action_hr === "Approved" &&
+              {leaveTransaction?.results?.map((leave, index) => (
+                <TableRow key={index} className="cursor-pointer">
+                  <TableCell>{leave?.component_name}</TableCell>
+                  <TableCell>{leave?.leave_request?.no_of_days}</TableCell>
+                  <TableCell>
+                    {`${moment(leave?.leave_request?.start_date).format(
+                      "MMM D"
+                    )} - ${moment(leave?.leave_request?.end_date).format(
+                      "MMM D"
+                    )}`}
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
+                        leave?.action_hr === "Approved" &&
                         leave?.action_manager === "Approved"
-                          ? "Approved"
+                          ? "bg-emerald-50 text-teal-700"
                           : leave?.action_hr === "Declined" ||
                             leave?.action_manager === "Declined"
-                          ? "Declined"
-                          : "Pending"}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                          ? "bg-red-50 text-red-700"
+                          : "bg-[#f0f0f3] text-[#7f838d]"
+                      }`}
+                    >
+                      {leave?.action_hr === "Approved" &&
+                      leave?.action_manager === "Approved"
+                        ? "Approved"
+                        : leave?.action_hr === "Declined" ||
+                          leave?.action_manager === "Declined"
+                        ? "Declined"
+                        : "Pending"}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           )}
         </Table>

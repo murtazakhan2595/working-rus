@@ -71,18 +71,16 @@ export const Notifications_Action_URL = [
   {
     module: "Task Management",
     notification_type: "Task Assignment",
-    action_url: "project-board/card/{related_id}",
+    action_url: "/tasks/{task_id}",
   },
   {
     module: "Task Management",
     notification_type: "Task Unassignment",
-    action_url: "project-board/card/{related_id}",
+    action_url: "/tasks/{task_id}",
   },
   {
     module: "Project Management",
     notification_type: "Project Addition",
-    action_url: "project-board/{related_id}",
-
   },
   {
     module: "Task Management",

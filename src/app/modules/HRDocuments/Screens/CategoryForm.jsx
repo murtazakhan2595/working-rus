@@ -13,7 +13,7 @@ import { useDispatch } from "react-redux";
 
 const FormSheetData = {
   triggerText: "Submit",
-  title: "Add New Category",
+  title: "Add Category",
   description: null,
   footer: null,
   width: "560px",

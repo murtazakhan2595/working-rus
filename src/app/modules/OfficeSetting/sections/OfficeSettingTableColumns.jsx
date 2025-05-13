@@ -7,6 +7,7 @@ import DesignationAction from "../Screens/Designations/DesignationAction";
 import { getDesignations } from "app/hooks/employee";
 import OnboardingActions from "../Screens/OnboardingChecklist/OnboardingActions";
 import { FormatID } from "utils/getValuesFromTables";
+import RoleAction from "../Screens/Roles/RoleAction";
 
 // 
 export const BranchColumn = (reload) => [
@@ -141,5 +142,31 @@ export const OnboardingChecklistColumn = (reload) => [
     formatter: (cell, row) => (
       <OnboardingActions data={row} reload={reload} />
     ),
+  },
+];
+
+// Role Column
+export const RoleColumn = (reload) => [
+  {
+    dataField: "id",
+    text: "ID",
+    dataSort: true,
+    formatter: (cell, row) => <FormatID value={cell} prefix={'RL-'} />,
+  },
+  {
+    dataField: "name",
+    text: "Role Name",
+    dataSort: true,
+  },
+  {
+    dataField: "description",
+    text: "Description",
+    dataSort: true,
+  },
+  {
+    text: "Action",
+    formatter: (cell, row) => <RoleAction data={row} reload={reload} />,
+    classes: "text-center",
+    headerClasses: "text-center",
   },
 ];
