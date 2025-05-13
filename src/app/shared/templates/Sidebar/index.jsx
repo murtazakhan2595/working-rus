@@ -3,7 +3,7 @@ import { cn } from "../../../../src/@/lib/utils";
 import { useStore } from "../../../hooks/use-store";
 import { useSidebarToggle } from "../../../hooks/use-sidebar-toggle";
 import { ContentLayout } from "../../../../components/ui/content-layout";
-import { SidebarNew } from "components/ui/sidebar-new";
+import { SideBarMenu } from "app/modules/SideBarNavigation/SideBarMenu";
 
 // const Main = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
@@ -15,7 +15,7 @@ export default function Main({ userRole }) {
   return (
     <>
       <div className="sidebar">
-        <SidebarNew userRole={userRole} />
+        <SideBarMenu userRole={userRole} />
       </div>
 
       <main

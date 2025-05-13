@@ -80,9 +80,9 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   if (values.po_box_number && !/^\d+$/.test(values.po_box_number)) {
     errors.po_box_number = "PO Box Number must contain only numbers";
   }
-  if (!values.nationality){
-    errors.nationality = "Nationality is required"
-  } 
+  if (!values.nationality) {
+    errors.nationality = "Nationality is required";
+  }
   return errors;
 };
 
@@ -94,7 +94,7 @@ const validationEmployeeContactInfoFormSchema = (values) => {
     errors.emergency_relation = "Contact Relation is required";
   if (!values.emergency_phone_no)
     errors.emergency_phone_no = "Phone number is required";
- 
+
   return errors;
 };
 
@@ -451,6 +451,24 @@ const validateOnboardingDocuments = (onboardingDocuments) => {
   });
 
   return hasErrors ? errors : {};
+};
+
+export const validateChangePasswordForm = (values) => {
+  const errors = {};
+  if (!values?.confirm_password)
+    errors.confirm_password = "Confirm password is required";
+  if (!values?.new_password) errors.new_password = "New Password is required";
+  if (!values?.current_password)
+    errors.current_password = "Current password is required";
+  if (
+    values?.confirm_password &&
+    values.new_password &&
+    values.current_password !== values.confirm_password
+  ) {
+    errors.confirm_password =
+      "Confirm password does not match with current password";
+  }
+  return errors;
 };
 export {
   validationPersonalInfoFormSchema,

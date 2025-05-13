@@ -1,8 +1,8 @@
 // done
 import { Link } from 'react-router-dom';
 import { MenuIcon } from "lucide-react";
-import { Button } from "./button";
-import Menu from "./Menu";
+import { Button } from "components/ui/button";
+import Menu from "./MenuList";
 import {
   Sheet,
   SheetHeader,
@@ -10,7 +10,7 @@ import {
   SheetTrigger,
 } from "src/@/components/ui/sheet";
 
-import MobileLogo from "../../assets/images/mobile-logo";
+import MobileLogo from "assets/images/mobile-logo";
 export function MenuSheet({userRole}) {
   return (
     <Sheet>

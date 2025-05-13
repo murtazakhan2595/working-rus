@@ -1,15 +1,15 @@
 
 // import { PanelsTopLeft } from "lucide-react";
 import { Link } from 'react-router-dom';
-import { cn } from "../../src/@/lib/utils";
-import { useStore } from "../../app/hooks/use-store";
-import { Button } from "./button";
-import { useSidebarToggle } from "../../app/hooks/use-sidebar-toggle";
-import SidebarToggle from "../../components/ui/sidebar-toggle";
-import Menu from "../../components/ui/menu";
-import NewLogo from './../../assets/images/NewLogo';
-import MobileLogo from './../../assets/images/mobile-logo';
-export function SidebarNew({ userRole }) {
+import { cn } from "src/@/lib/utils";
+import { useStore } from "app/hooks/use-store";
+import { Button } from "components/ui/button";
+import { useSidebarToggle } from "app/hooks/use-sidebar-toggle";
+import SidebarToggle from "components/ui/sidebar-toggle";
+import MenuList from "./MenuList";
+import NewLogo from 'assets/images/NewLogo';
+import MobileLogo from 'assets/images/mobile-logo';
+export function SideBarMenu({ userRole }) {
   const sidebar = useStore(useSidebarToggle, (state) => state);
 
   if (!sidebar) return null;
@@ -49,7 +49,7 @@ export function SidebarNew({ userRole }) {
             </div>
           </Link>
         </Button>
-        <Menu isOpen={sidebar?.isOpen} userRole={userRole} />
+        <MenuList isOpen={sidebar?.isOpen} userRole={userRole} />
       </div>
     </aside>
   );

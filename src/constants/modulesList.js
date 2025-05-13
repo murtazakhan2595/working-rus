@@ -1,286 +1,714 @@
 const ModuleList = [
   {
-    moduleId: 1,
-    moduleName: "Dashboard",
-    key: "DASHBOARD",
+    code_name: "DASHBOARD",
+    name: "Dashboard",
+    order: 1,
   },
   {
-    moduleId: 2,
-    moduleName: "Create Profile",
+    code_name: "SELF_SERVICE_HUB",
+    name: "Self Service Hub",
+    order: 2,
   },
   {
-    moduleId: 3,
-    moduleName: "Team Management",
+    code_name: "TEAM_MANAGEMENT",
+    name: "Team Management",
+    order: 3,
   },
   {
-    moduleId: 4,
-    moduleName: "Profile Management",
-    parentModuleId: 3,
+    code_name: "PEOPLE_TEAM",
+    name: "People Team",
+    order: 4,
   },
   {
-    moduleId: 5,
-    moduleName: "Profile Settings",
-    parentModuleId: 3,
+    code_name: "ATTENDANCE",
+    name: "Attendance",
+    order: 5,
   },
   {
-    moduleId: 6,
-    moduleName: "Travel Details",
-    parentModuleId: 3,
+    code_name: "LEAVE_MANAGEMENT",
+    name: "Leave Tracker",
+    order: 6,
   },
   {
-    moduleId: 7,
-    moduleName: "Exit & Clearance",
-    parentModuleId: 3,
+    code_name: "PAYROLL",
+    name: "Payroll",
+    order: 7,
   },
   {
-    moduleId: 8,
-    moduleName: "Customize Employee",
-    parentModuleId: 3,
+    code_name: "TASK_MANAGEMENT",
+    name: "Task Management",
+    order: 8,
   },
   {
-    moduleId: 9,
-    moduleName: "Relocation",
-    parentModuleId: 3,
+    code_name: "TALENT_SPHERE",
+    name: "Talent Sphere",
+    order: 9,
   },
   {
-    moduleId: 10,
-    moduleName: "Internal",
-    parentModuleId: 3,
+    code_name: "ASSET_MANAGEMENT",
+    name: "Asset Management",
+    order: 10,
   },
   {
-    moduleId: 11,
-    moduleName: "External",
-    parentModuleId: 3,
+    code_name: "ORGANIZATIONAL_CHART",
+    name: "Organization Chart",
+    order: 11,
   },
   {
-    moduleId: 12,
-    moduleName: "Self Service Hub",
-  },
-  {
-    moduleId: 13,
-    moduleName: "My Profile",
-    parentModuleId: 12,
-  },
-  {
-    moduleId: 14,
-    moduleName: "My Team",
-    parentModuleId: 12,
-  },
-  {
-    moduleId: 15,
-    moduleName: "Calendar",
-    parentModuleId: 12,
-  },
-  {
-    moduleId: 16,
-    moduleName: "My Payroll",
-    key: "MY_PAYROLL",
-  },
-  {
-    moduleId: 17,
-    moduleName: "My Claims",
-    parentModuleId: 12,
-  },
-  {
-    moduleId: 18,
-    moduleName: "Exit",
-    parentModuleId: 12,
-  },
-  {
-    moduleId: 19,
-    moduleName: "My Travel Details",
-    parentModuleId: 12,
-  },
-  {
-    moduleId: 20,
-    moduleName: "Payroll",
-    key: "PAYROLL",
-  },
-  {
-    moduleId: 21,
-    moduleName: "Employee Payrolls",
-    parentModuleId: 20,
-  },
-  {
-    moduleId: 22,
-    moduleName: "Salary Setup",
-    key: "PAYROLL_SALARY_SETUP",
-  },
-  {
-    moduleId: 23,
-    moduleName: "Claim Request",
-    parentModuleId: 20,
-  },
-  {
-    moduleId: 58,
-    moduleName: "On-Hold Salaries",
-    parentModuleId: 20,
-  },
-  {
-    moduleId: 24,
-    moduleName: "Pay Run",
-    parentModuleId: 20,
-  },
-  {
-    moduleId: 25,
-    moduleName: "Loans",
-    parentModuleId: 20,
-  },
-  {
-    moduleId: 26,
-    moduleName: "Payslips",
-    parentModuleId: 20,
-  },
-  {
-    moduleId: 27,
-    moduleName: "Task Management",
-  },
-  {
-    moduleId: 28,
-    moduleName: "My Task",
-    parentModuleId: 27,
-  },
-  {
-    moduleId: 29,
-    moduleName: "My Team DTR",
-    parentModuleId: 27,
-  },
-  {
-    moduleId: 30,
-    moduleName: "Project Board",
-    parentModuleId: 27,
-  },
-  {
-    moduleId: 31,
-    moduleName: "Time Management",
-    parentModuleId: 27,
-  },
-  {
-    moduleId: 32,
-    moduleName: "Leave Tracker",
-  },
-  {
-    moduleId: 33,
-    moduleName: "Leave Records",
-    parentModuleId: 32,
-  },
-  {
-    moduleId: 34,
-    moduleName: "Leave Request",
-    parentModuleId: 32,
-  },
-  {
-    moduleId: 35,
-    moduleName: "Talent Sphere",
-  },
-  {
-    moduleId: 36,
-    moduleName: "Personnel Requisition",
-    parentModuleId: 35,
-  },
-  {
-    moduleId: 37,
-    moduleName: "Jobs",
-    parentModuleId: 35,
-  },
-  {
-    moduleId: 38,
-    moduleName: "Applicants",
-    parentModuleId: 35,
-  },
-  {
-    moduleId: 39,
-    moduleName: "Referrals",
-    parentModuleId: 35,
-  },
-  {
-    moduleId: 40,
-    moduleName: "On Boarding",
-    parentModuleId: 35,
-  },
-  {
-    moduleId: 41,
-    moduleName: "Daily Task Report",
-    parentModuleId: 12,
-  },
-  {
-    moduleId: 42,
-    moduleName: "My DTR",
-    parentModuleId: 41,
-  },
-  {
-    moduleId: 43,
-    moduleName: "Create Task",
-    parentModuleId: 41,
-  },
-  {
-    moduleId: 44,
-    moduleName: "Personal Development",
-  },
-  {
-    moduleId: 45,
-    moduleName: "Learn",
-    parentModuleId: 44,
-  },
-  {
-    moduleId: 46,
-    moduleName: "Career Planning",
-    parentModuleId: 44,
-  },
-  {
-    moduleId: 47,
-    moduleName: "Succession Plan",
-    parentModuleId: 44,
-  },
-  {
-    moduleId: 48,
-    moduleName: "Attendance",
-  },
-  {
-    moduleId: 49,
-    moduleName: "People Engagement",
-  },
-  {
-    moduleId: 50,
-    moduleName: "Announcement",
-    parentModuleId: 49,
-  },
-  {
-    moduleId: 51,
-    moduleName: "Performance Management",
-  },
-  {
-    moduleId: 54,
-    moduleName: "Employee Evaluation",
-    parentModuleId: 51,
-  },
-  {
-    moduleId: 52,
-    moduleName: "Reports",
-  },
-  {
-    moduleId: 53,
-    moduleName: "Recognition",
-    parentModuleId: 49,
-  },
-  {
-    moduleId: 55,
-    moduleName: "Assets Management",
-  },
-  {
-    moduleId: 56,
-    moduleName: "Assets",
-    parentModuleId: 55,
-  },
-  {
-    moduleId: 59,
-    moduleName: "Request and Assign",
-    parentModuleId: 55,
-  },
-  {
-    moduleId: 57,
-    moduleName: "HR Documents",
+    code_name: "OFFICE_SETTING",
+    name: "Organizational Setup",
+    order: 12,
   },
 ];
+
+const SubModuleAndFeatureList = [
+  // Sub Module of Self Service Hub
+
+  {
+    code_name: "MY_PROFILE",
+    name: "My Profile",
+    order: 1,
+    feature_list: [
+      {
+        code_name: "VIEW_PERSONAL_INFORMATION",
+        name: "View Personal Information",
+      },
+      {
+        code_name: "EDIT_PERSONAL_INFORMATION",
+        name: "Edit Personal Information",
+      },
+      {
+        code_name: "VIEW_JOB_INFORMATION",
+        name: "View Job Information",
+      },
+      {
+        code_name: "EDIT_ACADEMIC_INFORMATION",
+        name: "Edit Academic Information",
+      },
+      {
+        code_name: "VIEW_ACADEMIC_INFORMATION",
+        name: "View Academic Information",
+      },
+      {
+        code_name: "VIEW_EXPERIENCE_INFORMATION",
+        name: "View Experience Information",
+      },
+      {
+        code_name: "EDIT_EXPERIENCE_INFORMATION",
+        name: "Edit Experience Information",
+      },
+      {
+        code_name: "VIEW_CERTIFICATION_INFORMATION",
+        name: "View Certification Information",
+      },
+      {
+        code_name: "EDIT_CERTIFICATION_INFORMATION",
+        name: "Edit Certification Information",
+      },
+      {
+        code_name: "VIEW_IDENTIFICATION_INFORMATION",
+        name: "View Identification Information",
+      },
+      {
+        code_name: "EDIT_IDENTIFICATION_INFORMATION",
+        name: "Edit Identification Information",
+      },
+    ],
+  },
+  {
+    code_name: "MY_ATTENDANCE",
+    name: "My Attendance",
+    order: 2,
+    feature_list: [
+      {
+        code_name: "MARK_ATTENDANCE",
+        name: "Mark My Attendance",
+      },
+      {
+        code_name: "MARK_BREAK",
+        name: "Log Break Time",
+      },
+      {
+        code_name: "VIEW_ATTENDANCE",
+        name: "View Attendance Records",
+      },
+    ],
+  },
+  {
+    code_name: "DAILY_TASK_REPORT",
+    name: "Daily Task Report",
+    order: 3,
+    feature_list: [
+      {
+        code_name: "ADD_DAILY_TASK_REPORT",
+        name: "Create Daily Task Report",
+      },
+      {
+        code_name: "VIEW_DAILY_TASK_REPORT",
+        name: "View Daily Task Report",
+      },
+      {
+        code_name: "SUBMIT_DAILY_TASK_REPORT",
+        name: "Submit Daily Task Report",
+      },
+    ],
+  },
+
+  {
+    code_name: "MY_LEAVE_TRACKER",
+    name: "My Leave Tracker",
+    order: 4,
+    feature_list: [
+      {
+        code_name: "ADD_LEAVE_REQUEST",
+        name: "Add Leave Request",
+      },
+      {
+        code_name: "VIEW_LEAVES_APPLIED",
+        name: "View Applied Leaves",
+      },
+      {
+        code_name: "DELETE_LEAVE_REQUEST",
+        name: "Delete Leave Request",
+      },
+      {
+        code_name: "VIEW_CONSUMED_LEAVES",
+        name: "View Consumed Leaves",
+      },
+    ],
+  },
+  {
+    code_name: "MY_PAYROLL",
+    name: "My Payroll",
+    order: 5,
+    feature_list: [
+      {
+        code_name: "VIEW_PAYROLL",
+        name: "View Payroll",
+      },
+    ],
+  },
+  {
+    code_name: "MY_CLAIMS",
+    name: "My Claims",
+    order: 6,
+    feature_list: [
+      {
+        code_name: "REQUEST_CLAIM",
+        name: "Request Claim",
+      },
+      {
+        code_name: "VIEW_CLAIMS",
+        name: "View Claims",
+      },
+      {
+        code_name: "DELETE_CLAIM",
+        name: "Delete Claim",
+      },
+    ],
+  },
+  {
+    code_name: "MY_TRANSFERS",
+    name: "My Transfers",
+    order: 7,
+    feature_list: [
+      {
+        code_name: "REQUEST_TRANSFER",
+        name: "Request Transfer",
+      },
+      {
+        code_name: "VIEW_TRANSFER",
+        name: "View Transfer",
+      },
+    ],
+  },
+  {
+    code_name: "DOCUMENTS",
+    name: "HR Documents",
+    order: 8,
+    feature_list: [
+      {
+        code_name: "VIEW_ASSIGNED_DOCUMENTS",
+        name: "View Assigned Documents",
+      },
+      {
+        code_name: "MANAGE_ASSIGNED_DOCUMENTS",
+        name: "Manage Assigned Documents",
+        description: "View, acknowledge, and sign assigned documents",
+      },
+    ],
+  },
+  {
+    code_name: "MY_ASSETS",
+    name: "My Assets",
+    order: 9,
+    feature_list: [
+      {
+        code_name: "VIEW_ASSET",
+        name: "View Asset",
+      },
+      {
+        code_name: "ADD_ASSET_REQUEST",
+        name: "Request New Asset",
+      },
+      {
+        code_name: "WITHDRAW_ASSET",
+        name: "Withdraw Asset",
+      },
+    ],
+  },
+  {
+    code_name: "EXIT",
+    name: "Exit",
+    order: 10,
+    feature_list: [
+      {
+        code_name: "SUBMIT_RESIGNATION",
+        name: "Submit Resignation",
+      },
+      {
+        code_name: "VIEW_EXIT_REQUEST",
+        name: "View Exit Request",
+        description: "View submitted exit requests, including resignations and terminations",
+      },
+      {
+        code_name: "MANAGE_TERMINATION_REQUESTS",
+        name: "Manage Termination Requests",
+        description: "Approve or reject termination requests",
+      },
+    ],
+  },
+
+ // Team Management
+ {
+  code_name: "TEAM_PROFILE",
+  name: "Team Profile",
+  order: 1,
+},
+{
+  code_name: "TEAM_LEAVE_REQUEST",
+  name: "Leave Request",
+  order: 2,
+  feature_list: [
+    { code_name: "VIEW_TEAM_LEAVE_REQUEST", name: "View Team Leave Request" },
+    {
+      code_name: "MANAGE_TEAM_LEAVE_REQUEST",
+      name: "Manage Team Leave Request",
+      description: "Approve or reject leave requests from employees",
+    },
+  ],
+},
+{
+  code_name: "TEAM_ATTENDANCE",
+  name: "Attendance",
+  order: 3,
+  feature_list: [
+    {
+      code_name: "VIEW_TEAM_LEAVE_STATUS",
+      name: "View Team Leave Status Overview",
+    },
+    {
+      code_name: "VIEW_TEAM_WEEKLY_STATISTICS",
+      name: "View Team Weekly Attendance Statistics",
+    },
+    {
+      code_name: "UPDATE_TEAM_ATTENDANCE",
+      name: "Update Team Attendance",
+    },
+    {
+      code_name: "VIEW_TEAM_ATTENDANCE",
+      name: "View Team Attendance",
+    },
+    {
+      code_name: "EXPORT_TEAM_ATTENDANCE",
+      name: "Export Team Attendance",
+    },
+  ],
+},
+{
+  code_name: "TEAM_DAILY_TASK_REPORT",
+  name: "Daily Task Report",
+  order: 4,
+  feature_list: [
+    {
+      code_name: "VIEW_TEAM_DAILY_TASK_REPORT",
+      name: "View Team Daily Task Report",
+    },
+  ],
+},
+
+// People Team
+{
+  code_name: "PROFILE_MANAGEMENT",
+  name: "Profile Management",
+  order: 1,
+  feature_list: [
+    { code_name: "ADD_EMPLOYEE", name: "Add Employee" },
+    { code_name: "VIEW_EMPLOYEES", name: "View Employees" },
+    {
+      code_name: "VIEW_EMPLOYEE_DETAILS",
+      name: "View Employee Details",
+      description:
+        "View employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)",
+    },
+    {
+      code_name: "EDIT_EMPLOYEE_PROFILE",
+      name: "Edit Employee Profile",
+      description:
+        "Edit employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)",
+    },
+    {
+      code_name: "EDIT_EMPLOYEE",
+      name: "Edit Employee",
+      description: "Edit employee work information",
+    },
+  ],
+},
+{
+  code_name: "EXIT_CLEARANCE",
+  name: "Exit & Clearance",
+  order: 2,
+  feature_list: [
+    { code_name: "VIEW_EXIT_REQUESTS", name: "View Exit Requests" },
+    { code_name: "VIEW_EXIT_RECORDS", name: "View Exit Records" },
+    {
+      code_name: "MANAGE_EXIT_REQUESTS",
+      name: "Manage Exit Requests",
+      description:
+        "Approve, reject, or change status of exit requests (Termination or Resignation)",
+    },
+    {
+      code_name: "ADD_TERMINATION",
+      name: "Add Termination Request",
+    },
+  ],
+},
+{
+  code_name: "EMPLOYEE_CREATION",
+  name: "Employee Creation",
+  order: 3,
+  feature_list: [
+    { code_name: "ADD_EMPLOYEE", name: "Add Employee" },
+  ],
+},
+{
+  code_name: "HR_DOCUMENTS",
+  name: "HR Documents",
+  order: 4,
+  feature_list: [
+    { code_name: "UPLOAD_HR_DOCUMENT", name: "Upload HR Document" },
+    { code_name: "VIEW_HR_DOCUMENT", name: "View HR Document" },
+    {
+      code_name: "VIEW_HR_DOCUMENT_DETAILS",
+      name: "View HR Document Details",
+      description: "View all assigned employees for a document",
+    },
+    { code_name: "ASSIGN_HR_DOCUMENT", name: "Assign HR Document" },
+    { code_name: "ADD_DOCUMENT_CATEGORY", name: "Add Document Category" },
+    { code_name: "VIEW_DOCUMENT_CATEGORY", name: "View Document Category" },
+    { code_name: "EDIT_DOCUMENT_CATEGORY", name: "Edit Document Category" },
+    { code_name: "DELETE_DOCUMENT_CATEGORY", name: "Delete Document Category" },
+  ],
+},
+{
+  code_name: "EMPLOYEE_TRANSFER",
+  name: "Employee Transfer",
+  order: 5,
+  feature_list: [
+    { code_name: "VIEW_EMPLOYEE_TRANSFER", name: "View Employee Transfer" },
+    { code_name: "EDIT_EMPLOYEE_TRANSFER", name: "Edit Employee Transfer" },
+    {
+      code_name: "MANAGE_EMPLOYEE_TRANSFER",
+      name: "Manage Employee Transfer",
+      description: "Approve or reject employee transfer requests",
+    },
+  ],
+},
+
+
+  // Sub module of Attendance
+  {
+    code_name: "EMPLOYEES_ATTENDANCE",
+    name: "Attendance",
+    order: 1,
+    feature_list: [
+      { code_name: "VIEW_LEAVE_STATUS", name: "View Leave Status Overview" },
+      { code_name: "VIEW_WEEKLY_STATISTICS", name: "View Weekly Attendance Statistics" },
+      { code_name: "VIEW_DEPARTMENT_ATTENDANCE_OVERVIEW", name: "View Department Attendance Overview" },
+      { code_name: "UPDATE_EMPLOYEE_ATTENDANCE", name: "Update Employee Attendance" },
+      { code_name: "VIEW_EMPLOYEE_ATTENDANCE", name: "View Employee Attendance" },
+      { code_name: "EXPORT_ATTENDANCE", name: "Export Attendance" }
+    ]
+  },
+  {
+    code_name: "SHIFT_CALENDAR",
+    name: "Shift Calendar",
+    order: 2,
+    feature_list: [
+      { code_name: "VIEW_SHIFT_CALENDAR", name: "View Shift Calendar" },
+      { code_name: "ASSIGN_SHIFT", name: "Assign Shift" }
+    ]
+  },
+  {
+    code_name: "EMPLOYEE_DAILY_TASK_REPORT",
+    name: "Daily Task Report",
+    order: 3,
+    feature_list: [
+      { code_name: "VIEW_EMPLOYEE_DAILY_TASK_REPORT", name: "View Daily Task Report" }
+    ]
+  },
+  {
+    code_name: "LEAVE_RECORDS",
+    name: "Leave Records",
+    order: 1,
+    feature_list: [
+      { code_name: "VIEW_EMPLOYEE_LEAVE", name: "View Employee Leave Details" },
+      { code_name: "ASSIGN_LEAVES", name: "Assign Leaves to Employee" },
+      { code_name: "EDIT_ASSIGNED_LEAVES", name: "Edit Assigned Leaves for Employee" },
+      { code_name: "ADD_LEAVE_TYPES", name: "Add Leave Types" },
+      { code_name: "VIEW_LEAVE_TYPES", name: "View Leave Types" },
+      { code_name: "EDIT_LEAVE_TYPES", name: "Edit Leave Types" },
+      { code_name: "DELETE_LEAVE_TYPES", name: "Delete Leave Types" }
+    ]
+  },
+  {
+    code_name: "LEAVE_REQUEST",
+    name: "Leave Request",
+    order: 2,
+    feature_list: [
+      { code_name: "VIEW_LEAVE_REQUEST", name: "View Leave Request" },
+      { code_name: "MANAGE_LEAVE_REQUEST", name: "Manage Leave Request" }
+    ]
+  },
+  {
+    code_name: "EMPLOYEES_PAYROLL",
+    name: "Employees Payroll",
+    order: 1,
+    feature_list: [
+      { code_name: "VIEW_EMPLOYEE_PAYROLL", name: "View Employee Payroll" }
+    ]
+  },
+  {
+    code_name: "SALARY_SETUP",
+    name: "Salary Setup",
+    order: 2,
+    feature_list: [
+      { code_name: "VIEW_EMPLOYEE_SALARY_SETUP", name: "View Salary Setup" },
+      { code_name: "EDIT_EMPLOYEE_SALARY_SETUP", name: "Edit Salary Setup" },
+      { code_name: "ADD_EMPLOYEE_REVISED_SALARY", name: "Add Revised Salary" },
+      { code_name: "MANAGE_REVISED_SALARY", name: "Manage Revised Salary" },
+      { code_name: "ADD_SALARY_COMPONENTS", name: "Add Salary Components" },
+      { code_name: "VIEW_SALARY_COMPONENTS", name: "View Salary Components" },
+      { code_name: "EDIT_SALARY_COMPONENTS", name: "Edit Salary Components" },
+      { code_name: "DELETE_SALARY_COMPONENTS", name: "Delete Salary Components" },
+      { code_name: "ADD_PAYROLL_ADJUSTMENT", name: "Add Payroll Adjustments" },
+      { code_name: "VIEW_PAYROLL_ADJUSTMENT", name: "View Payroll Adjustments" },
+      { code_name: "EDIT_PAYROLL_ADJUSTMENT", name: "Edit Payroll Adjustments" },
+      { code_name: "DELETE_PAYROLL_ADJUSTMENT", name: "Delete Payroll Adjustments" },
+      { code_name: "MANAGE_PAYROLL_ADJUSTMENT", name: "Manage Payroll Adjustments" },
+      { code_name: "IMPORT_PAYROLL_ADJUSTMENT", name: "Import Payroll Adjustments" }
+    ]
+  },
+  {
+    code_name: "CLAIM_REQUEST",
+    name: "Claim Request",
+    order: 3,
+    feature_list: [
+      { code_name: "ADD_CLAIM_REQUEST", name: "Add Claim Request" },
+      { code_name: "VIEW_CLAIM_REQUEST", name: "View Claim Request" },
+      { code_name: "DELETE_CLAIM_REQUEST", name: "Delete Claim Request" },
+      { code_name: "EXPORT_CLAIM_REQUEST", name: "Export Claim Request" },
+      { code_name: "MANAGE_CLAIM_REQUEST", name: "Manage Claim Request" }
+    ]
+  },
+  {
+    code_name: "PAY_RUN",
+    name: "Pay Run",
+    order: 4,
+    feature_list: [
+      { code_name: "GENERATE_RUN_PAYROLL", name: "Generate Run Payroll" },
+      { code_name: "VIEW_RUN_PAYROLL", name: "View Run Payroll" },
+      { code_name: "DELETE_RUN_PAYROLL", name: "Delete Run Payroll" },
+      { code_name: "EDIT_EMPLOYEE_RUN_PAYROLL", name: "Edit Employee Run Payroll" },
+      { code_name: "PROCEED_TO_PAYRUN", name: "Proceed to Payrun" },
+      { code_name: "VIEW_PAYRUN", name: "View Payrun" },
+      { code_name: "EXPORT_PAYRUN", name: "Export Payrun" },
+      { code_name: "VIEW_PAYSLIPS", name: "View Payslips" },
+      { code_name: "DOWNLOAD_PAYSLIPS", name: "Download Payslips" }
+    ]
+  },
+  {
+    code_name: "ON_HOLD_SALARIES",
+    name: "On-Hold Salaries",
+    order: 5,
+    feature_list: [
+      { code_name: "VIEW_ON_HOLD_SALARIES", name: "View On-Hold Salaries" }
+    ]
+  },
+  {
+    code_name: "END_OF_SERVICE",
+    name: "End of Service",
+    order: 6,
+    feature_list: [
+      { code_name: "VIEW_END_OF_SERVICE", name: "View End of Service" },
+      { code_name: "SETUP_END_OF_SERVICE", name: "Setup End of Service" },
+      { code_name: "DOWNLOAD_END_OF_SERVICE", name: "Download End of Service" },
+      { code_name: "MARK_END_OF_SERVICE_AS_PAID", name: "Mark End of Service as Paid" }
+    ]
+  },
+  {
+    code_name: "PROJECT_BOARD",
+    name: "Project Board",
+    order: 1,
+    feature_list: [
+      { code_name: "VIEW_OWN_PROJECTS", name: "View Own Projects" },
+      { code_name: "VIEW_ALL_PROJECTS", name: "View All Projects" },
+      { code_name: "ADD_PROJECTS", name: "Add Projects" },
+      { code_name: "EDIT_PROJECTS", name: "Edit Projects" }
+    ]
+  },
+
+
+
+  // Sub Modules of Talent Sphere
+  {
+    code_name: "JOBS",
+    name: "Jobs",
+    order: 1,
+    feature_list: [
+      { code_name: "VIEW_JOBS", name: "View Jobs" },
+      { code_name: "EDIT_JOBS", name: "Edit Jobs" },
+      { code_name: "DELETE_JOBS", name: "Delete Jobs" },
+    ],
+  },
+  {
+    code_name: "APPLICANTS",
+    name: "Applicants",
+    order: 2,
+    feature_list: [
+      { code_name: "VIEW_APPLICANTS", name: "View Applicants" },
+      {
+        code_name: "MANAGE_APPLICANTS",
+        name: "Manage Applicants",
+        description: "Update the applicants' application status",
+      },
+    ],
+  },
+
+  // Sub module of Asset Management
+  {
+    code_name: "ASSETS",
+    name: "Assets",
+    order: 1,
+    feature_list: [
+      { code_name: "VIEW_ASSET", name: "View Asset" },
+      { code_name: "ADD_ASSET", name: "Add Asset" },
+      { code_name: "EDIT_ASSET", name: "Edit Asset" },
+      { code_name: "DELETE_ASSET", name: "Delete Asset" },
+      { code_name: "VIEW_ASSET_CATEGORY", name: "View Asset Category" },
+      { code_name: "ADD_ASSET_CATEGORY", name: "Add Asset Category" },
+      { code_name: "EDIT_ASSET_CATEGORY", name: "Edit Asset Category" },
+      { code_name: "DELETE_ASSET_CATEGORY", name: "Delete Asset Category" },
+    ],
+  },
+  {
+    code_name: "REQUEST_AND_ASSIGN",
+    name: "Request and Assign",
+    order: 2,
+    feature_list: [
+      { code_name: "VIEW_ASSETS_REQUEST", name: "View Assets Request" },
+      { code_name: "VIEW_ASSIGN_ASSETS", name: "View Assign Assets" },
+      { code_name: "ASSIGN_ASSETS_TO_EMPLOYEE", name: "Assign Assets to Employee" },
+      {
+        code_name: "MANAGE_ASSET_REQUEST",
+        name: "Manage Asset Request",
+        description: "Approve/Reject asset request from employees.",
+      },
+    ],
+  },
+
+  // Sub Module of Organization Chart
+  {
+    code_name: "ORGANIZATION_TREE",
+    name: "Organization Tree",
+    order: 1,
+    feature_list: [
+      { code_name: "VIEW_ORGANIZATION_TREE", name: "View Organization Tree" },
+    ],
+  },
+  {
+    code_name: "MY_REPORTING_LINE",
+    name: "My Reporting Line",
+    order: 2,
+    feature_list: [
+      { code_name: "VIEW_MY_REPORTING_LINE", name: "View My Reporting Line" },
+    ],
+  },
+
+  // Sub module of Office Settings
+  {
+    code_name: "ORGANIZATION",
+    name: "Organization",
+    order: 1,
+    feature_list: [
+      { code_name: "VIEW_ORGANIZATION", name: "View Organization" },
+      { code_name: "EDIT_ORGANIZATION", name: "Edit Organization" },
+    ],
+  },
+  {
+    code_name: "DEPARTMENTS",
+    name: "Departments",
+    order: 2,
+    feature_list: [
+      { code_name: "ADD_DEPARTMENTS", name: "Add Departments" },
+      { code_name: "VIEW_DEPARTMENTS", name: "View Departments" },
+      { code_name: "EDIT_DEPARTMENTS", name: "Edit Departments" },
+      { code_name: "DELETE_DEPARTMENTS", name: "Delete Departments" },
+    ],
+  },
+  {
+    code_name: "DESIGNATIONS",
+    name: "Designations",
+    order: 3,
+    feature_list: [
+      { code_name: "ADD_DESIGNATIONS", name: "Add Designation" },
+      { code_name: "VIEW_DESIGNATIONS", name: "View Designation" },
+      { code_name: "EDIT_DESIGNATIONS", name: "Edit Designation" },
+      { code_name: "DELETE_DESIGNATIONS", name: "Delete Designation" },
+    ],
+  },
+  {
+    code_name: "BRANCHES",
+    name: "Branches",
+    order: 4,
+    feature_list: [
+      { code_name: "ADD_BRANCHES", name: "Add Branches" },
+      { code_name: "VIEW_BRANCHES", name: "View Branches" },
+      { code_name: "EDIT_BRANCHES", name: "Edit Branches" },
+      { code_name: "DELETE_BRANCHES", name: "Delete Branches" },
+    ],
+  },
+  {
+    code_name: "SHIFTS",
+    name: "Working Hours",
+    order: 5,
+    feature_list: [
+      { code_name: "ADD_SHIFTS", name: "Add Working Hours" },
+      { code_name: "VIEW_SHIFTS", name: "View Working Hours" },
+      { code_name: "EDIT_SHIFTS", name: "Edit Working Hours" },
+      { code_name: "DELETE_SHIFTS", name: "Delete Working Hours" },
+    ],
+  },
+  {
+    code_name: "ONBOARDING_CHECKLIST",
+    name: "Onboarding Checklist",
+    order: 6,
+    feature_list: [
+      { code_name: "ADD_ONBOARDING_CHECKLIST", name: "Add Onboarding Checklist" },
+      { code_name: "VIEW_ONBOARDING_CHECKLIST", name: "View Onboarding Checklist" },
+      { code_name: "EDIT_ONBOARDING_CHECKLIST", name: "Edit Onboarding Checklist" },
+      { code_name: "DELETE_ONBOARDING_CHECKLIST", name: "Delete Onboarding Checklist" },
+    ],
+  },];
 
 export { ModuleList };

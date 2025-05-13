@@ -4,19 +4,19 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Ellipsis } from "lucide-react";
 
-import { cn } from "../../src/@/lib/utils";
-import getMenuList from "../../src/@/lib/menu-list";
-import { Button } from "./button";
-import { ScrollArea } from "../../src/@/components/ui/scroll-area";
-import { CollapseMenuButton } from "../../components/ui/collapse-menu-button";
+import { cn } from "src/@/lib/utils";
+import getMenuList from "src/@/lib/menu-list";
+import { Button } from "components/ui/button";
+import { ScrollArea } from "src/@/components/ui/scroll-area";
+import { CollapseMenuButton } from "components/ui/collapse-menu-button";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-} from "../../src/@/components/ui/tooltip";
+} from "src/@/components/ui/tooltip";
 
-const Menu = ({ isOpen, userRole }) => {
+const MenuList = ({ isOpen, userRole }) => {
   const pathname = window.location.pathname; // Get the current pathname
   const menuList = getMenuList(pathname, userRole) || [];
 
@@ -123,4 +123,4 @@ const Menu = ({ isOpen, userRole }) => {
   );
 };
 
-export default Menu;
+export default MenuList;

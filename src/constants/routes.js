@@ -24,7 +24,11 @@ import "react-toastify/dist/ReactToastify.css";
 import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
 import Employee from "app/modules/Employees/Employee.jsx";
 import { EmployeeTransfer, MyTransfers } from "app/modules/EmployeeTransfer";
-import { HRDocuments, MyDocuments,DocumentDetails } from "app/modules/HRDocuments";
+import {
+  HRDocuments,
+  MyDocuments,
+  DocumentDetails,
+} from "app/modules/HRDocuments";
 import { EditEmployeeProfile } from "app/modules/Employees/Screens/Profile";
 import { MyDtr } from "app/modules/DTR";
 import ForgotPassword from "app/modules/Login/ForgotPassword.jsx";
@@ -64,6 +68,7 @@ import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
 import { OnHoldSalaries, OnHoldSalaryDetails } from "app/modules/Payroll";
 import { EOSList, EOSDetails } from "app/modules/Payroll/Screens/EOS";
 import { RequestAndAssign } from "app/modules/AssetsManagement";
+import { ChangePassword } from "app/modules/ResetPassword";
 
 const SidebarRoutes = [
   {
@@ -423,6 +428,11 @@ const SidebarRoutes = [
       component: <EOSSettlementDetails />,
       name: "EOS Settlement Details",
     },
+  {
+    path: "/change-password",
+    component: <ChangePassword />,
+    name: "Change Password",
+  },
 ].filter(Boolean); // Filter out undefined routes
 
 const LoginRoutes = [

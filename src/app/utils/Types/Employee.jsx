@@ -191,6 +191,11 @@ const Employee = {
   bankDetails: EmployeeBankDetails,
   certifications: EmployeeCertifiation,
 };
+export const EmployeeChangePassword = {
+  confirm_password: null,
+  current_password: null,
+  confirm_password: null,
+};
 
 export {
   Employee,
