@@ -32,8 +32,6 @@ import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
 import { getCountryById, getRegionById, getCityById } from "app/hooks/officeSetting";
-import Roles from "./Roles";
-import AddRole from "./Roles/AddRole";
 
 const OfficeSetting = () => {
   const [dataShift, setDataShift] = useState(null);
@@ -69,9 +67,6 @@ const OfficeSetting = () => {
   const [stateData, setStateData] = useState({});
   const [cityData, setCityData] = useState({});
 
-  // For Roles tab
-  const [rolesLoading, setRolesLoading] = useState(false);
-  const [reloadRoles, setReloadRoles] = useState(false);
 
   const getOrganization = async () => {
     try {
@@ -318,7 +313,6 @@ const OfficeSetting = () => {
     { value: "branches", label: "Branches" },
     { value: "working-hours", label: "Working Hours" },
     { value: "onboarding", label: "Onboarding Checklist" },
-    { value: "roles", label: "Roles" },
   ];
 
   return (
@@ -339,8 +333,6 @@ const OfficeSetting = () => {
                 <Shift reload={fetchShifts} />
               ) : activeTab === "branches" ? (
                 <AddBranch reload={setReloadBranchesData} />
-              ) : activeTab === "roles" ? (
-                <AddRole reload={() => setReloadRoles(prev => !prev)} />
               ) : (
                 <OnboardingTab reload={getOnboardingDocuments} />
               )
@@ -485,13 +477,7 @@ const OfficeSetting = () => {
                 />
               )}
             </TabsContent>
-            <TabsContent value="roles">
-              <Roles
-                loading={rolesLoading}
-                reload={reloadRoles}
-                organizationId={userOrganizationId}
-              />
-            </TabsContent>
+          
           </Tabs>
           {activeTab === "offices" && edit && (
             <AddOrganization

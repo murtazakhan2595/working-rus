@@ -3,7 +3,7 @@ import {
   getPermissionsSchema,
   checkRoleNameUniqueness,
 } from "app/hooks/rolesPermisions";
-import { RoleInformation, PermissionTypes } from "./RoleTypes";
+import { UserRole } from "app/utils/Types/RolesPermission";
 import { TextAreaInput, TextInput, FilterInput } from "components/FormControl";
 import {
   handleCloseWithConfirmation,
@@ -14,10 +14,11 @@ import AlertDialogue from "components/ui/AlertDialogue";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import PermissionsTree from "./PermissionsTree";
+// import PermissionsTree from "./PermissionsTree";
 import { useSelector } from "react-redux";
+import { SheetUI } from "components";
 
-const AddRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
+const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const [closeSheet, setCloseSheet] = useState(false);
   const [confirmSave, setConfirmSave] = useState(false);
   const [permissionsSchema, setPermissionsSchema] = useState([]);
@@ -27,9 +28,15 @@ const AddRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const isEditMode = Boolean(edit?.data);
   const ModulesList = useSelector((state) => state.roles_permissions.module);
 
+  const FormSheetData = {
+    triggerText: "Add New Role",
+    title: "Add New Role",
+    description: null,
+    footer: null,
+  };
   // Initialize form data with role values if in edit mode
   const [formData, setFormData] = useState({
-    ...RoleInformation,
+    ...UserRole,
     ...(edit?.data || {}),
   });
 
@@ -52,7 +59,7 @@ const AddRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   // Update form data when edit data changes
   useEffect(() => {
     setFormData({
-      ...RoleInformation,
+      ...UserRole,
       ...(edit?.data || {}),
     });
   }, [edit?.data]);
@@ -206,11 +213,61 @@ const AddRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
 
   return (
     <>
-      {handleCloseWithConfirmation({
-        isOpen: closeSheet,
-        setCloseSheet,
-        setIsOpen,
-      })}
+      <SheetUI
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        variant="sheet"
+        sheetConfig={FormSheetData}
+        formConfig={{
+          initialValues: formData,
+          enableReinitialize: true,
+          handleSubmit: handleSubmit,
+          // validateFormSchema: validateChangePasswordForm,
+          submitButtonText: "Submit",
+          cancelButtonText: "Cancel",
+          columns: 2,
+          //   renderUpdatedFormValues: setFormValues,
+          // disableSubmit: isLoading,
+          formFiels: [
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: `${isEditMode ? "Edit" : "Add"} Role`,
+              InputFiels: [
+                {
+                  InputField: TextInput,
+                  name: "name",
+                  required: true,
+                  label: "Role Name",
+                },
+                {
+                  InputField: TextInput,
+                  name: "description",
+                  required: true,
+                  label: "Description",
+                },
+              ],
+            },
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: `Permissions`,
+              InputFiels: [
+                {
+                  InputField: TextInput,
+                  name: "name",
+                  required: true,
+                  label: "Role Name",
+                },
+                {
+                  InputField: TextInput,
+                  name: "description",
+                  required: true,
+                  label: "Description",
+                },
+              ],
+            },
+          ],
+        }}
+      ></SheetUI>
 
       {confirmSave && (
         <AlertDialogue
@@ -280,7 +337,7 @@ const AddRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
               </div>
 
               <div className="max-h-[auto] overflow-y-auto">
-                <PermissionsTree
+                {/* <PermissionsTree
                   schema={filteredSchema}
                   selectedPermissions={props.values.permissions}
                   onChange={(permissions) => {
@@ -288,7 +345,7 @@ const AddRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                   }}
                   permissionTypes={Object.values(PermissionTypes)}
                   searchTerm={searchTerm}
-                />
+                /> */}
               </div>
             </SheetCardExtension>
 
@@ -323,4 +380,4 @@ const AddRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   );
 };
 
-export default AddRoleForm;
+export default AddUpdateUserRoleForm;

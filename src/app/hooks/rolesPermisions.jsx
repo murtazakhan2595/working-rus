@@ -1,8 +1,12 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-import { getRolesList, saveRole, deleteRole } from "./general";
+import { saveRole, deleteRole } from "./general";
 import { initialState } from "state/slices/UserSlice";
-import { mapModuleListData } from "app/utils/MappingObjects/mapRolesPermissionData";
+import {
+  mapModuleListData,
+  mapUserRoleListData,
+} from "app/utils/MappingObjects/mapRolesPermissionData";
+
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -169,8 +173,8 @@ export const getPermissionsSchema = async () => {
 // Check if role name is unique
 export const checkRoleNameUniqueness = async (name) => {
   try {
-    // Call the getRolesList with a filter for the role name
-    const response = await getRolesList({
+    // Call the getUserRoleList with a filter for the role name
+    const response = await getUserRoleList({
       filterData: { name: name },
     });
 
@@ -206,5 +210,31 @@ export const getModuleList = async (payload) => {
   }
   return [];
 };
+// Get roles list
+export const getUserRoleList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+  try {
+    const URL = `/userrole/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const rolesResponse = response.data;
+      const rolesList = await mapUserRoleListData(rolesResponse?.results);
+      return { results: rolesList, count: rolesResponse.count };
+    } else return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching roles data:", error);
+    return { results: [], count: 0 };
+  }
+};
+
 // Re-export functions from general.js
-export { getRolesList, saveRole, deleteRole };
+export { saveRole, deleteRole };

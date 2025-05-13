@@ -21,7 +21,7 @@ const rootReducer = combineReducers({
   emp: EmpSlice,
   getDtr: GetDtrSlice,
   leave_management: leaveManagementSlice,
-  roles: RolePermissionSlice,
+  roles_permissions: RolePermissionSlice,
   payroll: PayrollSlice,
   updateDtr: UpdateDtrSlice,
   doc_category: HRDocumentsSlice,

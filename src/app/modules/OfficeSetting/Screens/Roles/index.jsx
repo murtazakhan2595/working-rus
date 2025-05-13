@@ -9,7 +9,7 @@ import { CardDescription } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import RoleAction from "./RoleAction";
 import AddRole from "./AddRole";
-import { getRolesList } from "app/hooks/rolesPermisions";
+import { getUserRoleList } from "app/hooks/rolesPermisions";
 import { RoleColumn } from "../../sections/OfficeSettingTableColumns";
 
 const Roles = ({
@@ -46,7 +46,7 @@ const Roles = ({
         ...(organizationId ? { organization: organizationId } : {})
       };
       
-      const response = await getRolesList({
+      const response = await getUserRoleList({
         filterData: filterPayload,
         options: options,
         ordering: ordering
