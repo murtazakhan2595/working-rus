@@ -155,6 +155,7 @@ const RenderTreeLevel = ({
       {treeNodes.map((node) => {
         const { name, id, code_name } = node;
         const children = node[nextLevelKey];
+
         if (code_name === "DASHBOARD") return null;
 
         return children && children.length > 0 ? (

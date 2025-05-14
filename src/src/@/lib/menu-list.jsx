@@ -305,6 +305,7 @@ export function getMenuList(pathname, userRole) {
     createMenu("", "Organization Setup", Settings, [
       createMenu("/office-settings", "Office Setting"),
       createMenu("/office-settings/role-managment", "Role Management"),
+      createMenu("/office-settings/assigned-roles", "Assigned Roles"),
     ]),
     // createMenu("/services", "Services", SquareStack),
   ];

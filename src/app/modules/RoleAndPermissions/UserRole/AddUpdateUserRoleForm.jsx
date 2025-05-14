@@ -14,16 +14,16 @@ import {
 import { validateUserRoleFormSchema } from "app/utils/FormSchema/RolePermissionsFormSchema";
 import { Button } from "components/ui/button";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-// import PermissionsTree from "./PermissionsTree";
-import { useSelector } from "react-redux";
-import { SheetUI } from "components";
 import { Header } from "components";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { getRole } from "app/hooks/general";
+import { getRolePermissions } from "app/hooks/rolesPermisions";
+
 
 const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
 
   const FormSheetData = {
     triggerText: "Add New Role",
-    title: "Add New Role",
+    title: isEditMode ? "Edit Role" : "Add New Role",
     description: null,
     footer: null,
   };
@@ -113,6 +113,7 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
   };
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+    console.log("Form submitted with values:", values);
     setFormValues(values);
     setConfirmSave(true);
     //   setSubmitting(false);
@@ -144,6 +145,7 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
       // Show error message
       const errorMessage =
         error?.response?.data?.message ||
+        error.message ||
         `Failed to ${isEditMode ? "update" : "add"} role.`;
       toast.error(errorMessage);
     } finally {
@@ -165,6 +167,9 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
   };
   // console.log(UserRoles,RoleNameExist, "Selected LEave Ids");
 
+  const toggleIsOpen = () => {
+    navigate(-1);
+  }
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -232,19 +237,22 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
                         level_1: "submodules",
                         level_2: "features",
                       },
+                      disabled: isLoadingModules,
                     },
                   ],
                 },
               ],
             }}
-          ></SheetUI>
+          />
         </CardContent>
       </Card>
 
       {confirmSave && (
         <AlertDialogue
-          title="Confirm Create Role"
-          description="Are you sure you want to create this role with the selected permissions?"
+          title={`Confirm ${isEditMode ? "Update" : "Create"} Role`}
+          description={`Are you sure you want to ${
+            isEditMode ? "update" : "create"
+          } this role with the selected permissions?`}
           isOpen={confirmSave}
           setIsOpen={setConfirmSave}
           handleContinue={() => {
@@ -253,101 +261,6 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
           }}
         />
       )}
-
-      {/* <Formik
-        initialValues={formData}
-        onSubmit={handleSubmit}
-        validate={validateForm}
-        enableReinitialize
-      >
-        {(props) => (
-          <form onSubmit={props.handleSubmit}>
-            <SheetCardExtension title={`${isEditMode ? "Edit" : "Add"} Role`}>
-              {/* Role Name 
-              <TextInput
-                name="name"
-                label="Role Name"
-                required
-                error={props.errors.name}
-                touch={props.touched.name}
-                value={props.values.name}
-                onChange={(field, value) => {
-                  props.setFieldValue(field, value);
-                }}
-              />
-
-              {/* Description 
-              <TextAreaInput
-                name="description"
-                label="Description"
-                required
-                error={props.errors.description}
-                touch={props.touched.description}
-                value={props.values.description}
-                onChange={(field, value) => {
-                  props.setFieldValue(field, value);
-                }}
-              />
-            </SheetCardExtension>
-
-            <SheetCardExtension title="Permissions">
-              <div className="mb-4">
-                <FilterInput
-                  filters={[
-                    {
-                      type: "search",
-                      placeholder: "Search modules, features...",
-                      name: "search",
-                    },
-                  ]}
-                  onChange={(filterName, filterValue) => {
-                    if (filterName === "search") {
-                      setSearchTerm(filterValue);
-                    }
-                  }}
-                />
-              </div>
-
-              <div className="max-h-[auto] overflow-y-auto">
-                {/* <PermissionsTree
-                  schema={filteredSchema}
-                  selectedPermissions={props.values.permissions}
-                  onChange={(permissions) => {
-                    props.setFieldValue("permissions", permissions);
-                  }}
-                  permissionTypes={Object.values(PermissionTypes)}
-                  searchTerm={searchTerm}
-                /> 
-              </div>
-            </SheetCardExtension>
-
-            <div className="p-6 border-t border-gray-200 bg-gray-50">
-              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  type="button"
-                  onClick={handleClose}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="lg"
-                  variant="default"
-                  disabled={props.isSubmitting || !props.isValid}
-                >
-                  {props.isSubmitting
-                    ? "Saving..."
-                    : isEditMode
-                    ? "Update"
-                    : "Add"}
-                </Button>
-              </div>
-            </div>
-          </form>
-        )}
-      </Formik> */}
     </div>
   );
 };

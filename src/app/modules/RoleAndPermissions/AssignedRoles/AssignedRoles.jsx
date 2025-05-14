@@ -1,3 +1,4 @@
+// AssignedRoles.jsx
 import React, { useEffect, useState } from "react";
 import { TableCustom, Header } from "components";
 import { Card } from "components/ui/card";
@@ -8,18 +9,19 @@ import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
-import { getUserRoleList } from "app/hooks/rolesPermisions";
-import { UserRoleColumn } from "app/modules/RoleAndPermissions/Sections";
-import { useNavigate } from "react-router-dom";
+import AssignRoleForm from "./AssignRoleForm";
+import { getAssignedRolesList } from "app/hooks/rolesPermisions";
+import { AssignedRolesColumn } from "../Sections";
+import SheetComponent from "components/ui/SheetComponent";
 
-const UserRoles = ({
+const AssignedRoles = ({
   loading: initialLoading,
   reload: externalReload,
   organizationId,
 }) => {
-  const navigate = useNavigate();
-  const [roles, setRoles] = useState({ results: [], count: 0 });
+  const [assignedRoles, setAssignedRoles] = useState({ results: [], count: 0 });
   const [loading, setLoading] = useState(initialLoading || false);
+  const [openAssignRoleForm, setOpenAssignRoleForm] = useState(false);
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -41,23 +43,22 @@ const UserRoles = ({
   const fetchData = async (isMounted) => {
     try {
       setLoading(true);
-      // Add organizationId to filter if available
       const filterPayload = {
         ...filterData,
         ...(organizationId ? { organization: organizationId } : {}),
       };
 
-      const response = await getUserRoleList({
+      const response = await getAssignedRolesList({
         filterData: filterPayload,
         options: options,
         ordering: ordering,
       });
 
       if (isMounted) {
-        setRoles(response);
+        setAssignedRoles(response);
       }
     } catch (error) {
-      console.error("Error fetching roles:", error);
+      console.error("Error fetching assigned roles:", error);
     } finally {
       setLoading(false);
     }
@@ -91,7 +92,6 @@ const UserRoles = ({
     });
   };
 
-  // Function to force a table reload
   const forceReload = () => {
     setReloadCounter((prev) => prev + 1);
   };
@@ -105,10 +105,10 @@ const UserRoles = ({
           <Button
             onClick={(e) => {
               e.preventDefault();
-              navigate("/office-settings/role-managment/user-role/add");
+              setOpenAssignRoleForm(true);
             }}
           >
-            Add New User Role
+            Assign Roles
           </Button>
         }
       />
@@ -117,8 +117,8 @@ const UserRoles = ({
           filters={[
             {
               type: "search",
-              placeholder: "Search Role Name",
-              name: "name",
+              placeholder: "Search Employee ID, Name, or Role",
+              name: "search",
             },
           ]}
           className="justify-end"
@@ -130,27 +130,44 @@ const UserRoles = ({
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle className="text-primary">Role List</CardTitle>
+              <CardTitle className="text-primary">Assigned Roles</CardTitle>
               <CardDescription className="text-neutral-1100">
-                Here you can manage roles and their permissions. Add, edit, or
-                delete roles as needed.
+                Here you can view and manage role assignments for employees.
+                Assign, edit, or remove roles as needed.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <TableCustom
-                columns={UserRoleColumn(forceReload)}
-                data={roles?.results || []}
+                columns={AssignedRolesColumn(forceReload)}
+                data={assignedRoles?.results || []}
                 tableOptions={tableOptions}
-                dataTotalSize={roles?.count || 0}
+                dataTotalSize={assignedRoles?.count || 0}
                 pagination={true}
-                className="roles-table"
+                className="assigned-roles-table"
               />
             </CardContent>
           </Card>
         )}
       </div>
+      {openAssignRoleForm && (
+        <SheetComponent
+          triggerText={null}
+          title="Assign Roles to Employee"
+          description={null}
+          footer={null}
+          isOpen={openAssignRoleForm}
+          setIsOpen={setOpenAssignRoleForm}
+          width="568px"
+        >
+          <AssignRoleForm
+            isOpen={openAssignRoleForm}
+            setIsOpen={setOpenAssignRoleForm}
+            reload={fetchData}
+          />
+        </SheetComponent>
+      )}
     </div>
   );
 };
 
-export default UserRoles;
+export default AssignedRoles;
