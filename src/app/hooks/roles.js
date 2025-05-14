@@ -176,5 +176,130 @@ export const checkRoleNameUniqueness = async (name) => {
   }
 };
 
-// Re-export functions from general.js
-export { getRolesList, saveRole, deleteRole };
+ const saveAssignedRole = async (id, payload) => {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  try {
+    console.log("Saving assigned role:", { id, payload });
+
+    return {
+      success: true,
+      id: id || Math.floor(Math.random() * 1000) + 100,
+      message: id
+        ? "Role assignment updated successfully"
+        : "Roles assigned successfully",
+    };
+  } catch (error) {
+    console.error("Error saving assigned role:", error);
+    throw error;
+  }
+};
+
+// Delete assigned role (dummy implementation)
+ const deleteAssignedRole = async (id) => {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  try {
+    console.log("Deleting assigned role:", id);
+
+    return {
+      success: true,
+      message: "Role assignments removed successfully",
+    };
+  } catch (error) {
+    console.error("Error deleting assigned role:", error);
+    throw error;
+  }
+};
+
+
+const dummyAssignedRoles = [
+  {
+    id: 1,
+    employee: {
+      id: 1,
+      name: "John Doe",
+      employeeId: "EMP001",
+      department: "IT",
+      branch: "Main Office",
+      email: "john.doe@company.com",
+    },
+    roles: [
+      { id: 1, name: "Admin", description: "Full system access" },
+      { id: 2, name: "Manager", description: "Management access" },
+    ],
+    created_at: "2024-01-15T10:30:00Z",
+    updated_at: "2024-01-15T10:30:00Z",
+  },
+  {
+    id: 2,
+    employee: {
+      id: 2,
+      name: "Jane Smith",
+      employeeId: "EMP002",
+      department: "HR",
+      branch: "Main Office",
+      email: "jane.smith@company.com",
+    },
+    roles: [{ id: 2, name: "Manager", description: "Management access" }],
+    created_at: "2024-01-16T14:20:00Z",
+    updated_at: "2024-01-16T14:20:00Z",
+  },
+];
+
+// ADD THIS FUNCTION (it seems this one is missing)
+ const getAssignedRolesList = async (payload) => {
+  const pageNo = payload?.options?.page ?? 1;
+  const pageSize = payload?.options?.sizePerPage ?? 10;
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  try {
+    let filteredData = [...dummyAssignedRoles];
+
+    // Apply search filter
+    if (filterData.search) {
+      const searchTerm = filterData.search.toLowerCase();
+      filteredData = dummyAssignedRoles.filter(
+        (item) =>
+          item.employee.name.toLowerCase().includes(searchTerm) ||
+          item.employee.employeeId.toLowerCase().includes(searchTerm) ||
+          item.roles.some((role) =>
+            role.name.toLowerCase().includes(searchTerm)
+          )
+      );
+    }
+
+    // Apply ordering
+    if (ordering === "-id") {
+      filteredData.sort((a, b) => b.id - a.id);
+    } else if (ordering === "id") {
+      filteredData.sort((a, b) => a.id - b.id);
+    }
+
+    // Apply pagination
+    const startIndex = (pageNo - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+
+    return {
+      results: paginatedData,
+      count: filteredData.length,
+    };
+  } catch (error) {
+    console.error("Error fetching assigned roles data:", error);
+    return { results: [], count: 0 };
+  }
+};
+export {
+  saveRole,
+  deleteRole,
+  saveAssignedRole,
+  deleteAssignedRole,
+  getAssignedRolesList,
+};

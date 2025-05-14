@@ -1,0 +1,173 @@
+// AssignedRoles.jsx
+import React, { useEffect, useState } from "react";
+import { TableCustom, Header } from "components";
+import { Card } from "components/ui/card";
+import { CardContent } from "components/ui/card";
+import PageLoader from "components/PageLoader";
+import { CardHeader } from "components/ui/card";
+import { CardTitle } from "components/ui/card";
+import { CardDescription } from "components/ui/card";
+import { Button } from "components/ui/button";
+import { FilterInput } from "components/FormControl";
+import AssignRoleForm from "./AssignRoleForm";
+import { getAssignedRolesList } from "app/hooks/rolesPermisions";
+import { AssignedRolesColumn } from "../Sections";
+import SheetComponent from "components/ui/SheetComponent";
+
+const AssignedRoles = ({
+  loading: initialLoading,
+  reload: externalReload,
+  organizationId,
+}) => {
+  const [assignedRoles, setAssignedRoles] = useState({ results: [], count: 0 });
+  const [loading, setLoading] = useState(initialLoading || false);
+  const [openAssignRoleForm, setOpenAssignRoleForm] = useState(false);
+  const [filterData, setFilterData] = useState({});
+  const [ordering, setOrdering] = useState("-id");
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [reloadCounter, setReloadCounter] = useState(0);
+
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
+  };
+
+  const fetchData = async (isMounted) => {
+    try {
+      setLoading(true);
+      const filterPayload = {
+        ...filterData,
+        ...(organizationId ? { organization: organizationId } : {}),
+      };
+
+      const response = await getAssignedRolesList({
+        filterData: filterPayload,
+        options: options,
+        ordering: ordering,
+      });
+
+      if (isMounted) {
+        setAssignedRoles(response);
+      }
+    } catch (error) {
+      console.error("Error fetching assigned roles:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    filterData,
+    ordering,
+    options,
+    externalReload,
+    reloadCounter,
+    organizationId,
+  ]);
+
+  const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
+
+  const forceReload = () => {
+    setReloadCounter((prev) => prev + 1);
+  };
+
+  return (
+    <div
+      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
+    >
+      <Header
+        content={
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              setOpenAssignRoleForm(true);
+            }}
+          >
+            Assign Roles
+          </Button>
+        }
+      />
+      <div className="flex flex-col gap-4">
+        <FilterInput
+          filters={[
+            {
+              type: "search",
+              placeholder: "Search Employee ID, Name, or Role",
+              name: "search",
+            },
+          ]}
+          className="justify-end"
+          onChange={handleFilterChange}
+        />
+
+        {loading ? (
+          <PageLoader />
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-primary">Assigned Roles</CardTitle>
+              <CardDescription className="text-neutral-1100">
+                Here you can view and manage role assignments for employees.
+                Assign, edit, or remove roles as needed.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TableCustom
+                columns={AssignedRolesColumn(forceReload)}
+                data={assignedRoles?.results || []}
+                tableOptions={tableOptions}
+                dataTotalSize={assignedRoles?.count || 0}
+                pagination={true}
+                className="assigned-roles-table"
+              />
+            </CardContent>
+          </Card>
+        )}
+      </div>
+      {openAssignRoleForm && (
+        <SheetComponent
+          triggerText={null}
+          title="Assign Roles to Employee"
+          description={null}
+          footer={null}
+          isOpen={openAssignRoleForm}
+          setIsOpen={setOpenAssignRoleForm}
+          width="800px"
+        >
+          <AssignRoleForm
+            isOpen={openAssignRoleForm}
+            setIsOpen={setOpenAssignRoleForm}
+            reload={fetchData}
+          />
+        </SheetComponent>
+      )}
+    </div>
+  );
+};
+
+export default AssignedRoles;
