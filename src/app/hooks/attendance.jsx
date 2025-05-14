@@ -305,7 +305,7 @@ const getBreakStatus = async (payload) => {
   if (lastBreak.results && lastBreak.results.length === 0) {
     return false;
   } else {
-    const lastBreakEnd = lastBreak.results[0].endtime;
+    const lastBreakEnd = lastBreak.results[0]?.endtime;
     if (!lastBreakEnd) {
       return true;
     }
