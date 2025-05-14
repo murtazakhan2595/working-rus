@@ -452,6 +452,11 @@ const SidebarRoutes = [
     component: <AddUpdateUserRoleForm />,
     name: "Add User Role",
   },
+  {
+    path: "/office-settings/assigned-roles",
+    component: <AssignedRoles />,
+    name: "Add User Role",
+  },
 ].filter(Boolean); // Filter out undefined routes
 
 const LoginRoutes = [
