@@ -69,7 +69,10 @@ import { OnHoldSalaries, OnHoldSalaryDetails } from "app/modules/Payroll";
 import { EOSList, EOSDetails } from "app/modules/Payroll/Screens/EOS";
 import { RequestAndAssign } from "app/modules/AssetsManagement";
 import { ChangePassword } from "app/modules/ResetPassword";
-import { UserRoles, AssignedRoles } from "app/modules/RoleAndPermissions";
+import {
+  UserRoles, AssignedRoles,
+  AddUpdateUserRoleForm,
+} from "app/modules/RoleAndPermissions";
 
 const SidebarRoutes = [
   {
@@ -438,11 +441,6 @@ const SidebarRoutes = [
     path: "/office-settings/role-managment",
     component: <UserRoles />,
     name: "Change Password",
-  },
-  {
-    path: "/office-settings/assigned-roles",
-    component: <AssignedRoles />,
-    name: "Assigned Roles",
   },
 ].filter(Boolean); // Filter out undefined routes
 

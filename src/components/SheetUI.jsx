@@ -101,7 +101,7 @@ const SheetUI = forwardRef(
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
               {children}
               {formFiels?.map(
-                ({ InputFiels, sheetCardExtension, sheetCardTitle }, index) => {
+                ({ InputFields, sheetCardExtension, sheetCardTitle }, index) => {
                   return (
                     <div key={index}>
                       <FormBody
@@ -109,8 +109,8 @@ const SheetUI = forwardRef(
                         sheetCardTitle={sheetCardTitle}
                         columns={columns}
                       >
-                        {InputFiels?.map(
-                          ({
+                        {InputFields?.map((fieldsConfig, index) => {
+                          const {
                             name,
                             required,
                             disabled,
@@ -125,47 +125,41 @@ const SheetUI = forwardRef(
                             InputField,
                             variant,
                             multiple,
-                            allowUpdate,
-                            min,
-                            max,
-                            minDate,
-                          }) => {
-                            return (
-                              <div
-                                className={`space-y-4 ${
-                                  colsSpan ? `col-span-${colsSpan || 1}` : ""
-                                }`}
-                                key={name}
-                              >
-                                <InputField
-                                  name={name}
-                                  options={options}
-                                  error={props?.errors[name]}
-                                  touch={props?.touched[name]}
-                                  value={value ? value : props?.values[name]}
-                                  required={required}
-                                  disabled={disabled}
-                                  label={label}
-                                  placeholder={placeholder}
-                                  onChange={(field, value) => {
-                                    props?.setFieldValue(field, value);
-                                    if (onChange) {
-                                      onChange(field, value);
-                                    }
-                                  }}
-                                  maxRows={maxRows}
-                                  date={date}
-                                  variant={variant}
-                                  allowUpdate={allowUpdate}
-                                  multiple={multiple}
-                                  min={min}
-                                  max={max}
-                                  minDate={minDate}
-                                />
-                              </div>
-                            );
-                          }
-                        )}
+                            subColumns,
+                          } = fieldsConfig;
+                          return (
+                            <div
+                              className={`space-y-4 ${
+                                colsSpan ? `col-span-${colsSpan || 1}` : ""
+                              }`}
+                              key={name || index}
+                            >
+                              <InputField
+                                name={name}
+                                options={options}
+                                error={props?.errors[name]}
+                                touch={props?.touched[name]}
+                                value={value ? value : props?.values[name]}
+                                required={required}
+                                disabled={disabled}
+                                label={label}
+                                placeholder={placeholder}
+                                onChange={(field, value) => {
+                                  props?.setFieldValue(field, value);
+                                  if (onChange) {
+                                    onChange(field, value);
+                                  }
+                                }}
+                                maxRows={maxRows}
+                                date={date}
+                                variant={variant}
+                                multiple={multiple}
+                                columns={subColumns}
+                                {...fieldsConfig}
+                              />
+                            </div>
+                          );
+                        })}
                       </FormBody>
                     </div>
                   );

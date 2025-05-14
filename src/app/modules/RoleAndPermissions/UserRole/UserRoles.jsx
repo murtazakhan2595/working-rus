@@ -12,12 +12,14 @@ import { FilterInput } from "components/FormControl";
 import { AddUpdateUserRoleForm } from "app/modules/RoleAndPermissions/UserRole";
 import { getUserRoleList } from "app/hooks/rolesPermisions";
 import { UserRoleColumn } from "app/modules/RoleAndPermissions/Sections";
+import { useNavigate } from "react-router-dom";
 
 const UserRoles = ({
   loading: initialLoading,
   reload: externalReload,
   organizationId,
 }) => {
+  const navigate = useNavigate();
   const [roles, setRoles] = useState({ results: [], count: 0 });
   const [loading, setLoading] = useState(initialLoading || false);
   const [OpenUserRoleForm, setOpenUserRoleForm] = useState(false);
@@ -106,7 +108,7 @@ const UserRoles = ({
           <Button
             onClick={(e) => {
               e.preventDefault();
-              setOpenUserRoleForm(true)
+              navigate("/office-settings/role-managment/user-role/add");
             }}
           >
             Add New User Role

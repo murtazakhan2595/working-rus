@@ -1,3 +1,3 @@
-import { UserRoles } from "./UserRole";
+import { UserRoles, AddUpdateUserRoleForm } from "./UserRole";
 import {AssignedRoles} from "./AssignedRoles";
-export { UserRoles, AssignedRoles };
+export { UserRoles, AddUpdateUserRoleForm, AssignedRoles };
