@@ -1,24 +1,17 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
-import SheetComponent from "components/ui/SheetComponent";
 import {
   ViewUserRole,
-  AddUpdateUserRoleForm,
 } from "app/modules/RoleAndPermissions/UserRole";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { toast } from "react-toastify";
+import { deleteRole } from "app/hooks/rolesPermisions";
+import { useNavigate } from "react-router-dom";
 
 const UserRoleAction = ({ data, reload }) => {
   const [view, setView] = useState(null);
-  const [deleteRole, setDeleteRole] = useState(null);
-  const [edit, setEdit] = useState(null);
-
-  const formSheetData = {
-    triggerText: null,
-    title: "Update Role",
-    description: null,
-    footer: null,
-  };
+  const [deleteRoleState, setDeleteRoleState] = useState(null);
+  const navigate = useNavigate();
 
   const handleView = () => {
     setView({
@@ -27,15 +20,13 @@ const UserRoleAction = ({ data, reload }) => {
     });
   };
 
-  const handleEdit = () => {
-    setEdit({
-      open: true,
-      data: data,
-    });
+  const handleEdit = (e) => {
+    e.preventDefault();
+    navigate(`/office-settings/role-managment/user-role/add/${data?.id}`);
   };
 
   const handleDelete = () => {
-    setDeleteRole({
+    setDeleteRoleState({
       open: true,
       data: data,
     });
@@ -43,10 +34,17 @@ const UserRoleAction = ({ data, reload }) => {
 
   const confirmDelete = async () => {
     try {
-      // Mock deletion for now
-      toast.success(`Role "${deleteRole?.data?.name}" deleted successfully`, {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+      console.log("Deleting role:", deleteRoleState?.data?.id);
+      await deleteRole(deleteRoleState?.data?.id);
+
+      toast.success(
+        `Role "${deleteRoleState?.data?.name}" deleted successfully`,
+        {
+          position: toast.POSITION.TOP_RIGHT,
+        }
+      );
+
+      setDeleteRoleState(null);
 
       // Ensure table is reloaded by calling reload function
       if (typeof reload === "function") {
@@ -72,37 +70,16 @@ const UserRoleAction = ({ data, reload }) => {
         menuTooltip="Role Actions"
       />
 
-      {deleteRole?.open && (
+      {deleteRoleState?.open && (
         <AlertDialogue
           title="Confirm Delete?"
-          description="This action can't be undone. All information associated with this will be lost."
-          isOpen={deleteRole.open}
+          description={`This action can't be undone. All information associated with role "${deleteRoleState?.data?.name}" will be lost.`}
+          isOpen={deleteRoleState.open}
           setIsOpen={(isOpen) =>
-            setDeleteRole((prev) => ({ ...prev, open: isOpen }))
+            setDeleteRoleState((prev) => ({ ...prev, open: isOpen }))
           }
-          handleContinue={() => {
-            confirmDelete();
-            setDeleteRole(null);
-          }}
+          handleContinue={confirmDelete}
         />
-      )}
-
-      {edit?.open && (
-        <SheetComponent
-          {...formSheetData}
-          isOpen={edit?.open}
-          setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
-          width="700px"
-        >
-          <AddUpdateUserRoleForm
-            isOpen={edit.open}
-            setIsOpen={(isOpen) =>
-              setEdit((prev) => ({ ...prev, open: isOpen }))
-            }
-            edit={edit}
-            reload={reload}
-          />
-        </SheetComponent>
       )}
 
       {view?.visible && (

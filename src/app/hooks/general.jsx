@@ -696,6 +696,24 @@ const deleteRole = async (roleId, roleName) => {
   }
 };
 
+const getRole = async (roleId) => {
+  try {
+    const response = await axios.get(`${baseUrl}/userrole/${roleId}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error fetching role data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
 
 // Save/Update role
 const saveRole = async (roleId, payload) => {
@@ -753,4 +771,5 @@ export {
   HandleLogout,
   deleteRole,
   saveRole,
+  getRole,
 };
