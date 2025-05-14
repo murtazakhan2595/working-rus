@@ -696,40 +696,6 @@ const deleteRole = async (roleId, roleName) => {
   }
 };
 
-// Get roles list
-const getRolesList = async (payload) => {
-  const pageNo = payload?.options?.page ?? "";
-  const pageSize = payload?.options?.sizePerPage ?? "";
-  const filterData = payload?.filterData ?? {};
-  const ordering = payload?.ordering ?? "-id";
-  try {
-    const URL = `/userrole/?ordering=${ordering}&${
-      pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
-    const response = await axios.get(`${baseUrl}${URL}`, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      const rolesResponse = response.data;
-      const rolesList = rolesResponse?.results?.map(role => ({
-        value: role.id,
-        label: role.name,
-        id: role.id,
-        name: role.name,
-        description: role.description,
-        created_at: role.created_at,
-        updated_at: role.updated_at,
-        permissions: role.permissions || {}
-      }));
-      return { results: rolesList, count: rolesResponse.count };
-    } else return { results: [], count: 0 };
-  } catch (error) {
-    console.error("Error fetching roles data:", error);
-    return { results: [], count: 0 };
-  }
-};
 
 // Save/Update role
 const saveRole = async (roleId, payload) => {
@@ -786,6 +752,5 @@ export {
   saveShift,
   HandleLogout,
   deleteRole,
-  getRolesList,
   saveRole,
 };
