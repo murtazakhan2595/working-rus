@@ -157,7 +157,7 @@ const AssignedRoles = ({
           footer={null}
           isOpen={openAssignRoleForm}
           setIsOpen={setOpenAssignRoleForm}
-          width="800px"
+          width="568px"
         >
           <AssignRoleForm
             isOpen={openAssignRoleForm}

@@ -4,10 +4,19 @@ import { toast } from "react-toastify";
 import { Button } from "components/ui/button";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { SheetCardExtension } from "components/SheetCardExtension";
-import { TextInput, FilterInput } from "components/FormControl";
+import {
+  TextInput,
+  FilterInput,
+  SelectInputComponent,
+  SelectMultiInputComponent, // Added this import
+} from "components/FormControl";
 import { saveAssignedRole, getUserRoleList } from "app/hooks/rolesPermisions";
 import { useSelector } from "react-redux";
 import { AssignedRole } from "app/utils/Types/RolesPermission";
+import { DepartmentName } from "utils/getValuesFromTables";
+import { BranchName } from "utils/getValuesFromTables";
+import { CheckBoxInput } from "components/FormControl";
+import { Label } from "src/@/components/ui/label";
 
 const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const [confirmSave, setConfirmSave] = useState(false);
@@ -17,7 +26,6 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRoles, setSelectedRoles] = useState(new Set());
   const isEditMode = Boolean(edit?.data);
 
   // Get employees from Redux state
@@ -27,6 +35,8 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const [formData, setFormData] = useState({
     ...AssignedRole,
     ...(edit?.data || {}),
+    employee: "",
+    roles: [], // This will now hold an array of role IDs for multi-select
   });
 
   // Load available roles on mount
@@ -49,19 +59,24 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   // Update form data when edit data changes
   useEffect(() => {
     if (edit?.data) {
+      // Extract role IDs for multi-select
+      const roleIds = edit.data.roles
+        ? edit.data.roles.map((role) => role.id)
+        : [];
+
       setFormData({
         ...AssignedRole,
         ...edit.data,
+        employee: edit.data.employee?.id || "",
+        roles: roleIds, // Set as array of IDs for multi-select
       });
 
-      // If editing, set the employee data and selected roles
+      // If editing, set the employee data
       if (edit.data.employee) {
         setEmployeeData(edit.data.employee);
-      }
-
-      if (edit.data.roles) {
-        const roleIds = edit.data.roles.map((role) => role.id);
-        setSelectedRoles(new Set(roleIds));
+        setSearchTerm(
+          `${edit.data.employee.name} (${edit.data.employee.employeeId})`
+        );
       }
     }
   }, [edit?.data]);
@@ -69,11 +84,11 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const validateForm = async (values) => {
     const errors = {};
 
-    if (!employeeData) {
+    if (!employeeData && !values.employee) {
       errors.employee = "Employee is required";
     }
 
-    if (selectedRoles.size === 0) {
+    if (!values.roles || values.roles.length === 0) {
       errors.roles = "At least one role must be selected";
     }
 
@@ -130,20 +145,10 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     setSearchResults([]);
   };
 
-  const handleRoleToggle = (roleId) => {
-    const newSelectedRoles = new Set(selectedRoles);
-    if (newSelectedRoles.has(roleId)) {
-      newSelectedRoles.delete(roleId);
-    } else {
-      newSelectedRoles.add(roleId);
-    }
-    setSelectedRoles(newSelectedRoles);
-  };
-
   const handleSubmit = async (values, { setSubmitting }) => {
     const payload = {
-      employeeId: employeeData?.id,
-      roles: Array.from(selectedRoles),
+      employeeId: employeeData?.id || values.employee,
+      roles: values.roles, // This is now already an array of role IDs
     };
 
     setFormValues({ ...values, ...payload });
@@ -152,7 +157,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   };
 
   const confirmSubmit = async () => {
-    if (!formValues || !employeeData) return;
+    if (!formValues || (!employeeData && !formValues.employeeId)) return;
 
     try {
       const payload = {
@@ -187,6 +192,23 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     setIsOpen(false);
   };
 
+  // Transform employees for SelectInputComponent
+  const employeeOptions = employees.map((emp) => ({
+    value: emp.value,
+    label: `${emp.label} (${emp.serial_number})`,
+    employeeId: emp.empId || emp.value,
+    department: emp.department || "N/A",
+    branch: emp.branch || "N/A",
+    email: emp.email || "",
+  }));
+
+  // Transform available roles for SelectMultiInputComponent
+  const roleOptions = availableRoles.map((role) => ({
+    value: role.id,
+    label: role.name,
+    description: role.description,
+  }));
+
   return (
     <>
       <Formik
@@ -200,58 +222,50 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
             <SheetCardExtension
               title={`${isEditMode ? "Edit" : "Assign"} Roles`}
             >
-              {/* Employee Search Section */}
+              {/* Employee Selection Section */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Search Employee *
-                </label>
-
-                {!employeeData && (
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Search by Employee ID or Name"
-                      value={searchTerm}
-                      onChange={(e) => handleEmployeeSearch(e.target.value)}
+                {!isEditMode ? (
+                  <>
+                    <SelectInputComponent
+                      name="employee"
+                      error={props.errors?.employee}
+                      touch={props.touched?.employee}
+                      value={props.values.employee}
+                      label="Select Employee"
+                      required={true}
+                      options={employeeOptions}
+                      onChange={(field, value) => {
+                        props.setFieldValue(field, value);
+                        // Find the full employee data
+                        const selectedEmp = employees.find(
+                          (emp) => emp.value === value
+                        );
+                        if (selectedEmp) {
+                          setEmployeeData(selectedEmp);
+                        }
+                      }}
+                      placeholder="Select an employee"
                       disabled={isEditMode}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                     />
-                    {isSearching && (
-                      <div className="absolute right-3 top-2">
-                        <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full"></div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Search Results */}
-                {searchResults.length > 0 && !employeeData && (
-                  <div className="mt-2 max-h-60 overflow-y-auto border border-gray-200 rounded-md bg-white shadow-lg">
-                    {searchResults.map((employee) => (
-                      <div
-                        key={employee.id}
-                        className="p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0"
-                        onClick={() => handleEmployeeSelect(employee)}
-                      >
-                        <div className="font-medium text-gray-900">
-                          {employee.name}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          ID: {employee.employeeId} | {employee.department} -{" "}
-                          {employee.branch}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {props.errors.employee && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {props.errors.employee}
+                  </>
+                ) : (
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Employee
+                    </label>
+                    <TextInput
+                      value={
+                        employeeData
+                          ? `${employeeData.name} (${employeeData.employeeId})`
+                          : ""
+                      }
+                      disabled={true}
+                      label=""
+                    />
                   </div>
                 )}
               </div>
-
+              {console.log("employeeData", employeeData)}
               {/* Employee Details */}
               {employeeData && (
                 <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
@@ -274,7 +288,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                             Employee ID
                           </label>
                           <div className="text-gray-900">
-                            {employeeData.employeeId}
+                            {employeeData.serial_number}
                           </div>
                         </div>
                         <div>
@@ -282,7 +296,9 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                             Department
                           </label>
                           <div className="text-gray-900">
-                            {employeeData.department || "N/A"}
+                            <DepartmentName
+                              value={employeeData.department_name}
+                            />
                           </div>
                         </div>
                         <div>
@@ -290,7 +306,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                             Branch
                           </label>
                           <div className="text-gray-900">
-                            {employeeData.branch || "N/A"}
+                            <BranchName value={employeeData.branch} />
                           </div>
                         </div>
                       </div>
@@ -302,7 +318,6 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                         variant="outline"
                         size="sm"
                         onClick={clearEmployeeSelection}
-                        className="text-red-600 border-red-300 hover:bg-red-50"
                       >
                         Clear
                       </Button>
@@ -311,55 +326,29 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                 </div>
               )}
 
-              {/* Roles Selection */}
+              {/* Roles Selection - Now using SelectMultiInputComponent */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select Roles *
-                </label>
+                <SelectMultiInputComponent
+                  name="roles"
+                  options={roleOptions}
+                  error={props.errors?.roles}
+                  touch={props.touched?.roles}
+                  value={props.values.roles}
+                  label="Select Roles"
+                  required={true}
+                  onChange={(field, value) => {
+                    props.setFieldValue(field, value);
+                  }}
+                  placeholder="Select roles"
+                />
 
-                {availableRoles.length > 0 ? (
-                  <div className="space-y-3 max-h-80 overflow-y-auto border border-gray-200 rounded-lg p-4">
-                    {availableRoles.map((role) => (
-                      <div key={role.id} className="flex items-start space-x-3">
-                        <input
-                          type="checkbox"
-                          id={`role-${role.id}`}
-                          checked={selectedRoles.has(role.id)}
-                          onChange={() => handleRoleToggle(role.id)}
-                          className="mt-1 h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-                        />
-                        <label
-                          htmlFor={`role-${role.id}`}
-                          className="flex-1 cursor-pointer"
-                        >
-                          <div className="font-medium text-gray-900">
-                            {role.name}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {role.description}
-                          </div>
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-gray-500 text-center py-4">
-                    No roles available
-                  </div>
-                )}
-
-                {selectedRoles.size > 0 && (
+                {/* Show selected roles count */}
+                {props.values.roles && props.values.roles.length > 0 && (
                   <div className="mt-3 p-3 bg-green-50 rounded-lg">
                     <div className="text-sm text-green-700">
-                      {selectedRoles.size} role
-                      {selectedRoles.size !== 1 ? "s" : ""} selected
+                      {props.values.roles.length} role
+                      {props.values.roles.length !== 1 ? "s" : ""} selected
                     </div>
-                  </div>
-                )}
-
-                {props.errors.roles && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {props.errors.roles}
                   </div>
                 )}
               </div>
@@ -380,11 +369,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                   type="submit"
                   size="lg"
                   variant="default"
-                  disabled={
-                    props.isSubmitting ||
-                    !employeeData ||
-                    selectedRoles.size === 0
-                  }
+                  disabled={props.isSubmitting}
                 >
                   {props.isSubmitting
                     ? "Assigning..."
