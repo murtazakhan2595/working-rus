@@ -8,8 +8,6 @@ import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
-// import RoleAction from "./RoleAction";
-import { AddUpdateUserRoleForm } from "app/modules/RoleAndPermissions/UserRole";
 import { getUserRoleList } from "app/hooks/rolesPermisions";
 import { UserRoleColumn } from "app/modules/RoleAndPermissions/Sections";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +20,6 @@ const UserRoles = ({
   const navigate = useNavigate();
   const [roles, setRoles] = useState({ results: [], count: 0 });
   const [loading, setLoading] = useState(initialLoading || false);
-  const [OpenUserRoleForm, setOpenUserRoleForm] = useState(false);
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -152,13 +149,6 @@ const UserRoles = ({
           </Card>
         )}
       </div>
-      {OpenUserRoleForm && (
-        <AddUpdateUserRoleForm
-          isOpen={OpenUserRoleForm}
-          setIsOpen={setOpenUserRoleForm}
-          reload={fetchData}
-        />
-      )}
     </div>
   );
 };

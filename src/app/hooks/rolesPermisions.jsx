@@ -258,13 +258,10 @@ export const getUserRoleList = async (payload) => {
 };
 
 // Delete assigned role (dummy implementation)
- const deleteAssignedRole = async (id) => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
+ const deleteAssignedRole = async (id,name) => {
   try {
     console.log("Deleting assigned role:", id);
-
+    deleteRole(id, name);
     return {
       success: true,
       message: "Role assignments removed successfully",
@@ -357,10 +354,62 @@ const dummyAssignedRoles = [
     return { results: [], count: 0 };
   }
 };
+
+ const saveRolePermissions = async (roleId, featureIds) => {
+  try {
+    if (!featureIds || featureIds.length === 0) {
+      console.warn("No feature IDs provided for permissions");
+      return { success: true, message: "No permissions to assign" };
+    }
+
+    const URL = `/role-permissions/`;
+    const payload = {
+      role: roleId,
+      feature_ids: featureIds,
+    };
+
+    const response = await axios.post(`${baseUrl}${URL}`, payload, {
+      headers: headers(),
+    });
+
+    if (response.status === 201 || response.status === 200) {
+      return response.data;
+    }
+    throw new Error("Failed to save role permissions");
+  } catch (error) {
+    console.error("Error saving role permissions:", error);
+    throw error;
+  }
+};
+
+const getRolePermissions = async (payload) =>{
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "order";
+  try {
+    const URL = `/role-permissions/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else return [];
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+} 
 export {
   saveRole,
   deleteRole,
   saveAssignedRole,
   deleteAssignedRole,
   getAssignedRolesList,
+  saveRolePermissions,
+  getRolePermissions,
 };
