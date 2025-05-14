@@ -1,5 +1,5 @@
 import {
-  saveRole,
+  saveUpdateUserRole,
   getPermissionsSchema,
   checkRoleNameUniqueness,
 } from "app/hooks/rolesPermisions";
@@ -164,7 +164,7 @@ const AddRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
       };
 
       // Save role
-      const response = await saveRole(edit?.data?.id, payload);
+      const response = await saveUpdateUserRole(edit?.data?.id, payload);
 
       if (response) {
         toast.success(

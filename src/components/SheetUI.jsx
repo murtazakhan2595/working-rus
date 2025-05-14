@@ -101,7 +101,10 @@ const SheetUI = forwardRef(
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
               {children}
               {formFiels?.map(
-                ({ InputFields, sheetCardExtension, sheetCardTitle }, index) => {
+                (
+                  { InputFields, sheetCardExtension, sheetCardTitle },
+                  index
+                ) => {
                   return (
                     <div key={index}>
                       <FormBody
@@ -115,7 +118,7 @@ const SheetUI = forwardRef(
                             required,
                             disabled,
                             label,
-                            onChange,
+                            onFieldUpdate = () => {},
                             options,
                             value,
                             colsSpan,
@@ -144,11 +147,9 @@ const SheetUI = forwardRef(
                                 disabled={disabled}
                                 label={label}
                                 placeholder={placeholder}
-                                onChange={(field, value) => {
-                                  props?.setFieldValue(field, value);
-                                  if (onChange) {
-                                    onChange(field, value);
-                                  }
+                                onChange={async (field, value) => {
+                                  await props?.setFieldValue(field, value);
+                                  onFieldUpdate(field, value);
                                 }}
                                 maxRows={maxRows}
                                 date={date}

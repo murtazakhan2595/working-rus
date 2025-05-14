@@ -1,7 +1,8 @@
 import {
-  saveRole,
-  getPermissionsSchema,
-  checkRoleNameUniqueness,
+  saveUpdateUserRole,
+  getUserRoleList,
+  saveUpdateUserRolePermission,
+  getUserRoleData,
 } from "app/hooks/rolesPermisions";
 import { UserRole } from "app/utils/Types/RolesPermission";
 import {
@@ -10,10 +11,7 @@ import {
   FilterInput,
   CheckBoxInputTree,
 } from "components/FormControl";
-import {
-  handleCloseWithConfirmation,
-  SheetCardExtension,
-} from "components/SheetCardExtension";
+import { validateUserRoleFormSchema } from "app/utils/FormSchema/RolePermissionsFormSchema";
 import { Button } from "components/ui/button";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { Formik } from "formik";
@@ -25,17 +23,19 @@ import { SheetUI } from "components";
 import { Header } from "components";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
-  const [closeSheet, setCloseSheet] = useState(false);
+const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { GOTO_URLS, id } = location.state || {};
   const [confirmSave, setConfirmSave] = useState(false);
-  const [permissionsSchema, setPermissionsSchema] = useState([]);
-  const [filteredSchema, setFilteredSchema] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [formValues, setFormValues] = useState(null);
+  const [UserRoles, setUserRoles] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [RoleNameExist, setRoleNameExist] = useState(false);
   const isEditMode = Boolean(edit?.data);
   const ModulesList = useSelector((state) => state.roles_permissions.modules);
-  console.log(ModulesList, "ModulesListModulesList");
 
   const FormSheetData = {
     triggerText: "Add New Role",
@@ -44,181 +44,126 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     footer: null,
   };
   // Initialize form data with role values if in edit mode
-  const [formData, setFormData] = useState({
-    ...UserRole,
-    ...(edit?.data || {}),
-  });
+  const [formData, setFormData] = useState(UserRole);
 
-  // Load permissions schema on mount
-  useEffect(() => {
-    const fetchPermissionsSchema = async () => {
-      try {
-        const schema = await getPermissionsSchema();
-        setPermissionsSchema(schema);
-        setFilteredSchema(schema);
-      } catch (error) {
-        toast.error("Failed to load permissions schema");
-        console.error("Error loading permissions schema:", error);
+  const fetchUserRolesData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      // Add organizationId to filter if available
+
+      const response = await getUserRoleList();
+
+      if (isMounted) {
+        setUserRoles(
+          response.results?.map((item) => {
+            return { name: item.name, id: item.id };
+          })
+        );
       }
-    };
-
-    fetchPermissionsSchema();
-  }, []);
-
-  // Update form data when edit data changes
-  useEffect(() => {
-    setFormData({
-      ...UserRole,
-      ...(edit?.data || {}),
-    });
-  }, [edit?.data]);
-
-  // Filter schema based on search term
-  useEffect(() => {
-    if (!searchTerm.trim()) {
-      setFilteredSchema(permissionsSchema);
-      return;
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    } finally {
+      setIsLoading(false);
     }
-
-    const searchTermLower = searchTerm.toLowerCase();
-
-    // Deep copy and filter the schema
-    const filtered = permissionsSchema
-      .map((module) => {
-        // Check if module name matches
-        const moduleMatches = module.name
-          .toLowerCase()
-          .includes(searchTermLower);
-
-        // Filter and map submodules
-        const filteredSubmodules =
-          module.subModules
-            ?.map((subModule) => {
-              // Check if submodule name matches
-              const subModuleMatches = subModule.name
-                .toLowerCase()
-                .includes(searchTermLower);
-
-              // Filter features
-              const filteredFeatures = subModule.features?.filter((feature) =>
-                feature.name.toLowerCase().includes(searchTermLower)
-              );
-
-              // Return submodule if it or any of its features match
-              return subModuleMatches || filteredFeatures.length > 0
-                ? { ...subModule, features: filteredFeatures }
-                : null;
-            })
-            .filter(Boolean) || [];
-
-        // Filter direct module features
-        const filteredFeatures =
-          module.features?.filter((feature) =>
-            feature.name.toLowerCase().includes(searchTermLower)
-          ) || [];
-
-        // Return module if it, any of its submodules, or features match
-        return moduleMatches ||
-          filteredSubmodules.length > 0 ||
-          filteredFeatures.length > 0
-          ? {
-              ...module,
-              subModules: filteredSubmodules,
-              features: filteredFeatures,
-            }
-          : null;
-      })
-      .filter(Boolean);
-
-    setFilteredSchema(filtered);
-  }, [searchTerm, permissionsSchema]);
-
-  const handleClose = () => {
-    setCloseSheet(true);
   };
 
-  const validateForm = async (values) => {
-    const errors = {};
+  useEffect(() => {
+    let isMounted = true;
+    fetchUserRolesData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-    if (!values.name || values.name.trim() === "") {
-      errors.name = "Role Name is required";
-    } else if (!isEditMode) {
-      // Check uniqueness when adding new role
-      try {
-        const isUnique = await checkRoleNameUniqueness(values.name);
-        if (!isUnique) {
-          errors.name =
-            "Role Name already exists. Please choose a different name";
-        }
-      } catch (error) {
-        console.error("Failed to check role name uniqueness:", error);
+  const fetchData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      // Add organizationId to filter if available
+      const response = await getUserRoleData(id);
+
+      if (isMounted) {
+        setFormData(response);
       }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    if (!values.description || values.description.trim() === "") {
-      errors.description = "Description is required";
+  useEffect(() => {
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
+
+  const handleClose = () => {
+    if (GOTO_URLS)
+      navigate(GOTO_URLS, {
+        state: {
+          // activeView: activeView,
+          // projectId: taskProjectId,
+        },
+      });
+    else {
+      navigate(`/office-settings/role-managment`);
     }
-
-    return errors;
   };
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     setFormValues(values);
     setConfirmSave(true);
- //   setSubmitting(false);
+    //   setSubmitting(false);
   };
 
   const confirmSubmit = async () => {
+    debugger;
     if (!formValues) return;
-
     try {
-      // Structure the payload
-      const payload = {
-        name: formValues.name,
-        description: formValues.description,
-        permissions: formValues.permissions,
-      };
-
       // Save role
-      const response = await saveRole(edit?.data?.id, payload);
-
+      const response = await saveUpdateUserRole(formValues, edit?.data?.id);
       if (response) {
         toast.success(
-          `Role ${isEditMode ? "Updated" : "Added"} Successfully!`,
+          `User Role ${isEditMode ? "Updated" : "Added"} Successfully!`,
           {
             position: toast.POSITION.TOP_RIGHT,
           }
         );
-        setIsOpen(false);
-
-        // Ensure table is reloaded
-        if (typeof reload === "function") {
-          reload();
+        if (response.id) {
+          saveUpdateUserRolePermission(
+            { ...formValues, role: response.id },
+            edit?.data?.id
+          );
         }
+        // Ensure table is reloaded
+        handleClose();
       }
     } catch (error) {
-      // Handle API validation errors
-      if (error?.response?.data) {
-        const apiErrors = error.response.data;
-
-        const formikErrors = {};
-        Object.keys(apiErrors).forEach((key) => {
-          formikErrors[key] = Array.isArray(apiErrors[key])
-            ? apiErrors[key][0]
-            : apiErrors[key];
-        });
-
-        // Set errors on form when reopened
-        setConfirmSave(false);
-      }
-
       // Show error message
       const errorMessage =
         error?.response?.data?.message ||
         `Failed to ${isEditMode ? "update" : "add"} role.`;
       toast.error(errorMessage);
+    } finally {
+      setConfirmSave(false);
     }
   };
+
+  const validateUserRoleName = (role_name) => {
+    const user_role_name = UserRoles.filter(
+      (role) =>
+        role.name.toLowerCase() === role_name.toLowerCase() &&
+        parseInt(role.id) !== parseInt(id)
+    );
+    if (user_role_name && user_role_name.length > 0) {
+      setRoleNameExist(true);
+    } else {
+      setRoleNameExist(false);
+    }
+  };
+  // console.log(UserRoles,RoleNameExist, "Selected LEave Ids");
 
   return (
     <div
@@ -229,19 +174,25 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
         <CardContent>
           <SheetUI
             isOpen={isOpen}
-            setIsOpen={setIsOpen}
+            setIsOpen={handleClose}
             variant=""
             sheetConfig={FormSheetData}
             formConfig={{
               initialValues: formData,
               enableReinitialize: true,
               handleSubmit: handleSubmit,
-              validateFormSchema: () => {},
+              validateFormSchema: (values) => {
+                const errors = validateUserRoleFormSchema(values);
+                if (values.name && RoleNameExist)
+                  errors.name =
+                    "Role Name already exists. Please choose a different name";
+                return errors;
+              },
               submitButtonText: "Submit",
               cancelButtonText: "Cancel",
-              columns: 2,
-              //   renderUpdatedFormValues: setFormValues,
-              // disableSubmit: isLoading,
+              columns: 3,
+              //renderUpdatedFormValues: setFormValues,
+              disableSubmit: isLoading,
               formFiels: [
                 {
                   sheetCardExtension: true,
@@ -252,11 +203,16 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                       name: "name",
                       required: true,
                       label: "Role Name",
+                      onFieldUpdate: (_, value) => {
+                        validateUserRoleName(value);
+                      },
                     },
                     {
-                      InputField: TextInput,
+                      InputField: TextAreaInput,
                       name: "description",
                       required: true,
+                      colsSpan: 3,
+                      rows: 2,
                       label: "Description",
                     },
                   ],
@@ -267,10 +223,9 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                   InputFields: [
                     {
                       InputField: CheckBoxInputTree,
-                      name: "name",
-                      colsSpan: 2,
+                      name: "feature_ids",
+                      colsSpan: 3,
                       options: ModulesList,
-                      subColumns: 3,
                       searchFeature: true,
                       treeLevels: 3,
                       treeLevelsName: {

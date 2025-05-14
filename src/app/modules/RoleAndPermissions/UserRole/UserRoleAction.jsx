@@ -7,11 +7,13 @@ import {
 } from "app/modules/RoleAndPermissions/UserRole";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const UserRoleAction = ({ data, reload }) => {
   const [view, setView] = useState(null);
   const [deleteRole, setDeleteRole] = useState(null);
   const [edit, setEdit] = useState(null);
+  const navigate = useNavigate();
 
   const formSheetData = {
     triggerText: null,
@@ -28,6 +30,11 @@ const UserRoleAction = ({ data, reload }) => {
   };
 
   const handleEdit = () => {
+    navigate("/office-settings/role-managment/user-role/edit", {
+      state: {
+        id: data.id,
+      },
+    });
     setEdit({
       open: true,
       data: data,

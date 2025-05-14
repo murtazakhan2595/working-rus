@@ -696,43 +696,6 @@ const deleteRole = async (roleId, roleName) => {
   }
 };
 
-
-// Save/Update role
-const saveRole = async (roleId, payload) => {
-  try {
-    if (roleId) {
-      // Update existing role
-      const response = await axios.patch(
-        `${baseUrl}/userrole/${roleId}`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
-      if (response.status === 200) {
-        return response?.data;
-      }
-    } else {
-      // Create new role
-      const response = await axios.post(`${baseUrl}/userrole/`, payload, {
-        headers: headers(),
-      });
-      if (response.status === 201) {
-        return response?.data;
-      }
-    }
-    // If we get here, neither condition returned a response
-    console.warn("API call succeeded but with unexpected status code");
-    return false;
-  } catch (error) {
-    console.error("API error in saveRole:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    throw error; // Re-throw to allow handling in the component
-  }
-};
-
 export {
   getDepartmentList,
   getManagersList,
@@ -752,5 +715,4 @@ export {
   saveShift,
   HandleLogout,
   deleteRole,
-  saveRole,
 };

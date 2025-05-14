@@ -1,12 +1,18 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-import { saveRole, deleteRole } from "./general";
+import { deleteRole } from "./general";
 import { initialState } from "state/slices/UserSlice";
 import {
   mapModuleListData,
   mapUserRoleListData,
+  mapUserRolePayloadData,
+  mapUserRolePermissionsPayloadData,
+  mapUserRoleData,
+  mapUserRolePermissionsData,
 } from "app/utils/MappingObjects/mapRolesPermissionData";
 
+import { HandleLogout } from "./general";
+import { renderErrorMessages } from "utils/renderErrors";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -235,6 +241,119 @@ export const getUserRoleList = async (payload) => {
     return { results: [], count: 0 };
   }
 };
+// Save/Update role
+export const saveUpdateUserRole = async (payload, roleID) => {
+  try {
+    const url = roleID
+      ? `${baseUrl}/userrole/${roleID}`
+      : `${baseUrl}/userrole/`;
+
+    const method = roleID ? "patch" : "post";
+    const expectedStatus = roleID ? 200 : 201;
+    const finalPayload = mapUserRolePayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateUserRole:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+export const saveUpdateUserRolePermission = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/role-permissions/${id}`
+      : `${baseUrl}/role-permissions/`;
+
+    const method = id ? "patch" : "post";
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapUserRolePermissionsPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateUserRole:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+
+export const getUserRoleData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/userrole/${id}`, {
+      headers: headers(),
+    });
+    const UserRoleData = mapUserRoleData(response.data);
+    const permissionslist = await getUserRolePermissionsData(UserRoleData.id);
+    // Extract all `feature` arrays and flatten into a single array
+    const feature_ids = await permissionslist.flatMap((item) =>
+      item.feature.map((f) => f.id)
+    );
+    return { ...UserRoleData, feature_ids };
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching data:", error);
+  }
+  return {};
+};
+
+export const getUserRolePermissionsData = async (ids) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/role-permissions?search=${encodeURIComponent(
+        JSON.stringify({ role: ids })
+      )}`,
+      {
+        headers: headers(),
+      }
+    );
+    // const UserRolePermissionData = ;
+    return response.data.results;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching data:", error);
+  }
+  return 0;
+};
 
 // Re-export functions from general.js
-export { saveRole, deleteRole };
+export { deleteRole };
