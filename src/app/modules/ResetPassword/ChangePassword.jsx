@@ -63,7 +63,7 @@ const ChangePassword = () => {
         formFiels: [
           {
             sheetCardExtension: false,
-            InputFiels: [
+            InputFields: [
               {
                 InputField: PasswordInput,
                 name: "current_password",

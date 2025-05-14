@@ -15,6 +15,7 @@ import { RadioGroup, RadioGroupItem } from "src/@/components/ui/radio-group";
 import TextInput from "components/FormControl/TextInput";
 import NumberInput from "components/FormControl/NumberInput";
 import PasswordInput from "components/FormControl/PasswordInput";
+import CheckBoxInputTree from "components/FormControl/CheckBoxInputTree";
 import CoverFileUpload from "components/FormControl/UploadFiles";
 import { ChevronsUpDown, Check, SearchIcon } from "lucide-react";
 import {
@@ -66,24 +67,34 @@ export const FormField = memo(
         touched,
         className = "w-full", // Custom styling
         disabled = false,
+        field_description,
+        label_description,
         children,
       },
       ref
     ) => {
       return (
         <div className={cn(`flex flex-col gap-4`, className)}>
-          {label && (
-            <Label htmlFor={name} className="items-center flex">
-              {required && <span className="text-red-600">* </span>}
-              {label}
-            </Label>
-          )}
+          <div>
+            {label && (
+              <Label htmlFor={name} className="items-center flex">
+                {required && <span className="text-red-600">* </span>}
+                {label}
+              </Label>
+            )}
+            {label_description && (
+              <div className={'text-neutral-900 text-xs font-[inter] font-normal'}>{label_description}</div>
+            )}
+          </div>
           <div
             className={`flex-col flex gap-1 ${
               disabled ? "cursor-not-allowed" : ""
             }`}
           >
             {children}
+            {field_description && (
+              <div className={'text-neutral-900 text-xs font-[inter] font-normal'}>{field_description}</div>
+            )}
             {error && touched && <div className={errorClassName}>{error}</div>}
           </div>
         </div>
@@ -399,7 +410,7 @@ export const FormFieldIcon = memo(
 //             }
 //             value={inputValue}
 //             className={`
-//               ${error && touch ? "is-invalid" : ""} 
+//               ${error && touch ? "is-invalid" : ""}
 //               rounded-l-none rounded-r-sm
 //               ${!selectedCountryCode ? "bg-gray-100 cursor-not-allowed" : ""}
 //             `}
@@ -728,6 +739,7 @@ export {
   TextAreaInput,
   FilterInput,
   CheckBoxInput,
+  CheckBoxInputTree,
   PasswordInput,
   RadioGroupInput,
   NumberInput,

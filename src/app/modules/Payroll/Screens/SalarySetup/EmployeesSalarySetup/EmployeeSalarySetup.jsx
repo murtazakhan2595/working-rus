@@ -210,7 +210,7 @@ const EmployeeSalarySetup = () => {
                     formFiels: [
                       {
                         sheetCardExtension: false,
-                        InputFiels: [
+                        InputFields: [
                           {
                             InputField: RadioGroupInput,
                             name: "salary_breakdown_type",

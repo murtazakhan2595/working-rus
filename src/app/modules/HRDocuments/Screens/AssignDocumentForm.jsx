@@ -131,7 +131,7 @@ const AssignDocumentForm = ({
           {
             sheetCardExtension: false,
             // sheetCardTitle: "Employee Details",
-            InputFiels: [
+            InputFields: [
               {
                 InputField: RadioGroupInput,
                 name: "acknowledgment_type",

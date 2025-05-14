@@ -14,6 +14,7 @@ const CheckBoxInput = React.memo(
     label,
     disabled,
     className,
+    description,
   }) => {
     return (
       <FormField
@@ -24,6 +25,7 @@ const CheckBoxInput = React.memo(
         touched={touch}
         className={cn("w-full flex-row-reverse justify-end gap-2", className)}
         disabled={disabled}
+        label_description={description}
       >
         <Checkbox
           id={name}

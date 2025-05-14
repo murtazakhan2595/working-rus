@@ -4,7 +4,12 @@ import {
   checkRoleNameUniqueness,
 } from "app/hooks/rolesPermisions";
 import { UserRole } from "app/utils/Types/RolesPermission";
-import { TextAreaInput, TextInput, FilterInput } from "components/FormControl";
+import {
+  TextAreaInput,
+  TextInput,
+  FilterInput,
+  CheckBoxInputTree,
+} from "components/FormControl";
 import {
   handleCloseWithConfirmation,
   SheetCardExtension,
@@ -17,6 +22,9 @@ import { toast } from "react-toastify";
 // import PermissionsTree from "./PermissionsTree";
 import { useSelector } from "react-redux";
 import { SheetUI } from "components";
+import { Header } from "components";
+import { Card } from "components/ui/card";
+import { CardContent } from "components/ui/card";
 
 const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const [closeSheet, setCloseSheet] = useState(false);
@@ -26,7 +34,8 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [formValues, setFormValues] = useState(null);
   const isEditMode = Boolean(edit?.data);
-  const ModulesList = useSelector((state) => state.roles_permissions.module);
+  const ModulesList = useSelector((state) => state.roles_permissions.modules);
+  console.log(ModulesList, "ModulesListModulesList");
 
   const FormSheetData = {
     triggerText: "Add New Role",
@@ -156,7 +165,7 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     setFormValues(values);
     setConfirmSave(true);
-    setSubmitting(false);
+ //   setSubmitting(false);
   };
 
   const confirmSubmit = async () => {
@@ -212,62 +221,70 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   };
 
   return (
-    <>
-      <SheetUI
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        variant="sheet"
-        sheetConfig={FormSheetData}
-        formConfig={{
-          initialValues: formData,
-          enableReinitialize: true,
-          handleSubmit: handleSubmit,
-          // validateFormSchema: validateChangePasswordForm,
-          submitButtonText: "Submit",
-          cancelButtonText: "Cancel",
-          columns: 2,
-          //   renderUpdatedFormValues: setFormValues,
-          // disableSubmit: isLoading,
-          formFiels: [
-            {
-              sheetCardExtension: true,
-              sheetCardTitle: `${isEditMode ? "Edit" : "Add"} Role`,
-              InputFiels: [
+    <div
+      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
+    >
+      <Header />
+      <Card>
+        <CardContent>
+          <SheetUI
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            variant=""
+            sheetConfig={FormSheetData}
+            formConfig={{
+              initialValues: formData,
+              enableReinitialize: true,
+              handleSubmit: handleSubmit,
+              validateFormSchema: () => {},
+              submitButtonText: "Submit",
+              cancelButtonText: "Cancel",
+              columns: 2,
+              //   renderUpdatedFormValues: setFormValues,
+              // disableSubmit: isLoading,
+              formFiels: [
                 {
-                  InputField: TextInput,
-                  name: "name",
-                  required: true,
-                  label: "Role Name",
+                  sheetCardExtension: true,
+                  sheetCardTitle: `Role Details`,
+                  InputFields: [
+                    {
+                      InputField: TextInput,
+                      name: "name",
+                      required: true,
+                      label: "Role Name",
+                    },
+                    {
+                      InputField: TextInput,
+                      name: "description",
+                      required: true,
+                      label: "Description",
+                    },
+                  ],
                 },
                 {
-                  InputField: TextInput,
-                  name: "description",
-                  required: true,
-                  label: "Description",
+                  sheetCardExtension: true,
+                  sheetCardTitle: `Role Permissions`,
+                  InputFields: [
+                    {
+                      InputField: CheckBoxInputTree,
+                      name: "name",
+                      colsSpan: 2,
+                      options: ModulesList,
+                      subColumns: 3,
+                      searchFeature: true,
+                      treeLevels: 3,
+                      treeLevelsName: {
+                        level_1: "submodules",
+                        level_2: "features",
+                      },
+                    },
+                  ],
                 },
               ],
-            },
-            {
-              sheetCardExtension: true,
-              sheetCardTitle: `Permissions`,
-              InputFiels: [
-                {
-                  InputField: TextInput,
-                  name: "name",
-                  required: true,
-                  label: "Role Name",
-                },
-                {
-                  InputField: TextInput,
-                  name: "description",
-                  required: true,
-                  label: "Description",
-                },
-              ],
-            },
-          ],
-        }}
-      ></SheetUI>
+            }}
+          ></SheetUI>
+        </CardContent>
+      </Card>
 
       {confirmSave && (
         <AlertDialogue
@@ -282,7 +299,7 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
         />
       )}
 
-      <Formik
+      {/* <Formik
         initialValues={formData}
         onSubmit={handleSubmit}
         validate={validateForm}
@@ -291,7 +308,7 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
         {(props) => (
           <form onSubmit={props.handleSubmit}>
             <SheetCardExtension title={`${isEditMode ? "Edit" : "Add"} Role`}>
-              {/* Role Name */}
+              {/* Role Name 
               <TextInput
                 name="name"
                 label="Role Name"
@@ -304,7 +321,7 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                 }}
               />
 
-              {/* Description */}
+              {/* Description 
               <TextAreaInput
                 name="description"
                 label="Description"
@@ -345,7 +362,7 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                   }}
                   permissionTypes={Object.values(PermissionTypes)}
                   searchTerm={searchTerm}
-                /> */}
+                /> 
               </div>
             </SheetCardExtension>
 
@@ -375,8 +392,8 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
             </div>
           </form>
         )}
-      </Formik>
-    </>
+      </Formik> */}
+    </div>
   );
 };
 

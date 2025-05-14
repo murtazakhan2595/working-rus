@@ -1,2 +1,2 @@
-import { UserRoles } from "./UserRole";
-export { UserRoles };
+import { UserRoles, AddUpdateUserRoleForm } from "./UserRole";
+export { UserRoles, AddUpdateUserRoleForm };
