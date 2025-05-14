@@ -60,26 +60,16 @@ export function mapUserRoleData(data) {
 }
 
 export function mapUserRolePermissionsData(data) {
-  const userRoleData = Object.keys(UserRolePermissions).reduce((acc, key) => {
+  const userRolePermissionData = Object.keys(UserRolePermissions).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
       acc[key] = data[key];
     }
     return acc;
   }, {});
 
-  return userRoleData;
+  return userRolePermissionData;
 }
 
-export function mapUserRolePermissionsData(data) {
-  const userRoleData = Object.keys(UserRolePermissions).reduce((acc, key) => {
-    if (data.hasOwnProperty(key)) {
-      acc[key] = data[key];
-    }
-    return acc;
-  }, {});
-
-  return userRoleData;
-}
 
 export async function mapUserRoleListData(data) {
   if (!data || data.length === 0) return [];

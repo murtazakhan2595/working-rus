@@ -16,16 +16,13 @@ import { Button } from "components/ui/button";
 import AlertDialogue from "components/ui/AlertDialogue";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Header } from "components";
+import { Header, SheetUI } from "components";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useNavigate, useParams } from "react-router-dom";
-import { getRole } from "app/hooks/general";
-import { getRolePermissions } from "app/hooks/rolesPermisions";
+import { useSelector } from "react-redux";
 
-
-const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
+const AddUpdateUserRoleForm = ({ isOpen = true }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { GOTO_URLS, id } = location.state || {};
@@ -34,7 +31,7 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
   const [UserRoles, setUserRoles] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [RoleNameExist, setRoleNameExist] = useState(false);
-  const isEditMode = Boolean(edit?.data);
+  const isEditMode = Boolean(id);
   const ModulesList = useSelector((state) => state.roles_permissions.modules);
 
   const FormSheetData = {
@@ -75,7 +72,7 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
     };
   }, []);
 
-  const fetchData = async (isMounted) => {
+  const fetchData = async (isMounted, id) => {
     try {
       setIsLoading(true);
       // Add organizationId to filter if available
@@ -93,7 +90,7 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
 
   useEffect(() => {
     let isMounted = true;
-    fetchData(isMounted);
+    if (id) fetchData(isMounted, id);
     return () => {
       isMounted = false;
     };
@@ -113,18 +110,16 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
   };
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
-    console.log("Form submitted with values:", values);
     setFormValues(values);
     setConfirmSave(true);
     //   setSubmitting(false);
   };
 
   const confirmSubmit = async () => {
-    debugger;
     if (!formValues) return;
     try {
       // Save role
-      const response = await saveUpdateUserRole(formValues, edit?.data?.id);
+      const response = await saveUpdateUserRole(formValues, id);
       if (response) {
         toast.success(
           `User Role ${isEditMode ? "Updated" : "Added"} Successfully!`,
@@ -133,9 +128,9 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
           }
         );
         if (response.id) {
-          saveUpdateUserRolePermission(
+          await saveUpdateUserRolePermission(
             { ...formValues, role: response.id },
-            edit?.data?.id
+            formData.role_permission_id
           );
         }
         // Ensure table is reloaded
@@ -165,11 +160,7 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
       setRoleNameExist(false);
     }
   };
-  // console.log(UserRoles,RoleNameExist, "Selected LEave Ids");
 
-  const toggleIsOpen = () => {
-    navigate(-1);
-  }
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -215,7 +206,6 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
                     {
                       InputField: TextAreaInput,
                       name: "description",
-                      required: true,
                       colsSpan: 3,
                       rows: 2,
                       label: "Description",
@@ -237,7 +227,7 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
                         level_1: "submodules",
                         level_2: "features",
                       },
-                      disabled: isLoadingModules,
+                      disabled: isLoading,
                     },
                   ],
                 },
@@ -259,6 +249,8 @@ const AddUpdateUserRoleForm = ({ isOpen, edit, reload }) => {
             confirmSubmit();
             setConfirmSave(false);
           }}
+          buttonType="default"
+          className="text-neutral-1200"
         />
       )}
     </div>

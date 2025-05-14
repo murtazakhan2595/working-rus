@@ -11,6 +11,8 @@ export const UserRole={
     description	:null,
     status:'inactive',
     id:null,
+  role_permission_id:null,
+
 }
 export const UserRolePermissions = {
   role: null,

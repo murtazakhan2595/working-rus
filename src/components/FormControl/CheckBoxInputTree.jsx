@@ -28,7 +28,12 @@ const CheckBoxInputTree = React.memo(
     value = [],
   }) => {
     const [searchQuery, setSearchQuery] = useState(null);
-    const [selectedLeafIds, setSelectedLeafIds] = useState(value||[]);
+    const selectedLeafIds = React.useMemo(
+      () => (value && Array.isArray(value) ? value : []),
+      [value]
+    );
+    // console.log(selectedLeafIds, value, "Selected LEave Ids");
+
     const filteredOptions = React.useMemo(() => {
       if (!searchQuery) return options;
 
@@ -72,18 +77,19 @@ const CheckBoxInputTree = React.memo(
     // onChange Handler
     const handleCheckChange = (node, isChecked, currentTreeLevel) => {
       const leafIds = getAllLeafIds(node, currentTreeLevel);
-      setSelectedLeafIds((prev) => {
-        if (isChecked) {
-          const newSet = new Set([...prev, ...leafIds]);
-          const updated = [...newSet];
-          onChange(name, updated);
-          return updated;
-        } else {
-          const updated = prev.filter((id) => !leafIds.includes(id));
-          onChange(name, updated);
-          return updated;
-        }
-      });
+      const previousSelectedLeadIds = selectedLeafIds;
+      if (isChecked) {
+        const newSet = new Set([...previousSelectedLeadIds, ...leafIds]);
+        const updated = [...newSet];
+        onChange(name, updated);
+        return updated;
+      } else {
+        const updated = previousSelectedLeadIds.filter(
+          (id) => !leafIds.includes(id)
+        );
+        onChange(name, updated);
+        return updated;
+      }
     };
 
     return (
@@ -133,7 +139,7 @@ const RenderTreeLevel = ({
 }) => {
   if (!treeLevels || currentTreeLevel >= treeLevels) return null;
   const nextLevelKey = treeLevelsName[`level_${currentTreeLevel + 1}`];
- 
+
   const RenderNode = ({ node, selected }) => {
     const { name, id, code_name, description } = node;
     return (

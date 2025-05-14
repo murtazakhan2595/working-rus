@@ -248,7 +248,7 @@ export const saveUpdateUserRole = async (payload, roleID) => {
       ? `${baseUrl}/userrole/${roleID}`
       : `${baseUrl}/userrole/`;
 
-    const method = roleID ? "patch" : "post";
+    const method = roleID ? "PATCH" : "POST"; // Determine method based on existence of id
     const expectedStatus = roleID ? 200 : 201;
     const finalPayload = mapUserRolePayloadData(payload);
     const response = await axios({
@@ -280,7 +280,7 @@ export const saveUpdateUserRole = async (payload, roleID) => {
 export const saveUpdateUserRolePermission = async (payload, id) => {
   try {
     const url = id
-      ? `${baseUrl}/role-permissions/${id}`
+      ? `${baseUrl}/role-permissions/${id}/`
       : `${baseUrl}/role-permissions/`;
 
     const method = id ? "patch" : "post";
@@ -324,7 +324,15 @@ export const getUserRoleData = async (id) => {
     const feature_ids = await permissionslist.flatMap((item) =>
       item.feature.map((f) => f.id)
     );
-    return { ...UserRoleData, feature_ids };
+    const role_permission_id =
+      Array.isArray(permissionslist) && permissionslist.length > 0
+        ? permissionslist[0].id
+        : null;
+    return {
+      ...UserRoleData,
+      feature_ids: feature_ids,
+      role_permission_id: role_permission_id,
+    };
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();
@@ -355,11 +363,9 @@ export const getUserRolePermissionsData = async (ids) => {
   return 0;
 };
 
-
- const saveAssignedRole = async (id, payload) => {
+const saveAssignedRole = async (id, payload) => {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 1000));
-
   try {
     console.log("Saving assigned role:", { id, payload });
 
@@ -377,7 +383,7 @@ export const getUserRolePermissionsData = async (ids) => {
 };
 
 // Delete assigned role (dummy implementation)
- const deleteAssignedRole = async (id,name) => {
+const deleteAssignedRole = async (id, name) => {
   try {
     console.log("Deleting assigned role:", id);
     deleteRole(id, name);
@@ -390,7 +396,6 @@ export const getUserRolePermissionsData = async (ids) => {
     throw error;
   }
 };
-
 
 const dummyAssignedRoles = [
   {
@@ -427,7 +432,7 @@ const dummyAssignedRoles = [
 ];
 
 // ADD THIS FUNCTION (it seems this one is missing)
- const getAssignedRolesList = async (payload) => {
+const getAssignedRolesList = async (payload) => {
   const pageNo = payload?.options?.page ?? 1;
   const pageSize = payload?.options?.sizePerPage ?? 10;
   const filterData = payload?.filterData ?? {};
@@ -474,9 +479,9 @@ const dummyAssignedRoles = [
   }
 };
 
- const saveRolePermissions = async (id,roleId, featureIds) => {
+const saveRolePermissions = async (id, roleId, featureIds) => {
   try {
-    if(id){
+    if (id) {
       const URL = `/role-permissions/${id}/`;
       const payload = {
         role: roleId,
@@ -488,29 +493,29 @@ const dummyAssignedRoles = [
       if (response.status === 200) {
         return response.data;
       }
-    }else{
+    } else {
       const URL = `/role-permissions/`;
       const payload = {
         role: roleId,
         feature_ids: featureIds,
       };
-  
+
       const response = await axios.post(`${baseUrl}${URL}`, payload, {
         headers: headers(),
       });
-  
+
       if (response.status === 201 || response.status === 200) {
         return response.data;
       }
       throw new Error("Failed to save role permissions");
-    }   
+    }
   } catch (error) {
     console.error("Error saving role permissions:", error);
     throw error;
   }
 };
 
-const getRolePermissions = async (payload) =>{
+const getRolePermissions = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -531,9 +536,8 @@ const getRolePermissions = async (payload) =>{
     console.error("Error fetching Personal Info data :", error);
   }
   return [];
-} 
+};
 export {
-  saveRole,
   deleteRole,
   saveAssignedRole,
   deleteAssignedRole,

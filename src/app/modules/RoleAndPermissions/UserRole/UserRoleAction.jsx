@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
-import {
-  ViewUserRole,
-} from "app/modules/RoleAndPermissions/UserRole";
+import { ViewUserRole } from "app/modules/RoleAndPermissions/UserRole";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { toast } from "react-toastify";
 import { deleteRole } from "app/hooks/rolesPermisions";
@@ -22,7 +20,9 @@ const UserRoleAction = ({ data, reload }) => {
 
   const handleEdit = (e) => {
     e.preventDefault();
-    navigate(`/office-settings/role-managment/user-role/add/${data?.id}`);
+    navigate(`/office-settings/role-managment/user-role/edit`, {
+      state: { id: data.id },
+    });
   };
 
   const handleDelete = () => {
