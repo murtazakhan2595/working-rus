@@ -2,6 +2,7 @@ import {
   saveRole,
   getModuleList,
   saveRolePermissions,
+  getAssignedRolesList,
 } from "app/hooks/rolesPermisions";
 import { UserRole } from "app/utils/Types/RolesPermission";
 import { TextInput, CheckBoxInputTree } from "components/FormControl";
@@ -14,16 +15,21 @@ import { Header } from "components";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import { useNavigate, useParams } from "react-router-dom";
+import { getRole } from "app/hooks/general";
+import { getRolePermissions } from "app/hooks/rolesPermisions";
 
-const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
+
+const AddUpdateUserRoleForm = () => {
   const [confirmSave, setConfirmSave] = useState(false);
   const [modulesList, setModulesList] = useState([]);
   const [formValues, setFormValues] = useState(null);
+  
   const [isLoadingModules, setIsLoadingModules] = useState(true);
-
-  const isEditMode = Boolean(edit?.data);
+  const [isLoading, setIsLoading] = useState(false);
+  const [rolePermissionsId, setRolePermissionsId] = useState(null);
   const navigate = useNavigate();
   const { roleId } = useParams();
+  const isEditMode = Boolean(roleId);
   const FormSheetData = {
     triggerText: "Add New Role",
     title: isEditMode ? "Edit Role" : "Add New Role",
@@ -31,11 +37,9 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     footer: null,
   };
 
-  // Initialize form data with role values if in edit mode
   const [formData, setFormData] = useState({
     ...UserRole,
-    permissions: [], // Ensure permissions is always an array
-    ...(edit?.data || {}),
+    permissions: [],
   });
 
   // Load modules list on mount
@@ -58,14 +62,67 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     fetchModules();
   }, []);
 
-  // Update form data when edit data changes
   useEffect(() => {
-    setFormData({
-      ...UserRole,
-      permissions: [], // Ensure permissions is always an array
-      ...(edit?.data || {}),
-    });
-  }, [edit?.data]);
+    const fetchRoleData = async () => {
+      if (!roleId) return;
+      setIsLoading(true);
+      try {
+        // Fetch role details
+        console.log("Fetching role details for roleId:", roleId);
+        const roleResponse = await getRole(roleId);
+        const rolePermissionsResponse = await getRolePermissions({
+          filterData: { role: roleId },
+        });
+
+        if (roleResponse && rolePermissionsResponse) {
+          console.log(
+            "Role details fetched:",
+            roleResponse,
+            rolePermissionsResponse
+          );
+          setRolePermissionsId(rolePermissionsResponse?.results[0]?.id);
+          // Extract feature IDs from permissions response
+          const featureIds = [];
+          if (
+            rolePermissionsResponse.results &&
+            rolePermissionsResponse.results.length > 0
+          ) {
+            rolePermissionsResponse.results.forEach((permission) => {
+              if (permission.feature && Array.isArray(permission.feature)) {
+                permission.feature.forEach((feature) => {
+                  if (feature.id) {
+                    featureIds.push(feature.id);
+                  }
+                });
+              }
+            });
+          }
+
+          // Combine role data with permissions
+          const combinedData = {
+            id: roleResponse.id,
+            name: roleResponse.name,
+            description: roleResponse.description,
+            status: roleResponse.status,
+            permissions: featureIds, // Array of feature IDs for checkbox tree
+          };
+
+          console.log("Combined form data:", combinedData);
+
+          // Update form data with the combined data
+          setFormData(combinedData);
+        }
+      } catch (error) {
+        console.error("Error loading role details:", error);
+        toast.error("Failed to load role details");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRoleData();
+  }, [roleId]);
+
 
   const validateForm = async (values) => {
     const errors = {};
@@ -97,7 +154,7 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
         description: formValues.description,
       };
 
-      const roleResponse = await saveRole(edit?.data?.id, rolePayload);
+      const roleResponse = await saveRole(roleId, rolePayload);
 
       if (!roleResponse || !roleResponse.id) {
         throw new Error("Failed to create/update role");
@@ -105,20 +162,19 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
 
       // Step 2: Save role permissions using the permissions array directly
       if (formValues.permissions && formValues.permissions.length > 0) {
-        await saveRolePermissions(roleResponse.id, formValues.permissions);
+        await saveRolePermissions(
+          rolePermissionsId,
+          roleResponse.id,
+          formValues.permissions
+        );
       }
 
       toast.success(`Role ${isEditMode ? "Updated" : "Added"} Successfully!`, {
         position: toast.POSITION.TOP_RIGHT,
       });
-      setIsOpen(false);
       setFormValues(null);
       setConfirmSave(false);
       navigate(-1);
-      // Ensure table is reloaded
-      if (typeof reload === "function") {
-        reload();
-      }
     } catch (error) {
       // Show error message
       const errorMessage =
@@ -141,7 +197,7 @@ const AddUpdateUserRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
       <Card>
         <CardContent>
           <SheetUI
-            isOpen={isOpen}
+            isOpen={true}
             setIsOpen={toggleIsOpen}
             variant=""
             sheetConfig={FormSheetData}

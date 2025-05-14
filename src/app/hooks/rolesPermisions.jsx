@@ -355,27 +355,36 @@ const dummyAssignedRoles = [
   }
 };
 
- const saveRolePermissions = async (roleId, featureIds) => {
+ const saveRolePermissions = async (id,roleId, featureIds) => {
   try {
-    if (!featureIds || featureIds.length === 0) {
-      console.warn("No feature IDs provided for permissions");
-      return { success: true, message: "No permissions to assign" };
-    }
-
-    const URL = `/role-permissions/`;
-    const payload = {
-      role: roleId,
-      feature_ids: featureIds,
-    };
-
-    const response = await axios.post(`${baseUrl}${URL}`, payload, {
-      headers: headers(),
-    });
-
-    if (response.status === 201 || response.status === 200) {
-      return response.data;
-    }
-    throw new Error("Failed to save role permissions");
+    if(id){
+      const URL = `/role-permissions/${id}/`;
+      const payload = {
+        role: roleId,
+        feature_ids: featureIds,
+      };
+      const response = await axios.put(`${baseUrl}${URL}`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 200) {
+        return response.data;
+      }
+    }else{
+      const URL = `/role-permissions/`;
+      const payload = {
+        role: roleId,
+        feature_ids: featureIds,
+      };
+  
+      const response = await axios.post(`${baseUrl}${URL}`, payload, {
+        headers: headers(),
+      });
+  
+      if (response.status === 201 || response.status === 200) {
+        return response.data;
+      }
+      throw new Error("Failed to save role permissions");
+    }   
   } catch (error) {
     console.error("Error saving role permissions:", error);
     throw error;
