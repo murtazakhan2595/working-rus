@@ -1,0 +1,80 @@
+import React, { useState } from "react";
+import {UserRoles,AssignedRoles} from "app/modules/RoleAndPermissions";
+
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "src/@/components/ui/tabs";
+import { Card, CardContent } from "components/ui/card";
+import { Header } from "components";
+import { Button } from "components/ui/button";
+import { useNavigate } from "react-router-dom";
+const RoleAndPermissionsTab = ["Role Management", "Assigned Roles"];
+
+function RoleAndPermissions() {
+  const navigate = useNavigate();
+  const [OpenUploadDocumentForm, setOpenUploadDocumentForm] = useState(false);
+  const [OpenCategoryForm, setOpenCategoryForm] = useState(false);
+  const [activeHRDocumentsTab, setActiveHRDocumentsTab] = useState("Role Management");
+  const [reloadData, setReloadData] = useState(false);
+  return (
+    <div
+      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
+    >
+      <Header
+        content={
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              if (activeHRDocumentsTab === "Role Management")
+                navigate("/office-settings/role-permission/user-role/add");
+              else setOpenCategoryForm(true);
+            }}
+          >
+            {activeHRDocumentsTab === "Role Management"
+              ? "Add User Role"
+              : "Add Category"}
+          </Button>
+        }
+      />
+      <Tabs
+        defaultValue="Role Management"
+        className="w-full"
+        onValueChange={(tab) => {
+          setActiveHRDocumentsTab(tab);
+        }}
+        value={activeHRDocumentsTab}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between w-full">
+          <div className="w-full sm:w-auto overflow-hidden mb-4">
+            <TabsList className="flex flex-nowrap w-full gap-4 overflow-x-auto overflow-y-hidden sm:overflow-visible">
+              {RoleAndPermissionsTab.map((tab) => (
+                <TabsTrigger
+                  key={tab}
+                  value={tab}
+                  className="md:w-fit data-[state=active]:bg-primary-200 flex-1 sm:flex-initial whitespace-nowrap sm:w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                >
+                  {tab}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+        </div>
+        <Card>
+          <CardContent>
+            <TabsContent value="Role Management">
+              <UserRoles reload={reloadData} />
+            </TabsContent>
+            <TabsContent value="Assigned Roles">
+              <AssignedRoles reload={reloadData} />
+            </TabsContent>
+          </CardContent>
+        </Card>
+      </Tabs>
+    </div>
+  );
+}
+
+export default RoleAndPermissions;

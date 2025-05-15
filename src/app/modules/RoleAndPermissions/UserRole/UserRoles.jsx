@@ -97,58 +97,36 @@ const UserRoles = ({
   };
 
   return (
-    <div
-      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
-    >
-      <Header
-        content={
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/office-settings/role-managment/user-role/add");
-            }}
-          >
-            Add New User Role
-          </Button>
-        }
+    <div className="flex flex-col gap-4">
+      <CardTitle className="text-primary pt-6">Role List</CardTitle>
+      <CardDescription className="text-neutral-1100">
+        Here you can manage roles and their permissions. Add, edit, or delete
+        roles as needed.
+      </CardDescription>
+      <FilterInput
+        filters={[
+          {
+            type: "search",
+            placeholder: "Search Role Name",
+            name: "name",
+          },
+        ]}
+        className="justify-end"
+        onChange={handleFilterChange}
       />
-      <div className="flex flex-col gap-4">
-        <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Search Role Name",
-              name: "name",
-            },
-          ]}
-          className="justify-end"
-          onChange={handleFilterChange}
-        />
 
-        {loading ? (
-          <PageLoader />
-        ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-primary">Role List</CardTitle>
-              <CardDescription className="text-neutral-1100">
-                Here you can manage roles and their permissions. Add, edit, or
-                delete roles as needed.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <TableCustom
-                columns={UserRoleColumn(forceReload)}
-                data={roles?.results || []}
-                tableOptions={tableOptions}
-                dataTotalSize={roles?.count || 0}
-                pagination={true}
-                className="roles-table"
-              />
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      {loading ? (
+        <PageLoader />
+      ) : (
+        <TableCustom
+          columns={UserRoleColumn(forceReload)}
+          data={roles?.results || []}
+          tableOptions={tableOptions}
+          dataTotalSize={roles?.count || 0}
+          pagination={true}
+          className="roles-table"
+        />
+      )}
     </div>
   );
 };

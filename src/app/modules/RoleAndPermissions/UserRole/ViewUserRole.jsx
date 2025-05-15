@@ -51,7 +51,7 @@ const ViewUserRole = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
 
   const handleEdit = (e) => {
     e.preventDefault();
-    navigate(`/office-settings/role-managment/user-role/add/${viewData?.id}`, );
+    navigate(`/office-settings/role-permission/user-role/add/${viewData?.id}`, );
   };
 
   const handleDelete = () => {

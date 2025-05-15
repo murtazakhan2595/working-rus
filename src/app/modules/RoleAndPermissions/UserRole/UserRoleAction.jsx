@@ -20,7 +20,7 @@ const UserRoleAction = ({ data, reload }) => {
 
   const handleEdit = (e) => {
     e.preventDefault();
-    navigate(`/office-settings/role-managment/user-role/edit`, {
+    navigate(`/office-settings/role-permission/user-role/edit`, {
       state: { id: data.id },
     });
   };
