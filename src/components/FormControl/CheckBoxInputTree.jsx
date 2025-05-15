@@ -1,16 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Input } from "components/ui/input";
 import { FormField, InvalidInput, TextInput } from "components/FormControl";
-import { Checkbox } from "src/@/components/ui/checkbox";
-import { cn } from "src/@/lib/utils";
-import CheckBoxInput from "./CheckBoxInput";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "src/@/components/ui/accordion";
 
+import CheckBoxInput from "./CheckBoxInput";
+import { ChevronDown, ChevronRight } from "lucide-react"; // or any icon lib
+import { ChildALLNodeSelected, ChildAnyNodeSeleted } from "utils/renderValues";
 const CheckBoxInputTree = React.memo(
   ({
     name,
@@ -23,8 +17,6 @@ const CheckBoxInputTree = React.memo(
     className,
     options,
     searchFeature = false,
-    treeLevels = 2,
-    treeLevelsName = {},
     value = [],
   }) => {
     const [searchQuery, setSearchQuery] = useState(null);
@@ -32,51 +24,56 @@ const CheckBoxInputTree = React.memo(
       () => (value && Array.isArray(value) ? value : []),
       [value]
     );
-    // console.log(selectedLeafIds, value, "Selected LEave Ids");
 
     const filteredOptions = React.useMemo(() => {
       if (!searchQuery) return options;
-
+    
       const query = searchQuery.toLowerCase();
-
-      const filterNodeRecursively = (node, currentTreeLevel) => {
+    
+      const filterTree = (node) => {
         const nodeName = node.name?.toLowerCase() || "";
-        const nextLevelKey = treeLevelsName[`level_${currentTreeLevel}`];
-        const childNodes = node[nextLevelKey];
-        let matchingChildren = [];
-
-        if (Array.isArray(childNodes)) {
-          matchingChildren = childNodes
-            .map((child) => filterNodeRecursively(child, currentTreeLevel + 1))
-            .filter(Boolean);
+        const children = node.childrens || [];
+    
+        // Recursively filter children
+        const matchingChildren = children
+          .map((child) => filterTree(child))
+          .filter(Boolean);
+    
+        const isMatch = nodeName.includes(query);
+    
+        if (isMatch) {
+          // Parent matches → keep full children as-is
+          return {
+            ...node,
+            childrens: children,
+          };
+        } else if (matchingChildren.length > 0) {
+          // Children matched → keep only matching children
+          return {
+            ...node,
+            childrens: matchingChildren,
+          };
         }
-
-        const isMatchingNode = nodeName.includes(query);
-
-        if (isMatchingNode || matchingChildren.length > 0) {
-          return { ...node, [nextLevelKey]: matchingChildren };
-        }
-
+    
         return null;
       };
-
-      return options
-        ?.map((node) => filterNodeRecursively(node, 1))
-        .filter(Boolean);
-    }, [options, searchQuery, treeLevelsName]);
-
+    
+      return options.map(filterTree).filter(Boolean);
+    }, [options, searchQuery]);
+    
     // Recursive function to collect all leaf IDs from a node
-    const getAllLeafIds = (node, level) => {
-      const nextLevelKey = treeLevelsName[`level_${level + 1}`];
-      const children = node[nextLevelKey];
-      if (!children || children.length === 0) return [node.id];
+    const getAllLeafIds = (node) => {
+      const children = node.childrens;
 
-      return children.flatMap((child) => getAllLeafIds(child, level + 1));
+      if (!Array.isArray(children) || children.length === 0) {
+        return [node.id];
+      }
+
+      return children.flatMap((child) => getAllLeafIds(child));
     };
-
     // onChange Handler
-    const handleCheckChange = (node, isChecked, currentTreeLevel) => {
-      const leafIds = getAllLeafIds(node, currentTreeLevel);
+    const handleCheckChange = (node, isChecked) => {
+      const leafIds = getAllLeafIds(node);
       const previousSelectedLeadIds = selectedLeafIds;
       if (isChecked) {
         const newSet = new Set([...previousSelectedLeadIds, ...leafIds]);
@@ -107,7 +104,7 @@ const CheckBoxInputTree = React.memo(
             {searchFeature && (
               <TextInput
                 name="search"
-                placeholder="Search Module"
+                placeholder="Search module by name"
                 value={searchQuery}
                 onChange={(_, value) => setSearchQuery(value)}
               />
@@ -116,9 +113,6 @@ const CheckBoxInputTree = React.memo(
           <RenderTreeLevel
             treeNodes={filteredOptions}
             className="grid grid-cols-1"
-            currentTreeLevel={0}
-            treeLevelsName={treeLevelsName}
-            treeLevels={treeLevels}
             onCheckChange={handleCheckChange}
             selectedLeafIds={selectedLeafIds}
           />
@@ -131,67 +125,76 @@ const CheckBoxInputTree = React.memo(
 const RenderTreeLevel = ({
   treeNodes = [],
   className = "",
-  currentTreeLevel = 0,
-  treeLevelsName = {},
-  treeLevels = 0,
   onCheckChange = () => {},
   selectedLeafIds = [],
 }) => {
-  if (!treeLevels || currentTreeLevel >= treeLevels) return null;
-  const nextLevelKey = treeLevelsName[`level_${currentTreeLevel + 1}`];
-
-  const RenderNode = ({ node, selected }) => {
-    const { name, id, code_name, description } = node;
-    return (
-      <CheckBoxInput
-        name={code_name}
-        label={name}
-        description={description}
-        value={selected}
-        onChange={(_, checked) => {
-          onCheckChange(node, checked, currentTreeLevel);
-        }}
-        className="w-fit mr-3"
-      />
-    );
-  };
+  if (!treeNodes || (Array.isArray(treeNodes) && treeNodes.length === 0))
+    return null;
 
   return (
-    <Accordion type="multiple" className={className}>
-      {treeNodes.map((node) => {
-        const { name, id, code_name } = node;
-        const children = node[nextLevelKey];
+    <div className={`flex flex-col ${className}`}>
+      {treeNodes.map((node) => (
+        <TreeNodeItem
+          key={node.id}
+          node={node}
+          onCheckChange={onCheckChange}
+          selectedLeafIds={selectedLeafIds}
+          fullTree={treeNodes}
+        />
+      ))}
+    </div>
+  );
+};
 
-        if (code_name === "DASHBOARD") return null;
+const TreeNodeItem = ({ node, selectedLeafIds, onCheckChange }) => {
+  const [open, setOpen] = useState(false);
+  const { childrens, id, code_name, name, description } = node;
+  const hasChildren = Boolean(childrens && childrens.length > 0);
+  const anyNodeSelected = React.useMemo(() => {
+    {
+      const isSelected = ChildAnyNodeSeleted(node, selectedLeafIds, "id");
+      if (isSelected) setOpen(true);
+      return isSelected;
+    }
+  }, [selectedLeafIds, node]);
+  const CheckSelected = React.useMemo(() => {
+    return ChildALLNodeSelected(node, selectedLeafIds, "id");
+  }, [selectedLeafIds, node]);
 
-        return children && children.length > 0 ? (
-          <AccordionItem key={id} value={code_name} className="mb-3">
-            <AccordionTrigger className="justify-start rounded-t-sm py-1 px-4 h-fit text-left">
-              <RenderNode node={node} />
-            </AccordionTrigger>
-            <AccordionContent className="pl-5 ml-3 mt-3">
-              <RenderTreeLevel
-                treeNodes={children}
-                currentTreeLevel={currentTreeLevel + 1}
-                treeLevelsName={treeLevelsName}
-                treeLevels={treeLevels}
-                className={
-                  currentTreeLevel === treeLevels - 2
-                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
-                    : ""
-                }
-                onCheckChange={onCheckChange}
-                selectedLeafIds={selectedLeafIds}
-              />
-            </AccordionContent>
-          </AccordionItem>
-        ) : (
-          <div key={id} className="pl-5 ml-3 mt-3">
-            <RenderNode node={node} selected={selectedLeafIds.includes(id)} />
+  if (code_name === "DASHBOARD") return null;
+  return (
+    <div className="mb-3 p-2">
+      <div
+        className="flex items-center cursor-pointer"
+        onClick={() => setOpen(!open)}
+      >
+        {hasChildren && (
+          <div className="mr-2">
+            {open ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </div>
-        );
-      })}
-    </Accordion>
+        )}
+        <CheckBoxInput
+          name={code_name}
+          label={name}
+          description={description}
+          value={CheckSelected}
+          onChange={(_, checked) => {
+            onCheckChange(node, checked);
+          }}
+          className="w-full mr-3"
+        />
+      </div>
+
+      {open && hasChildren && (
+        <div className={`pl-5 pt-3 ml-3 mt-3 border rounded `}>
+          <RenderTreeLevel
+            treeNodes={childrens}
+            onCheckChange={onCheckChange}
+            selectedLeafIds={selectedLeafIds}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 

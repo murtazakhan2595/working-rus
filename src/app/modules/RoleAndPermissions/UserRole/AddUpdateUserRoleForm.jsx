@@ -33,7 +33,23 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
   const [RoleNameExist, setRoleNameExist] = useState(false);
   const isEditMode = Boolean(id);
   const ModulesList = useSelector((state) => state.roles_permissions.modules);
+  const ModuleTree = React.useMemo(() => {
+    if (!Array.isArray(ModulesList)) return [];
 
+    return ModulesList.map((module) => ({
+      id: module.id,
+      name: module.name,
+      code_name: module.code_name,
+      childrens: (module.submodules || []).map((submodule) => ({
+        id: submodule.id,
+        name: submodule.name,
+        code_name: submodule.code_name,
+        childrens: (submodule.features || []).map((feature) => ({
+          ...feature,
+        })),
+      })),
+    }));
+  }, [ModulesList]);
   const FormSheetData = {
     triggerText: "Add New Role",
     title: isEditMode ? "Edit Role" : "Add New Role",
@@ -220,7 +236,7 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
                       InputField: CheckBoxInputTree,
                       name: "feature_ids",
                       colsSpan: 3,
-                      options: ModulesList,
+                      options: ModuleTree,
                       searchFeature: true,
                       treeLevels: 3,
                       treeLevelsName: {

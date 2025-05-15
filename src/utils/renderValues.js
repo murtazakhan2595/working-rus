@@ -337,3 +337,32 @@ export const getWorkingDays = (startDate, endDate) => {
 
   return count;
 };
+
+export const ChildAnyNodeSeleted = (
+  parent_node = {},
+  selectedLeafs = [],
+  label = "id"
+) => {
+  const children = parent_node.childrens;
+  if (!children || children.length === 0) {
+    return selectedLeafs.includes(parent_node[label]);
+  }
+  // If children exist, check recursively
+  if (Array.isArray(children)) {
+    return children.some((child) => ChildAnyNodeSeleted(child,selectedLeafs,label));
+  }
+
+  return false;
+};
+
+export const ChildALLNodeSelected = (
+  parent_node = {},
+  selectedLeafs = [],
+  label = "id"
+) => {
+  const children = parent_node.childrens;
+  if (!children || children.length === 0) {
+    return selectedLeafs.includes(parent_node[label]);
+  }
+  return children.every((child_node) => ChildALLNodeSelected(child_node,selectedLeafs,label));
+};
