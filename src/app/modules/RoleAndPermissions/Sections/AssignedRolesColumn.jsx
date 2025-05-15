@@ -6,18 +6,18 @@ export const AssignedRolesColumn = (reload,roles) => [
   {
     dataField: "serial_number",
     text: "Emp ID",
-    sort: true,
+    dataSort: true,
   },
   {
-    dataField: "",
+    dataField: "first_name",
     text: "Employee Name",
-    sort: true,
+    dataSort: true,
     formatter: (cell, row) => `${row.first_name} ${row.last_name}`,
   },
   {
     dataField: "department_name",
     text: "Department",
-    sort: true,
+    dataSort: true,
     formatter: (cell) => <DepartmentName value={cell} />,
   },
   {
