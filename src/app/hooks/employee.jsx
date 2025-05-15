@@ -1135,11 +1135,15 @@ const getEmployeeDocsChecklist = async (payload) => {
   }
 };
 
-export const UpdatePassword = async () => {
+export const UpdatePassword = async (payload) => {
   try {
-    const response = await axios.post(`${baseUrl}/auth/change-password/ `, {
-      headers: headers(),
-    });
+    const response = await axios.post(
+      `${baseUrl}/auth/change-password/ `,
+      payload,
+      {
+        headers: headers(),
+      }
+    );
     return response.data;
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -1148,6 +1152,7 @@ export const UpdatePassword = async () => {
     console.error("Error fetching shifts:", error);
     renderErrorMessages(error?.response?.data);
   }
+
   return false;
 };
 
@@ -1169,7 +1174,7 @@ const getEmployeeMonthlySummary = async (payload) => {
     }
     console.error("Error fetching Personal Info data :", error);
   }
-}
+};
 
 export {
   getEmployeeMonthlySummary,
