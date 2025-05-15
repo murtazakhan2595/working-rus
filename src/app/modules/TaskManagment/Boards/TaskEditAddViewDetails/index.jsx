@@ -102,7 +102,6 @@ const TaskEditAddViewDetails = ({
     setShowActivities(!showActivities);
   };
   const handleCloseTaskEditor = () => {
-    console.log(taskProjectId);
     if (GOTO_URLS)
       navigate(GOTO_URLS, {
         state: {
@@ -111,7 +110,7 @@ const TaskEditAddViewDetails = ({
         },
       });
     else {
-      navigate(`/project-board/${projectId}`, {
+      navigate(`/project-board/${taskProjectId}`, {
         state: {
           activeView: activeView,
           projectId: taskProjectId,

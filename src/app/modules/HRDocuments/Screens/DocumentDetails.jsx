@@ -33,7 +33,7 @@ import { calculateTotalCount } from "utils/renderValues";
 const DocumentDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { GOTO_URLS, document_id } = location.state || {};
+  const { GOTO_URLS, id } = location.state || {};
   const [currentDocument, setCurrentDocument] = useState({});
   const [DocumentAssignees, setDocumentAssignees] = useState([]);
   const [acknowledgedDocument, setAcknowledgedDocument] = useState(0);
@@ -60,7 +60,7 @@ const DocumentDetails = () => {
       // navigate(`/documents/detail`, {
       //   state: {
       //     GOTO_URLS: `/documents/`,
-      //     document_id: row.id,
+      //     id: row.id,
       //   },
       // });
     },
@@ -69,7 +69,7 @@ const DocumentDetails = () => {
   const fetchDocumentAssigneeData = async (isMounted) => {
     try {
       const assigneeResponse = await getDocumentAssignmentList({
-        filterData: { document: document_id },
+        filterData: { document: id },
         ordering,
       });
       if (isMounted && assigneeResponse) {
@@ -94,7 +94,7 @@ const DocumentDetails = () => {
 
   useEffect(() => {
     let isMounted = true;
-    if (document_id) {
+    if (id) {
       fetchDocumentAssigneeData(isMounted);
     }
     return () => {
@@ -115,13 +115,13 @@ const DocumentDetails = () => {
 
   useEffect(() => {
     let isMounted = true;
-    if (document_id) {
-      fetchData(isMounted, document_id);
+    if (id) {
+      fetchData(isMounted, id);
     }
     return () => {
       isMounted = false;
     };
-  }, [document_id]);
+  }, [id]);
 
   const labelList = [
     {

@@ -55,6 +55,11 @@ export const Notifications_Action_URL = [
   },
   {
     module: "user_management",
+    notification_type: "transfer_request_initiated_for_self",
+    action_url: "/my-tranfers",
+  },
+  {
+    module: "user_management",
     notification_type: "Rejection",
     action_url: "#",
   },
@@ -71,21 +76,22 @@ export const Notifications_Action_URL = [
   {
     module: "Task Management",
     notification_type: "Task Assignment",
-    action_url: "/tasks/{task_id}",
+    action_url: "project-board/card/{related_id}",
   },
   {
     module: "Task Management",
     notification_type: "Task Unassignment",
-    action_url: "/tasks/{task_id}",
+    action_url: "project-board/card/{related_id}",
   },
   {
     module: "Project Management",
     notification_type: "Project Addition",
+    action_url: "project-board/{related_id}",
   },
   {
     module: "Task Management",
     notification_type: "Mention",
-    action_url: "/tasks/{task_id}/comments/{comment_id}",
+    action_url: "project-board/card/{related_id}",
   },
   {
     module: "Project Management",
@@ -151,5 +157,15 @@ export const Notifications_Action_URL = [
     module: "Payroll",
     notification_type: "EarningDeduction",
     action_url: "#",
-  }
+  },
+  {
+    module: "compliance_documents",
+    notification_type: "document_acknowledged",
+    action_url: "/documents/detail",
+  },
+  {
+    module: "compliance_documents",
+    notification_type: "document_assigned",
+    action_url: "/my-documents",
+  },
 ];
