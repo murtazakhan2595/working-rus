@@ -658,10 +658,10 @@ const handleLogout = () => {
     setUserLogout();
   }
 };
-function HandleLogout() {
+function HandleLogout(message='Session Time Out') {
   if (window.localStorage.getItem("token")) {
     window.location.href = "/login";
-    toast.error("Session Time Out", {
+    toast.error(message, {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 2000,
     });
@@ -704,7 +704,6 @@ export {
   deleteRecord,
   getOrganizationList,
   getEmployeeList,
-  handleLogout,
   getEmployeeCustomList,
   getProjectsList,
   getCurrenciesList,

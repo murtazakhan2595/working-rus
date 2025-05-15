@@ -12,9 +12,11 @@ import IdentificationInformation from "../Profile/IdentificationInformation";
 import OnboardComplete from "./OnboardComplete";
 
 import { useSelector } from "react-redux";
-import { toast, } from "react-toastify";
-import { Card, CardTitle, CardContent, CardHeader, CardDescription } from "components/ui/card";
-
+import { toast } from "react-toastify";
+import { ChangePassword } from "app/modules/ResetPassword";
+import { Card } from "components/ui/card";
+import { CardTitle } from "reactstrap";
+import { CardContent } from "@mui/material";
 const CreateEmployeeProfile = () => {
   const userProfile = useSelector((state) => state.user.userProfile);
   const navigate = useNavigate();
@@ -31,8 +33,7 @@ const CreateEmployeeProfile = () => {
     else if (currentTab === 7) return "Certification and Licences";
     else if (currentTab === 8) return "Identification Details";
   };
-  if(userProfile.is_filled)
-    navigate('/');
+  if (userProfile.is_filled) navigate("/");
 
   return (
     <>
@@ -58,106 +59,108 @@ const CreateEmployeeProfile = () => {
                     toast.success("Employee Profile Updated Successfully!", {
                       position: toast.POSITION.TOP_RIGHT,
                     });
-                    navigate('/')
+                    // navigate("/");
                   }}
                   isEditMode={true}
                 />
               )}
-              {currentTab !== 1 && currentTab !== 9 &&
+              {currentTab === 10 && (
+                <Card>
+                  <CardTitle className="h4 capitalize text-neutral-1200 pt-6 px-6">Change Password</CardTitle>
+                  <CardContent>
+                    <ChangePassword variant="" />
+                  </CardContent>
+                </Card>
+              )}
+              {currentTab !== 1 && currentTab !== 9 && currentTab !== 10 && (
                 <>
-                <h3 className="h4 capitalize">{getTitle()}</h3>
-                
-
-                 
-                  
+                  <h3 className="h4 capitalize">{getTitle()}</h3>
                   {currentTab === 2 && (
-                      <PersonalInformation
-                        employeeId={id}
-                        nextstep={() => {
-                          setCurrentTab(currentTab + 1);
-                        }}
-                        isEditMode={false}
-                      />
-                    )}
-                    {currentTab === 3 && (
-                      <ContactInformation
-                        employeeId={id}
-                        nextstep={() => {
-                          setCurrentTab(currentTab + 1);
-                        }}
-                        isEditMode={false}
-                        prevStep={() => {
-                          setCurrentTab(currentTab - 1);
-                        }}
-                      />
-                    )}
-                    {currentTab === 4 && (
-                      <BankInformation
-                        employeeId={id}
-                        nextstep={() => {
-                          setCurrentTab(currentTab + 1);
-                        }}
-                        isEditMode={false}
-                        prevStep={() => {
-                          setCurrentTab(currentTab - 1);
-                        }}
-                      />
-                    )}
-                    {currentTab === 5 && (
-                      <ExperienceInformation
-                        employeeId={id}
-                        nextstep={() => {
-                          setCurrentTab(currentTab + 1);
-                        }}
-                        isEditMode={false}
-                        prevStep={() => {
-                          setCurrentTab(currentTab - 1);
-                        }}
-                      />
-                    )}
-                    {currentTab === 6 && (
-                      <EducationInformation
-                        employeeId={id}
-                        nextstep={() => {
-                          setCurrentTab(currentTab + 1);
-                        }}
-                        isEditMode={false}
-                        prevStep={() => {
-                          setCurrentTab(currentTab - 1);
-                        }}
-                      />
-                    )}
-                    {currentTab === 7 && (
-                      <CertificationsInformation
-                        employeeId={id}
-                        nextstep={() => {
-                          setCurrentTab(currentTab + 1);
-                        }}
-                        isEditMode={false}
-                        prevStep={() => {
-                          setCurrentTab(currentTab - 1);
-                        }}
-                      />
-                    )}
-                    {currentTab === 8 && (
-                      <IdentificationInformation
-                        employeeId={id}
-                        nextstep={() => {
-                          setCurrentTab(currentTab + 1);
-                        }}
-                        isEditMode={false}
-                        prevStep={() => {
-                          setCurrentTab(currentTab - 1);
-                        }}
-                      />
-                    )}
-                    
-               
+                    <PersonalInformation
+                      employeeId={id}
+                      nextstep={() => {
+                        setCurrentTab(currentTab + 1);
+                      }}
+                      isEditMode={false}
+                    />
+                  )}
+                  {currentTab === 3 && (
+                    <ContactInformation
+                      employeeId={id}
+                      nextstep={() => {
+                        setCurrentTab(currentTab + 1);
+                      }}
+                      isEditMode={false}
+                      prevStep={() => {
+                        setCurrentTab(currentTab - 1);
+                      }}
+                    />
+                  )}
+                  {currentTab === 4 && (
+                    <BankInformation
+                      employeeId={id}
+                      nextstep={() => {
+                        setCurrentTab(currentTab + 1);
+                      }}
+                      isEditMode={false}
+                      prevStep={() => {
+                        setCurrentTab(currentTab - 1);
+                      }}
+                    />
+                  )}
+                  {currentTab === 5 && (
+                    <ExperienceInformation
+                      employeeId={id}
+                      nextstep={() => {
+                        setCurrentTab(currentTab + 1);
+                      }}
+                      isEditMode={false}
+                      prevStep={() => {
+                        setCurrentTab(currentTab - 1);
+                      }}
+                    />
+                  )}
+                  {currentTab === 6 && (
+                    <EducationInformation
+                      employeeId={id}
+                      nextstep={() => {
+                        setCurrentTab(currentTab + 1);
+                      }}
+                      isEditMode={false}
+                      prevStep={() => {
+                        setCurrentTab(currentTab - 1);
+                      }}
+                    />
+                  )}
+                  {currentTab === 7 && (
+                    <CertificationsInformation
+                      employeeId={id}
+                      nextstep={() => {
+                        setCurrentTab(currentTab + 1);
+                      }}
+                      isEditMode={false}
+                      prevStep={() => {
+                        setCurrentTab(currentTab - 1);
+                      }}
+                    />
+                  )}
+                  {currentTab === 8 && (
+                    <IdentificationInformation
+                      employeeId={id}
+                      nextstep={() => {
+                        setCurrentTab(currentTab + 1);
+                      }}
+                      isEditMode={false}
+                      prevStep={() => {
+                        setCurrentTab(currentTab - 1);
+                      }}
+                    />
+                  )}
                 </>
-              }
+              )}
             </div>
           </div>
-         </div>
+        </div>
       </div>
     </>
   );

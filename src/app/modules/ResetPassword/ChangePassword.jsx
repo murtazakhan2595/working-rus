@@ -6,6 +6,8 @@ import { PasswordInput } from "components/FormControl";
 import { validateChangePasswordForm } from "app/utils/FormSchema/employeeFormSchema";
 import { EmployeeChangePassword } from "app/utils/Types/Employee";
 import { UpdatePassword } from "app/hooks/employee";
+import { useNavigate } from "react-router-dom";
+import { HandleLogout } from "app/hooks/general";
 
 const FormSheetData = {
   triggerText: "",
@@ -13,17 +15,18 @@ const FormSheetData = {
   description: null,
   footer: null,
 };
-const ChangePassword = () => {
-  const baseUrl = useSelector((state) => state.user.baseUrl);
+const ChangePassword = ({ variant = "modal" }) => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
   const [formData, setFormData] = useState(EmployeeChangePassword);
-  const [response, setResponse] = useState(null);
+  const [logoutFlag, setLogoutFlag] = useState(null);
   const handleSubmit = async (values) => {
     setIsLoading(true);
     try {
       const res = await UpdatePassword(values);
       if (res) {
+        setLogoutFlag(true);
         return {
           status: true,
           title: "Form Submitted Succesfully",
@@ -33,13 +36,9 @@ const ChangePassword = () => {
         };
       }
     } catch (error) {
-      setResponse({
-        message: error.response?.data?.error || "Can’t find your email?",
-        status: "error",
-      });
+      console.log(error);
     } finally {
       setIsLoading(false);
-
       setFormData(EmployeeChangePassword);
     }
   };
@@ -47,8 +46,12 @@ const ChangePassword = () => {
   return (
     <SheetUI
       isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      variant="modal"
+      setIsOpen={() => {
+        if (logoutFlag) HandleLogout("Logging Out");
+        else navigate("/");
+        setIsOpen(false);
+      }}
+      variant={variant}
       sheetConfig={FormSheetData}
       formConfig={{
         initialValues: formData,
