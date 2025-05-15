@@ -75,17 +75,24 @@ export const FormField = memo(
     ) => {
       return (
         <div className={cn(`flex flex-col gap-4`, className)}>
-          <div>
-            {label && (
+          {label && (
+            <div>
               <Label htmlFor={name} className="items-center flex">
                 {required && <span className="text-red-600">* </span>}
                 {label}
               </Label>
-            )}
-            {label_description && (
-              <div className={'text-neutral-900 text-xs font-[inter] font-normal'}>{label_description}</div>
-            )}
-          </div>
+              {label_description && (
+                <div
+                  className={
+                    "text-neutral-900 text-xs font-[inter] font-normal"
+                  }
+                >
+                  {label_description}
+                </div>
+              )}
+            </div>
+          )}
+
           <div
             className={`flex-col flex gap-1 ${
               disabled ? "cursor-not-allowed" : ""
@@ -93,7 +100,11 @@ export const FormField = memo(
           >
             {children}
             {field_description && (
-              <div className={'text-neutral-900 text-xs font-[inter] font-normal'}>{field_description}</div>
+              <div
+                className={"text-neutral-900 text-xs font-[inter] font-normal"}
+              >
+                {field_description}
+              </div>
             )}
             {error && touched && <div className={errorClassName}>{error}</div>}
           </div>
