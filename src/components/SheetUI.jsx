@@ -112,6 +112,7 @@ const SheetUI = forwardRef(
                             min,
                             max,
                             minDate,
+                            maxDate,
                           }) => {
                             return (
                               <div
@@ -144,6 +145,7 @@ const SheetUI = forwardRef(
                                   min={min}
                                   max={max}
                                   minDate={minDate}
+                                  maxDate={maxDate}
                                 />
                               </div>
                             );
