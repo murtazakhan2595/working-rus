@@ -9,7 +9,7 @@ export const Module = {
 export const UserRole={
     name:null,
     description	:null,
-    status:'inactive',
+    status:true,
     id:null,
   role_permission_id:null,
 

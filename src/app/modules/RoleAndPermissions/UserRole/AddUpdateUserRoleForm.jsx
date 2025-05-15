@@ -21,6 +21,8 @@ import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { CheckBoxInput } from "components/FormControl";
+import { SwitchInput } from "components/FormControl";
 
 const AddUpdateUserRoleForm = ({ isOpen = true }) => {
   const navigate = useNavigate();
@@ -93,9 +95,13 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
       setIsLoading(true);
       // Add organizationId to filter if available
       const response = await getUserRoleData(id);
+      console.log(
+        "activeactiveactiveactiveactiveactiveactiveactiveactiveactiveactiveactiveactiveactive",
+        response
+      );
 
       if (isMounted) {
-        setFormData(response);
+        setFormData({...response, status: response.status === "active"});
       }
     } catch (error) {
       console.error("Error fetching roles:", error);
@@ -128,14 +134,13 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     setFormValues(values);
     setConfirmSave(true);
-    //   setSubmitting(false);
   };
 
   const confirmSubmit = async () => {
     if (!formValues) return;
     try {
       // Save role
-      const response = await saveUpdateUserRole(formValues, id);
+      const response = await saveUpdateUserRole({ ...formValues, status: formValues.status? "active": "inactive"}, id);
       if (response) {
         toast.success(
           `User Role ${isEditMode ? "Updated" : "Added"} Successfully!`,
@@ -203,7 +208,6 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
               submitButtonText: "Submit",
               cancelButtonText: "Cancel",
               columns: 3,
-              //renderUpdatedFormValues: setFormValues,
               disableSubmit: isLoading,
               formFiels: [
                 {
@@ -225,6 +229,12 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
                       colsSpan: 3,
                       rows: 2,
                       label: "Description",
+                    },
+                    {
+                      InputField: SwitchInput,
+                      name: "status",
+                      label: "Status",
+                      description: "Enable or disable this role",
                     },
                   ],
                 },
