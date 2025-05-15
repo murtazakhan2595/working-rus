@@ -100,11 +100,7 @@ const BoardGridView = ({
               {boards.map((board) => (
                 <div
                   key={board.id}
-                  draggable={true}
-                  onDragStart={(e) => handleDragStart(e, board)}
-                  onDragEnd={handleDragEnd}
                   onDragOver={(e) => handleDragOver(e, board)}
-                  onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, board)}
                   className="cursor-move transition-all duration-200"
                 >
@@ -118,6 +114,9 @@ const BoardGridView = ({
                       ...filterData,
                       board_id: [board.id],
                     }}
+                    handleBoardDragStart={handleDragStart}
+                    handleBoardDragLeave={handleDragLeave}
+                    handleBoardDragEnd={handleDragEnd}
                   />
                 </div>
               ))}
@@ -146,7 +145,14 @@ const BoardGridView = ({
   );
 };
 
-const TaskColumn = ({ reloadData, board, filterData }) => {
+const TaskColumn = ({
+  reloadData,
+  board,
+  filterData,
+  handleBoardDragStart = () => {},
+  handleBoardDragLeave = () => {},
+  handleBoardDragEnd = () => {},
+}) => {
   const { projectId, viewStyle } = useParams();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
@@ -199,7 +205,13 @@ const TaskColumn = ({ reloadData, board, filterData }) => {
           style={{ background: board.color ? board.color : "white" }}
         >
           <div className="flex flex-col px-4">
-            <header className="flex justify-between w-full items-center mb-3">
+            <header
+              className="flex justify-between w-full items-center mb-3"
+              draggable={true}
+              onDragStart={(e) => handleBoardDragStart(e, board)}
+              onDragLeave={handleBoardDragLeave}
+              onDragEnd={handleBoardDragEnd}
+            >
               <h2 className="text-zinc-800 text-base font-bold">
                 {board.name}
               </h2>
@@ -226,7 +238,7 @@ const TaskColumn = ({ reloadData, board, filterData }) => {
                     boardId: board.id,
                   },
                 });
-               }}
+              }}
             >
               <RxPlus className="text-xl" />
               <span className="ml-2">Add Task</span>
