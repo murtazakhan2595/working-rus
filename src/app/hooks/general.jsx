@@ -696,6 +696,29 @@ const deleteRole = async (roleId, roleName) => {
   }
 };
 
+const getRoleList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-created_at";
+  try {
+    const URL = `/userrole/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else return [];
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+}
+
 export {
   getDepartmentList,
   getManagersList,
@@ -715,4 +738,5 @@ export {
   saveShift,
   HandleLogout,
   deleteRole,
+  getRoleList,
 };

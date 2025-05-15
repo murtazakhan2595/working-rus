@@ -20,21 +20,3 @@ export const UserRolePermissions = {
   id:null,
 };
 
-export const AssignedRole = {
-  id: null,
-  employeeId: null,
-  employee: {
-    id: null,
-    name: "",
-    employeeId: "",
-    department: "",
-    branch: "",
-    email: "",
-    phone: "",
-  },
-  roles: [],
-  created_at: null,
-  updated_at: null,
-  created_by: null,
-  updated_by: null,
-};

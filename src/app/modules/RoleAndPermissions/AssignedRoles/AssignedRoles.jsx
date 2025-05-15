@@ -10,23 +10,25 @@ import { CardDescription } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
 import AssignRoleForm from "./AssignRoleForm";
-import { getAssignedRolesList } from "app/hooks/rolesPermisions";
 import { AssignedRolesColumn } from "../Sections";
 import SheetComponent from "components/ui/SheetComponent";
+import { getEmployeeList } from "app/hooks/attendance";
+import { getUserRolePermissionsData } from "app/hooks/rolesPermisions";
+import { getRoleList } from "app/hooks/general";
 
 const AssignedRoles = ({
   loading: initialLoading,
   reload: externalReload,
   organizationId,
 }) => {
-  const [assignedRoles, setAssignedRoles] = useState({ results: [], count: 0 });
+  const [assignedRoles, setAssignedRoles] = useState();
   const [loading, setLoading] = useState(initialLoading || false);
   const [openAssignRoleForm, setOpenAssignRoleForm] = useState(false);
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [reloadCounter, setReloadCounter] = useState(0);
-
+  const [roles, setRoles] = useState([]);
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -43,30 +45,35 @@ const AssignedRoles = ({
   const fetchData = async (isMounted) => {
     try {
       setLoading(true);
-      const filterPayload = {
-        ...filterData,
-        ...(organizationId ? { organization: organizationId } : {}),
-      };
-
-      const response = await getAssignedRolesList({
-        filterData: filterPayload,
-        options: options,
-        ordering: ordering,
-      });
-
+      const response = await getEmployeeList({options: options, filterData: filterData, })
       if (isMounted) {
         setAssignedRoles(response);
-      }
+      }      
     } catch (error) {
       console.error("Error fetching assigned roles:", error);
     } finally {
       setLoading(false);
     }
   };
+  const fetchRoles = async (isMounted) => {
+    try {
+      const response = await getRoleList();
+
+      console.log("rolesssssssssssssssss ", response);
+      if (isMounted && response) {
+        setRoles(response.results || []);
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     let isMounted = true;
     fetchData(isMounted);
+    fetchRoles(isMounted);
     return () => {
       isMounted = false;
     };
@@ -117,8 +124,8 @@ const AssignedRoles = ({
           filters={[
             {
               type: "search",
-              placeholder: "Search Employee ID, Name, or Role",
-              name: "search",
+              placeholder: "Search by ID and Name",
+              name: "emp_search",
             },
           ]}
           className="justify-end"
@@ -138,8 +145,8 @@ const AssignedRoles = ({
             </CardHeader>
             <CardContent>
               <TableCustom
-                columns={AssignedRolesColumn(forceReload)}
-                data={assignedRoles?.results || []}
+                columns={AssignedRolesColumn(forceReload, roles)}
+                data={assignedRoles?.results?.employees || []}
                 tableOptions={tableOptions}
                 dataTotalSize={assignedRoles?.count || 0}
                 pagination={true}

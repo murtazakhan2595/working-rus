@@ -6,13 +6,16 @@ import AlertDialogue from "components/ui/AlertDialogue";
 import { toast } from "react-toastify";
 import AssignRoleForm from "./AssignRoleForm";
 import { deleteAssignedRole } from "app/hooks/rolesPermisions";
+import { DepartmentName } from "utils/getValuesFromTables";
+import { BranchName } from "utils/getValuesFromTables";
 
-const ViewAssignedRole = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
+const ViewAssignedRole = ({ isOpen, setIsOpen,roles, data, reload = () => {} }) => {
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [editAssignment, setEditAssignment] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [viewData, setViewData] = useState(data);
-
+  console.log("ViewAssignedRole data", data);
+  console.log("ViewAssignedRole roles", roles);
   const formSheetData = {
     triggerText: null,
     title: "Update Role Assignment",
@@ -90,38 +93,25 @@ const ViewAssignedRole = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
     }
   };
 
-  // Format date for display
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
+  const getAssignedRoles = () => {
+    const roleIds = viewData?.user_role;
 
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-      });
-    } catch (error) {
-      return "Invalid Date";
-    }
-  };
-
-  // Get role count and names
-  const getRolesSummary = () => {
-    if (!viewData?.roles || viewData.roles.length === 0) {
-      return { count: 0, names: "None" };
+    if (!roleIds || roleIds.length === 0) {
+      return [];
     }
 
-    const count = viewData.roles.length;
-    const names = viewData.roles.map((role) => role.name).join(", ");
+    // Get the role objects based on IDs
+    const roleObjects = roleIds
+      .map((roleId) => {
+        const role = roles.find((r) => r.id === roleId);
+        return role ? role : null;
+      })
+      .filter((role) => role !== null);
 
-    return { count, names };
+    return roleObjects;
   };
 
-  const rolesSummary = getRolesSummary();
-
+  const assignedRoles = getAssignedRoles();
   return (
     <>
       <SheetComponent
@@ -131,7 +121,7 @@ const ViewAssignedRole = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
         footer={null}
         isOpen={isOpen}
         setIsOpen={handleViewClose}
-        width="700px"
+        width="568px"
       >
         {/* Action Buttons */}
         <div className="flex justify-end mb-4 space-x-2">
@@ -152,118 +142,38 @@ const ViewAssignedRole = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
         >
           <DetailBox
             label="Employee Name"
-            value={viewData?.employee?.name || "N/A"}
+            value={viewData?.first_name + viewData?.last_name || "N/A"}
           />
           <DetailBox
             label="Employee ID"
-            value={viewData?.employee?.employeeId || "N/A"}
+            value={viewData?.serial_number || "N/A"}
           />
           <DetailBox
             label="Department"
-            value={viewData?.employee?.department || "N/A"}
+            value={<DepartmentName value={viewData?.department_name} />}
           />
           <DetailBox
             label="Branch"
-            value={viewData?.employee?.branch || "N/A"}
+            value={<BranchName value={viewData?.branch_name} />}
           />
-          <DetailBox label="Email" value={viewData?.employee?.email || "N/A"} />
-        </DetailCard>
-
-        {/* Assignment Summary Card */}
-        <DetailCard detailCardTitle="Assignment Summary" className="mt-4">
-          <DetailBox
-            label="Total Roles Assigned"
-            value={rolesSummary.count.toString()}
-          />
-          <DetailBox
-            label="Assignment Date"
-            value={formatDate(viewData?.created_at)}
-          />
-          <DetailBox
-            label="Last Updated"
-            value={formatDate(viewData?.updated_at)}
-          />
+          <DetailBox label="Email" value={viewData?.work_email || "N/A"} />
         </DetailCard>
 
         {/* Assigned Roles Card */}
         <DetailCard detailCardTitle="Assigned Roles" className="mt-4">
-          <div className="space-y-4">
-            {viewData?.roles && viewData.roles.length > 0 ? (
-              viewData.roles.map((role) => (
-                <div
-                  key={role.id}
-                  className="border border-gray-200 rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h4 className="font-medium text-base text-gray-900 mb-2">
-                        {role.name}
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        {role.description || "No description available"}
-                      </p>
-
-                      {/* Role Permissions Preview */}
-                      {role.permissions &&
-                        Object.keys(role.permissions).length > 0 && (
-                          <div className="mt-2">
-                            <span className="text-xs text-blue-600 font-medium">
-                              {Object.keys(role.permissions).length} permissions
-                              assigned
-                            </span>
-                          </div>
-                        )}
-                    </div>
-
-                    {/* Role Status Badge */}
-                    <div className="ml-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Active
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <div className="text-4xl mb-2">👤</div>
-                <div className="text-lg font-medium mb-1">
-                  No Roles Assigned
-                </div>
-                <div className="text-sm">
-                  This employee has no roles assigned yet
-                </div>
-              </div>
-            )}
-          </div>
+          <DetailBox label="Total Roles" value={assignedRoles.length || "0"} />
+          {assignedRoles.length > 0 ? (
+            assignedRoles.map((role) => (
+              <DetailBox
+                key={role.id}
+                label={role.name}
+                value={role.description || "No description available"}
+              />
+            ))
+          ) : (
+            <DetailBox label="Roles" value="No roles assigned" />
+          )}
         </DetailCard>
-
-        {/* Permission Summary (if roles exist) */}
-        {viewData?.roles && viewData.roles.length > 0 && (
-          <DetailCard detailCardTitle="Permission Summary" className="mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-blue-50 rounded-lg p-3">
-                <div className="text-2xl font-bold text-blue-600">
-                  {viewData.roles.reduce((total, role) => {
-                    return (
-                      total +
-                      (role.permissions
-                        ? Object.keys(role.permissions).length
-                        : 0)
-                    );
-                  }, 0)}
-                </div>
-                <div className="text-sm text-blue-700">Total Permissions</div>
-              </div>
-              <div className="bg-green-50 rounded-lg p-3">
-                <div className="text-2xl font-bold text-green-600">
-                  {viewData.roles.length}
-                </div>
-                <div className="text-sm text-green-700">Active Roles</div>
-              </div>
-            </div>
-          </DetailCard>
-        )}
       </SheetComponent>
 
       {/* Delete Confirmation Dialog */}
