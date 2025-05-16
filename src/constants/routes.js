@@ -449,11 +449,6 @@ const SidebarRoutes = [
     name: "Add User Role",
   },
   {
-    path: "/office-settings/role-permission/user-role/add/:roleId",
-    component: <AddUpdateUserRoleForm />,
-    name: "Add User Role",
-  },
-  {
     path: "/office-settings/assigned-roles",
     component: <AssignedRoles />,
     name: "Add User Role",

@@ -1,12 +1,10 @@
 import { DetailBox } from "components/SheetCardExtension";
-import { DetailCard, SheetCardExtension } from "components/SheetCardExtension";
-import SheetComponent from "components/ui/SheetComponent";
+import { SheetCardExtension } from "components/SheetCardExtension";
 import { useState, useEffect } from "react";
 import CircularActionButtons from "components/CircularActionButtons";
 import AlertDialogue from "components/ui/AlertDialogue";
 import {
   deleteRole,
-  getRolePermissions,
   getUserRoleData,
 } from "app/hooks/rolesPermisions";
 import { useNavigate } from "react-router-dom";
@@ -30,6 +28,7 @@ const ViewUserRole = ({
       const response = await getUserRoleData(roleId);
       if (isMounted && response) {
         setCurrentRole(response);
+        
         setCurrentRoleId(roleId);
       }
     } catch (error) {
