@@ -16,7 +16,6 @@ export function mapShiftData(data) {
   return shiftDetails;
 }
 export function mapAttendanceData(data, shiftDetails) {
-  debugger;
   const startTime = moment(shiftDetails.starttime);
   const endTime = moment(shiftDetails.endtime);
   // Initialize an empty payload object
@@ -52,11 +51,17 @@ export function mapAttendanceData(data, shiftDetails) {
         }
         payload.is_weekend = [0, 6].includes(checkInTime.day());
       } else if (key === "checkout") {
+        debugger;
         const checkin = moment(payload.checkin);
         payload[key] = data[key];
-        payload["payable_hours"] = CalculateTotalWorkingHours(
+        const totalHoursWorked = CalculateTotalWorkingHours(
           checkin,
           payload.checkout
+        );
+        const payableHours =
+          totalHoursWorked - parseFloat(data.break_duration || 0);
+        payload["payable_hours"] = parseFloat(
+          parseFloat(payableHours).toFixed(2)
         );
         if (Hours > 0) {
           if (
@@ -66,6 +71,8 @@ export function mapAttendanceData(data, shiftDetails) {
               parseFloat(payload.payable_hours) -
                 parseFloat(payload.total_hours)
             ).toFixed(2);
+          } else {
+            payload["overtime_hours"] = parseFloat(0).toFixed(2);
           }
         }
       } else payload[key] = data[key];
