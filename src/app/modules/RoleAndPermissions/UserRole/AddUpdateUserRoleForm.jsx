@@ -51,7 +51,7 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
     }));
   }, [ModulesList]);
   const FormSheetData = {
-    triggerText: "Add New Role",
+    triggerText: "",
     title: isEditMode ? "Edit Role" : "Add New Role",
     description: null,
     footer: null,

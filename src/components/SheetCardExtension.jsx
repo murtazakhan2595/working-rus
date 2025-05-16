@@ -7,7 +7,7 @@ import AlertDialogue from "./ui/AlertDialogue";
 export const SheetCardExtension = ({ title, children, className }) => {
   return (
     <div
-      className={`font-[inter] ${className} flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900`}
+      className={`${className} flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-normal leading-[1.2] tracking-[0px]`}
     >
       <div className="flex h-[7px] flex-shrink-0 items-end px-px">
         <div className="text-plum-900 bg-white">{title}</div>

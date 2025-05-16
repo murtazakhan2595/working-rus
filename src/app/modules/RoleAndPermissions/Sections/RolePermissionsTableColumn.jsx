@@ -32,7 +32,9 @@ export const UserRoleColumn = (reload = () => {}) => [
   },
   {
     text: "Action",
-    formatter: (cell, row) => <UserRoleAction data={row} reload={reload} />,
+    formatter: (cell, row, data_list) => (
+      <UserRoleAction data={row} reload={reload} UserRoleList={data_list} />
+    ),
     classes: "text-center",
     headerClasses: "text-center",
   },
@@ -52,7 +54,7 @@ export const RoleAssignmentHistoryLogsColumn = [
     dataSort: true,
   },
   {
-    dataField: "assigned_date",
+    dataField: "timestamp",
     text: "Assigned Date",
     dataSort: true,
     formatter: (cell, row) => renderDate(cell),
@@ -65,7 +67,7 @@ export const RoleAssignmentHistoryLogsColumn = [
     // },
   },
   {
-    dataField: "assigned_by",
+    dataField: "performed_by",
     text: "Assigned By",
     formatter: (cell) => <EmployeeUsername value={cell} />,
   },

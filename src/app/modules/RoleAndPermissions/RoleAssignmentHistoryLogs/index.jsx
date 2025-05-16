@@ -12,18 +12,12 @@ import { getRoleAssignmentHistoryLogsList } from "app/hooks/rolesPermisions";
 import { RoleAssignmentHistoryLogsColumn } from "app/modules/RoleAndPermissions/Sections";
 import { useNavigate } from "react-router-dom";
 
-const RoleAssignmentHistoryLogs = ({
-  loading: initialLoading,
-  reload: externalReload,
-  organizationId,
-}) => {
-  const navigate = useNavigate();
+const RoleAssignmentHistoryLogs = () => {
   const [roles, setRoles] = useState({ results: [], count: 0 });
-  const [loading, setLoading] = useState(initialLoading || false);
+  const [loading, setLoading] = useState(false);
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [reloadCounter, setReloadCounter] = useState(0);
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -43,7 +37,11 @@ const RoleAssignmentHistoryLogs = ({
       setLoading(true);
       // Add organizationId to filter if available
 
-      const response = await getRoleAssignmentHistoryLogsList({ filterData, options, ordering });
+      const response = await getRoleAssignmentHistoryLogsList({
+        filterData,
+        options,
+        ordering,
+      });
 
       if (isMounted) {
         setRoles(response);
@@ -61,11 +59,7 @@ const RoleAssignmentHistoryLogs = ({
     return () => {
       isMounted = false;
     };
-  }, [
-    filterData,
-    ordering,
-    options,
-  ]);
+  }, [filterData, ordering, options]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
@@ -78,11 +72,6 @@ const RoleAssignmentHistoryLogs = ({
       }
       return updatedFilters;
     });
-  };
-
-  // Function to force a table reload
-  const forceReload = () => {
-    setReloadCounter((prev) => prev + 1);
   };
 
   return (

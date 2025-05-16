@@ -25,9 +25,9 @@ export const RoleAssignmentHistoryLogs = {
   permission_changed: null,
   employee_id: null,
   employee_name: null,
-  assigned_by: null,
+  performed_by: null,
   role: null,
-  assigned_date: null,
+  timestamp: null,
 };
 
 export const AssignedRole = {
