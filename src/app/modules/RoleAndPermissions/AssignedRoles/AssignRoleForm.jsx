@@ -1,0 +1,333 @@
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { Button } from "components/ui/button";
+import AlertDialogue from "components/ui/AlertDialogue";
+import { SheetUI } from "components";
+import {
+  TextInput,
+  SelectInputComponent,
+  SelectMultiInputComponent,
+} from "components/FormControl";
+import { saveAssignedRole, getUserRoleList } from "app/hooks/rolesPermisions";
+import { useSelector } from "react-redux";
+import { DepartmentName, BranchName } from "utils/getValuesFromTables";
+
+const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
+  const [confirmSave, setConfirmSave] = useState(false);
+  const [formValues, setFormValues] = useState(null);
+  const [employeeData, setEmployeeData] = useState(null);
+  const [availableRoles, setAvailableRoles] = useState([]);
+  const isEditMode = Boolean(edit?.data);
+
+  // Get employees from Redux state
+  const employees = useSelector((state) => state.emp.employees);
+
+  // Initialize form data with assigned role values if in edit mode
+  const [formData, setFormData] = useState({});
+
+  // Load available roles on mount
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await getUserRoleList({
+          options: { page: 1, sizePerPage: 100 },
+        });
+        setAvailableRoles(response.results);
+      } catch (error) {
+        toast.error("Failed to load roles");
+        console.error("Error loading roles:", error);
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
+  // Update form data when edit data changes
+  useEffect(() => {
+    if (edit?.data) {
+      setFormData({
+        ...edit.data,
+        employee: edit.data.employee?.id || "",
+        roles: edit?.data?.user_role, 
+      });
+
+      // If editing, set the employee data
+      if (edit?.data) {
+        setEmployeeData({
+          value: edit.data?.id,
+          label: `${edit.data?.first_name} ${edit.data?.last_name} (${edit.data?.serial_number})`,
+          employeeId: edit.data?.id,
+          department: edit.data?.department_name,
+          branch: edit.data?.branch,
+          email: edit.data?.email,
+        });
+      }
+    }
+  }, [edit?.data]);
+
+  const validateForm = (values) => {
+    const errors = {};
+
+    if (!employeeData && !values.employee) {
+      errors.employee = "Employee is required";
+    }
+
+    if (!values.roles || values.roles.length === 0) {
+      errors.roles = "At least one role must be selected";
+    }
+
+    return errors;
+  };
+
+  const handleSubmit = async (values) => {
+    const payload = {
+      employeeId: employeeData?.id || employeeData?.value || values.employee,
+      roles: values.roles, 
+    };
+
+    setFormValues({ ...values, ...payload });
+    setConfirmSave(true);
+  };
+
+  const confirmSubmit = async () => {
+    if (!formValues || (!employeeData && !formValues.employeeId)) return;
+
+    try {
+      const payload = {
+        user_role: formValues.roles,
+      };
+
+      const response = await saveAssignedRole(formValues.employeeId, payload);
+
+      if (response) {
+        toast.success(
+          `Roles ${isEditMode ? "Updated" : "Assigned"} Successfully!`,
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+        setIsOpen(false);
+
+        if (typeof reload === "function") {
+          reload();
+        }
+      }
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.message ||
+        `Failed to ${isEditMode ? "update" : "assign"} roles.`;
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
+  // Transform employees for SelectInputComponent
+  const employeeOptions = employees.map((emp) => ({
+    value: emp.value,
+    label: `${emp.label} (${emp.serial_number || emp.empId})`,
+    employeeId: emp.empId || emp.value,
+    department: emp.department || "N/A",
+    branch: emp.branch || "N/A",
+    email: emp.email || "",
+  }));
+
+  // Transform available roles for SelectMultiInputComponent
+  const roleOptions = availableRoles.map((role) => ({
+    value: role.id,
+    label: role.name,
+    description: role.description,
+  }));
+
+  const FormSheetData = {
+    triggerText: "Assign Role",
+    title: `${isEditMode ? "Edit" : "Assign"} Roles`,
+    description: null,
+    footer: null,
+  };
+
+
+  // Get employee display values with fallbacks
+  const getEmployeeDisplayValues = () => {
+    if (!employeeData) return {};
+
+    return {
+      employee_name: employeeData.name || employeeData.label || "N/A",
+      employee_id:
+        employeeData.serial_number ||
+        employeeData.employeeId ||
+        employeeData.empId ||
+        "N/A",
+      employee_department:
+        employeeData.department_name || employeeData.department || "N/A",
+      employee_branch: employeeData.branch || "N/A",
+    };
+  };
+
+  // Create employee fields array based on mode and employee data
+  const getEmployeeFields = () => {
+    const baseFields = [];
+
+    if (isEditMode) {
+      // In edit mode, just show the employee name
+      const displayValues = getEmployeeDisplayValues();
+      baseFields.push({
+        InputField: TextInput,
+        name: "employee_display",
+        label: "Employee",
+        disabled: true,
+        colsSpan: 2,
+        value: `${displayValues.employee_name} (${displayValues.employee_id})`,
+      });
+    } else {
+      // In create mode, show the select dropdown
+      baseFields.push({
+        InputField: SelectInputComponent,
+        name: "employee",
+        required: true,
+        label: "Select Employee",
+        options: employeeOptions,
+        placeholder: "Select an employee",
+        colsSpan: 2,
+        onFieldUpdate: (field, value) => {
+          // Find the full employee data
+          const selectedEmp = employees.find((emp) => emp.value === value);
+          if (selectedEmp) {
+            setEmployeeData(selectedEmp);
+          }
+        },
+      });
+    }
+
+    // Add employee details fields if employee is selected
+    if (employeeData) {
+      const displayValues = getEmployeeDisplayValues();
+
+      baseFields.push(
+        {
+          InputField: TextInput,
+          name: "employee_name_display",
+          label: "Name",
+          disabled: true,
+          colsSpan: 1,
+          value: displayValues.employee_name,
+          placeholder: displayValues.employee_name || "N/A",
+        },
+        {
+          InputField: TextInput,
+          name: "employee_id_display",
+          label: "Employee ID",
+          disabled: true,
+          colsSpan: 1,
+          value: displayValues.employee_id,
+          placeholder: displayValues.employee_id || "N/A",
+        },
+        {
+          InputField: TextInput,
+          name: "employee_department_display",
+          label: "Department",
+          disabled: true,
+          colsSpan: 1,
+          value: displayValues.employee_department,
+          placeholder: displayValues.employee_department || "N/A",
+        },
+        {
+          InputField: TextInput,
+          name: "employee_branch_display",
+          label: "Branch",
+          disabled: true,
+          colsSpan: 1,
+          value: displayValues.employee_branch,
+          placeholder: displayValues.employee_branch || "N/A",
+        }
+      );
+
+      // Add clear button for create mode
+      if (!isEditMode) {
+        baseFields.push({
+          InputField: ({ onChange }) => (
+            <div className="col-span-2 flex justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setEmployeeData(null);
+                  onChange("employee", "");
+                }}
+              >
+                Clear
+              </Button>
+            </div>
+          ),
+          name: "clear_button",
+          colsSpan: 2,
+        });
+      }
+    }
+
+    return baseFields;
+  };
+
+  return (
+    <>
+      <SheetUI
+        isOpen={isOpen}
+        setIsOpen={handleClose}
+        variant=""
+        sheetConfig={FormSheetData}
+        formConfig={{
+          initialValues: formData,
+          enableReinitialize: true,
+          handleSubmit: handleSubmit,
+          validateFormSchema: validateForm,
+          submitButtonText: isEditMode ? "Update" : "Assign",
+          cancelButtonText: "Cancel",
+          columns: 2,
+          renderUpdatedFormValues: setFormValues,
+          formFiels: [
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: "Employee Selection",
+              InputFields: getEmployeeFields(),
+            },
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: "Role Selection",
+              InputFields: [
+                {
+                  InputField: SelectMultiInputComponent,
+                  name: "roles",
+                  required: true,
+                  label: "Select Roles",
+                  options: roleOptions,
+                  placeholder: "Select roles",
+                  colsSpan: 2,
+                },
+              ],
+            },
+          ],
+        }}
+      ></SheetUI>
+
+      {confirmSave && (
+        <AlertDialogue
+          title="Confirm Role Assignment"
+          description={`Are you sure you want to ${
+            isEditMode ? "update" : "assign"
+          } these roles to ${employeeData?.name || employeeData?.label}?`}
+          isOpen={confirmSave}
+          setIsOpen={setConfirmSave}
+          handleContinue={() => {
+            confirmSubmit();
+            setConfirmSave(false);
+          }}
+        />
+      )}
+    </>
+  );
+};
+
+export default AssignRoleForm;

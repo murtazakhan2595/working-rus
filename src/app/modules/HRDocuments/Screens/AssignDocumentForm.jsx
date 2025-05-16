@@ -131,7 +131,7 @@ const AssignDocumentForm = ({
           {
             sheetCardExtension: false,
             // sheetCardTitle: "Employee Details",
-            InputFiels: [
+            InputFields: [
               {
                 InputField: RadioGroupInput,
                 name: "acknowledgment_type",
@@ -172,14 +172,14 @@ const AssignDocumentForm = ({
                 minDate: moment(),
                 disabled: true,
               },
-              ...(formValues.acknowledgment_type === "MANDATORY"
+              ...(formData.acknowledgment_type === "MANDATORY"
                 ? [
                     {
                       InputField: DateInput,
                       name: "due_date",
                       label: "Due Date",
                       minDate: moment(),
-                      maxDate: formValues.expiration_date,
+                      maxDate: formData.expiration_date,
                     },
                   ]
                 : []),

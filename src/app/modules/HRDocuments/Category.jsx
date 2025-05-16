@@ -64,7 +64,7 @@ const Category = ({ reload }) => {
           pagination={true}
           className="organization-table"
         />
-      )}
+)}
     </div>
   );
 };

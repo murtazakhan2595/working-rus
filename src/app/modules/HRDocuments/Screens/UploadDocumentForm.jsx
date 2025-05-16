@@ -25,7 +25,7 @@ import moment from "moment";
 
 const FormSheetData = {
   triggerText: "Submit",
-  title: "Upload New Document",
+  title: "Add Document",
   description: null,
   footer: null,
 };
@@ -102,7 +102,7 @@ const UploadDocumentForm = ({
           {
             sheetCardExtension: false,
             // sheetCardTitle: "Employee Details",
-            InputFiels: [
+            InputFields: [
               {
                 InputField: RadioGroupInput,
                 name: "acknowledgment_type",

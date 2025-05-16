@@ -28,11 +28,15 @@ const DateInput = React.memo(
     dateFormat = "yyyy-MM-dd", // Default format for the value
     showMonthYearPicker = false, // Whether to show only month/year picker
     minDate,
+    maxDate,
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const MinDate = React.useMemo(() => {
-      return moment(minDate).startOf("day");
+      return minDate ? moment(minDate).startOf("day") : null;
     }, [minDate]);
+    const MaxDate = React.useMemo(() => {
+      return maxDate ? moment(maxDate).endOf("day") : null;
+    }, [maxDate]);
     // Determine input and display formats based on showMonthYearPicker
     const inputPattern = showMonthYearPicker ? "MM/yyyy" : "dd/MM/yyyy";
     const displayPattern = showMonthYearPicker ? "MMMM yyyy" : "d MMMM yyyy";
@@ -111,6 +115,9 @@ const DateInput = React.memo(
             if (minDate && moment(parsedDate).isBefore(MinDate)) {
               return; // Don't allow setting date earlier than minDate
             }
+            if (maxDate && moment(parsedDate).isAfter(MaxDate)) {
+              return; // Don't allow setting date earlier than minDate
+            }
             setDate(parsedDate);
             setCalendarDate(parsedDate); // Sync with the calendar
             onChange(name, format(parsedDate, dateFormat));
@@ -127,6 +134,9 @@ const DateInput = React.memo(
       if (selectedDate) {
         // ✅ Add check: if selected date >= minDate
         if (minDate && moment(selectedDate).isBefore(MinDate)) {
+          return; // Ignore selection if before minDate
+        }
+        if (maxDate && moment(selectedDate).isAfter(MaxDate)) {
           return; // Ignore selection if before minDate
         }
         setDate(selectedDate);
@@ -205,7 +215,8 @@ const DateInput = React.memo(
                 showMonthYearPicker={showMonthYearPicker}
                 // ✅ Block past dates
                 disabled={(date) =>
-                  minDate ? moment(date).isBefore(MinDate) : false
+                  (minDate ? moment(date).isBefore(MinDate) : false) ||
+                  (maxDate ? moment(date).isAfter(MaxDate) : false)
                 }
               />
             </div>

@@ -658,16 +658,65 @@ const handleLogout = () => {
     setUserLogout();
   }
 };
-function HandleLogout() {
+function HandleLogout(message='Session Time Out') {
   if (window.localStorage.getItem("token")) {
     window.location.href = "/login";
-    toast.error("Session Time Out", {
+    toast.error(message, {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 2000,
     });
     window.localStorage.setItem("token", "");
     setUserLogout();
   }
+}
+
+// Delete role
+const deleteRole = async (roleId, roleName) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/userrole/${roleId}`, {
+      headers: headers(),
+    });
+    if (response.status === 204 || response.status === 200) {
+      toast.success(`Role "${roleName}" deleted successfully`, {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1000,
+      });
+      return true;
+    } else {
+      toast.error(`Unexpected response status: ${response.status}`);
+      return false;
+    }
+  } catch (error) {
+    console.error("ERROR deleting role:", error);
+    toast.error(error?.response?.data?.message || error.message, {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 1000,
+    });
+    return false;
+  }
+};
+
+const getRoleList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-created_at";
+  try {
+    const URL = `/userrole/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else return [];
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
 }
 
 export {
@@ -678,7 +727,6 @@ export {
   deleteRecord,
   getOrganizationList,
   getEmployeeList,
-  handleLogout,
   getEmployeeCustomList,
   getProjectsList,
   getCurrenciesList,
@@ -688,4 +736,6 @@ export {
   getEmployeeListWithDetail,
   saveShift,
   HandleLogout,
+  deleteRole,
+  getRoleList,
 };

@@ -78,7 +78,7 @@ const UploadDocumentForm = ({
           {
             sheetCardExtension: false,
             // sheetCardTitle: "Employee Details",
-            InputFiels: [
+            InputFields: [
               {
                 InputField: InputSignature,
                 name: "signature_file",

@@ -31,7 +31,9 @@ export function mapAttendanceData(data, shiftDetails) {
       data[key] !== null
     ) {
       // Add the key and its value to the payload
-      if (key === "status") {
+      if (key === "total_hours" && data.shift_id === shiftDetails.id) {
+        payload["total_hours"] = Hours;
+      } else if (key === "status") {
         if (data[key] === "Absent") payload["is_absent"] = true;
         else if (data[key] === "Present") payload["is_absent"] = false;
         else if (data[key] === "Late") {
@@ -52,9 +54,14 @@ export function mapAttendanceData(data, shiftDetails) {
       } else if (key === "checkout") {
         const checkin = moment(payload.checkin);
         payload[key] = data[key];
-        payload["payable_hours"] = CalculateTotalWorkingHours(
+        const totalHoursWorked = CalculateTotalWorkingHours(
           checkin,
           payload.checkout
+        );
+        const payableHours =
+          totalHoursWorked - parseFloat(data.break_duration || 0);
+        payload["payable_hours"] = parseFloat(
+          parseFloat(payableHours).toFixed(2)
         );
         if (Hours > 0) {
           if (
@@ -64,6 +71,8 @@ export function mapAttendanceData(data, shiftDetails) {
               parseFloat(payload.payable_hours) -
                 parseFloat(payload.total_hours)
             ).toFixed(2);
+          } else {
+            payload["overtime_hours"] = parseFloat(0).toFixed(2);
           }
         }
       } else payload[key] = data[key];

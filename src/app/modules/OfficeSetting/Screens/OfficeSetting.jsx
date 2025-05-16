@@ -67,6 +67,7 @@ const OfficeSetting = () => {
   const [stateData, setStateData] = useState({});
   const [cityData, setCityData] = useState({});
 
+
   const getOrganization = async () => {
     try {
       console.log("Fetching organization data...");
@@ -476,6 +477,7 @@ const OfficeSetting = () => {
                 />
               )}
             </TabsContent>
+          
           </Tabs>
           {activeTab === "offices" && edit && (
             <AddOrganization

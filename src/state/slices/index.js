@@ -5,7 +5,7 @@ import ModalSlice from "./ModalSlice";
 import EmpSlice from "./EmpSlice";
 import leaveManagementSlice from "./LeaveManagementSlice";
 import GetDtrSlice from "./GetDtrSlice";
-import GetDtrAllSlice from "./GetDtrAllSlice";
+import RolePermissionSlice from "./RolePermissionSlice";
 import PayrollSlice from "./PayrollSlice";
 import UpdateDtrSlice from "./UpdateDtrSlice";
 import HRDocumentsSlice from "./HRDocumentsSlice";
@@ -21,7 +21,7 @@ const rootReducer = combineReducers({
   emp: EmpSlice,
   getDtr: GetDtrSlice,
   leave_management: leaveManagementSlice,
-  getDtrAll: GetDtrAllSlice,
+  roles_permissions: RolePermissionSlice,
   payroll: PayrollSlice,
   updateDtr: UpdateDtrSlice,
   doc_category: HRDocumentsSlice,

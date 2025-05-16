@@ -18,14 +18,15 @@ import Err404 from "app/modules/Error/Err404";
 import { AddNewListModel } from "./Sections";
 
 const Board = () => {
-  const { projectId, taskId, viewStyle, boardId } = useParams();
+  const { projectId, taskId, boardId } = useParams();
   const location = useLocation();
-  const { activeView } = location.state || {};
+  // const { activeView } = location.state || {};
   const navigate = useNavigate();
   const userId = useSelector((state) => state.user.userProfile).id;
   const userRole = useSelector((state) => state.user.userProfile).role;
   const [AllBoards, setAllBoards] = useState([]);
   const isTaskDetailOpen = !!taskId || !!boardId;
+  const activeView = localStorage.getItem("boardActiveView") || "grid";
   const [projectData, setProjectData] = useState({});
   const [openSuccessMessage, setOpenSuccessMessage] = useState(false);
   const [openRequestJoinDialogBox, setOpenRequestJoinDialogBox] =
@@ -35,7 +36,6 @@ const Board = () => {
     is_archive: [false],
   });
   const [showAddNewListModel, setShowAddNewListModel] = useState(false);
-  //const activeView = viewStyle || "grid";
 
   useEffect(() => {
     let isMounted = true;
@@ -104,12 +104,10 @@ const Board = () => {
     setShowAddNewListModel(!showAddNewListModel);
   };
 
-
-  console.log(openRequestJoinDialogBox, "OPEN BOX")
   if (projectData === -1) {
     return <Err404 />;
   }
-
+  console.log(activeView, "activeViewactiveView");
   return (
     <>
       {showAddNewListModel && (
@@ -124,10 +122,10 @@ const Board = () => {
         projectId={projectId}
         activeView={activeView}
         setActiveView={(viewStyle) => {
+          localStorage.setItem("boardActiveView", viewStyle);
           navigate(`/project-board/${projectId}`, {
             state: {
               GOTO_URLS: `/project-board/${projectId}`,
-              activeView: viewStyle,
             },
           });
         }}

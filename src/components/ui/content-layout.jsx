@@ -1,4 +1,4 @@
-import { Navbar } from "components/ui/navbar";
+import  {SideBarNavigation}  from "app/modules/SideBarNavigation";
 import { useStore } from "app/hooks/use-store";
 import { useSidebarToggle } from "app/hooks/use-sidebar-toggle";
 import { Outlet } from "react-router-dom";
@@ -11,7 +11,7 @@ export function ContentLayout({ title, children, isSidebarOpen, userRole }) {
   return (
     <>
       <div className="nav">
-        <Navbar title={title} userRole={userRole} />
+        <SideBarNavigation title={title} userRole={userRole} />
       </div>
       <div className="main-content rounded-[24px] h-[calc(100vh_-_70px)]">
         <ScrollArea className="[&>div>div[style]]:!block">

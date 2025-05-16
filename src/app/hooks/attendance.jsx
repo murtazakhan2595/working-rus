@@ -302,10 +302,8 @@ const calculateBreak = async (payload) => {
 
 const getBreakStatus = async (payload) => {
   const lastBreak = await getBreak(payload);
-  if (lastBreak.results.length === 0) {
-    return false;
-  } else {
-    const lastBreakEnd = lastBreak.results[0].endtime;
+  if (lastBreak && lastBreak?.results && lastBreak?.results.length > 0) {
+    const lastBreakEnd = lastBreak?.results[0]?.endtime;
     if (!lastBreakEnd) {
       return true;
     }
@@ -442,7 +440,7 @@ const getAttendanceStats = async (payload) => {
     const pageNo = payload?.options?.page ?? "";
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData ?? {};
-    const ordering = payload?.ordering ?? '';
+    const ordering = payload?.ordering ?? "";
 
     const URL = `/attendance/summary/overall?${
       ordering ? `ordering=${ordering}&` : ""
