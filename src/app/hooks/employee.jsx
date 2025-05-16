@@ -761,6 +761,8 @@ const getEmployeeWorkInformationData = async (employeeid) => {
 
 const saveEmployeeWorkInformationData = async (employeeid, payload) => {
   try {
+    console.log("payload", payload);
+    console.log("employeeid", employeeid);
     if (employeeid) {
       const response = await axios.patch(
         `${baseUrl}/emp/${employeeid}`,

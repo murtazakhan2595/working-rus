@@ -31,6 +31,7 @@ import { Calendar } from "src/@/components/ui/calendar";
 import TextEditorInputField from "./TextEditorInputField";
 import MonthInput from "./MonthInput";
 import CommentsInputField from "./CommentsInputField";
+import SwitchInput from "./SwitchInput";
 import DateRangeFilter from "./DateRangeFilter";
 import TextAreaInput from "./TextAreaInput";
 import SortingFilters from "./SortingFilters";
@@ -763,4 +764,5 @@ export {
   DateRangeInput,
   InputSignature,
   MonthInput,
+  SwitchInput,
 };

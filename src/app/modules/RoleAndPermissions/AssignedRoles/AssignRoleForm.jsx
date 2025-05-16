@@ -1,43 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { Formik } from "formik";
 import { toast } from "react-toastify";
 import { Button } from "components/ui/button";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { SheetCardExtension } from "components/SheetCardExtension";
+import { SheetUI } from "components";
 import {
   TextInput,
-  FilterInput,
   SelectInputComponent,
-  SelectMultiInputComponent, // Added this import
+  SelectMultiInputComponent,
 } from "components/FormControl";
 import { saveAssignedRole, getUserRoleList } from "app/hooks/rolesPermisions";
 import { useSelector } from "react-redux";
-import { AssignedRole } from "app/utils/Types/RolesPermission";
-import { DepartmentName } from "utils/getValuesFromTables";
-import { BranchName } from "utils/getValuesFromTables";
-import { CheckBoxInput } from "components/FormControl";
-import { Label } from "src/@/components/ui/label";
+import { DepartmentName, BranchName } from "utils/getValuesFromTables";
 
 const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const [confirmSave, setConfirmSave] = useState(false);
   const [formValues, setFormValues] = useState(null);
   const [employeeData, setEmployeeData] = useState(null);
   const [availableRoles, setAvailableRoles] = useState([]);
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const isEditMode = Boolean(edit?.data);
 
   // Get employees from Redux state
   const employees = useSelector((state) => state.emp.employees);
 
   // Initialize form data with assigned role values if in edit mode
-  const [formData, setFormData] = useState({
-    ...AssignedRole,
-    ...(edit?.data || {}),
-    employee: "",
-    roles: [], // This will now hold an array of role IDs for multi-select
-  });
+  const [formData, setFormData] = useState({});
 
   // Load available roles on mount
   useEffect(() => {
@@ -59,29 +45,27 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   // Update form data when edit data changes
   useEffect(() => {
     if (edit?.data) {
-      // Extract role IDs for multi-select
-      const roleIds = edit.data.roles
-        ? edit.data.roles.map((role) => role.id)
-        : [];
-
       setFormData({
-        ...AssignedRole,
         ...edit.data,
         employee: edit.data.employee?.id || "",
-        roles: roleIds, // Set as array of IDs for multi-select
+        roles: edit?.data?.user_role, 
       });
 
       // If editing, set the employee data
-      if (edit.data.employee) {
-        setEmployeeData(edit.data.employee);
-        setSearchTerm(
-          `${edit.data.employee.name} (${edit.data.employee.employeeId})`
-        );
+      if (edit?.data) {
+        setEmployeeData({
+          value: edit.data?.id,
+          label: `${edit.data?.first_name} ${edit.data?.last_name} (${edit.data?.serial_number})`,
+          employeeId: edit.data?.id,
+          department: edit.data?.department_name,
+          branch: edit.data?.branch,
+          email: edit.data?.email,
+        });
       }
     }
   }, [edit?.data]);
 
-  const validateForm = async (values) => {
+  const validateForm = (values) => {
     const errors = {};
 
     if (!employeeData && !values.employee) {
@@ -95,65 +79,14 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     return errors;
   };
 
-  const handleEmployeeSearch = async (searchValue) => {
-    setSearchTerm(searchValue);
-
-    if (!searchValue || searchValue.length < 2) {
-      setSearchResults([]);
-      return;
-    }
-
-    setIsSearching(true);
-
-    // Use existing employees from Redux state
-    try {
-      const searchTermLower = searchValue.toLowerCase();
-      const results = employees.filter((employee) => {
-        const name = employee.label?.toLowerCase() || "";
-        const id = employee.empId?.toLowerCase() || "";
-        return name.includes(searchTermLower) || id.includes(searchTermLower);
-      });
-
-      // Transform to the format expected by the component
-      const transformedResults = results.slice(0, 10).map((emp) => ({
-        id: emp.value,
-        name: emp.label,
-        employeeId: emp.empId || emp.value,
-        department: emp.department || "N/A",
-        branch: emp.branch || "N/A",
-        email: emp.email || "",
-      }));
-
-      setSearchResults(transformedResults);
-    } catch (error) {
-      console.error("Error searching employees:", error);
-      setSearchResults([]);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  const handleEmployeeSelect = (employee) => {
-    setEmployeeData(employee);
-    setSearchResults([]);
-    setSearchTerm(`${employee.name} (${employee.employeeId})`);
-  };
-
-  const clearEmployeeSelection = () => {
-    setEmployeeData(null);
-    setSearchTerm("");
-    setSearchResults([]);
-  };
-
-  const handleSubmit = async (values, { setSubmitting }) => {
+  const handleSubmit = async (values) => {
     const payload = {
-      employeeId: employeeData?.id || values.employee,
-      roles: values.roles, // This is now already an array of role IDs
+      employeeId: employeeData?.id || employeeData?.value || values.employee,
+      roles: values.roles, 
     };
 
     setFormValues({ ...values, ...payload });
     setConfirmSave(true);
-    setSubmitting(false);
   };
 
   const confirmSubmit = async () => {
@@ -161,11 +94,10 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
 
     try {
       const payload = {
-        employeeId: formValues.employeeId,
-        roles: formValues.roles,
+        user_role: formValues.roles,
       };
 
-      const response = await saveAssignedRole(edit?.data?.id, payload);
+      const response = await saveAssignedRole(formValues.employeeId, payload);
 
       if (response) {
         toast.success(
@@ -195,7 +127,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   // Transform employees for SelectInputComponent
   const employeeOptions = employees.map((emp) => ({
     value: emp.value,
-    label: `${emp.label} (${emp.serial_number})`,
+    label: `${emp.label} (${emp.serial_number || emp.empId})`,
     employeeId: emp.empId || emp.value,
     department: emp.department || "N/A",
     branch: emp.branch || "N/A",
@@ -209,186 +141,183 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     description: role.description,
   }));
 
+  const FormSheetData = {
+    triggerText: "Assign Role",
+    title: `${isEditMode ? "Edit" : "Assign"} Roles`,
+    description: null,
+    footer: null,
+  };
+
+
+  // Get employee display values with fallbacks
+  const getEmployeeDisplayValues = () => {
+    if (!employeeData) return {};
+
+    return {
+      employee_name: employeeData.name || employeeData.label || "N/A",
+      employee_id:
+        employeeData.serial_number ||
+        employeeData.employeeId ||
+        employeeData.empId ||
+        "N/A",
+      employee_department:
+        employeeData.department_name || employeeData.department || "N/A",
+      employee_branch: employeeData.branch || "N/A",
+    };
+  };
+
+  // Create employee fields array based on mode and employee data
+  const getEmployeeFields = () => {
+    const baseFields = [];
+
+    if (isEditMode) {
+      // In edit mode, just show the employee name
+      const displayValues = getEmployeeDisplayValues();
+      baseFields.push({
+        InputField: TextInput,
+        name: "employee_display",
+        label: "Employee",
+        disabled: true,
+        colsSpan: 2,
+        value: `${displayValues.employee_name} (${displayValues.employee_id})`,
+      });
+    } else {
+      // In create mode, show the select dropdown
+      baseFields.push({
+        InputField: SelectInputComponent,
+        name: "employee",
+        required: true,
+        label: "Select Employee",
+        options: employeeOptions,
+        placeholder: "Select an employee",
+        colsSpan: 2,
+        onFieldUpdate: (field, value) => {
+          // Find the full employee data
+          const selectedEmp = employees.find((emp) => emp.value === value);
+          if (selectedEmp) {
+            setEmployeeData(selectedEmp);
+          }
+        },
+      });
+    }
+
+    // Add employee details fields if employee is selected
+    if (employeeData) {
+      const displayValues = getEmployeeDisplayValues();
+
+      baseFields.push(
+        {
+          InputField: TextInput,
+          name: "employee_name_display",
+          label: "Name",
+          disabled: true,
+          colsSpan: 1,
+          value: displayValues.employee_name,
+          placeholder: displayValues.employee_name || "N/A",
+        },
+        {
+          InputField: TextInput,
+          name: "employee_id_display",
+          label: "Employee ID",
+          disabled: true,
+          colsSpan: 1,
+          value: displayValues.employee_id,
+          placeholder: displayValues.employee_id || "N/A",
+        },
+        {
+          InputField: TextInput,
+          name: "employee_department_display",
+          label: "Department",
+          disabled: true,
+          colsSpan: 1,
+          value: displayValues.employee_department,
+          placeholder: displayValues.employee_department || "N/A",
+        },
+        {
+          InputField: TextInput,
+          name: "employee_branch_display",
+          label: "Branch",
+          disabled: true,
+          colsSpan: 1,
+          value: displayValues.employee_branch,
+          placeholder: displayValues.employee_branch || "N/A",
+        }
+      );
+
+      // Add clear button for create mode
+      if (!isEditMode) {
+        baseFields.push({
+          InputField: ({ onChange }) => (
+            <div className="col-span-2 flex justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setEmployeeData(null);
+                  onChange("employee", "");
+                }}
+              >
+                Clear
+              </Button>
+            </div>
+          ),
+          name: "clear_button",
+          colsSpan: 2,
+        });
+      }
+    }
+
+    return baseFields;
+  };
+
   return (
     <>
-      <Formik
-        initialValues={formData}
-        onSubmit={handleSubmit}
-        validate={validateForm}
-        enableReinitialize
-      >
-        {(props) => (
-          <form onSubmit={props.handleSubmit}>
-            <SheetCardExtension
-              title={`${isEditMode ? "Edit" : "Assign"} Roles`}
-            >
-              {/* Employee Selection Section */}
-              <div className="mb-6">
-                {!isEditMode ? (
-                  <>
-                    <SelectInputComponent
-                      name="employee"
-                      error={props.errors?.employee}
-                      touch={props.touched?.employee}
-                      value={props.values.employee}
-                      label="Select Employee"
-                      required={true}
-                      options={employeeOptions}
-                      onChange={(field, value) => {
-                        props.setFieldValue(field, value);
-                        // Find the full employee data
-                        const selectedEmp = employees.find(
-                          (emp) => emp.value === value
-                        );
-                        if (selectedEmp) {
-                          setEmployeeData(selectedEmp);
-                        }
-                      }}
-                      placeholder="Select an employee"
-                      disabled={isEditMode}
-                    />
-                  </>
-                ) : (
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Employee
-                    </label>
-                    <TextInput
-                      value={
-                        employeeData
-                          ? `${employeeData.name} (${employeeData.employeeId})`
-                          : ""
-                      }
-                      disabled={true}
-                      label=""
-                    />
-                  </div>
-                )}
-              </div>
-              {console.log("employeeData", employeeData)}
-              {/* Employee Details */}
-              {employeeData && (
-                <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-medium text-lg mb-2 text-blue-900">
-                        Selected Employee
-                      </h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Name
-                          </label>
-                          <div className="text-gray-900">
-                            {employeeData.name}
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Employee ID
-                          </label>
-                          <div className="text-gray-900">
-                            {employeeData.serial_number}
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Department
-                          </label>
-                          <div className="text-gray-900">
-                            <DepartmentName
-                              value={employeeData.department_name}
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">
-                            Branch
-                          </label>
-                          <div className="text-gray-900">
-                            <BranchName value={employeeData.branch} />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {!isEditMode && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={clearEmployeeSelection}
-                      >
-                        Clear
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Roles Selection - Now using SelectMultiInputComponent */}
-              <div className="mb-6">
-                <SelectMultiInputComponent
-                  name="roles"
-                  options={roleOptions}
-                  error={props.errors?.roles}
-                  touch={props.touched?.roles}
-                  value={props.values.roles}
-                  label="Select Roles"
-                  required={true}
-                  onChange={(field, value) => {
-                    props.setFieldValue(field, value);
-                  }}
-                  placeholder="Select roles"
-                />
-
-                {/* Show selected roles count */}
-                {props.values.roles && props.values.roles.length > 0 && (
-                  <div className="mt-3 p-3 bg-green-50 rounded-lg">
-                    <div className="text-sm text-green-700">
-                      {props.values.roles.length} role
-                      {props.values.roles.length !== 1 ? "s" : ""} selected
-                    </div>
-                  </div>
-                )}
-              </div>
-            </SheetCardExtension>
-
-            {/* Form Actions */}
-            <div className="p-6 border-t border-gray-200 bg-gray-50">
-              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  type="button"
-                  onClick={handleClose}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="lg"
-                  variant="default"
-                  disabled={props.isSubmitting}
-                >
-                  {props.isSubmitting
-                    ? "Assigning..."
-                    : isEditMode
-                    ? "Update"
-                    : "Assign"}
-                </Button>
-              </div>
-            </div>
-          </form>
-        )}
-      </Formik>
+      <SheetUI
+        isOpen={isOpen}
+        setIsOpen={handleClose}
+        variant=""
+        sheetConfig={FormSheetData}
+        formConfig={{
+          initialValues: formData,
+          enableReinitialize: true,
+          handleSubmit: handleSubmit,
+          validateFormSchema: validateForm,
+          submitButtonText: isEditMode ? "Update" : "Assign",
+          cancelButtonText: "Cancel",
+          columns: 2,
+          renderUpdatedFormValues: setFormValues,
+          formFiels: [
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: "Employee Selection",
+              InputFields: getEmployeeFields(),
+            },
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: "Role Selection",
+              InputFields: [
+                {
+                  InputField: SelectMultiInputComponent,
+                  name: "roles",
+                  required: true,
+                  label: "Select Roles",
+                  options: roleOptions,
+                  placeholder: "Select roles",
+                  colsSpan: 2,
+                },
+              ],
+            },
+          ],
+        }}
+      ></SheetUI>
 
       {confirmSave && (
         <AlertDialogue
           title="Confirm Role Assignment"
           description={`Are you sure you want to ${
             isEditMode ? "update" : "assign"
-          } these roles to ${employeeData?.name}?`}
+          } these roles to ${employeeData?.name || employeeData?.label}?`}
           isOpen={confirmSave}
           setIsOpen={setConfirmSave}
           handleContinue={() => {
