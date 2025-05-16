@@ -16,7 +16,6 @@ export function mapShiftData(data) {
   return shiftDetails;
 }
 export function mapAttendanceData(data, shiftDetails) {
-  debugger;
   const startTime = moment(shiftDetails.starttime);
   const endTime = moment(shiftDetails.endtime);
   // Initialize an empty payload object
@@ -52,6 +51,7 @@ export function mapAttendanceData(data, shiftDetails) {
         }
         payload.is_weekend = [0, 6].includes(checkInTime.day());
       } else if (key === "checkout") {
+        debugger;
         const checkin = moment(payload.checkin);
         payload[key] = data[key];
         const totalHoursWorked = CalculateTotalWorkingHours(
