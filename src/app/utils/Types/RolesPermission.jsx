@@ -19,6 +19,17 @@ export const UserRolePermissions = {
   feature_ids: [],
   id:null,
 };
+export const RoleAssignmentHistoryLogs = {
+  action: null,
+  branch: null,
+  feature_ids: null,
+  permission_changed: null,
+  employee_id: null,
+  employee_name: null,
+  performed_by: null,
+  role: null,
+  timestamp: null,
+};
 
 export const AssignedRole = {
   id: null,
@@ -38,3 +49,4 @@ export const AssignedRole = {
   created_by: null,
   updated_by: null,
 };
+
