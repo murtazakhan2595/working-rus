@@ -70,43 +70,52 @@ function TerminationStatus(status) {
 }
 function DepartmentName({ value, fallBackText = "N/A", debug = false }) {
   const departments = useSelector((state) => state.common.departments);
-  
+
   // If value is falsy, return fallback
   if (!value) {
-    if (debug) console.log('DepartmentName: Returning fallback for empty value');
+    if (debug)
+      console.log("DepartmentName: Returning fallback for empty value");
     return fallBackText;
   }
-  
+
   // Handle case where value is already a string (like "CEO")
-  if (typeof value === 'string' && isNaN(parseInt(value))) {
-    if (debug) console.log(`DepartmentName: Returning string value directly: ${value}`);
+  if (typeof value === "string" && isNaN(parseInt(value))) {
+    if (debug)
+      console.log(`DepartmentName: Returning string value directly: ${value}`);
     return value;
   }
-  
+
   // Try to find department by ID
   const parsedValue = parseInt(value);
-  
+
   // Check if departments array exists and has items
   if (!departments || !Array.isArray(departments) || departments.length === 0) {
-    if (debug) console.warn(`DepartmentName: No departments available in redux store for ID: ${value}`);
+    if (debug)
+      console.warn(
+        `DepartmentName: No departments available in redux store for ID: ${value}`
+      );
     // If departments are not available, return the fallback with ID
     return `${fallBackText}`;
   }
-  
+
   // Try to find by both value and id properties
   const department = departments.find(
     (option) => option.value === parsedValue || option.id === parsedValue
   );
-  
+
   if (debug) {
-    console.log(`DepartmentName: value=${value}, parsed=${parsedValue}, found=${department?.label || department?.name || 'not found'}, departments count: ${departments.length}`);
+    console.log(
+      `DepartmentName: value=${value}, parsed=${parsedValue}, found=${
+        department?.label || department?.name || "not found"
+      }, departments count: ${departments.length}`
+    );
   }
-  
+
   // Return department label if found, otherwise original value or fallback
   if (department) {
     return department.label || department.name;
   }
-  
+
   // If not found and we want to show a meaningful fallback
   return fallBackText;
 }
@@ -144,6 +153,13 @@ function EmployeeName({ value, length }) {
   const displayedName = length ? employeeName.slice(0, length) : employeeName;
 
   return <>{displayedName}</>;
+}
+export function EmployeeUsername({ value, fallBackText = "N/A" }) {
+  const employees = useSelector((state) => state.emp.employees);
+  const employee = employees.find((option) => option.value === parseInt(value));
+  const employeeName = employee ? employee.username : fallBackText;
+
+  return <>{employeeName}</>;
 }
 
 export function EmployeeNameList(employeeIdList) {

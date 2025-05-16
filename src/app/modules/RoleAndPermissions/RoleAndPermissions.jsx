@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {UserRoles,AssignedRoles} from "app/modules/RoleAndPermissions";
+import {UserRoles,AssignedRoles,RoleAssignmentHistoryLogs} from "app/modules/RoleAndPermissions";
 
 import {
   Tabs,
@@ -11,7 +11,8 @@ import { Card, CardContent } from "components/ui/card";
 import { Header } from "components";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
-const RoleAndPermissionsTab = ["Role Management", "Assigned Roles"];
+
+const RoleAndPermissionsTab = ["Role Management", "Assigned Roles","Role Assignment History & Logs"];
 
 function RoleAndPermissions() {
   const navigate = useNavigate();
@@ -69,6 +70,9 @@ function RoleAndPermissions() {
             </TabsContent>
             <TabsContent value="Assigned Roles">
               <AssignedRoles reload={reloadData} />
+            </TabsContent>
+            <TabsContent value="Role Assignment History & Logs">
+              <RoleAssignmentHistoryLogs />
             </TabsContent>
           </CardContent>
         </Card>

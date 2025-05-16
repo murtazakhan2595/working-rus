@@ -9,6 +9,7 @@ import {
   mapUserRolePermissionsPayloadData,
   mapUserRoleData,
   mapUserRolePermissionsData,
+  mapRoleAssignmentHistoryLogsListData
 } from "app/utils/MappingObjects/mapRolesPermissionData";
 
 import { HandleLogout } from "./general";
@@ -234,6 +235,32 @@ export const getUserRoleList = async (payload) => {
     if (response.status === 200) {
       const rolesResponse = response.data;
       const rolesList = await mapUserRoleListData(rolesResponse?.results);
+      return { results: rolesList, count: rolesResponse.count };
+    } else return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching roles data:", error);
+    return { results: [], count: 0 };
+  }
+};
+
+// Get roles list
+export const getRoleAssignmentHistoryLogsList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-id";
+  try {
+    const URL = `/role-history/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const rolesResponse = response.data;
+      const rolesList = await mapRoleAssignmentHistoryLogsListData(rolesResponse?.results);
       return { results: rolesList, count: rolesResponse.count };
     } else return { results: [], count: 0 };
   } catch (error) {

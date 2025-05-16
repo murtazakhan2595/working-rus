@@ -1,4 +1,9 @@
-import { Module, UserRole,UserRolePermissions } from "app/utils/Types/RolesPermission";
+import {
+  Module,
+  UserRole,
+  UserRolePermissions,
+  RoleAssignmentHistoryLogs,
+} from "app/utils/Types/RolesPermission";
 
 export function mapModuleData(data) {
   const moduleData = Object.keys(Module).reduce((acc, key) => {
@@ -59,18 +64,6 @@ export function mapUserRoleData(data) {
   return userRoleData;
 }
 
-export function mapUserRolePermissionsData(data) {
-  const userRolePermissionData = Object.keys(UserRolePermissions).reduce((acc, key) => {
-    if (data.hasOwnProperty(key)) {
-      acc[key] = data[key];
-    }
-    return acc;
-  }, {});
-
-  return userRolePermissionData;
-}
-
-
 export async function mapUserRoleListData(data) {
   if (!data || data.length === 0) return [];
   const UserRoleList = await data?.map((userRole) => {
@@ -78,6 +71,20 @@ export async function mapUserRoleListData(data) {
   });
 
   return UserRoleList;
+}
+
+export function mapUserRolePermissionsData(data) {
+  const userRolePermissionData = Object.keys(UserRolePermissions).reduce(
+    (acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
+
+  return userRolePermissionData;
 }
 
 export function mapUserRolePayloadData(data, id) {
@@ -116,4 +123,35 @@ export function mapUserRolePermissionsPayloadData(data, id) {
 
   // Return the constructed payload
   return payload;
+}
+
+export function mapRoleAssignmentHistoryLogsData(data) {
+  console.log(data, "mapRoleAssignmentHistoryLogsData");
+  const historyData = Object.keys(RoleAssignmentHistoryLogs).reduce(
+    (acc, key) => {
+      if (key === "feature_ids") acc[key] = data.details.feature_ids;
+      else if (key === "permission_changed")
+        acc[key] = data.details.permission_changed;
+      else if (key === "employee_id") acc[key] = data.employee.id;
+      else if (key === "employee_name") acc[key] = data.employee.name;
+      else if (key === "assigned_by") acc[key] = data.performed_by;
+      else if (key === "assigned_date") acc[key] = data.timestamp;
+      else if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
+
+  return historyData;
+}
+
+export async function mapRoleAssignmentHistoryLogsListData(data) {
+  if (!data || data.length === 0) return [];
+  const HistoryList = await data?.map((history) => {
+    return mapRoleAssignmentHistoryLogsData(history);
+  });
+
+  return HistoryList;
 }
