@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { deleteRole } from "app/hooks/rolesPermisions";
 import { useNavigate } from "react-router-dom";
 
-const UserRoleAction = ({ data, reload }) => {
+const UserRoleAction = ({ data, reload , UserRoleList=[]}) => {
   const [view, setView] = useState(null);
   const [deleteRoleState, setDeleteRoleState] = useState(null);
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const UserRoleAction = ({ data, reload }) => {
 
   const handleEdit = (e) => {
     e.preventDefault();
-    navigate(`/office-settings/role-managment/user-role/edit`, {
+    navigate(`/office-settings/role-permission/user-role/edit`, {
       state: { id: data.id },
     });
   };
@@ -90,6 +90,8 @@ const UserRoleAction = ({ data, reload }) => {
           }
           data={view.data}
           reload={reload}
+          UserRoleList={UserRoleList}
+          roleID={view?.data?.id}
         />
       )}
     </>

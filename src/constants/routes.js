@@ -70,7 +70,7 @@ import { EOSList, EOSDetails } from "app/modules/Payroll/Screens/EOS";
 import { RequestAndAssign } from "app/modules/AssetsManagement";
 import { ChangePassword } from "app/modules/ResetPassword";
 import {
-  UserRoles,
+  RoleAndPermissions,
   AssignedRoles,
   AddUpdateUserRoleForm,
 } from "app/modules/RoleAndPermissions";
@@ -439,17 +439,17 @@ const SidebarRoutes = [
     name: "Change Password",
   },
   {
-    path: "/office-settings/role-managment",
-    component: <UserRoles />,
+    path: "/office-settings/role-permission",
+    component: <RoleAndPermissions />,
     name: "Change Password",
   },
   {
-    path: "/office-settings/role-managment/user-role/add",
+    path: "/office-settings/role-permission/user-role/add",
     component: <AddUpdateUserRoleForm />,
     name: "Add User Role",
   },
   {
-    path: "/office-settings/role-managment/user-role/add/:roleId",
+    path: "/office-settings/role-permission/user-role/add/:roleId",
     component: <AddUpdateUserRoleForm />,
     name: "Add User Role",
   },
@@ -459,7 +459,7 @@ const SidebarRoutes = [
     name: "Add User Role",
   },
   {
-    path: "/office-settings/role-managment/user-role/edit",
+    path: "/office-settings/role-permission/user-role/edit",
     component: <AddUpdateUserRoleForm />,
     name: "Add User Role",
   },

@@ -116,7 +116,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
     }
 
     let attachmentId = null;
-    console.log(attachmentId, "ATTACHMENT ID")
+    console.log(attachmentId, "ATTACHMENT ID");
     // Step 1: Check if there is an attachment and save it
     if (newAttachment) {
       const formData = new FormData();
@@ -163,7 +163,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
   };
 
   const handleFileChange = (field, value) => {
-    console.log(value, "VALUE IS HERE")
+    console.log(value, "VALUE IS HERE");
     if (value) {
       const file = value.file; // Extract the file data
       const maxFileSize = 10 * 1024 * 1024; // Max file size: 10MB
@@ -171,11 +171,10 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
         toast.error("File is too large, must be less than 10MB");
         return;
       }
-  
+
       setNewAttachment(value); // Update the state with the selected file
     }
   };
-  
 
   const handleClose = () => {
     setCloseSheet(true);
@@ -237,7 +236,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                     label="Number of Days"
                     required="true"
                   />
-                  <div className="flex items-center gap-4 ">
+                  <div className="flex items-start gap-4 ">
                     <div className="flex-1 space-y-2">
                       <DateInput
                         name={"start_date"}
@@ -250,6 +249,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                           props.handleChange(field)(value);
                         }}
                         placeholder=""
+                        minDate={moment()}
                       />
                     </div>
                     <div className="flex-1 space-y-2">
@@ -263,7 +263,7 @@ const ApplyLeaveSheet = ({ userProfile, reload }) => {
                         onChange={(field, value) => {
                           props.handleChange(field)(value);
                         }}
-                        placeholder=""
+                        minDate={props.values?.start_date || moment()}
                       />
                     </div>
                   </div>

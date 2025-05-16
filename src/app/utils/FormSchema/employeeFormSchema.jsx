@@ -463,10 +463,10 @@ export const validateChangePasswordForm = (values) => {
   if (
     values?.confirm_password &&
     values.new_password &&
-    values.current_password !== values.confirm_password
+    values.confirm_password !== values.new_password
   ) {
     errors.confirm_password =
-      "Confirm password does not match with current password";
+      "Confirm password does not match with new password";
   }
   return errors;
 };

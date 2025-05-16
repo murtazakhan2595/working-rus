@@ -202,7 +202,7 @@ const Notifications = () => {
   const handleNotificationClick = (n) => {
     if (!n.isRead) markRead(n.id);
     if (n.action_url) {
-      navigate(n.action_url);
+      navigate(n.action_url, { state: { id: n.related_id } });
     }
     if (n.type === "PROJECT" && n.project_id) {
       navigate(`/project-board/${n.project_id}`);

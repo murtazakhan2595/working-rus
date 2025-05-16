@@ -8,22 +8,16 @@ import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
-import { getUserRoleList } from "app/hooks/rolesPermisions";
-import { UserRoleColumn } from "app/modules/RoleAndPermissions/Sections";
+import { getRoleAssignmentHistoryLogsList } from "app/hooks/rolesPermisions";
+import { RoleAssignmentHistoryLogsColumn } from "app/modules/RoleAndPermissions/Sections";
 import { useNavigate } from "react-router-dom";
 
-const UserRoles = ({
-  loading: initialLoading,
-  reload: externalReload,
-  organizationId,
-}) => {
-  const navigate = useNavigate();
+const RoleAssignmentHistoryLogs = () => {
   const [roles, setRoles] = useState({ results: [], count: 0 });
-  const [loading, setLoading] = useState(initialLoading || false);
+  const [loading, setLoading] = useState(false);
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [reloadCounter, setReloadCounter] = useState(0);
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -42,15 +36,11 @@ const UserRoles = ({
     try {
       setLoading(true);
       // Add organizationId to filter if available
-      const filterPayload = {
-        ...filterData,
-        ...(organizationId ? { organization: organizationId } : {}),
-      };
 
-      const response = await getUserRoleList({
-        filterData: filterPayload,
-        options: options,
-        ordering: ordering,
+      const response = await getRoleAssignmentHistoryLogsList({
+        filterData,
+        options,
+        ordering,
       });
 
       if (isMounted) {
@@ -69,14 +59,7 @@ const UserRoles = ({
     return () => {
       isMounted = false;
     };
-  }, [
-    filterData,
-    ordering,
-    options,
-    externalReload,
-    reloadCounter,
-    organizationId,
-  ]);
+  }, [filterData, ordering, options]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
@@ -89,11 +72,6 @@ const UserRoles = ({
       }
       return updatedFilters;
     });
-  };
-
-  // Function to force a table reload
-  const forceReload = () => {
-    setReloadCounter((prev) => prev + 1);
   };
 
   return (
@@ -119,7 +97,7 @@ const UserRoles = ({
         <PageLoader />
       ) : (
         <TableCustom
-          columns={UserRoleColumn(forceReload)}
+          columns={RoleAssignmentHistoryLogsColumn}
           data={roles?.results || []}
           tableOptions={tableOptions}
           dataTotalSize={roles?.count || 0}
@@ -131,4 +109,4 @@ const UserRoles = ({
   );
 };
 
-export default UserRoles;
+export default RoleAssignmentHistoryLogs;

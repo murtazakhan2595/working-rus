@@ -53,7 +53,7 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
     }));
   }, [ModulesList]);
   const FormSheetData = {
-    triggerText: "Add New Role",
+    triggerText: "",
     title: isEditMode ? "Edit Role" : "Add New Role",
     description: null,
     footer: null,
@@ -127,7 +127,7 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
         },
       });
     else {
-      navigate(`/office-settings/role-managment`);
+      navigate(`/office-settings/role-permission`);
     }
   };
 
@@ -186,7 +186,10 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
-      <Header />
+      <Header
+        showBackButton={true}
+        navigationLink={GOTO_URLS || "/office-settings/role-permission"}
+      />
       <Card>
         <CardContent>
           <SheetUI

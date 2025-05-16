@@ -48,13 +48,13 @@ const EmployeeAction = ({ row }) => {
             Edit Profile
           </DropdownMenuItem>
         )}
-        {(userRole === 1 || userRole === 3) && (
+        {/* {(userRole === 1 || userRole === 3) && ( */}
           <DropdownMenuItem
             onClick={() => navigate(`/edit-employee/${row.id}`)}
           >
             Edit Employee
           </DropdownMenuItem>
-        )}
+        {/* )} */}
         <DropdownMenuItem onClick={() => navigate(`/user/${row.id}`)}>
           View Profile
         </DropdownMenuItem>

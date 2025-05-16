@@ -1,5 +1,6 @@
 import {
-  UserRoleColumn,
+  UserRoleColumn,RoleAssignmentHistoryLogsColumn
 } from "./RolePermissionsTableColumn";
+import UserRoleStatusTogle from './UserRoleStatusTogle'
 import { AssignedRolesColumn } from "./AssignedRolesColumn";
-export { UserRoleColumn, AssignedRolesColumn }; 
+export { UserRoleColumn, AssignedRolesColumn,UserRoleStatusTogle,RoleAssignmentHistoryLogsColumn }; 

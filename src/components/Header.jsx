@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
+import { Button } from "components/ui/button";
+import { ArrowLeft } from "lucide-react";
+
 const pathNames = (userProfile) => {
   return {
     "people-team": "People Team",
@@ -48,6 +51,9 @@ const pathNames = (userProfile) => {
     "create-task": "Create Task",
     "my-dtr": "Daily Tasks Report",
     "employee-dtrs": "Daily Tasks Report",
+    "user-role/add": "Add User Role",
+    "user-role/edit": "Update User Role",
+    "role-permission": "Role & Permission",
     settings: "Settings",
     "travel-details": "Travel Details",
     "customise-employees": "Customize Employees",
@@ -84,8 +90,15 @@ const pathNames = (userProfile) => {
   };
 };
 
-const Header = ({ content, userProfile }) => {
+const Header = ({
+  content,
+  userProfile,
+  showBackButton = false,
+  navigationLink = "-1",
+  showTitle = true,
+}) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [pathName, setPathName] = useState("");
   const PATHNAMELIST = React.useMemo(() => {
     return pathNames(userProfile);
@@ -93,15 +106,33 @@ const Header = ({ content, userProfile }) => {
 
   useEffect(() => {
     const path = location.pathname.replace(/^\//, "");
-    const matchedPathKey = Object.keys(PATHNAMELIST).find((key) => path.includes(key));
+    const matchedPathKey = Object.keys(PATHNAMELIST).find((key) =>
+      path.includes(key)
+    );
     setPathName(PATHNAMELIST[matchedPathKey] || "Dashboard");
   }, [location]);
 
   return (
     <div className="flex flex-row items-center justify-between px-4 py-4">
-      <h3 className="text-lg font-semibold capitalize sm:text-xl md:text-2xl lg:text-3xl">
-        {pathName}
-      </h3>
+      <div className="flex flex-row gap-2">
+        {showBackButton && (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              navigate(navigationLink);
+            }}
+            className="p-0 text-xl text-balance hover:bg-transparent"
+          >
+            <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
+            {!showTitle ? "Go Back" : ""}
+          </Button>
+        )}
+        {showTitle && (
+          <h3 className="text-lg font-semibold capitalize sm:text-xl md:text-2xl lg:text-3xl">
+            {pathName}
+          </h3>
+        )}
+      </div>
       <div className="flex flex-wrap justify-end gap-3">{content}</div>
     </div>
   );

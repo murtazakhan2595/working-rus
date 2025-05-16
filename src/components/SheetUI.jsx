@@ -53,13 +53,13 @@ const SheetUI = forwardRef(
     const handleClose = () => {
       setIsCloseConfirmationOpen(true);
     };
-    const HandleSubmit = (values, resetForm) => {
+    const HandleSubmit = async (values, resetForm) => {
       try {
         setIsSubmittingForm(true);
-        const response = handleSubmit(values, resetForm);
+        const response = await handleSubmit(values, resetForm);
         if (response.status) {
           setMessageConfig(response);
-          openActionMessage(true);
+          setOpenActionMessage(true);
         }
       } catch (error) {
         console.error(error);
@@ -197,6 +197,7 @@ const SheetUI = forwardRef(
             isOpen={openActionMessage}
             onClose={() => {
               setOpenActionMessage(false);
+              setIsOpen(false)
             }}
             title={messageConfig.title || "Request Submitted!"}
             description={
