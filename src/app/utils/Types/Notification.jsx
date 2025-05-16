@@ -87,7 +87,7 @@ export const Notifications_Action_URL = [
   {
     module: "Task Management",
     notification_type: "Mention",
-    action_url: "/tasks/{task_id}/comments/{comment_id}",
+    action_url: "project-board/card/{related_id}",
   },
   {
     module: "Project Management",
