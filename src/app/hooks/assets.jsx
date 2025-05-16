@@ -61,13 +61,9 @@ const getLocations = async () => {
   }
 };
 
-const uploadAttachment = async (file) => {
+const uploadAttachment = async (formData) => {
   try {
-
-    const formData = new FormData();
-    // Match the working pattern exactly
-    formData.append("attachment", file);
-
+    // formData should already be a FormData object with the file
     const response = await axios({
       method: "POST",
       url: `${baseUrl}/asset_attachment/`,
@@ -76,7 +72,7 @@ const uploadAttachment = async (file) => {
     });
 
     if (response.status === 201) {
-      return response.data.id;
+      return response.data;
     }
   } catch (error) {
     console.error("Error uploading attachment:", error);
@@ -86,92 +82,50 @@ const uploadAttachment = async (file) => {
     throw error;
   }
 };
-const addAsset = async (formValues) => {
+const addAsset = async (payload, id = null) => {
   try {
-    // Handle the attachment format coming from the existing component
-    let attachmentIds = [];
-
-    // Process existing attachments that already have IDs
-    if (formValues.attachment) {
-      // If attachment is an array, extract the IDs
-      if (Array.isArray(formValues.attachment)) {
-        attachmentIds = formValues.attachment
-          .filter((att) => att && att.id) // Only include items with IDs
-          .map((att) => att.id);
-      }
-    }
-
-    // Process new files if they exist in the format provided by the component
-    const newFiles = [];
-
-    // Check if attachment is an array of objects with attachment property
-    if (Array.isArray(formValues.attachment)) {
-      formValues.attachment.forEach((item) => {
-        if (item instanceof File) {
-          newFiles.push(item);
-        } else if (item && item.attachment instanceof File) {
-          newFiles.push(item.attachment);
-        }
-      });
-    }
-
-    // Upload any new files
-    if (newFiles.length > 0) {
-      // Upload each new file and get back the IDs
-      const uploadPromises = newFiles.map((file) => uploadAttachment(file));
-      const newIds = await Promise.all(uploadPromises);
-      attachmentIds = [...attachmentIds, ...newIds];
-    }
-
-    // Prepare payload directly using backend field names
-    const payload = {
-      asset_name: formValues.asset_name,
-      asset_type: formValues.category,
-      asset_description: formValues.specifications,
-      asset_serial_number: formValues.serial_number,
-      asset_purchase_date: formValues.purchase_date,
-      asset_purchase_price: formValues.purchase_cost,
-      asset_model: formValues.specifications, // Using specifications for model as well
-      asset_notes: formValues.notes,
-      asset_warranty: formValues.warranty_expiry ? "Yes" : "No",
-      asset_warranty_expiry: formValues.warranty_expiry || null,
-      asset_initial_condition: formValues.condition,
-      asset_location: formValues.location?.value || formValues.location,
-      attachment: attachmentIds,
+    const requestData = {
+      asset_name: payload.asset_name,
+      asset_type_id: payload.asset_type_id,
+      asset_purchase_date: payload.asset_purchase_date,
+      asset_purchase_price: payload.asset_purchase_price,
+      asset_notes: payload.asset_notes,
+      asset_warranty: payload.asset_warranty,
+      asset_warranty_expiry: payload.asset_warranty_expiry,
+      asset_initial_condition: payload.asset_initial_condition,
+      asset_location: payload.asset_location,
+      attachment: payload.attachment, // Array of attachment IDs
+      dynamic_field_values: payload.dynamic_field_values,
     };
 
-    if (formValues.id) {
-      const response = await axios.put(
-        `${baseUrl}/asset_management/${formValues.id}/`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
-      if (response.status === 200) {
-        return response.data;
-      }
-    } else {
-      const response = await axios.post(
-        `${baseUrl}/asset_management/`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
-      if (response.status === 201) {
-        return response.data;
-      }
+    if (payload.id) {
+      requestData.id = payload.id;
+    }
+
+    const url = id
+      ? `${baseUrl}/asset_management/${id}/`
+      : `${baseUrl}/asset_management/`;
+
+    const method = id ? "PUT" : "POST";
+
+    const response = await axios({
+      method,
+      url,
+      data: requestData,
+      headers: headers(),
+    });
+
+    if (response.status === 201 || response.status === 200) {
+      return response.data;
     }
   } catch (error) {
     console.error("Error saving asset:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return false;
+    throw error;
   }
 };
-
 const deleteAsset = async (assetId) => {
   try {
     const response = await axios.delete(
@@ -277,7 +231,7 @@ const getAssetCategories = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  let URL = `/asset_categories?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
+  let URL = `/asset-categories?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
     pageSize ? `page_size=${pageSize}&` : ""
   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
@@ -300,14 +254,14 @@ const addAssetCategory = async (payload) => {
   try {
     if (payload.id) {
       const response = await axios.put(
-        `${baseUrl}/asset_categories/${payload.id}/`,
+        `${baseUrl}/asset-categories/${payload.id}/`,
         payload,
         { headers: headers() }
       );
       return response.status === 200 ? response.data : false;
     } else {
       const response = await axios.post(
-        `${baseUrl}/asset_categories/`,
+        `${baseUrl}/asset-categories/`,
         payload,
         { headers: headers() }
       );
@@ -325,7 +279,7 @@ const addAssetCategory = async (payload) => {
 const deleteAssetCategory = async (categoryId) => {
   try {
     const response = await axios.delete(
-      `${baseUrl}/asset_categories/${categoryId}/`,
+      `${baseUrl}/asset-categories/${categoryId}/`,
       { headers: headers() }
     );
     return response.status === 204;

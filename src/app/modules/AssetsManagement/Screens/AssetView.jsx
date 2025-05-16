@@ -1,101 +1,106 @@
-import React, { useState } from "react";
-import { Button } from "components/ui/button";
-import moment from "moment";
-import { Tag, MapPin, Calendar, Banknote, Info } from "lucide-react";
-import AttachmentUI from "components/ui/AttachmentUI";
+import React, { useState, useEffect } from "react";
+import { DetailBox, DetailCard } from "components/SheetCardExtension";
+import SheetComponent from "components/ui/SheetComponent";
+import CircularActionButtons from "components/CircularActionButtons";
 import AlertDialogue from "components/ui/AlertDialogue";
+import { toast } from "react-toastify";
+import AddUpdateAsset from "./AddUpdateAsset";
+import AttachmentUI from "components/ui/AttachmentUI";
+import { deleteAsset } from "app/hooks/assets";
 
-const AssetView = ({ assetData, onEdit, onDelete, onClose }) => {
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+const ViewAsset = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
+  const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
+  const [editAsset, setEditAsset] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [viewData, setViewData] = useState(data);
+
+  useEffect(() => {
+    setViewData(data);
+  }, [data]);
+
+  const formSheetData = {
+    triggerText: null,
+    title: "View Asset",
+    description: null,
+    footer: null,
+  };
 
   // Format currency
   const formatCurrency = (value) => {
-    return `AED ${parseFloat(value).toFixed(2)}`;
+    return value ? `AED ${parseFloat(value).toFixed(2)}` : "N/A";
   };
 
-  // NEW: Organize asset details to include category and dynamic fields
-  const assetDetails = [
-    { label: "Asset Name", value: assetData.asset_name },
-    {
-      label: "Category",
-      value: assetData.category?.name || assetData.asset_type, // Support both new and old structure
-    },
-    // NEW: Show dynamic field values
-    ...Object.entries(assetData.dynamic_field_values || {}).map(
-      ([key, value]) => ({
-        label: key,
-        value: value || "N/A",
-      })
-    ),
-    // Keep old fields for backward compatibility during migration
-    assetData.asset_serial_number && {
-      label: "Serial Number",
-      value: assetData.asset_serial_number,
-    },
-    assetData.asset_model && {
-      label: "Model",
-      value: assetData.asset_model,
-    },
-    assetData.asset_description && {
-      label: "Description",
-      value: assetData.asset_description,
-    },
-  ].filter(Boolean);
+  // Format date
+  const formatDate = (date) => {
+    return date ? new Date(date).toLocaleDateString() : "N/A";
+  };
 
-  const purchaseDetails = [
-    {
-      label: "Purchase Date",
-      value: assetData.asset_purchase_date
-        ? moment(assetData.asset_purchase_date).format("MMM D, YYYY")
-        : "N/A",
-      icon: <Calendar size={16} className="text-muted-foreground" />,
-    },
-    {
-      label: "Purchase Price",
-      value: formatCurrency(assetData.asset_purchase_price),
-      icon: <Banknote size={16} className="text-muted-foreground" />,
-    },
-    {
-      label: "Condition",
-      value: assetData.asset_initial_condition,
-      icon: <Info size={16} className="text-muted-foreground" />,
-    },
-    {
-      label: "Warranty",
-      value: assetData.asset_warranty,
-      icon: <Info size={16} className="text-muted-foreground" />,
-    },
-    {
-      label: "Warranty Expiry",
-      value: assetData.asset_warranty_expiry
-        ? moment(assetData.asset_warranty_expiry).format("MMM D, YYYY")
-        : "N/A",
-      icon: <Calendar size={16} className="text-muted-foreground" />,
-    },
-  ];
+  // Handle opening edit form
+  const handleEdit = () => {
+    setEditAsset(true);
+  };
 
-  // NEW: Updated location details to support office branches
-  const locationDetails = [
-    {
-      label: "Location",
-      value:
-        typeof assetData.asset_location === "object"
-          ? assetData.asset_location?.name
-          : assetData.asset_location_name ||
-            `Location ${assetData.asset_location}`,
-      icon: <MapPin size={16} className="text-muted-foreground" />,
-    },
-    {
-      label: "Category",
-      value: assetData.category?.name || assetData.asset_type,
-      icon: <Tag size={16} className="text-muted-foreground" />,
-    },
-    {
-      label: "Status",
-      value: assetData.asset_status,
-      icon: <Info size={16} className="text-muted-foreground" />,
-    },
-  ];
+  // Handle opening delete confirmation
+  const handleDelete = () => {
+    setOpenDeleteAlert(true);
+  };
+
+  // Confirm and execute deletion
+  const confirmDelete = async () => {
+    if (!viewData?.id) return;
+
+    setIsDeleting(true);
+
+    try {
+      await deleteAsset(viewData.id);
+
+      toast.success(`Asset "${viewData.asset_name}" deleted successfully`, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+
+      // Close all dialogs
+      setOpenDeleteAlert(false);
+      setIsOpen(false);
+
+      // Reload the table
+      if (typeof reload === "function") {
+        reload(true);
+      }
+    } catch (error) {
+      console.error("Error deleting asset:", error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        "Failed to delete asset";
+
+      toast.error(errorMessage, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Handle edit form close
+  const handleEditClose = async (updated = false) => {
+    setEditAsset(false);
+
+    if (updated) {
+      // If the asset was updated, reload the table
+      if (typeof reload === "function") {
+        reload(true);
+      }
+    }
+  };
+
+  // Handle view sheet close
+  const handleViewClose = (open) => {
+    setIsOpen(open);
+    if (!open && typeof reload === "function") {
+      reload(true);
+    }
+  };
 
   // Helper function to extract filename from URL
   const getFilenameFromUrl = (url) => {
@@ -104,210 +109,177 @@ const AssetView = ({ assetData, onEdit, onDelete, onClose }) => {
     return parts[parts.length - 1];
   };
 
-  // Handle delete confirmation
-  const handleDeleteClick = () => {
-    setIsDeleteDialogOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    onDelete(); // Call the original onDelete function when confirmed
-    setIsDeleteDialogOpen(false);
-  };
-
   return (
-    <div className="w-full p-0">
-      <div className="flex flex-col">
-        <div className="flex-grow">
-          <div className="p-0">
-            <div className="flex items-center justify-end mb-6">
-              <div className="flex items-center gap-3">
-                <Button
-                  onClick={onEdit}
-                  className="border bg-white border-[#e8e8ec] text-neutral-1200 text-xs font-semibold font-[inter]"
-                >
-                  Edit
-                </Button>
-                <Button
-                  onClick={handleDeleteClick}
-                  className="border bg-white border-[#e8e8ec] text-neutral-1200 text-xs font-semibold font-[inter]"
-                >
-                  Delete
-                </Button>
-
-                {/* Delete Confirmation Dialog */}
-                {isDeleteDialogOpen && (
-                  <AlertDialogue
-                    isOpen={isDeleteDialogOpen}
-                    setIsOpen={setIsDeleteDialogOpen}
-                    handleContinue={handleConfirmDelete}
-                    continueText="Delete"
-                    title={`Are you sure you want to delete ${assetData.asset_name}?`}
-                    description="This action cannot be undone. Once deleted, the asset data will be permanently removed."
-                  />
-                )}
-              </div>
-            </div>
-
-            {/* Asset Details Section */}
-            <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 text-sm font-medium leading-[1.2] tracking-[0px] ">
-              <section className="flex flex-col justify-center p-6 text-sm bg-white">
-                <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
-                  Basic Information
-                </div>
-                <div className="flex w-full mt-3">
-                  <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
-                    {assetDetails.map((item, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center max-w-full gap-4 mt-4"
-                      >
-                        <div className="flex flex-col leading-none min-w-[88px]  w-[132px]">
-                          <div>{item.label}</div>
-                        </div>
-                        <div className="flex-1 leading-5 text-neutral-900 shrink basis-0 ">
-                          {item.value || "N/A"}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-              <div className="h-[45px] px-6 pt-[13px] pb-3 bg-zinc-100/50 border-t border-zinc-200 justify-start items-center inline-flex">
-                <div className="inline-flex flex-col items-start justify-start grow shrink basis-0">
-                  <div>
-                    <span className="text-[#8b8d98] text-xs font-medium leading-tight">
-                      Created on:
-                    </span>
-                    <span className="text-[#8b8d98] text-xs font-normal leading-3">
-                      {` ${moment(assetData?.created_at).format(
-                        "MMMM DD, YYYY"
-                      )}`}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Purchase Details Section */}
-            <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 text-sm font-medium leading-[1.2] tracking-[0px] ">
-              <section className="flex flex-col justify-center p-6 text-sm bg-white">
-                <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
-                  Purchase Information
-                </div>
-                <div className="flex w-full mt-3">
-                  <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
-                    {purchaseDetails.map((item, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center max-w-full gap-4 mt-4"
-                      >
-                        <div className="flex flex-col leading-none min-w-[88px]  w-[132px]">
-                          <div>{item.label}</div>
-                        </div>
-                        <div className="flex-1 leading-5 text-neutral-900 shrink basis-0  flex items-center gap-2">
-                          {item.icon}
-                          {item.value || "N/A"}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-              <div className="h-[45px] px-6 pt-[13px] pb-3 bg-zinc-100/50 border-t border-zinc-200 justify-start items-center inline-flex">
-                <div className="inline-flex flex-col items-start justify-start grow shrink basis-0">
-                  <div>
-                    <span className="text-[#8b8d98] text-xs font-medium leading-tight">
-                      Last updated:
-                    </span>
-                    <span className="text-[#8b8d98] text-xs font-normal leading-3">
-                      {` ${moment(assetData?.updated_at).format(
-                        "MMMM DD, YYYY"
-                      )}`}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Location Details Section */}
-            <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 text-sm font-medium leading-[1.2] tracking-[0px] ">
-              <section className="flex flex-col justify-center p-6 text-sm bg-white">
-                <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
-                  Location & Category
-                </div>
-                <div className="flex w-full mt-3">
-                  <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
-                    {locationDetails.map((item, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center max-w-full gap-4 mt-4"
-                      >
-                        <div className="flex flex-col leading-none min-w-[88px]  w-[132px]">
-                          <div>{item.label}</div>
-                        </div>
-                        <div className="flex-1 leading-5 shrink basis-0 text-neutral-900 flex items-center gap-2">
-                          {item.icon}
-                          {item.value || "N/A"}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </section>
-            </div>
-
-            {/* Notes Section - display only if notes exist */}
-            {assetData.asset_notes && (
-              <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 text-sm font-medium leading-[1.2] tracking-[0px] ">
-                <section className="flex flex-col justify-center p-6 text-sm bg-white">
-                  <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
-                    Notes
-                  </div>
-                  <div className="flex w-full mt-3">
-                    <div className="flex flex-col flex-1 shrink justify-center pr-11 w-full basis-0 min-w-[240px]">
-                      <div className="mt-2 ">{assetData.asset_notes}</div>
-                    </div>
-                  </div>
-                </section>
-              </div>
-            )}
-
-            {/* Attachments Section - Now using AttachmentUI component */}
-            {assetData.attachments && assetData.attachments.length > 0 && (
-              <div className="font-[inter] mt-5 flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 text-sm font-medium leading-[1.2] tracking-[0px] ">
-                <section className="flex flex-col justify-center p-6 text-sm bg-white">
-                  <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">
-                    Attachments
-                  </div>
-                  <div className="flex w-full mt-3">
-                    <div className="flex flex-col flex-1 shrink justify-center w-full basis-0 min-w-[240px]">
-                      {assetData.attachments.map((attachmentItem, index) => (
-                        <AttachmentUI
-                          key={attachmentItem.id}
-                          id={attachmentItem.id}
-                          attachment={attachmentItem.attachment}
-                          name={getFilenameFromUrl(attachmentItem.attachment)}
-                          viewOnly={true}
-                          removeFile={() => {}} // Empty function since it's view only
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </section>
-              </div>
-            )}
-
-            {/* Footer Button */}
-            <div className="flex justify-end mt-6">
-              <Button variant="outline" size="lg" onClick={onClose}>
-                Close
-              </Button>
-            </div>
-          </div>
+    <>
+      <SheetComponent
+        {...formSheetData}
+        isOpen={isOpen}
+        setIsOpen={handleViewClose}
+        width="568px"
+      >
+        {/* Action Buttons */}
+        <div className="flex justify-end mb-4 space-x-2">
+          <CircularActionButtons
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            editTooltip="Edit Asset"
+            deleteTooltip="Delete Asset"
+            disabled={isDeleting}
+          />
         </div>
-      </div>
-    </div>
+
+        {/* Basic Asset Information */}
+        <DetailCard
+          detailCardTitle="Basic Information"
+          date={viewData?.created_at}
+          dateTitle="Created At"
+        >
+          <DetailBox label="Asset Name" value={viewData?.asset_name || "N/A"} />
+          <DetailBox
+            label="Category"
+            value={viewData?.asset_type?.name || "N/A"}
+          />
+          <DetailBox
+            label="Status"
+            value={
+              <span
+                className={`px-2 py-1 rounded-full text-xs ${
+                  viewData?.asset_status === "Available"
+                    ? "bg-green-100 text-green-800"
+                    : viewData?.asset_status === "Assigned"
+                    ? "bg-blue-100 text-blue-800"
+                    : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {viewData?.asset_status || "N/A"}
+              </span>
+            }
+          />
+          <DetailBox
+            label="Initial Condition"
+            value={viewData?.asset_initial_condition || "N/A"}
+          />
+        </DetailCard>
+
+        {/* Dynamic Fields */}
+        {viewData?.dynamic_field_values &&
+          Object.keys(viewData.dynamic_field_values).length > 0 && (
+            <DetailCard detailCardTitle="Additional Details" className="mt-4">
+              {Object.entries(viewData.dynamic_field_values).map(
+                ([fieldName, fieldValue]) => (
+                  <DetailBox
+                    key={fieldName}
+                    label={fieldName}
+                    value={fieldValue || "N/A"}
+                  />
+                )
+              )}
+            </DetailCard>
+          )}
+
+        {/* Purchase Information */}
+        <DetailCard detailCardTitle="Purchase Information" className="mt-4">
+          <DetailBox
+            label="Purchase Date"
+            value={formatDate(viewData?.asset_purchase_date)}
+          />
+          <DetailBox
+            label="Purchase Price"
+            value={formatCurrency(viewData?.asset_purchase_price)}
+          />
+          <DetailBox
+            label="Warranty"
+            value={viewData?.asset_warranty || "N/A"}
+          />
+          {viewData?.asset_warranty_expiry && (
+            <DetailBox
+              label="Warranty Expiry"
+              value={formatDate(viewData.asset_warranty_expiry)}
+            />
+          )}
+        </DetailCard>
+
+        {/* Location Information */}
+        {(viewData?.asset_location || viewData?.asset_location_name) && (
+          <DetailCard detailCardTitle="Location Information" className="mt-4">
+            <DetailBox
+              label="Location"
+              value={
+                typeof viewData.asset_location === "object"
+                  ? viewData.asset_location?.name
+                  : viewData.asset_location_name ||
+                    `Location ${viewData.asset_location}` ||
+                    "N/A"
+              }
+            />
+          </DetailCard>
+        )}
+
+        {/* Notes */}
+        {viewData?.asset_notes && (
+          <DetailCard detailCardTitle="Notes" className="mt-4">
+            <DetailBox label="Notes" value={viewData.asset_notes} />
+          </DetailCard>
+        )}
+
+        {/* Attachments */}
+        {viewData?.attachments && viewData.attachments.length > 0 && (
+          <DetailCard detailCardTitle="Attachments" className="mt-4">
+            <div className="space-y-2">
+              {viewData.attachments.map((attachmentItem, index) => (
+                <AttachmentUI
+                  key={attachmentItem.id || index}
+                  id={attachmentItem.id}
+                  attachment={attachmentItem.attachment}
+                  name={getFilenameFromUrl(attachmentItem.attachment)}
+                  viewOnly={true}
+                  removeFile={() => {}} // Empty function since it's view only
+                />
+              ))}
+            </div>
+          </DetailCard>
+        )}
+      </SheetComponent>
+
+      {/* Delete Confirmation Dialog */}
+      {openDeleteAlert && (
+        <AlertDialogue
+          title="Confirm Delete?"
+          description={
+            <div className="space-y-3">
+              <p>
+                This action will permanently delete the asset{" "}
+                <strong>"{viewData?.asset_name}"</strong>.
+              </p>
+              <p className="text-red-600 font-medium">
+                This action cannot be undone. All information associated with
+                this asset will be permanently removed.
+              </p>
+            </div>
+          }
+          isOpen={openDeleteAlert}
+          setIsOpen={setOpenDeleteAlert}
+          handleContinue={confirmDelete}
+          continueText={isDeleting ? "Deleting..." : "Delete Asset"}
+          cancelText="Cancel"
+          variant="destructive"
+          disabled={isDeleting}
+        />
+      )}
+
+      {editAsset && (
+        <AddUpdateAsset
+          isOpen={editAsset}
+          setIsOpen={()=>{
+            handleEditClose(true)
+            handleViewClose(true)
+          }}
+          assetToEdit={viewData}
+          reload={reload}
+        />
+      )}
+    </>
   );
 };
 
-export default AssetView;
+export default ViewAsset;

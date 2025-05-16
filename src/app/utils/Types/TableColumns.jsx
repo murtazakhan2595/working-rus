@@ -646,14 +646,14 @@ export const AssetsColumns = [
   {
     dataField: "asset_name",
     text: "Asset Name",
-    formatter: (cell, row) => (
-      <div className="flex flex-col">
-        <div className="text-base font-medium">{cell}</div>
-        <div className="text-sm text-muted-foreground">
-          {row.asset_description || row.asset_model}
-        </div>
-      </div>
-    ),
+    // formatter: (cell, row) => (
+    //   <div className="flex flex-col">
+    //     <div className="text-base font-medium">{cell}</div>
+    //     <div className="text-sm text-muted-foreground">
+    //       {row.asset_description || row.asset_model}
+    //     </div>
+    //   </div>
+    // ),
   },
   {
     dataField: "asset_type",
@@ -661,7 +661,7 @@ export const AssetsColumns = [
     formatter: (cell) => (
       <div className="flex items-center gap-2">
         <Tag size={16} className="text-muted-foreground" />
-        <span>{cell}</span>
+        <span>{cell?.name}</span>
       </div>
     ),
   },

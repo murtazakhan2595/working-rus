@@ -26,15 +26,24 @@ export const downloadFiles = async (file, name) => {
   }
 };
 
+// Fix the getFileNameFromURL function
 export const getFileNameFromURL = (url) => {
-  if (!url) return null;
-  const parts = url?.split("/");
-  const name = parts.length ? parts[parts.length - 1] : null;
-  return name && typeof name === "string"
-    ? name.replace(/_/g, " ")
-    : "Attachment Document";
+  // Handle cases where url might not be a string
+  if (!url || typeof url !== 'string') {
+    return "Attachment Document";
+  }
+  
+  try {
+    const parts = url.split("/");
+    const name = parts.length ? parts[parts.length - 1] : null;
+    return name && typeof name === "string"
+      ? name.replace(/_/g, " ")
+      : "Attachment Document";
+  } catch (error) {
+    console.error("Error parsing filename from URL:", error);
+    return "Attachment Document";
+  }
 };
-
 const downloadFile = (data, fileName) => {
   const url = window.URL.createObjectURL(data);
   // Create a temporary link element

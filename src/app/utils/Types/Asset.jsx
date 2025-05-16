@@ -1,18 +1,14 @@
 export const Asset = {
   id: null,
   asset_name: "",
-  category: "", // Changed from asset_type
-  // Removed: specifications, serial_number (now stored in dynamic_field_values)
+  category: "", 
   purchase_date: "",
   purchase_cost: "",
   notes: "",
   warranty_expiry: null,
   condition: "",
-  location: "",
   attachment: [],
-  // NEW: Dynamic field values will be stored here
-  // Format: { "Model & Specifications": "value", "Serial Number": "value" }
-  ...Object.create(null), // Allow dynamic properties to be added
+  ...Object.create(null), 
 };
 
 // NEW: Asset Category Type

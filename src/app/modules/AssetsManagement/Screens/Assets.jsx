@@ -14,12 +14,14 @@ import {
 import { toast } from "react-toastify";
 import AddUpdateAsset from "./AddUpdateAsset";
 import AddUpdateAssetCategory from "./AddUpdateAssetCategory";
+import ViewCategory from "./ViewCategory";
 import {
   getAssetList,
   getAssetById,
   getAssetCategories,
 } from "app/hooks/assets";
 import { AssetsColumns } from "app/utils/Types/TableColumns";
+import AssetView from "./AssetView";
 
 const Assets = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("assets"); // "assets" or "categories"
@@ -28,16 +30,16 @@ const Assets = ({ userProfile }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [assetsList, setAssetsList] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [openAddAssetModal, setOpenAddAssetModal] = useState(false);
-  const [assetToEdit, setAssetToEdit] = useState(null);
+  const [createAsset, setCreateAsset] = useState(false);
+  const [viewAsset, setViewAsset] = useState(null);
   const [filterData, setFilterData] = useState({});
   const [selectedAssetType, setSelectedAssetType] = useState("");
 
   // Asset Categories state
   const [categoriesList, setCategoriesList] = useState([]);
   const [categoriesTotalCount, setCategoriesTotalCount] = useState(0);
-  const [openAddCategoryModal, setOpenAddCategoryModal] = useState(false);
-  const [categoryToEdit, setCategoryToEdit] = useState(null);
+  const [createCategory, setCreateCategory] = useState(false);
+  const [categoryToView, setCategoryToView] = useState(null);
   const [categoriesFilterData, setCategoriesFilterData] = useState({});
 
   // NEW: Categories for filter dropdown
@@ -64,21 +66,19 @@ const Assets = ({ userProfile }) => {
     setOptions({ page: 1, sizePerPage: 10 });
   }, [activeTab]);
 
-  // NEW: Fetch categories for filter dropdown
   const fetchCategoriesForFilter = async () => {
     try {
-      const response = await getAssetCategories({
-        options: { page: 1, sizePerPage: 100 },
-        filterData: { is_active: true }, // Only active categories for filtering
-      });
-
-      if (response?.results) {
-        const formattedCategories = response.results.map((category) => ({
-          value: category.id,
-          label: category.name,
-        }));
-        setFilterCategories(formattedCategories);
-      }
+      // const response = await getAssetCategories({
+      //   options: { page: 1, sizePerPage: 100 },
+      //   filterData: { is_active: true }, // Only active categories for filtering
+      // });
+      // if (response?.results) {
+      //   const formattedCategories = response.results.map((category) => ({
+      //     value: category.id,
+      //     label: category.name,
+      //   }));
+      //   setFilterCategories(formattedCategories);
+      // }
     } catch (error) {
       console.error("Error fetching categories for filter:", error);
     }
@@ -86,7 +86,7 @@ const Assets = ({ userProfile }) => {
 
   // Fetch categories for filter when component mounts or when categories tab data is updated
   useEffect(() => {
-    fetchCategoriesForFilter();
+    // fetchCategoriesForFilter();
   }, [categoriesList]); // Refetch when categories list changes
 
   const fetchAssetsData = async (isMounted = true) => {
@@ -111,7 +111,6 @@ const Assets = ({ userProfile }) => {
     }
   };
 
-  // FIXED: Proper implementation for categories with actual API call
   const fetchCategoriesData = async (isMounted = true) => {
     setIsLoading(true);
     try {
@@ -132,26 +131,6 @@ const Assets = ({ userProfile }) => {
     } finally {
       if (isMounted) setIsLoading(false);
     }
-  };
-
-  const handleAddOrEditAsset = () => {
-    setAssetToEdit(null);
-    setOpenAddAssetModal(true);
-  };
-
-  const handleCloseAssetModal = () => {
-    setAssetToEdit(null);
-    setOpenAddAssetModal(false);
-  };
-
-  const handleAddOrEditCategory = () => {
-    setCategoryToEdit(null);
-    setOpenAddCategoryModal(true);
-  };
-
-  const handleCloseCategoryModal = () => {
-    setCategoryToEdit(null);
-    setOpenAddCategoryModal(false);
   };
 
   const handleAssetsFilterChange = (filterName, filterValue) => {
@@ -199,8 +178,7 @@ const Assets = ({ userProfile }) => {
         setIsLoading(true);
         const assetDetails = await getAssetById(row.id);
         if (assetDetails) {
-          setAssetToEdit(assetDetails);
-          setOpenAddAssetModal(true);
+          setViewAsset(assetDetails);
         }
       } catch (error) {
         console.error("Error fetching asset details:", error);
@@ -211,18 +189,15 @@ const Assets = ({ userProfile }) => {
     },
   };
 
-  // TABLE OPTIONS for Categories
   const categoriesTableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
     onRowClick: (row) => {
-      setCategoryToEdit(row);
-      setOpenAddCategoryModal(true);
+      setCategoryToView(row);
     },
   };
 
-  // Load data based on active tab
   useEffect(() => {
     let isMounted = true;
     if (activeTab === "assets") {
@@ -235,13 +210,11 @@ const Assets = ({ userProfile }) => {
     };
   }, [activeTab, options, filterData, categoriesFilterData]);
 
-  // Tab configuration
   const tabsData = [
     { value: "assets", label: "Assets" },
     { value: "categories", label: "Asset Category" },
   ];
 
-  // FIXED: Filters configuration for Assets using dynamic categories
   const assetsFilters = [
     {
       type: "search",
@@ -257,7 +230,6 @@ const Assets = ({ userProfile }) => {
     },
   ];
 
-  // Filters configuration for Categories
   const categoriesFilters = [
     {
       type: "search",
@@ -308,12 +280,13 @@ const Assets = ({ userProfile }) => {
     },
   ];
 
-  // FIXED: Correct action button text for each tab
   const getActionButton = () => {
     if (activeTab === "assets") {
-      return <Button onClick={handleAddOrEditAsset}>Add Asset</Button>;
+      return <Button onClick={()=>{setCreateAsset(true)}}>Add Asset</Button>;
     } else {
-      return <Button onClick={handleAddOrEditCategory}>Create Category</Button>;
+      return (
+        <Button onClick={() => setCreateCategory(true)}>Create Category</Button>
+      );
     }
   };
 
@@ -387,23 +360,36 @@ const Assets = ({ userProfile }) => {
         </Card>
       </Tabs>
 
-      {/* Asset Add/Edit Modal */}
-      {openAddAssetModal && (
+      {createAsset && (
         <AddUpdateAsset
-          isOpen={openAddAssetModal}
-          setIsOpen={handleCloseAssetModal}
-          assetToEdit={assetToEdit}
-          viewMode={assetToEdit !== null}
+          isOpen={createAsset}
+          setIsOpen={setCreateAsset}
           reload={() => fetchAssetsData(true)}
         />
       )}
+      {viewAsset && (
+        <AssetView
+          isOpen={viewAsset}
+          setIsOpen={() => setViewAsset(null)}
+          reload={() => fetchAssetsData(true)}
+          data={viewAsset}
+        />
+      )}
 
-      {/* Asset Category Add/Edit Modal */}
-      {openAddCategoryModal && (
+      {createCategory && (
         <AddUpdateAssetCategory
-          isOpen={openAddCategoryModal}
-          setIsOpen={handleCloseCategoryModal}
-          categoryToEdit={categoryToEdit}
+          isOpen={createCategory}
+          setIsOpen={setCreateCategory}
+          reload={() => fetchCategoriesData(true)}
+        />
+      )}
+
+      {/* Category View Modal - Simple pattern */}
+      {categoryToView && (
+        <ViewCategory
+          isOpen={categoryToView}
+          setIsOpen={() => setCategoryToView(null)}
+          data={categoryToView}
           reload={() => fetchCategoriesData(true)}
         />
       )}
@@ -411,7 +397,6 @@ const Assets = ({ userProfile }) => {
   );
 };
 
-// Connect to Redux to get user profile
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,

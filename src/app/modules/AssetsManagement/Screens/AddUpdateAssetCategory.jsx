@@ -144,7 +144,7 @@ const AddUpdateAssetCategory = ({
 
   const handleFormSubmit = async (values) => {
     setIsSubmitting(true);
-
+    
     try {
       const payload = {
         name: values.name,
@@ -152,11 +152,11 @@ const AddUpdateAssetCategory = ({
         is_active: values.is_active,
         dynamic_fields: dynamicFields,
       };
-
+    
       if (categoryToEdit?.id) {
         payload.id = categoryToEdit.id;
       }
-
+      console.log("payload", payload);
       const response = await addAssetCategory(payload);
 
       if (response) {
