@@ -21,6 +21,7 @@ const UserRoles = ({
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [reloadCounter, setReloadCounter] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState('');
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -77,6 +78,7 @@ const UserRoles = ({
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
+    if(filterName==='status')setSelectedStatus(filterValue)
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -108,6 +110,16 @@ const UserRoles = ({
             type: "search",
             placeholder: "Search Role Name",
             name: "name",
+          },
+          {
+            type: "select-one",
+            placeholder: "Status",
+            name: "status",
+            option: [
+              { label: "Active", value: "active" },
+              { label: "Inactive", value: "inactive" },
+            ],
+            values:selectedStatus,
           },
         ]}
         className="justify-end"
