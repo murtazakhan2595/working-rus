@@ -7,7 +7,12 @@ import {
   fetchBranches,
 } from "state/slices/CommonSlice";
 import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
-import { fetchModules,fetchUserRoles } from "state/slices/RolePermissionSlice";
+import {
+  fetchModules,
+  fetchUserRoles,
+  fetchMyPermissions,
+  fetchUserPermittedModules,
+} from "state/slices/RolePermissionSlice";
 import { fetchTerminationReasons } from "state/slices/ExitEmployeeSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
 import {
@@ -21,8 +26,10 @@ import { fetchDocumentCategory } from "state/slices/HRDocumentsSlice";
 import { fetchShiftById } from "state/slices/AttendanceSlice";
 import { ArrowDown, ArrowRight, ArrowUp, Timer } from "lucide-react";
 import { lightenColor } from "utils/renderValues";
-
-console.log(countries);
+import {
+  ExtractFieldValueFromList,
+  FilterTreeBySelectedLeafs,
+} from "utils/Lists";
 
 export const countriesCallingCodes = countries.all
   .filter(
@@ -824,12 +831,19 @@ export const handleUpdateProfile = async (dispatch, data) => {
     organization: data.organization,
   };
   dispatch(setUserProfile(userprofile));
+  const ModuleList = await dispatch(fetchModules());
+  const MyPermissions = await dispatch(fetchMyPermissions());
   const employee_details = await dispatch(fetchUser(userprofile.id));
   dispatch(fetchEmployees());
   dispatch(fetchEmployeesDetail());
   dispatch(fetchBranches());
+  dispatch(
+    fetchUserPermittedModules({
+      modules: ModuleList.payload,
+      permissions: MyPermissions.payload,
+    })
+  );
   dispatch(fetchDepartments());
-  dispatch(fetchModules());
   dispatch(fetchDesignations());
   dispatch(fetchDocumentCategory());
   dispatch(fetchOrganizations());

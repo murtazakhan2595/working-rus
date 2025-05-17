@@ -75,75 +75,320 @@ import {
   AddUpdateUserRoleForm,
 } from "app/modules/RoleAndPermissions";
 
-const SidebarRoutes = [
+export const SidebarRoutes = [
   {
     path: "/",
     component: <Dashboard />,
-    name: "Dashboard",
+    name: "DASHBOARD",
   },
+  ...(Config.SELF_SERVICE_HUB
+    ? [
+        Config.MY_PROFILE && {
+          path: "/my-profile",
+          component: <ViewEmployee profileView />,
+          name: "MY_PROFILE",
+        },
+        Config.MY_ATTENDANCE && {
+          path: "/my-attendance",
+          component: <MyAttendance />,
+          name: "MY_ATTENDANCE",
+        },
+        Config.DAILY_TASK_REPORT && {
+          path: "/my-dtr",
+          component: <MyDtr />,
+          name: "DAILY_TASK_REPORT",
+        },
+        Config.MY_LEAVE_TRACKER && {
+          path: "/my-leave-tracker",
+          component: <MyLeaveTracker />,
+          name: "MY_LEAVE_TRACKER",
+        },
+        Config.MY_PAYROLL && {
+          path: "/my-payroll",
+          component: <MyPayroll />,
+          name: "MY_PAYROLL",
+        },
+        Config.MY_CLAIMS && {
+          path: "/my-claims",
+          component: <MyClaims />,
+          name: "MY_CLAIMS",
+        },
+        Config.MY_TRANSFERS && {
+          path: "/my-tranfers",
+          component: <MyTransfers />,
+          name: "MY_TRANSFERS",
+        },
+        Config.DOCUMENTS && {
+          path: "/my-documents",
+          component: <MyDocuments />,
+          name: "DOCUMENTS",
+        },
+        Config.MY_ASSETS && {
+          path: "/my-assets",
+          component: <MyAssets />,
+          name: "MY_ASSETS",
+        },
+        Config.EXIT && {
+          path: "/exit-employee",
+          component: <EmployeeExit />,
+          name: "EXIT",
+        },
+      ].filter(Boolean) // Filter out undefined routes
+    : []),
+  ...(Config.TEAM_MANAGEMENT
+    ? [
+        Config.TEAM_PROFILE && {
+          path: "/team-profile-management",
+          component: <TeamProfileMangement />,
+          name: "TEAM_PROFILE",
+        },
+        Config.TEAM_LEAVE_REQUEST && {
+          path: "/team-leave-request",
+          component: <LeaveRequests isTeamView={true} />,
+          name: "TEAM_LEAVE_REQUEST",
+        },
+        Config.TEAM_EXIT_CLEARANCE && {
+          path: "/team-exit-clearance",
+          component: <ExitAndClearance isTeamView={true} />,
+          name: "TEAM_EXIT_CLEARANCE",
+        },
+      ].filter(Boolean) // Filter out undefined route
+    : []),
+  ...(Config.TEAM_MANAGEMENT
+    ? [
+        Config.TEAM_PROFILE && {
+          path: "/team-profile-management",
+          component: <TeamProfileMangement />,
+          name: "TEAM_PROFILE",
+        },
+        Config.TEAM_LEAVE_REQUEST && {
+          path: "/team-leave-request",
+          component: <LeaveRequests isTeamView={true} />,
+          name: "TEAM_LEAVE_REQUEST",
+        },
+        Config.TEAM_EXIT_CLEARANCE && {
+          path: "/team-exit-clearance",
+          component: <ExitAndClearance isTeamView={true} />,
+          name: "TEAM_EXIT_CLEARANCE",
+        },
+      ].filter(Boolean) // Filter out undefined route
+    : []),
+  ...(Config.PEOPLE_TEAM
+    ? [
+        Config.PROFILE_MANAGEMENT && {
+          path: "/profile-management",
+          component: <Employee />,
+          name: "PROFILE_MANAGEMENT",
+        },
+        Config.HR_DOCUMENTS && {
+          path: "/documents",
+          component: <HRDocuments />,
+          name: "HR_DOCUMENTS",
+        },
+        Config.HR_DOCUMENTS && {
+          path: "/documents/detail",
+          component: <DocumentDetails />,
+          name: "Document Detail",
+        },
+
+        Config.EMPLOYEE_TRANSFER && {
+          path: "/employee-tranfer",
+          component: <EmployeeTransfer />,
+          name: "EMPLOYEE_TRANSFER",
+        },
+
+        Config.EMPLOYEE_CREATION && {
+          path: "/create-employee",
+          component: <CreateUpdateEmployee />,
+          name: "EMPLOYEE_CREATION",
+        },
+        Config.PROFILE_MANAGEMENT && {
+          path: "/edit-employee/:id",
+          component: <CreateUpdateEmployee />,
+          name: "Edit Employee",
+        },
+        Config.PROFILE_MANAGEMENT && {
+          path: "/profile/:id",
+          component: <EditEmployeeProfile />,
+          name: "Edit Employee Profile",
+        },
+        Config.PROFILE_MANAGEMENT && {
+          path: "/user/:id",
+          component: <ViewEmployee profileView={false} />,
+          name: "User Profile",
+        },
+        Config.EXIT_CLEARANCE && {
+          path: "/exit-clearance",
+          component: <ExitAndClearance />,
+          name: "EXIT_CLEARANCE",
+        },
+      ].filter(Boolean) // Filter out undefined route
+    : []),
+  ...(Config.TASK_MANAGEMENT
+    ? [
+        Config.TASK_MANAGMENT && {
+          path: "/projects",
+          component: <Projects />,
+          name: "PROJECT_BOARD",
+        },
+      ].filter(Boolean) // Filter out undefined route
+    : []),
+  ...(Config.LEAVE_MANAGEMENT
+    ? [
+        Config.LEAVE_RECORDS && {
+          path: "/leave-records",
+          component: <LeaveTracker />,
+          name: "LEAVE_RECORDS",
+        },
+        Config.LEAVE_REQUEST && {
+          path: "/leave-request",
+          component: <LeaveRequests />,
+          name: "LEAVE_REQUEST",
+        },
+      ].filter(Boolean) // Filter out undefined route
+    : []),
+  ...(Config.TALENT_SPHERE
+    ? [
+        Config.JOBS && {
+          path: "/jobs",
+          component: <Jobs />,
+          name: "JOBS",
+        },
+        Config.JOBS && {
+          path: "/job-post",
+          component: <CreateUpdateJob />,
+          name: "JOBS",
+        },
+        Config.TALENT_SPHERE && {
+          path: "/applicants/:id",
+          component: <Applications />,
+          name: "Applicants",
+        },
+        Config.APPLICANTS && {
+          path: "/applicants",
+          component: <Applications />,
+          name: "APPLICANTS",
+        },
+      ].filter(Boolean) // Filter out undefined route
+    : []),
+  ...(Config.ASSET_MANAGEMENT
+    ? [
+        Config.ASSETS && {
+          path: "/assets",
+          component: <Assets />,
+          name: "ASSETS",
+        },
+        Config.REQUEST_AND_ASSIGN && {
+          path: "/request-and-assign",
+          component: <RequestAndAssign />,
+          name: "REQUEST_AND_ASSIGN",
+        },
+      ].filter(Boolean) // Filter out undefined route
+    : []),
+  ...(Config.ATTENDANCE
+    ? [
+        Config.EMPLOYEES_ATTENDANCE && {
+          path: "/attendance",
+          component: <Attendance />,
+          name: "EMPLOYEES_ATTENDANCE",
+        },
+        Config.EMPLOYEE_DAILY_TASK_REPORT && {
+          path: "/employee-dtrs",
+          component: <EmployeeDTRs />,
+          name: "EMPLOYEE_DAILY_TASK_REPORT",
+        },
+        Config.SHIFT_CALENDAR && {
+          path: "/shift-calendar",
+          component: <ShiftCalendar />,
+          name: "SHIFT_CALENDAR",
+        },
+      ].filter(Boolean) // Filter out undefined route
+    : []),
+  ...(Config.OFFICE_SETTING
+    ? [
+        Config.ROLE_PERMISSIONS && {
+          path: "/office-settings/role-permission",
+          component: <RoleAndPermissions />,
+          name: "ROLE_PERMISSIONS",
+        },
+        Config.OFFICE_SETTING && {
+          path: "/office-settings",
+          component: <OfficeSetting />,
+          name: "OFFICE_SETTING",
+        },
+        Config.ROLE_PERMISSIONS && {
+          path: "/office-settings/role-permission/user-role/add",
+          component: <AddUpdateUserRoleForm />,
+          name: "ADD_USER_ROLE",
+        },
+        {
+          path: "/office-settings/assigned-roles",
+          component: <AssignedRoles />,
+          name: "Add User Role",
+        },
+        Config.ROLE_PERMISSIONS && {
+          path: "/office-settings/role-permission/user-role/edit",
+          component: <AddUpdateUserRoleForm />,
+          name: "EDIT_USER_ROLE",
+        },
+      ].filter(Boolean) // Filter out undefined route
+    : []),
   {
-    path: "/services",
-    component: <Services />,
-    name: "Services",
+    path: "/change-password",
+    component: <ChangePassword />,
+    name: "Change Password",
   },
-  Config.TASK_MANAGMENT && {
-    path: "/projects",
-    component: <Projects />,
-    name: "Projects",
+];
+
+const RemainingSidebarRoutes = [
+  {
+    path: "/",
+    component: <Dashboard />,
+    name: "DASHBOARD",
   },
+
   Config.TASK_MANAGMENT && {
     path: "/project-board/card/add",
     component: <TaskEditAddViewDetails />,
-    name: "Project Board",
+    name: "PROJECT_BOARD",
   },
   Config.TASK_MANAGMENT && {
     path: "/project-board/card/:taskId",
     component: <TaskEditAddViewDetails />,
-    name: "Project Board",
+    name: "VIEW_ALL_PROJECTS",
   },
   Config.TASK_MANAGMENT && {
     path: "/project-board/card/:parentTaskId/subtask/:subtaskId",
     component: <TaskEditAddViewDetails />,
-    name: "Project Board",
+    name: "VIEW_ALL_PROJECTS",
   },
   Config.TASK_MANAGMENT && {
     path: "/project-board/:projectId",
     component: <Board />,
-    name: "Project Board",
+    name: "VIEW_ALL_PROJECTS",
   },
   Config.TASK_MANAGMENT && {
     path: "/project-board/user/:userId",
     component: <UserProfileTaskDetails />,
-    name: "User Profile Details",
+    name: "VIEW_ALL_PROJECTS",
   },
 
-  Config.SELF_SERVICE_HUB &&
-    Config.PROFIL_MANAGMENT && {
-      path: "/my-profile",
-      component: <ViewEmployee profileView />,
-      name: "View Employee Profile",
-    },
   Config.TALENT_SPHERE && {
     path: "/edit-post/:id",
     component: <CreateUpdateJob />,
-    name: "Edit Post",
+    name: "JOBS",
   },
   Config.LEAVE_MANAGMENT && {
     path: "/leave-tracker",
     component: <LeaveTracker />,
-    name: "Leave Tracker",
+    name: "LEAVE_RECORDS",
   },
-  Config.PAYROLL &&
-    Config.SELF_SERVICE_HUB && {
-      path: "/my-payroll",
-      component: <MyPayroll />,
-      name: "My Payroll",
-    },
-  Config.PAYROLL && {
-    path: "/payroll/:id",
-    component: <EmployeeSalaryDetails />,
-    name: "Payroll Details",
-  },
+
+  // Config.PAYROLL && {
+  //   path: "/payroll/:id",
+  //   component: <EmployeeSalaryDetails />,
+  //   name: "Payroll Details",
+  // },
   Config.PAYROLL && {
     path: "/payslip/:id",
     component: <Payslip />,
@@ -154,85 +399,7 @@ const SidebarRoutes = [
     component: <Payslip />,
     name: "Payslip EOS",
   },
-  Config.SELF_SERVICE_HUB &&
-    Config.EMPLOYEE_OFFBOARDING && {
-      path: "/exit-employee",
-      component: <EmployeeExit />,
-      name: "Exit Employee",
-    },
-  Config.PAYROLL &&
-    Config.SELF_SERVICE_HUB && {
-      path: "/my-claims",
-      component: <MyClaims />,
-      name: "My Claims",
-    },
-  Config.SELF_SERVICE_HUB &&
-    Config.LEAVE_MANAGMENT && {
-      path: "/my-leave-tracker",
-      component: <MyLeaveTracker />,
-      name: "My Leave Tracker",
-    },
-  Config.DAILY_TASK_REPORT &&
-    Config.MY_DAILY_TASK_REPORT && {
-      path: "/my-dtr",
-      component: <MyDtr />,
-      name: "My DTR",
-    },
-  Config.PROFIL_MANAGMENT && {
-    path: "/profile-management",
-    component: <Employee />,
-    name: "Profile Management",
-  },
-  Config.HR_DOCUMENTS && {
-    path: "/documents",
-    component: <HRDocuments />,
-    name: "HR Documents",
-  },
-  Config.HR_DOCUMENTS && {
-    path: "/documents/detail",
-    component: <DocumentDetails />,
-    name: "Document Detail",
-  },
-  Config.HR_DOCUMENTS && {
-    path: "/my-documents",
-    component: <MyDocuments />,
-    name: "HR Documents",
-  },
-  Config.TRANSFER_MANAGEMENT && {
-    path: "/employee-tranfer",
-    component: <EmployeeTransfer />,
-    name: "Employee Transfer",
-  },
-  Config.TRANSFER_MANAGEMENT && {
-    path: "/my-tranfers",
-    component: <MyTransfers />,
-    name: "My Transfer",
-  },
-  Config.ASSETS_MANAGEMENT && {
-    path: "/my-assets",
-    component: <MyAssets />,
-    name: "My Assets",
-  },
-  Config.TEAM_MANAGEMENT && {
-    path: "/team-profile-management",
-    component: <TeamProfileMangement />,
-    name: "Team Profile Management",
-  },
-  Config.PROFIL_MANAGMENT && {
-    path: "/create-employee",
-    component: <CreateUpdateEmployee />,
-    name: "Create Employee",
-  },
-  Config.PROFIL_MANAGMENT && {
-    path: "/edit-employee/:id",
-    component: <CreateUpdateEmployee />,
-    name: "Edit Employee",
-  },
-  Config.PROFIL_MANAGMENT && {
-    path: "/profile/:id",
-    component: <EditEmployeeProfile />,
-    name: "Edit Employee Profile",
-  },
+
   Config.PAYROLL && {
     path: "/payroll",
     component: <EmployeesPayroll />,
@@ -288,26 +455,6 @@ const SidebarRoutes = [
     component: <EOSDetails />,
     name: "EOS Details",
   },
-  Config.ATTENDANCE && {
-    path: "/attendance",
-    component: <Attendance />,
-    name: "Attendance",
-  },
-  Config.MY_ATTENDANCE && {
-    path: "/my-attendance",
-    component: <MyAttendance />,
-    name: "My Attendance",
-  },
-  Config.MY_ATTENDANCE && {
-    path: "/employee-dtrs",
-    component: <EmployeeDTRs />,
-    name: "Employee DTRs",
-  },
-  Config.ATTENDANCE && {
-    path: "/shift-calendar",
-    component: <ShiftCalendar />,
-    name: "Shift Calendar",
-  },
 
   Config.ATTENDANCE && {
     path: "attendance-reports/:id",
@@ -321,43 +468,13 @@ const SidebarRoutes = [
     name: "Employee Attendance",
   },
 
-  Config.OFFICE_SETTING && {
-    path: "/office-settings",
-    component: <OfficeSetting />,
-    name: "Office Setting",
-  },
-
-  Config.PROFIL_MANAGMENT && {
-    path: "/user/:id",
-    component: <ViewEmployee profileView={false} />,
-    name: "User Profile",
-  },
   Config.TALENT_SPHERE &&
     Config.TS_PERSONAL_REQUISITION && {
       path: "/personnel-requisition",
       component: <ComingSoon />,
       name: "Personnel Requisition",
     },
-  Config.TALENT_SPHERE && {
-    path: "/jobs",
-    component: <Jobs />,
-    name: "Jobs",
-  },
-  Config.TALENT_SPHERE && {
-    path: "/job-post",
-    component: <CreateUpdateJob />,
-    name: "Job Post",
-  },
-  Config.TALENT_SPHERE && {
-    path: "/applicants/:id",
-    component: <Applications />,
-    name: "Applicants",
-  },
-  Config.TALENT_SPHERE && {
-    path: "/applicants",
-    component: <Applications />,
-    name: "Applicants List",
-  },
+
   Config.TALENT_SPHERE &&
     Config.TS_REFERRALS && {
       path: "/referals",
@@ -372,21 +489,6 @@ const SidebarRoutes = [
       name: "Onboarding",
     },
 
-  Config.LEAVE_MANAGMENT && {
-    path: "/leave-request",
-    component: <LeaveRequests />,
-    name: "Leave Request",
-  },
-  Config.LEAVE_MANAGMENT && {
-    path: "/team-leave-request",
-    component: <LeaveRequests isTeamView={true} />,
-    name: "Leave Request",
-  },
-  Config.LEAVE_MANAGMENT && {
-    path: "/leave-records",
-    component: <LeaveTracker />,
-    name: "Leave Records",
-  },
   Config.PAYROLL && {
     path: "/claim-request",
     component: <ClaimRequest />,
@@ -402,62 +504,19 @@ const SidebarRoutes = [
     component: <OnHoldSalaryDetails />,
     name: "On-Hold Salary Details",
   },
-  Config.EMPLOYEE_OFFBOARDING && {
-    path: "/exit-clearance",
-    component: <ExitAndClearance />,
-    name: "Exit Clearance",
-  },
-  Config.EMPLOYEE_OFFBOARDING && {
-    path: "/team-exit-clearance",
-    component: <ExitAndClearance isTeamView={true} />,
-    name: "Exit Clearance",
-  },
+
   {
     path: "/organizational-chart",
     component: <OrganizationalChart />,
     name: "Organizational Chart",
   },
-  Config.ASSETS_MANAGEMENT && {
-    path: "/assets",
-    component: <Assets />,
-    name: "Assets Management",
-  },
-  Config.ASSETS_MANAGEMENT && {
-    path: "/request-and-assign",
-    component: <RequestAndAssign />,
-    name: "Request and Assign",
-  },
+
   Config.SELF_SERVICE_HUB &&
     Config.EMPLOYEE_OFFBOARDING && {
       path: "/self-service/exit/eos-settlement/:id",
       component: <EOSSettlementDetails />,
       name: "EOS Settlement Details",
     },
-  {
-    path: "/change-password",
-    component: <ChangePassword />,
-    name: "Change Password",
-  },
-  {
-    path: "/office-settings/role-permission",
-    component: <RoleAndPermissions />,
-    name: "Change Password",
-  },
-  {
-    path: "/office-settings/role-permission/user-role/add",
-    component: <AddUpdateUserRoleForm />,
-    name: "Add User Role",
-  },
-  {
-    path: "/office-settings/assigned-roles",
-    component: <AssignedRoles />,
-    name: "Add User Role",
-  },
-  {
-    path: "/office-settings/role-permission/user-role/edit",
-    component: <AddUpdateUserRoleForm />,
-    name: "Add User Role",
-  },
 ].filter(Boolean); // Filter out undefined routes
 
 const LoginRoutes = [
@@ -505,4 +564,4 @@ const GeneralRoutes = [
   },
 ].filter(Boolean); // Filter out undefined routes
 
-export { SidebarRoutes, LoginRoutes, GeneralRoutes };
+export { LoginRoutes, GeneralRoutes };

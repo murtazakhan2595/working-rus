@@ -1,19 +1,22 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
+import { getOrganizationList } from "app/hooks/general";
 import {
-  getDesignationList,
-  getProjectsList,
-  getOrganizationList,
-  getBranchList,
-} from "app/hooks/general";
-import { getModuleList, getUserRoleList } from "app/hooks/rolesPermisions";
+  getModuleList,
+  getUserRoleList,
+  getMyEffectivePermissions,
+} from "app/hooks/rolesPermisions";
+import {
+  FilterTreeBySelectedLeafs,
+  ExtractFieldValueFromList,
+} from "utils/Lists";
 
 // Define the initial state
 const initialState = {
   modules: [],
   user_roles: [],
-  designations: [],
-  branches: [],
+  my_permissions: [],
+  user_permitted_modules: [],
   apiStatus: "idle",
   error: null,
 };
@@ -31,13 +34,17 @@ export const fetchOrganizations = createAsyncThunk(
   }
 );
 
-// Define the thunk to fetch branches
-export const fetchBranches = createAsyncThunk(
-  "roles_permissions/fetchBranches",
-  async () => {
+// Define the thunk to fetch user_permitted_modules
+export const fetchUserPermittedModules = createAsyncThunk(
+  "roles_permissions/fetchUserPermittedModules",
+  async ({ modules, permissions }) => {
     try {
-      const response = await getBranchList();
-      return response?.results || [];
+      const UserPermittedModules = FilterTreeBySelectedLeafs(
+        { code_name: null, childrens: modules },
+        permissions,
+        "code_name"
+      );
+      return UserPermittedModules?.childrens || [];
     } catch (error) {
       throw error;
     }
@@ -50,7 +57,21 @@ export const fetchModules = createAsyncThunk(
   async () => {
     try {
       const response = await getModuleList();
-      return response?.results || [];
+      const ModulesList = response?.results || [];
+      const ModuleTree = ModulesList.map((module) => ({
+        id: module.id,
+        name: module.name,
+        code_name: module.code_name,
+        childrens: (module.submodules || []).map((submodule) => ({
+          id: submodule.id,
+          name: submodule.name,
+          code_name: submodule.code_name,
+          childrens: (submodule.features || []).map((feature) => ({
+            ...feature,
+          })),
+        })),
+      }));
+      return ModuleTree || [];
     } catch (error) {
       throw error;
     }
@@ -72,13 +93,18 @@ export const fetchUserRoles = createAsyncThunk(
   }
 );
 
-// Define the thunk to fetch designations
-export const fetchDesignations = createAsyncThunk(
-  "roles_permissions/fetchDesignations",
+// Define the thunk to fetch my_permissions
+export const fetchMyPermissions = createAsyncThunk(
+  "roles_permissions/fetchMyPermissions",
   async () => {
     try {
-      const response = await getDesignationList();
-      return response?.results || [];
+      const response = await getMyEffectivePermissions();
+      const Permissions = response?.results || [];
+      const MyPermissionsList = ExtractFieldValueFromList(
+        Permissions,
+        "code_name"
+      );
+      return MyPermissionsList || [];
     } catch (error) {
       throw error;
     }
@@ -117,14 +143,14 @@ const RolePermissionSlice = createSlice({
         state.error = action.error.message;
       })
 
-      .addCase(fetchDesignations.pending, (state) => {
+      .addCase(fetchMyPermissions.pending, (state) => {
         state.apiStatus = "loading";
       })
-      .addCase(fetchDesignations.fulfilled, (state, action) => {
+      .addCase(fetchMyPermissions.fulfilled, (state, action) => {
         state.apiStatus = "succeeded";
-        state.designations = action.payload;
+        state.my_permissions = action.payload;
       })
-      .addCase(fetchDesignations.rejected, (state, action) => {
+      .addCase(fetchMyPermissions.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
       });
@@ -144,14 +170,14 @@ const RolePermissionSlice = createSlice({
 
     // Branches
     builder
-      .addCase(fetchBranches.pending, (state) => {
+      .addCase(fetchUserPermittedModules.pending, (state) => {
         state.apiStatus = "loading";
       })
-      .addCase(fetchBranches.fulfilled, (state, action) => {
+      .addCase(fetchUserPermittedModules.fulfilled, (state, action) => {
         state.apiStatus = "succeeded";
-        state.branches = action.payload;
+        state.user_permitted_modules = action.payload;
       })
-      .addCase(fetchBranches.rejected, (state, action) => {
+      .addCase(fetchUserPermittedModules.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
       });

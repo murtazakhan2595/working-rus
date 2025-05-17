@@ -98,7 +98,9 @@ export function mapUserRolePayloadData(data, id) {
       data[key] !== null &&
       data[key] !== undefined
     ) {
-      payload[key] = data[key];
+      if (key === "name" || key === "description")
+        payload[key] = data[key].trim();
+      else payload[key] = data[key];
     }
   }
 
@@ -152,4 +154,13 @@ export async function mapRoleAssignmentHistoryLogsListData(data) {
   });
 
   return HistoryList;
+}
+
+export async function mapEffectivePermissionsListData(data) {
+  if (!data || data.length === 0) return [];
+  const PermissionList = await data?.map((permissions) => {
+    return { ...permissions.feature };
+  });
+
+  return PermissionList;
 }

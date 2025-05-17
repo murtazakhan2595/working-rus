@@ -78,7 +78,7 @@ import { DateRangeInput } from "components/FormControl";
 import { validateOnboardingDocuments } from "app/utils/FormSchema/employeeFormSchema";
 import { getEmployeeDocsChecklist } from "app/hooks/employee";
 import { saveEmpoyeeDocBulk } from "app/hooks/employee";
-import { hasAccess } from "utils/PermissionUtils";
+import { HasAccess } from "utils/PermissionUtils";
 const SheetOnBorading = ({
   isEditMode,
   nextstep,
@@ -96,7 +96,7 @@ const SheetOnBorading = ({
 }) => {
   const formRef = React.createRef();
   const SalarySetupAllowed = React.useMemo(() => {
-    return !id && hasAccess("PAYROLL_SALARY_SETUP");
+    return !id && HasAccess("PAYROLL_SALARY_SETUP");
   }, [id]);
 
   const dispatch = useDispatch();
@@ -189,7 +189,7 @@ const SheetOnBorading = ({
     const employee = employees.filter(
       (emp) => emp.work_email === email && parseInt(emp.id) !== parseInt(id)
     );
-    if (employee && employee.length > 0) {
+    if (employee && employee?.length > 0) {
       setEmailAlreadyExist(true);
     } else {
       setEmailAlreadyExist(false);
@@ -199,7 +199,7 @@ const SheetOnBorading = ({
     const employee = employees.filter(
       (emp) => emp.username === username && parseInt(emp.id) !== parseInt(id)
     );
-    if (employee && employee.length > 0) {
+    if (employee && employee?.length > 0) {
       setUsernameAlreadyExist(true);
     } else {
       setUsernameAlreadyExist(false);
@@ -222,7 +222,6 @@ const SheetOnBorading = ({
           onboardingDocuments: data.onboardingDocuments,
           employeeId,
         });
-        console.log(checklistData, "Checklist Data");
         await saveEmpoyeeDocBulk(checklistData);
         // Dispatch fetch actions to update the state
         dispatch(fetchEmployees());
@@ -321,12 +320,7 @@ const SheetOnBorading = ({
                   handleSubmit(values, resetForm);
                 }}
                 validate={(values) => {
-                  console.log(
-                    values.user_role,
-                    formData.user_role,
-                    default_user,
-                    "vbjhfbvjhbfvhjb"
-                  );
+                 
                   try {
                     const errors = validationEmployeeInfoFormSchema(
                       values,

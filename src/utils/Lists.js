@@ -40,24 +40,25 @@ export function getDropdownList(
     : dropdownOptions;
 }
 
-
 export function getDropdownListWithExtraKeys(
   items,
   labelKey = "name",
   valueKey = "id",
-  additionalFields=[],
+  additionalFields = [],
   additionalOption = null,
   prefixKey = null,
-  separator = null,
+  separator = null
 ) {
-   // If the input array is empty or not an array, return only the additional option if provided
-   if (!Array.isArray(items) || items.length === 0) {
+  // If the input array is empty or not an array, return only the additional option if provided
+  if (!Array.isArray(items) || items.length === 0) {
     return additionalOption ? [additionalOption] : [];
   }
 
   // Map items to dropdown-friendly format
   const dropdownOptions = items.map((item) => {
-    let label = prefixKey ? `${item[prefixKey]} ${separator} ${item[labelKey]}` : item[labelKey];
+    let label = prefixKey
+      ? `${item[prefixKey]} ${separator} ${item[labelKey]}`
+      : item[labelKey];
 
     // Include additional keys if specified
     let additionalData = {};
@@ -70,12 +71,14 @@ export function getDropdownListWithExtraKeys(
     return {
       label,
       value: item[valueKey],
-      ...additionalData,  // Spread additional fields dynamically
+      ...additionalData, // Spread additional fields dynamically
     };
   });
 
   // Include the additional option at the start if provided
-  return additionalOption ? [additionalOption, ...dropdownOptions] : dropdownOptions;
+  return additionalOption
+    ? [additionalOption, ...dropdownOptions]
+    : dropdownOptions;
 }
 
 export function getFormattedDropdownItems(
@@ -293,3 +296,67 @@ export function convertStringsArrayToJsonArray(
     return { [label]: field, [valueKey]: value };
   });
 }
+
+/**
+ * Extracts a list of values for the given keys from an array of objects.
+ *
+ * @param {Array<Object>} dataList - The array of objects to process.
+ * @param {Array<String>} keys - The keys whose values you want to extract.
+ * @returns {Array<Object>} - An array of objects containing only the specified keys.
+ */
+export const ExtractFieldsFromList = (dataList = [], keys = []) => {
+  return dataList.map((item) => {
+    const extracted = {};
+    keys.forEach((key) => {
+      extracted[key] = item[key];
+    });
+    return extracted;
+  });
+};
+
+/**
+ * Extracts a list of values for the given key from an array of objects.
+ *
+ * @param {Array<Object>} dataList - The array of objects to process.
+ * @param {String} key - The key whose values you want to extract.
+ * @returns {Array<Object>} - An array of values containing only the specified key.
+ */
+export const ExtractFieldValueFromList = (dataList = [], key = []) => {
+  return dataList.map((item) => {
+    return item[key];
+  });
+};
+
+/**
+ * Recursively filters a tree, returning only the parts that contain nodes
+ * matching any value in selectedLeafs (based on the provided label).
+ * 
+ * It includes matching nodes, their ancestors, and optionally their children.
+ *
+ * @param {Object} node - The current tree node to evaluate.
+ * @param {Array} selectedLeafs - Array of values to match against.
+ * @param {String} label - Key name to match values against (e.g., "id").
+ * @returns {Object|null} - Filtered node (with matched children), or null if no match.
+ */
+export const FilterTreeBySelectedLeafs = (node = {}, selectedLeafs = [], label = "id") => {
+  const children = node.childrens || [];
+
+  // Recursively filter children
+  const filteredChildren = children
+    .map(child => FilterTreeBySelectedLeafs(child, selectedLeafs, label))
+    .filter(child => child !== null);
+
+  const isMatch = selectedLeafs.includes(node[label]);
+
+  // If current node is a match or has matching children, include it in the result
+  if (isMatch || filteredChildren.length > 0) {
+    return {
+      ...node,
+      childrens: filteredChildren, // preserve only matching sub-branches
+    };
+  }
+
+  // Otherwise, exclude this node
+  return null;
+};
+

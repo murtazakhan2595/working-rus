@@ -32,7 +32,7 @@ const OnboardingChecklistSection = ({ formikProps }) => {
           // Initialize the onboarding documents in formik if not already present
           if (
             !formikProps.values.onboardingDocuments ||
-            formikProps.values.onboardingDocuments.length === 0
+            formikProps.values.onboardingDocuments?.length === 0
           ) {
             const initialDocuments = response.results.map((template) => ({
               templateId: template.id,
@@ -139,7 +139,7 @@ const OnboardingChecklistSection = ({ formikProps }) => {
 
   if (
     !formikProps.values.onboardingDocuments ||
-    formikProps.values.onboardingDocuments.length === 0
+    formikProps.values.onboardingDocuments?.length === 0
   ) {
     return <div>No onboarding documents found.</div>;
   }

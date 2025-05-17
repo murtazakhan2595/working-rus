@@ -12,16 +12,14 @@ import {
   CheckBoxInputTree,
 } from "components/FormControl";
 import { validateUserRoleFormSchema } from "app/utils/FormSchema/RolePermissionsFormSchema";
-import { Button } from "components/ui/button";
 import AlertDialogue from "components/ui/AlertDialogue";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { Header, SheetUI } from "components";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { CheckBoxInput } from "components/FormControl";
 import { SwitchInput } from "components/FormControl";
 
 const AddUpdateUserRoleForm = ({ isOpen = true }) => {
@@ -34,24 +32,8 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [RoleNameExist, setRoleNameExist] = useState(false);
   const isEditMode = Boolean(id);
-  const ModulesList = useSelector((state) => state.roles_permissions.modules);
-  const ModuleTree = React.useMemo(() => {
-    if (!Array.isArray(ModulesList)) return [];
+  const ModuleTree = useSelector((state) => state.roles_permissions.modules);
 
-    return ModulesList.map((module) => ({
-      id: module.id,
-      name: module.name,
-      code_name: module.code_name,
-      childrens: (module.submodules || []).map((submodule) => ({
-        id: submodule.id,
-        name: submodule.name,
-        code_name: submodule.code_name,
-        childrens: (submodule.features || []).map((feature) => ({
-          ...feature,
-        })),
-      })),
-    }));
-  }, [ModulesList]);
   const FormSheetData = {
     triggerText: "",
     title: isEditMode ? "Edit Role" : "Add New Role",
@@ -93,15 +75,10 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
   const fetchData = async (isMounted, id) => {
     try {
       setIsLoading(true);
-      // Add organizationId to filter if available
       const response = await getUserRoleData(id);
-      console.log(
-        "activeactiveactiveactiveactiveactiveactiveactiveactiveactiveactiveactiveactiveactive",
-        response
-      );
 
       if (isMounted) {
-        setFormData({...response, status: response.status === "active"});
+        setFormData(response);
       }
     } catch (error) {
       console.error("Error fetching roles:", error);
@@ -140,7 +117,7 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
     if (!formValues) return;
     try {
       // Save role
-      const response = await saveUpdateUserRole({ ...formValues, status: formValues.status? "active": "inactive"}, id);
+      const response = await saveUpdateUserRole(formValues, id);
       if (response) {
         toast.success(
           `User Role ${isEditMode ? "Updated" : "Added"} Successfully!`,
@@ -169,18 +146,20 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
     }
   };
 
-  const validateUserRoleName = (role_name) => {
-    const user_role_name = UserRoles.filter(
-      (role) =>
-        role.name.toLowerCase() === role_name.toLowerCase() &&
-        parseInt(role.id) !== parseInt(id)
-    );
-    if (user_role_name && user_role_name.length > 0) {
-      setRoleNameExist(true);
-    } else {
-      setRoleNameExist(false);
-    }
-  };
+  const validateUserRoleName = useCallback(
+    (role_name) => {
+      if (!role_name) return false;
+
+      const user_role_name = UserRoles.filter(
+        (role) =>
+          role.name.toLowerCase() === role_name.trim().toLowerCase() &&
+          parseInt(role.id) !== parseInt(id)
+      );
+
+      setRoleNameExist(user_role_name.length > 0);
+    },
+    [UserRoles, id] // dependencies
+  );
 
   return (
     <div
@@ -201,6 +180,9 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
               initialValues: formData,
               enableReinitialize: true,
               handleSubmit: handleSubmit,
+              onSubmitClick: (values) => {
+                validateUserRoleName(values.name);
+              },
               validateFormSchema: (values) => {
                 const errors = validateUserRoleFormSchema(values);
                 if (values.name && RoleNameExist)
@@ -232,12 +214,6 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
                       colsSpan: 3,
                       rows: 2,
                       label: "Description",
-                    },
-                    {
-                      InputField: SwitchInput,
-                      name: "status",
-                      label: "Status",
-                      description: "Enable or disable this role",
                     },
                   ],
                 },

@@ -11,8 +11,12 @@ import SheetOnBoarding from "components/ui/OnBoardingSheet";
 import Stats from "../../../components/ui/Stats";
 import TableCustom from "components/CustomTable";
 import { useSelector } from "react-redux";
+import { HasAccess } from "utils/PermissionUtils";
+import Error from "app/modules/Error";
 
 export default function EmployeeManagement() {
+  const ViewEmployeesPermitted = HasAccess("VIEW_EMPLOYEES");
+  const AddEmployeesPermitted = HasAccess("ADD_EMPLOYEE");
   const [isLoading, setIsLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState({ results: [], count: 0 });
   const [filterData, setFilterData] = useState({});
@@ -110,19 +114,23 @@ export default function EmployeeManagement() {
     setSelectedStatus(newStatus);
   };
 
+  if (!ViewEmployeesPermitted) return <Error />;
+
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
       <Header
         content={
-          <SheetOnBoarding
-            reloadData={() => {
-              setOrdering("-id");
-              onPageChange("page", 1);
-              fetchData(true);
-            }}
-          />
+          AddEmployeesPermitted && (
+            <SheetOnBoarding
+              reloadData={() => {
+                setOrdering("-id");
+                onPageChange("page", 1);
+                fetchData(true);
+              }}
+            />
+          )
         }
       />
       <Stats stats={statsData} />
