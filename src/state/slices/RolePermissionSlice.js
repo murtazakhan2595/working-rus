@@ -6,12 +6,12 @@ import {
   getOrganizationList,
   getBranchList,
 } from "app/hooks/general";
-import { getModuleList } from "app/hooks/rolesPermisions";
+import { getModuleList, getUserRoleList } from "app/hooks/rolesPermisions";
 
 // Define the initial state
 const initialState = {
   modules: [],
-  projects: [],
+  user_roles: [],
   designations: [],
   branches: [],
   apiStatus: "idle",
@@ -56,13 +56,16 @@ export const fetchModules = createAsyncThunk(
     }
   }
 );
-// Define the thunk to fetch projects
-export const fetchProjects = createAsyncThunk(
-  "roles_permissions/fetchProjects",
-  async (userProfile) => {
+// Define the thunk to fetch user_roles
+export const fetchUserRoles = createAsyncThunk(
+  "roles_permissions/fetchUserRoles",
+  async () => {
     try {
-      const response = await getProjectsList(userProfile);
-      return response;
+      const response = await getUserRoleList({
+        filterData: { status: "active" },
+      });
+      const UserRoles = response.results;
+      return UserRoles || [];
     } catch (error) {
       throw error;
     }
@@ -102,14 +105,14 @@ const RolePermissionSlice = createSlice({
         state.error = action.error.message;
       })
       // Projects
-      .addCase(fetchProjects.pending, (state) => {
+      .addCase(fetchUserRoles.pending, (state) => {
         state.apiStatus = "loading";
       })
-      .addCase(fetchProjects.fulfilled, (state, action) => {
+      .addCase(fetchUserRoles.fulfilled, (state, action) => {
         state.apiStatus = "succeeded";
-        state.projects = action.payload;
+        state.user_roles = action.payload;
       })
-      .addCase(fetchProjects.rejected, (state, action) => {
+      .addCase(fetchUserRoles.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
       })

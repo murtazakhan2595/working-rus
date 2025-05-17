@@ -134,8 +134,6 @@ export function mapRoleAssignmentHistoryLogsData(data) {
         acc[key] = data.details.permission_changed;
       else if (key === "employee_id") acc[key] = data.employee.id;
       else if (key === "employee_name") acc[key] = data.employee.name;
-      else if (key === "assigned_by") acc[key] = data.performed_by;
-      else if (key === "assigned_date") acc[key] = data.timestamp;
       else if (data.hasOwnProperty(key)) {
         acc[key] = data[key];
       }

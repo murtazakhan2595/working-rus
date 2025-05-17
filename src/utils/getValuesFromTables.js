@@ -31,6 +31,11 @@ function UserRole({ value }) {
   const response = UserRoles.find((option) => option.value === parseInt(value));
   return response ? response.label : "";
 }
+export function GetDefaultUserRole() {
+  const user_roles = useSelector((state) => state.roles_permissions.user_roles);
+  const user_role = user_roles.find((option) => option.is_default);
+  return user_role ?? null;
+}
 function getWorkType(workType) {
   const response = workTypeOptions.find((option) => option.value === workType);
   return response ? response.label : workType;

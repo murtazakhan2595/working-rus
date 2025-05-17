@@ -7,7 +7,7 @@ import {
   fetchBranches,
 } from "state/slices/CommonSlice";
 import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
-import { fetchModules } from "state/slices/RolePermissionSlice";
+import { fetchModules,fetchUserRoles } from "state/slices/RolePermissionSlice";
 import { fetchTerminationReasons } from "state/slices/ExitEmployeeSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
 import {
@@ -834,6 +834,7 @@ export const handleUpdateProfile = async (dispatch, data) => {
   dispatch(fetchDocumentCategory());
   dispatch(fetchOrganizations());
   dispatch(fetchTaskLabels());
+  dispatch(fetchUserRoles());
   dispatch(fetchTerminationReasons());
   dispatch(fetchReportingManagers());
   dispatch(fetchLeaveComponents());

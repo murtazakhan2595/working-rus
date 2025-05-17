@@ -8,7 +8,7 @@ import {
   CertificationsInformation,
   IdentificationInformation,
 } from "../Profile";
-import EmployeeForm from "../Sections/EmployeeForm";
+import EmployeeForm from "../EmployeeForm";
 import SheetComponent from "components/ui/SheetComponent";
 
 function EmployeeDetailModal({

@@ -1,3 +1,4 @@
+import { GetDefaultUserRole } from "utils/getValuesFromTables";
 const EmployeePersonalInformation = {
   first_name: null,
   last_name: null,
@@ -123,7 +124,7 @@ const EmployeeInformation = {
   work_email: null,
   password: null,
   mobile_no: null,
-  user_role: null,
+  user_role: [],
   residential_address: null,
   department_name: null,
   country_code: null,
@@ -154,7 +155,7 @@ const EmployeeInformation = {
   onboardingDocuments: [],
   permanent_address: null,
   po_box_number: null,
-  nationality:null,
+  nationality: null,
 };
 const EmployeeProfessionalExperiance = {
   id: null,

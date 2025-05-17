@@ -15,11 +15,13 @@ export const UserRoleColumn = (reload = () => {}) => [
     dataField: "name",
     text: "Role Name",
     dataSort: true,
+    maxWidth:'200px',
   },
   {
     dataField: "description",
     text: "Description",
     dataSort: true,
+    maxWidth:'300px',
   },
   {
     dataField: "status",
