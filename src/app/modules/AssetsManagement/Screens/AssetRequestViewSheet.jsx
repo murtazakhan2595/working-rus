@@ -11,8 +11,11 @@ import statusWithdrawalIcon from "assets/images/status-withdrawal.svg";
 
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { getAttachmentById } from "app/hooks/assets"; // Assuming similar function exists for assets
-import { requestAsset } from "app/hooks/assets"; // Assuming this function exists
+import {
+  getAttachmentById,
+  requestAsset,
+  getAssetList,
+} from "app/hooks/assets";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 import { DesignationName } from "utils/getValuesFromTables";
 import { getDesignationName } from "utils/getValuesFromTables";
@@ -28,29 +31,36 @@ import {
   DialogHeader,
   DialogTitle,
 } from "src/@/components/ui/dialog";
-import { TextAreaInput } from "components/FormControl";
+import { TextAreaInput, SelectInputComponent } from "components/FormControl";
+
 const AssetRequestViewSheet = ({
-  request, // Updated from assetRequest to match what's being passed
+  request,
   isOpen,
   setIsOpen,
   isMyRequest = false,
   reload,
 }) => {
-  // For compatibility with the existing prop structure
   const assetRequest = request;
   const [attachments, setAttachments] = useState([]);
   const [showRejectReason, setShowRejectReason] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [isSubmittingRejection, setIsSubmittingRejection] = useState(false);
 
+  const [showAssetSelection, setShowAssetSelection] = useState(false);
+  const [availableAssets, setAvailableAssets] = useState([]);
+  const [selectedAssetId, setSelectedAssetId] = useState("");
+  const [isLoadingAssets, setIsLoadingAssets] = useState(false);
+
+  console.log("AssetRequestViewSheet", assetRequest);
+
   useEffect(() => {
     const fetchData = async () => {
-      // Handle attachments if they exist in the asset
+      // Handle attachments if they exist in the assigned asset
       if (
-        assetRequest?.asset?.attachments &&
-        assetRequest.asset.attachments.length > 0
+        assetRequest?.assigned_asset?.attachments &&
+        assetRequest.assigned_asset.attachments.length > 0
       ) {
-        const validAttachments = assetRequest.asset.attachments.filter(
+        const validAttachments = assetRequest.assigned_asset.attachments.filter(
           (att) => att.attachment !== null
         );
         setAttachments(validAttachments);
@@ -77,62 +87,60 @@ const AssetRequestViewSheet = ({
     assetRequest?.asset_status === "Accepted";
 
   const detailItems = [
-    // Only show Asset ID if not my request OR if approved
-    (!isMyRequest || isApproved) && {
+    {
+      label: "Category",
+      value: assetRequest?.asset?.asset_type?.name || "Not specified",
+    },
+    // Show assigned asset details if available
+    assetRequest?.asset && {
+      label: "Assigned Asset",
+      value: assetRequest.asset.asset_name,
+    },
+    assetRequest?.asset && {
       label: "Asset ID",
-      value: assetRequest?.asset?.id || "Not specified",
+      value: assetRequest.asset.id,
     },
-    {
-      label: "Asset Name",
-      value: assetRequest?.asset?.asset_name || assetRequest?.asset_name,
-    },
-    {
-      label: "Asset Type",
-      value: assetRequest?.asset?.asset_type || "Not specified",
-    },
-    // Only show Model if not my request OR if approved
-    (!isMyRequest || isApproved) && {
-      label: "Model",
-      value: assetRequest?.asset?.asset_model || "Not specified",
-    },
-    // Only show Specifications if not my request OR if approved
-    (!isMyRequest || isApproved) && {
-      label: "Specifications",
-      value: assetRequest?.asset?.asset_description || "Not specified",
-    },
-    // Only show Serial Number if not my request OR if approved
-    (!isMyRequest || isApproved) && {
-      label: "Serial Number",
-      value: assetRequest?.asset?.asset_serial_number || "Not specified",
-    },
+    ...Object.entries(assetRequest?.asset?.dynamic_field_values || {}).map(
+      ([key, value]) => ({
+        label: key,
+        value: value || "Not specified",
+      })
+    ),
     {
       label: "Location",
-      value: assetRequest?.asset?.asset_location_name || "Not specified",
+      value:
+        assetRequest?.asset?.asset_location_name ||
+        assetRequest?.category?.name + " (Not assigned)",
     },
-    !isMyRequest && {
-      label: "Purchase Date",
-      value: assetRequest?.asset?.asset_purchase_date
-        ? moment(assetRequest?.asset?.asset_purchase_date).format("MMM D, YYYY")
-        : "Not specified",
-    },
-    !isMyRequest && {
-      label: "Warranty Expiry",
-      value: assetRequest?.asset?.asset_warranty_expiry
-        ? moment(assetRequest?.asset?.asset_warranty_expiry).format(
-            "MMM D, YYYY"
-          )
-        : "Not specified",
-    },
-    {
+    !isMyRequest &&
+      assetRequest?.asset && {
+        label: "Purchase Date",
+        value: assetRequest.asset.asset_purchase_date
+          ? moment(assetRequest.asset.asset_purchase_date).format(
+              "MMM D, YYYY"
+            )
+          : "Not specified",
+      },
+    !isMyRequest &&
+      assetRequest?.asset && {
+        label: "Warranty Expiry",
+        value: assetRequest.asset.asset_warranty_expiry
+          ? moment(assetRequest.asset.asset_warranty_expiry).format(
+              "MMM D, YYYY"
+            )
+          : "Not specified",
+      },
+    assetRequest?.asset && {
       label: "Initial Condition",
-      value: assetRequest?.asset?.asset_initial_condition || "Not specified",
+      value: assetRequest.asset.asset_initial_condition || "Not specified",
     },
-    !isMyRequest && {
-      label: "Purchase Cost",
-      value: assetRequest?.asset?.asset_purchase_price
-        ? `$${assetRequest?.asset?.asset_purchase_price.toFixed(2)}`
-        : "Not specified",
-    },
+    !isMyRequest &&
+      assetRequest?.asset && {
+        label: "Purchase Cost",
+        value: assetRequest.asset.asset_purchase_price
+          ? `$${assetRequest.asset.asset_purchase_price.toFixed(2)}`
+          : "Not specified",
+      },
     {
       label: "Request Date",
       value: moment(assetRequest?.created_at).format("MMM D, YYYY"),
@@ -155,7 +163,7 @@ const AssetRequestViewSheet = ({
       label: "Reason",
       value: assetRequest?.reason,
     },
-  ].filter(Boolean); // Filter out any false entries
+  ].filter(Boolean);
 
   const approvalSteps = [
     {
@@ -183,15 +191,53 @@ const AssetRequestViewSheet = ({
   ];
 
   const formSheetData = {
-    triggerText: null,
     title: "Asset Request Details",
     description: null,
     footer: null,
   };
 
+  // NEW: Fetch available assets for assignment
+  const fetchAvailableAssets = async () => {
+    if (!assetRequest?.category_id) return;
+
+    setIsLoadingAssets(true);
+    try {
+      const response = await getAssetList({
+        options: { page: 1, sizePerPage: 100 },
+        filterData: {
+          category_id: assetRequest.category_id,
+          asset_status: "Available",
+        },
+      });
+
+      if (response?.results) {
+        const formattedAssets = response.results.map((asset) => ({
+          value: asset.id,
+          label: `${asset.asset_name} - ${Object.values(
+            asset.dynamic_field_values || {}
+          ).join(", ")}`,
+          asset: asset,
+        }));
+        setAvailableAssets(formattedAssets);
+      }
+    } catch (error) {
+      console.error("Error fetching available assets:", error);
+      toast.error("Failed to load available assets");
+    } finally {
+      setIsLoadingAssets(false);
+    }
+  };
+
   const handleStatusChange = async (status) => {
-    
     console.log("handle status change", status, assetRequest);
+
+    // NEW: Handle approval with asset assignment
+    if (status === "Accepted" && !isMyRequest) {
+      setShowAssetSelection(true);
+      fetchAvailableAssets();
+      return;
+    }
+
     setIsSubmittingRejection(true);
     if (assetRequest?.asset_status !== "Pending") {
       return;
@@ -228,11 +274,10 @@ const AssetRequestViewSheet = ({
 
         setIsOpen(false);
         reload();
-
       } else {
-         setIsSubmittingRejection(false);
-         setRejectionReason("");
-         setShowRejectReason(false);
+        setIsSubmittingRejection(false);
+        setRejectionReason("");
+        setShowRejectReason(false);
         toast.error("Error updating asset request");
       }
     } catch (error) {
@@ -240,6 +285,42 @@ const AssetRequestViewSheet = ({
       toast.error("Error updating request: " + error.message);
     }
   };
+
+  // NEW: Handle asset assignment
+  const handleAssetAssignment = async () => {
+    if (!selectedAssetId) {
+      toast.error("Please select an asset to assign");
+      return;
+    }
+
+    setIsSubmittingRejection(true);
+    try {
+      const updatedRequest = {
+        ...assetRequest,
+        asset_status: "Accepted",
+        assigned_asset_id: selectedAssetId,
+        asset_assigned_by: userProfile.id,
+        asset_assigned_date: moment().format("YYYY-MM-DD"),
+      };
+
+      const response = await requestAsset(updatedRequest);
+
+      if (response) {
+        toast.success("Asset assigned successfully");
+        setShowAssetSelection(false);
+        setIsOpen(false);
+        reload();
+      } else {
+        toast.error("Error assigning asset");
+      }
+    } catch (error) {
+      console.error("Error assigning asset:", error);
+      toast.error("Error assigning asset: " + error.message);
+    } finally {
+      setIsSubmittingRejection(false);
+    }
+  };
+
   // Handle rejection submission
   const handleReject = async () => {
     if (!rejectionReason.trim()) {
@@ -267,18 +348,16 @@ const AssetRequestViewSheet = ({
             showId={true}
             showBranchName={true}
           />
-          {(isMyRequest &&
-            assetRequest?.asset_status ===
-              "Pending") &&(
-                <Button
-                  variant="destructiveOutline"
-                  onClick={(status) => {
-                    handleStatusChange("Withdrawal");
-                  }}
-                >
-                  Withdraw Asset
-                </Button>
-              )}
+          {isMyRequest && assetRequest?.asset_status === "Pending" && (
+            <Button
+              variant="destructiveOutline"
+              onClick={() => {
+                handleStatusChange("Withdrawal");
+              }}
+            >
+              Withdraw Request
+            </Button>
+          )}
         </div>
 
         {/* Details Section */}
@@ -350,12 +429,14 @@ const AssetRequestViewSheet = ({
             </section>
           </div>
         </DetailCard>
+
         {assetRequest?.rejection_reason && (
           <div className="mt-4 p-3 border rounded-md bg-gray-50 text-sm text-gray-1100">
             <div className="font-medium mb-1">Rejection Reason:</div>
             <div>{assetRequest.rejection_reason}</div>
           </div>
         )}
+
         {/* Approval Buttons */}
         {!isMyRequest && showButtons && (
           <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">
@@ -367,16 +448,6 @@ const AssetRequestViewSheet = ({
             >
               Reject with Reason
             </Button>
-            {/* <Button
-              variant="outline"
-              type="button"
-              size="lg"
-              onClick={() => {
-                handleStatusChange("Rejected");
-              }}
-            >
-              Reject
-            </Button> */}
             <Button
               type="button"
               size="lg"
@@ -385,7 +456,7 @@ const AssetRequestViewSheet = ({
                 handleStatusChange("Accepted");
               }}
             >
-              Accept
+              Accept & Assign Asset
             </Button>
           </div>
         )}
@@ -404,6 +475,8 @@ const AssetRequestViewSheet = ({
           </div>
         )}
       </SheetComponent>
+
+      {/* Rejection Reason Dialog */}
       <RejectionReasonDialog
         open={showRejectReason}
         onOpenChange={setShowRejectReason}
@@ -412,10 +485,109 @@ const AssetRequestViewSheet = ({
         reason={rejectionReason}
         setReason={setRejectionReason}
       />
+
+      {/* NEW: Asset Selection Dialog */}
+      <AssetSelectionDialog
+        open={showAssetSelection}
+        onOpenChange={setShowAssetSelection}
+        onSubmit={handleAssetAssignment}
+        isSubmitting={isSubmittingRejection}
+        assets={availableAssets}
+        selectedAssetId={selectedAssetId}
+        setSelectedAssetId={setSelectedAssetId}
+        isLoading={isLoadingAssets}
+        category={assetRequest?.category?.name}
+      />
     </div>
   );
 };
 
+// NEW: Asset Selection Dialog Component
+const AssetSelectionDialog = ({
+  open,
+  onOpenChange,
+  onSubmit,
+  isSubmitting,
+  assets,
+  selectedAssetId,
+  setSelectedAssetId,
+  isLoading,
+  category,
+}) => {
+  const handleOpenChange = (newOpen) => {
+    if (!newOpen) {
+      setSelectedAssetId("");
+    }
+    onOpenChange(newOpen);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Select Asset to Assign</DialogTitle>
+          <DialogDescription>
+            Choose an available {category} to assign to this request
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <SelectInputComponent
+            name="asset_selection"
+            error={false}
+            touch={false}
+            value={selectedAssetId}
+            label="Available Assets"
+            required={true}
+            options={assets}
+            onChange={(field, value) => {
+              setSelectedAssetId(value);
+            }}
+            placeholder={isLoading ? "Loading assets..." : "Select an asset"}
+            isLoading={isLoading}
+          />
+
+          {selectedAssetId && (
+            <div className="mt-4 p-3 border rounded-md bg-gray-50 text-sm">
+              <div className="font-medium mb-1">Selected Asset Details:</div>
+              {(() => {
+                const selectedAsset = assets.find(
+                  (asset) => asset.value === selectedAssetId
+                );
+                if (!selectedAsset) return null;
+
+                const dynamicValues =
+                  selectedAsset.asset?.dynamic_field_values || {};
+                return Object.entries(dynamicValues).map(([key, value]) => (
+                  <div key={key} className="flex justify-between">
+                    <span className="text-gray-600">{key}:</span>
+                    <span>{value}</span>
+                  </div>
+                ));
+              })()}
+            </div>
+          )}
+        </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={onSubmit}
+            disabled={!selectedAssetId || isSubmitting}
+          >
+            {isSubmitting ? "Assigning..." : "Assign Asset"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Existing RejectionReasonDialog component remains the same
 const RejectionReasonDialog = ({
   open,
   onOpenChange,
@@ -425,7 +597,6 @@ const RejectionReasonDialog = ({
   setReason,
 }) => {
   const [touched, setTouched] = useState(false);
-
 
   const handleOpenChange = (newOpen) => {
     if (!newOpen) {
@@ -478,4 +649,5 @@ const RejectionReasonDialog = ({
     </Dialog>
   );
 };
+
 export default AssetRequestViewSheet;
