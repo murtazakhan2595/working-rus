@@ -46,11 +46,12 @@ const AssetRequestViewSheet = ({
   const [rejectionReason, setRejectionReason] = useState("");
   const [isSubmittingRejection, setIsSubmittingRejection] = useState(false);
 
-  // NEW: Asset assignment states
   const [showAssetSelection, setShowAssetSelection] = useState(false);
   const [availableAssets, setAvailableAssets] = useState([]);
   const [selectedAssetId, setSelectedAssetId] = useState("");
   const [isLoadingAssets, setIsLoadingAssets] = useState(false);
+
+  console.log("AssetRequestViewSheet", assetRequest);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -85,62 +86,59 @@ const AssetRequestViewSheet = ({
     assetRequest?.asset_status === "Approved" ||
     assetRequest?.asset_status === "Accepted";
 
-  // NEW: Updated detail items to show category and dynamic fields
   const detailItems = [
     {
       label: "Category",
-      value: assetRequest?.category?.name || "Not specified",
+      value: assetRequest?.asset?.asset_type?.name || "Not specified",
     },
     // Show assigned asset details if available
-    assetRequest?.assigned_asset && {
+    assetRequest?.asset && {
       label: "Assigned Asset",
-      value: assetRequest.assigned_asset.asset_name,
+      value: assetRequest.asset.asset_name,
     },
-    assetRequest?.assigned_asset && {
+    assetRequest?.asset && {
       label: "Asset ID",
-      value: assetRequest.assigned_asset.id,
+      value: assetRequest.asset.id,
     },
-    // NEW: Show dynamic field values from assigned asset
-    ...Object.entries(
-      assetRequest?.assigned_asset?.dynamic_field_values || {}
-    ).map(([key, value]) => ({
-      label: key,
-      value: value || "Not specified",
-    })),
+    ...Object.entries(assetRequest?.asset?.dynamic_field_values || {}).map(
+      ([key, value]) => ({
+        label: key,
+        value: value || "Not specified",
+      })
+    ),
     {
       label: "Location",
       value:
-        assetRequest?.assigned_asset?.asset_location_name ||
+        assetRequest?.asset?.asset_location_name ||
         assetRequest?.category?.name + " (Not assigned)",
     },
     !isMyRequest &&
-      assetRequest?.assigned_asset && {
+      assetRequest?.asset && {
         label: "Purchase Date",
-        value: assetRequest.assigned_asset.asset_purchase_date
-          ? moment(assetRequest.assigned_asset.asset_purchase_date).format(
+        value: assetRequest.asset.asset_purchase_date
+          ? moment(assetRequest.asset.asset_purchase_date).format(
               "MMM D, YYYY"
             )
           : "Not specified",
       },
     !isMyRequest &&
-      assetRequest?.assigned_asset && {
+      assetRequest?.asset && {
         label: "Warranty Expiry",
-        value: assetRequest.assigned_asset.asset_warranty_expiry
-          ? moment(assetRequest.assigned_asset.asset_warranty_expiry).format(
+        value: assetRequest.asset.asset_warranty_expiry
+          ? moment(assetRequest.asset.asset_warranty_expiry).format(
               "MMM D, YYYY"
             )
           : "Not specified",
       },
-    assetRequest?.assigned_asset && {
+    assetRequest?.asset && {
       label: "Initial Condition",
-      value:
-        assetRequest.assigned_asset.asset_initial_condition || "Not specified",
+      value: assetRequest.asset.asset_initial_condition || "Not specified",
     },
     !isMyRequest &&
-      assetRequest?.assigned_asset && {
+      assetRequest?.asset && {
         label: "Purchase Cost",
-        value: assetRequest.assigned_asset.asset_purchase_price
-          ? `$${assetRequest.assigned_asset.asset_purchase_price.toFixed(2)}`
+        value: assetRequest.asset.asset_purchase_price
+          ? `$${assetRequest.asset.asset_purchase_price.toFixed(2)}`
           : "Not specified",
       },
     {
@@ -164,13 +162,6 @@ const AssetRequestViewSheet = ({
     assetRequest?.reason && {
       label: "Reason",
       value: assetRequest?.reason,
-    },
-    // NEW: Show preferred specifications if available
-    Object.keys(assetRequest?.preferred_specifications || {}).length > 0 && {
-      label: "Preferred Specifications",
-      value: Object.entries(assetRequest.preferred_specifications)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join(", "),
     },
   ].filter(Boolean);
 

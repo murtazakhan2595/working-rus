@@ -67,8 +67,8 @@ const validateAssetRequestForm = (values, mode = "request") => {
       errors.category_id = "Category is required";
     }
   } else {
-    if (!values.asset_id) {
-      errors.asset_id = "Asset is required";
+    if (!values.asset_name) {
+      errors.asset_name = "Asset is required";
     }
     if (!values.employee) {
       errors.employee = "Employee is required";

@@ -167,7 +167,6 @@ const getAssetById = async (assetId) => {
 const requestAsset= async (payload) => {
   try {
     if (payload?.id) {
-      // If there's an ID, use PATCH to update the existing asset request
       const response = await axios.patch(
         `${baseUrl}/asset_assignment/${payload.id}/`,
         payload,
@@ -207,7 +206,7 @@ const getEmployeeAssets = async (payload) => {
    const filterData = payload?.filterData ?? {};
    const sortField = payload?.options?.sortField ?? "created_at";
    const sortOrder = payload?.options?.sortOrder ?? "desc";
-   let URL = `/asset_requests?ordering=${
+   let URL = `/asset_assignment?ordering=${
      sortOrder === "desc" ? "-" : ""
    }${sortField}&${pageNo ? `page=${pageNo}&` : ""}${
      pageSize ? `page_size=${pageSize}&` : ""

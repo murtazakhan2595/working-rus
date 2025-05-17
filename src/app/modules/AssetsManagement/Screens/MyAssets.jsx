@@ -93,7 +93,8 @@ const MyAssetsPage = ({ userProfile }) => {
         <CardContent>
           <CustomTable
             data={assets}
-            columns={MyAssetRequestColumns}
+            // columns={MyAssetRequestColumns}
+            columns={[]}
             pagination={true}
             dataTotalSize={totalCount}
             tableOptions={myAssetsTableOptions}

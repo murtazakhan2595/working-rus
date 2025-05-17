@@ -200,7 +200,7 @@ const AddUpdateAsset = ({
         asset_warranty_expiry: values.warranty_expiry || null,
         asset_initial_condition: values.condition,
         asset_location: values.asset_location,
-        attachment: attachmentIds, // Array of attachment IDs
+        attachment: attachmentIds, 
         dynamic_field_values: dynamicFieldValues,
       };
 

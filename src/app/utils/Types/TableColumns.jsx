@@ -823,10 +823,10 @@ export const AssetRequestColumns = [
   {
     dataField: "employee",
     text: "Employees",
-    formatter: (cell, row) => (
+    formatter: (cell) => (
       <>
         <EmployeeOverview
-          id={row.asset_employee_id}
+          id={cell.id}
           showEmail={true}
           showDepartment={true}
           showPosition={true}
@@ -837,12 +837,12 @@ export const AssetRequestColumns = [
   {
     dataField: "asset",
     text: "Asset Name",
-    formatter: (cell) => <>{cell?.asset_name}</>,
+    formatter: (cell) => <>{cell?.asset_name || "N/A"}</>,
   },
   {
     dataField: "asset",
     text: "Asset Type",
-    formatter: (cell) => <>{cell?.asset_type}</>,
+    formatter: (cell) => <>{cell?.asset_type?.name}</>,
   },
   {
     dataField: "reason",

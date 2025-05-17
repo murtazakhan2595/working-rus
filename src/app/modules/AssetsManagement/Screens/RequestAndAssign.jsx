@@ -137,10 +137,9 @@ const AssetRequests = ({ userProfile, departments }) => {
   ];
 
   const enhancedRequestColumns = [
-    ...AssetRequestColumns.filter((col) => col.dataField !== "id"), // Remove the ID column as we'll have different IDs
+    ...AssetRequestColumns.filter((col) => col.dataField !== "id"), 
   ];
 
-  // Filters configuration
   const filters = [
     {
       type: "search",
