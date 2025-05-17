@@ -24,6 +24,7 @@ import {
   calculateBreak,
 } from "app/hooks/attendance";
 import { Button } from "components/ui/button";
+import AlertDialogue from "components/ui/AlertDialogue";
 
 export default function EmployeeSelfTimesheet({
   employeeShift,
@@ -36,6 +37,7 @@ export default function EmployeeSelfTimesheet({
   const [payableHours, setPayableHours] = useState(
     parseFloat(attendance?.payable_hours) || 0
   );
+  
 
   const updateTimer = () => {
     const checkInDate = moment(attendance.checkin); // Check-in time
@@ -63,6 +65,7 @@ export default function EmployeeSelfTimesheet({
       return () => clearInterval(interval); // Cleanup on unmount
     }
   }, [attendance, OnBreak]);
+
 
   return (
     // if isDashboard is false, then the div will  have border and shadow
@@ -264,7 +267,10 @@ const RenderLogInButton = ({
 }) => {
   const userProfile = useSelector((state) => state.user.userProfile);
   const user_details = useSelector((state) => state.emp.user_details);
-
+  const [showCheckoutAlert, setShowCheckoutAlert] = useState(false);
+  const handleCheckoutClick = () => {
+    setShowCheckoutAlert(true);
+  };
   if (attendance && attendance.checkout) {
     return null;
   }
@@ -318,7 +324,9 @@ const RenderLogInButton = ({
     if (response) {
       toast.success("Shift ended");
       reloadData(true);
+      setShowCheckoutAlert(false);
     }
+
   };
   const disableCheckOutButton = OnBreak || disable;
   const disableCheckInButton = disable;
@@ -335,14 +343,30 @@ const RenderLogInButton = ({
           Check In
         </Button>
       ) : (
-        <Button
-          variant="default"
-          size="sm"
-          disabled={disableCheckOutButton}
-          onClick={endShift}
-        >
-          Check Out
-        </Button>
+        <>
+          <Button
+            variant="default"
+            size="sm"
+            disabled={disableCheckOutButton}
+            onClick={handleCheckoutClick}
+          >
+            Check Out
+          </Button>
+
+          {showCheckoutAlert && (
+            <AlertDialogue
+              title="Confirm Checkout"
+              description="Are you sure you want to checkout?"
+              isOpen={showCheckoutAlert}
+              setIsOpen={setShowCheckoutAlert}
+              handleContinue={() => {
+                endShift();
+              }}
+              continueText="Yes, Checkout"
+              cancelText="Cancel"
+            />
+          )}
+        </>
       )}
     </>
   );

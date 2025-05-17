@@ -6,17 +6,18 @@ export const Module = {
   submodules: null,
 };
 
-export const UserRole = {
-  name: null,
-  description: null,
-  status: "inactive",
-  id: null,
-  role_permission_id: null,
-};
+export const UserRole={
+    name:null,
+    description	:null,
+    status:'inactive',
+    id:null,
+  role_permission_id:null,
+
+}
 export const UserRolePermissions = {
   role: null,
   feature_ids: [],
-  id: null,
+  id:null,
 };
 export const RoleAssignmentHistoryLogs = {
   action: null,
@@ -48,3 +49,4 @@ export const AssignedRole = {
   created_by: null,
   updated_by: null,
 };
+
