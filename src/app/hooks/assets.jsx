@@ -94,7 +94,7 @@ const addAsset = async (payload, id = null) => {
       asset_warranty_expiry: payload.asset_warranty_expiry,
       asset_initial_condition: payload.asset_initial_condition,
       asset_location: payload.asset_location,
-      attachment: payload.attachment, // Array of attachment IDs
+      attachment: payload.attachment, 
       dynamic_field_values: payload.dynamic_field_values,
     };
 
@@ -106,7 +106,7 @@ const addAsset = async (payload, id = null) => {
       ? `${baseUrl}/asset_management/${id}/`
       : `${baseUrl}/asset_management/`;
 
-    const method = id ? "PUT" : "POST";
+    const method = id ? "PATCH" : "POST";
 
     const response = await axios({
       method,
@@ -126,6 +126,28 @@ const addAsset = async (payload, id = null) => {
     throw error;
   }
 };
+
+const updateAsset = async (payload) => {
+  try {
+    const response = await axios.patch(
+      `${baseUrl}/asset_management/${payload.id}/`,
+      payload,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) { 
+    console.error("Error updating asset:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
 const deleteAsset = async (assetId) => {
   try {
     const response = await axios.delete(
@@ -302,4 +324,5 @@ export {
   getAssetCategories,
   addAssetCategory,
   deleteAssetCategory,
+  updateAsset,
 };

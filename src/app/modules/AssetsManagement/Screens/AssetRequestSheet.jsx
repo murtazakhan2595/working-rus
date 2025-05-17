@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { validateAssetRequestForm } from "app/utils/FormSchema/AssetsFormSchema";
+import { updateAsset } from "app/hooks/assets";
 
 const AssetRequestSheet = ({
   userProfile,
@@ -24,17 +25,18 @@ const AssetRequestSheet = ({
   reload,
   isOpen,
   setIsOpen,
-  mode = "request", // "request" or "assign"
+  mode = "request", // "request" or "assign" 
   departments = [],
+  editData,
 }) => {
+  const isEdit = editData ? true : false;
   const [closeSheet, setCloseSheet] = useState(false);
   const [loading, setLoading] = useState(false);
   const [availableAssets, setAvailableAssets] = useState([]);
-  const [categories, setCategories] = useState([]); 
+  const [categories, setCategories] = useState([]);
   const [assetsLoading, setAssetsLoading] = useState(true);
-
-  // Initial form values
-  const initialValues = {
+  const [selectedCategory, setSelectedCategory] = useState(isEdit ? editData?.category.id : "");
+  const [initialValues, setInitialValues] = useState({
     category_id: "",
     asset_name: "",
     reason: "",
@@ -42,7 +44,8 @@ const AssetRequestSheet = ({
     employee: "",
     assign_date: new Date().toISOString().split("T")[0],
     return_date: null,
-  };
+  });
+  // Initial form values
 
   const formSheetData = {
     title: mode === "request" ? "Asset Request" : "Assign Asset to Employee",
@@ -54,7 +57,6 @@ const AssetRequestSheet = ({
     const fetchData = async () => {
       setAssetsLoading(true);
       try {
-        if (mode === "request") {
           const categoriesResponse = await getAssetCategories({
             options: { page: 1, sizePerPage: 100 },
             filterData: { is_active: true },
@@ -70,20 +72,19 @@ const AssetRequestSheet = ({
             );
             setCategories(formattedCategories);
           }
-        } else {
-          const assetsResponse = await getAssetList({
-            options: { page: 1, sizePerPage: 100 },
-          });
 
-          if (assetsResponse && assetsResponse.results) {
-            const formattedAssets = assetsResponse.results.map((asset) => ({
-              value: asset.id,
-              label: asset.asset_name,
-              category_id: asset.category_id,
-            }));
-            setAvailableAssets(formattedAssets);
+          if (isEdit) {
+            console.log("Asset request edit data", editData);
+            setInitialValues({
+              employee: editData?.employee?.id,
+              assign_date: "",
+              return_date: "",
+              reason: editData?.reason,
+              additional_notes: editData?.additional_notes,
+              category_id: editData?.category.id,
+              asset_name: "",
+            });
           }
-        }
       } catch (error) {
         console.error("Error fetching data:", error);
         toast.error("Failed to load required data");
@@ -97,6 +98,30 @@ const AssetRequestSheet = ({
     }
   }, [isOpen, mode]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (mode === "assign") {
+        const assetsResponse = await getAssetList({
+          options: { page: 1, sizePerPage: 100 },
+          filterData: {
+            asset_status: "Unassigned",
+            category: selectedCategory,
+          },
+        });
+
+        if (assetsResponse && assetsResponse.results) {
+          const formattedAssets = assetsResponse.results.map((asset) => ({
+            value: asset.id,
+            label: asset.asset_name,
+            category_id: asset.category_id,
+          }));
+          setAvailableAssets(formattedAssets);
+        }
+        
+      }
+    }
+    fetchData()
+  },[selectedCategory, isEdit])
 
   const handleFormSubmit = async (values) => {
     setLoading(true);
@@ -125,12 +150,18 @@ const AssetRequestSheet = ({
               ...(values.return_date && {
                 asset_return_date: values.return_date,
               }),
-              asset_request_status: "Assigned",
+              asset_request_status: isEdit? "Requested" : "Assigned",
             }),
       };
 
       const response = await requestAsset(payload);
-
+      if (response && mode === "assign") {
+        const assetMangaementPayload = {
+          id: values.asset_name,
+          asset_status: "Assigned",
+        };
+        await updateAsset(assetMangaementPayload);
+      }
       if (response) {
         toast.success(
           mode === "request"
@@ -196,6 +227,7 @@ const AssetRequestSheet = ({
                       props.setFieldValue(field, value);
                     }}
                     placeholder="Select an employee"
+                    disabled={isEdit}
                   />
                 </SheetCardExtension>
               )}
@@ -206,26 +238,27 @@ const AssetRequestSheet = ({
                   mode === "request" ? "Asset Request Details" : "Asset Details"
                 }
               >
-                {mode === "request" ? (
-                  <SelectInputComponent
-                    name="category_id"
-                    error={props.errors?.category_id}
-                    touch={props.touched?.category_id}
-                    value={props.values?.category_id}
-                    label="Asset Category"
-                    required={true}
-                    options={categories}
-                    onChange={(field, value) => {
-                      props.setFieldValue(field, value);
-                    }}
-                    placeholder={
-                      assetsLoading
-                        ? "Loading categories..."
-                        : "Select a category"
-                    }
-                    isLoading={assetsLoading}
-                  />
-                ) : (
+                <SelectInputComponent
+                  name="category_id"
+                  error={props.errors?.category_id}
+                  touch={props.touched?.category_id}
+                  value={props.values?.category_id}
+                  label="Asset Category"
+                  required={true}
+                  options={categories}
+                  onChange={(field, value) => {
+                    props.setFieldValue(field, value);
+                    setSelectedCategory(value);
+                  }}
+                  placeholder={
+                    assetsLoading
+                      ? "Loading categories..."
+                      : "Select a category"
+                  }
+                  isLoading={assetsLoading}
+                  disabled={isEdit}
+                />
+                {mode === "assign" && (
                   <SelectInputComponent
                     name="asset_name"
                     error={props.errors?.asset_name}

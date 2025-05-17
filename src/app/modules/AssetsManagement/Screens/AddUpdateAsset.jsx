@@ -401,7 +401,6 @@ const AddUpdateAsset = ({
                       options={branches}
                       onChange={(field, value) => {
                         props.setFieldValue(field, value);
-                        handleCategoryChange(value, props.setFieldValue);
                       }}
                     />
                   </div>

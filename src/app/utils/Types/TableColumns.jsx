@@ -43,13 +43,13 @@ export const EmployeeColumns = [
     text: "Role",
     formatter: (cell, row) => <UserRole value={cell} />,
     dataSort: true,
-    maxWidth:'120px'
+    maxWidth: "120px",
   },
   {
     dataField: "username",
     text: "Username",
     minWidth: "105px",
-    maxWidth:'120px',
+    maxWidth: "120px",
     dataSort: true,
     formatter: (cell) => (
       <div className="overflow-hidden text-ellipsis">{cell}</div>
@@ -685,24 +685,15 @@ export const MyAssetRequestColumns = [
   },
   {
     dataField: "asset",
-    text: "Asset",
-    formatter: (cell) => {
-      return (
-        <div className="flex flex-col">
-          <span className="font-medium">{cell?.asset_name}</span>
-          <span className="text-sm text-muted-foreground">
-            {cell?.asset_type}
-          </span>
-        </div>
-      );
-    },
+    text: "Asset Type",
+    formatter: (cell, row) => (
+      <>{cell?.asset_type?.name || row?.category?.name}</>
+    ),
   },
   {
     dataField: "asset",
-    text: "Serial Number",
-    formatter: (cell) => {
-      return cell?.asset_serial_number || "N/A";
-    },
+    text: "Asset Name",
+    formatter: (cell) => <>{cell?.asset_name || "Not assigned"}</>,
   },
   {
     dataField: "asset_assigned_date",
@@ -741,8 +732,7 @@ export const MyAssetRequestColumns = [
               ? "bg-blue-50 text-blue-700"
               : cell === "Withdrawal"
               ? "bg-yellow-50 text-yellow-700"
-
-              : "bg-[#f0f0f3] text-[#7f838d]" 
+              : "bg-[#f0f0f3] text-[#7f838d]"
           }`}
         >
           {cell || "N/A"}
@@ -842,7 +832,9 @@ export const AssetRequestColumns = [
   {
     dataField: "asset",
     text: "Asset Type",
-    formatter: (cell) => <>{cell?.asset_type?.name}</>,
+    formatter: (cell, row) => (
+      <>{cell?.asset_type?.name || row?.category?.name}</>
+    ),
   },
   {
     dataField: "reason",
