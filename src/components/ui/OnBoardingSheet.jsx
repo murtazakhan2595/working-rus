@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import SheetComponent from "./SheetComponent";
-import EmployeeForm from "app/modules/Employees/Screens/Sections/EmployeeForm";
+import EmployeeForm from "app/modules/Employees/Screens/EmployeeForm";
 
 const OnBoardingSheet = ({ reloadData = () => {} }) => {
   const formRef = useRef();

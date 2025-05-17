@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
-import EmployeeForm from "./Sections/EmployeeForm.jsx";
+import EmployeeForm from "./EmployeeForm";
 import {
   Dialog,
   // DialogTrigger,
