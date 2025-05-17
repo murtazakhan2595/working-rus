@@ -29,6 +29,7 @@ const AssetRequests = ({ userProfile, departments }) => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [editRequest, setEditRequest] = useState(null);
 
   // Asset request/assignment sheet state
   const [openAssetRequestSheet, setOpenAssetRequestSheet] = useState(false);
@@ -116,8 +117,15 @@ const AssetRequests = ({ userProfile, departments }) => {
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
     onRowClick: (row) => {
-      setSelectedRequest(row);
-      setOpenRequestDetailSheet(true);
+      console.log("Row clicked:", row);
+      if (row.asset_status === "Pending" && row.asset_request_status ==="Requested"){
+        setEditRequest(row);
+      }
+      else{
+        setSelectedRequest(row);
+        setOpenRequestDetailSheet(true);
+
+      }
     },
   };
 
@@ -137,10 +145,9 @@ const AssetRequests = ({ userProfile, departments }) => {
   ];
 
   const enhancedRequestColumns = [
-    ...AssetRequestColumns.filter((col) => col.dataField !== "id"), // Remove the ID column as we'll have different IDs
+    ...AssetRequestColumns.filter((col) => col.dataField !== "id"), 
   ];
 
-  // Filters configuration
   const filters = [
     {
       type: "search",
@@ -242,6 +249,18 @@ const AssetRequests = ({ userProfile, departments }) => {
           mode={assetSheetMode}
           reload={() => fetchRequestsData(true)}
           departments={departments}
+        />
+      )}
+      {editRequest && (
+        <AssetRequestSheet
+          isOpen={!!editRequest}
+          setIsOpen={() => {
+            setEditRequest(null);
+          }}
+          mode={"assign"}
+          reload={() => fetchRequestsData(true)}
+          departments={departments}
+          editData={editRequest}
         />
       )}
 
