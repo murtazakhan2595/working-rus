@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import { MenuIcon } from "lucide-react";
 import { Button } from "components/ui/button";
-import Menu from "./MenuList";
+import MenuList from "./MenuList";
 import {
   Sheet,
   SheetHeader,
@@ -11,7 +11,7 @@ import {
 } from "src/@/components/ui/sheet";
 
 import MobileLogo from "assets/images/mobile-logo";
-export function MenuSheet({userRole}) {
+export function MenuSheet({ModuleList}) { 
   return (
     <Sheet>
       <SheetTrigger className="lg:hidden" asChild>
@@ -34,7 +34,7 @@ export function MenuSheet({userRole}) {
 
         {/* <NavigationMenue isOpen  /> */}
            
-        <Menu isOpen userRole={userRole}/>
+        <MenuList isOpen={true} ModuleList={ModuleList}/>
 
 
       </SheetContent>

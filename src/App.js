@@ -15,10 +15,14 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import "./index.css";
 import { SidebarRoutes, LoginRoutes, GeneralRoutes } from "constants/routes";
+import { doesNodeExistInTree } from "utils/renderValues";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
   const userProfile = useSelector((state) => state.user.userProfile);
+  const ModuleList = useSelector(
+    (state) => state.roles_permissions.user_permitted_modules
+  );
   const token = window.localStorage.getItem("token");
   const baseUrl = useSelector((state) => state.user.baseUrl);
   let dispatch = useDispatch();
@@ -49,7 +53,6 @@ function App() {
         return;
       }
     } catch (error) {
-      debugger
       if (
         error.response &&
         (error.response.status === 401 || error.response.status === 403)
@@ -87,7 +90,10 @@ function App() {
     setUserRole(userProfile.role);
   }, [userProfile]);
 
-  if (loading) {
+  if (
+    loading ||
+    (!ModuleList && Array.isArray(ModuleList) && ModuleList.length === 0)
+  ) {
     return <PageLoader />; // Render the loader if loading is true
   }
   return (
@@ -96,7 +102,11 @@ function App() {
         {isLogin && (
           <>
             {LoginRoutes.map((route) => {
-              return <Route path={route.path} element={route.component} />;
+              // const featurePermitted = (doesNodeExistInTree =
+              //   (ModuleList, [route.name], "code_name"));
+              return (
+                <Route path={route?.path || "#"} element={route.component} />
+              );
             })}
             <Route
               element={
@@ -104,25 +114,28 @@ function App() {
                   isSidebarOpen={isSidebarOpen}
                   setIsSidebarOpen={setIsSidebarOpen}
                   userRole={userRole}
+                  ModuleList={ModuleList}
                 />
               }
             >
               {SidebarRoutes.map((route) => {
-                return <Route path={route.path} element={route.component} />;
+                return (
+                  <Route path={route?.path || "#"} element={route.component} />
+                );
               })}
 
               <Route path="*" element={<Err404 />} />
             </Route>
           </>
         )}
-       
+
         {GeneralRoutes.map((route) => {
           return <Route path={route.path} element={route.component} />;
         })}
-        
+
         {/* Test routes for error pages */}
         <Route path="/test-401" element={<Err401 />} />
-        
+
         <Route path="*" element={<Err404 />} />
       </Routes>
     </>

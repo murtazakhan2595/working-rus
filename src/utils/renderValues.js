@@ -338,7 +338,7 @@ export const getWorkingDays = (startDate, endDate) => {
   return count;
 };
 
-export const ChildAnyNodeSeleted = (
+export const ChildAnyNodeExist = (
   parent_node = {},
   selectedLeafs = [],
   label = "id"
@@ -349,13 +349,15 @@ export const ChildAnyNodeSeleted = (
   }
   // If children exist, check recursively
   if (Array.isArray(children)) {
-    return children.some((child) => ChildAnyNodeSeleted(child,selectedLeafs,label));
+    return children.some((child) =>
+      ChildAnyNodeExist(child, selectedLeafs, label)
+    );
   }
 
   return false;
 };
 
-export const ChildALLNodeSelected = (
+export const ChildALLNodesExist = (
   parent_node = {},
   selectedLeafs = [],
   label = "id"
@@ -364,5 +366,33 @@ export const ChildALLNodeSelected = (
   if (!children || children.length === 0) {
     return selectedLeafs.includes(parent_node[label]);
   }
-  return children.every((child_node) => ChildALLNodeSelected(child_node,selectedLeafs,label));
+  return children.every((child_node) =>
+    ChildALLNodesExist(child_node, selectedLeafs, label)
+  );
 };
+
+/**
+ * Recursively checks if any node in a tree (at any depth) matches one of the values in selectedValues.
+ *
+ * @param {Object} node - The current node to check.
+ * @param {String} selectedValues - A value to match against the given label key.
+ * @param {String} label - The key to compare in each node (default is "id").
+ * @returns {Boolean} - True if any matching node is found, false otherwise.
+ */
+export const getNodeExistInTree = (node = {}, selectedValue, label = "id") => {
+  if (node[label] === selectedValue) {
+    return node; // Found the node, return it
+  }
+
+  const children = node.childrens || [];
+
+  for (const child of children) {
+    const result = getNodeExistInTree(child, selectedValue, label);
+    if (result) {
+      return result; // Found in a child subtree
+    }
+  }
+
+  return null; // Not found anywhere in this subtree
+};
+

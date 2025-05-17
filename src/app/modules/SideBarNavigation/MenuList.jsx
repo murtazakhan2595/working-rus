@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Ellipsis } from "lucide-react";
 
@@ -15,12 +15,14 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "src/@/components/ui/tooltip";
+import { useSelector } from "react-redux";
 
-const MenuList = ({ isOpen, userRole }) => {
+const MenuList = ({ isOpen, ModuleList }) => {
   const pathname = window.location.pathname; // Get the current pathname
-  const menuList = getMenuList(pathname, userRole) || [];
-
-  // console.log(menuList, "MENU LIST IS THIS")
+  const PermittedModuleList = useSelector((state) => state.roles_permissions.user_permitted_modules);
+  const menuList = useMemo(() => {
+    return getMenuList(pathname, PermittedModuleList) || [];
+  }, [pathname, PermittedModuleList]);
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
@@ -61,7 +63,6 @@ const MenuList = ({ isOpen, userRole }) => {
                           active={active}
                           submenus={submenus}
                           isOpen={isOpen}
-                          userRole={userRole}
                         />
                       </div>
                     ) : (

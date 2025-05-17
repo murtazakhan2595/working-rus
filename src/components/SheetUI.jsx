@@ -48,6 +48,7 @@ const SheetUI = forwardRef(
       columns,
       onFormChange,
       disableSubmit = false,
+      onSubmitClick = () => {},
     } = formConfig;
 
     const handleClose = () => {
@@ -57,7 +58,7 @@ const SheetUI = forwardRef(
       try {
         setIsSubmittingForm(true);
         const response = await handleSubmit(values, resetForm);
-        if (response.status) {
+        if (response?.status) {
           setMessageConfig(response);
           setOpenActionMessage(true);
         }
@@ -182,7 +183,11 @@ const SheetUI = forwardRef(
                     type="submit"
                     size="lg"
                     variant="default"
-                    onClick={props.handleSubmit}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      onSubmitClick(props.values);
+                      props.handleSubmit();
+                    }}
                     disabled={disableSubmit || isSubmittingForm}
                   >
                     {isSubmittingForm ? "Submitting Form..." : submitButtonText}
@@ -197,7 +202,7 @@ const SheetUI = forwardRef(
             isOpen={openActionMessage}
             onClose={() => {
               setOpenActionMessage(false);
-              setIsOpen(false)
+              setIsOpen(false);
             }}
             title={messageConfig.title || "Request Submitted!"}
             description={

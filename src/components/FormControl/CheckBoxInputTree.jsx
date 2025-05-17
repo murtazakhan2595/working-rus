@@ -4,7 +4,7 @@ import { FormField, InvalidInput, TextInput } from "components/FormControl";
 
 import CheckBoxInput from "./CheckBoxInput";
 import { ChevronDown, ChevronRight } from "lucide-react"; // or any icon lib
-import { ChildALLNodeSelected, ChildAnyNodeSeleted } from "utils/renderValues";
+import { ChildALLNodesExist, ChildAnyNodeExist } from "utils/renderValues";
 const CheckBoxInputTree = React.memo(
   ({
     name,
@@ -152,13 +152,13 @@ const TreeNodeItem = ({ node, selectedLeafIds, onCheckChange }) => {
   const hasChildren = Boolean(childrens && childrens.length > 0);
   const anyNodeSelected = React.useMemo(() => {
     {
-      const isSelected = ChildAnyNodeSeleted(node, selectedLeafIds, "id");
+      const isSelected = ChildAnyNodeExist(node, selectedLeafIds, "id");
       if (isSelected) setOpen(true);
       return isSelected;
     }
   }, [selectedLeafIds, node]);
   const CheckSelected = React.useMemo(() => {
-    return ChildALLNodeSelected(node, selectedLeafIds, "id");
+    return ChildALLNodesExist(node, selectedLeafIds, "id");
   }, [selectedLeafIds, node]);
 
   if (code_name === "DASHBOARD") return null;

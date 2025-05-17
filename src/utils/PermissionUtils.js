@@ -1,6 +1,10 @@
-import Config from "constants/config";
+import { useSelector } from "react-redux";
 
-export function hasAccess(key) {
+export function HasAccess(key) {
   // Check if feature is enabled in config AND user has permission
-  return Config[key];
+  const permissions = useSelector(
+    (state) => state.roles_permissions.my_permissions
+  );
+  const isAllowed = permissions.includes(key);
+  return Boolean(isAllowed);
 }
