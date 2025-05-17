@@ -6,14 +6,15 @@ import { CardDescription } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { getUserRoleList } from "app/hooks/rolesPermisions";
 import { UserRoleColumn } from "app/modules/RoleAndPermissions/Sections";
-import { useNavigate } from "react-router-dom";
+import { HasAccess } from "utils/PermissionUtils";
+import Error from "app/modules/Error";
 
 const UserRoles = ({
   loading: initialLoading,
   reload: externalReload,
   organizationId,
 }) => {
-  const navigate = useNavigate();
+  const isViewUserRolePermitted = HasAccess("VIEW_USER_ROLE");
   const [roles, setRoles] = useState({ results: [], count: 0 });
   const [loading, setLoading] = useState(initialLoading || false);
   const [filterData, setFilterData] = useState({});
@@ -91,6 +92,8 @@ const UserRoles = ({
   const forceReload = () => {
     setReloadCounter((prev) => prev + 1);
   };
+
+  if (!isViewUserRolePermitted) return <Error />;
 
   return (
     <div className="flex flex-col gap-4">

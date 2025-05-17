@@ -5,8 +5,10 @@ import DropdownActionMenu from "components/DropdownActionMenu";
 import { toast } from "react-toastify";
 import { deleteRole } from "app/hooks/rolesPermisions";
 import { useNavigate } from "react-router-dom";
+import { HasAccess } from "utils/PermissionUtils";
 
-const UserRoleAction = ({ data, reload , UserRoleList=[]}) => {
+const UserRoleAction = ({ data, reload, UserRoleList = [] }) => {
+  const isEditUserRolePermitted = HasAccess("EDIT_USER_ROLE");
   const [view, setView] = useState(null);
   const [deleteRoleState, setDeleteRoleState] = useState(null);
   const navigate = useNavigate();
@@ -62,8 +64,15 @@ const UserRoleAction = ({ data, reload , UserRoleList=[]}) => {
     <>
       <DropdownActionMenu
         onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onEdit={isEditUserRolePermitted && data?.id !== 1 ? handleEdit : null}
+        onDelete={
+          isEditUserRolePermitted &&
+          data?.id !== 1 &&
+          data?.id !== 2 &&
+          data?.name?.toLowerCase() !== "employee"
+            ? handleDelete
+            : null
+        }
         viewText="View Role"
         editText="Edit Role"
         deleteText="Delete Role"

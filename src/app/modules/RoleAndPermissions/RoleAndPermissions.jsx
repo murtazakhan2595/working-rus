@@ -1,5 +1,9 @@
-import React, { useState } from "react";
-import {UserRoles,AssignedRoles,RoleAssignmentHistoryLogs} from "app/modules/RoleAndPermissions";
+import React, { useState, useMemo } from "react";
+import {
+  UserRoles,
+  AssignedRoles,
+  RoleAssignmentHistoryLogs,
+} from "app/modules/RoleAndPermissions";
 
 import {
   Tabs,
@@ -11,15 +15,22 @@ import { Card, CardContent } from "components/ui/card";
 import { Header } from "components";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
-
-const RoleAndPermissionsTab = ["Role Management", "Assigned Roles","Role Assignment History & Logs"];
+import { HasAccess } from "utils/PermissionUtils";
 
 function RoleAndPermissions() {
   const navigate = useNavigate();
-  const [OpenUploadDocumentForm, setOpenUploadDocumentForm] = useState(false);
-  const [OpenCategoryForm, setOpenCategoryForm] = useState(false);
-  const [activeHRDocumentsTab, setActiveHRDocumentsTab] = useState("Role Management");
+  const isViewUserRolePermitted = HasAccess("VIEW_USER_ROLE");
+  const [activeHRDocumentsTab, setActiveHRDocumentsTab] =
+    useState("Role Management");
   const [reloadData, setReloadData] = useState(false);
+  const RoleAndPermissionsTab = useMemo(() => {
+    return [
+      ...(isViewUserRolePermitted ? ["Role Management"] : []),
+      "Assigned Roles",
+      "Role Assignment History & Logs",
+    ];
+  }, [isViewUserRolePermitted]);
+
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -31,7 +42,6 @@ function RoleAndPermissions() {
               e.preventDefault();
               if (activeHRDocumentsTab === "Role Management")
                 navigate("/office-settings/role-permission/user-role/add");
-              else setOpenCategoryForm(true);
             }}
           >
             {activeHRDocumentsTab === "Role Management"
