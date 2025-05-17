@@ -36,15 +36,7 @@ const UserRoleAction = ({ data, reload, UserRoleList = [] }) => {
 
   const confirmDelete = async () => {
     try {
-      console.log("Deleting role:", deleteRoleState?.data?.id);
-      await deleteRole(deleteRoleState?.data?.id);
-
-      toast.success(
-        `Role "${deleteRoleState?.data?.name}" deleted successfully`,
-        {
-          position: toast.POSITION.TOP_RIGHT,
-        }
-      );
+      await deleteRole(deleteRoleState?.data?.id, deleteRoleState?.data?.name);
 
       setDeleteRoleState(null);
 
