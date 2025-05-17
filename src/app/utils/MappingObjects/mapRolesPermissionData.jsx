@@ -164,3 +164,15 @@ export async function mapEffectivePermissionsListData(data) {
 
   return PermissionList;
 }
+export async function mapUserPermissionsListData(data) {
+  if (!data || data.length === 0) return [];
+
+  const allFeatures = data.flatMap((item) => item.feature || []);
+
+  // Remove duplicates by 'id'
+  const uniqueFeatures = Array.from(
+    new Map(allFeatures.map((f) => [f.id, f])).values()
+  );
+
+  return { id: data[0].id, features: uniqueFeatures };
+}

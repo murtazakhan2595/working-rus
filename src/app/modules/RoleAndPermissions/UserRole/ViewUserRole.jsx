@@ -3,12 +3,12 @@ import { SheetCardExtension } from "components/SheetCardExtension";
 import { useState, useEffect } from "react";
 import CircularActionButtons from "components/CircularActionButtons";
 import AlertDialogue from "components/ui/AlertDialogue";
-import {
-  deleteRole,
-  getUserRoleData,
-} from "app/hooks/rolesPermisions";
+import { deleteRole, getUserRoleData } from "app/hooks/rolesPermisions";
 import { useNavigate } from "react-router-dom";
 import { ViewDetailSheetCardExtension } from "components";
+import { useSelector } from "react-redux";
+import ViewTreeUI from "components/ViewTreeUI";
+
 const ViewUserRole = ({
   isOpen,
   setIsOpen,
@@ -17,34 +17,41 @@ const ViewUserRole = ({
   UserRoleList = [],
 }) => {
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
-  const [rolePermissions, setRolePermissions] = useState([]);
-  const [isLoadingPermissions, setIsLoadingPermissions] = useState(true);
+  const [isLoadingPermissions, setIsLoadingPermissions] = useState(false);
   const [currentRole, setCurrentRole] = useState({});
   const [currentRoleId, setCurrentRoleId] = useState(roleID);
+  const ModuleTree = useSelector((state) => state.roles_permissions.modules);
   const navigate = useNavigate();
 
   const fetchData = async (isMounted, roleId) => {
+    setIsLoadingPermissions(true);
     try {
-      const response = await getUserRoleData(roleId);
+      const response = await getUserRoleData(roleId, ModuleTree);
       if (isMounted && response) {
         setCurrentRole(response);
-        
         setCurrentRoleId(roleId);
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoadingPermissions(false);
     }
   };
 
   useEffect(() => {
     let isMounted = true;
-    if (currentRoleId) {
+    if (
+      currentRoleId &&
+      ModuleTree &&
+      Array.isArray(ModuleTree) &&
+      ModuleTree.length > 0
+    ) {
       fetchData(isMounted, currentRoleId);
     }
     return () => {
       isMounted = false;
     };
-  }, [currentRoleId]);
+  }, [currentRoleId, ModuleTree]);
 
   const handleEdit = (e) => {
     e.preventDefault();
@@ -95,39 +102,26 @@ const ViewUserRole = ({
     }
   };
 
-  // Extract all features from rolePermissions
-  const getAllFeatures = () => {
-    const allFeatures = [];
-
-    rolePermissions.forEach((permission) => {
-      if (permission.feature && Array.isArray(permission.feature)) {
-        allFeatures.push(...permission.feature);
-      }
-    });
-
-    return allFeatures;
-  };
-
   const renderPermissions = () => {
     if (isLoadingPermissions) {
       return <div className="text-gray-500">Loading permissions...</div>;
     }
-
-    const features = getAllFeatures();
-
-    if (features.length === 0) {
-      return <div className="text-gray-500">No permissions assigned</div>;
+    const moduleTreePermitted = currentRole.module_permitted;
+    if (
+      !moduleTreePermitted ||
+      !Array.isArray(moduleTreePermitted) ||
+      moduleTreePermitted.length === 0
+    ) {
+      return (
+        <DetailBox label="Permissions" value={"No permission granted yet"} />
+      );
     }
-
     return (
       <div className="space-y-2">
-        {features.map((feature, index) => (
-          <DetailBox
-            key={index}
-            label={feature.name}
-            value={feature.description || feature.code_name}
-          />
-        ))}
+        <div className="text-neutral-900 mb-2">
+          All permissions granted are listed below
+        </div>
+        <ViewTreeUI list={moduleTreePermitted} searchFeature={true} />{" "}
       </div>
     );
   };

@@ -20,7 +20,6 @@ import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { SwitchInput } from "components/FormControl";
 
 const AddUpdateUserRoleForm = ({ isOpen = true }) => {
   const navigate = useNavigate();
@@ -33,6 +32,7 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
   const [RoleNameExist, setRoleNameExist] = useState(false);
   const isEditMode = Boolean(id);
   const ModuleTree = useSelector((state) => state.roles_permissions.modules);
+    const [isSubmittingForm, setIsSubmittingForm] = useState(false);
 
   const FormSheetData = {
     triggerText: "",
@@ -76,7 +76,6 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
     try {
       setIsLoading(true);
       const response = await getUserRoleData(id);
-
       if (isMounted) {
         setFormData(response);
       }
@@ -115,16 +114,11 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
 
   const confirmSubmit = async () => {
     if (!formValues) return;
+    setIsSubmittingForm(true);
     try {
       // Save role
       const response = await saveUpdateUserRole(formValues, id);
       if (response) {
-        toast.success(
-          `User Role ${isEditMode ? "Updated" : "Added"} Successfully!`,
-          {
-            position: toast.POSITION.TOP_RIGHT,
-          }
-        );
         if (response.id) {
           await saveUpdateUserRolePermission(
             { ...formValues, role: response.id },
@@ -132,6 +126,12 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
           );
         }
         // Ensure table is reloaded
+        toast.success(
+          `User Role ${isEditMode ? "Updated" : "Added"} Successfully!`,
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
         handleClose();
       }
     } catch (error) {
@@ -143,6 +143,7 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
       toast.error(errorMessage);
     } finally {
       setConfirmSave(false);
+      setIsSubmittingForm(false);
     }
   };
 
@@ -193,7 +194,8 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
               submitButtonText: "Submit",
               cancelButtonText: "Cancel",
               columns: 3,
-              disableSubmit: isLoading,
+              disableSubmit: isLoading||isSubmittingForm,
+              loadingMessage: isSubmittingForm?'Submitting Form...':'',
               formFiels: [
                 {
                   sheetCardExtension: true,

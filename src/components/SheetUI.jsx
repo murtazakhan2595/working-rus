@@ -48,6 +48,7 @@ const SheetUI = forwardRef(
       columns,
       onFormChange,
       disableSubmit = false,
+      loadingMessage,
       onSubmitClick = () => {},
     } = formConfig;
 
@@ -190,7 +191,11 @@ const SheetUI = forwardRef(
                     }}
                     disabled={disableSubmit || isSubmittingForm}
                   >
-                    {isSubmittingForm ? "Submitting Form..." : submitButtonText}
+                    {isSubmittingForm
+                      ? "Submitting Form..."
+                      : loadingMessage
+                      ? loadingMessage
+                      : submitButtonText}
                   </Button>
                 </div>
               </div>

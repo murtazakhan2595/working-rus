@@ -11,11 +11,13 @@ import {
   mapUserRolePermissionsData,
   mapRoleAssignmentHistoryLogsListData,
   mapEffectivePermissionsListData,
+  mapUserPermissionsListData,
 } from "app/utils/MappingObjects/mapRolesPermissionData";
 
 import { HandleLogout } from "./general";
 import { renderErrorMessages } from "utils/renderErrors";
 import { saveEmployeeWorkInformationData } from "./employee";
+import { FilterTreeBySelectedLeafs } from "utils/Lists";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -90,7 +92,9 @@ export const getRoleAssignmentHistoryLogsList = async (payload) => {
     });
     if (response.status === 200) {
       const rolesResponse = response.data;
-      const rolesList = await mapRoleAssignmentHistoryLogsListData(rolesResponse?.results);
+      const rolesList = await mapRoleAssignmentHistoryLogsListData(
+        rolesResponse?.results
+      );
       return { results: rolesList, count: rolesResponse.count };
     } else return { results: [], count: 0 };
   } catch (error) {
@@ -170,25 +174,33 @@ export const saveUpdateUserRolePermission = async (payload, id) => {
   }
 };
 
-export const getUserRoleData = async (id) => {
+export const getUserRoleData = async (id, ModuleTree) => {
   try {
     const response = await axios.get(`${baseUrl}/userrole/${id}`, {
       headers: headers(),
     });
     const UserRoleData = mapUserRoleData(response.data);
-    const permissionslist = await getUserRolePermissionsData(UserRoleData.id);
+    const permissions = await getUserRolePermissionsData(UserRoleData.id);
     // Extract all `feature` arrays and flatten into a single array
-    const feature_ids = await permissionslist.flatMap((item) =>
-      item.feature.map((f) => f.id)
-    );
-    const role_permission_id =
-      Array.isArray(permissionslist) && permissionslist.length > 0
-        ? permissionslist[0].id
-        : null;
+    const feature_ids = await permissions?.features?.map((item) => item.id);
+    if (ModuleTree && Array.isArray(ModuleTree) && ModuleTree.length > 0) {
+      const permissionslist = await permissions?.features?.map(
+        (item) => item.code_name
+      );
+      const UserPermittedModules = FilterTreeBySelectedLeafs(
+        { code_name: null, childrens: ModuleTree },
+        permissionslist,
+        "code_name"
+      );
+      return {
+        ...UserRoleData,
+        module_permitted: UserPermittedModules?.childrens || [],
+      };
+    }
     return {
       ...UserRoleData,
       feature_ids: feature_ids,
-      role_permission_id: role_permission_id,
+      role_permission_id: permissions.id,
     };
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -209,22 +221,25 @@ export const getUserRolePermissionsData = async (ids) => {
         headers: headers(),
       }
     );
-    // const UserRolePermissionData = ;
-    return response.data.results;
+    const permissionResponse = response?.data;
+    const permssionsList = await mapUserPermissionsListData(
+      permissionResponse?.results
+    );
+    return permssionsList;
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
     console.error("Error fetching data:", error);
   }
-  return 0;
+  return {};
 };
 
 const saveAssignedRole = async (id, payload) => {
-  try{
+  try {
     const response = await saveEmployeeWorkInformationData(id, payload);
     return response;
-  }catch(error){
+  } catch (error) {
     console.error("Error saving assigned role:", error);
     throw error;
   }
@@ -236,7 +251,7 @@ const deleteAssignedRole = async (id, name) => {
     console.log("Deleting assigned role:", id);
     deleteRole(id, name);
     return {
-      success: true,  
+      success: true,
       message: "Role assignments removed successfully",
     };
   } catch (error) {
@@ -244,7 +259,6 @@ const deleteAssignedRole = async (id, name) => {
     throw error;
   }
 };
-
 
 const saveRolePermissions = async (id, roleId, featureIds) => {
   try {
@@ -321,7 +335,9 @@ export const getMyEffectivePermissions = async (payload) => {
     });
     if (response.status === 200) {
       const permissionResponse = response.data;
-      const permissionList = await mapEffectivePermissionsListData(permissionResponse);
+      const permissionList = await mapEffectivePermissionsListData(
+        permissionResponse
+      );
       return { results: permissionList, count: permissionResponse.length };
     } else return { results: [], count: 0 };
   } catch (error) {
