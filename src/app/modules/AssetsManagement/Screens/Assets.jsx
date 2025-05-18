@@ -19,9 +19,14 @@ import {
   getAssetList,
   getAssetById,
   getAssetCategories,
+  deleteAsset,
+  getCategoryById,
 } from "app/hooks/assets";
+import { deleteRecord } from "app/hooks/general";
 import { AssetsColumns } from "app/utils/Types/TableColumns";
 import AssetView from "./AssetView";
+import AlertDialogue from "components/ui/AlertDialogue";
+import DropdownActionMenu from "components/DropdownActionMenu";
 
 const Assets = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("assets"); // "assets" or "categories"
@@ -34,13 +39,20 @@ const Assets = ({ userProfile }) => {
   const [viewAsset, setViewAsset] = useState(null);
   const [filterData, setFilterData] = useState({});
   const [selectedAssetType, setSelectedAssetType] = useState("");
+  const [assetToDelete, setAssetToDelete] = useState(null);
+  const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Asset Categories state
   const [categoriesList, setCategoriesList] = useState([]);
   const [categoriesTotalCount, setCategoriesTotalCount] = useState(0);
   const [createCategory, setCreateCategory] = useState(false);
   const [categoryToView, setCategoryToView] = useState(null);
+  const [categoryToEdit, setCategoryToEdit] = useState(null);
   const [categoriesFilterData, setCategoriesFilterData] = useState({});
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [openCategoryDeleteAlert, setOpenCategoryDeleteAlert] = useState(false);
+  const [isDeletingCategory, setIsDeletingCategory] = useState(false);
 
   // NEW: Categories for filter dropdown
   const [filterCategories, setFilterCategories] = useState([]);
@@ -168,25 +180,75 @@ const Assets = ({ userProfile }) => {
     });
   };
 
+  // Handle asset deletion
+  const confirmDeleteAsset = async () => {
+    if (!assetToDelete?.id) return;
+
+    setIsDeleting(true);
+    try {
+      const success = await deleteAsset(assetToDelete.id);
+      if (success) {
+        toast.success(`Asset "${assetToDelete.asset_name}" deleted successfully`);
+        fetchAssetsData(true);
+      } else {
+        toast.error("Failed to delete asset");
+      }
+    } catch (error) {
+      console.error("Error deleting asset:", error);
+      toast.error("An error occurred while deleting the asset");
+    } finally {
+      setIsDeleting(false);
+      setOpenDeleteAlert(false);
+      setAssetToDelete(null);
+    }
+  };
+
+  // Function to view asset details
+  const viewAssetDetails = async (row) => {
+    console.log("Viewing asset details for:", row);
+    try {
+      const assetDetails = await getAssetById(row.id);
+      if (assetDetails) {
+        setViewAsset(assetDetails);
+      }
+    } catch (error) {
+      console.error("Error fetching asset details:", error);
+      toast.error("Failed to load asset details");
+    }
+  };
+
+  // Enhanced reload function that ensures fresh data is fetched
+  const reloadAssets = async (force = true) => {
+    if (force) {
+      // Clear any cached data
+      setAssetsList([]);
+      // Fetch fresh data with a slight delay to ensure previous operations are complete
+      setTimeout(() => {
+        fetchAssetsData(true);
+      }, 100);
+    } else {
+      fetchAssetsData(true);
+    }
+  };
+
   // TABLE OPTIONS for Assets
   const assetsTableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
-    onRowClick: async (row) => {
-      try {
-        setIsLoading(true);
-        const assetDetails = await getAssetById(row.id);
-        if (assetDetails) {
-          setViewAsset(assetDetails);
-        }
-      } catch (error) {
-        console.error("Error fetching asset details:", error);
-        toast.error("Failed to load asset details");
-      } finally {
-        setIsLoading(false);
-      }
+    onRowClick: (row) => {
+      viewAssetDetails(row);
     },
+    formatExtraData: {
+      onRowClick: (row) => {
+        viewAssetDetails(row);
+      },
+      setViewAsset,
+      setCreateAsset,
+      setAssetToDelete,
+      setOpenDeleteAlert,
+      toast
+    }
   };
 
   const categoriesTableOptions = {
@@ -278,6 +340,79 @@ const Assets = ({ userProfile }) => {
         return new Date(cell).toLocaleDateString();
       },
     },
+    {
+      dataField: "",
+      text: "Actions",
+      formatter: (cell, row, rowIndex, formatExtraData) => {
+        // Function to view category details
+        const openCategoryView = () => {
+          const viewModule = window.AssetsModule;
+          
+          if (viewModule) {
+            viewModule.setCategoryToView(row);
+          }
+        };
+        
+        // Function to open the edit category form
+        const openCategoryEdit = async () => {
+          try {
+            const viewModule = window.AssetsModule;
+            
+            if (viewModule) {
+              // This sets categoryToView = row
+              viewModule.setCategoryToView(row);
+              // This sets createCategory = true 
+              viewModule.setCreateCategory(true);
+            }
+          } catch (error) {
+            console.error("Error preparing category for edit:", error);
+            toast.error("Failed to prepare category for editing");
+          }
+        };
+        
+        // Function to open delete confirmation
+        const openDeleteConfirm = () => {
+          const viewModule = window.AssetsModule;
+          
+          if (viewModule) {
+            viewModule.setCategoryToDelete(row);
+            viewModule.setOpenCategoryDeleteAlert(true);
+          }
+        };
+
+        const handleView = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openCategoryView();
+        };
+
+        const handleEdit = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openCategoryEdit();
+        };
+
+        const handleDelete = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openDeleteConfirm();
+        };
+
+        return (
+          <div onClick={(e) => e.stopPropagation()}>
+            <DropdownActionMenu
+              onView={handleView}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              viewText="View Category"
+              editText="Edit Category"
+              deleteText="Delete Category"
+              menuTooltip="Category Actions"
+            />
+          </div>
+        );
+      },
+    },
   ];
 
   const getActionButton = () => {
@@ -287,6 +422,51 @@ const Assets = ({ userProfile }) => {
       return (
         <Button onClick={() => setCreateCategory(true)}>Create Category</Button>
       );
+    }
+  };
+
+  // Expose state setters for dropdown actions to access
+  useEffect(() => {
+    window.AssetsModule = {
+      setViewAsset,
+      setCreateAsset,
+      setAssetToDelete,
+      setOpenDeleteAlert,
+      // Add category-related functions
+      setCategoryToView,
+      setCreateCategory,
+      setCategoryToDelete,
+      setOpenCategoryDeleteAlert,
+      setCategoryToEdit
+    };
+
+    // Cleanup function
+    return () => {
+      delete window.AssetsModule;
+    };
+  }, []);
+
+  // Confirm and execute category deletion
+  const confirmDeleteCategory = async () => {
+    if (!categoryToDelete?.id) return;
+
+    setIsDeletingCategory(true);
+    try {
+      const success = await deleteRecord(`/asset-categories/${categoryToDelete.id}`, categoryToDelete.name);
+      
+      if (success) {
+        toast.success(`Category "${categoryToDelete.name}" deleted successfully`);
+        fetchCategoriesData(true);
+      } else {
+        toast.error("Failed to delete category");
+      }
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      toast.error("An error occurred while deleting the category");
+    } finally {
+      setIsDeletingCategory(false);
+      setOpenCategoryDeleteAlert(false);
+      setCategoryToDelete(null);
     }
   };
 
@@ -363,15 +543,24 @@ const Assets = ({ userProfile }) => {
       {createAsset && (
         <AddUpdateAsset
           isOpen={createAsset}
-          setIsOpen={setCreateAsset}
-          reload={() => fetchAssetsData(true)}
+          setIsOpen={(isOpen) => {
+            setCreateAsset(isOpen);
+            if (!isOpen) {
+              // Clear the viewAsset when closing the form if it was opened for editing
+              setViewAsset(null);
+              // Reload assets data after closing the form
+              reloadAssets(true);
+            }
+          }}
+          reload={() => reloadAssets(true)}
+          assetToEdit={viewAsset}
         />
       )}
-      {viewAsset && (
+      {viewAsset && !createAsset && (
         <AssetView
-          isOpen={viewAsset}
+          isOpen={!!viewAsset}
           setIsOpen={() => setViewAsset(null)}
-          reload={() => fetchAssetsData(true)}
+          reload={() => reloadAssets(true)}
           data={viewAsset}
         />
       )}
@@ -379,18 +568,77 @@ const Assets = ({ userProfile }) => {
       {createCategory && (
         <AddUpdateAssetCategory
           isOpen={createCategory}
-          setIsOpen={setCreateCategory}
+          setIsOpen={(isOpen) => {
+            setCreateCategory(isOpen);
+            if (!isOpen) {
+              // Clear the categoryToView when closing the form if it was opened for editing
+              setCategoryToView(null);
+            }
+          }}
+          reload={() => fetchCategoriesData(true)}
+          categoryToEdit={categoryToView}
+        />
+      )}
+
+      {/* Category View Modal - Only show when not in edit mode */}
+      {categoryToView && !createCategory && (
+        <ViewCategory
+          isOpen={!!categoryToView}
+          setIsOpen={() => setCategoryToView(null)}
+          data={categoryToView}
           reload={() => fetchCategoriesData(true)}
         />
       )}
 
-      {/* Category View Modal - Simple pattern */}
-      {categoryToView && (
-        <ViewCategory
-          isOpen={categoryToView}
-          setIsOpen={() => setCategoryToView(null)}
-          data={categoryToView}
-          reload={() => fetchCategoriesData(true)}
+      {/* Delete Asset Confirmation Dialog */}
+      {openDeleteAlert && assetToDelete && (
+        <AlertDialogue
+          title="Confirm Delete?"
+          description={
+            <div className="space-y-3">
+              <p>
+                This action will permanently delete the asset{" "}
+                <strong>"{assetToDelete?.asset_name}"</strong>.
+              </p>
+              <p className="text-red-600 font-medium">
+                This action cannot be undone. All information associated with
+                this asset will be permanently removed.
+              </p>
+            </div>
+          }
+          isOpen={openDeleteAlert}
+          setIsOpen={setOpenDeleteAlert}
+          handleContinue={confirmDeleteAsset}
+          continueText={isDeleting ? "Deleting..." : "Delete Asset"}
+          cancelText="Cancel"
+          variant="destructive"
+          disabled={isDeleting}
+        />
+      )}
+
+      {/* Delete Category Confirmation Dialog */}
+      {openCategoryDeleteAlert && categoryToDelete && (
+        <AlertDialogue
+          title="Confirm Delete?"
+          description={
+            <div className="space-y-3">
+              <p>
+                This action will permanently delete the category{" "}
+                <strong>"{categoryToDelete?.name}"</strong>.
+              </p>
+              <p className="text-red-600 font-medium">
+                This action cannot be undone. All assets associated with
+                this category may be affected.
+              </p>
+            </div>
+          }
+          isOpen={openCategoryDeleteAlert}
+          setIsOpen={setOpenCategoryDeleteAlert}
+          handleContinue={confirmDeleteCategory}
+          continueText={isDeletingCategory ? "Deleting..." : "Delete Category"}
+          cancelText="Cancel"
+          variant="destructive"
+          disabled={isDeletingCategory}
         />
       )}
     </div>

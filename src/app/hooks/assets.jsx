@@ -82,6 +82,7 @@ const uploadAttachment = async (formData) => {
     throw error;
   }
 };
+
 const addAsset = async (payload, id = null) => {
   try {
     const requestData = {
@@ -102,21 +103,22 @@ const addAsset = async (payload, id = null) => {
       requestData.id = payload.id;
     }
 
-    const url = id
-      ? `${baseUrl}/asset_management/${id}/`
-      : `${baseUrl}/asset_management/`;
-
-    const method = id ? "PATCH" : "POST";
-
-    const response = await axios({
-      method,
-      url,
-      data: requestData,
-      headers: headers(),
-    });
-
-    if (response.status === 201 || response.status === 200) {
-      return response.data;
+    if (id) {
+      // For updates, use PUT similar to how category updates work
+      const response = await axios.put(
+        `${baseUrl}/asset_management/${id}/`,
+        requestData,
+        { headers: headers() }
+      );
+      return response.status === 200 ? response.data : false;
+    } else {
+      // For new assets, use POST
+      const response = await axios.post(
+        `${baseUrl}/asset_management/`,
+        requestData,
+        { headers: headers() }
+      );
+      return response.status === 201 ? response.data : false;
     }
   } catch (error) {
     console.error("Error saving asset:", error);

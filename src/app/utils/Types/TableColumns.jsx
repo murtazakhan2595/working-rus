@@ -13,6 +13,9 @@ import { Switch } from "src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
 import { Clock, MapPin, Tag } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
+import DropdownActionMenu from "components/DropdownActionMenu";
+import { getAssetById } from "app/hooks/assets";
+import { toast } from "react-toastify";
 /**
  * EmployeeColumns
  *
@@ -646,34 +649,112 @@ export const AssetsColumns = [
   {
     dataField: "asset_name",
     text: "Asset Name",
-    // formatter: (cell, row) => (
-    //   <div className="flex flex-col">
-    //     <div className="text-base font-medium">{cell}</div>
-    //     <div className="text-sm text-muted-foreground">
-    //       {row.asset_description || row.asset_model}
-    //     </div>
-    //   </div>
-    // ),
   },
   {
     dataField: "asset_type",
     text: "Category",
     formatter: (cell) => (
-      <div className="flex items-center gap-2">
-        <Tag size={16} className="text-muted-foreground" />
-        <span>{cell?.name}</span>
-      </div>
+      <span>{cell?.name}</span>
     ),
   },
   {
     dataField: "asset_location_name",
     text: "Location",
     formatter: (cell, row) => (
-      <div className="flex items-center gap-2">
-        <MapPin size={16} className="text-muted-foreground" />
-        <span>{cell}</span>
-      </div>
+      <span>{cell}</span>
     ),
+  },
+  {
+    dataField: "",
+    text: "Actions",
+    formatter: (cell, row, rowIndex, formatExtraData) => {
+      // Function to open the view sheet for an asset
+      const openAssetView = async () => {
+        try {
+          // Find the parent component's set functions from the current dom path
+          const viewModule = window.AssetsModule;
+          
+          if (viewModule) {
+            const assetDetails = await getAssetById(row.id);
+            if (assetDetails) {
+              viewModule.setViewAsset(assetDetails);
+            }
+          } else {
+            // Direct API call fallback if we can't access the module
+            window.location.href = `#/assets/view/${row.id}`;
+          }
+        } catch (error) {
+          console.error("Error fetching asset details:", error);
+          toast.error("Failed to load asset details");
+        }
+      };
+      
+      // Function to open the edit sheet
+      const openAssetEdit = async () => {
+        try {
+          const viewModule = window.AssetsModule;
+          
+          if (viewModule) {
+            const assetDetails = await getAssetById(row.id);
+            if (assetDetails) {
+              viewModule.setViewAsset(assetDetails);
+              viewModule.setCreateAsset(true);
+            }
+          } else {
+            // Fallback
+            window.location.href = `#/assets/edit/${row.id}`;
+          }
+        } catch (error) {
+          console.error("Error fetching asset details:", error);
+          toast.error("Failed to load asset details");
+        }
+      };
+      
+      // Function to open delete confirmation
+      const openDeleteConfirm = () => {
+        const viewModule = window.AssetsModule;
+        
+        if (viewModule) {
+          viewModule.setAssetToDelete(row);
+          viewModule.setOpenDeleteAlert(true);
+        }
+      };
+
+      const handleView = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("View clicked from dropdown");
+        openAssetView();
+      };
+
+      const handleEdit = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Edit clicked from dropdown");
+        openAssetEdit();
+      };
+
+      const handleDelete = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Delete clicked from dropdown");
+        openDeleteConfirm();
+      };
+
+      return (
+        <div onClick={(e) => e.stopPropagation()}>
+          <DropdownActionMenu
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            viewText="View Asset"
+            editText="Edit Asset"
+            deleteText="Delete Asset"
+            menuTooltip="Asset Actions"
+          />
+        </div>
+      );
+    },
   },
 ];
 

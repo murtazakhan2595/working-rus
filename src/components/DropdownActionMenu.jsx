@@ -45,6 +45,8 @@ const DropdownActionMenu = ({
           <DropdownMenuItem 
             onClick={(e) => {
               e.preventDefault();
+              e.stopPropagation();
+              console.log("View menu item clicked");
               onView(e);
             }}
             tabIndex="0"
@@ -57,6 +59,8 @@ const DropdownActionMenu = ({
           <DropdownMenuItem 
             onClick={(e) => {
               e.preventDefault();
+              e.stopPropagation();
+              console.log("Edit menu item clicked");
               onEdit(e);
             }}
             tabIndex="0"
@@ -69,6 +73,8 @@ const DropdownActionMenu = ({
           <DropdownMenuItem 
             onClick={(e) => {
               e.preventDefault();
+              e.stopPropagation();
+              console.log("Delete menu item clicked");
               onDelete(e);
             }}
             tabIndex="0"

@@ -20,13 +20,13 @@ const TextInput = React.memo(
     className = "w-full", // Custom styling
   }) => {
     return (
-      <FormField
+      <FormField cl
         name={name}
         label={label}
         required={required}
         error={error}
         touched={touch}
-        className={className}
+        className={`mb-6 ${className}`}
         disabled={disabled}
       >
         <Input
