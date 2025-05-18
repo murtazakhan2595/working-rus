@@ -215,8 +215,16 @@ const AddUpdateAsset = ({
         toast.success(
           `Asset ${assetToEdit?.id ? "updated" : "added"} successfully`
         );
-        setIsOpen(false);
-        reload();
+        
+        // If reload function exists, call it first to refresh data
+        if (typeof reload === 'function') {
+          reload();
+        }
+        
+        // Delay closing the modal slightly to ensure data is refreshed
+        setTimeout(() => {
+          setIsOpen(false);
+        }, 300);
       } else {
         toast.error(`Error ${assetToEdit?.id ? "updating" : "adding"} asset`);
       }
@@ -241,7 +249,7 @@ const AddUpdateAsset = ({
       switch (field.field_type) {
         case "text":
           return (
-            <TextInput
+            <TextInput 
               key={index}
               name={fieldName}
               error={props.errors?.[fieldName]}
@@ -357,7 +365,7 @@ const AddUpdateAsset = ({
           onSubmit={handleFormSubmit}
         >
           {(props) => (
-            <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+            <form onSubmit={props.handleSubmit} className="mt-6 space-y-6 ">
               {console.log("props", props)}
               <SheetCardExtension title="Asset Details">
                 <TextInput
