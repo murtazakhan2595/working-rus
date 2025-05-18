@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { SheetUI } from "components";
 import { PasswordInput } from "components/FormControl";
-import { validateChangePasswordForm } from "app/utils/FormSchema/employeeFormSchema";
+import { validateChangePasswordForm } from "app/utils/FormSchema/generalFormSchema";
 import { EmployeeChangePassword } from "app/utils/Types/Employee";
 import { UpdatePassword } from "app/hooks/employee";
 import { useNavigate } from "react-router-dom";

@@ -453,23 +453,6 @@ const validateOnboardingDocuments = (onboardingDocuments) => {
   return hasErrors ? errors : {};
 };
 
-export const validateChangePasswordForm = (values) => {
-  const errors = {};
-  if (!values?.confirm_password)
-    errors.confirm_password = "Confirm password is required";
-  if (!values?.new_password) errors.new_password = "New Password is required";
-  if (!values?.current_password)
-    errors.current_password = "Current password is required";
-  if (
-    values?.confirm_password &&
-    values.new_password &&
-    values.confirm_password !== values.new_password
-  ) {
-    errors.confirm_password =
-      "Confirm password does not match with new password";
-  }
-  return errors;
-};
 export {
   validationPersonalInfoFormSchema,
   validationAcademicRecordSchema,

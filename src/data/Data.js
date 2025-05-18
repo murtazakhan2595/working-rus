@@ -830,28 +830,28 @@ export const handleUpdateProfile = async (dispatch, data) => {
     role: data.user_role,
     organization: data.organization,
   };
-  dispatch(setUserProfile(userprofile));
+  await dispatch(setUserProfile(userprofile));
   const ModuleList = await dispatch(fetchModules());
   const MyPermissions = await dispatch(fetchMyPermissions());
   const employee_details = await dispatch(fetchUser(userprofile.id));
-  dispatch(fetchEmployees());
-  dispatch(fetchEmployeesDetail());
-  dispatch(fetchBranches());
-  dispatch(
+  await dispatch(
     fetchUserPermittedModules({
       modules: ModuleList.payload,
       permissions: MyPermissions.payload,
     })
   );
-  dispatch(fetchDepartments());
-  dispatch(fetchDesignations());
-  dispatch(fetchDocumentCategory());
+  await dispatch(fetchEmployees());
+  await dispatch(fetchEmployeesDetail());
+  await dispatch(fetchBranches());
+  await dispatch(fetchDepartments());
+  await dispatch(fetchDesignations());
+  await dispatch(fetchDocumentCategory());
   dispatch(fetchOrganizations());
   dispatch(fetchTaskLabels());
-  dispatch(fetchUserRoles());
+  await dispatch(fetchUserRoles());
   dispatch(fetchTerminationReasons());
   dispatch(fetchReportingManagers());
   dispatch(fetchLeaveComponents());
-  dispatch(fetchProjects(userprofile));
+  await dispatch(fetchProjects(userprofile));
   dispatch(fetchShiftById(employee_details?.payload?.shift_assignment));
 };

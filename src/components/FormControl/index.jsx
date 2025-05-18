@@ -95,7 +95,7 @@ export const FormField = memo(
           )}
 
           <div
-            className={`flex-col flex gap-1 ${
+            className={`flex-col flex gap-1 relative ${
               disabled ? "cursor-not-allowed" : ""
             }`}
           >

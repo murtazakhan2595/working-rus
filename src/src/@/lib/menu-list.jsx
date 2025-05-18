@@ -1,12 +1,10 @@
 import {
   Users,
-  SquareStack,
   House,
   Award,
   CalendarClockIcon,
   CalendarRange,
   Crosshair,
-  FileChartColumnIncreasing,
   ListTodo,
   UserRoundCheck,
   GalleryHorizontalEnd,
@@ -21,125 +19,72 @@ import Config from "constants/config";
 import { getNodeExistInTree } from "utils/renderValues";
 import { SidebarRoutes } from "constants/routes";
 
-const findRouteByCodeName = (codeName) => {
-  return SidebarRoutes.find(
-    (route) =>
-      route.name === codeName ||
-      route.name?.toUpperCase() === codeName.toUpperCase()
+// Helper function to fetch route
+const findRouteByCodeName = (codeName) =>
+  SidebarRoutes.find(
+    (route) => route.name?.toUpperCase() === codeName.toUpperCase()
   );
-};
 
-/**
- * @typedef {Object} Group
- * @property {string} groupLabel - The label for the group.
- * @property {Menu[]} menus - The list of menus in the group.
- */
-/**
- * @typedef {Object} Menu
- * @property {string} to - The URL of the menu item.
- * @property {string} label - The label of the menu item.
- * @property {boolean} active - Whether the menu item is active.
- * @property {React.ComponentType} icon - The icon component for the menu item.
- * @property {Menu[]} submenus - The list of submenus.
- */
+// Create menu function with default values
+const createMenu = (to, label, icon, submenus = [], active = false) => ({
+  to,
+  label,
+  active,
+  icon,
+  submenus,
+});
 
-/**
- * Example function using the Group type.
- * @param {Group[]} groups - The list of groups.
- */
-export function getMenuList(pathname, userRole) {
-  const ModuleTee = { code_name: "ORG", childrens: userRole };
-  const createMenu = (
-    to,
-    label,
-    icon,
-    submenus = [],
-    active = pathname === to
-  ) => ({
-    to,
-    label,
-    active,
-    icon,
-    submenus,
-  });
-
-  const getSubModuleMenueList = (CurrentNodeTree) => {
-    const SubModules = CurrentNodeTree.childrens || [];
-    const Sub_Menue = [];
-    SubModules.forEach(({ code_name }) => {
-      const sub_module = getNodeExistInTree(
-        CurrentNodeTree,
-        code_name,
-        "code_name"
-      );
-      if (Config[code_name] && sub_module) {
-        // config flag check or no flag required
-        const route = findRouteByCodeName(code_name);
-        if (route) {
-          Sub_Menue.push(createMenu(route.path, sub_module.name));
-        } else {
-          // fallback if route not found
-          Sub_Menue.push(createMenu("#", code_name));
-        }
-      }
+// Fetch submenu list efficiently
+const getSubModuleMenuList = (currentNodeTree) =>
+  (currentNodeTree?.childrens || [])
+    .filter(({ code_name }) => Config[code_name])
+    .map(({ code_name,name }) => {
+      const route = findRouteByCodeName(code_name);
+      return createMenu(route?.path || "#", name);
     });
 
-    return Sub_Menue;
+// Function to generate menu items
+const generateMenuItems = (moduleName, icon, moduleTree) => {
+  const currentNodeTree = getNodeExistInTree(moduleTree, moduleName, "code_name");
+  if (!currentNodeTree) return null;
+
+  const route = findRouteByCodeName(moduleName);
+  return {
+    groupLabel: "",
+    menus: [
+      createMenu(route?.path || "#", currentNodeTree.name, icon, getSubModuleMenuList(currentNodeTree)),
+    ],
   };
+};
 
-  const commonMenus = [
-    createMenu("/", "Dashboard", House),
-    // createMenu("/services", "Services", SquareStack),
-  ];
+// Main function to retrieve the menu list
+export function getMenuList(pathname, userRole) {
+  const moduleTree = { code_name: "ORG", childrens: userRole };
+console.log('FilteredTreeFilteredTreeFilteredTree',userRole)
+  // Define common menus
+  const commonMenus = [{ groupLabel: "", menus: [createMenu("/", "Dashboard", House)] }];
 
-  const MenueItems = (ModuleName, Icon) => {
-    const CurrentNodeTree = getNodeExistInTree(
-      ModuleTee,
-      ModuleName,
-      "code_name"
-    );
-    if (!CurrentNodeTree) return null;
-    if (CurrentNodeTree) {
-      const route = findRouteByCodeName(ModuleName);
-      const Sub_Menue = getSubModuleMenueList(CurrentNodeTree);
-      return {
-        groupLabel: "",
-        menus: [
-          createMenu(
-            route?.path || "#",
-            CurrentNodeTree.name,
-            Icon,
-            Sub_Menue.filter(Boolean)
-          ),
-        ],
-      };
-    }
-    return null;
-  };
+  // Dynamically generate menu items based on configuration flags
+  const configMenus = [
+    ["SELF_SERVICE_HUB", UserRoundCheck],
+    ["TEAM_MANAGEMENT", Users],
+    ["PEOPLE_TEAM", Users],
+    ["ATTENDANCE", CalendarClockIcon],
+    ["LEAVE_MANAGEMENT", CalendarRange],
+    ["PAYROLL", BadgeDollarSign],
+    ["TASK_MANAGEMENT", ListTodo],
+    ["TALENT_SPHERE", UserRoundSearch],
+    ["ASSET_MANAGEMENT", Laptop],
+    ["ORGANIZATIONAL_CHART", Network],
+    ["PERFORMANCE_MANAGEMENT", Award],
+    ["PERSONAL_DEVELOPMENT", UsersRound],
+    ["PEOPLE_ENGAGEMENT", Crosshair],
+    ["REPORTS", GalleryHorizontalEnd],
+    ["OFFICE_SETTING", Settings],
+  ].map(([name, icon]) => Config[name] && generateMenuItems(name, icon, moduleTree))
+    .filter(Boolean);
 
-
-  const menuList = [
-    { groupLabel: "", menus: commonMenus },
-    Config.SELF_SERVICE_HUB && MenueItems("SELF_SERVICE_HUB", UserRoundCheck),
-    Config.TEAM_MANAGEMENT && MenueItems("TEAM_MANAGEMENT", Users),
-    Config.PEOPLE_TEAM && MenueItems("PEOPLE_TEAM", Users),
-    Config.ATTENDANCE && MenueItems("ATTENDANCE", CalendarClockIcon),
-    Config.LEAVE_MANAGEMENT && MenueItems("LEAVE_MANAGEMENT", CalendarRange),
-    Config.PAYROLL && MenueItems("PAYROLL", BadgeDollarSign),
-    Config.TASK_MANAGEMENT && MenueItems("TASK_MANAGEMENT", ListTodo),
-    Config.TALENT_SPHERE && MenueItems("TALENT_SPHERE", UserRoundSearch),
-    Config.ASSET_MANAGEMENT && MenueItems("ASSET_MANAGEMENT", Laptop),
-    Config.ORGANIZATIONAL_CHART && MenueItems("ORGANIZATIONAL_CHART", Network),
-    Config.PERFORMANCE_MANAGEMENT &&
-      MenueItems("PERFORMANCE_MANAGEMENT", Award),
-    Config.PERSONAL_DEVELOPMENT &&
-      MenueItems("PERSONAL_DEVELOPMENT", UsersRound),
-    Config.PEOPLE_ENGAGEMENT && MenueItems("PEOPLE_ENGAGEMENT", Crosshair),
-    Config.REPORTS && MenueItems("REPORTS", GalleryHorizontalEnd),
-    Config.OFFICE_SETTING && MenueItems("OFFICE_SETTING", Settings),
-  ].filter(Boolean);
-
-  return menuList;
+  return [...commonMenus, ...configMenus];
 }
 
 export default getMenuList;

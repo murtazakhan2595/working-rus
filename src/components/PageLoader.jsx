@@ -15,7 +15,7 @@ const PageLoader = ({ height = "full" }) => {
 
   return (
     <div
-      className={`flex items-center justify-center h-full max-h-[${height}]`}
+      className={`flex items-center justify-center h-[${height}] max-h-[100vh]`}
     >
       <div className="text-center">
         <svg

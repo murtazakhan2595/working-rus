@@ -46,7 +46,7 @@ function App() {
         if (!response.data.is_filled) {
           navigate("/create-profile");
         }
-        handleUpdateProfile(dispatch, response.data);
+        await handleUpdateProfile(dispatch, response.data);
         dispatch(setToken(token));
         window.localStorage.setItem("token", token);
         setLoading(false);
@@ -90,11 +90,8 @@ function App() {
     setUserRole(userProfile.role);
   }, [userProfile]);
 
-  if (
-    loading ||
-    (!ModuleList && Array.isArray(ModuleList) && ModuleList.length === 0)
-  ) {
-    return <PageLoader />; // Render the loader if loading is true
+  if (loading) {
+    return <PageLoader height="100vh" />; // Render the loader if loading is true
   }
   return (
     <>
@@ -102,8 +99,6 @@ function App() {
         {isLogin && (
           <>
             {LoginRoutes.map((route) => {
-              // const featurePermitted = (doesNodeExistInTree =
-              //   (ModuleList, [route.name], "code_name"));
               return (
                 <Route path={route?.path || "#"} element={route.component} />
               );

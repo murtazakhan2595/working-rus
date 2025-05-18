@@ -8,7 +8,7 @@ import {
   mapBranchList,
   mapBranchPayloadData,
 } from "app/utils/MappingObjects/mapOfficeSettingData";
-import { useDispatch } from "react-redux";
+import { renderErrorMessages } from "utils/renderErrors";
 import { fetchDepartments } from "state/slices/CommonSlice";
 
 const baseUrl = initialState.baseUrl;
@@ -17,42 +17,7 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-// const getDepartmentList = async (payload) => {
-//   const pageNo = payload?.options?.page ?? "";
-//   const pageSize = payload?.options?.sizePerPage ?? "";
-//   const filterData = payload?.filterData ?? {};
-//   try {
-//     const URL = `/department/?ordering=-created_at&${
-//       pageNo ? `page=${pageNo}&` : ""
-//     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-//       JSON.stringify(filterData)
-//     )}`;
-//     const response = await axios.get(`${baseUrl}${URL}`, {
-//       headers: headers(),
-//     });
-//     if (response.status === 200) {
-//       const departmentResponse = response.data;
-//       const departmentList = await departmentResponse?.results?.map(
-//         (department) => ({
-//           value: department.id,
-//           label: department.name,
-//           created_at: department.created_at,
-//           description: department.description,
-//           id: department.id,
-//           name: department.name,
-//           organization: department.organization,
-//           updated_at: department.updated_at,
-//           parent_department: department.parent_department,
-//         })
-//       );
-//       return { results: departmentList, count: departmentResponse.count };
-//     } else return [];
-//   } catch (error) {
-//     console.error("Error fetching Personal Info data :", error);
-//   }
-//   return [];
-// };
- const getDepartmentList = async (payload) => {
+const getDepartmentList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -70,20 +35,19 @@ const headers = () => ({
       const departmentResponse = response.data;
       // const departmentList = await mapDepartmentList(departmentResponse?.results);
       const departmentList = await departmentResponse?.results?.map(
-                (department) => ({
-                  value: department.id,
-                  label: department.name,
-                  created_at: department.created_at,
-                  description: department.description,
-                  id: department.id,
-                  name: department.name,
-                  organization: department.organization,
-                  updated_at: department.updated_at,
-                  parent_department: department.parent_department,
-                })
-              );
-              return { results: departmentList, count: departmentResponse.count };
-      
+        (department) => ({
+          value: department.id,
+          label: department.name,
+          created_at: department.created_at,
+          description: department.description,
+          id: department.id,
+          name: department.name,
+          organization: department.organization,
+          updated_at: department.updated_at,
+          parent_department: department.parent_department,
+        })
+      );
+      return { results: departmentList, count: departmentResponse.count };
     } else return [];
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -125,7 +89,7 @@ const saveDepartment = async (departmentId, payload) => {
           headers: headers(),
         }
       );
-      
+
       if (response.status === 200) {
         return response?.data;
       } else {
@@ -135,7 +99,7 @@ const saveDepartment = async (departmentId, payload) => {
       const response = await axios.post(`${baseUrl}/department/`, payload, {
         headers: headers(),
       });
-      
+
       if (response.status === 201) {
         return response?.data;
       } else {
@@ -182,8 +146,6 @@ export const addUpdateBranch = async (payload, id = null) => {
 
 const saveDesignation = async (designationId, payload) => {
   try {
-   
-    
     if (designationId) {
       const response = await axios.patch(
         `${baseUrl}/designation/${designationId}`,
@@ -192,7 +154,7 @@ const saveDesignation = async (designationId, payload) => {
           headers: headers(),
         }
       );
-      
+
       if (response.status === 200) {
         return response?.data;
       }
@@ -200,7 +162,7 @@ const saveDesignation = async (designationId, payload) => {
       const response = await axios.post(`${baseUrl}/designation/`, payload, {
         headers: headers(),
       });
-      
+
       if (response.status === 201) {
         return response?.data;
       }
@@ -211,20 +173,20 @@ const saveDesignation = async (designationId, payload) => {
   } catch (error) {
     console.error("API error in saveDesignation:", error);
     console.error("Error response:", error.response);
-    
+
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    
+
     // Return the error response for better error handling
     if (error.response) {
       return {
         success: false,
         error: error.response.data,
-        status: error.response.status
+        status: error.response.status,
       };
     }
-    
+
     return false;
   }
 };
@@ -429,7 +391,7 @@ const getOrganizationList = async (allData = false) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      console.log('API Response:', response.data);
+      console.log("API Response:", response.data);
       const organizationResponse = response.data;
       const organizationList = organizationResponse?.results?.map(
         (organization) => ({
@@ -658,7 +620,7 @@ const handleLogout = () => {
     setUserLogout();
   }
 };
-function HandleLogout(message='Session Time Out') {
+function HandleLogout(message = "Session Time Out") {
   if (window.localStorage.getItem("token")) {
     window.location.href = "/login";
     toast.error(message, {
@@ -717,7 +679,26 @@ const getRoleList = async (payload) => {
     console.error("Error fetching Personal Info data :", error);
   }
   return [];
-}
+};
+
+export const SubmitResetPassword = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/password/reset/confirm/`,
+      payload,
+      { headers: headers() }
+    );
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching shifts:", error);
+    renderErrorMessages(error?.response?.data);
+  }
+
+  return false;
+};
 
 export {
   getDepartmentList,
