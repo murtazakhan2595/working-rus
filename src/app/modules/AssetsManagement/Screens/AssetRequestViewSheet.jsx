@@ -89,7 +89,10 @@ const AssetRequestViewSheet = ({
   const detailItems = [
     {
       label: "Category",
-      value: assetRequest?.asset?.asset_type?.name || "Not specified",
+      value:
+        assetRequest?.asset?.asset_type?.name ||
+        assetRequest?.category?.name ||
+        "Not specified",
     },
     // Show assigned asset details if available
     assetRequest?.asset && {
@@ -109,16 +112,13 @@ const AssetRequestViewSheet = ({
     {
       label: "Location",
       value:
-        assetRequest?.asset?.asset_location_name ||
-        assetRequest?.category?.name + " (Not assigned)",
+        assetRequest?.asset?.asset_location_name || "(Not assigned)",
     },
     !isMyRequest &&
       assetRequest?.asset && {
         label: "Purchase Date",
         value: assetRequest.asset.asset_purchase_date
-          ? moment(assetRequest.asset.asset_purchase_date).format(
-              "MMM D, YYYY"
-            )
+          ? moment(assetRequest.asset.asset_purchase_date).format("MMM D, YYYY")
           : "Not specified",
       },
     !isMyRequest &&

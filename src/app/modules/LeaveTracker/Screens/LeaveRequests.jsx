@@ -95,8 +95,9 @@ const LeaveRequests = ({ userProfile, departments, isTeamView = false }) => {
       filterData: filter,
       options,
     });
+    console.log("leaveTransaction----------------", leaveTransaction);
     if (leaveTransaction) {
-      setLeaveTransaction(leaveTransaction);
+      setLeaveTransaction(leaveTransaction?.results);
     }
     setIsLeaveTransactionLoading(false);
   };

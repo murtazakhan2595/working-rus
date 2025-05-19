@@ -100,6 +100,12 @@ export const probationPeriodOptions = [
   { value: "6 month", label: "6 Month" },
 ];
 
+export const assetStatus = [
+  { value: "Assigned", label: "Assigned" },
+  { value: "Unassigned", label: "Unassigned" },
+  { value: "Returned", label: "Returned" },
+];
+
 export const days = Array?.from({ length: 31 }, (_, index) => {
   const day = index + 1;
   return { label: day, value: `${day}` };
