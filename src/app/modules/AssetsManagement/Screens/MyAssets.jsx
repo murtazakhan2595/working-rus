@@ -15,11 +15,10 @@ const MyAssetsPage = ({ userProfile }) => {
   const [isOpenRequest, setIsOpenRequest] = useState(false);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
+  const [ordering, setOrdering] = useState("-id");
   const [tableOptions, setTableOptions] = useState({
     page: 1,
     sizePerPage: 10,
-    sortField: "created_at",
-    sortOrder: "desc",
   });
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [openAssetViewSheet, setOpenAssetViewSheet] = useState(false);
@@ -38,12 +37,11 @@ const MyAssetsPage = ({ userProfile }) => {
         options: {
           page: tableOptions.page,
           sizePerPage: tableOptions.sizePerPage,
-          sortField: tableOptions.sortField,
-          sortOrder: tableOptions.sortOrder,
         },
         filterData: {
           asset_employee_id: userProfile.id,
         },
+        ordering: ordering,
       });
 
       if (response) {
@@ -58,22 +56,23 @@ const MyAssetsPage = ({ userProfile }) => {
     }
   };
 
-  // Re-fetch data when table options change
   useEffect(() => {
     fetchData();
   }, [
     userProfile.id,
     tableOptions.page,
     tableOptions.sizePerPage,
-    tableOptions.sortField,
-    tableOptions.sortOrder,
+    ordering,
+    
   ]);
 
-  // Table options with pagination and row click handler
   const myAssetsTableOptions = {
     page: tableOptions.page,
     sizePerPage: tableOptions.sizePerPage,
     onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
     onRowClick: (row) => {
       setSelectedAsset(row);
       setOpenAssetViewSheet(true);

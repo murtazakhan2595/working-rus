@@ -645,24 +645,24 @@ export const AssetsColumns = [
     text: "Asset ID",
     minWidth: "105px",
     formatter: (cell) => <span>AST-{String(cell).padStart(4, "0")}</span>,
+    dataSort: true,
   },
   {
     dataField: "asset_name",
     text: "Asset Name",
+    dataSort: true,
   },
   {
     dataField: "asset_type",
     text: "Category",
-    formatter: (cell) => (
-      <span>{cell?.name}</span>
-    ),
+    formatter: (cell) => <span>{cell?.name}</span>,
+    dataSort: true,
   },
   {
     dataField: "asset_location_name",
     text: "Location",
-    formatter: (cell, row) => (
-      <span>{cell}</span>
-    ),
+    formatter: (cell, row) => <span>{cell}</span>,
+    dataSort: true,
   },
   {
     dataField: "",
@@ -673,7 +673,7 @@ export const AssetsColumns = [
         try {
           // Find the parent component's set functions from the current dom path
           const viewModule = window.AssetsModule;
-          
+
           if (viewModule) {
             const assetDetails = await getAssetById(row.id);
             if (assetDetails) {
@@ -688,12 +688,12 @@ export const AssetsColumns = [
           toast.error("Failed to load asset details");
         }
       };
-      
+
       // Function to open the edit sheet
       const openAssetEdit = async () => {
         try {
           const viewModule = window.AssetsModule;
-          
+
           if (viewModule) {
             const assetDetails = await getAssetById(row.id);
             if (assetDetails) {
@@ -709,11 +709,11 @@ export const AssetsColumns = [
           toast.error("Failed to load asset details");
         }
       };
-      
+
       // Function to open delete confirmation
       const openDeleteConfirm = () => {
         const viewModule = window.AssetsModule;
-        
+
         if (viewModule) {
           viewModule.setAssetToDelete(row);
           viewModule.setOpenDeleteAlert(true);
@@ -763,6 +763,7 @@ export const MyAssetRequestColumns = [
     dataField: "id",
     text: "Request ID",
     formatter: (cell) => <span>ASR-{String(cell).padStart(4, "0")}</span>,
+    dataSort: true,
   },
   {
     dataField: "asset",
@@ -770,11 +771,13 @@ export const MyAssetRequestColumns = [
     formatter: (cell, row) => (
       <>{cell?.asset_type?.name || row?.category?.name}</>
     ),
+    dataSort: true,
   },
   {
     dataField: "asset",
     text: "Asset Name",
     formatter: (cell) => <>{cell?.asset_name || "Not assigned"}</>,
+    dataSort: true,
   },
   {
     dataField: "asset_assigned_date",
@@ -782,6 +785,7 @@ export const MyAssetRequestColumns = [
     formatter: (cell) => {
       return cell ? new Date(cell).toLocaleDateString() : "N/A";
     },
+    dataSort: true,
   },
   {
     dataField: "asset_returned_date",
@@ -789,6 +793,7 @@ export const MyAssetRequestColumns = [
     formatter: (cell) => {
       return cell ? new Date(cell).toLocaleDateString() : "N/A";
     },
+    dataSort: true,
   },
   {
     dataField: "reason",
@@ -797,6 +802,7 @@ export const MyAssetRequestColumns = [
       return cell || "N/A";
     },
     maxWidth: "200px",
+    dataSort: true,
   },
   {
     dataField: "asset_status",
@@ -820,6 +826,7 @@ export const MyAssetRequestColumns = [
         </span>
       );
     },
+    dataSort: true,
   },
 ];
 
@@ -827,9 +834,7 @@ export const AssignedAssetsColumns = [
   {
     dataField: "id",
     text: "Assignment ID",
-    headerStyle: () => {
-      return { width: "120px" };
-    },
+    formatter: (cell) => <span>CAT-{String(cell).padStart(4, "0")}</span>,
   },
   {
     dataField: "employee_name",
@@ -838,9 +843,6 @@ export const AssignedAssetsColumns = [
   {
     dataField: "employee_id",
     text: "Employee ID",
-    headerStyle: () => {
-      return { width: "100px" };
-    },
   },
   {
     dataField: "department",

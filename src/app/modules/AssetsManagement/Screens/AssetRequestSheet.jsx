@@ -7,6 +7,14 @@ import {
   SelectInputComponent,
   DateInput,
 } from "components/FormControl";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "src/@/components/ui/dialog";
 import { connect } from "react-redux";
 import {
   getAssetList,
@@ -45,7 +53,9 @@ const AssetRequestSheet = ({
     assign_date: new Date().toISOString().split("T")[0],
     return_date: null,
   });
-  // Initial form values
+  const [showRejectReason, setShowRejectReason] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [isSubmittingRejection, setIsSubmittingRejection] = useState(false);
 
   const formSheetData = {
     title: mode === "request" ? "Asset Request" : "Assign Asset to Employee",
@@ -105,7 +115,7 @@ const AssetRequestSheet = ({
           options: { page: 1, sizePerPage: 100 },
           filterData: {
             asset_status: "Unassigned",
-            category: selectedCategory,
+            asset_category: selectedCategory,
           },
         });
 
@@ -182,6 +192,42 @@ const AssetRequestSheet = ({
       toast.error(`Error: ${error.message || "Something went wrong"}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRejectWithReason = async () => {
+    if (!rejectionReason.trim()) {
+      toast.error("Rejection reason is required");
+      return;
+    }
+
+    setIsSubmittingRejection(true);
+    try {
+      const updatedRequest = {
+        id: editData.id,
+        asset_status: "Rejected",
+        rejection_reason: rejectionReason,
+      };
+
+      const response = await requestAsset(updatedRequest);
+
+      if (response) {
+        setIsSubmittingRejection(false);
+        setRejectionReason("");
+        setShowRejectReason(false);
+        toast.success("Asset request rejected successfully");
+
+        // Close the sheet and trigger reload
+        setIsOpen(false);
+        reload();
+      } else {
+        setIsSubmittingRejection(false);
+        toast.error("Error rejecting asset request");
+      }
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+      toast.error("Error rejecting request: " + error.message);
+      setIsSubmittingRejection(false);
     }
   };
 
@@ -355,6 +401,19 @@ const AssetRequestSheet = ({
                 >
                   Cancel
                 </Button>
+                {isEdit && (
+                  <Button
+                    variant="destructive"
+                    type="button"
+                    size="lg"
+                    onClick={() => setShowRejectReason(true)}
+                    disabled={loading || isSubmittingRejection}
+                  >
+                    {isSubmittingRejection
+                      ? "Rejecting..."
+                      : "Reject with Reason"}
+                  </Button>
+                )}
                 <Button
                   type="submit"
                   size="lg"
@@ -374,10 +433,78 @@ const AssetRequestSheet = ({
           )}
         </Formik>
       </SheetComponent>
+      <RejectionReasonDialog
+        open={showRejectReason}
+        onOpenChange={setShowRejectReason}
+        onSubmit={handleRejectWithReason}
+        isSubmitting={isSubmittingRejection}
+        reason={rejectionReason}
+        setReason={setRejectionReason}
+      />
     </div>
   );
 };
+const RejectionReasonDialog = ({
+  open,
+  onOpenChange,
+  onSubmit,
+  isSubmitting,
+  reason,
+  setReason,
+}) => {
+  const [touched, setTouched] = useState(false);
 
+  const handleOpenChange = (newOpen) => {
+    if (!newOpen) {
+      setReason("");
+      setTouched(false);
+    }
+    onOpenChange(newOpen);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Rejection Reason</DialogTitle>
+          <DialogDescription>
+            Please provide a reason for rejecting this request
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <TextAreaInput
+            name="rejection_reason"
+            error={touched && reason.trim() === ""}
+            touch={touched}
+            value={reason}
+            label={"Rejection Reason"}
+            required={true}
+            onChange={(field, value) => {
+              setReason(value);
+            }}
+            maxRows={3}
+            placeholder={"Please provide a reason for rejecting this request"}
+          />
+        </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => handleOpenChange(false)}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={onSubmit}
+            disabled={reason.trim() === "" || isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Submit"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,

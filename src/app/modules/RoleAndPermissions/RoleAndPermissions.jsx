@@ -22,6 +22,7 @@ function RoleAndPermissions() {
   const isViewUserRolePermitted = HasAccess("VIEW_USER_ROLE");
   const [activeHRDocumentsTab, setActiveHRDocumentsTab] =
     useState("Role Management");
+  const [openAssignRoleForm, setOpenAssignRoleForm] = useState(false);
   const [reloadData, setReloadData] = useState(false);
   const RoleAndPermissionsTab = useMemo(() => {
     return [
@@ -37,17 +38,29 @@ function RoleAndPermissions() {
     >
       <Header
         content={
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              if (activeHRDocumentsTab === "Role Management")
-                navigate("/office-settings/role-permission/user-role/add");
-            }}
-          >
-            {activeHRDocumentsTab === "Role Management"
-              ? "Add User Role"
-              : "Add Category"}
-          </Button>
+          <>
+            {activeHRDocumentsTab === "Role Management" && (
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (activeHRDocumentsTab === "Role Management")
+                    navigate("/office-settings/role-permission/user-role/add");
+                }}
+              >
+                Add User Role
+              </Button>
+            )}
+            {activeHRDocumentsTab === "Assigned Roles" && (
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setOpenAssignRoleForm(true);
+                }}
+              >
+                Assign Roles
+              </Button>
+            )}
+          </>
         }
       />
       <Tabs
@@ -79,7 +92,11 @@ function RoleAndPermissions() {
               <UserRoles reload={reloadData} />
             </TabsContent>
             <TabsContent value="Assigned Roles">
-              <AssignedRoles reload={reloadData} />
+              <AssignedRoles
+                reload={reloadData}
+                openAssignRoleForm={openAssignRoleForm}
+                setOpenAssignRoleForm={setOpenAssignRoleForm}
+              />
             </TabsContent>
             <TabsContent value="Role Assignment History & Logs">
               <RoleAssignmentHistoryLogs />
