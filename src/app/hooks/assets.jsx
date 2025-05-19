@@ -16,13 +16,12 @@ const getAssetList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const sortField = payload?.options?.sortField ?? "id";
-  const sortOrder = payload?.options?.sortOrder ?? "desc";
-  let URL = `/asset_management?ordering=${
-    sortOrder === "desc" ? "-" : ""
-  }${sortField}&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const sortField = payload?.ordering || "id";
+  let URL = `/asset_management?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -228,13 +227,14 @@ const getEmployeeAssets = async (payload) => {
    const pageNo = payload?.options?.page ?? "";
    const pageSize = payload?.options?.sizePerPage ?? "";
    const filterData = payload?.filterData ?? {};
-   const sortField = payload?.options?.sortField ?? "created_at";
-   const sortOrder = payload?.options?.sortOrder ?? "desc";
-   let URL = `/asset_assignment?ordering=${
-     sortOrder === "desc" ? "-" : ""
-   }${sortField}&${pageNo ? `page=${pageNo}&` : ""}${
-     pageSize ? `page_size=${pageSize}&` : ""
-   }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+   const sortField = payload?.ordering; 
+
+   let URL = `/asset_assignment?ordering=${sortField}&${
+     pageNo ? `page=${pageNo}&` : ""
+   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+     JSON.stringify(filterData)
+   )}`;
+   
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -254,9 +254,14 @@ const getAssetCategories = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  let URL = `/asset-categories?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const sortField = payload?.ordering || "-id";
+
+  let URL = `/asset-categories?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),

@@ -55,11 +55,10 @@ const Assets = ({ userProfile }) => {
   const [openCategoryDeleteAlert, setOpenCategoryDeleteAlert] = useState(false);
   const [isDeletingCategory, setIsDeletingCategory] = useState(false);
   const [selectedAssetStatus, setSelectedAssetStatus] = useState("");
+  const [ordering, setOrdering] = useState("-id");
 
-  // NEW: Categories for filter dropdown
   const [filterCategories, setFilterCategories] = useState([]);
 
-  // Pagination options
   const [options, setOptions] = useState({
     page: 1,
     sizePerPage: 10,
@@ -69,11 +68,11 @@ const Assets = ({ userProfile }) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
-  // Reset filter states when tab changes
   useEffect(() => {
     if (activeTab === "assets") {
       setFilterData({});
       setSelectedAssetType("");
+      setSelectedAssetStatus("");
     } else {
       setCategoriesFilterData({});
     }
@@ -98,8 +97,10 @@ const Assets = ({ userProfile }) => {
   };
 
   useEffect(() => {
-    fetchCategoriesForFilter();
-  }, [categoriesList]); 
+    if (activeTab === "assets") {
+      fetchCategoriesForFilter();
+    }
+  }, [categoriesList, activeTab]); 
 
   const fetchAssetsData = async (isMounted = true) => {
     setIsLoading(true);
@@ -108,6 +109,7 @@ const Assets = ({ userProfile }) => {
         const response = await getAssetList({
           options,
           filterData,
+          ordering,
         });
 
         if (response) {
@@ -130,6 +132,7 @@ const Assets = ({ userProfile }) => {
         const response = await getAssetCategories({
           options,
           filterData: categoriesFilterData,
+          ordering,
         });
 
         if (response) {
@@ -146,10 +149,8 @@ const Assets = ({ userProfile }) => {
   };
 
   const handleAssetsFilterChange = (filterName, filterValue) => {
-    // Reset to page 1 when filter changes
     setOptions((prevOptions) => ({ ...prevOptions, page: 1 }));
 
-    // Update selected values for UI display
     if (filterName === "asset_category") {
       setSelectedAssetType(filterValue);
     } else if (filterName === "asset_status") {
@@ -234,6 +235,9 @@ const Assets = ({ userProfile }) => {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
     onRowClick: (row) => {
       viewAssetDetails(row);
     },
@@ -245,14 +249,17 @@ const Assets = ({ userProfile }) => {
       setCreateAsset,
       setAssetToDelete,
       setOpenDeleteAlert,
-      toast
-    }
+      toast,
+    },
   };
 
   const categoriesTableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
     onRowClick: (row) => {
       setCategoryToView(row);
     },
@@ -260,6 +267,7 @@ const Assets = ({ userProfile }) => {
 
   useEffect(() => {
     let isMounted = true;
+    if (isLoading) return;
     if (activeTab === "assets") {
       fetchAssetsData(isMounted);
     } else {
@@ -268,7 +276,7 @@ const Assets = ({ userProfile }) => {
     return () => {
       isMounted = false;
     };
-  }, [activeTab, options, filterData, categoriesFilterData]);
+  }, [activeTab, options, filterData, categoriesFilterData, ordering]);
 
   const tabsData = [
     { value: "assets", label: "Assets" },
@@ -305,22 +313,24 @@ const Assets = ({ userProfile }) => {
     },
   ];
 
-  // Updated columns for Asset Categories
   const categoriesColumns = [
     {
       dataField: "id",
       text: "ID",
       hidden: true,
+      dataSort: true,
     },
     {
       dataField: "name",
       text: "Category Name",
       sort: true,
+      dataSort: true,
     },
     {
       dataField: "description",
       text: "Description",
       sort: true,
+      dataSort: true,
     },
     {
       dataField: "is_active",
@@ -337,36 +347,27 @@ const Assets = ({ userProfile }) => {
       ),
     },
     {
-      dataField: "created_at",
-      text: "Created Date",
-      sort: true,
-      formatter: (cell) => {
-        if (!cell) return "N/A";
-        return new Date(cell).toLocaleDateString();
-      },
-    },
-    {
       dataField: "",
       text: "Actions",
       formatter: (cell, row, rowIndex, formatExtraData) => {
         // Function to view category details
         const openCategoryView = () => {
           const viewModule = window.AssetsModule;
-          
+
           if (viewModule) {
             viewModule.setCategoryToView(row);
           }
         };
-        
+
         // Function to open the edit category form
         const openCategoryEdit = async () => {
           try {
             const viewModule = window.AssetsModule;
-            
+
             if (viewModule) {
               // This sets categoryToView = row
               viewModule.setCategoryToView(row);
-              // This sets createCategory = true 
+              // This sets createCategory = true
               viewModule.setCreateCategory(true);
             }
           } catch (error) {
@@ -374,11 +375,11 @@ const Assets = ({ userProfile }) => {
             toast.error("Failed to prepare category for editing");
           }
         };
-        
+
         // Function to open delete confirmation
         const openDeleteConfirm = () => {
           const viewModule = window.AssetsModule;
-          
+
           if (viewModule) {
             viewModule.setCategoryToDelete(row);
             viewModule.setOpenCategoryDeleteAlert(true);
