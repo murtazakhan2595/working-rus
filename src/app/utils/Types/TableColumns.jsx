@@ -834,7 +834,7 @@ export const AssignedAssetsColumns = [
   {
     dataField: "id",
     text: "Assignment ID",
-    formatter: (cell) => <span>CAT-{String(cell).padStart(4, "0")}</span>,
+    formatter: (cell) => <span>ASD-{String(cell).padStart(4, "0")}</span>,
   },
   {
     dataField: "employee_name",

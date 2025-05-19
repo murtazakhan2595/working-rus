@@ -309,7 +309,7 @@ const Assets = ({ userProfile }) => {
     {
       type: "search",
       placeholder: "Category Name",
-      name: "asset_category",
+      name: "category_name",
     },
   ];
 
@@ -319,6 +319,7 @@ const Assets = ({ userProfile }) => {
       text: "ID",
       hidden: true,
       dataSort: true,
+      formatter: (cell) => <span>CAT-{String(cell).padStart(4, "0")}</span>,
     },
     {
       dataField: "name",
