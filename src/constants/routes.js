@@ -73,7 +73,7 @@ import {
   RoleAndPermissions,
   AssignedRoles,
   AddUpdateUserRoleForm,
-  RoleAssignmentEmployeeHistoryLogs
+  RoleAssignmentEmployeeHistoryLogs,
 } from "app/modules/RoleAndPermissions";
 
 export const SidebarRoutes = [
@@ -528,12 +528,8 @@ const RemainingSidebarRoutes = [
 const LoginRoutes = [
   {
     path: "/create-profile",
-    component: Config.EMPLOYEE_ONBOARDING ? (
-      <CreateEmployeeProfile />
-    ) : (
-      <ComingSoon />
-    ),
-    name: "Create Employee Profile",
+    component: <CreateEmployeeProfile />,
+    name: "Create_Employee_Profile",
   },
 ].filter(Boolean); // Filter out undefined routes;
 
