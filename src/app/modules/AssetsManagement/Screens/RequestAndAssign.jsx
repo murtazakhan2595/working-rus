@@ -90,13 +90,11 @@ const AssetRequests = ({ userProfile, departments }) => {
   };
 
   const handleFilterChange = (filterName, filterValue) => {
-    // Reset to page 1 when filter changes
     setOptions((prevOptions) => ({ ...prevOptions, page: 1 }));
 
-    // Update selected values for UI display
-    if (filterName === "status") {
+    if (filterName === "asset_status") {
       setSelectedStatus(filterValue);
-    } else if (filterName === "department") {
+    } else if (filterName === "department_name") {
       setSelectedDepartment(filterValue);
     }
 
@@ -111,7 +109,6 @@ const AssetRequests = ({ userProfile, departments }) => {
     });
   };
 
-  // TABLE OPTIONS
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -140,8 +137,8 @@ const AssetRequests = ({ userProfile, departments }) => {
 
   // Tab configuration
   const tabsData = [
-    { value: "requests", label: "Request Assets" },
-    { value: "assignments", label: "Assign Assets" },
+    { value: "requests", label: "Requested By Employee" },
+    { value: "assignments", label: "Assign By HR" },
   ];
 
   const enhancedRequestColumns = [
@@ -200,7 +197,7 @@ const AssetRequests = ({ userProfile, departments }) => {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="data-[state=active]:bg-primary-200 w-40 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                className="data-[state=active]:bg-primary-200 w-44 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
               >
                 {tab.label}
               </TabsTrigger>

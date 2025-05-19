@@ -27,6 +27,7 @@ import { AssetsColumns } from "app/utils/Types/TableColumns";
 import AssetView from "./AssetView";
 import AlertDialogue from "components/ui/AlertDialogue";
 import DropdownActionMenu from "components/DropdownActionMenu";
+import { assetStatus } from "data/Data";
 
 const Assets = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("assets"); // "assets" or "categories"
@@ -53,6 +54,7 @@ const Assets = ({ userProfile }) => {
   const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [openCategoryDeleteAlert, setOpenCategoryDeleteAlert] = useState(false);
   const [isDeletingCategory, setIsDeletingCategory] = useState(false);
+  const [selectedAssetStatus, setSelectedAssetStatus] = useState("");
 
   // NEW: Categories for filter dropdown
   const [filterCategories, setFilterCategories] = useState([]);
@@ -80,26 +82,24 @@ const Assets = ({ userProfile }) => {
 
   const fetchCategoriesForFilter = async () => {
     try {
-      // const response = await getAssetCategories({
-      //   options: { page: 1, sizePerPage: 100 },
-      //   filterData: { is_active: true }, // Only active categories for filtering
-      // });
-      // if (response?.results) {
-      //   const formattedCategories = response.results.map((category) => ({
-      //     value: category.id,
-      //     label: category.name,
-      //   }));
-      //   setFilterCategories(formattedCategories);
-      // }
+      const response = await getAssetCategories({
+        options: { page: 1, sizePerPage: 100 },
+      });
+      if (response?.results) {
+        const formattedCategories = response.results.map((category) => ({
+          value: category.id,
+          label: category.name,
+        }));
+        setFilterCategories(formattedCategories);
+      }
     } catch (error) {
       console.error("Error fetching categories for filter:", error);
     }
   };
 
-  // Fetch categories for filter when component mounts or when categories tab data is updated
   useEffect(() => {
-    // fetchCategoriesForFilter();
-  }, [categoriesList]); // Refetch when categories list changes
+    fetchCategoriesForFilter();
+  }, [categoriesList]); 
 
   const fetchAssetsData = async (isMounted = true) => {
     setIsLoading(true);
@@ -150,8 +150,10 @@ const Assets = ({ userProfile }) => {
     setOptions((prevOptions) => ({ ...prevOptions, page: 1 }));
 
     // Update selected values for UI display
-    if (filterName === "asset_type") {
+    if (filterName === "asset_category") {
       setSelectedAssetType(filterValue);
+    } else if (filterName === "asset_status") {
+      setSelectedAssetStatus(filterValue);
     }
 
     setFilterData((prevFilters) => {
@@ -217,12 +219,9 @@ const Assets = ({ userProfile }) => {
     }
   };
 
-  // Enhanced reload function that ensures fresh data is fetched
   const reloadAssets = async (force = true) => {
     if (force) {
-      // Clear any cached data
       setAssetsList([]);
-      // Fetch fresh data with a slight delay to ensure previous operations are complete
       setTimeout(() => {
         fetchAssetsData(true);
       }, 100);
@@ -231,7 +230,6 @@ const Assets = ({ userProfile }) => {
     }
   };
 
-  // TABLE OPTIONS for Assets
   const assetsTableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -285,10 +283,17 @@ const Assets = ({ userProfile }) => {
     },
     {
       type: "select-one",
-      option: filterCategories, // NOW using dynamic categories from backend
-      name: "category_id", // Changed from asset_type to category_id to match backend
+      option: filterCategories,
+      name: "asset_category",
       placeholder: "Category",
       values: selectedAssetType,
+    },
+    {
+      type: "select-two", 
+      option: assetStatus,
+      name: "asset_status",
+      placeholder: "Status",
+      values: selectedAssetStatus,
     },
   ];
 
@@ -296,7 +301,7 @@ const Assets = ({ userProfile }) => {
     {
       type: "search",
       placeholder: "Category Name",
-      name: "category_name",
+      name: "asset_category",
     },
   ];
 
