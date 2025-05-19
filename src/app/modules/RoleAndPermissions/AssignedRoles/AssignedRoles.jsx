@@ -1,10 +1,7 @@
 // AssignedRoles.jsx
 import React, { useEffect, useState } from "react";
-import { TableCustom, Header } from "components";
-import { Card } from "components/ui/card";
-import { CardContent } from "components/ui/card";
+import { TableCustom } from "components";
 import PageLoader from "components/PageLoader";
-import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
 import { Button } from "components/ui/button";
@@ -17,12 +14,9 @@ import { getUserRolePermissionsData } from "app/hooks/rolesPermisions";
 import { getRoleList } from "app/hooks/general";
 import { getEmployeeCustomList } from "app/hooks/general";
 
-const AssignedRoles = ({
-  setOpenAssignRoleForm,
-  openAssignRoleForm,
-}) => {
+const AssignedRoles = ({ setOpenAssignRoleForm, openAssignRoleForm }) => {
   const [assignedRoles, setAssignedRoles] = useState();
-  const [loading, setLoading] = useState( false);
+  const [loading, setLoading] = useState(false);
 
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
@@ -100,58 +94,37 @@ const AssignedRoles = ({
   };
 
   return (
-    <div
-      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
-    >
-      {/* <Header
-        content={
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              setOpenAssignRoleForm(true);
-            }}
-          >
-            Assign Roles
-          </Button>
-        }
-      /> */}
-      <div className="flex flex-col gap-4">
-        <FilterInput
-          filters={[
-            {
-              type: "search",
-              placeholder: "Search by ID and Name",
-              name: "emp_search",
-            },
-          ]}
-          className="justify-end"
-          onChange={handleFilterChange}
-        />
+    <div className="flex flex-col gap-4">
+      <CardTitle className="text-primary pt-6">Assigned Roles</CardTitle>
+      <CardDescription className="text-neutral-1100">
+        Here you can view and manage role assignments for employees. Assign,
+        edit, or remove roles as needed.
+      </CardDescription>
+      <FilterInput
+        filters={[
+          {
+            type: "search",
+            placeholder: "Search by ID and Name",
+            name: "emp_search",
+          },
+        ]}
+        className="justify-end"
+        onChange={handleFilterChange}
+      />
 
-        {loading ? (
-          <PageLoader />
-        ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-primary">Assigned Roles</CardTitle>
-              <CardDescription className="text-neutral-1100">
-                Here you can view and manage role assignments for employees.
-                Assign, edit, or remove roles as needed.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <TableCustom
-                columns={AssignedRolesColumn(fetchData, roles)}
-                data={assignedRoles?.results || []}
-                tableOptions={tableOptions}
-                dataTotalSize={assignedRoles?.count || 0}
-                pagination={true}
-                className="assigned-roles-table"
-              />
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      {loading ? (
+        <PageLoader />
+      ) : (
+        <TableCustom
+          columns={AssignedRolesColumn(fetchData, roles)}
+          data={assignedRoles?.results || []}
+          tableOptions={tableOptions}
+          dataTotalSize={assignedRoles?.count || 0}
+          pagination={true}
+          className="assigned-roles-table"
+        />
+      )}
+
       {openAssignRoleForm && (
         <SheetComponent
           triggerText={null}

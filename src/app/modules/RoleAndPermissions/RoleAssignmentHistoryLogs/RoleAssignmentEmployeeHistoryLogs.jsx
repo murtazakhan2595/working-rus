@@ -11,7 +11,7 @@ import { FilterInput } from "components/FormControl";
 import { getRoleAssignmentHistoryLogsList } from "app/hooks/rolesPermisions";
 import { RoleAssignmentHistoryLogsColumn } from "app/modules/RoleAndPermissions/Sections";
 import { useNavigate, useLocation } from "react-router-dom";
-import { EmployeeDetailUI } from "components";
+import { EmployeeDetailUI } from "components"; 
 
 const RoleAssignmentEmployeeHistoryLogs = () => {
   const location = useLocation();

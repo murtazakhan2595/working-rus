@@ -12,7 +12,7 @@ import { getEmployeeList } from "app/hooks/general";
 import { RoleAssignmentEmployeesLogsColumn } from "app/modules/RoleAndPermissions/Sections";
 import { useNavigate } from "react-router-dom";
 import RoleAssignmentEmployeeHistoryLogs from "./RoleAssignmentEmployeeHistoryLogs";
-
+ 
 const RoleAssignmentHistoryLogs = () => {
   const [Employees, setEmployees] = useState({ results: [], count: 0 });
   const [loading, setLoading] = useState(false);
