@@ -17,6 +17,7 @@ const EmployeeDetailUI = React.memo(
     className = null,
     variant = "ViewMode", // othere options are [ViewMode,FormView]
     InformationKeys = [],
+    ViewVariant='horizontal'
   }) => {
     const Departments = useSelector((state) => state.common.departments);
     const Designations = useSelector((state) => state.common.designations);
@@ -126,7 +127,7 @@ const EmployeeDetailUI = React.memo(
           employeeDataList.map((data) => {
             return (
               <DetailBox
-                orientation="horizontal"
+                orientation={ViewVariant}
                 key={data.label}
                 className=""
                 label={data.label}

@@ -53,6 +53,7 @@ const pathNames = () => {
     "employee-dtrs": "Daily Tasks Report",
     "user-role/add": "Add User Role",
     "user-role/edit": "Update User Role",
+    "role-permission/history-logs": "Role Assignment History & Logs",
     "role-permission": "Role & Permission",
     settings: "Settings",
     "travel-details": "Travel Details",

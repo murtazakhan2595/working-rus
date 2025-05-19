@@ -308,7 +308,7 @@ const getEmployeeList = async (payload) => {
     });
     if (response.status === 200) {
       const employeeResponse = response.data?.results?.employees ?? [];
-      const employeeList = employeeResponse.map((employee) => ({
+      const employeeList = await employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
         label: `${employee.first_name} ${employee.last_name}`,
