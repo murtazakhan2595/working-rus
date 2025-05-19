@@ -159,7 +159,14 @@ export function numberToWords(number) {
 
 export function renderDate(date, fallbackValue = "N/A", variant = "date") {
   if (!date || !moment(date).isValid()) return fallbackValue;
-  const format = variant === "month" ? "MMMM YYYY" : "MMM DD, YYYY";
+  const format =
+    variant === "month"
+      ? "MMMM YYYY"
+      : variant === "date-time"
+      ? "MMM DD, YYYY hh:mm A"
+      : variant === "time"
+      ? "hh:mm A"
+      : "MMM DD, YYYY";
   return moment(date).format(format);
 }
 
@@ -395,4 +402,3 @@ export const getNodeExistInTree = (node = {}, selectedValue, label = "id") => {
 
   return null; // Not found anywhere in this subtree
 };
-

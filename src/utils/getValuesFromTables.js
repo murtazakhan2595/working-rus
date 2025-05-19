@@ -27,9 +27,13 @@ function getEmployeeType(employeeType) {
   );
   return response ? response.label : employeeType;
 }
-function UserRole({ value }) {
-  const response = UserRoles.find((option) => option.value === parseInt(value));
-  return response ? response.label : "";
+function UserRole({ value, fallBackText = "N/A" }) {
+  const user_roles = useSelector((state) => state.roles_permissions.user_roles);
+  const user_role = user_roles.find(
+    (option) => option.id === parseInt(value)
+  );
+
+  return user_role ? user_role.name : value ?? fallBackText;
 }
 export function GetDefaultUserRole() {
   const user_roles = useSelector((state) => state.roles_permissions.user_roles);

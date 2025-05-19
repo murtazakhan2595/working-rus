@@ -8,12 +8,13 @@ import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
-import { getRoleAssignmentHistoryLogsList } from "app/hooks/rolesPermisions";
-import { RoleAssignmentHistoryLogsColumn } from "app/modules/RoleAndPermissions/Sections";
+import { getEmployeeList } from "app/hooks/general";
+import { RoleAssignmentEmployeesLogsColumn } from "app/modules/RoleAndPermissions/Sections";
 import { useNavigate } from "react-router-dom";
+import RoleAssignmentEmployeeHistoryLogs from "./RoleAssignmentEmployeeHistoryLogs";
 
 const RoleAssignmentHistoryLogs = () => {
-  const [roles, setRoles] = useState({ results: [], count: 0 });
+  const [Employees, setEmployees] = useState({ results: [], count: 0 });
   const [loading, setLoading] = useState(false);
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
@@ -37,17 +38,17 @@ const RoleAssignmentHistoryLogs = () => {
       setLoading(true);
       // Add organizationId to filter if available
 
-      const response = await getRoleAssignmentHistoryLogsList({
+      const response = await getEmployeeList({
         filterData,
         options,
         ordering,
       });
 
       if (isMounted) {
-        setRoles(response);
+        setEmployees(response);
       }
     } catch (error) {
-      console.error("Error fetching roles:", error);
+      console.error("Error fetching Employees:", error);
     } finally {
       setLoading(false);
     }
@@ -73,20 +74,26 @@ const RoleAssignmentHistoryLogs = () => {
       return updatedFilters;
     });
   };
-
   return (
     <div className="flex flex-col gap-4">
-      <CardTitle className="text-primary pt-6">Role List</CardTitle>
+      <CardTitle className="text-primary pt-6">
+        Role Assignment History & Logs
+      </CardTitle>
       <CardDescription className="text-neutral-1100">
-        Here you can manage roles and their permissions. Add, edit, or delete
-        roles as needed.
+        {/* Here you can manage Employees and their permissions. Add, edit, or delete
+        Employees as needed. */}
       </CardDescription>
       <FilterInput
         filters={[
           {
             type: "search",
-            placeholder: "Search Role Name",
-            name: "name",
+            placeholder: "Search Employee ID",
+            name: "serial_number",
+          },
+          {
+            type: "search",
+            placeholder: "Search Employee Name",
+            name: "first_name",
           },
         ]}
         className="justify-end"
@@ -97,12 +104,12 @@ const RoleAssignmentHistoryLogs = () => {
         <PageLoader />
       ) : (
         <TableCustom
-          columns={RoleAssignmentHistoryLogsColumn}
-          data={roles?.results || []}
+          columns={RoleAssignmentEmployeesLogsColumn}
+          data={Employees?.results || []}
           tableOptions={tableOptions}
-          dataTotalSize={roles?.count || 0}
+          dataTotalSize={Employees?.count || 0}
           pagination={true}
-          className="roles-table"
+          className="Employees-table"
         />
       )}
     </div>
@@ -110,3 +117,4 @@ const RoleAssignmentHistoryLogs = () => {
 };
 
 export default RoleAssignmentHistoryLogs;
+export { RoleAssignmentEmployeeHistoryLogs };

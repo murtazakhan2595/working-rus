@@ -73,6 +73,7 @@ import {
   RoleAndPermissions,
   AssignedRoles,
   AddUpdateUserRoleForm,
+  RoleAssignmentEmployeeHistoryLogs
 } from "app/modules/RoleAndPermissions";
 
 export const SidebarRoutes = [
@@ -321,7 +322,7 @@ export const SidebarRoutes = [
           component: <AddUpdateUserRoleForm />,
           name: "ADD_USER_ROLE",
         },
-        {
+        Config.ROLE_PERMISSIONS && {
           path: "/office-settings/assigned-roles",
           component: <AssignedRoles />,
           name: "Add User Role",
@@ -330,6 +331,11 @@ export const SidebarRoutes = [
           path: "/office-settings/role-permission/user-role/edit",
           component: <AddUpdateUserRoleForm />,
           name: "EDIT_USER_ROLE",
+        },
+        Config.ROLE_PERMISSIONS && {
+          path: "/office-settings/role-permission/history-logs",
+          component: <RoleAssignmentEmployeeHistoryLogs />,
+          name: "VIEW_ROLE_HISTORY_LOGS",
         },
       ].filter(Boolean) // Filter out undefined route
     : []),
