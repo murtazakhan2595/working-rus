@@ -13,6 +13,7 @@ import { getEmployeeList } from "app/hooks/attendance";
 import { getUserRolePermissionsData } from "app/hooks/rolesPermisions";
 import { getRoleList } from "app/hooks/general";
 import { getEmployeeCustomList } from "app/hooks/general";
+import { useSelector } from "react-redux";
 
 const AssignedRoles = ({ setOpenAssignRoleForm, openAssignRoleForm }) => {
   const [assignedRoles, setAssignedRoles] = useState();
@@ -21,6 +22,9 @@ const AssignedRoles = ({ setOpenAssignRoleForm, openAssignRoleForm }) => {
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+    const Departments = useSelector((state) => state.common.departments);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
   const [roles, setRoles] = useState([]);
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -82,6 +86,8 @@ const AssignedRoles = ({ setOpenAssignRoleForm, openAssignRoleForm }) => {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
+    if (filterName === "department_name") setSelectedDepartment(filterValue);
+    if(filterName === "user_role") setSelectedRole(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -106,6 +112,23 @@ const AssignedRoles = ({ setOpenAssignRoleForm, openAssignRoleForm }) => {
             type: "search",
             placeholder: "Search by ID and Name",
             name: "emp_search",
+          },
+          {
+            type: "select-one",
+            option: roles.map((role) => ({
+              label: role.name,
+              value: role.id,
+            })),
+            name: "user_role",
+            placeholder: "Assigned Role",
+            values: selectedRole,
+          },
+          {
+            type: "select-two",
+            option: Departments,
+            name: "department_name",
+            placeholder: "Department",
+            values: selectedDepartment,
           },
         ]}
         className="justify-end"
