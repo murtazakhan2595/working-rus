@@ -834,9 +834,7 @@ export const AssignedAssetsColumns = [
   {
     dataField: "id",
     text: "Assignment ID",
-    headerStyle: () => {
-      return { width: "120px" };
-    },
+    formatter: (cell) => <span>CAT-{String(cell).padStart(4, "0")}</span>,
   },
   {
     dataField: "employee_name",
@@ -845,9 +843,6 @@ export const AssignedAssetsColumns = [
   {
     dataField: "employee_id",
     text: "Employee ID",
-    headerStyle: () => {
-      return { width: "100px" };
-    },
   },
   {
     dataField: "department",
