@@ -18,11 +18,12 @@ import { getRoleList } from "app/hooks/general";
 import { getEmployeeCustomList } from "app/hooks/general";
 
 const AssignedRoles = ({
-  loading: initialLoading,
+  setOpenAssignRoleForm,
+  openAssignRoleForm,
 }) => {
   const [assignedRoles, setAssignedRoles] = useState();
-  const [loading, setLoading] = useState(initialLoading || false);
-  const [openAssignRoleForm, setOpenAssignRoleForm] = useState(false);
+  const [loading, setLoading] = useState( false);
+
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -49,13 +50,13 @@ const AssignedRoles = ({
         options,
         filterData: {
           ...filterData,
-          employee_status: "Active,Probation,Notice Period", 
+          employee_status: "Active,Probation,Notice Period",
         },
         ordering,
       });
       if (isMounted) {
         setAssignedRoles(response);
-      }      
+      }
     } catch (error) {
       console.error("Error fetching assigned roles:", error);
     } finally {
@@ -74,7 +75,7 @@ const AssignedRoles = ({
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -83,11 +84,7 @@ const AssignedRoles = ({
     return () => {
       isMounted = false;
     };
-  }, [
-    filterData,
-    ordering,
-    options,
-  ]);
+  }, [filterData, ordering, options]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
@@ -106,7 +103,7 @@ const AssignedRoles = ({
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
-      <Header
+      {/* <Header
         content={
           <Button
             onClick={(e) => {
@@ -117,7 +114,7 @@ const AssignedRoles = ({
             Assign Roles
           </Button>
         }
-      />
+      /> */}
       <div className="flex flex-col gap-4">
         <FilterInput
           filters={[
