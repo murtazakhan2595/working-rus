@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Button } from "components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
-const pathNames = (userProfile) => {
+const pathNames = () => {
   return {
     "people-team": "People Team",
     "team-profile-management": "Team Managment",
@@ -28,7 +28,7 @@ const pathNames = (userProfile) => {
     "exit-employee": "Employee Offboarding",
     "claim-request": "Claim Request",
     "my-claims": "My Claims",
-    projects: `${userProfile.role === 4 ? "My Projects" : "All Projects"}`,
+    projects: `Projects`,
     "leave-records": "Leave Records",
     applications: "Applications",
     applicants: "Applicants",
@@ -92,7 +92,6 @@ const pathNames = (userProfile) => {
 
 const Header = ({
   content,
-  userProfile,
   showBackButton = false,
   navigationLink = "-1",
   showTitle = true,
@@ -101,8 +100,8 @@ const Header = ({
   const navigate = useNavigate();
   const [pathName, setPathName] = useState("");
   const PATHNAMELIST = React.useMemo(() => {
-    return pathNames(userProfile);
-  }, [userProfile]);
+    return pathNames();
+  }, []);
 
   useEffect(() => {
     const path = location.pathname.replace(/^\//, "");

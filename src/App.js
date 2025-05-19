@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import "./index.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Sidebar from "./app/shared/templates/Sidebar";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Err404 from "./app/modules/Error/Err404.jsx";
@@ -16,6 +16,8 @@ import { useSelector } from "react-redux";
 import "./index.css";
 import { SidebarRoutes, LoginRoutes, GeneralRoutes } from "constants/routes";
 import { doesNodeExistInTree } from "utils/renderValues";
+import { getNodeExistInTree } from "utils/renderValues";
+import Error from "app/modules/Error";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
@@ -23,6 +25,10 @@ function App() {
   const ModuleList = useSelector(
     (state) => state.roles_permissions.user_permitted_modules
   );
+  const Modules_Permitted = useMemo(() => {
+    return { code_name: "DASHBOARD", childrens: ModuleList };
+  }, [ModuleList]);
+
   const token = window.localStorage.getItem("token");
   const baseUrl = useSelector((state) => state.user.baseUrl);
   let dispatch = useDispatch();
@@ -114,8 +120,20 @@ function App() {
               }
             >
               {SidebarRoutes.map((route) => {
+                const hasAccess = getNodeExistInTree(
+                  Modules_Permitted,
+                  route.name,
+                  "code_name"
+                );
+                if (!hasAccess)
+                  return <Route path="*" element={<Error errorType={401} />} />;
+
                 return (
-                  <Route path={route?.path || "#"} element={route.component} />
+                  <Route
+                    key={route.path || route.name}
+                    path={route.path || "#"}
+                    element={route.component}
+                  />
                 );
               })}
 

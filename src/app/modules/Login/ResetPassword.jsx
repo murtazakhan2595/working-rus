@@ -12,9 +12,11 @@ const ResetPassword = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const uid = searchParams.get("uid");
+  const token = searchParams.get("token");
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     uid: uid,
+    token:token,
     password: "",
     confirm_password: "",
   });
@@ -40,6 +42,7 @@ const ResetPassword = () => {
         uid: uid,
         password: "",
         confirm_password: "",
+        token:token,
       });
     }
   };

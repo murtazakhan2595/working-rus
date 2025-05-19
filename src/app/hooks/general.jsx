@@ -685,8 +685,7 @@ export const SubmitResetPassword = async (payload) => {
   try {
     const response = await axios.post(
       `${baseUrl}/password/reset/confirm/`,
-      payload,
-      { headers: headers() }
+      payload
     );
     return response.data;
   } catch (error) {

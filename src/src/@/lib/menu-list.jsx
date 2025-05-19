@@ -60,7 +60,6 @@ const generateMenuItems = (moduleName, icon, moduleTree) => {
 // Main function to retrieve the menu list
 export function getMenuList(pathname, userRole) {
   const moduleTree = { code_name: "ORG", childrens: userRole };
-console.log('FilteredTreeFilteredTreeFilteredTree',userRole)
   // Define common menus
   const commonMenus = [{ groupLabel: "", menus: [createMenu("/", "Dashboard", House)] }];
 

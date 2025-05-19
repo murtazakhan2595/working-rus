@@ -17,7 +17,7 @@ import {
 } from "src/@/components/ui/tooltip";
 import { useSelector } from "react-redux";
 
-const MenuList = ({ isOpen, ModuleList }) => {
+const MenuList = ({ isOpen }) => {
   const pathname = window.location.pathname; // Get the current pathname
   const PermittedModuleList = useSelector((state) => state.roles_permissions.user_permitted_modules);
   const menuList = useMemo(() => {

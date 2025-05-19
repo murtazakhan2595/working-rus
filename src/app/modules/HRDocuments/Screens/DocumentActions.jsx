@@ -43,7 +43,7 @@ const DocumentActions = ({ reloadData = () => {}, variant = "", document, showAc
     navigate(`/documents/detail`, {
       state: {
         GOTO_URLS: `/documents/`,
-        document_id: document.id,
+        id: document.id,
       },
     });
   };

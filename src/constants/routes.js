@@ -188,7 +188,7 @@ export const SidebarRoutes = [
         Config.HR_DOCUMENTS && {
           path: "/documents/detail",
           component: <DocumentDetails />,
-          name: "Document Detail",
+          name: "VIEW_HR_DOCUMENT_DETAILS",
         },
 
         Config.EMPLOYEE_TRANSFER && {

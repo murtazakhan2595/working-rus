@@ -32,6 +32,7 @@ import { URLS, WEBSOCKET_PATHS } from "constants/config";
 import { useNavigate } from "react-router-dom";
 import { cn } from "src/@/lib/utils";
 import { renderDate } from "utils/renderValues";
+import { mapNotificationData } from "app/utils/MappingObjects/mapNotificationData";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -43,15 +44,6 @@ const Notifications = () => {
   const fetchNotifications = async () => {
     try {
       const response = await getNotifications();
-      //   const transformed = response.results.map((n) => ({
-      //     id: n.id,
-      //     type: n.type,
-      //     description: n.message,
-      //     time: formatNotificationTime(n.created_at),
-      //     isRead: n.is_read,
-      //     task_id: n?.task_id,
-      //     project_id: n?.project_id,
-      //   }));
       setNotifications(response?.results || []);
     } catch (err) {
       console.error("Error fetching notifications:", err);
@@ -82,7 +74,7 @@ const Notifications = () => {
     text?.length > maxLength ? text.slice(0, maxLength) + "..." : text;
 
   // Calculate unread notifications count
-  const unreadCount = notifications.filter((n) => !n.isRead)?.length;
+  const unreadCount = notifications.filter((n) => !n.is_read)?.length;
 
   // Derive WebSocket base URL from environment
   const getWebSocketBaseURL = () => {
@@ -107,16 +99,8 @@ const Notifications = () => {
 
       ws.onmessage = (event) => {
         try {
-          const n = JSON.parse(event.data);
-          const transformed = {
-            id: n.id,
-            type: n.type,
-            description: n.message,
-            time: formatNotificationTime(n.created_at),
-            isRead: false,
-            task_id: n?.task_id,
-            project_id: n?.project_id,
-          };
+          const notification = JSON.parse(event.data);
+          const transformed = mapNotificationData(notification);
           setNotifications((prev) => [transformed, ...prev]);
         } catch (error) {
           console.error(`Error parsing message from ${path}`, error);
@@ -144,16 +128,8 @@ const Notifications = () => {
     socketRefs.current[path] = ws;
 
     ws.onmessage = (event) => {
-      const n = JSON.parse(event.data);
-      const transformed = {
-        id: n.id,
-        type: n.type,
-        description: n.message,
-        time: formatNotificationTime(n.created_at),
-        isRead: false,
-        task_id: n?.task_id,
-        project_id: n?.project_id,
-      };
+      const notification = JSON.parse(event.data);
+      const transformed = mapNotificationData(notification);
       setNotifications((prev) => [transformed, ...prev]);
     };
 
@@ -185,7 +161,7 @@ const Notifications = () => {
     const response = await markAsRead(id);
     if (response) {
       setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
       );
     }
   };
@@ -194,13 +170,13 @@ const Notifications = () => {
   const markAllRead = async () => {
     const response = await markAllNotificationsAsRead(notifications);
     if (response) {
-      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
     }
   };
 
   // Handle click and redirect based on notification type
   const handleNotificationClick = (n) => {
-    if (!n.isRead) markRead(n.id);
+    if (!n.is_read) markRead(n.id);
     if (n.action_url) {
       navigate(n.action_url, { state: { id: n.related_id } });
     }
@@ -251,7 +227,7 @@ const Notifications = () => {
                         key={i}
                         className={cn(
                           "flex items-start gap-4 px-1 py-2 transition-colors cursor-pointer hover:bg-gray-100",
-                          n.isRead ? "bg-gray-100" : "bg-gray-300"
+                          n.is_read ? "bg-gray-100" : "bg-gray-300"
                         )}
                         onClick={() => handleNotificationClick(n)}
                       >
@@ -259,7 +235,7 @@ const Notifications = () => {
                           <Bell
                             className={cn(
                               "w-5 h-5",
-                              n.isRead ? "text-neutral-1100" : "text-red-700"
+                              n.is_read ? "text-neutral-1100" : "text-red-700"
                             )}
                           />
                         </div>
@@ -271,7 +247,7 @@ const Notifications = () => {
                             <TooltipTrigger asChild>
                               <p
                                 className={`text-sm leading-none text-neutral-1100${
-                                  !n.isRead ? "font-bold" : ""
+                                  !n.is_read ? "font-bold" : ""
                                 }`}
                               >
                                 {truncateText(plainText, 50)}
