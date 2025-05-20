@@ -76,7 +76,7 @@ const RoleAssignmentEmployeeHistoryLogs = () => {
       return updatedFilters;
     });
   };
-
+console.log(roles,'rolesrolesroles')
   return (
     <>
       <Header

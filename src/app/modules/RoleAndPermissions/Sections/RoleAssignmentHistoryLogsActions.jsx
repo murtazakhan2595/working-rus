@@ -20,7 +20,7 @@ const RoleAssignmentHistoryLogsActions = ({ data }) => {
     <>
       <DropdownActionMenu
         onView={handleView}
-        viewText="View Role"
+        viewText="View History"
         menuTooltip="History Actions"
       />
     </>
