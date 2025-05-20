@@ -144,7 +144,7 @@ export const addUpdateBranch = async (payload, id = null) => {
   }
 };
 
-const saveDesignation = async (designationId, payload) => {
+const saveDesignation = async (payload,designationId) => {
   try {
     if (designationId) {
       const response = await axios.patch(

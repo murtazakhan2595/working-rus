@@ -9,7 +9,7 @@ import SidebarToggle from "components/ui/sidebar-toggle";
 import MenuList from "./MenuList";
 import NewLogo from 'assets/images/NewLogo';
 import MobileLogo from 'assets/images/mobile-logo';
-export function SideBarMenu({ userRole }) {
+export function SideBarMenu() {
   const sidebar = useStore(useSidebarToggle, (state) => state);
 
   if (!sidebar) return null;
@@ -49,7 +49,7 @@ export function SideBarMenu({ userRole }) {
             </div>
           </Link>
         </Button>
-        <MenuList isOpen={sidebar?.isOpen} userRole={userRole} />
+        <MenuList isOpen={sidebar?.isOpen} />
       </div>
     </aside>
   );

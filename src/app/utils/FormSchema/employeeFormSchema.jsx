@@ -428,7 +428,7 @@ const validateOnboardingDocuments = (onboardingDocuments) => {
     // Only validate active documents
     if (doc.isActive) {
       // Check if active documents have attachments
-      if (!doc.attachment || doc.attachment.length === 0) {
+      if (!doc.attachment || doc.attachment?.length === 0) {
         // Initialize the object at this index if it doesn't exist
         if (!errors.onboardingDocuments[index]) {
           errors.onboardingDocuments[index] = {};

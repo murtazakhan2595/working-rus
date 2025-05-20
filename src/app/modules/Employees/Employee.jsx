@@ -7,15 +7,15 @@ import { FilterInput, SelectInputComponent } from "components/FormControl";
 import { UserRoles, employeeStatus } from "data/Data";
 import { getEmployeeCustomList } from "app/hooks/general";
 import { PageLoader } from "components";
-import SheetOnBoarding from "components/ui/OnBoardingSheet";
 import Stats from "../../../components/ui/Stats";
 import TableCustom from "components/CustomTable";
 import { useSelector } from "react-redux";
 import { HasAccess } from "utils/PermissionUtils";
-import Error from "app/modules/Error";
+import { Button } from "components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function EmployeeManagement() {
-  const ViewEmployeesPermitted = HasAccess("VIEW_EMPLOYEES");
+  const navigate = useNavigate();
   const AddEmployeesPermitted = HasAccess("ADD_EMPLOYEE");
   const [isLoading, setIsLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState({ results: [], count: 0 });
@@ -114,8 +114,6 @@ export default function EmployeeManagement() {
     setSelectedStatus(newStatus);
   };
 
-  if (!ViewEmployeesPermitted) return <Error />;
-
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -123,13 +121,14 @@ export default function EmployeeManagement() {
       <Header
         content={
           AddEmployeesPermitted && (
-            <SheetOnBoarding
-              reloadData={() => {
-                setOrdering("-id");
-                onPageChange("page", 1);
-                fetchData(true);
+            <Button
+              onClick={(event) => {
+                event.preventDefault();
+                navigate("/create-employee");
               }}
-            />
+            >
+              Add Employee
+            </Button>
           )
         }
       />

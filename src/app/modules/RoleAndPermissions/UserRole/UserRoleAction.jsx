@@ -3,7 +3,7 @@ import AlertDialogue from "components/ui/AlertDialogue";
 import { ViewUserRole } from "app/modules/RoleAndPermissions/UserRole";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { toast } from "react-toastify";
-import { deleteRole } from "app/hooks/rolesPermisions";
+import { deleteRole } from "app/hooks/general";
 import { useNavigate } from "react-router-dom";
 import { HasAccess } from "utils/PermissionUtils";
 

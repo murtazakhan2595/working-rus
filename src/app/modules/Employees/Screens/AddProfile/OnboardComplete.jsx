@@ -9,7 +9,7 @@ const OnboardComplete = ({ nextstep = () => {}, employeeId }) => {
   const handleCompleteOnBoarding = useCallback(async (event) => {
     event.preventDefault();
     try {
-      const personalInformation = { is_filled: false };
+      const personalInformation = { is_filled: true };
       await saveEmployeePersonalInfoData(employeeId, personalInformation);
       nextstep(); // Call the callback after successful save
     } catch (error) {

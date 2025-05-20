@@ -31,6 +31,11 @@ export const AssignedRolesColumn = (reload,roles) => [
       // Get the role objects first, then work with them
       const roleObjects = cell
         .map((roleId) => {
+          // Handle both role objects and role IDs
+          if (typeof roleId === 'object' && roleId !== null) {
+            return roleId;
+          }
+          
           const role = roles.find((r) => r.id === roleId);
           return role ? role : null;
         })
@@ -38,7 +43,7 @@ export const AssignedRolesColumn = (reload,roles) => [
   
       return (
         <div className="flex flex-wrap gap-1">
-          {roleObjects.slice(0, 2).map((role, index) => (
+          {roleObjects.map((role) => (
             <span
               key={role.id}
               className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
@@ -46,11 +51,6 @@ export const AssignedRolesColumn = (reload,roles) => [
               {role.name} 
             </span>
           ))}
-          {roleObjects.length > 2 && (
-            <span className="text-xs text-gray-900">
-              +{roleObjects.length - 2} more
-            </span>
-          )}
         </div>
       );
     },

@@ -24,24 +24,32 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdateSuccess = null }) => {
+const AddDesignationForm = ({
+  isOpen,
+  setIsOpen,
+  edit,
+  setEdit,
+  reload,
+  onUpdateSuccess = null,
+}) => {
   const [closeSheet, setCloseSheet] = useState(false);
-  
+
   // Get user details from Redux store to access organization ID
   const userDetails = useSelector((state) => state.emp?.user_details);
-  const userOrganizationId = userDetails?.organization_id || userDetails?.organization;
+  const userOrganizationId =
+    userDetails?.organization_id || userDetails?.organization;
 
   // Debug the incoming edit data
   useEffect(() => {
     console.log("AddDesignationForm edit prop:", edit);
-    console.log("Is edit an object?", typeof edit === 'object');
+    console.log("Is edit an object?", typeof edit === "object");
     console.log("Edit has data property?", edit?.data !== undefined);
     console.log("Edit has open property?", edit?.open !== undefined);
   }, [edit]);
 
   // Determine if we're in edit mode - handle both structures
   const isEditMode = Boolean(edit?.data) || Boolean(edit?.id);
-  
+
   // Extract the actual data based on the structure provided
   const editData = edit?.data || edit;
 
@@ -55,7 +63,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdate
   useEffect(() => {
     console.log("AddDesignationForm mounted, isEditMode:", isEditMode);
     console.log("Initial edit data:", editData);
-    
+
     if (editData) {
       console.log("Setting form data with edit data:", editData);
       setFormData({
@@ -72,7 +80,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdate
   // Form validation
   const validateForm = (values) => {
     const errors = {};
-    
+
     if (!values.name) {
       errors.name = "Designation name is required";
     } else if (values.name.length < 2) {
@@ -80,7 +88,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdate
     } else if (values.name.length > 50) {
       errors.name = "Designation name must be less than 50 characters";
     }
-    
+
     if (!values.description) {
       errors.description = "Description is required";
     } else if (values.description.length < 5) {
@@ -88,45 +96,27 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdate
     } else if (values.description.length > 500) {
       errors.description = "Description must be less than 500 characters";
     }
-    
+
     return errors;
   };
 
   const handleSubmit = async (values, formikHelpers) => {
     const { setSubmitting, setErrors, resetForm } = formikHelpers;
-    
+
     // Get the ID from the appropriate source
     const designationId = editData?.id;
-    
-    // Debug submission
-    console.log("Submitting form with designationId:", designationId);
-    console.log("Edit mode:", isEditMode);
-    
+
     // Make sure organization is included
     const submitData = {
       ...values,
-      organization: values.organization || editData?.organization || userOrganizationId
+      organization:
+        values.organization || editData?.organization || userOrganizationId,
     };
 
     console.log("Submitting data with organization:", submitData);
 
     try {
-      let response;
-      
-      if (isEditMode && designationId) {
-        // Update existing designation
-        console.log(`Making PUT request to /designation/${designationId}`);
-        response = await axios.put(
-          `/designation/${designationId}`,
-          submitData
-        );
-      } else {
-        // Create new designation
-        console.log("Making POST request to /designation");
-        response = await axios.post("/designation", submitData);
-      }
-
-      console.log("API response:", response);
+      const response = await saveDesignation(submitData, designationId);
 
       if (response) {
         toast.success(
@@ -141,7 +131,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdate
         }
 
         // Call the update success callback if provided
-        if (onUpdateSuccess && typeof onUpdateSuccess === 'function') {
+        if (onUpdateSuccess && typeof onUpdateSuccess === "function") {
           await onUpdateSuccess(submitData);
         }
 
@@ -151,7 +141,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdate
     } catch (error) {
       console.log("API call error:", error);
       console.log("Error response data:", error.response?.data);
-      
+
       // Set form errors if they come from the API
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
@@ -159,8 +149,10 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdate
         // Handle Django REST framework error format
         setErrors(error.response.data);
       }
-      
-      const errorMessage = error?.response?.data?.message || `Failed to ${isEditMode ? "update" : "add"} designation.`;
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        `Failed to ${isEditMode ? "update" : "add"} designation.`;
       toast.error(errorMessage, {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -176,8 +168,8 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdate
         setCloseSheet,
         setIsOpen,
       })}
-      <Formik 
-        initialValues={formData} 
+      <Formik
+        initialValues={formData}
         onSubmit={handleSubmit}
         validate={validateForm}
         validateOnChange={true}
@@ -187,7 +179,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdate
         {(props) => (
           <form onSubmit={props?.handleSubmit}>
             {!isEditMode && (
-              <BulkUploadSection 
+              <BulkUploadSection
                 title="Bulk Upload Designations"
                 module="designation"
                 templateEndpoint={null}
@@ -197,8 +189,10 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdate
                 showDivider={true}
               />
             )}
-            
-            <SheetCardExtension title={`${isEditMode ? 'Edit' : 'Add'} Designation`}>
+
+            <SheetCardExtension
+              title={`${isEditMode ? "Edit" : "Add"} Designation`}
+            >
               <TextInput
                 name="name"
                 label="Designation"
@@ -224,10 +218,14 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdate
                 onBlur={props.handleBlur}
               />
               {/* Hidden field for organization */}
-              <input 
-                type="hidden" 
-                name="organization" 
-                value={props.values.organization || editData?.organization || userOrganizationId} 
+              <input
+                type="hidden"
+                name="organization"
+                value={
+                  props.values.organization ||
+                  editData?.organization ||
+                  userOrganizationId
+                }
               />
             </SheetCardExtension>
             <div className="p-6 border-t border-gray-200 bg-gray-50">
@@ -246,7 +244,11 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdate
                   variant="default"
                   disabled={props.isSubmitting || !props.isValid}
                 >
-                  {props.isSubmitting ? 'Saving...' : (isEditMode ? "Update" : "Add")}
+                  {props.isSubmitting
+                    ? "Saving..."
+                    : isEditMode
+                    ? "Update"
+                    : "Add"}
                 </Button>
               </div>
             </div>
