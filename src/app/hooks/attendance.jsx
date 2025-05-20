@@ -6,6 +6,8 @@ import {
   mapShiftData,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
+import { renderErrorMessages } from "utils/renderErrors";
+
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -203,6 +205,7 @@ const saveAttendance = async (payload, userDetails, id) => {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
+    renderErrorMessages(error?.response?.data)
     return false;
   }
 };
