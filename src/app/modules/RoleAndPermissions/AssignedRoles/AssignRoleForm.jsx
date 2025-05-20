@@ -134,13 +134,13 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     email: emp.email || "",
   }));
 
-  // Transform available roles for SelectMultiInputComponent
-  const roleOptions = availableRoles.map((role) => ({
-    value: role.id,
-    label: role.name,
-    description: role.description,
-  }));
-
+  const roleOptions = availableRoles
+    .filter((role) => role.id !== 1 && role.name !== "Super Admin")
+    .map((role) => ({
+      value: role.id,
+      label: role.name,
+      description: role.description,
+    }));
   const FormSheetData = {
     triggerText: "Assign Role",
     title: `${isEditMode ? "Edit" : "Assign"} Roles`,
