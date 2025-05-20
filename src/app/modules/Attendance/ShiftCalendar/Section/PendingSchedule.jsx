@@ -7,7 +7,8 @@ import { useSelector } from "react-redux";
 import { TextAreaInput } from "components/FormControl";
 import TableCustom from "components/CustomTable";
 import PageLoader from "components/PageLoader";
-import { ShiftCalendarView } from "..";
+import ShiftCalendarView from "../Section/ShiftCalendarView";
+
 
 const PendingSchedule = () => {
   const [pendingSchedules, setPendingSchedules] = useState([]);
