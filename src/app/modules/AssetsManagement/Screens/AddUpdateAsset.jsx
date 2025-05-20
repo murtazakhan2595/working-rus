@@ -382,7 +382,7 @@ const AddUpdateAsset = ({
                 />
 
                 <div className="flex items-center gap-4">
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 space-y-2 mb-6">
                     <SelectInputComponent
                       name={"category"}
                       error={props.errors?.category}
