@@ -25,6 +25,7 @@ import {
   EmployeeExternalTranfer,
 } from "app/modules/EmployeeTransfer";
 import Config from "constants/config";
+import { HasAccess } from "utils/PermissionUtils";
 
 const ExternalTabs = [
   Config.TEAM_INTERNALTRANSFER ? "Internal" : null,
@@ -34,6 +35,8 @@ const ExternalTabs = [
 const InternalTabs = ["Requests", "Records"];
 
 export default function EmployeeTransfer() {
+
+   const viewEmployeeTransferPermitted = HasAccess("VIEW_EMPLOYEE_TRANSFER");
   const userRole = useSelector((state) => state.user.userProfile.role);
   const userID = useSelector((state) => state.user.userProfile.id);
   const [isLoading, setIsLoading] = useState(true);
@@ -183,7 +186,7 @@ export default function EmployeeTransfer() {
         value={activeExternalTab}
       >
         <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
-          <TabsList className="flex items-center justify-center mb-4">
+          {ExternalTabs.length>1 &&<TabsList className="flex items-center justify-center mb-4">
             {ExternalTabs.map((tab) => (
               <TabsTrigger
                 key={tab}
@@ -193,7 +196,7 @@ export default function EmployeeTransfer() {
                 {tab}
               </TabsTrigger>
             ))}
-          </TabsList>
+          </TabsList>}
           {/* <FilterInput
             filters={[
               // {
@@ -219,11 +222,11 @@ export default function EmployeeTransfer() {
             onChange={handleFilterChange}
           /> */}
         </div>
-        <Card>
+        {viewEmployeeTransferPermitted && <Card>
           <CardContent>
             <TabsContent value="Internal">
               <EmployeeInternalTranfer
-                TabList={InternalTabs}
+                TabList={ InternalTabs}
                 activeTab={activeInternalTab}
                 setActiveTab={setActiveInternalTab}
                 EmployeesTransferData={employeeTransferData}
@@ -231,16 +234,16 @@ export default function EmployeeTransfer() {
               />
             </TabsContent>
             <TabsContent value="External">
-              <EmployeeExternalTranfer
-                TabList={InternalTabs}
+              {<EmployeeExternalTranfer
+                TabList={ InternalTabs}
                 activeTab={activeInternalTab}
                 setActiveTab={setActiveInternalTab}
                 EmployeesTransferData={employeeTransferData}
                 reloadData={fetchData}
-              />
+              />}
             </TabsContent>
           </CardContent>
-        </Card>
+        </Card>}
       </Tabs>
       {OpenTransferForm && (
         <TransferForm

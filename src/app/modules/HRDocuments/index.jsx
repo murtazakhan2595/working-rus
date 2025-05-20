@@ -16,7 +16,7 @@ import {
 import { Card, CardContent } from "components/ui/card";
 import { Header } from "components";
 import { Button } from "components/ui/button";
-
+import { HasAccess } from "utils/PermissionUtils";
 const HRDocumentsTab = ["Documents", "Category"];
 
 function HRDocuments() {
@@ -24,24 +24,31 @@ function HRDocuments() {
   const [OpenCategoryForm, setOpenCategoryForm] = useState(false);
   const [activeHRDocumentsTab, setActiveHRDocumentsTab] = useState("Documents");
   const [reloadData, setReloadData] = useState(false);
+  const uploadHRDocumentPermitted = HasAccess("UPLOAD_HR_DOCUMENT");
+  const addDocumentCategoryPermitted = HasAccess("ADD_DOCUMENT_CATEGORY");
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
       <Header
         content={
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              if (activeHRDocumentsTab === "Documents")
-                setOpenUploadDocumentForm(true);
-              else setOpenCategoryForm(true);
-            }}
-          >
-            {activeHRDocumentsTab === "Documents"
-              ? "Add Document"
-              : "Add Category"}
-          </Button>
+          ((activeHRDocumentsTab === "Documents" &&
+            uploadHRDocumentPermitted) ||
+            (activeHRDocumentsTab !== "Documents" &&
+              addDocumentCategoryPermitted)) && (
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                if (activeHRDocumentsTab === "Documents")
+                  setOpenUploadDocumentForm(true);
+                else setOpenCategoryForm(true);
+              }}
+            >
+              {activeHRDocumentsTab === "Documents"
+                ? "Add Document"
+                : "Add Category"}
+            </Button>
+          )
         }
       />
       <Tabs
