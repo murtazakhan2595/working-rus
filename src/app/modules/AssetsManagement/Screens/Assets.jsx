@@ -28,6 +28,8 @@ import AssetView from "./AssetView";
 import AlertDialogue from "components/ui/AlertDialogue";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { assetStatus } from "data/Data";
+import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
+
 
 const Assets = ({ userProfile }) => {
   const [activeTab, setActiveTab] = useState("assets"); // "assets" or "categories"
@@ -427,7 +429,7 @@ const Assets = ({ userProfile }) => {
       return <Button onClick={()=>{setCreateAsset(true)}}>Add Asset</Button>;
     } else {
       return (
-        <Button onClick={() => setCreateCategory(true)}>Create Category</Button>
+        <Button onClick={() => setCreateCategory(true)}>Add Category</Button>
       );
     }
   };
@@ -503,9 +505,20 @@ const Assets = ({ userProfile }) => {
               </TabsTrigger>
             ))}
           </TabsList>
-          <div
+         
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-primary">
+              {activeTab === "assets" ? "Assets" : "Asset Categories"}
+            </CardTitle>
+            <CardDescription className="text-neutral-1100">
+              {activeTab === "assets" ? "Here you can manage your assets. Add, edit, or delete assets as needed." : "Here you can manage your asset categories. Add, edit, or delete categories as needed."}
+            </CardDescription>
+            <div
             onClick={(e) => e.stopPropagation()}
-            className="mt-2 lg:mt-0 md:mt-0 xl:mt-0"
+            className="mt-2 lg:mt-0 md:mt-0 xl:mt-0 justify-end flex"
           >
             <FilterInput
               filters={
@@ -518,9 +531,7 @@ const Assets = ({ userProfile }) => {
               }
             />
           </div>
-        </div>
-
-        <Card>
+          </CardHeader>
           <CardContent>
             <TabsContent value="assets">
               <CustomTable
