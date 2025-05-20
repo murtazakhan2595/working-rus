@@ -15,8 +15,19 @@ import { useSelector } from "react-redux";
 import { GetDateRange, getWorkingDays } from "utils/renderValues";
 import { exportRecordToExcel } from "utils/downloadUtils";
 import { getLabelByValue } from "utils/getValuesFromTables";
+import { HasAccess } from "utils/PermissionUtils";
 
 const Attendance = () => {
+  const isViewLeaveStatusPermitted = HasAccess("VIEW_LEAVE_STATUS");
+  const isViewEmpAttendancePermitted = HasAccess("VIEW_EMPLOYEE_ATTENDANCE");
+  const isExportAttendancePermitted = HasAccess("EXPORT_ATTENDANCE");
+  const isViewWeeklytatusPermitted = HasAccess("VIEW_WEEKLY_STATISTICS");
+  const isUpdateEmpAttendancePermitted = HasAccess(
+    "UPDATE_EMPLOYEE_ATTENDANCE"
+  );
+  const isViewDptAttendancePermitted = HasAccess(
+    "VIEW_DEPARTMENT_ATTENDANCE_OVERVIEW"
+  );
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
   const userProfile = useSelector((state) => state.user.userProfile);
@@ -131,77 +142,86 @@ const Attendance = () => {
         )}`}
       >
         <div className="flex gap-4">
-          <LeaveStatusOverview />
-          <StatisticsChart weeklySummary={weeklySummary} />
-          <DepartmentOverview />
+          {isViewLeaveStatusPermitted && <LeaveStatusOverview />}
+          {isViewWeeklytatusPermitted && (
+            <StatisticsChart weeklySummary={weeklySummary} />
+          )}
+          {isViewDptAttendancePermitted && <DepartmentOverview />}
         </div>
-        <StatsCards />
-        <div className="flex justify-end gap-3 flex-row flex-wrap">
-          <FilterInput
-            filters={[
-              {
-                type: "search",
-                placeholder: "Search by Name",
-                name: "emp_name",
-                width: "w-[175px]",
-              },
-              {
-                type: "select-one",
-                option: Departments,
-                name: "department_name",
-                placeholder: "Department",
-                values: selectedDepartment,
-                width: "w-[175px]",
-              },
-            ]}
-            onChange={handleFilterChange}
-          />
-          <DateRangeFilter
-            activeDateRange={activeTab}
-            setDateRange={(dateRange) => {
-              if (dateRange.toUpperCase() === "DAY") {
-                setDateRange(
-                  `${moment().format("YYYY-MM-DD")},${moment().format(
-                    "YYYY-MM-DD"
-                  )}`
-                );
-              } else {
-                setDateRange(GetDateRange(dateRange));
-              }
-              setActiveTab(dateRange);
-              return;
-            }}
-          />
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              setOpenUpdateEmployeeAttendance(true);
-            }}
-          >
-            Update Attendance
-          </Button>
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              exportAttendanceToExcel();
-            }}
-            variant="continue"
-          >
-            Export
-          </Button>
-        </div>
-
-        <Card className="mb-10">
-          <CardContent>
-            <TableCustom
-              data={attendanceData.results || []}
-              columns={EmployeesAttendanceColumns(TotalDays)}
-              pagination={false}
-              dataTotalSize={attendanceData.count || 0}
-              tableOptions={tableOptions}
-            />
-          </CardContent>
-        </Card>
+        {isViewEmpAttendancePermitted && (
+          <>
+            <StatsCards />
+            <div className="flex justify-end gap-3 flex-row flex-wrap">
+              <FilterInput
+                filters={[
+                  {
+                    type: "search",
+                    placeholder: "Search by Name",
+                    name: "emp_name",
+                    width: "w-[175px]",
+                  },
+                  {
+                    type: "select-one",
+                    option: Departments,
+                    name: "department_name",
+                    placeholder: "Department",
+                    values: selectedDepartment,
+                    width: "w-[175px]",
+                  },
+                ]}
+                onChange={handleFilterChange}
+              />
+              <DateRangeFilter
+                activeDateRange={activeTab}
+                setDateRange={(dateRange) => {
+                  if (dateRange.toUpperCase() === "DAY") {
+                    setDateRange(
+                      `${moment().format("YYYY-MM-DD")},${moment().format(
+                        "YYYY-MM-DD"
+                      )}`
+                    );
+                  } else {
+                    setDateRange(GetDateRange(dateRange));
+                  }
+                  setActiveTab(dateRange);
+                  return;
+                }}
+              />
+              {isUpdateEmpAttendancePermitted && (
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setOpenUpdateEmployeeAttendance(true);
+                  }}
+                >
+                  Update Attendance
+                </Button>
+              )}
+              {isExportAttendancePermitted && (
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    exportAttendanceToExcel();
+                  }}
+                  variant="continue"
+                >
+                  Export
+                </Button>
+              )}
+            </div>
+            <Card className="mb-10">
+              <CardContent>
+                <TableCustom
+                  data={attendanceData.results || []}
+                  columns={EmployeesAttendanceColumns(TotalDays)}
+                  pagination={false}
+                  dataTotalSize={attendanceData.count || 0}
+                  tableOptions={tableOptions}
+                />
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
       {openUpdateEmployeeAttendance && (
         <UpdateEmployeeAttendance

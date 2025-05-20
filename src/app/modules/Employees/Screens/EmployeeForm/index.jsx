@@ -96,7 +96,7 @@ const EmployeeForm = ({
   const Departments = useSelector((state) => state.common.departments);
   const Employees = useSelector((state) => state.emp.employees);
 
-  const default_user = GetDefaultUserRole()?.id || 2;
+  const default_user = GetDefaultUserRole()?.id;
   const [formData, setFormData] = useState({});
   const [empId, setEmpId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);

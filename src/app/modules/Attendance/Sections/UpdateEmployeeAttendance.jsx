@@ -144,14 +144,14 @@ const UpdateEmployeeAttendance = ({
           {
             sheetCardExtension: true,
             sheetCardTitle: "Employee Details",
-            InputFiels: [
+            InputFields: [
               {
                 InputField: SelectInputComponent,
                 name: "employee_id",
                 required: true,
                 disabled: isEmployee,
                 label: "Employee",
-                onChange: (field, value) => {
+                onFieldUpdate: (field, value) => {
                   if (value)
                     setSelectedEmployee(
                       Employees.find((obj) => obj.value === value)
@@ -193,7 +193,7 @@ const UpdateEmployeeAttendance = ({
           {
             sheetCardExtension: true,
             sheetCardTitle: "Attendance Details",
-            InputFiels: [
+            InputFields: [
               {
                 InputField: DateInput,
                 name: "date",
