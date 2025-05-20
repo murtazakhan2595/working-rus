@@ -107,23 +107,23 @@ export const RoleAssignmentEmployeesLogsColumn = [
         return <span className="">No roles assigned</span>;
       }
 
-      // Get the role objects first, then work with them
-
       return (
         <div className="flex flex-wrap gap-1">
-          {cell.slice(0, 2).map((role, index) => (
-            <span
-              key={index}
-              className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
-            >
-              <UserRole value={role} />
-            </span>
-          ))}
-          {cell.length > 2 && (
-            <span className="text-xs text-gray-900">
-              +{cell.length - 2} more
-            </span>
-          )}
+          {cell.map((role, index) => {
+            // Check the type of role to ensure it's processed correctly by UserRole component
+            // The UserRole component in getValuesFromTables.js calls parseInt on the value
+            // So we need to ensure each role is a value that can be found in the roles list
+            const roleValue = typeof role === 'object' && role !== null ? role.id || role.value : role;
+            
+            return (
+              <span
+                key={index}
+                className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
+              >
+                <UserRole value={roleValue} />
+              </span>
+            );
+          })}
         </div>
       );
     },
