@@ -72,7 +72,18 @@ const Departments = ({
 
   return (
     <div className="flex flex-col justify-end gap-4">
-      <FilterInput
+     
+      {loading ? (
+        <PageLoader />
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-primary">Department List</CardTitle>
+            <CardDescription className="text-neutral-1100">
+              Here you can manage your departments. Add, edit, or delete departments as needed.
+            </CardDescription>
+            <div className="flex justify-end">
+            <FilterInput
         filters={[
           {
             type: "search",
@@ -84,15 +95,8 @@ const Departments = ({
         className='justify-end'
         onChange={handleFilterChange}
       />
-      {loading ? (
-        <PageLoader />
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-primary">Department List</CardTitle>
-            <CardDescription className="text-neutral-1100">
-              Here you can manage your departments. Add, edit, or delete departments as needed.
-            </CardDescription>
+            </div>
+       
           </CardHeader>
           <CardContent>
             <TableCustom
