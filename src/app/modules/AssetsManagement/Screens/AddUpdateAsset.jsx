@@ -398,7 +398,7 @@ const AddUpdateAsset = ({
                       placeholder="Select category"
                     />
                   </div>
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 space-y-2 mb-6">
                     <SelectInputComponent
                       name={"asset_location"}
                       error={props.errors?.asset_location}
@@ -419,7 +419,7 @@ const AddUpdateAsset = ({
 
               <SheetCardExtension title="Purchase Information">
                 <div className="flex items-center gap-4">
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 space-y-2 mb-6">
                     <DateInput
                       name={"purchase_date"}
                       error={props.errors?.purchase_date}
@@ -433,7 +433,7 @@ const AddUpdateAsset = ({
                       placeholder="Select purchase date"
                     />
                   </div>
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 space-y-2 mb-6">
                     <DateInput
                       name={"warranty_expiry"}
                       error={props.errors?.warranty_expiry}
@@ -450,7 +450,7 @@ const AddUpdateAsset = ({
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 space-y-2 mb-6">
                     <NumberInput
                       name={"purchase_cost"}
                       error={props.errors?.purchase_cost}
@@ -465,7 +465,7 @@ const AddUpdateAsset = ({
                       min={1}
                     />
                   </div>
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 space-y-2 mb-6">
                     <SelectInputComponent
                       name={"condition"}
                       error={props.errors?.condition}
@@ -481,7 +481,7 @@ const AddUpdateAsset = ({
                     />
                   </div>
                 </div>
-
+                <div className="flex-1 space-y-2 mb-6">
                 <TextAreaInput
                   name={"notes"}
                   error={props.errors?.notes}
@@ -495,6 +495,7 @@ const AddUpdateAsset = ({
                   maxRows={3}
                   placeholder="Add any additional notes about the asset"
                 />
+                </div>
 
                 {/* Using Attachments component like DTR */}
                 <Attachments
