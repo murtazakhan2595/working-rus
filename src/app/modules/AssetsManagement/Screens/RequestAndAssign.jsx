@@ -4,7 +4,7 @@ import { Button } from "components/ui/button";
 import { Header } from "components";
 import CustomTable from "components/CustomTable";
 import { FilterInput } from "components/FormControl";
-import { Card, CardContent } from "components/ui/card";
+import { Card, CardContent, CardDescription, CardTitle, CardHeader } from "components/ui/card";
 import {
   Tabs,
   TabsList,
@@ -16,6 +16,8 @@ import AssetRequestSheet from "./AssetRequestSheet";
 import AssetRequestViewSheet from "./AssetRequestViewSheet";
 import { AssetRequestColumns } from "app/utils/Types/TableColumns";
 import { getEmployeeAssets } from "app/hooks/assets";
+
+
 
 const AssetRequests = ({ userProfile, departments }) => {
   const [activeTab, setActiveTab] = useState("requests"); // "requests" or "assignments"
@@ -203,15 +205,26 @@ const AssetRequests = ({ userProfile, departments }) => {
               </TabsTrigger>
             ))}
           </TabsList>
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="mt-2 lg:mt-0 md:mt-0 xl:mt-0"
-          >
-            <FilterInput filters={filters} onChange={handleFilterChange} />
-          </div>
+          
         </div>
 
         <Card>
+        <CardHeader>
+        <CardTitle className="text-primary-1100">
+          
+            {activeTab === "requests" ? "Requested By Employee" : "Assign By HR"}
+          
+        </CardTitle>
+        <CardDescription className="text-neutral-1100">
+        {activeTab === "requests" ? "Here you can manage your requests. Add, edit, or delete requests as needed." : "Here you can manage your assignments. Add, edit, or delete assignments as needed."}
+        </CardDescription>
+        <div
+            onClick={(e) => e.stopPropagation()}
+            className="mt-2 lg:mt-0 md:mt-0 xl:mt-0 justify-end flex"
+          >
+            <FilterInput filters={filters} onChange={handleFilterChange} />
+          </div>
+        </CardHeader>
           <CardContent>
             <TabsContent value="requests">
               <CustomTable
