@@ -13,6 +13,7 @@ import { connect } from "react-redux";
 import { NoticePeriod } from "data/Data";
 import { validateTerminationForm } from "app/utils/FormSchema/exitAndClearanceFormSchema";
 import { CoverFileUpload } from "components/FormControl";
+import { HasAccess } from "utils/PermissionUtils";
 
 const RequestTerminationForm = ({
   employees,
@@ -32,6 +33,7 @@ const RequestTerminationForm = ({
   const [loading, setLoading] = React.useState(false);
   const [terminations, setTerminations] = React.useState([]);
   const [filterEmployees, setFilterEmployees] = React.useState([]);
+  const manageExitRequestsPermitted = HasAccess("MANAGE_EXIT_REQUESTS");
   const fetchData = async () => {
     try {
       setLoading(true);

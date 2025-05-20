@@ -32,6 +32,7 @@ import {
 } from "app/hooks/employee";
 
 import {getBranchList} from "app/hooks/general"
+import { HasAccess } from "utils/PermissionUtils";
 
 const ImportEmployeesButton = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,7 +40,6 @@ const ImportEmployeesButton = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [validationErrors, setValidationErrors] = useState([]);
   const [showFieldInfo, setShowFieldInfo] = useState(true);
-
   // Create a ref for the file input element
   const fileInputRef = useRef(null);
 
@@ -51,7 +51,7 @@ const ImportEmployeesButton = () => {
   const [shifts, setShifts] = useState([]);
   const [branches, setBranches] = useState([]);
   const [isLoadingReferenceData, setIsLoadingReferenceData] = useState(false);
-
+  const importEmployeesPermitted = HasAccess("IMPORT_EMPLOYEES");
   // Fetch reference data when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -371,14 +371,14 @@ const ImportEmployeesButton = () => {
 
   return (
     <>
-      <Button
+      {importEmployeesPermitted && <Button
         onClick={() => setIsOpen(true)}
         className="bg-primary hover:bg-primary-dark"
         type="button"
       >
         <Upload className="w-4 h-4 mr-2" />
         Import Employees
-      </Button>
+      </Button>}
 
       <Dialog
         open={isOpen}

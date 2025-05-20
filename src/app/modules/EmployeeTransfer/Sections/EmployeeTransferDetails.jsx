@@ -30,9 +30,11 @@ import {
   DialogBox,
 } from "components";
 import { renderDate } from "utils/renderValues";
+import { HasAccess } from "utils/PermissionUtils";
 
-const renderActionButtons = (status, userRole, new_reporting_manager) => {
-  if (!status || userRole === 4) return false;
+const renderActionButtons = (status, userRole, new_reporting_manager,manageEmployeeTransferPermitted) => {
+  if (!manageEmployeeTransferPermitted) return false;
+    if (!status || userRole === 4) return false;
   if (userRole === 1 || userRole === 3) {
     if (status === "ACCEPTED BY MANAGER") return true;
     else if (status === "PENDING" && !new_reporting_manager) return true;
@@ -57,6 +59,8 @@ const EmployeeTransferDetails = ({
   const [OpenConfirmRejection, setOpenConfirmRejection] = useState(false);
   const [currentTranferId, setCurrentTranferId] = useState(transferID);
   const [OpenTransferForm, setOpenTransferForm] = useState(false);
+  const editEmployeeTransferPermitted = HasAccess("EDIT_EMPLOYEE_TRANSFER");
+  const manageEmployeeTransferPermitted = HasAccess("MANAGE_EMPLOYEE_TRANSFER")
 
   const fetchData = async (isMounted, tranferId) => {
     try {
@@ -193,7 +197,8 @@ const EmployeeTransferDetails = ({
   const showActionbutton = renderActionButtons(
     currentTranfer?.status,
     userRole,
-    currentTranfer?.new_reporting_manager
+    currentTranfer?.new_reporting_manager,
+    manageEmployeeTransferPermitted
   );
 
   return (
@@ -248,7 +253,7 @@ const EmployeeTransferDetails = ({
                       </Button>
                     </>
                   )}
-                  {currentTranfer?.status === "PENDING" && (
+                  {currentTranfer?.status === "PENDING" && editEmployeeTransferPermitted && (
                     <Button
                       variant="ghost"
                       size="icon"

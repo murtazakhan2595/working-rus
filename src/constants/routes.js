@@ -206,17 +206,17 @@ export const SidebarRoutes = [
         Config.PROFILE_MANAGEMENT && {
           path: "/edit-employee/:id",
           component: <CreateUpdateEmployee />,
-          name: "Edit Employee",
+          name: "EDIT_EMPLOYEE",
         },
         Config.PROFILE_MANAGEMENT && {
           path: "/profile/:id",
           component: <EditEmployeeProfile />,
-          name: "Edit Employee Profile",
+          name: "EDIT_EMPLOYEE_PROFILE",
         },
         Config.PROFILE_MANAGEMENT && {
           path: "/user/:id",
           component: <ViewEmployee profileView={false} />,
-          name: "User Profile",
+          name: "VIEW_EMPLOYEES",
         },
         Config.EXIT_CLEARANCE && {
           path: "/exit-clearance",
