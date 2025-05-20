@@ -34,7 +34,7 @@ import { MyDtr } from "app/modules/DTR";
 import ForgotPassword from "app/modules/Login/ForgotPassword.jsx";
 import ResetPassword from "app/modules/Login/ResetPassword.jsx";
 import ComingSoon from "app/modules/comingSoon/ComingSoon.jsx";
-import Services from "app/shared/templates/Sidebar/Services.jsx";
+import { ApprovalHierarchy } from "app/modules/ApprovalHierarchy";
 import CreateEmployeeProfile from "app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 import { ExitAndClearance, EmployeeExit } from "app/modules/ExitAndClearance";
 import { Exit, EOSSettlementDetails } from "app/modules/SelfService/Exit";
@@ -336,6 +336,11 @@ export const SidebarRoutes = [
           path: "/office-settings/role-permission/history-logs",
           component: <RoleAssignmentEmployeeHistoryLogs />,
           name: "VIEW_ROLE_HISTORY_LOGS",
+        },
+        Config.APPROVAL_HIERARCHY && {
+          path: "/office-settings/approval-hierarchy",
+          component: <ApprovalHierarchy />,
+          name: "APPROVAL_HIERARCHY",
         },
       ].filter(Boolean) // Filter out undefined route
     : []),

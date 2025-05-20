@@ -94,6 +94,7 @@ const Config = {
   SHIFTS: false,
   ONBOARDING_CHECKLIST: false,
   ROLE_PERMISSIONS:true,
+  APPROVAL_HIERARCHY:true,
 
 };
 
