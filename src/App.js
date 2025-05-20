@@ -21,7 +21,6 @@ import Error from "app/modules/Error";
 
 function App() {
   const isLogin = useSelector((state) => state.user.isLogin);
-  const userProfile = useSelector((state) => state.user.userProfile);
   const ModuleList = useSelector(
     (state) => state.roles_permissions.user_permitted_modules
   );
@@ -36,7 +35,6 @@ function App() {
   let val = width <= 1279 ? false : true;
   const [isSidebarOpen, setIsSidebarOpen] = useState(val);
   const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState(userProfile.role);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -48,7 +46,6 @@ function App() {
         },
       });
       if (response.status === 200) {
-        setUserRole(response.data.user_role);
         if (!response.data.is_filled) {
           navigate("/create-profile");
         }
@@ -92,10 +89,6 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    setUserRole(userProfile.role);
-  }, [userProfile]);
-
   if (loading) {
     return <PageLoader height="100vh" />; // Render the loader if loading is true
   }
@@ -114,7 +107,6 @@ function App() {
                 <Sidebar
                   isSidebarOpen={isSidebarOpen}
                   setIsSidebarOpen={setIsSidebarOpen}
-                  userRole={userRole}
                   ModuleList={ModuleList}
                 />
               }

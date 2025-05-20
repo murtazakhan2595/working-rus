@@ -123,7 +123,7 @@ const AddDesignationForm = ({ isOpen, setIsOpen, edit, setEdit, reload, onUpdate
       } else {
         // Create new designation
         console.log("Making POST request to /designation");
-        response = await axios.post("/designation", submitData);
+        response = await axios.post("/designation/", submitData);
       }
 
       console.log("API response:", response);

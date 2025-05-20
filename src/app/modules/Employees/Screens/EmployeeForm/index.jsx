@@ -78,29 +78,24 @@ import { DateRangeInput } from "components/FormControl";
 import { validateOnboardingDocuments } from "app/utils/FormSchema/employeeFormSchema";
 import { getEmployeeDocsChecklist } from "app/hooks/employee";
 import { saveEmpoyeeDocBulk } from "app/hooks/employee";
-import { HasAccess } from "utils/PermissionUtils";
-const SheetOnBorading = ({
-  isEditMode,
-  nextstep,
-  setShowFormSubmittedModal,
-  setEmail,
+import { useSelector } from "react-redux";
+const EmployeeForm = ({
+  setShowFormSubmittedModal = () => {},
+  setEmail = () => {},
   id,
-  employees,
-  designations,
-  departments,
-  managers,
-  isOpen,
-  setIsOpen,
-  branches,
+  setIsOpen = () => {},
   discard = false,
+  SalarySetupAllowed,
 }) => {
   const formRef = React.createRef();
-  const SalarySetupAllowed = React.useMemo(() => {
-    return !id && HasAccess("PAYROLL_SALARY_SETUP");
-  }, [id]);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const Managers = useSelector((state) => state.emp.reportingManagers);
+  const Branches = useSelector((state) => state.common.branches);
+  const Designations = useSelector((state) => state.common.designations);
+  const Departments = useSelector((state) => state.common.departments);
+  const Employees = useSelector((state) => state.emp.employees);
+
   const default_user = GetDefaultUserRole()?.id || 2;
   const [formData, setFormData] = useState({});
   const [empId, setEmpId] = useState(null);
@@ -111,10 +106,6 @@ const SheetOnBorading = ({
   const [addShift, setAddShift] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
   const [shiftSelect, setShiftSelect] = useState(false);
-
-  const FilteredReportingEmployees = React.useMemo(() => {
-    return employees?.filter((employee) => employee.user_role !== 4);
-  }, [employees]);
 
   const getShiftList = async () => {
     const shiftData = await getShift();
@@ -186,7 +177,9 @@ const SheetOnBorading = ({
   }, [id, default_user]);
 
   const validateEmail = (email) => {
-    const employee = employees.filter(
+    if (!Employees || !Array.isArray(Employees) || Employees.length === 0)
+      return false;
+    const employee = Employees.filter(
       (emp) => emp.work_email === email && parseInt(emp.id) !== parseInt(id)
     );
     if (employee && employee?.length > 0) {
@@ -196,7 +189,9 @@ const SheetOnBorading = ({
     }
   };
   const validateUsername = (username) => {
-    const employee = employees.filter(
+    if (!Employees || !Array.isArray(Employees) || Employees.length === 0)
+      return false;
+    const employee = Employees.filter(
       (emp) => emp.username === username && parseInt(emp.id) !== parseInt(id)
     );
     if (employee && employee?.length > 0) {
@@ -223,7 +218,6 @@ const SheetOnBorading = ({
           employeeId,
         });
         await saveEmpoyeeDocBulk(checklistData);
-        // Dispatch fetch actions to update the state
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
         dispatch(fetchEmployeesDetail());
@@ -232,9 +226,7 @@ const SheetOnBorading = ({
           toast.success("Employee Updated Successfully!", {
             position: toast.POSITION.TOP_RIGHT,
           });
-          if (isEditMode) {
-            nextstep();
-          } else navigate("/profile-management");
+          navigate("/profile-management");
         } else {
           if (SalarySetupAllowed) {
             const employeePayroll = {
@@ -258,7 +250,6 @@ const SheetOnBorading = ({
             position: toast.POSITION.TOP_RIGHT,
           });
           setShowFormSubmittedModal && setShowFormSubmittedModal(true);
-          setIsOpen(false);
         }
       }
     } catch (error) {
@@ -300,617 +291,601 @@ const SheetOnBorading = ({
         discard,
         navigate,
       })}
-
       <div
-        side="right"
-        className="w-full p-0 "
-        open={isOpen}
-        onOpenChange={setIsOpen}
+        className={`flex flex-col   ${window.location.pathname.substring(1)}`}
       >
-        <div
-          className={`flex flex-col   ${window.location.pathname.substring(1)}`}
-        >
-          <div className="flex-grow ">
-            <div className="p-0">
-              <Formik
-                initialValues={formData}
-                innerRef={formRef}
-                enableReinitialize={true}
-                onSubmit={(values, { resetForm }) => {
-                  handleSubmit(values, resetForm);
-                }}
-                validate={(values) => {
-                 
-                  try {
-                    const errors = validationEmployeeInfoFormSchema(
-                      values,
-                      id ? true : false
-                    );
-                    const documentErrors = validateOnboardingDocuments(
-                      values?.onboardingDocuments
-                    );
+        <div className="flex-grow ">
+          <div className="p-0">
+            <Formik
+              initialValues={formData}
+              innerRef={formRef}
+              enableReinitialize={true}
+              onSubmit={(values, { resetForm }) => {
+                handleSubmit(values, resetForm);
+              }}
+              validate={(values) => {
+                try {
+                  const errors = validationEmployeeInfoFormSchema(
+                    values,
+                    id ? true : false
+                  );
+                  const documentErrors = validateOnboardingDocuments(
+                    values?.onboardingDocuments
+                  );
 
-                    if (values.work_email && emailAlreadyExist) {
-                      errors.work_email = "Email already exist";
-                    }
-                    if (values.username && usernameAlreadyExist) {
-                      errors.username = "Username already exist";
-                    }
-                    const finalErrors = {
-                      ...errors,
-                      ...(documentErrors ? documentErrors : {}),
-                    };
-                    console.error(finalErrors, values, "Errors");
-
-                    return finalErrors;
-                  } catch (error) {
-                    console.error(error);
+                  if (values.work_email && emailAlreadyExist) {
+                    errors.work_email = "Email already exist";
                   }
-                }}
-              >
-                {(props) => (
-                  <form
-                    onSubmit={props.handleSubmit}
-                    className="mt-6 space-y-6"
-                  >
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-semibold">
-                          Employee Details
-                        </h3>
-                        {/* Import button goes here */}
-                        <ImportEmployeesButton />
-                      </div>
-                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <TextInput
-                            name={"serial_number"}
-                            error={props.errors?.serial_number}
-                            touch={props.touched?.serial_number}
-                            value={getEmployeeid(empId)}
-                            label={"Employee ID"}
-                            required={true}
-                            disabled={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <TextInput
-                            name={"username"}
-                            error={props.errors?.username}
-                            touch={props.touched?.username}
-                            value={props.values?.username}
-                            label={"User Name"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                              validateUsername(value);
-                            }}
-                          />
-                        </div>
+                  if (values.username && usernameAlreadyExist) {
+                    errors.username = "Username already exist";
+                  }
+                  const finalErrors = {
+                    ...errors,
+                    ...(documentErrors ? documentErrors : {}),
+                  };
+                  console.error(finalErrors, values, "Errors");
 
-                        <div className="space-y-2">
-                          <TextInput
-                            name={"first_name"}
-                            error={props.errors?.first_name}
-                            touch={props.touched?.first_name}
-                            value={props.values?.first_name}
-                            label={"First Name"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <TextInput
-                            name={"last_name"}
-                            error={props.errors?.last_name}
-                            touch={props.touched?.last_name}
-                            value={props.values?.last_name}
-                            label={"Last Name"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <EmailInput
-                            name={"work_email"}
-                            error={props.errors?.work_email}
-                            touch={props.touched?.work_email}
-                            value={props.values?.work_email}
-                            label={"Email"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                              setEmail && setEmail(value);
-                              validateEmail(value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <PasswordInput
-                            name={"password"}
-                            error={props.errors?.password}
-                            touch={props.touched?.password}
-                            value={props.values?.password}
-                            placeholder={"Enter Password"}
-                            label={"Password"}
-                            maxLength="20"
-                            required={true}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <PhoneNumberInput
-                            name={"mobile_no"}
-                            error={props.errors.mobile_no}
-                            touch={props.touched?.mobile_no}
-                            value={props.values?.mobile_no}
-                            required={true}
-                            label={"Contact no."}
-                            countryCode={props.values?.country_code}
-                            countryCodeName={"country_code"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                            countryOptions={countriesCallingCodes} // Pass the country options here
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"blood_group"}
-                            options={BloodGroupOptions}
-                            error={props.errors?.blood_group}
-                            touch={props.touched.blood_group}
-                            value={props.values.blood_group}
-                            required={false}
-                            label={"Blood Group"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"gender"}
-                            options={GenderOptions}
-                            error={props.errors?.gender}
-                            touch={props.touched.gender}
-                            value={props.values.gender}
-                            required={false}
-                            label={"Gender"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-
-                        <div className="col-span-1 space-y-2 xl:col-span-3 lg:col-span-2 md:col-span-2">
-                          <TextAreaInput
-                            name={"residential_address"}
-                            error={props.errors?.residential_address}
-                            touch={props.touched?.residential_address}
-                            value={props.values?.residential_address}
-                            label={"Residential Address"}
-                            required={true}
-                            maxRows={3}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                            }}
-                          />
-                        </div>
-                        {/* New UAE Address Fields */}
-                        <div className="col-span-1 space-y-2 xl:col-span-3 lg:col-span-2 md:col-span-2">
-                          <TextAreaInput
-                            name={"permanent_address"}
-                            error={props.errors?.permanent_address}
-                            touch={props.touched?.permanent_address}
-                            value={props.values?.permanent_address}
-                            label={"Permanent Address"}
-                            required={false}
-                            maxRows={3}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                            }}
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <TextInput
-                            name={"po_box_number"}
-                            error={props.errors?.po_box_number}
-                            touch={props.touched?.po_box_number}
-                            value={props.values?.po_box_number}
-                            label={"PO Box Number"}
-                            required={false}
-                            onChange={(field, value) => {
-                              props.handleChange(field)(value);
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
+                  return finalErrors;
+                } catch (error) {
+                  console.error(error);
+                }
+              }}
+            >
+              {(props) => (
+                <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
                       <h3 className="text-lg font-semibold">
-                        Official Information
+                        Employee Details
                       </h3>
-                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"department_name"}
-                            options={departments}
-                            error={props.errors?.department_name}
-                            touch={props.touched.department_name}
-                            value={props.values.department_name}
-                            label={"Department"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"branch_id"}
-                            options={branches}
-                            error={props.errors?.branch_id}
-                            touch={props.touched.branch_id}
-                            value={props.values.branch_id}
-                            required={true}
-                            label={"Branch"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"employee_location"}
-                            options={countriesList}
-                            error={props.errors?.employee_location}
-                            touch={props.touched.employee_location}
-                            value={props.values.employee_location}
-                            required={true}
-                            label={"Employee Location"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"nationality"}
-                            options={countriesList}
-                            error={props.errors.nationality}
-                            touch={props.touched.nationality}
-                            value={props.values.nationality}
-                            required={true}
-                            label={"Nationality"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"department_position"}
-                            options={designations}
-                            error={props.errors?.department_position}
-                            touch={props.touched.department_position}
-                            value={props.values.department_position}
-                            label={"Designation"}
-                            required={true}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"employee_type"}
-                            options={jobRoles}
-                            error={props.errors?.employee_type}
-                            touch={props.touched.employee_type}
-                            value={props.values.employee_type}
-                            required={true}
-                            label={"Employee Type"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"employee_status"}
-                            options={employeeStatus}
-                            error={props.errors?.employee_status}
-                            touch={props.touched.employee_status}
-                            value={props.values.employee_status}
-                            required={true}
-                            label={"Employee status"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"employee_work_type"}
-                            options={workplaceTypes}
-                            error={props.errors?.employee_work_type}
-                            touch={props.touched.employee_work_type}
-                            value={props.values.employee_work_type}
-                            required={true}
-                            label={"Employee Work Type"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <SelectInputComponent
-                            name={"direct_report"}
-                            options={FilteredReportingEmployees}
-                            error={props.errors?.direct_report}
-                            touch={props.touched.direct_report}
-                            value={props.values.direct_report}
-                            label={"Direct Report"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <SelectMultiInputComponent
-                            name={"indirect_report"}
-                            options={FilteredReportingEmployees}
-                            error={props.errors?.indirect_report}
-                            touch={props.touched.indirect_report}
-                            value={props.values.indirect_report}
-                            label={"Indirect Report"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <DateInput
-                            name={"joining_date"}
-                            error={props.errors?.joining_date}
-                            touch={props.touched?.joining_date}
-                            value={props.values?.joining_date}
-                            required={true}
-                            label={"Joining Date"}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                        <ProbationDateRange formikProps={props} />
-                        <div className="space-y-2">
-                          <DateInput
-                            name={"confirmation_date"}
-                            error={props.errors?.confirmation_date}
-                            touch={props.touched?.confirmation_date}
-                            value={props.values?.confirmation_date}
-                            required={true}
-                            label={"Confirmation Date"}
-                            disabled={true}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                      </div>
+                      {/* Import button goes here */}
+                      <ImportEmployeesButton />
                     </div>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <CheckBoxInput
-                            label="Contract Employment"
-                            name="active_contract"
-                            value={props.values.active_contract}
-                            onChange={(field, value) => {
-                              props.setFieldValue(field, value);
-                            }}
-                          />
-                        </div>
-                        {props.values.active_contract && (
-                          <>
-                            <div className="space-y-2">
-                              <DateInput
-                                name={"contract_start_date"}
-                                error={props.errors?.contract_start_date}
-                                touch={props.touched?.contract_start_date}
-                                value={props.values?.contract_start_date}
-                                required={true}
-                                label={"Contract Start Date"}
-                                onChange={(field, value) => {
-                                  props.setFieldValue(field, value);
-                                }}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <DateInput
-                                name={"contract_end_date"}
-                                error={props.errors?.contract_end_date}
-                                touch={props.touched?.contract_end_date}
-                                value={props.values?.contract_end_date}
-                                required={true}
-                                label={"Contract End Date"}
-                                onChange={(field, value) => {
-                                  props.setFieldValue(field, value);
-                                }}
-                              />
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold">Shift Details</h3>
-                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <CheckBoxInput
-                            label="Choose Shift"
-                            name="shift-select"
-                            value={shiftSelect}
-                            onChange={(name, value) => {
-                              setShiftSelect(value);
-                            }}
-                          />
-                        </div>
-                        {shiftSelect && (
-                          <div className="space-y-2">
-                            <SelectInputComponent
-                              name={"shift_assignment"}
-                              options={shiftList}
-                              error={props.errors?.shift_assignment}
-                              touch={props.touched.shift_assignment}
-                              value={props.values.shift_assignment}
-                              label={"Shift"}
-                              required={true}
-                              onChange={(field, value) => {
-                                props.setFieldValue(field, value);
-                              }}
-                            />
-                          </div>
-                        )}
+                    <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <TextInput
+                          name={"serial_number"}
+                          error={props.errors?.serial_number}
+                          touch={props.touched?.serial_number}
+                          value={getEmployeeid(empId)}
+                          label={"Employee ID"}
+                          required={true}
+                          disabled={true}
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
+                          }}
+                        />
                       </div>
                       <div className="space-y-2">
-                        <CheckBoxInput
-                          label="Custom Shift"
-                          name="custom-shift"
-                          value={addShift}
-                          onChange={(name, value) => {
-                            setAddShift(value);
+                        <TextInput
+                          name={"username"}
+                          error={props.errors?.username}
+                          touch={props.touched?.username}
+                          value={props.values?.username}
+                          label={"User Name"}
+                          required={true}
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
+                            validateUsername(value);
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <TextInput
+                          name={"first_name"}
+                          error={props.errors?.first_name}
+                          touch={props.touched?.first_name}
+                          value={props.values?.first_name}
+                          label={"First Name"}
+                          required={true}
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <TextInput
+                          name={"last_name"}
+                          error={props.errors?.last_name}
+                          touch={props.touched?.last_name}
+                          value={props.values?.last_name}
+                          label={"Last Name"}
+                          required={true}
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <EmailInput
+                          name={"work_email"}
+                          error={props.errors?.work_email}
+                          touch={props.touched?.work_email}
+                          value={props.values?.work_email}
+                          label={"Email"}
+                          required={true}
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
+                            setEmail && setEmail(value);
+                            validateEmail(value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <PasswordInput
+                          name={"password"}
+                          error={props.errors?.password}
+                          touch={props.touched?.password}
+                          value={props.values?.password}
+                          placeholder={"Enter Password"}
+                          label={"Password"}
+                          maxLength="20"
+                          required={true}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <PhoneNumberInput
+                          name={"mobile_no"}
+                          error={props.errors.mobile_no}
+                          touch={props.touched?.mobile_no}
+                          value={props.values?.mobile_no}
+                          required={true}
+                          label={"Contact no."}
+                          countryCode={props.values?.country_code}
+                          countryCodeName={"country_code"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                          countryOptions={countriesCallingCodes} // Pass the country options here
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <SelectInputComponent
+                          name={"blood_group"}
+                          options={BloodGroupOptions}
+                          error={props.errors?.blood_group}
+                          touch={props.touched.blood_group}
+                          value={props.values.blood_group}
+                          required={false}
+                          label={"Blood Group"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <SelectInputComponent
+                          name={"gender"}
+                          options={GenderOptions}
+                          error={props.errors?.gender}
+                          touch={props.touched.gender}
+                          value={props.values.gender}
+                          required={false}
+                          label={"Gender"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+
+                      <div className="col-span-1 space-y-2 xl:col-span-3 lg:col-span-2 md:col-span-2">
+                        <TextAreaInput
+                          name={"residential_address"}
+                          error={props.errors?.residential_address}
+                          touch={props.touched?.residential_address}
+                          value={props.values?.residential_address}
+                          label={"Residential Address"}
+                          required={true}
+                          maxRows={3}
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
+                          }}
+                        />
+                      </div>
+                      {/* New UAE Address Fields */}
+                      <div className="col-span-1 space-y-2 xl:col-span-3 lg:col-span-2 md:col-span-2">
+                        <TextAreaInput
+                          name={"permanent_address"}
+                          error={props.errors?.permanent_address}
+                          touch={props.touched?.permanent_address}
+                          value={props.values?.permanent_address}
+                          label={"Permanent Address"}
+                          required={false}
+                          maxRows={3}
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <TextInput
+                          name={"po_box_number"}
+                          error={props.errors?.po_box_number}
+                          touch={props.touched?.po_box_number}
+                          value={props.values?.po_box_number}
+                          label={"PO Box Number"}
+                          required={false}
+                          onChange={(field, value) => {
+                            props.handleChange(field)(value);
                           }}
                         />
                       </div>
                     </div>
-                    {SalarySetupAllowed && (
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">
-                          Salary Details
-                        </h3>
-                        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">
+                      Official Information
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <SelectInputComponent
+                          name={"department_name"}
+                          options={Departments}
+                          error={props.errors?.department_name}
+                          touch={props.touched.department_name}
+                          value={props.values.department_name}
+                          label={"Department"}
+                          required={true}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <SelectInputComponent
+                          name={"branch_id"}
+                          options={Branches}
+                          error={props.errors?.branch_id}
+                          touch={props.touched.branch_id}
+                          value={props.values.branch_id}
+                          required={true}
+                          label={"Branch"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <SelectInputComponent
+                          name={"employee_location"}
+                          options={countriesList}
+                          error={props.errors?.employee_location}
+                          touch={props.touched.employee_location}
+                          value={props.values.employee_location}
+                          required={true}
+                          label={"Employee Location"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <SelectInputComponent
+                          name={"nationality"}
+                          options={countriesList}
+                          error={props.errors.nationality}
+                          touch={props.touched.nationality}
+                          value={props.values.nationality}
+                          required={true}
+                          label={"Nationality"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <SelectInputComponent
+                          name={"department_position"}
+                          options={Designations}
+                          error={props.errors?.department_position}
+                          touch={props.touched.department_position}
+                          value={props.values.department_position}
+                          label={"Designation"}
+                          required={true}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <SelectInputComponent
+                          name={"employee_type"}
+                          options={jobRoles}
+                          error={props.errors?.employee_type}
+                          touch={props.touched.employee_type}
+                          value={props.values.employee_type}
+                          required={true}
+                          label={"Employee Type"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <SelectInputComponent
+                          name={"employee_status"}
+                          options={employeeStatus}
+                          error={props.errors?.employee_status}
+                          touch={props.touched.employee_status}
+                          value={props.values.employee_status}
+                          required={true}
+                          label={"Employee status"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <SelectInputComponent
+                          name={"employee_work_type"}
+                          options={workplaceTypes}
+                          error={props.errors?.employee_work_type}
+                          touch={props.touched.employee_work_type}
+                          value={props.values.employee_work_type}
+                          required={true}
+                          label={"Employee Work Type"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <SelectInputComponent
+                          name={"direct_report"}
+                          options={Managers}
+                          error={props.errors?.direct_report}
+                          touch={props.touched.direct_report}
+                          value={props.values.direct_report}
+                          label={"Direct Report"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <SelectMultiInputComponent
+                          name={"indirect_report"}
+                          options={Managers}
+                          error={props.errors?.indirect_report}
+                          touch={props.touched.indirect_report}
+                          value={props.values.indirect_report}
+                          label={"Indirect Report"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <DateInput
+                          name={"joining_date"}
+                          error={props.errors?.joining_date}
+                          touch={props.touched?.joining_date}
+                          value={props.values?.joining_date}
+                          required={true}
+                          label={"Joining Date"}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      <ProbationDateRange formikProps={props} />
+                      <div className="space-y-2">
+                        <DateInput
+                          name={"confirmation_date"}
+                          error={props.errors?.confirmation_date}
+                          touch={props.touched?.confirmation_date}
+                          value={props.values?.confirmation_date}
+                          required={true}
+                          label={"Confirmation Date"}
+                          disabled={true}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <CheckBoxInput
+                          label="Contract Employment"
+                          name="active_contract"
+                          value={props.values.active_contract}
+                          onChange={(field, value) => {
+                            props.setFieldValue(field, value);
+                          }}
+                        />
+                      </div>
+                      {props.values.active_contract && (
+                        <>
                           <div className="space-y-2">
-                            <SelectInputComponent
-                              name={"salary_type"}
-                              options={SalaryTypeOptions}
-                              error={props.errors?.salary_type}
-                              touch={props.touched.salary_type}
-                              value={props.values.salary_type}
-                              label={"Salary Type"}
+                            <DateInput
+                              name={"contract_start_date"}
+                              error={props.errors?.contract_start_date}
+                              touch={props.touched?.contract_start_date}
+                              value={props.values?.contract_start_date}
                               required={true}
+                              label={"Contract Start Date"}
                               onChange={(field, value) => {
                                 props.setFieldValue(field, value);
                               }}
                             />
                           </div>
                           <div className="space-y-2">
-                            <TextInput
-                              name={"salary"}
-                              error={props.errors?.salary}
-                              touch={props.touched?.salary}
-                              value={props.values?.salary}
-                              label={
-                                props.values.salary_type === "hourly"
-                                  ? "Employee Hourly Salary"
-                                  : "Employee Monthly Salary"
-                              }
+                            <DateInput
+                              name={"contract_end_date"}
+                              error={props.errors?.contract_end_date}
+                              touch={props.touched?.contract_end_date}
+                              value={props.values?.contract_end_date}
                               required={true}
+                              label={"Contract End Date"}
                               onChange={(field, value) => {
-                                props.handleChange(field)(value);
+                                props.setFieldValue(field, value);
                               }}
                             />
                           </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Shift Details</h3>
+                    <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <CheckBoxInput
+                          label="Choose Shift"
+                          name="shift-select"
+                          value={shiftSelect}
+                          onChange={(name, value) => {
+                            setShiftSelect(value);
+                          }}
+                        />
+                      </div>
+                      {shiftSelect && (
+                        <div className="space-y-2">
+                          <SelectInputComponent
+                            name={"shift_assignment"}
+                            options={shiftList}
+                            error={props.errors?.shift_assignment}
+                            touch={props.touched.shift_assignment}
+                            value={props.values.shift_assignment}
+                            label={"Shift"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <CheckBoxInput
+                        label="Custom Shift"
+                        name="custom-shift"
+                        value={addShift}
+                        onChange={(name, value) => {
+                          setAddShift(value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {SalarySetupAllowed && (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold">Salary Details</h3>
+                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
+                        <div className="space-y-2">
+                          <SelectInputComponent
+                            name={"salary_type"}
+                            options={SalaryTypeOptions}
+                            error={props.errors?.salary_type}
+                            touch={props.touched.salary_type}
+                            value={props.values.salary_type}
+                            label={"Salary Type"}
+                            required={true}
+                            onChange={(field, value) => {
+                              props.setFieldValue(field, value);
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <TextInput
+                            name={"salary"}
+                            error={props.errors?.salary}
+                            touch={props.touched?.salary}
+                            value={props.values?.salary}
+                            label={
+                              props.values.salary_type === "hourly"
+                                ? "Employee Hourly Salary"
+                                : "Employee Monthly Salary"
+                            }
+                            required={true}
+                            onChange={(field, value) => {
+                              props.handleChange(field)(value);
+                            }}
+                          />
                         </div>
                       </div>
-                    )}
-                    <div className="col-span-2 space-y-2">
-                      <TextAreaInput
-                        name={"jd_file"}
-                        error={props.errors?.jd_file}
-                        touch={props.touched?.jd_file}
-                        value={props.values?.jd_file}
-                        label={"Job Description"}
-                        required={false}
-                        maxRows={5}
-                        maxLength={1000}
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
+                    </div>
+                  )}
+                  <div className="col-span-2 space-y-2">
+                    <TextAreaInput
+                      name={"jd_file"}
+                      error={props.errors?.jd_file}
+                      touch={props.touched?.jd_file}
+                      value={props.values?.jd_file}
+                      label={"Job Description"}
+                      required={false}
+                      maxRows={5}
+                      maxLength={1000}
+                      onChange={(field, value) => {
+                        props.handleChange(field)(value);
+                      }}
+                    />
+                  </div>
+                  <div className="col-span-2 space-y-2 ">
+                    <TextAreaInput
+                      name={"kpi_file"}
+                      error={props.errors?.kpi_file}
+                      touch={props.touched?.kpi_file}
+                      value={props.values?.kpi_file}
+                      label={"Job KPIs"}
+                      maxLength={1000}
+                      required={false}
+                      maxRows={5}
+                      onChange={(field, value) => {
+                        props.handleChange(field)(value);
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <OnboardingChecklistSection formikProps={props} />
+                  </div>
+                  <div className="p-6 border-t border-gray-200 bg-gray-50">
+                    <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        onClick={handleClose}
+                        type="button"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        size="lg"
+                        variant="default"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          validateEmail(props.values.work_email);
+                          validateUsername(props.values?.username);
+                          props.handleSubmit();
                         }}
-                      />
+                      >
+                        {id ? "Update" : "Add"}
+                      </Button>
                     </div>
-                    <div className="col-span-2 space-y-2 ">
-                      <TextAreaInput
-                        name={"kpi_file"}
-                        error={props.errors?.kpi_file}
-                        touch={props.touched?.kpi_file}
-                        value={props.values?.kpi_file}
-                        label={"Job KPIs"}
-                        maxLength={1000}
-                        required={false}
-                        maxRows={5}
-                        onChange={(field, value) => {
-                          props.handleChange(field)(value);
-                        }}
-                      />
-                    </div>
-                    <div className="space-y-4">
-                      <OnboardingChecklistSection formikProps={props} />
-                    </div>
-                    <div className="p-6 border-t border-gray-200 bg-gray-50">
-                      <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                        {!nextstep && (
-                          <Button
-                            variant="outline"
-                            size="lg"
-                            onClick={handleClose}
-                            type="button"
-                          >
-                            Cancel
-                          </Button>
-                        )}
-                        <Button
-                          type="submit"
-                          size="lg"
-                          variant="default"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            validateEmail(props.values.work_email);
-                            validateUsername(props.values?.username);
-                            props.handleSubmit();
-                          }}
-                        >
-                          {id ? "Update" : "Add"}
-                        </Button>
-                      </div>
-                    </div>
-                    {addShift && (
-                      <ShiftAction
-                        isOpen={addShift}
-                        setIsOpen={setAddShift}
-                        reload={getShiftList}
-                        setEmployeeShift={(value) => {
-                          props.setFieldValue("shift_assignment", value);
-                        }}
-                      />
-                    )}
-                  </form>
-                )}
-              </Formik>
-            </div>
+                  </div>
+                  {addShift && (
+                    <ShiftAction
+                      isOpen={addShift}
+                      setIsOpen={setAddShift}
+                      reload={getShiftList}
+                      setEmployeeShift={(value) => {
+                        props.setFieldValue("shift_assignment", value);
+                      }}
+                    />
+                  )}
+                </form>
+              )}
+            </Formik>
           </div>
         </div>
       </div>
@@ -949,15 +924,5 @@ const ShiftAction = ({
     </SheetComponent>
   );
 };
-const mapStateToProps = (state) => {
-  return {
-    token: state.user.token,
-    baseUrl: state.user.baseUrl,
-    employees: state.emp.employees,
-    departments: state.common.departments,
-    designations: state.common.designations,
-    branches: state.common.branches,
-    managers: state.emp.reportingManagers,
-  };
-};
-export default connect(mapStateToProps)(SheetOnBorading);
+
+export default EmployeeForm;

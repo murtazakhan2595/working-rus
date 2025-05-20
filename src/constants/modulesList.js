@@ -73,6 +73,7 @@ const SubModuleList = [
   "SHIFTS",
   "ONBOARDING_CHECKLIST",
   "ROLE_PERMISSIONS",
+  "APPROVAL_HIERARCHY",
 ];
 
 const FeatureList = [
@@ -247,6 +248,8 @@ const FeatureList = [
   "REMOVE_ASSIGNED_ROLE",
   "VIEW_ROLE_HISTORY_LOGS",
   "VIEW_USER_ROLE",
+  "ADD_APPROVAL_HIERARCHY",
+  "View_APPROVAL_HIERARCHY",
 ];
 
 // const new_submodule = {

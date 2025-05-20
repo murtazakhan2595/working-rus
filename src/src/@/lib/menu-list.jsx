@@ -38,21 +38,35 @@ const createMenu = (to, label, icon, submenus = [], active = false) => ({
 const getSubModuleMenuList = (currentNodeTree) =>
   (currentNodeTree?.childrens || [])
     .filter(({ code_name }) => Config[code_name])
-    .map(({ code_name,name }) => {
+    .map(({ code_name, name }) => {
       const route = findRouteByCodeName(code_name);
       return createMenu(route?.path || "#", name);
     });
 
 // Function to generate menu items
 const generateMenuItems = (moduleName, icon, moduleTree) => {
-  const currentNodeTree = getNodeExistInTree(moduleTree, moduleName, "code_name");
+  const currentNodeTree = getNodeExistInTree(
+    moduleTree,
+    moduleName,
+    "code_name"
+  );
   if (!currentNodeTree) return null;
 
   const route = findRouteByCodeName(moduleName);
   return {
     groupLabel: "",
     menus: [
-      createMenu(route?.path || "#", currentNodeTree.name, icon, getSubModuleMenuList(currentNodeTree)),
+      createMenu(
+        route?.path || "#",
+        currentNodeTree.name,
+        icon,
+        moduleName === "OFFICE_SETTING"
+          ? [
+              ...getSubModuleMenuList(currentNodeTree),
+              createMenu('/office-settings', 'Office Setting'),
+            ]
+          : getSubModuleMenuList(currentNodeTree)
+      ),
     ],
   };
 };
@@ -61,7 +75,9 @@ const generateMenuItems = (moduleName, icon, moduleTree) => {
 export function getMenuList(pathname, userRole) {
   const moduleTree = { code_name: "ORG", childrens: userRole };
   // Define common menus
-  const commonMenus = [{ groupLabel: "", menus: [createMenu("/", "Dashboard", House)] }];
+  const commonMenus = [
+    { groupLabel: "", menus: [createMenu("/", "Dashboard", House)] },
+  ];
 
   // Dynamically generate menu items based on configuration flags
   const configMenus = [
@@ -80,7 +96,11 @@ export function getMenuList(pathname, userRole) {
     ["PEOPLE_ENGAGEMENT", Crosshair],
     ["REPORTS", GalleryHorizontalEnd],
     ["OFFICE_SETTING", Settings],
-  ].map(([name, icon]) => Config[name] && generateMenuItems(name, icon, moduleTree))
+  ]
+    .map(
+      ([name, icon]) =>
+        Config[name] && generateMenuItems(name, icon, moduleTree)
+    )
     .filter(Boolean);
 
   return [...commonMenus, ...configMenus];
