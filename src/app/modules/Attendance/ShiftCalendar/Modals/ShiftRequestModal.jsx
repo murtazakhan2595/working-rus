@@ -1,18 +1,15 @@
-// src/app/modules/Attendance/ShiftManagement/Modals/ShiftRequestModal.jsx
+// src/app/modules/Attendance/ShiftCalendar/Modals/ShiftRequestModal.jsx
 import React, { useState, useEffect } from "react";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import SheetComponent from "components/ui/CustomSheet";
 import { Formik, Form } from "formik";
 import { Button } from "components/ui/button";
-import { 
-  DateInput,
-  TimePicker,
-  CheckBoxInput
-} from "components/FormControl";
+import { DateInput, TimePicker, CheckBoxInput } from "components/FormControl";
 import { toast } from "react-toastify";
 import moment from "moment";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
-import * as Yup from 'yup';
+import { validateShiftRequestFormSchema } from "app/utils/FormSchema/ShiftManagementFormSchema";
+import { ShiftChangeRequest } from "app/utils/Types/ShiftManagement";
 
 const ShiftRequestModal = ({
   isOpen,
@@ -43,38 +40,9 @@ const ShiftRequestModal = ({
 
   // Initial values for the form
   const initialValues = {
-    date: "",
-    is_off_current: false,
-    current_start_time: "",
-    current_end_time: "",
-    is_off_requested: false,
-    requested_start_time: "",
-    requested_end_time: "",
-    is_split_current: false,
-    is_split_requested: false,
-    current_split_start_time1: "",
-    current_split_end_time1: "",
-    current_split_start_time2: "",
-    current_split_end_time2: "",
-    requested_split_start_time1: "",
-    requested_split_end_time1: "",
-    requested_split_start_time2: "",
-    requested_split_end_time2: "",
+    ...ShiftChangeRequest,
+    employee_id: employee?.id,
   };
-
-  // Validation schema
-  const validationSchema = Yup.object().shape({
-    date: Yup.string().required("Date is required"),
-    is_off_requested: Yup.boolean(),
-    requested_start_time: Yup.string().when("is_off_requested", {
-      is: false,
-      then: Yup.string().required("Start time is required"),
-    }),
-    requested_end_time: Yup.string().when("is_off_requested", {
-      is: false,
-      then: Yup.string().required("End time is required"),
-    }),
-  });
 
   // Handle form submission
   const handleSubmit = (values) => {
@@ -104,7 +72,7 @@ const ShiftRequestModal = ({
       >
         <Formik
           initialValues={initialValues}
-          validationSchema={validationSchema}
+          validate={validateShiftRequestFormSchema}
           onSubmit={handleSubmit}
         >
           {({ values, errors, touched, setFieldValue }) => (
@@ -135,7 +103,6 @@ const ShiftRequestModal = ({
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <DateInput
-                    // src/app/modules/Attendance/ShiftManagement/Modals/ShiftRequestModal.jsx (continued)
                     name="date"
                     label="Select Date"
                     value={values.date}
@@ -152,7 +119,7 @@ const ShiftRequestModal = ({
                       );
 
                       if (shift) {
-                        setFieldValue("is_off_current", shift.is_off);
+                        setFieldValue("is_current_off", shift.is_off);
                         if (!shift.is_off) {
                           setFieldValue("current_start_time", shift.start_time);
                           setFieldValue("current_end_time", shift.end_time);
@@ -173,13 +140,13 @@ const ShiftRequestModal = ({
                           <div className="flex items-center">
                             <CheckBoxInput
                               label="OFF Day"
-                              name="is_off_current"
-                              value={values.is_off_current}
+                              name="is_current_off"
+                              value={values.is_current_off}
                               disabled={true} // Cannot change current shift status
                             />
                           </div>
 
-                          {!values.is_off_current && (
+                          {!values.is_current_off && (
                             <>
                               <TimePicker
                                 name="current_start_time"
@@ -215,8 +182,8 @@ const ShiftRequestModal = ({
                           <div className="flex items-center">
                             <CheckBoxInput
                               label="Mark as OFF"
-                              name="is_off_requested"
-                              value={values.is_off_requested}
+                              name="is_requested_off"
+                              value={values.is_requested_off}
                               onChange={(name, value) => {
                                 setFieldValue(name, value);
                                 // Clear time values if marked as OFF
@@ -228,13 +195,13 @@ const ShiftRequestModal = ({
                             />
                           </div>
 
-                          {!values.is_off_requested && (
+                          {!values.is_requested_off && (
                             <>
                               <div className="flex items-center mb-4">
                                 <CheckBoxInput
                                   label="Split Shift"
-                                  name="is_split_requested"
-                                  value={values.is_split_requested}
+                                  name="is_requested_split"
+                                  value={values.is_requested_split}
                                   onChange={(name, value) => {
                                     setFieldValue(name, value);
                                     setIsSplitShift(value);
@@ -242,7 +209,7 @@ const ShiftRequestModal = ({
                                 />
                               </div>
 
-                              {!values.is_split_requested ? (
+                              {!values.is_requested_split ? (
                                 <>
                                   <TimePicker
                                     name="requested_start_time"
@@ -252,7 +219,7 @@ const ShiftRequestModal = ({
                                     date={values.date}
                                     error={errors.requested_start_time}
                                     touch={touched.requested_start_time}
-                                    required={!values.is_off_requested}
+                                    required={!values.is_requested_off}
                                   />
 
                                   <TimePicker
@@ -263,7 +230,7 @@ const ShiftRequestModal = ({
                                     date={values.date}
                                     error={errors.requested_end_time}
                                     touch={touched.requested_end_time}
-                                    required={!values.is_off_requested}
+                                    required={!values.is_requested_off}
                                   />
                                 </>
                               ) : (
@@ -278,7 +245,11 @@ const ShiftRequestModal = ({
                                       value={values.requested_split_start_time1}
                                       onChange={setFieldValue}
                                       date={values.date}
-                                      required={values.is_split_requested}
+                                      required={values.is_requested_split}
+                                      error={errors.requested_split_start_time1}
+                                      touch={
+                                        touched.requested_split_start_time1
+                                      }
                                     />
 
                                     <TimePicker
@@ -287,7 +258,9 @@ const ShiftRequestModal = ({
                                       value={values.requested_split_end_time1}
                                       onChange={setFieldValue}
                                       date={values.date}
-                                      required={values.is_split_requested}
+                                      required={values.is_requested_split}
+                                      error={errors.requested_split_end_time1}
+                                      touch={touched.requested_split_end_time1}
                                     />
                                   </div>
 
@@ -301,7 +274,11 @@ const ShiftRequestModal = ({
                                       value={values.requested_split_start_time2}
                                       onChange={setFieldValue}
                                       date={values.date}
-                                      required={values.is_split_requested}
+                                      required={values.is_requested_split}
+                                      error={errors.requested_split_start_time2}
+                                      touch={
+                                        touched.requested_split_start_time2
+                                      }
                                     />
 
                                     <TimePicker
@@ -310,7 +287,9 @@ const ShiftRequestModal = ({
                                       value={values.requested_split_end_time2}
                                       onChange={setFieldValue}
                                       date={values.date}
-                                      required={values.is_split_requested}
+                                      required={values.is_requested_split}
+                                      error={errors.requested_split_end_time2}
+                                      touch={touched.requested_split_end_time2}
                                     />
                                   </div>
                                 </>

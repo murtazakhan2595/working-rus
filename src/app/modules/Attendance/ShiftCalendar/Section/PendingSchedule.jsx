@@ -1,103 +1,127 @@
-// src/app/modules/Attendance/ShiftManagement/Sections/PendingSchedule.jsx
+// src/app/modules/Attendance/ShiftCalendar/Section/PendingSchedule.jsx
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { TextAreaInput } from "components/FormControl";
-import ShiftCalendarView from "../index";
+import TableCustom from "components/CustomTable";
+import PageLoader from "components/PageLoader";
+import { ShiftCalendarView } from "..";
 
 const PendingSchedule = () => {
   const [pendingSchedules, setPendingSchedules] = useState([]);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
   const [showRejectForm, setShowRejectForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [ordering, setOrdering] = useState("-id");
+
+  // Handle pagination
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
+  };
 
   // Mock data for pending schedules (replace with API call later)
   useEffect(() => {
-    setPendingSchedules([
-      {
-        id: 1,
-        employee_id: 101,
-        employee_name: "John Doe",
-        branch_id: 1,
-        branch_name: "Main Branch",
-        submitted_by: "Branch Manager A",
-        submitted_date: "2025-05-15",
-        schedule_dates: [
-          "2025-05-20",
-          "2025-05-21",
-          "2025-05-22",
-          "2025-05-23",
-          "2025-05-24",
-        ],
-        shifts: [
-          {
-            date: "2025-05-20",
-            is_off: false,
-            start_time: "2025-05-20T09:00:00",
-            end_time: "2025-05-20T18:00:00",
-          },
-          {
-            date: "2025-05-21",
-            is_off: false,
-            start_time: "2025-05-21T09:00:00",
-            end_time: "2025-05-21T18:00:00",
-          },
-          { date: "2025-05-22", is_off: true },
-          {
-            date: "2025-05-23",
-            is_off: false,
-            start_time: "2025-05-23T09:00:00",
-            end_time: "2025-05-23T18:00:00",
-          },
-          {
-            date: "2025-05-24",
-            is_off: false,
-            start_time: "2025-05-24T09:00:00",
-            end_time: "2025-05-24T18:00:00",
-          },
-        ],
-      },
-      {
-        id: 2,
-        employee_id: 102,
-        employee_name: "Jane Smith",
-        branch_id: 2,
-        branch_name: "Downtown Branch",
-        submitted_by: "Branch Manager B",
-        submitted_date: "2025-05-16",
-        schedule_dates: [
-          "2025-05-20",
-          "2025-05-21",
-          "2025-05-22",
-          "2025-05-23",
-          "2025-05-24",
-        ],
-        shifts: [
-          {
-            date: "2025-05-20",
-            is_off: false,
-            start_time: "2025-05-20T10:00:00",
-            end_time: "2025-05-20T19:00:00",
-          },
-          {
-            date: "2025-05-21",
-            is_off: false,
-            start_time: "2025-05-21T10:00:00",
-            end_time: "2025-05-21T19:00:00",
-          },
-          {
-            date: "2025-05-22",
-            is_off: false,
-            start_time: "2025-05-22T10:00:00",
-            end_time: "2025-05-22T19:00:00",
-          },
-          { date: "2025-05-23", is_off: true },
-          { date: "2025-05-24", is_off: true },
-        ],
-      },
-    ]);
+    // Simulate API call
+    setLoading(true);
+    setTimeout(() => {
+      setPendingSchedules([
+        {
+          id: 1,
+          employee_id: 101,
+          employee_name: "John Doe",
+          branch_id: 1,
+          branch_name: "Main Branch",
+          submitted_by: "Branch Manager A",
+          submitted_date: "2025-05-15",
+          schedule_dates: [
+            "2025-05-20",
+            "2025-05-21",
+            "2025-05-22",
+            "2025-05-23",
+            "2025-05-24",
+          ],
+          shifts: [
+            {
+              date: "2025-05-20",
+              is_off: false,
+              start_time: "2025-05-20T09:00:00",
+              end_time: "2025-05-20T18:00:00",
+            },
+            {
+              date: "2025-05-21",
+              is_off: false,
+              start_time: "2025-05-21T09:00:00",
+              end_time: "2025-05-21T18:00:00",
+            },
+            { date: "2025-05-22", is_off: true },
+            {
+              date: "2025-05-23",
+              is_off: false,
+              start_time: "2025-05-23T09:00:00",
+              end_time: "2025-05-23T18:00:00",
+            },
+            {
+              date: "2025-05-24",
+              is_off: false,
+              start_time: "2025-05-24T09:00:00",
+              end_time: "2025-05-24T18:00:00",
+            },
+          ],
+        },
+        {
+          id: 2,
+          employee_id: 102,
+          employee_name: "Jane Smith",
+          branch_id: 2,
+          branch_name: "Downtown Branch",
+          submitted_by: "Branch Manager B",
+          submitted_date: "2025-05-16",
+          schedule_dates: [
+            "2025-05-20",
+            "2025-05-21",
+            "2025-05-22",
+            "2025-05-23",
+            "2025-05-24",
+          ],
+          shifts: [
+            {
+              date: "2025-05-20",
+              is_off: false,
+              start_time: "2025-05-20T10:00:00",
+              end_time: "2025-05-20T19:00:00",
+            },
+            {
+              date: "2025-05-21",
+              is_off: false,
+              start_time: "2025-05-21T10:00:00",
+              end_time: "2025-05-21T19:00:00",
+            },
+            {
+              date: "2025-05-22",
+              is_off: false,
+              start_time: "2025-05-22T10:00:00",
+              end_time: "2025-05-22T19:00:00",
+            },
+            { date: "2025-05-23", is_off: true },
+            { date: "2025-05-24", is_off: true },
+          ],
+        },
+      ]);
+      setLoading(false);
+    }, 500);
   }, []);
 
   const handleApprove = (scheduleId) => {
@@ -129,6 +153,37 @@ const PendingSchedule = () => {
     setRejectReason("");
   };
 
+  const pendingScheduleColumns = [
+    {
+      dataField: "employee_name",
+      text: "Employee",
+    },
+    {
+      dataField: "branch_name",
+      text: "Branch",
+    },
+    {
+      dataField: "submitted_by",
+      text: "Submitted By",
+    },
+    {
+      dataField: "submitted_date",
+      text: "Date Submitted",
+    },
+    {
+      text: "Actions",
+      formatter: (cell, row) => (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setSelectedSchedule(row)}
+        >
+          View Schedule
+        </Button>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <Card>
@@ -136,7 +191,9 @@ const PendingSchedule = () => {
           <CardTitle>Pending Shift Schedules</CardTitle>
         </CardHeader>
         <CardContent>
-          {pendingSchedules.length === 0 ? (
+          {loading ? (
+            <PageLoader />
+          ) : pendingSchedules.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               No pending schedules to review
             </div>
@@ -144,35 +201,12 @@ const PendingSchedule = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="md:col-span-1 border-r pr-4">
                 <h3 className="font-medium mb-4">Submitted Schedules</h3>
-                <div className="space-y-2">
-                  {pendingSchedules.map((schedule) => (
-                    <div
-                      key={schedule.id}
-                      className={`p-3 border rounded-md cursor-pointer transition-colors ${
-                        selectedSchedule?.id === schedule.id
-                          ? "bg-primary-50 border-primary"
-                          : ""
-                      }`}
-                      onClick={() => {
-                        setSelectedSchedule(schedule);
-                        setShowRejectForm(false);
-                      }}
-                    >
-                      <div className="font-medium">
-                        {schedule.employee_name}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Branch: {schedule.branch_name}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Submitted by: {schedule.submitted_by}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Date: {schedule.submitted_date}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <TableCustom
+                  columns={pendingScheduleColumns}
+                  data={pendingSchedules}
+                  pagination={false}
+                  onRowClick={(row) => setSelectedSchedule(row)}
+                />
               </div>
 
               <div className="md:col-span-2">

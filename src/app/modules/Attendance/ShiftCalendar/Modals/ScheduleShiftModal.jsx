@@ -1,4 +1,4 @@
-// src/app/modules/Attendance/ShiftManagement/Modals/ScheduleShiftModal.jsx
+// src/app/modules/Attendance/ShiftCalendar/Modals/ScheduleShiftModal.jsx
 import React, { useState, useEffect } from "react";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import SheetComponent from "components/ui/CustomSheet";
@@ -16,7 +16,9 @@ import { useSelector } from "react-redux";
 import moment from "moment";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { Separator } from "src/@/components/ui/separator";
-import * as Yup from "yup";
+import { validateScheduleShiftFormSchema } from "app/utils/FormSchema/ShiftManagementFormSchema";
+import { ScheduleFormValues } from "app/utils/Types/ShiftManagement";
+import { getShift } from "app/hooks/attendance";
 
 const ScheduleShiftModal = ({
   isOpen,
@@ -31,13 +33,31 @@ const ScheduleShiftModal = ({
   const [usePredefinedShift, setUsePredefinedShift] = useState(true);
   const [isSplitShift, setIsSplitShift] = useState(false);
 
-  // Mock shifts data (replace with API call later)
+  // Fetch shifts
   useEffect(() => {
-    setShifts([
-      { value: 1, label: "Morning Shift (9:00 AM - 6:00 PM)" },
-      { value: 2, label: "Evening Shift (2:00 PM - 10:00 PM)" },
-      { value: 3, label: "Night Shift (10:00 PM - 6:00 AM)" },
-    ]);
+    const fetchShifts = async () => {
+      try {
+        const response = await getShift();
+        if (response && response.results) {
+          const formattedShifts = response.results.map((shift) => ({
+            value: shift.id,
+            label: `${shift.name} (${moment(shift.starttime).format(
+              "h:mm a"
+            )} - ${moment(shift.endtime).format("h:mm a")})`,
+          }));
+          setShifts(formattedShifts);
+        }
+      } catch (error) {
+        console.error("Error fetching shifts:", error);
+        setShifts([
+          { value: 1, label: "Morning Shift (9:00 AM - 6:00 PM)" },
+          { value: 2, label: "Evening Shift (2:00 PM - 10:00 PM)" },
+          { value: 3, label: "Night Shift (10:00 PM - 6:00 AM)" },
+        ]);
+      }
+    };
+
+    fetchShifts();
   }, []);
 
   const handleClose = () => {
@@ -90,27 +110,9 @@ const ScheduleShiftModal = ({
 
   // Initial values for the form
   const initialValues = {
+    ...ScheduleFormValues,
     dateRange: getInitialDateRange(),
-    employees: [],
     shiftType: usePredefinedShift ? "predefined" : "custom",
-    shiftId: "",
-    dailySchedule: [],
-    totalHours: {
-      daily: {},
-      weekly: 0,
-    },
-  };
-
-  // Validation schema
-  const validationSchema = Yup.object().shape({
-    dateRange: Yup.string().required("Date range is required"),
-    employees: Yup.array().min(1, "At least one employee must be selected"),
-  });
-
-  // Update daily schedule when date range changes
-  const handleDateRangeChange = (values, setFieldValue) => {
-    const dailySchedule = generateDailySchedule(values.dateRange);
-    setFieldValue("dailySchedule", dailySchedule);
   };
 
   // Calculate working hours
@@ -205,7 +207,7 @@ const ScheduleShiftModal = ({
       >
         <Formik
           initialValues={initialValues}
-          validationSchema={validationSchema}
+          validate={validateScheduleShiftFormSchema}
           onSubmit={handleSubmit}
         >
           {({ values, errors, touched, setFieldValue, handleChange }) => (
@@ -224,10 +226,8 @@ const ScheduleShiftModal = ({
                       touch={touched.dateRange}
                       onChange={(name, value) => {
                         setFieldValue(name, value);
-                        handleDateRangeChange(
-                          { ...values, dateRange: value },
-                          setFieldValue
-                        );
+                        const dailySchedule = generateDailySchedule(value);
+                        setFieldValue("dailySchedule", dailySchedule);
                       }}
                       required={true}
                     />

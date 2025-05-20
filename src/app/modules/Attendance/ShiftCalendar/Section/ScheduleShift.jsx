@@ -1,4 +1,4 @@
-// src/app/modules/Attendance/ShiftManagement/Sections/ScheduleShift.jsx
+// src/app/modules/Attendance/ShiftCalendar/Section/ScheduleShift.jsx
 import React, { useState, useEffect } from "react";
 import { Button } from "components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
@@ -7,34 +7,13 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ScheduleShiftModal from "../Modals/ScheduleShiftModal";
-import { useSelector } from "react-redux";
-import { getEmployeeCustomList } from "app/hooks/general";
+import { toast } from "react-toastify";
 
-const ScheduleShift = () => {
-  const [employees, setEmployees] = useState([]);
+const ScheduleShift = ({ employees = [] }) => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDates, setSelectedDates] = useState([]);
   const [scheduleEvents, setScheduleEvents] = useState([]);
-  const userProfile = useSelector((state) => state.user.userProfile);
-
-  useEffect(() => {
-    // Fetch employees under this branch manager
-    const fetchEmployees = async () => {
-      try {
-        const response = await getEmployeeCustomList({
-          filterData: { direct_report: userProfile.id },
-        });
-        if (response && response.results) {
-          setEmployees(response.results);
-        }
-      } catch (error) {
-        console.error("Error fetching employees:", error);
-      }
-    };
-
-    fetchEmployees();
-  }, [userProfile.id]);
 
   const handleDateSelect = (selectInfo) => {
     // Get selected date range
@@ -74,6 +53,7 @@ const ScheduleShift = () => {
     });
 
     setScheduleEvents([...scheduleEvents, ...newEvents]);
+    toast.success("Shifts scheduled successfully!");
     handleModalClose();
   };
 

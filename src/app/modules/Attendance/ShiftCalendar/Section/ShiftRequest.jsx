@@ -1,4 +1,4 @@
-// src/app/modules/Attendance/ShiftManagement/Sections/ShiftRequest.jsx
+// src/app/modules/Attendance/ShiftCalendar/Section/ShiftRequest.jsx
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { Button } from "components/ui/button";
@@ -7,10 +7,11 @@ import { getEmployeeCustomList } from "app/hooks/general";
 import { Input } from "components/ui/input";
 import { Search } from "lucide-react";
 import ShiftRequestModal from "../Modals/ShiftRequestModal";
-import { DataTable } from "src/@/components/ui/data-table";
-import { SelectInputComponent, DateRangeInput } from "components/FormControl";
+import TableCustom from "components/CustomTable";
+import { SelectInputComponent } from "components/FormControl";
 import { toast } from "react-toastify";
 import ViewRequestModal from "../Modals/ViewRequestModal";
+import PageLoader from "components/PageLoader";
 
 const ShiftRequest = () => {
   const [employees, setEmployees] = useState([]);
@@ -22,6 +23,9 @@ const ShiftRequest = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [changeRequests, setChangeRequests] = useState([]);
   const [statusFilter, setStatusFilter] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [ordering, setOrdering] = useState("-id");
   const userProfile = useSelector((state) => state.user.userProfile);
 
   // Mock employee shifts (replace with API call later)
@@ -77,49 +81,68 @@ const ShiftRequest = () => {
     ],
   });
 
+  // Handle pagination
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
+  };
+
   // Mock change requests (replace with API call later)
   useEffect(() => {
-    setChangeRequests([
-      {
-        id: 1,
-        employee_id: 101,
-        employee_name: "John Doe",
-        request_date: "2025-05-15",
-        shift_date: "2025-05-20",
-        current_shift: "9:00 AM - 6:00 PM",
-        requested_shift: "10:00 AM - 7:00 PM",
-        is_off_current: false,
-        is_off_requested: false,
-        requested_by: "Branch Manager",
-        status: "Pending",
-      },
-      {
-        id: 2,
-        employee_id: 102,
-        employee_name: "Jane Smith",
-        request_date: "2025-05-16",
-        shift_date: "2025-05-23",
-        current_shift: "OFF",
-        requested_shift: "10:00 AM - 7:00 PM",
-        is_off_current: true,
-        is_off_requested: false,
-        requested_by: "Employee",
-        status: "Approved",
-      },
-      {
-        id: 3,
-        employee_id: 101,
-        employee_name: "John Doe",
-        request_date: "2025-05-14",
-        shift_date: "2025-05-21",
-        current_shift: "9:00 AM - 6:00 PM",
-        requested_shift: "OFF",
-        is_off_current: false,
-        is_off_requested: true,
-        requested_by: "Employee",
-        status: "Rejected",
-      },
-    ]);
+    setLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      setChangeRequests([
+        {
+          id: 1,
+          employee_id: 101,
+          employee_name: "John Doe",
+          request_date: "2025-05-15",
+          shift_date: "2025-05-20",
+          current_shift: "9:00 AM - 6:00 PM",
+          requested_shift: "10:00 AM - 7:00 PM",
+          is_off_current: false,
+          is_off_requested: false,
+          requested_by: "Branch Manager",
+          status: "Pending",
+        },
+        {
+          id: 2,
+          employee_id: 102,
+          employee_name: "Jane Smith",
+          request_date: "2025-05-16",
+          shift_date: "2025-05-23",
+          current_shift: "OFF",
+          requested_shift: "10:00 AM - 7:00 PM",
+          is_off_current: true,
+          is_off_requested: false,
+          requested_by: "Employee",
+          status: "Approved",
+        },
+        {
+          id: 3,
+          employee_id: 101,
+          employee_name: "John Doe",
+          request_date: "2025-05-14",
+          shift_date: "2025-05-21",
+          current_shift: "9:00 AM - 6:00 PM",
+          requested_shift: "OFF",
+          is_off_current: false,
+          is_off_requested: true,
+          requested_by: "Employee",
+          status: "Rejected",
+        },
+      ]);
+      setLoading(false);
+    }, 500);
   }, []);
 
   useEffect(() => {
@@ -177,14 +200,14 @@ const ShiftRequest = () => {
       employee_name: `${selectedEmployee.first_name} ${selectedEmployee.last_name}`,
       request_date: new Date().toISOString().split("T")[0],
       shift_date: requestData.date,
-      current_shift: requestData.is_off_current
+      current_shift: requestData.is_current_off
         ? "OFF"
         : `${requestData.current_start_time} - ${requestData.current_end_time}`,
-      requested_shift: requestData.is_off_requested
+      requested_shift: requestData.is_requested_off
         ? "OFF"
         : `${requestData.requested_start_time} - ${requestData.requested_end_time}`,
-      is_off_current: requestData.is_off_current,
-      is_off_requested: requestData.is_off_requested,
+      is_off_current: requestData.is_current_off,
+      is_off_requested: requestData.is_requested_off,
       requested_by: "Branch Manager",
       status: "Pending",
     };
@@ -192,8 +215,8 @@ const ShiftRequest = () => {
     setChangeRequests([newRequest, ...changeRequests]);
   };
 
-  const handleViewRequest = (request) => {
-    setSelectedRequest(request);
+  const handleViewRequest = (row) => {
+    setSelectedRequest(row);
     setIsViewModalOpen(true);
   };
 
@@ -232,54 +255,53 @@ const ShiftRequest = () => {
     ? changeRequests.filter((req) => req.status === statusFilter)
     : changeRequests;
 
-  // Define columns for the data table
-  const columns = [
+  // Define columns for the table
+  const requestColumns = [
     {
-      accessorKey: "employee_name",
-      header: "Employee",
+      dataField: "employee_name",
+      text: "Employee",
     },
     {
-      accessorKey: "shift_date",
-      header: "Shift Date",
+      dataField: "shift_date",
+      text: "Shift Date",
     },
     {
-      accessorKey: "current_shift",
-      header: "Current Shift",
+      dataField: "current_shift",
+      text: "Current Shift",
     },
     {
-      accessorKey: "requested_shift",
-      header: "Requested Shift",
+      dataField: "requested_shift",
+      text: "Requested Shift",
     },
     {
-      accessorKey: "requested_by",
-      header: "Requested By",
+      dataField: "requested_by",
+      text: "Requested By",
     },
     {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => (
-        <div
+      dataField: "status",
+      text: "Status",
+      formatter: (cell) => (
+        <span
           className={`px-2 py-1 rounded-full text-center text-sm font-medium inline-block w-24
           ${
-            row.original.status === "Pending"
+            cell === "Pending"
               ? "bg-yellow-100 text-yellow-800"
-              : row.original.status === "Approved"
+              : cell === "Approved"
               ? "bg-green-100 text-green-800"
               : "bg-red-100 text-red-800"
           }`}
         >
-          {row.original.status}
-        </div>
+          {cell}
+        </span>
       ),
     },
     {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => (
+      text: "Actions",
+      formatter: (cell, row) => (
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handleViewRequest(row.original)}
+          onClick={() => handleViewRequest(row)}
         >
           View Details
         </Button>
@@ -360,11 +382,17 @@ const ShiftRequest = () => {
               />
             </div>
 
-            <DataTable
-              columns={columns}
-              data={filteredRequests}
-              pagination={true}
-            />
+            {loading ? (
+              <PageLoader />
+            ) : (
+              <TableCustom
+                columns={requestColumns}
+                data={filteredRequests}
+                pagination={true}
+                dataTotalSize={filteredRequests.length}
+                tableOptions={tableOptions}
+              />
+            )}
           </CardContent>
         </Card>
       </div>
