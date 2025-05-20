@@ -46,7 +46,7 @@ const AddUpdateAssetCategory = ({
         ? "Category Details"
         : mode === "edit"
         ? "Update Category"
-        : "Create Category",
+        : "Add Category",
     description: null,
     footer: null,
   };

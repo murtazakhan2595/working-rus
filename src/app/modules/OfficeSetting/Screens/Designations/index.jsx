@@ -93,13 +93,7 @@ const Designations = ({
   return (
     <>
       <div className="flex flex-col justify-end gap-4">
-        <div className="flex justify-end">
-          <FilterInput 
-            filters={filters} 
-            onChange={handleFilterChange} 
-            className="justify-end"
-          />
-        </div>
+        
         {loading ? (
           <PageLoader />
         ) : (
@@ -109,6 +103,13 @@ const Designations = ({
               <CardDescription className="text-neutral-1100">
                 Here you can manage your designations. Add, edit, or delete designations as needed.
               </CardDescription>
+              <div className="flex justify-end">
+              <FilterInput 
+            filters={filters} 
+            onChange={handleFilterChange} 
+            className="justify-end"
+          />
+              </div>
             </CardHeader>
             <CardContent>
               <TableCustom
