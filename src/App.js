@@ -117,7 +117,7 @@ function App() {
                   route.name,
                   "code_name"
                 );
-                if (!hasAccess)
+                if (!hasAccess && route.name !== "CHANGE_PASSWORD")
                   return <Route path="*" element={<Error errorType={401} />} />;
 
                 return (

@@ -342,7 +342,7 @@ export const SidebarRoutes = [
   {
     path: "/change-password",
     component: <ChangePassword />,
-    name: "Change Password",
+    name: "CHANGE_PASSWORD",
   },
 ];
 
