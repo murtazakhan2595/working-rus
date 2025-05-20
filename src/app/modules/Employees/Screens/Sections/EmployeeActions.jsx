@@ -15,7 +15,6 @@ const EmployeeAction = ({ row }) => {
   const EditEmployeesPermitted = HasAccess("EDIT_EMPLOYEE");
   const EditEmployeesDetailsPermitted = HasAccess("EDIT_EMPLOYEE_PROFILE");
   const navigate = useNavigate();
-
   if (
     !ViewEmployeesDetailsPermitted &&
     !EditEmployeesDetailsPermitted &&
