@@ -161,6 +161,7 @@ const EmployeeForm = ({
           const updated = { ...EmployeeInformation, user_role: [default_user] };
           setFormData(updated);
         }
+        getShiftList();
       }
     } catch (error) {
       console.error("ERROR--", error);
