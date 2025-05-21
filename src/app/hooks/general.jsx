@@ -235,35 +235,6 @@ const getDesignationList = async (payload) => {
   return [];
 };
 
-const saveShift = async (shiftId, payload) => {
-  try {
-    if (shiftId) {
-      const response = await axios.patch(
-        `${baseUrl}/shift/${shiftId}`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
-      if (response.status === 200) {
-        return response?.data;
-      }
-    } else {
-      const response = await axios.post(`${baseUrl}/shift/`, payload, {
-        headers: headers(),
-      });
-      if (response.status === 201) {
-        return response?.data;
-      }
-    }
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("Error fetching Personal Info data :", error);
-    return false;
-  }
-};
 
 const getManagersList = async () => {
   try {
@@ -714,7 +685,6 @@ export {
   saveDesignation,
   getWorkingHours,
   getEmployeeListWithDetail,
-  saveShift,
   HandleLogout,
   deleteRole,
   getRoleList,
