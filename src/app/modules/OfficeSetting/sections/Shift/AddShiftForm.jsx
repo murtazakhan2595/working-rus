@@ -98,6 +98,7 @@ const AddShiftForm = ({
         {(props) => (
           <form onSubmit={props?.handleSubmit}>
             <SheetCardExtension title="Shift Details">
+              <div className="mb-6 space-y-2">
               <TextInput
                 name="name"
                 label="Shift Name"
@@ -110,7 +111,9 @@ const AddShiftForm = ({
                   props.handleChange(field)(value);
                 }}
               />
-
+              </div>
+             
+              <div className="mb-6 space-y-2">
               <SelectInputComponent
                 name={"type"}
                 options={shiftType}
@@ -123,7 +126,8 @@ const AddShiftForm = ({
                   props.setFieldValue(field, value);
                 }}
               />
-
+              </div>
+              <div className="mb-6 space-y-2">
               <Label>Start Time</Label>
               <TimePicker
                 value={props.values.starttime} // Bind Formik value for starttime
@@ -131,7 +135,8 @@ const AddShiftForm = ({
                 date={props.values.starttime}
                 name={'starttime'}
               />
-
+              </div>
+              <div className="mb-6 space-y-2">
               <Label>End Time</Label>
               <TimePicker
                 value={props.values.endtime} // Bind Formik value for endtime
@@ -140,6 +145,7 @@ const AddShiftForm = ({
                 name='endtime'
 
               />
+              </div>
             </SheetCardExtension>
             <div className="p-6 border-t border-gray-200 bg-gray-50">
               <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
