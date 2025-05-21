@@ -202,71 +202,71 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     }
 
     // Add employee details fields if employee is selected
-    if (employeeData) {
-      const displayValues = getEmployeeDisplayValues();
+    // if (employeeData) {
+    //   const displayValues = getEmployeeDisplayValues();
 
-      baseFields.push(
-        {
-          InputField: TextInput,
-          name: "employee_name_display",
-          label: "Name",
-          disabled: true,
-          colsSpan: 1,
-          value: displayValues.employee_name,
-          placeholder: displayValues.employee_name || "N/A",
-        },
-        {
-          InputField: TextInput,
-          name: "employee_id_display",
-          label: "Employee ID",
-          disabled: true,
-          colsSpan: 1,
-          value: displayValues.employee_id,
-          placeholder: displayValues.employee_id || "N/A",
-        },
-        {
-          InputField: TextInput,
-          name: "employee_department_display",
-          label: "Department",
-          disabled: true,
-          colsSpan: 1,
-          value: displayValues.employee_department,
-          placeholder: displayValues.employee_department || "N/A",
-        },
-        {
-          InputField: TextInput,
-          name: "employee_branch_display",
-          label: "Branch",
-          disabled: true,
-          colsSpan: 1,
-          value: displayValues.employee_branch,
-          placeholder: displayValues.employee_branch || "N/A",
-        }
-      );
+    //   baseFields.push(
+    //     {
+    //       InputField: TextInput,
+    //       name: "employee_name_display",
+    //       label: "Name",
+    //       disabled: true,
+    //       colsSpan: 1,
+    //       value: displayValues.employee_name,
+    //       placeholder: displayValues.employee_name || "N/A",
+    //     },
+    //     {
+    //       InputField: TextInput,
+    //       name: "employee_id_display",
+    //       label: "Employee ID",
+    //       disabled: true,
+    //       colsSpan: 1,
+    //       value: displayValues.employee_id,
+    //       placeholder: displayValues.employee_id || "N/A",
+    //     },
+    //     {
+    //       InputField: TextInput,
+    //       name: "department_name",
+    //       label: "Department",
+    //       disabled: true,
+    //       colsSpan: 1,
+    //       value: displayValues.employee_department,
+    //       placeholder: displayValues.employee_department || "N/A",
+    //     },
+    //     {
+    //       InputField: TextInput,
+    //       name: "employee_branch_display",
+    //       label: "Branch",
+    //       disabled: true,
+    //       colsSpan: 1,
+    //       value: displayValues.employee_branch,
+    //       placeholder: displayValues.employee_branch || "N/A",
+    //     }
+    //   );
 
-      // Add clear button for create mode
-      if (!isEditMode) {
-        baseFields.push({
-          InputField: ({ onChange }) => (
-            <div className="col-span-2 flex justify-end">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setEmployeeData(null);
-                  onChange("employee", "");
-                }}
-              >
-                Clear
-              </Button>
-            </div>
-          ),
-          name: "clear_button",
-          colsSpan: 2,
-        });
-      }
-    }
+    //   // Add clear button for create mode
+    //   if (!isEditMode) {
+    //     baseFields.push({
+    //       InputField: ({ onChange }) => (
+    //         <div className="flex justify-end col-span-2">
+    //           <Button
+    //             type="button"
+    //             variant="outline"
+    //             size="sm"
+    //             onClick={() => {
+    //               setEmployeeData(null);
+    //               onChange("employee", "");
+    //             }}
+    //           >
+    //             Clear
+    //           </Button>
+    //         </div>
+    //       ),
+    //       name: "clear_button",
+    //       colsSpan: 2,
+    //     });
+    //   }
+    // }
 
     return baseFields;
   };
@@ -278,6 +278,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
         setIsOpen={handleClose}
         variant=""
         sheetConfig={FormSheetData}
+       
         formConfig={{
           initialValues: formData,
           enableReinitialize: true,

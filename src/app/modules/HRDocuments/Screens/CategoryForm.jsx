@@ -83,7 +83,7 @@ const CategoryForm = ({ id = null, isOpen = true, setIsOpen = () => {} }) => {
         formFiels: [
           {
             sheetCardExtension: false,
-            InputFiels: [
+            InputFields: [
               {
                 InputField: TextInput,
                 name: "name",

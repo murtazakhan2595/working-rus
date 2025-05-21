@@ -29,6 +29,7 @@ export const RoleAssignmentHistoryLogs = {
   performed_by: null,
   role: null,
   timestamp: null,
+  id:null,
 };
 
 export const AssignedRole = {

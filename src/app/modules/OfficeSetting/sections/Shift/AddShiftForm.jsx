@@ -134,6 +134,7 @@ const AddShiftForm = ({
         {(props) => (
           <form onSubmit={props?.handleSubmit}>
             <SheetCardExtension title="Shift Details">
+              <div className="mb-6 space-y-2">
               <TextInput
                 name="name"
                 label="Shift Name"
@@ -145,7 +146,9 @@ const AddShiftForm = ({
                   props.handleChange(field)(value);
                 }}
               />
-
+              </div>
+             
+              <div className="mb-6 space-y-2">
               <SelectInputComponent
                 name={"type"}
                 options={shiftType}

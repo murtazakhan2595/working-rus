@@ -284,6 +284,8 @@ const AssetRequestSheet = ({
                   mode === "request" ? "Asset Request Details" : "Asset Details"
                 }
               >
+                <div className="flex items-center gap-4">
+                <div className="flex-1 space-y-2 mb-6">
                 <SelectInputComponent
                   name="category_id"
                   error={props.errors?.category_id}
@@ -304,6 +306,8 @@ const AssetRequestSheet = ({
                   isLoading={assetsLoading}
                   disabled={isEdit}
                 />
+                </div>
+                <div className="flex-1 space-y-2 mb-6">
                 {mode === "assign" && (
                   <SelectInputComponent
                     name="asset_name"
@@ -322,10 +326,13 @@ const AssetRequestSheet = ({
                     isLoading={assetsLoading}
                   />
                 )}
+                </div>
+                </div>
                 {/* Additional fields for assign mode */}
+                <div className="flex items-center gap-4">
                 {mode === "assign" && (
                   <>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="flex-1 space-y-2 mb-6">
                       <DateInput
                         name="assign_date"
                         error={props.errors?.assign_date}
@@ -353,7 +360,8 @@ const AssetRequestSheet = ({
                     </div>
                   </>
                 )}
-
+                </div>
+                <div className="flex-1 space-y-2 mb-6">
                 <TextAreaInput
                   name="reason"
                   error={props.errors?.reason}
@@ -375,7 +383,8 @@ const AssetRequestSheet = ({
                       : "Explain why this asset is being assigned"
                   }
                 />
-
+                </div>
+                <div className="flex-1 space-y-2 mb-6">
                 <TextAreaInput
                   name="additional_notes"
                   error={props.errors?.additional_notes}
@@ -389,6 +398,8 @@ const AssetRequestSheet = ({
                   maxRows={3}
                   placeholder="Any additional information (optional)"
                 />
+                </div>
+                
               </SheetCardExtension>
 
               <div className="flex flex-col justify-end gap-4 pt-6 md:flex-row lg:flex-row xl:flex-row">

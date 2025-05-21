@@ -4,6 +4,7 @@ import {
   AssignedRoles,
   RoleAssignmentHistoryLogs,
 } from "app/modules/RoleAndPermissions";
+import { ViewApprovalHierarchy } from "app/modules/ApprovalHierarchy";
 
 import {
   Tabs,
@@ -17,18 +18,18 @@ import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { HasAccess } from "utils/PermissionUtils";
 
-function RoleAndPermissions() {
+function ApprovalHierarchy() {
   const navigate = useNavigate();
   const isViewUserRolePermitted = HasAccess("VIEW_USER_ROLE");
   const [activeHRDocumentsTab, setActiveHRDocumentsTab] =
-    useState("Role Management");
+    useState("Approval Hierarchy");
   const [openAssignRoleForm, setOpenAssignRoleForm] = useState(false);
   const [reloadData, setReloadData] = useState(false);
   const RoleAndPermissionsTab = useMemo(() => {
     return [
-      ...(isViewUserRolePermitted ? ["Role Management"] : []),
+      ...(isViewUserRolePermitted ? ["Approval Hierarchy"] : []),
       "Assigned Roles",
-      "History & Logs",
+      "Role Assignment History & Logs",
     ];
   }, [isViewUserRolePermitted]);
 
@@ -39,11 +40,11 @@ function RoleAndPermissions() {
       <Header
         content={
           <>
-            {activeHRDocumentsTab === "Role Management" && (
+            {activeHRDocumentsTab === "Approval Hierarchy" && (
               <Button
                 onClick={(e) => {
                   e.preventDefault();
-                  if (activeHRDocumentsTab === "Role Management")
+                  if (activeHRDocumentsTab === "Approval Hierarchy")
                     navigate("/office-settings/role-permission/user-role/add");
                 }}
               >
@@ -64,7 +65,7 @@ function RoleAndPermissions() {
         }
       />
       <Tabs
-        defaultValue="Role Management"
+        defaultValue="Approval Hierarchy"
         className="w-full"
         onValueChange={(tab) => {
           setActiveHRDocumentsTab(tab);
@@ -88,8 +89,8 @@ function RoleAndPermissions() {
         </div>
         <Card>
           <CardContent>
-            <TabsContent value="Role Management">
-              <UserRoles reload={reloadData} />
+            <TabsContent value="Approval Hierarchy">
+              <ViewApprovalHierarchy reload={reloadData} />
             </TabsContent>
             <TabsContent value="Assigned Roles">
               <AssignedRoles
@@ -98,7 +99,7 @@ function RoleAndPermissions() {
                 setOpenAssignRoleForm={setOpenAssignRoleForm}
               />
             </TabsContent>
-            <TabsContent value="History & Logs">
+            <TabsContent value="Role Assignment History & Logs">
               <RoleAssignmentHistoryLogs />
             </TabsContent>
           </CardContent>
@@ -108,4 +109,4 @@ function RoleAndPermissions() {
   );
 }
 
-export default RoleAndPermissions;
+export default ApprovalHierarchy;

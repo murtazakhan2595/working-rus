@@ -129,7 +129,7 @@ export const RoleAssignmentEmployeesLogsColumn = [
     },
   },
   {
-    dataField: "timestamp",
+    dataField: "branch_id",
     text: "Branch",
     dataSort: true,
     formatter: (cell, row) => <BranchName value={cell} />,

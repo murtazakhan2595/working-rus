@@ -164,8 +164,9 @@ function EmployeeName({ value, length }) {
   return <>{displayedName}</>;
 }
 export function EmployeeUsername({ value, fallBackText = "N/A" }) {
+  debugger
   const employees = useSelector((state) => state.emp.employees);
-  const employee = employees.find((option) => option.value === parseInt(value));
+  const employee = employees.find((option) => option.id === parseInt(value));
   const employeeName = employee ? employee.username : fallBackText;
 
   return <>{employeeName}</>;
