@@ -27,6 +27,7 @@ const ViewApprovalHierarchy = ({
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
+   
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
