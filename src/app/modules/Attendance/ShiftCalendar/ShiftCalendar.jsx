@@ -1,3 +1,5 @@
+// src/app/modules/Attendance/ShiftCalendar/ShiftCalendar.jsx
+import React, { useState, useEffect } from "react";
 import {
   Tabs,
   TabsList,
@@ -5,21 +7,48 @@ import {
   TabsContent,
 } from "src/@/components/ui/tabs";
 import { Header } from "components";
-import React, { useEffect, useState } from "react";
-import Emplist from "./Section/Emplist";
-import AssignShift from "./Section/AssignShift";
 import { useSelector } from "react-redux";
 import { getEmployeeCustomList } from "app/hooks/general";
-import { getShift } from "app/hooks/attendance";
+import AssignShift from "./Section/AssignShift";
+import Emplist from "./Section/Emplist";
+import ScheduleShift from "./Section/ScheduleShift";
+import PendingSchedule from "./Section/PendingSchedule";
+import ShiftRequest from "./Section/ShiftRequest";
 import ShiftCalendarFilters from "./Section/ShiftCalendarFilters";
 
-const ShiftCalender = () => {
-  const [activeTab, setActiveTab] = useState("all");
-  const [teamMembers, setTeamMembers] = useState([]);
-  const [shifts, setShifts] = useState([]);
-  const [filteredTeamMembers, setFilteredTeamMembers] = useState([]);
+const ShiftCalendar = () => {
+  const [activeTab, setActiveTab] = useState("shift-calendar");
+  const [teamMembers, setTeamMembers] = useState({ results: [], count: 0 });
+  const [filteredTeamMembers, setFilteredTeamMembers] = useState({
+    results: [],
+    count: 0,
+  });
   const [filterData, setFilterData] = useState({});
   const userProfile = useSelector((state) => state.user.userProfile);
+
+  // Define tabs data
+  const tabsData = [
+    {
+      value: "schedule-shift",
+      label: "Schedule Shift",
+      component: <ScheduleShift employees={teamMembers.results} />,
+    },
+    {
+      value: "pending-schedule",
+      label: "Pending Schedule",
+      component: <PendingSchedule />,
+    },
+    {
+      value: "shift-calendar",
+      label: "Shift Calendar",
+      component: <Emplist teamMembers={filteredTeamMembers} />,
+    },
+    {
+      value: "shift-request",
+      label: "Shift Request",
+      component: <ShiftRequest employees={teamMembers.results} />,
+    },
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,18 +63,12 @@ const ShiftCalender = () => {
           setTeamMembers(response);
           setFilteredTeamMembers(response);
         }
-
-        const shifts = await getShift();
-        if (shifts) {
-          console.log("Shifts", shifts);
-          setShifts(shifts);
-        }
       } catch (err) {
         console.error(err);
       }
     };
     fetchData();
-  }, []);
+  }, [userProfile]);
 
   // Handle filter changes from the ShiftCalendarFilters component
   const handleFilterChange = (newFilterData) => {
@@ -55,8 +78,6 @@ const ShiftCalender = () => {
 
   // Apply filters to the team members
   const applyFilters = (filters) => {
-    let filtered = { ...teamMembers };
-
     if (!teamMembers.results || !teamMembers.results.length) {
       return;
     }
@@ -101,29 +122,6 @@ const ShiftCalender = () => {
     });
   };
 
-  const tabsData = [
-    {
-      value: "shift-calendar",
-      label: "Shift Calendar",
-      component: <Emplist teamMembers={filteredTeamMembers} />,
-    },
-    {
-      value: "schedule-shift",
-      label: "Schedule Shift",
-      component: <ScheduleShift employees={teamMembers.results} />,
-    },
-    {
-      value: "pending-schedule",
-      label: "Pending Schedule",
-      component: <PendingSchedule />,
-    },
-    {
-      value: "shift-request",
-      label: "Shift Request",
-      component: <ShiftRequest employees={teamMembers.results} />,
-    },
-  ];
-
   return (
     <div>
       <Header content={<AssignShift employees={teamMembers.results} />} />
@@ -165,4 +163,4 @@ const ShiftCalender = () => {
   );
 };
 
-export default ShiftCalender;
+export default ShiftCalendar;

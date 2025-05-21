@@ -129,6 +129,104 @@ const ScheduleShiftModal = ({
     });
   }, [isOpen]);
 
+  // Helper to format just the time part (HH:MM) from an ISO string or moment
+  function formatTimeOnly(timeStr) {
+    if (!timeStr) return "null";
+
+    // Convert to 24-hour format (HH:mm) regardless of the source format
+    const time = moment(timeStr);
+    return time.format("HH:mm");
+  }
+
+  // Helper to normalize moment times by stripping date info but preserving time
+  function normalizeMomentTime(timeStr) {
+    if (!timeStr) return null;
+
+    const time = moment(timeStr);
+    // Extract just hours and minutes from the time
+    const hours = time.hours();
+    const minutes = time.minutes();
+
+    // Create a new moment with today's date but the same time
+    return moment().startOf("day").hours(hours).minutes(minutes).toISOString();
+  }
+
+  // Helper function to group days by pattern
+  function groupDaysByPattern(dailySchedule) {
+    const offDays = [];
+    const regularPatterns = {};
+    const splitPatterns = {};
+
+    dailySchedule.forEach((day) => {
+      if (day.isOff) {
+        offDays.push(day);
+      } else if (day.isSplit) {
+        // For split shifts, create a simplified pattern key that will group identical patterns
+        // Remove timezone/date info to ensure proper grouping
+        const timeKey = `${formatTimeOnly(
+          day.splitStartTime1
+        )}-${formatTimeOnly(day.splitEndTime1)}-${formatTimeOnly(
+          day.splitStartTime2
+        )}-${formatTimeOnly(day.splitEndTime2)}`;
+
+        if (!splitPatterns[timeKey]) {
+          splitPatterns[timeKey] = [];
+        }
+        splitPatterns[timeKey].push(day);
+      } else {
+        // For regular shifts, simplify the pattern key to just hours/minutes
+        // This ensures shifts with same times but different dates group together
+        const timeKey = `${formatTimeOnly(day.startTime)}-${formatTimeOnly(
+          day.endTime
+        )}`;
+
+        if (!regularPatterns[timeKey]) {
+          regularPatterns[timeKey] = [];
+        }
+        regularPatterns[timeKey].push(day);
+      }
+    });
+
+    return {
+      off: offDays,
+      regular: regularPatterns,
+      split: splitPatterns,
+    };
+  }
+
+  // Helper function to get consecutive date ranges
+  function getConsecutiveDateRanges(dates) {
+    if (!dates || dates.length === 0) return [];
+
+    // Sort dates
+    const sortedDates = [...dates].sort();
+
+    const ranges = [];
+    let rangeStart = sortedDates[0];
+    let rangeEnd = sortedDates[0];
+
+    for (let i = 1; i < sortedDates.length; i++) {
+      const currentDate = moment(sortedDates[i]);
+      const previousDate = moment(rangeEnd);
+
+      // Check if current date is consecutive with previous date
+      if (currentDate.diff(previousDate, "days") === 1) {
+        // It's consecutive, extend the current range
+        rangeEnd = sortedDates[i];
+      } else {
+        // Not consecutive, save the current range and start a new one
+        ranges.push({ start: rangeStart, end: rangeEnd });
+        rangeStart = sortedDates[i];
+        rangeEnd = sortedDates[i];
+      }
+    }
+
+    // Add the last range
+    ranges.push({ start: rangeStart, end: rangeEnd });
+
+    return ranges;
+  }
+
   // calculateHours with PM time correction
   const calculateHours = (values, setFieldValue) => {
     const dailyHours = {};
@@ -246,11 +344,11 @@ const ScheduleShiftModal = ({
     });
   };
 
-  // Updated handleFormSubmit function with optimized database usage
   const handleFormSubmit = async (values) => {
     setLoading(true);
 
     try {
+      // Prepare schedule data
       const scheduleData = {
         employees: values.employees,
         dates: values.dailySchedule.map((day) => day.date),
@@ -266,7 +364,7 @@ const ScheduleShiftModal = ({
 
       console.log("Schedule Data:", scheduleData);
 
-      // Track success/failure results
+      // Track results
       const results = {
         success: [],
         failed: [],
@@ -274,13 +372,13 @@ const ScheduleShiftModal = ({
 
       // Handle predefined shifts
       if (!scheduleData.customShift) {
-        // Set progress counter
+        // Set progress for predefined shifts
         setSavingProgress({
           total: scheduleData.employees.length,
           completed: 0,
         });
 
-        // Create one schedule per employee using the predefined shift
+        // One schedule per employee for predefined shifts
         for (const employeeId of scheduleData.employees) {
           try {
             const payload = {
@@ -294,7 +392,9 @@ const ScheduleShiftModal = ({
               assigned_by: userProfile.id,
             };
 
+            console.log("Creating predefined shift schedule:", payload);
             const response = await saveShiftSchedule(payload);
+
             if (response) {
               results.success.push(`Employee ${employeeId}`);
             } else {
@@ -311,46 +411,92 @@ const ScheduleShiftModal = ({
           }));
         }
       } else {
-        // Handle custom shifts - more complex logic with pattern grouping
+        // Handle custom shifts
 
-        // Step 1: Group days by pattern
-        const patternGroups = groupDaysByPattern(scheduleData.dailySchedule);
+        // Normalize the times to ensure consistent comparison
+        const normalizedSchedule = scheduleData.dailySchedule.map((day) => {
+          // Only process days that have times (not off days)
+          if (!day.isOff) {
+            if (day.isSplit) {
+              return {
+                ...day,
+                splitStartTime1: day.splitStartTime1
+                  ? normalizeMomentTime(day.splitStartTime1)
+                  : null,
+                splitEndTime1: day.splitEndTime1
+                  ? normalizeMomentTime(day.splitEndTime1)
+                  : null,
+                splitStartTime2: day.splitStartTime2
+                  ? normalizeMomentTime(day.splitStartTime2)
+                  : null,
+                splitEndTime2: day.splitEndTime2
+                  ? normalizeMomentTime(day.splitEndTime2)
+                  : null,
+              };
+            } else {
+              return {
+                ...day,
+                startTime: day.startTime
+                  ? normalizeMomentTime(day.startTime)
+                  : null,
+                endTime: day.endTime ? normalizeMomentTime(day.endTime) : null,
+              };
+            }
+          }
+          return day;
+        });
 
-        // Calculate total API calls for progress indicator
-        const totalPatterns =
-          Object.keys(patternGroups.regular).length +
-          Object.keys(patternGroups.split).length +
-          (patternGroups.off.length > 0 ? 1 : 0);
-        const totalApiCalls =
-          totalPatterns + scheduleData.employees.length * totalPatterns;
+        // Group days by pattern
+        const { off, regular, split } = groupDaysByPattern(normalizedSchedule);
+
+        console.log("PATTERN GROUPS:");
+        console.log("Off days:", off);
+        console.log("Regular patterns:", regular);
+        console.log("Split patterns:", split);
+
+        // Calculate total API calls
+        const numRegularPatterns = Object.keys(regular).length;
+        const numSplitPatterns = Object.keys(split).length;
+        const hasOffDays = off.length > 0;
+
+        console.log(`Number of regular patterns: ${numRegularPatterns}`);
+        console.log(`Number of split patterns: ${numSplitPatterns}`);
+        console.log(`Has off days: ${hasOffDays}`);
+
+        const totalShifts = numRegularPatterns + numSplitPatterns;
+        const totalSchedules =
+          scheduleData.employees.length *
+          (numRegularPatterns + numSplitPatterns + (hasOffDays ? 1 : 0));
 
         setSavingProgress({
-          total: totalApiCalls,
+          total: totalShifts + totalSchedules,
           completed: 0,
         });
 
-        // Step 2: Process each pattern group for all employees
         let progressCount = 0;
 
-        // Handle regular shift patterns
-        for (const [patternKey, dayGroup] of Object.entries(
-          patternGroups.regular
-        )) {
+        // Process regular shifts
+        for (const [patternKey, days] of Object.entries(regular)) {
           try {
-            // Create one shift for this pattern
-            const firstDay = dayGroup[0];
+            console.log(
+              `Processing regular pattern: ${patternKey} with ${days.length} days`
+            );
+            console.log("Days in pattern:", days);
+
+            // Create a shift for this pattern
             const shiftPayload = {
-              name: `Regular Shift ${firstDay.date.substring(
-                5
-              )} (${generateWeekdayString(dayGroup)})`,
+              name: `Regular Shift ${days[0].date.substring(5)} (${days
+                .map((d) => d.day.toLowerCase())
+                .join(",")})`,
               type: "Regular",
-              weekdays: generateWeekdayString(dayGroup),
-              starttime: firstDay.startTime,
-              endtime: firstDay.endTime,
+              weekdays: days.map((d) => d.day.toLowerCase()).join(","),
+              starttime: days[0].startTime,
+              endtime: days[0].endTime,
               Is_org_based: false,
               organization: userProfile.organization_id,
             };
 
+            console.log("Creating shift:", shiftPayload);
             const shiftResponse = await saveShift(shiftPayload);
             progressCount++;
             setSavingProgress((prev) => ({
@@ -361,36 +507,63 @@ const ScheduleShiftModal = ({
             if (shiftResponse && shiftResponse.id) {
               const shiftId = shiftResponse.id;
 
-              // Create consolidated date ranges from the days
+              // Get date ranges
               const dateRanges = getConsecutiveDateRanges(
-                dayGroup.map((d) => d.date)
+                days.map((d) => d.date)
               );
+              console.log("Date ranges for pattern:", dateRanges);
 
-              // Create a schedule for each employee for each date range
+              // Create schedules for each employee
               for (const employeeId of scheduleData.employees) {
-                for (const range of dateRanges) {
+                // For simplicity - when consecutive days have the same pattern,
+                // create just one schedule spanning both days
+                if (dateRanges.length === 1) {
                   const schedulePayload = {
                     employee: employeeId,
                     shift: shiftId,
-                    start_date: range.start,
-                    end_date: range.end,
+                    start_date: dateRanges[0].start,
+                    end_date: dateRanges[0].end,
                     is_split_shift: false,
                     is_off_day: false,
                     status: "Pending",
                     assigned_by: userProfile.id,
                   };
 
+                  console.log("Creating schedule:", schedulePayload);
                   await saveShiftSchedule(schedulePayload);
-                  progressCount++;
-                  setSavingProgress((prev) => ({
-                    ...prev,
-                    completed: progressCount,
-                  }));
-
                   results.success.push(
-                    `Regular shift for Employee ${employeeId} (${range.start} to ${range.end})`
+                    `Regular shift for Employee ${employeeId}`
                   );
+                } else {
+                  // Multiple non-consecutive ranges
+                  for (const range of dateRanges) {
+                    const schedulePayload = {
+                      employee: employeeId,
+                      shift: shiftId,
+                      start_date: range.start,
+                      end_date: range.end,
+                      is_split_shift: false,
+                      is_off_day: false,
+                      status: "Pending",
+                      assigned_by: userProfile.id,
+                    };
+
+                    console.log(
+                      "Creating schedule for range:",
+                      schedulePayload
+                    );
+                    await saveShiftSchedule(schedulePayload);
+                    results.success.push(
+                      `Regular shift for Employee ${employeeId} (${range.start} to ${range.end})`
+                    );
+                  }
                 }
+
+                progressCount++;
+                setSavingProgress((prev) => ({
+                  ...prev,
+                  completed: progressCount,
+                }));
               }
             }
           } catch (error) {
@@ -404,25 +577,28 @@ const ScheduleShiftModal = ({
           }
         }
 
-        // Handle split shift patterns
-        for (const [patternKey, dayGroup] of Object.entries(
-          patternGroups.split
-        )) {
+        // Process split shifts
+        for (const [patternKey, days] of Object.entries(split)) {
           try {
-            // Create one shift for this split pattern
-            const firstDay = dayGroup[0];
+            console.log(
+              `Processing split pattern: ${patternKey} with ${days.length} days`
+            );
+
+            // Create a shift for this split pattern
+            const firstDay = days[0];
             const shiftPayload = {
-              name: `Split Shift ${firstDay.date.substring(
-                5
-              )} (${generateWeekdayString(dayGroup)})`,
+              name: `Split Shift ${firstDay.date.substring(5)} (${days
+                .map((d) => d.day.toLowerCase())
+                .join(",")})`,
               type: "Split",
-              weekdays: generateWeekdayString(dayGroup),
+              weekdays: days.map((d) => d.day.toLowerCase()).join(","),
               starttime: firstDay.splitStartTime1,
               endtime: firstDay.splitEndTime1, // First part of the split shift
               Is_org_based: false,
               organization: userProfile.organization_id,
             };
 
+            console.log("Creating split shift:", shiftPayload);
             const shiftResponse = await saveShift(shiftPayload);
             progressCount++;
             setSavingProgress((prev) => ({
@@ -433,12 +609,12 @@ const ScheduleShiftModal = ({
             if (shiftResponse && shiftResponse.id) {
               const shiftId = shiftResponse.id;
 
-              // Create consolidated date ranges
+              // Get date ranges
               const dateRanges = getConsecutiveDateRanges(
-                dayGroup.map((d) => d.date)
+                days.map((d) => d.date)
               );
 
-              // Create a schedule for each employee for each date range
+              // Create schedules for each employee
               for (const employeeId of scheduleData.employees) {
                 for (const range of dateRanges) {
                   const schedulePayload = {
@@ -447,24 +623,25 @@ const ScheduleShiftModal = ({
                     start_date: range.start,
                     end_date: range.end,
                     is_split_shift: true,
-                    split_start_time: firstDay.splitStartTime2, // Second part start time
-                    split_end_time: firstDay.splitEndTime2, // Second part end time
+                    split_start_time: firstDay.splitStartTime2, // Second part start
+                    split_end_time: firstDay.splitEndTime2, // Second part end
                     is_off_day: false,
                     status: "Pending",
                     assigned_by: userProfile.id,
                   };
 
+                  console.log("Creating split schedule:", schedulePayload);
                   await saveShiftSchedule(schedulePayload);
-                  progressCount++;
-                  setSavingProgress((prev) => ({
-                    ...prev,
-                    completed: progressCount,
-                  }));
-
                   results.success.push(
                     `Split shift for Employee ${employeeId} (${range.start} to ${range.end})`
                   );
                 }
+
+                progressCount++;
+                setSavingProgress((prev) => ({
+                  ...prev,
+                  completed: progressCount,
+                }));
               }
             }
           } catch (error) {
@@ -478,13 +655,16 @@ const ScheduleShiftModal = ({
           }
         }
 
-        // Handle off days (don't need a shift record, just schedules)
-        if (patternGroups.off.length > 0) {
+        // Process off days
+        if (off.length > 0) {
           try {
+            console.log(`Processing ${off.length} off days`);
+
             // Group off days into consecutive ranges
             const offDateRanges = getConsecutiveDateRanges(
-              patternGroups.off.map((d) => d.date)
+              off.map((d) => d.date)
             );
+            console.log("Off day ranges:", offDateRanges);
 
             // Create an off schedule for each employee for each date range
             for (const employeeId of scheduleData.employees) {
@@ -500,17 +680,18 @@ const ScheduleShiftModal = ({
                   assigned_by: userProfile.id,
                 };
 
+                console.log("Creating off day schedule:", offPayload);
                 await saveShiftSchedule(offPayload);
-                progressCount++;
-                setSavingProgress((prev) => ({
-                  ...prev,
-                  completed: progressCount,
-                }));
-
                 results.success.push(
                   `Off days for Employee ${employeeId} (${range.start} to ${range.end})`
                 );
               }
+
+              progressCount++;
+              setSavingProgress((prev) => ({
+                ...prev,
+                completed: progressCount,
+              }));
             }
           } catch (error) {
             console.error(`Error processing off days:`, error);
@@ -524,10 +705,9 @@ const ScheduleShiftModal = ({
         }
       }
 
-      // Log results
+      // Show results
       console.log("Save Results:", results);
 
-      // Show appropriate toast messages
       if (results.failed.length === 0) {
         toast.success("All shift schedules saved successfully");
       } else if (results.success.length === 0) {
@@ -538,7 +718,6 @@ const ScheduleShiftModal = ({
         );
       }
 
-      // Close modal on success (or partial success)
       if (results.success.length > 0) {
         setIsOpen(false);
       }
@@ -550,84 +729,6 @@ const ScheduleShiftModal = ({
       setSavingProgress({ total: 0, completed: 0 });
     }
   };
-
-  // Helper function to group days by pattern
-  function groupDaysByPattern(dailySchedule) {
-    const offDays = [];
-    const regularPatterns = {};
-    const splitPatterns = {};
-
-    dailySchedule.forEach((day) => {
-      if (day.isOff) {
-        // Add to off days group
-        offDays.push(day);
-      } else if (day.isSplit) {
-        // Group by split shift pattern
-        // Create a key based on the split shift times
-        const key = `${day.splitStartTime1}-${day.splitEndTime1}-${day.splitStartTime2}-${day.splitEndTime2}`;
-
-        if (!splitPatterns[key]) {
-          splitPatterns[key] = [];
-        }
-        splitPatterns[key].push(day);
-      } else {
-        // Group by regular shift pattern
-        // Create a key based on start and end times
-        const key = `${day.startTime}-${day.endTime}`;
-
-        if (!regularPatterns[key]) {
-          regularPatterns[key] = [];
-        }
-        regularPatterns[key].push(day);
-      }
-    });
-
-    return {
-      off: offDays,
-      regular: regularPatterns,
-      split: splitPatterns,
-    };
-  }
-
-  // Helper function to get consecutive date ranges
-  function getConsecutiveDateRanges(dates) {
-    if (!dates || dates.length === 0) return [];
-
-    // Sort dates
-    const sortedDates = [...dates].sort();
-
-    const ranges = [];
-    let rangeStart = sortedDates[0];
-    let rangeEnd = sortedDates[0];
-
-    for (let i = 1; i < sortedDates.length; i++) {
-      const currentDate = moment(sortedDates[i]);
-      const previousDate = moment(rangeEnd);
-
-      // Check if current date is consecutive with previous date
-      if (currentDate.diff(previousDate, "days") === 1) {
-        // It's consecutive, extend the current range
-        rangeEnd = sortedDates[i];
-      } else {
-        // Not consecutive, save the current range and start a new one
-        ranges.push({ start: rangeStart, end: rangeEnd });
-        rangeStart = sortedDates[i];
-        rangeEnd = sortedDates[i];
-      }
-    }
-
-    // Add the last range
-    ranges.push({ start: rangeStart, end: rangeEnd });
-
-    return ranges;
-  }
-
-  // Helper function to generate weekday string
-  function generateWeekdayString(days) {
-    // Extract unique day abbreviations (mon, tue, etc.)
-    const uniqueDays = [...new Set(days.map((d) => d.day.toLowerCase()))];
-    return uniqueDays.join(",");
-  }
 
   const formSheetData = {
     title: "Schedule Shift",
@@ -1003,7 +1104,11 @@ const ScheduleShiftModal = ({
                   variant="default"
                   disabled={loading}
                 >
-                  {loading ? "Saving..." : "Save"}
+                  {loading
+                    ? savingProgress.total > 0
+                      ? `Saving... (${savingProgress.completed}/${savingProgress.total})`
+                      : "Saving..."
+                    : "Save"}
                 </Button>
               </div>
             </form>

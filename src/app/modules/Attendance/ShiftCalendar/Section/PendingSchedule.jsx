@@ -8,6 +8,7 @@ import { TextAreaInput } from "components/FormControl";
 import TableCustom from "components/CustomTable";
 import PageLoader from "components/PageLoader";
 import ShiftCalendarView from "../Section/ShiftCalendarView";
+import { getShiftSchedule } from "app/hooks/shiftManagement";
 
 
 const PendingSchedule = () => {
@@ -35,94 +36,100 @@ const PendingSchedule = () => {
 
   // Mock data for pending schedules (replace with API call later)
   useEffect(() => {
-    // Simulate API call
-    setLoading(true);
-    setTimeout(() => {
-      setPendingSchedules([
-        {
-          id: 1,
-          employee_id: 101,
-          employee_name: "John Doe",
-          branch_id: 1,
-          branch_name: "Main Branch",
-          submitted_by: "Branch Manager A",
-          submitted_date: "2025-05-15",
-          schedule_dates: [
-            "2025-05-20",
-            "2025-05-21",
-            "2025-05-22",
-            "2025-05-23",
-            "2025-05-24",
-          ],
-          shifts: [
-            {
-              date: "2025-05-20",
-              is_off: false,
-              start_time: "2025-05-20T09:00:00",
-              end_time: "2025-05-20T18:00:00",
-            },
-            {
-              date: "2025-05-21",
-              is_off: false,
-              start_time: "2025-05-21T09:00:00",
-              end_time: "2025-05-21T18:00:00",
-            },
-            { date: "2025-05-22", is_off: true },
-            {
-              date: "2025-05-23",
-              is_off: false,
-              start_time: "2025-05-23T09:00:00",
-              end_time: "2025-05-23T18:00:00",
-            },
-            {
-              date: "2025-05-24",
-              is_off: false,
-              start_time: "2025-05-24T09:00:00",
-              end_time: "2025-05-24T18:00:00",
-            },
-          ],
-        },
-        {
-          id: 2,
-          employee_id: 102,
-          employee_name: "Jane Smith",
-          branch_id: 2,
-          branch_name: "Downtown Branch",
-          submitted_by: "Branch Manager B",
-          submitted_date: "2025-05-16",
-          schedule_dates: [
-            "2025-05-20",
-            "2025-05-21",
-            "2025-05-22",
-            "2025-05-23",
-            "2025-05-24",
-          ],
-          shifts: [
-            {
-              date: "2025-05-20",
-              is_off: false,
-              start_time: "2025-05-20T10:00:00",
-              end_time: "2025-05-20T19:00:00",
-            },
-            {
-              date: "2025-05-21",
-              is_off: false,
-              start_time: "2025-05-21T10:00:00",
-              end_time: "2025-05-21T19:00:00",
-            },
-            {
-              date: "2025-05-22",
-              is_off: false,
-              start_time: "2025-05-22T10:00:00",
-              end_time: "2025-05-22T19:00:00",
-            },
-            { date: "2025-05-23", is_off: true },
-            { date: "2025-05-24", is_off: true },
-          ],
-        },
-      ]);
-      setLoading(false);
-    }, 500);
+
+    const init = async () => {
+      const response = await getShiftSchedule({})
+      console.log("Pending Schedules", response)
+      // Simulate API call
+      setLoading(true);
+      setTimeout(() => {
+        setPendingSchedules([
+          {
+            id: 1,
+            employee_id: 101,
+            employee_name: "John Doe",
+            branch_id: 1,
+            branch_name: "Main Branch",
+            submitted_by: "Branch Manager A",
+            submitted_date: "2025-05-15",
+            schedule_dates: [
+              "2025-05-20",
+              "2025-05-21",
+              "2025-05-22",
+              "2025-05-23",
+              "2025-05-24",
+            ],
+            shifts: [
+              {
+                date: "2025-05-20",
+                is_off: false,
+                start_time: "2025-05-20T09:00:00",
+                end_time: "2025-05-20T18:00:00",
+              },
+              {
+                date: "2025-05-21",
+                is_off: false,
+                start_time: "2025-05-21T09:00:00",
+                end_time: "2025-05-21T18:00:00",
+              },
+              { date: "2025-05-22", is_off: true },
+              {
+                date: "2025-05-23",
+                is_off: false,
+                start_time: "2025-05-23T09:00:00",
+                end_time: "2025-05-23T18:00:00",
+              },
+              {
+                date: "2025-05-24",
+                is_off: false,
+                start_time: "2025-05-24T09:00:00",
+                end_time: "2025-05-24T18:00:00",
+              },
+            ],
+          },
+          {
+            id: 2,
+            employee_id: 102,
+            employee_name: "Jane Smith",
+            branch_id: 2,
+            branch_name: "Downtown Branch",
+            submitted_by: "Branch Manager B",
+            submitted_date: "2025-05-16",
+            schedule_dates: [
+              "2025-05-20",
+              "2025-05-21",
+              "2025-05-22",
+              "2025-05-23",
+              "2025-05-24",
+            ],
+            shifts: [
+              {
+                date: "2025-05-20",
+                is_off: false,
+                start_time: "2025-05-20T10:00:00",
+                end_time: "2025-05-20T19:00:00",
+              },
+              {
+                date: "2025-05-21",
+                is_off: false,
+                start_time: "2025-05-21T10:00:00",
+                end_time: "2025-05-21T19:00:00",
+              },
+              {
+                date: "2025-05-22",
+                is_off: false,
+                start_time: "2025-05-22T10:00:00",
+                end_time: "2025-05-22T19:00:00",
+              },
+              { date: "2025-05-23", is_off: true },
+              { date: "2025-05-24", is_off: true },
+            ],
+          },
+        ]);
+        setLoading(false);
+      }, 500);
+    }
+    init()
   }, []);
 
   const handleApprove = (scheduleId) => {

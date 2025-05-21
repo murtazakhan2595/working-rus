@@ -1,5 +1,4 @@
 import { Label } from "src/@/components/ui/label";
-import { ShiftInformation } from "app/utils/Types/Shift";
 import { TextInput, TimePicker } from "components/FormControl";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { Button } from "components/ui/button";
