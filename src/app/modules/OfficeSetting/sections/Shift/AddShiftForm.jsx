@@ -245,6 +245,26 @@ const AddShiftForm = ({
                   </div>
                 </>
               )}
+              </div>
+              <div className="mb-6 space-y-2">
+              <Label>Start Time</Label>
+              <TimePicker
+                value={props.values.starttime} // Bind Formik value for starttime
+                onChange={(field, time) => props.setFieldValue(field, time)} // Update Formik value on time change
+                date={props.values.starttime}
+                name={'starttime'}
+              />
+              </div>
+              <div className="mb-6 space-y-2">
+              <Label>End Time</Label>
+              <TimePicker
+                value={props.values.endtime} // Bind Formik value for endtime
+                onChange={(field, time) => props.setFieldValue(field, time)}
+                date={props.values.endtime}
+                name='endtime'
+
+              />
+              </div>
             </SheetCardExtension>
             <div className="p-6 border-t border-gray-200 bg-gray-50">
               <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
