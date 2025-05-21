@@ -108,6 +108,10 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
   };
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+    if (!values?.feature_ids) 
+      return toast.error("Please select at least one permission", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     setFormValues(values);
     setConfirmSave(true);
   };
