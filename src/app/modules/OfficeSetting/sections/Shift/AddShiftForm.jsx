@@ -9,10 +9,10 @@ import { SelectInputComponent } from "components/FormControl";
 import { shiftType } from "data/Data";
 import { toast } from "react-toastify";
 import moment from "moment";
-
-import { saveShift } from "app/hooks/general";
-import { validateShiftFormSchema } from "app/utils/FormSchema/ShiftFormSchema";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
+import { ShiftInformation } from "app/utils/Types/ShiftManagement";
+import { validateShiftFormSchema } from 'app/utils/FormSchema/ShiftManagementFormSchema';
+import { saveShift } from "app/hooks/shiftManagement";
 
 const AddShiftForm = ({
   isOpen,

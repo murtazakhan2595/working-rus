@@ -39,7 +39,7 @@ const TimePicker = ({
     setTime(updatedTime);
     if (onChange) {
       onChange(name, updatedTime);
-     console.log(updatedTime,moment(updatedTime).format("h:mm A"),"updatedTime")
+    //  console.log(updatedTime,moment(updatedTime).format("h:mm A"),"updatedTime")
     }
   };
 

@@ -101,27 +101,65 @@ const ShiftCalender = () => {
     });
   };
 
+  const tabsData = [
+    {
+      value: "shift-calendar",
+      label: "Shift Calendar",
+      component: <Emplist teamMembers={filteredTeamMembers} />,
+    },
+    {
+      value: "schedule-shift",
+      label: "Schedule Shift",
+      component: <ScheduleShift employees={teamMembers.results} />,
+    },
+    {
+      value: "pending-schedule",
+      label: "Pending Schedule",
+      component: <PendingSchedule />,
+    },
+    {
+      value: "shift-request",
+      label: "Shift Request",
+      component: <ShiftRequest employees={teamMembers.results} />,
+    },
+  ];
+
   return (
     <div>
-      <Header
-        content={
-          <AssignShift
-            employees={teamMembers.results}
-            shifts={shifts.results}
+      <Header content={<AssignShift employees={teamMembers.results} />} />
+
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        defaultValue="shift-calendar"
+      >
+        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row mb-4">
+          <TabsList className="flex justify-center mb-4">
+            {tabsData.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="data-[state=active]:bg-primary-200 w-40 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+        {/* Add the filters component for the shift calendar tab */}
+        {activeTab === "shift-calendar" && (
+          <ShiftCalendarFilters
+            onFilterChange={handleFilterChange}
+            teamMembers={teamMembers}
           />
-        }
-      />
+        )}
 
-      {/* Add the filters component */}
-      <ShiftCalendarFilters
-        onFilterChange={handleFilterChange}
-        teamMembers={teamMembers}
-      />
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="all">
-        <TabsContent value="all">
-          <Emplist teamMembers={filteredTeamMembers} />
-        </TabsContent>
+        {/* Render TabsContent using the same data */}
+        {tabsData.map((tab) => (
+          <TabsContent key={tab.value} value={tab.value}>
+            {tab.component}
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   );
