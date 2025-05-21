@@ -82,8 +82,10 @@ export default function ShiftDetailsWidget() {
 
   // Format days of the week for display
   const formatWeekdays = (weekdays) => {
-    if (!weekdays || weekdays.length === 0) return "N/A";
-    return weekdays.join(", ");
+    // console.log("weekdays", weekdays);
+    // if (!weekdays || weekdays.length === 0) return "N/A";
+    // return weekdays?.join(", ");
+    return "N/A"
   };
 
   return (
@@ -131,7 +133,7 @@ export default function ShiftDetailsWidget() {
               <div className="mt-2">
                 <span className="font-medium text-sm mr-2">Working Days:</span>
                 <span className="text-sm">
-                  {formatWeekdays(shiftData.weekdays)}
+                  {formatWeekdays(shiftData?.weekdays)}
                 </span>
               </div>
             </div>

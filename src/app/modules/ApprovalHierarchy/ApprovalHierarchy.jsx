@@ -5,7 +5,6 @@ import {
   RoleAssignmentHistoryLogs,
 } from "app/modules/RoleAndPermissions";
 import { ViewApprovalHierarchy } from "app/modules/ApprovalHierarchy";
-
 import {
   Tabs,
   TabsList,
@@ -18,7 +17,7 @@ import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { HasAccess } from "utils/PermissionUtils";
 
-function ApprovalHierarchy() {
+export default function ApprovalHierarchy() {
   const navigate = useNavigate();
   const isViewUserRolePermitted = HasAccess("VIEW_USER_ROLE");
   const [activeHRDocumentsTab, setActiveHRDocumentsTab] =
@@ -32,9 +31,11 @@ function ApprovalHierarchy() {
       "Role Assignment History & Logs",
     ];
   }, [isViewUserRolePermitted]);
+ 
 
+    
   return (
-    <div
+     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
       <Header
@@ -108,5 +109,3 @@ function ApprovalHierarchy() {
     </div>
   );
 }
-
-export default ApprovalHierarchy;

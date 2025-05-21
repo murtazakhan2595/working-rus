@@ -1,6 +1,6 @@
-// src/app/modules/OfficeSetting/sections/Shift/AddShiftForm.jsx
 import { Label } from "src/@/components/ui/label";
-import { TextInput, TimePicker, CheckBoxInput } from "components/FormControl";
+import { ShiftInformation } from "app/utils/Types/Shift";
+import { TextInput, TimePicker } from "components/FormControl";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { Button } from "components/ui/button";
 import { Formik } from "formik";
@@ -9,10 +9,10 @@ import { SelectInputComponent } from "components/FormControl";
 import { shiftType } from "data/Data";
 import { toast } from "react-toastify";
 import moment from "moment";
-import { saveShift } from "app/hooks/general";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { ShiftInformation } from "app/utils/Types/ShiftManagement";
 import { validateShiftFormSchema } from 'app/utils/FormSchema/ShiftManagementFormSchema';
+import { saveShift } from "app/hooks/shiftManagement";
 
 const AddShiftForm = ({
   isOpen,
@@ -23,90 +23,50 @@ const AddShiftForm = ({
   setEmployeeShift = () => {},
 }) => {
   const formData = shiftData ?? ShiftInformation;
+  // setFormData] = useState(() => {
+  //   if (edit?.data) {
+  //     const localStartTime = moment(edit.data.starttime)
+  //     const localEndTime = moment(edit.data.endtime)
+  //     return {
+  //       ...edit.data,
+  //       starttime: localStartTime,
+  //       endtime: localEndTime,
+  //     };
+  //   }
+  //   return ShiftInformation;
+  // });
   const [closeSheet, setCloseSheet] = useState(false);
-  const [isSplitShift, setIsSplitShift] = useState(false);
 
   const handleSubmit = async (values) => {
     try {
       // Use default times if no value is selected
       const startTime = moment(values.starttime);
-      const endTime = moment(values.endtime);
+      const endTime = moment(values.endtime)
 
       const startTimeUTC = moment(startTime).utc().toISOString();
-      const endTimeUTC = moment(endTime).utc().toISOString();
+      const endTimeUTC =moment(endTime).utc().toISOString();
 
-      // Check if total hours don't exceed 9 hours limit
-      const duration = moment.duration(endTime.diff(startTime));
-      const hours = duration.asHours();
-
-      if (hours > 9) {
-        toast.error("Shift duration cannot exceed 9 hours", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        return;
-      }
-
-      let updatedValues = {
+      const updatedValues = {
         ...values,
         starttime: startTimeUTC,
         endtime: endTimeUTC,
       };
 
-      // Add split shift data if enabled
-      if (isSplitShift) {
-        // Validate the split shift format (4.5 hours + 4.5 hours)
-        const splitStart1 = moment(values.split_start_time1);
-        const splitEnd1 = moment(values.split_end_time1);
-        const splitStart2 = moment(values.split_start_time2);
-        const splitEnd2 = moment(values.split_end_time2);
-
-        const duration1 = moment
-          .duration(splitEnd1.diff(splitStart1))
-          .asHours();
-        const duration2 = moment
-          .duration(splitEnd2.diff(splitStart2))
-          .asHours();
-
-        if (
-          Math.abs(duration1 - 4.5) > 0.25 ||
-          Math.abs(duration2 - 4.5) > 0.25
-        ) {
-          toast.error("Split shift should be 4.5 hours each", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-          return;
-        }
-
-        updatedValues = {
-          ...updatedValues,
-          is_split_shift: true,
-          split_start_time1: moment(splitStart1).utc().toISOString(),
-          split_end_time1: moment(splitEnd1).utc().toISOString(),
-          split_start_time2: moment(splitStart2).utc().toISOString(),
-          split_end_time2: moment(splitEnd2).utc().toISOString(),
-        };
-      }
-
       console.log(updatedValues, "UPDATE VALUES");
 
       const response = await saveShift(updatedValues?.id, updatedValues);
       if (response) {
-        toast.success(
-          `Shift ${shiftData ? "Updated" : "Added"} Successfully!`,
-          {
-            position: toast.POSITION.TOP_RIGHT,
-          }
-        );
+        toast.success(`Shift ${shiftData ? "Updated" : "Added"} Successfully!`, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
         console.log("response", response);
         reload(true);
         setIsOpen(false);
         setEmployeeShift(response.id);
-        if (setEdit) {
-          setEdit({
-            open: false,
-            data: null,
-          });
-        }
+        setEdit({
+          open: false,
+          data: null,
+        });
       }
     } catch (error) {
       console.error("Error during submission:", error);
@@ -115,6 +75,10 @@ const AddShiftForm = ({
 
   const handleClose = () => {
     setCloseSheet(true);
+  };
+
+  const handleTimeChange = (field, time, props) => {
+    props.setFieldValue(field, time);
   };
 
   return (
@@ -143,6 +107,7 @@ const AddShiftForm = ({
                 touch={props.touched.name}
                 value={props.values.name}
                 onChange={(field, value) => {
+                  console.log(field, value, "FIELD VALUE");
                   props.handleChange(field)(value);
                 }}
               />
@@ -161,90 +126,6 @@ const AddShiftForm = ({
                   props.setFieldValue(field, value);
                 }}
               />
-
-              <CheckBoxInput
-                label="Split Shift (4.5 hr + 4.5 hr format)"
-                name="is_split_shift"
-                value={isSplitShift}
-                onChange={(name, value) => {
-                  setIsSplitShift(value);
-                  props.setFieldValue("is_split_shift", value);
-                }}
-              />
-
-              {!isSplitShift ? (
-                <>
-                  <Label>Start Time</Label>
-                  <TimePicker
-                    value={props.values.starttime}
-                    onChange={(field, time) => props.setFieldValue(field, time)}
-                    date={props.values.starttime}
-                    name={"starttime"}
-                  />
-
-                  <Label>End Time</Label>
-                  <TimePicker
-                    value={props.values.endtime}
-                    onChange={(field, time) => props.setFieldValue(field, time)}
-                    date={props.values.endtime}
-                    name="endtime"
-                  />
-                </>
-              ) : (
-                <>
-                  <div className="mb-2 font-medium">Split Shift 1</div>
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <Label>Start Time</Label>
-                      <TimePicker
-                        value={props.values.split_start_time1}
-                        onChange={(field, time) =>
-                          props.setFieldValue(field, time)
-                        }
-                        date={props.values.split_start_time1}
-                        name="split_start_time1"
-                      />
-                    </div>
-                    <div>
-                      <Label>End Time</Label>
-                      <TimePicker
-                        value={props.values.split_end_time1}
-                        onChange={(field, time) =>
-                          props.setFieldValue(field, time)
-                        }
-                        date={props.values.split_end_time1}
-                        name="split_end_time1"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mb-2 font-medium">Split Shift 2</div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Start Time</Label>
-                      <TimePicker
-                        value={props.values.split_start_time2}
-                        onChange={(field, time) =>
-                          props.setFieldValue(field, time)
-                        }
-                        date={props.values.split_start_time2}
-                        name="split_start_time2"
-                      />
-                    </div>
-                    <div>
-                      <Label>End Time</Label>
-                      <TimePicker
-                        value={props.values.split_end_time2}
-                        onChange={(field, time) =>
-                          props.setFieldValue(field, time)
-                        }
-                        date={props.values.split_end_time2}
-                        name="split_end_time2"
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
               </div>
               <div className="mb-6 space-y-2">
               <Label>Start Time</Label>
