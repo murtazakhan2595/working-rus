@@ -12,9 +12,9 @@ import { getEmployeeCustomList } from "app/hooks/general";
 import AssignShift from "./Section/AssignShift";
 import Emplist from "./Section/Emplist";
 import ScheduleShift from "./Section/ScheduleShift";
-import PendingSchedule from "./Section/PendingSchedule";
 import ShiftRequest from "./Section/ShiftRequest";
 import ShiftCalendarFilters from "./Section/ShiftCalendarFilters";
+import PendingSchedule from "./PendingSchedule/PendingSchedule";
 
 const ShiftCalendar = () => {
   const [activeTab, setActiveTab] = useState("shift-calendar");
