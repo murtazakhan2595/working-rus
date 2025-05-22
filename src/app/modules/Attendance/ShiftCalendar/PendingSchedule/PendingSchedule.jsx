@@ -15,191 +15,84 @@ import { getShiftSchedule } from "app/hooks/shiftManagement";
 import moment from "moment";
 import { EmployeeOverview, EmployeeID } from "components";
 import { pendingScheduleColumns } from "./PendingScheduleColumn";
+import ScheduleCalendar from "./ScheduleCalendar";
+import { Button } from "components/ui/button";
 
-const PendingSchedule = () => {
-  const [pendingSchedules, setPendingSchedules] = useState([]);
-  const [filteredSchedules, setFilteredSchedules] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [totalCount, setTotalCount] = useState(0);
-  const [filterData, setFilterData] = useState({});
-  const [selectedBranch, setSelectedBranch] = useState("");
-  const [selectedShiftType, setSelectedShiftType] = useState("");
-  const [ordering, setOrdering] = useState("-id");
+const PendingSchedule = ({pendingSchedules}) => {
+  const [activeSchedule, setActiveSchedule] = useState(null);
 
-  const [options, setOptions] = useState({
-    page: 1,
-    sizePerPage: 10,
-  });
-
-  const userProfile = useSelector((state) => state.user.userProfile);
-
-  const onPageChange = (name, value) => {
-    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
-  };
-
-  // Fetch pending schedules from API
-  const fetchPendingSchedules = async (isMounted = true) => {
-    setIsLoading(true);
-    try {
-      if (isMounted) {
-        const response = await getShiftSchedule({
-          status: "Pending",
-          ...options,
-          filterData,
-          ordering,
-        });
-
-        if (response && response.results) {
-          // Transform the API response to match our UI needs
-          const transformedSchedules = response.results.map((schedule) => ({
-            id: schedule.id,
-            employee_id: schedule.employee,
-            employee_name: `Employee ${schedule.employee}`, // You might want to fetch employee names separately
-            shift_id: schedule.shift,
-            start_date: schedule.start_date,
-            end_date: schedule.end_date,
-            is_split_shift: schedule.is_split_shift,
-            split_start_time: schedule.split_start_time,
-            split_end_time: schedule.split_end_time,
-            is_off_day: schedule.is_off_day,
-            status: schedule.status,
-            assigned_by: schedule.assigned_by,
-            created_at: schedule.created_at,
-            // Add branch info if available
-            branch_name: "Branch Name", // This should come from employee data
-            submitted_by: `Manager ${schedule.assigned_by}`,
-            submitted_date: moment(schedule.created_at).format("YYYY-MM-DD"),
-          }));
-
-          setPendingSchedules(transformedSchedules);
-          setTotalCount(response.count || 0);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching pending schedules:", error);
-      toast.error("Failed to load pending schedules");
-      // Fallback to empty array
-      setPendingSchedules([]);
-      setTotalCount(0);
-    } finally {
-      if (isMounted) {
-        setIsLoading(false);
-      }
-    }
-  };
-
-  const handleFilterChange = (filterName, filterValue) => {
-    // Reset to page 1 when filter changes
-    setOptions((prevOptions) => ({ ...prevOptions, page: 1 }));
-
-    if (filterName === "branch_name") {
-      setSelectedBranch(filterValue);
-    } else if (filterName === "shift_type") {
-      setSelectedShiftType(filterValue);
-    }
-
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
-
-  const tableOptions = {
-    page: options.page,
-    sizePerPage: options.sizePerPage,
-    onPageChange: onPageChange,
-    onSortChange: (sortName) => {
-      setOrdering(sortName);
-    },
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    if (isLoading) return;
-    fetchPendingSchedules(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [options, filterData, ordering]);
-
-  // Get unique branches for filter (you might want to fetch this from API)
-  const uniqueBranches = [
-    ...new Set(pendingSchedules.map((s) => s.branch_name)),
-  ];
-  const branchOptions = uniqueBranches.map((branch) => ({
-    value: branch,
-    label: branch,
-  }));
-
-  // Shift type options for filter
-  const shiftTypeOptions = [
-    { value: "regular", label: "Regular Shift" },
-    { value: "split", label: "Split Shift" },
-    { value: "off", label: "OFF Day" },
-  ];
-
-  const scheduleFilters = [
-    {
-      type: "search",
-      placeholder: "Employee Name or ID",
-      name: "employee_search",
-    },
-    {
-      type: "select-one",
-      option: branchOptions,
-      name: "branch_name",
-      placeholder: "Branch",
-      values: selectedBranch,
-    },
-    {
-      type: "select-two",
-      option: shiftTypeOptions,
-      name: "shift_type",
-      placeholder: "Shift Type",
-      values: selectedShiftType,
-    },
-  ];
-
+  console.log("Pending Schedules", pendingSchedules);
+  const handleScheduleSelect = (scheduleId) => {
+    setActiveSchedule(scheduleId);
+  }
   return (
-    <div className="space-y-6">
-      <Card>
+    <div className="flex gap-2">
+      <Card className="min-w-[40%]">
         <CardHeader>
-          <CardTitle className="text-primary">
-            Pending Shift Schedules for Approval
+          <CardTitle>
+            <div className="flex justify-between">
+              <p className="text-sm">All Members</p>
+              <p className="text-sm">{pendingSchedules?.count || 0}</p>
+            </div>
           </CardTitle>
-          <CardDescription className="text-neutral-1100">
-            Review and approve shift schedules submitted by Branch Managers.
-            Total {totalCount} pending schedule(s) for review.
-          </CardDescription>
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="mt-2 lg:mt-0 md:mt-0 xl:mt-0 justify-end flex"
-          >
-            <FilterInput
-              filters={scheduleFilters}
-              onChange={handleFilterChange}
-            />
-          </div>
         </CardHeader>
-
-        <CardContent>
-          <CustomTable
-            columns={pendingScheduleColumns(fetchPendingSchedules)}
-            data={isLoading ? [] : pendingSchedules}
-            pagination={true}
-            dataTotalSize={totalCount}
-            tableOptions={tableOptions}
-            loading={isLoading}
-          />
+        <CardContent className="max-h-[450px] overflow-auto">
+          {pendingSchedules?.count > 0 &&
+            pendingSchedules?.results?.map((schedule, index) => (
+              <ListView
+                pendingShift={schedule}
+                key={index}
+                handleSelect={handleScheduleSelect}
+                active={activeSchedule}
+              />
+            ))}
+          {(!pendingSchedules?.results ||
+            pendingSchedules.results.length === 0) && (
+            <div className="text-center py-4 text-gray-500">
+              No pending schedule found
+            </div>
+          )}
         </CardContent>
       </Card>
+      <div className="flex flex-col gap-2 w-full p-4 bg-gray-100 rounded-lg shadow-lg">
+        <ScheduleCalendar pendingSchedule={activeSchedule} />
+        <div className="flex justify-end gap-2 mt-4">
+          <Button variant="outline" onClick={() => {}} disabled={false}>
+            Reject with Reason
+          </Button>
+          <Button onClick={() => {}} disabled={false}>
+            Approve
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
-
+const ListView = ({pendingShift, handleSelect, active}) =>{
+  return (
+    <div
+      className={`flex flex-row items-center justify-start gap-4 py-2 border-b-2  hover:bg-plum-500 hover:text-plum-900 cursor-pointer ${
+        active === pendingShift.id ? "bg-plum-300 text-plum-1100 " : ""
+      }`}
+      onClick={() => {
+        handleSelect(pendingShift.id);
+      }}
+    >
+      <EmployeeOverview
+        id={pendingShift?.employee}
+        showPosition={true}
+        showDepartment={true}
+      />
+      <div className="flex flex-col justify-start gap-1">
+        <div className="flex justify-start text-base font-medium text-neutral-1100">
+          {`${"here come shift name"}`}
+        </div>
+        <div className="flex justify-start text-sm text-muted-foreground md:inline">
+          {moment(pendingShift.start_date).format("YYYY-MM-DD")} -{" "}
+          {moment(pendingShift.end_date).format("YYYY-MM-DD")}
+        </div>
+      </div>
+    </div>
+  );
+}
 export default PendingSchedule;

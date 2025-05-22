@@ -15,16 +15,17 @@ import ScheduleShift from "./Section/ScheduleShift";
 import ShiftRequest from "./Section/ShiftRequest";
 import ShiftCalendarFilters from "./Section/ShiftCalendarFilters";
 import PendingSchedule from "./PendingSchedule/PendingSchedule";
+import { getShiftSchedule } from "app/hooks/shiftManagement";
 
 const ShiftCalendar = () => {
   const [activeTab, setActiveTab] = useState("shift-calendar");
   const [teamMembers, setTeamMembers] = useState({ results: [], count: 0 });
-  const [filteredTeamMembers, setFilteredTeamMembers] = useState({
-    results: [],
-    count: 0,
-  });
   const [filterData, setFilterData] = useState({});
   const userProfile = useSelector((state) => state.user.userProfile);
+  const [pendingSchedules, setPendingSchedules] = useState({
+    results: [],
+    count: 0,
+  })
 
   // Define tabs data
   const tabsData = [
@@ -36,12 +37,12 @@ const ShiftCalendar = () => {
     {
       value: "pending-schedule",
       label: "Pending Schedule",
-      component: <PendingSchedule />,
+      component: <PendingSchedule pendingSchedules={pendingSchedules}/>,
     },
     {
       value: "shift-calendar",
       label: "Shift Calendar",
-      component: <Emplist teamMembers={filteredTeamMembers} />,
+      component: <Emplist teamMembers={teamMembers} />,
     },
     {
       value: "shift-request",
@@ -50,24 +51,30 @@ const ShiftCalendar = () => {
     },
   ];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const requestFilterData = {
-        ...(userProfile.role === 2 ? { direct_report: userProfile.id } : {}),
-      };
-      try {
-        const response = await getEmployeeCustomList({
-          filterData: requestFilterData,
-        });
-        if (response) {
-          setTeamMembers(response);
-          setFilteredTeamMembers(response);
-        }
-      } catch (err) {
-        console.error(err);
+  const fetchUsers = async () => {
+    try {
+      const response = await getEmployeeCustomList();
+      if (response) {
+        setTeamMembers(response);
       }
-    };
-    fetchData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const fetchPendingSchedules = async () => {
+    try {
+      const response = await getShiftSchedule();
+      if(response){
+        setPendingSchedules(response);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    fetchUsers();
+    fetchPendingSchedules();
+
   }, [userProfile]);
 
   // Handle filter changes from the ShiftCalendarFilters component
@@ -115,11 +122,11 @@ const ShiftCalendar = () => {
       return true;
     });
 
-    setFilteredTeamMembers({
-      ...teamMembers,
-      results: filteredResults,
-      count: filteredResults.length,
-    });
+    // setFilteredTeamMembers({
+    //   ...teamMembers,
+    //   results: filteredResults,
+    //   count: filteredResults.length,
+    // });
   };
 
   return (
