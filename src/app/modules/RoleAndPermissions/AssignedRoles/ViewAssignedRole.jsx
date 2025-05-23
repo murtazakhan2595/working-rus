@@ -160,7 +160,7 @@ const ViewAssignedRole = ({ isOpen, setIsOpen,roles, data, reload = () => {} }) 
         </DetailCard>
 
         {/* Assigned Roles Card */}
-        <DetailCard detailCardTitle="Assigned Roles" className="mt-4">
+        {/* <DetailCard detailCardTitle="Assigned Roles" className="mt-4">
           <DetailBox label="Total Roles" value={assignedRoles.length || "0"} />
           {assignedRoles.length > 0 ? (
             assignedRoles.map((role) => (
@@ -173,7 +173,7 @@ const ViewAssignedRole = ({ isOpen, setIsOpen,roles, data, reload = () => {} }) 
           ) : (
             <DetailBox label="Roles" value="No roles assigned" />
           )}
-        </DetailCard>
+        </DetailCard> */}
       </SheetComponent>
 
       {/* Delete Confirmation Dialog */}
