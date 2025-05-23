@@ -9,22 +9,25 @@ import { CardDescription } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
 import {
-  getRoleAssignmentHistoryLogsList,
-  getUserRoleList,
-} from "app/hooks/rolesPermisions";
-import { RoleAssignmentHistoryLogsColumn } from "app/modules/RoleAndPermissions/Sections";
+  getApprovalHierarchyHistoryLogsList,
+  getApprovalHierarchyData,
+} from "app/hooks/approvalHierarchy";
+import {
+  HierarchyLevelsColumn,
+  HierarchyHistoryDetailsColumn,
+} from "app/modules/ApprovalHierarchy/Sections";
 import { useNavigate, useLocation } from "react-router-dom";
 import { EmployeeDetailUI } from "components";
-import { getDropdownList } from "utils/Lists";
+import { DetailBox } from "components/SheetCardExtension";
+import { ApprovalHierarchyRequestTypeName } from "utils/getValuesFromTables";
 
-const RoleAssignmentEmployeeHistoryLogs = () => {
+const ApprovalHierarchyHistoryLogs = () => {
   const location = useLocation();
-  const { GOTO_URLS, employee_id } = location.state || {};
+  const { GOTO_URLS, id } = location.state || {};
   const [roles, setRoles] = useState({ results: [], count: 0 });
-  const [UserRoles, setUserRoles] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState("");
-  const [filterData, setFilterData] = useState({ employee: employee_id });
+  const [HierarchyDetails, setHierarchyDetails] = useState(null);
+  const [filterData, setFilterData] = useState({ employee: id });
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
 
@@ -45,8 +48,9 @@ const RoleAssignmentEmployeeHistoryLogs = () => {
     try {
       setLoading(true);
       // Add organizationId to filter if available
-
-      const response = await getRoleAssignmentHistoryLogsList({
+      const hierarchyResponse = await getApprovalHierarchyData(id);
+      setHierarchyDetails(hierarchyResponse);
+      const response = await getApprovalHierarchyHistoryLogsList({
         filterData,
         options,
         ordering,
@@ -70,28 +74,8 @@ const RoleAssignmentEmployeeHistoryLogs = () => {
     };
   }, [filterData, ordering, options]);
 
-  const fetchUserRoleData = async (isMounted) => {
-    try {
-      const response = await getUserRoleList();
-      if (isMounted) {
-        setUserRoles(getDropdownList(response.results));
-      }
-    } catch (error) {
-      console.error("Error fetching roles:", error);
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    fetchUserRoleData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "role") setSelectedRole(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -102,31 +86,55 @@ const RoleAssignmentEmployeeHistoryLogs = () => {
       return updatedFilters;
     });
   };
+  console.log(roles, "rolesrolesroles");
   return (
     <>
       <Header
         showBackButton={true}
-        navigationLink={GOTO_URLS || "/office-settings/role-permission/"}
+        navigationLink={GOTO_URLS || "/office-settings/approval-hierarchy/history"}
       />
       <Card className="mb-5">
         <CardTitle className="text-primary px-6 pt-6">
-          Employee Details
+          Hierarchy Details
         </CardTitle>
         <CardDescription className="text-neutral-1100 px-6 pb-6">
-          Here is the employee informations
+          Here is the hierarchy informations
         </CardDescription>
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
           <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-5">
-            <EmployeeDetailUI
-              id={employee_id}
-              // ViewVariant="vertical"
-              InformationKeys={[
-                "id",
-                "name",
-                "department",
-                "position",
-                "branch",
-              ]}
+            <DetailBox
+              value={HierarchyDetails?.name}
+              label="Name"
+              orientation="horizontal"
+            />
+            <DetailBox
+              orientation="horizontal"
+              value={
+                <ApprovalHierarchyRequestTypeName
+                  value={HierarchyDetails?.request_type}
+                />
+              }
+              label="Request Type"
+            />
+            {HierarchyDetails?.auto_forward_enabled && (
+              <DetailBox
+                orientation="horizontal"
+                value={`${HierarchyDetails?.auto_forward_threshold}hr`}
+                label="Auto-Forward Thershold"
+              />
+            )}
+          </div>
+          <div className="text-primary text-lg font-[inter] font-semiBold">
+            Levels
+          </div>
+          <div>
+            <TableCustom
+              columns={HierarchyLevelsColumn()}
+              data={roles?.results || []}
+              tableOptions={tableOptions}
+              dataTotalSize={roles?.count || 0}
+              pagination={true}
+              className="roles-table"
             />
           </div>
         </CardContent>
@@ -141,11 +149,9 @@ const RoleAssignmentEmployeeHistoryLogs = () => {
             <FilterInput
               filters={[
                 {
-                  type: "select-one",
-                  placeholder: "Select Role",
+                  type: "search",
+                  placeholder: "Search Role Name",
                   name: "role",
-                  option: UserRoles,
-                  values: selectedRole,
                 },
               ]}
               className="justify-end"
@@ -156,7 +162,7 @@ const RoleAssignmentEmployeeHistoryLogs = () => {
               <PageLoader />
             ) : (
               <TableCustom
-                columns={RoleAssignmentHistoryLogsColumn}
+                columns={HierarchyHistoryDetailsColumn}
                 data={roles?.results || []}
                 tableOptions={tableOptions}
                 dataTotalSize={roles?.count || 0}
@@ -171,4 +177,4 @@ const RoleAssignmentEmployeeHistoryLogs = () => {
   );
 };
 
-export default RoleAssignmentEmployeeHistoryLogs;
+export default ApprovalHierarchyHistoryLogs;

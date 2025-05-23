@@ -24,6 +24,7 @@ const DropdownActionMenu = ({
   deleteText = "Delete",
   customText = "Custom Action", // New text prop
   menuTooltip = "Actions",
+  additionalOptionsConfig = [],
 }) => {
   return (
     <DropdownMenu>
@@ -99,6 +100,22 @@ const DropdownActionMenu = ({
             {deleteText}
           </DropdownMenuItem>
         )}
+        {additionalOptionsConfig &&
+          additionalOptionsConfig.map(({action=()=>{},text}, index) => (
+            <DropdownMenuItem
+              key={index}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Delete menu item clicked");
+                action(e);
+              }}
+              tabIndex="0"
+              className="cursor-pointer"
+            >
+              {text}
+            </DropdownMenuItem>
+          ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -1,4 +1,5 @@
 import { countries } from "country-data";
+import Config from "constants/config";
 import {
   fetchDepartments,
   fetchDesignations,
@@ -26,10 +27,6 @@ import { fetchDocumentCategory } from "state/slices/HRDocumentsSlice";
 import { fetchShiftById } from "state/slices/AttendanceSlice";
 import { ArrowDown, ArrowRight, ArrowUp, Timer } from "lucide-react";
 import { lightenColor } from "utils/renderValues";
-import {
-  ExtractFieldValueFromList,
-  FilterTreeBySelectedLeafs,
-} from "utils/Lists";
 
 export const countriesCallingCodes = countries.all
   .filter(
@@ -44,6 +41,7 @@ export const countriesCallingCodes = countries.all
     )})`,
     alpha2: country.alpha2,
   }));
+
 export const countriesList = countries.all.map((country) => {
   return {
     value: country.name,
@@ -58,16 +56,14 @@ export const CurrencyList = countries.all.map((country) => {
     currency: country.currencies[0] ?? "USD",
   };
 });
-export const tasksTitle = [
-  { label: "Task Name", width: "w-44" },
 
-  { label: "Assign By", width: "w-28" },
-
-  { label: "Due Date", width: "w-28" },
-
-  { label: "List", width: "w-28" },
-
-  { label: "Priority", width: "w-28" },
+export const ApprovalHierarchyRequestType = [
+  ...(Config.EXIT_CLEARANCE
+    ? [{ label: "Exit", value: "EXIT_CLEARANCE" }]
+    : []),
+  ...(Config.MY_LEAVE_TRACKER
+    ? [{ label: "Leave", value: "MY_LEAVE_TRACKER" }]
+    : []),
 ];
 
 export const statusOptions = [

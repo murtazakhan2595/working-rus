@@ -34,7 +34,11 @@ import { MyDtr } from "app/modules/DTR";
 import ForgotPassword from "app/modules/Login/ForgotPassword.jsx";
 import ResetPassword from "app/modules/Login/ResetPassword.jsx";
 import ComingSoon from "app/modules/comingSoon/ComingSoon.jsx";
-import { ApprovalHierarchy } from "app/modules/ApprovalHierarchy";
+import {
+  ApprovalHierarchy,
+  ApprovalHierarchyDetails,
+  ApprovalHierarchyHistoryLogs,
+} from "app/modules/ApprovalHierarchy";
 import CreateEmployeeProfile from "app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 import { ExitAndClearance, EmployeeExit } from "app/modules/ExitAndClearance";
 import { Exit, EOSSettlementDetails } from "app/modules/SelfService/Exit";
@@ -227,7 +231,7 @@ export const SidebarRoutes = [
     : []),
   ...(Config.TASK_MANAGEMENT
     ? [
-        Config.TASK_MANAGMENT && {
+        Config.PROJECT_BOARD && {
           path: "/projects",
           component: <Projects />,
           name: "PROJECT_BOARD",
@@ -340,7 +344,22 @@ export const SidebarRoutes = [
         Config.APPROVAL_HIERARCHY && {
           path: "/office-settings/approval-hierarchy",
           component: <ApprovalHierarchy />,
-          name: "APPROVAL_HIERARCHY",
+          name: "VIEW_ROLE_HISTORY_LOGS",
+        },
+        Config.APPROVAL_HIERARCHY && {
+          path: "/office-settings/approval-hierarchy/history",
+          component: <ApprovalHierarchy active={"History & Logs"} />,
+          name: "VIEW_ROLE_HISTORY_LOGS",
+        },
+        Config.APPROVAL_HIERARCHY && {
+          path: "/office-settings/approval-hierarchy/add-levels",
+          component: <ApprovalHierarchyDetails />,
+          name: "VIEW_ROLE_HISTORY_LOGS",
+        },
+        Config.APPROVAL_HIERARCHY && {
+          path: "/office-settings/approval-hierarchy/history-logs",
+          component: <ApprovalHierarchyHistoryLogs />,
+          name: "VIEW_ROLE_HISTORY_LOGS",
         },
       ].filter(Boolean) // Filter out undefined route
     : []),

@@ -102,7 +102,7 @@ export const FormField = memo(
             {children}
             {field_description && (
               <div
-                className={"text-neutral-900 text-xs font-[inter] font-normal"}
+                className={"text-neutral-900 text-xs font-[inter] font-normal mt-1"}
               >
                 {field_description}
               </div>

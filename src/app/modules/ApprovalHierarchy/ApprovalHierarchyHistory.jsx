@@ -1,26 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { TableCustom } from "components";
+import { TableCustom, Header } from "components";
+import { Card } from "components/ui/card";
+import { CardContent } from "components/ui/card";
 import PageLoader from "components/PageLoader";
+import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
+import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
 import { getApprovalHierarchyList } from "app/hooks/approvalHierarchy";
-import { ApprovalHierarchyColumn } from "app/modules/ApprovalHierarchy/Sections";
-import { HasAccess } from "utils/PermissionUtils";
-import Error from "app/modules/Error";
-import { ApprovalHierarchyRequestType } from "data/Data";
-
-const ViewApprovalHierarchy = ({reload}) => {
-  const [ApprovalHierarchies, setApprovalHierarchies] = useState({
-    results: [],
-    count: 0,
-  });
+import { HierarchyHistoryColumn } from "app/modules/ApprovalHierarchy/Sections"
+import { useNavigate } from "react-router-dom";
+ 
+const ApprovalHierarchyHistory = () => {
+  const [ApprovalHierarchy, setApprovalHierarchy] = useState({ results: [], count: 0 });
   const [loading, setLoading] = useState(false);
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [reloadCounter, setReloadCounter] = useState(0);
-  const [selectedRequestType, setSelectedRequestType] = useState("");
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -38,6 +35,7 @@ const ViewApprovalHierarchy = ({reload}) => {
   const fetchData = async (isMounted) => {
     try {
       setLoading(true);
+      // Add organizationId to filter if available
 
       const response = await getApprovalHierarchyList({
         filterData,
@@ -46,10 +44,10 @@ const ViewApprovalHierarchy = ({reload}) => {
       });
 
       if (isMounted) {
-        setApprovalHierarchies(response);
+        setApprovalHierarchy(response);
       }
     } catch (error) {
-      console.error("Error fetching Approval Hierarchy:", error);
+      console.error("Error fetching ApprovalHierarchy:", error);
     } finally {
       setLoading(false);
     }
@@ -65,7 +63,6 @@ const ViewApprovalHierarchy = ({reload}) => {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "status") setSelectedRequestType(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -76,37 +73,25 @@ const ViewApprovalHierarchy = ({reload}) => {
       return updatedFilters;
     });
   };
-  useEffect(() => {
-    let isMounted = true;
-    onPageChange("page", 1);
-    setOrdering("-id");
-    fetchData(true);
-    return () => {
-      isMounted = false;
-    };
-  }, [reload]);
   return (
     <div className="flex flex-col gap-4">
       <CardTitle className="text-primary pt-6">
-        Approval Hierarchy List
+        Approval Hierarchy History & Logs
       </CardTitle>
       <CardDescription className="text-neutral-1100">
-        Here you can manage approval Hierarchy and their levels. Add, edit, or
-        delete Approval Hierarchy as needed.
+        Here you can view approval hierarchy history.
       </CardDescription>
       <FilterInput
         filters={[
           {
             type: "search",
-            placeholder: "Search By Hierarchy Name",
-            name: "name",
+            placeholder: "Search Employee ID",
+            name: "serial_number",
           },
           {
-            type: "select-one",
-            placeholder: "RequestType",
-            name: "status",
-            option: ApprovalHierarchyRequestType,
-            values: selectedRequestType,
+            type: "search",
+            placeholder: "Search Employee Name",
+            name: "first_name",
           },
         ]}
         className="justify-end"
@@ -117,16 +102,16 @@ const ViewApprovalHierarchy = ({reload}) => {
         <PageLoader />
       ) : (
         <TableCustom
-          columns={ApprovalHierarchyColumn(fetchData)}
-          data={ApprovalHierarchies?.results || []}
+          columns={HierarchyHistoryColumn}
+          data={ApprovalHierarchy?.results || []}
           tableOptions={tableOptions}
-          dataTotalSize={ApprovalHierarchies?.count || 0}
+          dataTotalSize={ApprovalHierarchy?.count || 0}
           pagination={true}
-          className="ApprovalHierarchies-table"
+          className="ApprovalHierarchy-table"
         />
       )}
     </div>
   );
 };
 
-export default ViewApprovalHierarchy;
+export default ApprovalHierarchyHistory;
