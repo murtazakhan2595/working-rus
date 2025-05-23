@@ -30,7 +30,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     const fetchRoles = async () => {
       try {
         const response = await getUserRoleList({
-          options: { page: 1, sizePerPage: 100 },
+          filterData: { status:'active' },
         });
         setAvailableRoles(response.results);
       } catch (error) {

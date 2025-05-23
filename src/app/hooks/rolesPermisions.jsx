@@ -75,7 +75,6 @@ export const getUserRoleList = async (payload) => {
   }
 };
 
-// Get roles list
 export const getRoleAssignmentHistoryLogsList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";

@@ -1,5 +1,4 @@
 import { ResignationStatusOptions } from "data/Data";
-import { terminationReasonsOptions } from "data/Data";
 import { TerminationStatusOptions } from "data/Data";
 import {
   workTypeOptions,
@@ -7,10 +6,10 @@ import {
   jobTypeOptions,
   locationTypeOptions,
   countriesList,
-  UserRoles,
   workplaceTypes,
   GenderOptions,
   BloodGroupOptions,
+  ApprovalHierarchyRequestType
 } from "data/Data";
 import { useSelector } from "react-redux";
 import moment from "moment";
@@ -29,9 +28,7 @@ function getEmployeeType(employeeType) {
 }
 function UserRole({ value, fallBackText = "N/A" }) {
   const user_roles = useSelector((state) => state.roles_permissions.user_roles);
-  const user_role = user_roles.find(
-    (option) => option.id === parseInt(value)
-  );
+  const user_role = user_roles.find((option) => option.id === parseInt(value));
 
   return user_role ? user_role.name : value ?? fallBackText;
 }
@@ -76,6 +73,12 @@ function TerminationStatus(status) {
     (option) => option.value === status
   );
   return response ? response.label : status ?? "N/A";
+}
+export function ApprovalHierarchyRequestTypeName({ value, fallBackText }) {
+  const response = ApprovalHierarchyRequestType.find(
+    (option) => option.value === value
+  );
+  return response ? response.label : value ?? fallBackText;
 }
 function DepartmentName({ value, fallBackText = "N/A", debug = false }) {
   const departments = useSelector((state) => state.common.departments);
@@ -164,7 +167,6 @@ function EmployeeName({ value, length }) {
   return <>{displayedName}</>;
 }
 export function EmployeeUsername({ value, fallBackText = "N/A" }) {
-  debugger
   const employees = useSelector((state) => state.emp.employees);
   const employee = employees.find((option) => option.id === parseInt(value));
   const employeeName = employee ? employee.username : fallBackText;

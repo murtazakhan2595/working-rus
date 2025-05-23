@@ -14,14 +14,15 @@ import {
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
 
-const DropdownActionMenu = ({ 
-  onView, 
-  onEdit, 
-  onDelete, 
-  viewText = "View Profile", 
-  editText = "Edit Profile", 
+const DropdownActionMenu = ({
+  onView,
+  onEdit,
+  onDelete,
+  viewText = "View Profile",
+  editText = "Edit Profile",
   deleteText = "Delete",
-  menuTooltip = "Actions"
+  menuTooltip = "Actions",
+  additionalOptionsConfig = [],
 }) => {
   return (
     <DropdownMenu>
@@ -42,7 +43,7 @@ const DropdownActionMenu = ({
       </TooltipProvider>
       <DropdownMenuContent align="end">
         {onView && (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -56,7 +57,7 @@ const DropdownActionMenu = ({
           </DropdownMenuItem>
         )}
         {onEdit && (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -70,7 +71,7 @@ const DropdownActionMenu = ({
           </DropdownMenuItem>
         )}
         {onDelete && (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -83,9 +84,25 @@ const DropdownActionMenu = ({
             {deleteText}
           </DropdownMenuItem>
         )}
+        {additionalOptionsConfig &&
+          additionalOptionsConfig.map(({action=()=>{},text}, index) => (
+            <DropdownMenuItem
+              key={index}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Delete menu item clicked");
+                action(e);
+              }}
+              tabIndex="0"
+              className="cursor-pointer"
+            >
+              {text}
+            </DropdownMenuItem>
+          ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
 
-export default DropdownActionMenu; 
+export default DropdownActionMenu;

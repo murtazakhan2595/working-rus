@@ -20,6 +20,7 @@ const statusVariants = cva("", {
       warning: "bg-amber-50 text-amber-700",
       success: "bg-emerald-50 text-emerald-700",
       neutral: "bg-neutral-300 text-neutral-1100",
+      info: "bg-blue-100 text-blue-900",
       "dot-plum":
         "bg-white border-neutral-300 flex items-center gap-2 text-neutral-1100",
       "dot-error": "bg-white border-neutral-300 flex items-center gap-2",
