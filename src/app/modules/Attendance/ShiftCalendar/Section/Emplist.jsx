@@ -9,17 +9,32 @@ import { CardTitle } from "components/ui/card";
 import Listview from "../../Sections/Listview";
 import { getShiftById, employeeData } from "app/hooks/attendance";
 import { toast } from "react-toastify";
+import { getShiftSchedule } from "app/hooks/shiftManagement";
 
 const Emplist = ({ teamMembers }) => {
   const [activeMember, setActiveMember] = useState(null);
   const [employeeShift, setEmployeeShift] = useState(null);
+  const [schduleShifts, setSchduleShifts] = useState({
+    results: [],
+    count: 0,
+  });
+
+  console.log("schduleShifts", schduleShifts);
+
 
   const handleSelect = async (memberId) => {
     setActiveMember(memberId);
     const empData = await employeeData(memberId);
-    if (!empData?.shift_assignment) {
+    const empScheduleShift = await getShiftSchedule({
+      filterData: { status: "Approved", employee: memberId },
+    });
+    if (!empData?.shift_assignment && empScheduleShift?.count === 0) {
       toast.error("Employee has no shift assigned");
       setEmployeeShift(null);
+      setSchduleShifts({
+        results: [],
+        count: 0,
+      })
       return;
     }
     const shiftData = await getShiftById(empData.shift_assignment);
@@ -27,6 +42,9 @@ const Emplist = ({ teamMembers }) => {
       setEmployeeShift({
         ...shiftData,
       });
+    }
+    if (empScheduleShift) {
+      setSchduleShifts(empScheduleShift);
     }
   };
 
@@ -44,6 +62,7 @@ const Emplist = ({ teamMembers }) => {
     }
   }, [teamMembers, activeMember]);
 
+
   return (
     <div className="flex gap-2">
       <Card className="min-w-[25%]">
@@ -55,7 +74,7 @@ const Emplist = ({ teamMembers }) => {
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="max-h-[450px] overflow-auto">
+        <CardContent className="max-h-[550px] overflow-auto">
           {teamMembers?.count > 0 &&
             teamMembers?.results?.map((member, index) => (
               <Listview
@@ -72,7 +91,11 @@ const Emplist = ({ teamMembers }) => {
           )}
         </CardContent>
       </Card>
-      <Calender shift={employeeShift} />
+      <Calender
+        shift={employeeShift}
+        scheduleShifts={schduleShifts} // Add this prop
+        employeeId={activeMember} // Add this for reference
+      />
     </div>
   );
 };

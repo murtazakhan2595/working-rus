@@ -9,23 +9,22 @@ import {
 } from "components/ui/card";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { FilterInput } from "components/FormControl";
-import CustomTable from "components/CustomTable";
 import { getShiftSchedule, saveShiftSchedule } from "app/hooks/shiftManagement";
 import moment from "moment";
 import { EmployeeOverview, EmployeeID } from "components";
-import { pendingScheduleColumns } from "./PendingScheduleColumn";
 import ScheduleCalendar from "./ScheduleCalendar";
 import { Button } from "components/ui/button";
 import AlertDialogue from "components/ui/AlertDialogue";
 import RejectReasonDialog from "./RejectReasonDialog";
+import ScheduleShiftModal from "../Modals/ScheduleShiftModal";
 
-const PendingSchedule = ({ pendingSchedules, reload }) => {
+const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
   const [activeSchedule, setActiveSchedule] = useState(null);
   const [approveState, setApproveState] = useState(null);
   const [rejectState, setRejectState] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const userProfile = useSelector((state) => state.user.userProfile);
 
@@ -58,6 +57,15 @@ const PendingSchedule = ({ pendingSchedules, reload }) => {
       data: activeSchedule,
     });
     setRejectReason("");
+  };
+
+  const handleEdit = () => {
+    if (!activeSchedule) {
+      toast.error("Please select a schedule to edit");
+      return;
+    }
+
+    setIsEditModalOpen(true);
   };
 
   const confirmApprove = async () => {
@@ -121,6 +129,14 @@ const PendingSchedule = ({ pendingSchedules, reload }) => {
     }
   };
 
+  const handleEditSuccess = () => {
+    // Reload the data after successful edit
+    if (typeof reload === "function") {
+      reload();
+    }
+    setActiveSchedule(null); // Clear selection after edit
+  };
+
   // Get shift name helper function
   const getShiftName = (schedule) => {
     if (schedule.is_org_based && schedule.shift_details) {
@@ -154,9 +170,7 @@ const PendingSchedule = ({ pendingSchedules, reload }) => {
             ))}
           {(!pendingSchedules?.results ||
             pendingSchedules.results.length === 0) && (
-            <div className="text-center py-4">
-              No pending schedule found
-            </div>
+            <div className="text-center py-4">No pending schedule found</div>
           )}
         </CardContent>
       </Card>
@@ -166,6 +180,13 @@ const PendingSchedule = ({ pendingSchedules, reload }) => {
 
         {/* Action Buttons */}
         <div className="flex justify-end gap-2 mt-4">
+          <Button
+            variant="outline"
+            onClick={handleEdit}
+            disabled={!activeSchedule || processing}
+          >
+            Edit Schedule
+          </Button>
           <Button
             variant="outline"
             onClick={handleReject}
@@ -212,6 +233,18 @@ const PendingSchedule = ({ pendingSchedules, reload }) => {
           reason={rejectReason}
           setReason={setRejectReason}
           employeeId={rejectState?.data?.employee}
+        />
+      )}
+
+      {/* Edit Schedule Modal */}
+      {isEditModalOpen && (
+        <ScheduleShiftModal
+          isOpen={isEditModalOpen}
+          setIsOpen={setIsEditModalOpen}
+          selectedDates={null}
+          employees={employees}
+          editSchedule={activeSchedule} // Pass the schedule to edit
+          onScheduleSuccess={handleEditSuccess}
         />
       )}
     </div>

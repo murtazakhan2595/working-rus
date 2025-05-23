@@ -11,45 +11,24 @@ import { useSelector } from "react-redux";
 import { getEmployeeCustomList } from "app/hooks/general";
 import AssignShift from "./Section/AssignShift";
 import Emplist from "./Section/Emplist";
-import ScheduleShift from "./Section/ScheduleShift";
 import ShiftRequest from "./Section/ShiftRequest";
 import ShiftCalendarFilters from "./Section/ShiftCalendarFilters";
 import PendingSchedule from "./PendingSchedule/PendingSchedule";
+import ScheduleShiftModal from "./Modals/ScheduleShiftModal";
 import { getShiftSchedule } from "app/hooks/shiftManagement";
+import { Button } from "components/ui/button";
 
 const ShiftCalendar = () => {
   const [activeTab, setActiveTab] = useState("shift-calendar");
   const [teamMembers, setTeamMembers] = useState({ results: [], count: 0 });
   const [filterData, setFilterData] = useState({});
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const userProfile = useSelector((state) => state.user.userProfile);
   const [pendingSchedules, setPendingSchedules] = useState({
     results: [],
     count: 0,
-  })
+  });
 
-  // Define tabs data
-  const tabsData = [
-    {
-      value: "schedule-shift",
-      label: "Schedule Shift",
-      component: <ScheduleShift employees={teamMembers.results} />,
-    },
-    {
-      value: "pending-schedule",
-      label: "Pending Schedule",
-      component: <PendingSchedule pendingSchedules={pendingSchedules}/>,
-    },
-    {
-      value: "shift-calendar",
-      label: "Shift Calendar",
-      component: <Emplist teamMembers={teamMembers} />,
-    },
-    {
-      value: "shift-request",
-      label: "Shift Request",
-      component: <ShiftRequest employees={teamMembers.results} />,
-    },
-  ];
 
   const fetchUsers = async () => {
     try {
@@ -61,20 +40,21 @@ const ShiftCalendar = () => {
       console.error(err);
     }
   };
+
   const fetchPendingSchedules = async () => {
     try {
-      const response = await getShiftSchedule();
-      if(response){
+      const response = await getShiftSchedule({filterData: { status: "Pending" }});
+      if (response) {
         setPendingSchedules(response);
       }
     } catch (err) {
       console.error(err);
     }
   };
+
   useEffect(() => {
     fetchUsers();
     fetchPendingSchedules();
-
   }, [userProfile]);
 
   // Handle filter changes from the ShiftCalendarFilters component
@@ -121,17 +101,50 @@ const ShiftCalendar = () => {
 
       return true;
     });
-
-    // setFilteredTeamMembers({
-    //   ...teamMembers,
-    //   results: filteredResults,
-    //   count: filteredResults.length,
-    // });
   };
+
+  const tabsData = [
+    {
+      value: "shift-calendar",
+      label: "Shift Calendar",
+      component: <Emplist teamMembers={teamMembers} />,
+    },
+    {
+      value: "pending-schedule",
+      label: "Pending Schedule",
+      component: (
+        <PendingSchedule
+          pendingSchedules={pendingSchedules}
+          reload={fetchPendingSchedules}
+          employees={teamMembers.results}
+        />
+      ),
+    },
+
+    {
+      value: "shift-request",
+      label: "Shift Request",
+      component: <ShiftRequest employees={teamMembers.results} />,
+    },
+  ];
+
+  // Header content with both AssignShift and ScheduleShift buttons
+  const headerContent = (
+    <div className="flex gap-2">
+      {activeTab === "shift-calendar" && (
+        <AssignShift employees={teamMembers.results} />
+      )}
+      {activeTab === "pending-schedule" && (
+        <Button onClick={() => setIsScheduleModalOpen(true)}>
+          Schedule Shift
+        </Button>
+      )}
+    </div>
+  );
 
   return (
     <div>
-      <Header content={<AssignShift employees={teamMembers.results} />} />
+      <Header content={headerContent} />
 
       <Tabs
         value={activeTab}
@@ -151,6 +164,7 @@ const ShiftCalendar = () => {
             ))}
           </TabsList>
         </div>
+
         {/* Add the filters component for the shift calendar tab */}
         {activeTab === "shift-calendar" && (
           <ShiftCalendarFilters
@@ -166,6 +180,19 @@ const ShiftCalendar = () => {
           </TabsContent>
         ))}
       </Tabs>
+
+      {/* Schedule Shift Modal */}
+      {isScheduleModalOpen && (
+        <ScheduleShiftModal
+          isOpen={isScheduleModalOpen}
+          setIsOpen={setIsScheduleModalOpen}
+          selectedDates={null}
+          employees={teamMembers.results}
+          onScheduleSuccess={() => {
+            fetchPendingSchedules(); // Reload pending schedules after successful scheduling
+          }}
+        />
+      )}
     </div>
   );
 };
