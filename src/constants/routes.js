@@ -36,7 +36,7 @@ import ResetPassword from "app/modules/Login/ResetPassword.jsx";
 import ComingSoon from "app/modules/comingSoon/ComingSoon.jsx";
 import {
   ApprovalHierarchy,
-  ApprovalHierarchyLevels,
+  ApprovalHierarchyDetails,
   ApprovalHierarchyHistoryLogs,
 } from "app/modules/ApprovalHierarchy";
 import CreateEmployeeProfile from "app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
@@ -231,7 +231,7 @@ export const SidebarRoutes = [
     : []),
   ...(Config.TASK_MANAGEMENT
     ? [
-        Config.TASK_MANAGMENT && {
+        Config.PROJECT_BOARD && {
           path: "/projects",
           component: <Projects />,
           name: "PROJECT_BOARD",
@@ -353,7 +353,7 @@ export const SidebarRoutes = [
         },
         Config.APPROVAL_HIERARCHY && {
           path: "/office-settings/approval-hierarchy/add-levels",
-          component: <ApprovalHierarchyLevels />,
+          component: <ApprovalHierarchyDetails />,
           name: "VIEW_ROLE_HISTORY_LOGS",
         },
         Config.APPROVAL_HIERARCHY && {

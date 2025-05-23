@@ -139,7 +139,7 @@ const AssignedRoles = ({ setOpenAssignRoleForm, openAssignRoleForm }) => {
         <PageLoader />
       ) : (
         <TableCustom
-          columns={AssignedRolesColumn(fetchData, roles)}
+          columns={AssignedRolesColumn(()=>{fetchData(true)}, roles)}
           data={assignedRoles?.results || []}
           tableOptions={tableOptions}
           dataTotalSize={assignedRoles?.count || 0}

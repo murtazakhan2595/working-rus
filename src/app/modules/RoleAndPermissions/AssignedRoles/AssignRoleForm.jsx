@@ -127,8 +127,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   // Transform employees for SelectInputComponent
   const employeeOptions = employees.map((emp) => ({
     value: emp.value,
-    label: `${emp.label} (${emp.serial_number || emp.empId})`,
-    employeeId: emp.empId || emp.value,
+    label: `dsfsadfksdfjshfk`,
     department: emp.department || "N/A",
     branch: emp.branch || "N/A",
     email: emp.email || "",

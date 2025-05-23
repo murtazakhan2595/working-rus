@@ -261,7 +261,7 @@ const AddUpdateApprovalHierarchy = ({
                 //   sheetCardTitle: `Approval Hierarchy Level`,
                 //   InputFields: [
                 //     {
-                //       InputField: ApprovalHierarchyLevels,
+                //       InputField: ApprovalHierarchyDetails,
                 //       name: "levels",
                 //       colsSpan: 3,
                 //     },
@@ -276,7 +276,7 @@ const AddUpdateApprovalHierarchy = ({
   );
 };
 
-const ApprovalHierarchyLevels = React.memo(
+const ApprovalHierarchyDetails = React.memo(
   ({ name, onChange = () => {}, value = [] }) => {
     const [formData, setFormData] = useState({
       ...ApprovalLevel,

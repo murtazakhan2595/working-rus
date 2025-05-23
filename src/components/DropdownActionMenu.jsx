@@ -18,9 +18,11 @@ const DropdownActionMenu = ({
   onView,
   onEdit,
   onDelete,
+  onCustom, // New 4th action
   viewText = "View Profile",
   editText = "Edit Profile",
   deleteText = "Delete",
+  customText = "Custom Action", // New text prop
   menuTooltip = "Actions",
   additionalOptionsConfig = [],
 }) => {
@@ -54,6 +56,20 @@ const DropdownActionMenu = ({
             className="cursor-pointer"
           >
             {viewText}
+          </DropdownMenuItem>
+        )}
+        {onCustom && (
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log("Custom menu item clicked");
+              onCustom(e);
+            }}
+            tabIndex="0"
+            className="cursor-pointer"
+          >
+            {customText}
           </DropdownMenuItem>
         )}
         {onEdit && (

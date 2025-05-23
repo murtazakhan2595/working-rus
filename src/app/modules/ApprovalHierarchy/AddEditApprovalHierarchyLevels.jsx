@@ -10,6 +10,7 @@ import {
 import { TextInput, SelectInputComponent } from "components/FormControl";
 import { validateApprovalHierarchyFormSchema } from "app/utils/FormSchema/ApprovalHierarchyFormSchema";
 import { HierarchyLevelsColumn } from "app/modules/ApprovalHierarchy/Sections";
+import { AddUpdateHierarchyLevels } from "app/modules/ApprovalHierarchy";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { Header, SheetUI, TableCustom } from "components";
@@ -25,6 +26,7 @@ import { DesignationName } from "utils/getValuesFromTables";
 import { SwitchInput } from "components/FormControl";
 import { CardTitle } from "reactstrap";
 import { CardDescription } from "components/ui/card";
+import { CheckBoxInput } from "components/FormControl";
 
 const AddEditApprovalHierarchyLevels = ({
   isOpen = true,
@@ -42,47 +44,15 @@ const AddEditApprovalHierarchyLevels = ({
     useState(false);
   const isEditMode = Boolean(id);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
-
+  const Designations = useSelector((state) => state.common.designations);
   const FormSheetData = {
     triggerText: "",
-    title: "Add Level",
+    title: "Add Levels",
     description: null,
     footer: null,
   };
   // Initialize form data with role values if in edit mode
   const [formData, setFormData] = useState(ApprovalHierarchy);
-
-  const fetchApprovalHierarchyData = async (isMounted) => {
-    try {
-      setIsLoading(true);
-      // Add organizationId to filter if available
-
-      const response = await getApprovalHierarchyList();
-
-      if (isMounted) {
-        const HierarchyList = await response.results?.map((item) => {
-          return {
-            name: item.name,
-            id: item.id,
-            request_type: item.request_type,
-          };
-        });
-        setUserRoles(HierarchyList);
-      }
-    } catch (error) {
-      console.error("Error fetching roles:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    fetchApprovalHierarchyData(isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const fetchData = async (isMounted, id) => {
     try {
@@ -122,9 +92,14 @@ const AddEditApprovalHierarchyLevels = ({
   };
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+    debugger;
     try {
-      // Save role
-      const response = await saveUpdateApprovalHierarchy(values, id);
+      const payload = values;
+      payload.levels = await values?.levels?.map((level) => ({
+        ...level,
+        initiative_designation: [values.initiative_designation],
+      }));
+      const response = await saveUpdateApprovalHierarchy(payload, id);
       if (response) {
         // Ensure table is reloaded
         toast.success(
@@ -197,26 +172,26 @@ const AddEditApprovalHierarchyLevels = ({
           <SheetUI
             isOpen={isOpen}
             setIsOpen={handleClose}
-            variant=""
+            variant="sheet"
             sheetConfig={FormSheetData}
             formConfig={{
               initialValues: formData,
               enableReinitialize: true,
               handleSubmit: handleSubmit,
-              onSubmitClick: (values) => {
-                validateUserRoleName(values.name);
-                validateRequestType(values.request_type);
-              },
+              // onSubmitClick: (values) => {
+              //   validateUserRoleName(values.name);
+              //   validateRequestType(values.request_type);
+              // },
               renderUpdatedFormValues: setFormValues,
               validateFormSchema: (values) => {
-                const errors = validateApprovalHierarchyFormSchema(values);
-                if (values.name && HierarchyNameExist)
-                  errors.name =
-                    "Hierarchy Name already exists. Please choose a different name";
-                if (values.request_type && HierarchyRequestTypeExist)
-                  errors.request_type =
-                    "Hierarchy with this request type already exists. Please choose a different type";
-                return errors;
+                // const errors = validateApprovalHierarchyFormSchema(values);
+                // if (values.name && HierarchyNameExist)
+                //   errors.name =
+                //     "Hierarchy Name already exists. Please choose a different name";
+                // if (values.request_type && HierarchyRequestTypeExist)
+                //   errors.request_type =
+                //     "Hierarchy with this request type already exists. Please choose a different type";
+                return {};
               },
               submitButtonText: "Submit",
               cancelButtonText: "Cancel",
@@ -226,56 +201,24 @@ const AddEditApprovalHierarchyLevels = ({
               formFiels: [
                 {
                   sheetCardExtension: true,
-                  sheetCardTitle: `Approval Hierarchy Details`,
+                  sheetCardTitle: `Approval Hierarchy Level`,
                   InputFields: [
                     {
-                      InputField: TextInput,
-                      name: "name",
-                      required: true,
-                      label: "Hierarchy Name",
-                      onFieldUpdate: (_, value) => {
-                        validateUserRoleName(value);
-                      },
-                    },
-                    {
                       InputField: SelectInputComponent,
-                      name: "request_type",
-                      options: ApprovalHierarchyRequestType,
-                      label: "Request Type",
+                      name: "initiative_designation",
+                      options: Designations,
+                      label: "Request Initiator",
                       onFieldUpdate: (_, value) => {
-                        validateRequestType(value);
+                        // validateRequestType(value);
                       },
                     },
                     {
-                      InputField: SwitchInput,
-                      name: "auto_forward_enabled",
-                      label: "Auto Forward",
+                      InputField: AddUpdateHierarchyLevels,
+                      name: "levels",
+                      colsSpan: 3,
                     },
-                    ...(formValues.auto_forward_enabled
-                      ? [
-                          {
-                            InputField: NumberInput,
-                            name: "auto_forward_threshold",
-                            label: "Auto Farward Threshold Type",
-                            description:
-                              "Add the thershold time in hours. Request will be forwarded to next level automatically if not responded in mentioned time",
-                            min: 1,
-                          },
-                        ]
-                      : []),
                   ],
                 },
-                // {
-                //   sheetCardExtension: true,
-                //   sheetCardTitle: `Approval Hierarchy Level`,
-                //   InputFields: [
-                //     {
-                //       InputField: AddEditApprovalHierarchyLevels,
-                //       name: "levels",
-                //       colsSpan: 3,
-                //     },
-                //   ],
-                // },
               ],
             }}
           />
@@ -284,130 +227,5 @@ const AddEditApprovalHierarchyLevels = ({
     </div>
   );
 };
-
-// const AddEditApprovalHierarchyLevels = React.memo(
-//   ({ name, onChange = () => {}, value = [] }) => {
-//     const [formData, setFormData] = useState({
-//       ...ApprovalLevel,
-//       level_number: value ? value?.length + 1 : 1,
-//     }); // Ensure ApprovalLevel is defined/imported
-//     const [openLevelForm, setOpenLevelForm] = useState(false);
-//     const Designations = useSelector((state) => state.common.designations);
-//     const Employees = useSelector((state) => state.emp.employees);
-
-//     const handleClick = (event) => {
-//       event.preventDefault();
-//       event.stopPropagation();
-//       setOpenLevelForm(true);
-//     };
-//     const handleLevelSubmit = (event) => {
-//       event.preventDefault();
-//       event.stopPropagation();
-//       const existingLevels = value || [];
-//       const updatedLevels = [...existingLevels, formData];
-//       onChange(name, updatedLevels);
-//       setOpenLevelForm(false);
-//     };
-
-//     return (
-//       <div>
-//         <div>
-//           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-4">
-//             {value && Array.isArray(value)
-//               ? value.map(
-//                   ({ level_number, assignment_type, designation, user }) => (
-//                     <>
-//                       <DetailBox
-//                         value={level_number}
-//                         label={"Level Number"}
-//                         variant="horizontal"
-//                       />
-//                       <DetailBox
-//                         value={assignment_type}
-//                         label={"Assignment Type"}
-//                         variant="horizontal"
-//                       />
-//                       <DetailBox
-//                         value={<DesignationName value={designation} />}
-//                         label={"Designation"}
-//                         variant="horizontal"
-//                       />
-//                     </>
-//                   )
-//                 )
-//               : null}
-//           </div>
-//         </div>
-
-//         <Button variant="outline" onClick={handleClick}>
-//           Add Level
-//         </Button>
-//         {openLevelForm && (
-//           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-4">
-//             <NumberInput
-//               name="level_number"
-//               value={formData.level_number}
-//               label="Level Number"
-//               disabled={true}
-//               onChange={(field, value) =>
-//                 setFormData((prev) => {
-//                   const updatedForm = prev;
-//                   updatedForm[field] = value;
-//                   return updatedForm;
-//                 })
-//               }
-//             />
-//             <SelectInputComponent
-//               name="assignment_type"
-//               value={formData.assignment_type}
-//               label="Assignment Type"
-//               options={[]}
-//               onChange={(field, value) =>
-//                 setFormData((prev) => {
-//                   const updatedForm = prev;
-//                   updatedForm[field] = value;
-//                   return updatedForm;
-//                 })
-//               }
-//             />
-//             {formData.assignment_type === "DESIGNATION" && (
-//               <SelectInputComponent
-//                 name="designation"
-//                 label="Designation"
-//                 required={true}
-//                 options={Designations}
-//                 onChange={(field, value) =>
-//                   setFormData((prev) => {
-//                     const updatedForm = prev;
-//                     updatedForm[field] = value;
-//                     return updatedForm;
-//                   })
-//                 }
-//               />
-//             )}
-//             {formData.assignment_type === "USER" && (
-//               <SelectInputComponent
-//                 name="user"
-//                 label="User"
-//                 required={true}
-//                 options={Employees}
-//                 onChange={(field, value) =>
-//                   setFormData((prev) => {
-//                     const updatedForm = prev;
-//                     updatedForm[field] = value;
-//                     return updatedForm;
-//                   })
-//                 }
-//               />
-//             )}
-//             <div className="cols-span-3">
-//               <Button onClick={handleLevelSubmit}>Add</Button>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     );
-//   }
-// );
 
 export default AddEditApprovalHierarchyLevels;

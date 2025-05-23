@@ -6,6 +6,7 @@ import {
 import {
   ApprovalHierarchyActions,
   ApprovalHierarchyLogsActions,
+  ApprovalHierarchyLevelActions
 } from "app/modules/ApprovalHierarchy/Sections";
 
 import { renderDate } from "utils/renderValues";
@@ -80,26 +81,24 @@ export const HierarchyLevelsColumn = (reload = () => {}) => [
   },
   {
     dataField: "designation",
-    text: "Approver",
+    text: "Designation",
     dataSort: true,
-    formatter: (cell, row) => {
+    formatter: (cell, row) =>
       cell ? (
         <div>
           <DesignationName value={cell} />
-          <div>Designation</div>
         </div>
       ) : (
         <div>
           <EmployeeName value={row.user} fallBackText={"--"} />
           <div>User</div>
         </div>
-      );
-    },
+      ),
   },
   {
     text: "Action",
     formatter: (cell, row, data_list) => (
-      <ApprovalHierarchyActions
+      <ApprovalHierarchyLevelActions
         data={row}
         reloadData={reload}
         ApprovalHierarchyList={data_list}
@@ -183,7 +182,7 @@ export const HierarchyHistoryDetailsColumn = [
   {
     dataField: "from_value",
     text: "From -> To",
-    formatter: (cell,row) => `${cell} -> ${row.to_value}`,
+    formatter: (cell, row) => `${cell} -> ${row.to_value}`,
   },
   {
     dataField: "changed_by",

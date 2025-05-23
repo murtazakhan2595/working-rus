@@ -4,6 +4,7 @@ export const ApprovalLevel = {
   designation: null,
   user: null,
   is_final_approval: false,
+  id:null,
 };
 
 export const ApprovalHierarchy = {

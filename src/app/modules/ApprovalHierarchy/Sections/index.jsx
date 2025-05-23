@@ -6,6 +6,7 @@ import {
 } from "./ApprovalHierarchyTableColumn";
 import ApprovalHierarchyActions from "./ApprovalHierarchyActions";
 import ApprovalHierarchyLogsActions from "./ApprovalHierarchyLogsActions";
+import ApprovalHierarchyLevelActions from "./ApprovalHierarchyLevelActions";
 export {
   ApprovalHierarchyColumn,
   HierarchyLevelsColumn,
@@ -13,4 +14,5 @@ export {
   HierarchyHistoryColumn,
   ApprovalHierarchyLogsActions,
   HierarchyHistoryDetailsColumn,
+  ApprovalHierarchyLevelActions,
 };
