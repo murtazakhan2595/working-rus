@@ -14,14 +14,16 @@ import {
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
 
-const DropdownActionMenu = ({ 
-  onView, 
-  onEdit, 
-  onDelete, 
-  viewText = "View Profile", 
-  editText = "Edit Profile", 
+const DropdownActionMenu = ({
+  onView,
+  onEdit,
+  onDelete,
+  onCustom, // New 4th action
+  viewText = "View Profile",
+  editText = "Edit Profile",
   deleteText = "Delete",
-  menuTooltip = "Actions"
+  customText = "Custom Action", // New text prop
+  menuTooltip = "Actions",
 }) => {
   return (
     <DropdownMenu>
@@ -42,7 +44,7 @@ const DropdownActionMenu = ({
       </TooltipProvider>
       <DropdownMenuContent align="end">
         {onView && (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -55,8 +57,22 @@ const DropdownActionMenu = ({
             {viewText}
           </DropdownMenuItem>
         )}
+        {onCustom && (
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log("Custom menu item clicked");
+              onCustom(e);
+            }}
+            tabIndex="0"
+            className="cursor-pointer"
+          >
+            {customText}
+          </DropdownMenuItem>
+        )}
         {onEdit && (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -70,7 +86,7 @@ const DropdownActionMenu = ({
           </DropdownMenuItem>
         )}
         {onDelete && (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -88,4 +104,4 @@ const DropdownActionMenu = ({
   );
 };
 
-export default DropdownActionMenu; 
+export default DropdownActionMenu;
