@@ -4,20 +4,15 @@ export const ApprovalLevel = {
   designation: null,
   user: null,
   is_final_approval: false,
+  auto_forward_enabled: false,
+  auto_forward_threshold: null,
 };
 
 export const ApprovalHierarchy = {
   id: null,
   name: null,
   request_type: null,
-  created_by: null,
-  status: null,
-  // auto_forward_enabled: false,
-  // auto_forward_threshold: null,
-  created_at: null,
   levels: [],
-  no_of_levels: null,
-  has_delegation: null,
   request_initiative: [],
 };
 

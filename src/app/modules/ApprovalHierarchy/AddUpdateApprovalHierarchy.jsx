@@ -237,23 +237,7 @@ const AddUpdateApprovalHierarchy = ({
                         validateRequestType(value);
                       },
                     },
-                    // {
-                    //   InputField: SwitchInput,
-                    //   name: "auto_forward_enabled",
-                    //   label: "Auto Forward",
-                    // },
-                    // ...(formValues.auto_forward_enabled
-                    //   ? [
-                    //       {
-                    //         InputField: NumberInput,
-                    //         name: "auto_forward_threshold",
-                    //         label: "Auto Farward Threshold Type",
-                    //         description:
-                    //           "Add the thershold time in hours. Request will be forwarded to next level automatically if not responded in mentioned time",
-                    //         min: 1,
-                    //       },
-                    //     ]
-                    //   : []),
+                   
                   ],
                 },
               ],

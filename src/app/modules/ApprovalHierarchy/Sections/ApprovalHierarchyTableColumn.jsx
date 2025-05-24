@@ -62,27 +62,14 @@ export const ApprovalHierarchyColumn = (reload = () => {}) => [
 ];
 
 export const HierarchyLevelsColumn = (reload = () => {}) => [
-  // {
-  //   dataField: "id",
-  //   text: "ID",
-  //   dataSort: true,
-  //   formatter: (cell, row) => <FormatID value={cell} prefix={"APH-"} />,
-  // },
   {
     dataField: "level_number",
     text: "Level Number",
-    dataSort: true,
   },
-  {
-    dataField: "user",
-    text: "Delegated",
-    dataSort: true,
-    formatter: (cell) => (cell ? "Yes" : "No"),
-  },
+
   {
     dataField: "designation",
     text: "Designation",
-    dataSort: true,
     formatter: (cell, row) =>
       cell ? (
         <div>
@@ -94,6 +81,14 @@ export const HierarchyLevelsColumn = (reload = () => {}) => [
           <div>User</div>
         </div>
       ),
+  },
+  {
+    dataField: "auto_forward_enabled",
+    text: "Auto Forward",
+    dataSort: true,
+    formatter: (cell) => (
+      <StatusLabel variant="info">{cell ? "Enabled" : "Disabled"}</StatusLabel>
+    ),
   },
   {
     text: "Action",

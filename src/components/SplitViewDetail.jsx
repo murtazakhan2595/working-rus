@@ -12,56 +12,53 @@ import { DesignationName } from "utils/getValuesFromTables";
 import { SwitchInput } from "components/FormControl";
 import { CardDescription, CardTitle } from "components/ui/card";
 const SplitViewDetail = ({
-  items,
-  renderDetail,
-  dataConfig = { title: "", description: "", data: [] },
-  data,
+  dataConfig = { title: "", description: "", className: "" },
+  renderConfig = { title: "", description: "", className: "" },
+  data = [],
 }) => {
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(
+    data && Array.isArray(data) && data?.length > 0 ? data[0] : null
+  );
   return (
     <>
-      <Card>
-        <CardTitle>{dataConfig.title}</CardTitle>
-        <CardDescription>{dataConfig.description}</CardDescription>
-        <CardContent>
-          {dataConfig?.data?.map((item, index) => (
-            <div
-              key={index}
-              onClick={() => setSelectedItem(item)}
-              className={`p-4 cursor-pointer border-b hover:bg-gray-100 ${
-                selectedItem === item ? "bg-gray-200 font-semibold" : ""
-              }`}
-            >
-              {item.title}
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-      <div className="flex border rounded-xl overflow-hidden h-full">
-        {/* Left Column (List) */}
-        <div className="w-1/3 border-r bg-gray-50 overflow-y-auto">
-          {items.map((item, index) => (
-            <div
-              key={index}
-              onClick={() => setSelectedItem(item)}
-              className={`p-4 cursor-pointer border-b hover:bg-gray-100 ${
-                selectedItem === item ? "bg-gray-200 font-semibold" : ""
-              }`}
-            >
-              {item.title}
-            </div>
-          ))}
+      <div className="flex gap-4">
+        <div className={`w-25 ${dataConfig?.className || ""}`}>
+          <Card>
+            <CardTitle className="p-3 pb-1 text-lg text-neutral-1100">
+              {dataConfig?.title}
+            </CardTitle>
+            <CardDescription className="px-3 pb-3 text-neutral-800">
+              {dataConfig?.description}
+            </CardDescription>
+            <CardContent className="px-3">
+              {data && Array.isArray(data) && data.length > 0
+                ? data?.map((item, index) => (
+                    <div
+                      key={index}
+                      onClick={() => setSelectedItem(item)}
+                      className={`p-2 my-2 cursor-pointer border-b hover:bg-gray-100 ${
+                        selectedItem?.id === item?.id ? "bg-gray-200" : ""
+                      }`}
+                    >
+                      {item?.title}
+                    </div>
+                  ))
+                : <div className="text-sm">"No data to display"</div>}
+            </CardContent>
+          </Card>
         </div>
-
-        {/* Right Column (Detail View) */}
-        <div className="w-2/3 p-6 overflow-y-auto">
-          {selectedItem ? (
-            renderDetail(selectedItem)
-          ) : (
-            <div className="text-gray-500 italic">
-              Select a record to view details
-            </div>
-          )}
+        <div className={`w-full min-h-full ${renderConfig?.className || ""}`}>
+          <Card>
+            <CardTitle className="p-3 pb-1 text-lg text-neutral-1100">
+              {renderConfig?.title}
+            </CardTitle>
+            <CardDescription className="px-3 pb-3 text-neutral-800">
+              {renderConfig?.description}
+            </CardDescription>
+            <CardContent className="px-3">
+              {selectedItem ? selectedItem?.content : "No data to display"}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </>

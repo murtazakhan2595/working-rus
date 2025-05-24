@@ -20,6 +20,8 @@ import { ViewSignature } from "./FormControl/InputSignature";
 import ViewTreeUI  from "./ViewTreeUI";
 import DropdownActionMenu  from "./DropdownActionMenu";
 import SplitViewDetail  from "./SplitViewDetail";
+import CircularActionButtons from "components/CircularActionButtons";
+
 export {
   Header,
   PageLoader,
@@ -44,4 +46,5 @@ export {
   ViewTreeUI,
   DropdownActionMenu,
   SplitViewDetail,
+  CircularActionButtons,
 };
