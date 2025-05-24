@@ -107,7 +107,7 @@ export const FormField = memo(
                 {field_description}
               </div>
             )}
-            {error && touched && <div className={errorClassName}>{error}</div>}
+            {Boolean(error) && touched && <div className={errorClassName}>{error}</div>}
           </div>
         </div>
       );

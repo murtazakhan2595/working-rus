@@ -6,7 +6,7 @@ import {
 import {
   ApprovalHierarchyActions,
   ApprovalHierarchyLogsActions,
-  ApprovalHierarchyLevelActions
+  ApprovalHierarchyLevelActions,
 } from "app/modules/ApprovalHierarchy/Sections";
 
 import { renderDate } from "utils/renderValues";
@@ -206,5 +206,54 @@ export const HierarchyHistoryDetailsColumn = [
     text: "timestamp",
     dataField: "timestamp",
     formatter: (cell) => renderDate(cell, "--", "datetime"),
+  },
+];
+
+export const DelegateLevelsColumn = (reload = () => {}) => [
+  {
+    dataField: "branch",
+    text: "Branch",
+    dataSort: true,
+    formatter: (cell) => <BranchName value={cell} />,
+  },
+  {
+    dataField: "department",
+    text: "Department",
+    dataSort: true,
+    formatter: (cell) => <DepartmentName value={cell} />,
+  },
+  {
+    dataField: "delegate",
+    text: "Delegate User",
+    dataSort: true,
+    formatter: (cell) => <EmployeeName value={cell} />,
+  },
+  {
+    dataField: "start_date",
+    text: "Start Date",
+    dataSort: true,
+    formatter: (cell) => renderDate(cell),
+  },
+  {
+    dataField: "end_date",
+    text: "End Date",
+    dataSort: true,
+    formatter: (cell) => renderDate(cell),
+  },
+  {
+    dataField: "reason",
+    text: "Reason",
+  },
+  {
+    text: "Action",
+    formatter: (cell, row, data_list) => (
+      <ApprovalHierarchyLevelActions
+        data={row}
+        reloadData={reload}
+        ApprovalHierarchyList={data_list}
+      />
+    ),
+    classes: "text-center",
+    headerClasses: "text-center",
   },
 ];

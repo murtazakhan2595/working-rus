@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const validateChangePasswordForm = (values) => {
   const errors = {};
   if (!values?.confirm_password)
@@ -12,35 +14,6 @@ export const validateChangePasswordForm = (values) => {
   ) {
     errors.confirm_password =
       "Confirm password does not match with new password";
-  }
-  return errors;
-};
-
-export const validateResetPasswordForm1 = (values = {}) => {
-  const errors = {};
-  const {
-    new_password = "",
-    confirm_password = "",
-    current_password = "",
-  } = values;
-  const newPasswordError = validatePasswordFieldSchema(new_password);
-  const confirmPasswordError = validatePasswordFieldSchema(confirm_password);
-  const currentPasswordError = validatePasswordFieldSchema(current_password);
-  if (newPasswordError) {
-    errors.new_password = newPasswordError;
-  }
-  if (confirmPasswordError) {
-    errors.confirm_password = confirmPasswordError;
-  }
-  if (currentPasswordError) {
-    errors.current_password = currentPasswordError;
-  }
-  if (
-    !newPasswordError &&
-    !confirmPasswordError &&
-    newPasswordError !== confirm_password
-  ) {
-    errors.confirm_password = "Confirm password does not match with password";
   }
   return errors;
 };
@@ -81,4 +54,18 @@ export const validatePasswordFieldSchema = (Password) => {
     return "Password must contain at least one number";
   }
   return null; // Valid password
+};
+
+export const validateStartAndEndDateField = (start_date, end_date) => {
+  const errors = {};
+  if (!start_date) errors.start_date = "Start date is required";
+  if (!end_date) errors.end_date = "End date is required";
+  if (start_date && end_date) {
+    const startDate = moment(start_date).endOf("day");
+    const endDate = moment(end_date).endOf("day");
+    if (startDate.isAfter(endDate)) {
+      errors.end_date = "End cannot be before start date.";
+    }
+  }
+  return errors
 };

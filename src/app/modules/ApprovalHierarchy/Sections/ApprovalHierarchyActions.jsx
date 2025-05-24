@@ -37,7 +37,7 @@ const ApprovalHierarchyActions = ({
     });
   };
   const handleAddLevels = () => {
-    navigate("/office-settings/approval-hierarchy/add-levels", {
+    navigate("/office-settings/approval-hierarchy/hierarchy-detail", {
       state: { GOTO_URL: "/office-settings/approval-hierarchy", id: data.id },
     });
   };
@@ -56,15 +56,15 @@ const ApprovalHierarchyActions = ({
   return (
     <>
       <DropdownActionMenu
-        onView={handleView}
+        onView={handleAddLevels}
         onEdit={isEditUserRolePermitted ? handleEdit : null}
         onDelete={isEditUserRolePermitted ? handleDelete : null}
-        viewText="View Hierarchy"
+        viewText="View Hierarchy Detail"
         editText="Edit Hierarchy"
         deleteText="Delete Hierarchy"
         menuTooltip="Hierarchy Actions"
         additionalOptionsConfig={[
-          { action: handleAddLevels, text: "Add Levels" },
+          { action: handleAddLevels, text: "Add Hierarchy Levels" },
         ]}
       />
 

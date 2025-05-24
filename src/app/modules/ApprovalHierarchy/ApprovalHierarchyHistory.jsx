@@ -9,15 +9,19 @@ import { CardDescription } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
 import { getApprovalHierarchyList } from "app/hooks/approvalHierarchy";
-import { HierarchyHistoryColumn } from "app/modules/ApprovalHierarchy/Sections"
-import { useNavigate } from "react-router-dom";
- 
+import { HierarchyHistoryColumn } from "app/modules/ApprovalHierarchy/Sections";
+import { ApprovalHierarchyRequestType } from "data/Data";
+
 const ApprovalHierarchyHistory = () => {
-  const [ApprovalHierarchy, setApprovalHierarchy] = useState({ results: [], count: 0 });
+  const [ApprovalHierarchy, setApprovalHierarchy] = useState({
+    results: [],
+    count: 0,
+  });
   const [loading, setLoading] = useState(false);
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [selectedRequestType, setSelectedRequestType] = useState("");
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -63,6 +67,7 @@ const ApprovalHierarchyHistory = () => {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
+    if (filterName === "status") setSelectedRequestType(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -85,13 +90,15 @@ const ApprovalHierarchyHistory = () => {
         filters={[
           {
             type: "search",
-            placeholder: "Search Employee ID",
-            name: "serial_number",
+            placeholder: "Search By Hierarchy Name",
+            name: "name",
           },
           {
-            type: "search",
-            placeholder: "Search Employee Name",
-            name: "first_name",
+            type: "select-one",
+            placeholder: "RequestType",
+            name: "status",
+            option: ApprovalHierarchyRequestType,
+            values: selectedRequestType,
           },
         ]}
         className="justify-end"

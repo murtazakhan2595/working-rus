@@ -58,11 +58,19 @@ export const CurrencyList = countries.all.map((country) => {
 });
 
 export const ApprovalHierarchyRequestType = [
-  ...(Config.EXIT_CLEARANCE
-    ? [{ label: "Exit", value: "EXIT_CLEARANCE" }]
-    : []),
   ...(Config.MY_LEAVE_TRACKER
     ? [{ label: "Leave", value: "MY_LEAVE_TRACKER" }]
+    : []),
+  ...(Config.MY_CLAIMS ? [{ label: "Claims", value: "MY_CLAIMS" }] : []),
+  ...(Config.MY_TRANSFERS
+    ? [{ label: "Transfer", value: "MY_TRANSFERS" }]
+    : []),
+  ...(Config.MY_ASSETS ? [{ label: "Assets", value: "MY_ASSETS" }] : []),
+  ...(Config.EXIT_CLEARANCE
+    ? [{ label: "Temination", value: "EXIT_CLEARANCE_TERMINATION" }]
+    : []),
+  ...(Config.EXIT_CLEARANCE
+    ? [{ label: "Resignation", value: "EXIT_CLEARANCE_RESIGNATION" }]
     : []),
 ];
 

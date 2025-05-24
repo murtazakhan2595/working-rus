@@ -4,7 +4,6 @@ export const ApprovalLevel = {
   designation: null,
   user: null,
   is_final_approval: false,
-  id:null,
 };
 
 export const ApprovalHierarchy = {
@@ -13,12 +12,13 @@ export const ApprovalHierarchy = {
   request_type: null,
   created_by: null,
   status: null,
-  auto_forward_enabled: false,
-  auto_forward_threshold: null,
+  // auto_forward_enabled: false,
+  // auto_forward_threshold: null,
   created_at: null,
-  levels: null,
+  levels: [],
   no_of_levels: null,
   has_delegation: null,
+  request_initiative: [],
 };
 
 export const ApprovalHierarchyHistoryLogs = {
@@ -37,4 +37,14 @@ export const ApprovalHierarchyHistoryLogs = {
   original_approver: null,
   department: null,
   request_id: null,
+};
+
+export const DelegateLevel = {
+  level: null,
+  branch: null,
+  department: null,
+  delegate: null,
+  start_date: null,
+  end_date: null,
+  reason: null,
 };

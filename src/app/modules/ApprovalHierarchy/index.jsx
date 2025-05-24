@@ -4,10 +4,11 @@ import AddUpdateApprovalHierarchy from "./AddUpdateApprovalHierarchy";
 import ApprovalHierarchyDetails from "./ApprovalHierarchyDetails";
 import ApprovalHierarchyHistory from './ApprovalHierarchyHistory';
 import ApprovalHierarchyHistoryLogs from './ApprovalHierarchyHistoryLogs';
-import AddEditApprovalHierarchyLevels from './AddEditApprovalHierarchyLevels';
-import AddUpdateHierarchyLevels from './HierarchyLevels/AddUpdateHierarchyLevels';
+import AddEditApprovalHierarchyLevels from './HierarchyLevels/AddEditApprovalHierarchyLevels';
+import AddUpdateDelegateLevels from './HierarchyLevels/AddUpdateDelegateLevels';
 import AddUpdateLevels from './HierarchyLevels/AddUpdateLevels';
 import Levels from './HierarchyLevels/Levels';
+import LevelDelegations from './HierarchyLevelDelegation/LevelDelegations';
 export {
   ApprovalHierarchy,
   ViewApprovalHierarchy,
@@ -16,7 +17,8 @@ export {
   ApprovalHierarchyHistory,
   ApprovalHierarchyHistoryLogs,
   AddEditApprovalHierarchyLevels,
-  AddUpdateHierarchyLevels,
+  AddUpdateDelegateLevels,
   AddUpdateLevels,
   Levels,
+  LevelDelegations,
 };
