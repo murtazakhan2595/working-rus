@@ -24,6 +24,7 @@ const Designations = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterData, setFilterData] = useState({});
+  const [reloadCounter, setReloadCounter] = useState(0);
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -70,6 +71,11 @@ const Designations = ({
     }));
   };
 
+  // Function to force a table reload
+  const forceReload = () => {
+    setReloadCounter(prev => prev + 1);
+  };
+
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -79,7 +85,7 @@ const Designations = ({
 
   useEffect(() => {
     getDesignations();
-  }, [options]);
+  }, [options, reloadCounter]);
 
   // Filters configuration
   const filters = [
@@ -113,7 +119,7 @@ const Designations = ({
             </CardHeader>
             <CardContent>
               <TableCustom
-                columns={DesignationColumn(reload)}
+                columns={DesignationColumn(forceReload)}
                 data={designation?.results || []}
                 dataTotalSize={designation?.count || 0}
                 pagination={true}

@@ -127,6 +127,7 @@ const DesignationAction = ({ data, reload }) => {
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
           data={view.data}
+          reload={reload}
         />
       )}
     </>
