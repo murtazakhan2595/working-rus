@@ -100,7 +100,7 @@ const Departments = ({
           </CardHeader>
           <CardContent>
             <TableCustom
-              columns={DepartmentColumn(forceReload)}
+              columns={DepartmentColumn(forceReload, Departments?.results || [])}
               data={Departments?.results || []}
               tableOptions={tableOptions}
               dataTotalSize={Departments?.count || 0}

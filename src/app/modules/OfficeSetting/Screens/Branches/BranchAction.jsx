@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import SheetComponent from "components/ui/SheetComponent";
 import AddBranchForm from "./AddBranchForm";
 import ViewBranch from "app/modules/OfficeSetting/Screens/Branches/ViewBranch";
 import DropdownActionMenu from "components/DropdownActionMenu";
+import { ViewDetailSheetCardExtension } from "components";
 
-const BranchAction = ({ data, reload = () => {} }) => {
+const BranchAction = ({ data, reload, BranchList = [] }) => {
   const [view, setView] = useState(null);
-  const [OpenDeleteAlert, setOpenDeleteAlert] = useState(false);
-  const [EditBranch, setEditBranch] = useState(false);
+  const [edit, setEdit] = useState(null);
+  const [deleteBranch, setDeleteBranch] = useState(null);
 
   const formSheetData = {
     triggerText: 'Update Branch',
@@ -26,20 +26,33 @@ const BranchAction = ({ data, reload = () => {} }) => {
   };
 
   const handleEdit = () => {
-    setEditBranch(true);
+    setEdit({
+      open: true,
+      data: data,
+    });
   };
 
   const handleDelete = () => {
-    setOpenDeleteAlert(true);
+    setDeleteBranch({
+      open: true,
+      data: data,
+    });
   };
 
   const confirmDelete = async () => {
     try {
       await deleteRecord(`/branch/${data?.id}`, data?.branch_name);
-      reload(true);
+      if (typeof reload === 'function') {
+        reload();
+      }
     } catch (error) {
-      console.error("ERROR", error);
+      console.log("ERROR", error);
     }
+  };
+
+  const handleFormUpdate = async (formData) => {
+    console.log("Branch updated with data:", formData);
+    return true;
   };
 
   return (
@@ -54,33 +67,37 @@ const BranchAction = ({ data, reload = () => {} }) => {
         menuTooltip="Branch Actions"
       />
 
-      {OpenDeleteAlert && (
+      {deleteBranch?.open && (
         <AlertDialogue
           title="Confirm Delete?"
           description="This action can't be undone. All information associated with this will be lost."
-          isOpen={OpenDeleteAlert}
-          setIsOpen={(isOpen) => setOpenDeleteAlert(false)}
+          isOpen={deleteBranch.open}
+          setIsOpen={(isOpen) =>
+            setDeleteBranch((prev) => ({ ...prev, open: isOpen }))
+          }
           handleContinue={() => {
             confirmDelete();
-            setOpenDeleteAlert(false);
+            setDeleteBranch(null);
           }}
         />
       )}
 
-      {EditBranch && (
-        <SheetComponent
-          {...formSheetData}
-          isOpen={EditBranch}
-          setIsOpen={setEditBranch}
-          width="568px"
+      {edit?.open && (
+        <ViewDetailSheetCardExtension
+          isOpen={edit?.open}
+          setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
+          title="Update Branch"
+          handlePrevious={() => {}}
+          handleNext={() => {}}
         >
           <AddBranchForm
-            setIsOpen={setEditBranch}
+            setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
             editMode={true}
             reload={reload}
-            branchData={data}
+            branchData={edit.data}
+            onUpdateSuccess={handleFormUpdate}
           />
-        </SheetComponent>
+        </ViewDetailSheetCardExtension>
       )}
 
       {view?.visible && (
@@ -91,6 +108,7 @@ const BranchAction = ({ data, reload = () => {} }) => {
           }
           data={view.data}
           reload={reload}
+          BranchList={BranchList}
         />
       )}
     </>
