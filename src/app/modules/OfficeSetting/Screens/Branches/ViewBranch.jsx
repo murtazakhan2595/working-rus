@@ -1,21 +1,32 @@
 import { DetailBox } from "components/SheetCardExtension";
 import { DetailCard } from "components/SheetCardExtension";
-import SheetComponent from "components/ui/SheetComponent";
 import { useState, useEffect } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
 import AddBranchForm from "./AddBranchForm";
 import CircularActionButtons from "components/CircularActionButtons";
 import axios from "axios";
+import { ViewDetailSheetCardExtension } from "components";
 
-const ViewBranch = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
+const ViewBranch = ({ 
+  isOpen, 
+  setIsOpen, 
+  data, 
+  reload = () => {},
+  BranchList = []
+}) => {
   const [OpenDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [EditBranch, setEditBranch] = useState(false);
-  const [viewData, setViewData] = useState(data);
+  const [currentBranch, setCurrentBranch] = useState(data);
+  const [currentBranchId, setCurrentBranchId] = useState(data?.id);
 
+  // Reset to original data when sheet opens
   useEffect(() => {
-    setViewData(data);
-  }, [data]);
+    if (isOpen && data) {
+      setCurrentBranch(data);
+      setCurrentBranchId(data.id);
+    }
+  }, [isOpen]);
 
   const formSheetData = {
     triggerText: null,
@@ -39,9 +50,49 @@ const ViewBranch = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
     setOpenDeleteAlert(true);
   };
 
+  const handleNext = () => {
+    // Ensure BranchList is an array
+    const validList = Array.isArray(BranchList) ? BranchList : [];
+    if (validList.length === 0) return;
+    
+    const currentIndex = validList.findIndex(
+      (item) => item.id === currentBranchId
+    );
+    if (currentIndex < validList.length - 1) {
+      const nextBranch = validList[currentIndex + 1];
+      setCurrentBranchId(nextBranch?.id);
+      setCurrentBranch(nextBranch);
+    } else {
+      // Loop to first item
+      const firstBranch = validList[0];
+      setCurrentBranchId(firstBranch?.id);
+      setCurrentBranch(firstBranch);
+    }
+  };
+
+  const handlePrevious = () => {
+    // Ensure BranchList is an array
+    const validList = Array.isArray(BranchList) ? BranchList : [];
+    if (validList.length === 0) return;
+    
+    const currentIndex = validList.findIndex(
+      (item) => item.id === currentBranchId
+    );
+    if (currentIndex > 0) {
+      const prevBranch = validList[currentIndex - 1];
+      setCurrentBranchId(prevBranch?.id);
+      setCurrentBranch(prevBranch);
+    } else {
+      // Loop to last item
+      const lastBranch = validList[validList.length - 1];
+      setCurrentBranchId(lastBranch?.id);
+      setCurrentBranch(lastBranch);
+    }
+  };
+
   const confirmDelete = async () => {
     try {
-      await deleteRecord(`/branch/${viewData?.id}`, viewData?.branch_name);
+      await deleteRecord(`/branch/${currentBranch?.id}`, currentBranch?.branch_name);
       setIsOpen(false);
       reload(true);
     } catch (error) {
@@ -51,10 +102,9 @@ const ViewBranch = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
 
   const refreshData = async () => {
     try {
-      const response = await axios.get(`/branch/${viewData.id}`);
+      const response = await axios.get(`/branch/${currentBranchId}`);
       if (response.data) {
-        console.log("Fetched updated branch data:", response.data);
-        setViewData(response.data);
+        setCurrentBranch(response.data);
       }
     } catch (error) {
       console.error("Failed to fetch updated branch data:", error);
@@ -75,9 +125,8 @@ const ViewBranch = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
 
   const handleFormUpdate = async (formData) => {
     // This function will be called after successful form submission
-    console.log("Branch updated with data:", formData);
-    setViewData({
-      ...viewData,
+    setCurrentBranch({
+      ...currentBranch,
       ...formData
     });
     return true;
@@ -85,33 +134,31 @@ const ViewBranch = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
 
   return (
     <>
-      <SheetComponent
-        {...formSheetData}
+      <ViewDetailSheetCardExtension
         isOpen={isOpen}
-        setIsOpen={(open) => {
-          setIsOpen(open);
-          if (!open && typeof reload === 'function') {
-            reload(true); // Ensure table is reloaded when view is closed
-          }
-        }}
-        width="568px"
+        setIsOpen={setIsOpen}
+        title="Branch Detail"
+        handlePrevious={handlePrevious}
+        handleNext={handleNext}
       >
-        <div className="flex justify-end mb-4 space-x-2">
-          <CircularActionButtons 
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            editTooltip="Edit Branch"
-            deleteTooltip="Delete Branch"
-          />
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-end mt-4 space-x-2">
+            <CircularActionButtons 
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              editTooltip="Edit Branch"
+              deleteTooltip="Delete Branch"
+            />
+          </div>
+
+          <DetailCard detailCardTitle="Branch Details" date={currentBranch?.created_at} dateTitle="Created At">
+            <DetailBox label="Id" value={currentBranch?.id} />
+            <DetailBox label="Name" value={currentBranch?.branch_name} />
+            <DetailBox label="Branch Number" value={currentBranch?.branch_number} />
+            <DetailBox label="Address" value={currentBranch?.branch_address} />
+          </DetailCard>
         </div>
-        <DetailCard detailCardTitle="Branch Details" date={viewData?.created_at} dateTitle="Created At">
-          <DetailBox label="Id" value={viewData?.id} />
-          <DetailBox label="Name" value={viewData?.branch_name} />
-          <DetailBox label="Branch Number" value={viewData?.branch_number} />
-          <DetailBox label="Address" value={viewData?.branch_address} />
-          {/* <DetailBox label="Parent Department" value={data?.parent_department} /> */}
-        </DetailCard>
-      </SheetComponent>
+      </ViewDetailSheetCardExtension>
 
       {OpenDeleteAlert && (
         <AlertDialogue
@@ -127,20 +174,21 @@ const ViewBranch = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
       )}
 
       {EditBranch && (
-        <SheetComponent
-          {...updateSheetData}
+        <ViewDetailSheetCardExtension
           isOpen={EditBranch}
           setIsOpen={handleEditClose}
-          width="568px"
+          title="Update Branch"
+          handlePrevious={() => {}}
+          handleNext={() => {}}
         >
           <AddBranchForm
             setIsOpen={handleEditClose}
             editMode={true}
             reload={reload}
-            branchData={viewData}
+            branchData={currentBranch}
             onUpdateSuccess={handleFormUpdate}
           />
-        </SheetComponent>
+        </ViewDetailSheetCardExtension>
       )}
     </>
   );

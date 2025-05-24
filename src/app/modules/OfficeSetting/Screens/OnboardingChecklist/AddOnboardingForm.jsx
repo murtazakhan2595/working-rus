@@ -18,8 +18,18 @@ const validateOnboardingFormSchema = (values) => {
   return errors;
 };
 
-const AddOnboardingForm = ({ isOpen, setIsOpen, reload, onboardingItem=null }) => {
+const AddOnboardingForm = ({ 
+  isOpen, 
+  setIsOpen, 
+  reload, 
+  edit = null, 
+  onUpdateSuccess = null 
+}) => {
   const [closeSheet, setCloseSheet] = useState(false);
+  
+  // Extract onboarding item from edit prop to match other forms
+  const onboardingItem = edit?.data || edit;
+  
   const [initialValues, setInitialValues] = useState(
     onboardingItem || OnboardingDocumentTemplate
   );
@@ -46,9 +56,18 @@ const AddOnboardingForm = ({ isOpen, setIsOpen, reload, onboardingItem=null }) =
           }
         );
 
-        if (reload) reload();
-        setIsOpen(false);
+        console.log("📝 Form update successful, calling callbacks...");
 
+        // Call the update success callback if provided
+        if (onUpdateSuccess && typeof onUpdateSuccess === "function") {
+          console.log("📝 Calling onUpdateSuccess...");
+          await onUpdateSuccess(values);
+          console.log("📝 onUpdateSuccess completed");
+        }
+
+        console.log("📝 About to call setIsOpen(true) to close edit sheet...");
+        setIsOpen(true); // Pass true to indicate successful update
+        console.log("📝 setIsOpen(true) called");
       }
     } catch (error) {
       console.error("Error during submission:", error);

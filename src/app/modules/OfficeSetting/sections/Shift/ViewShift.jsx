@@ -1,6 +1,5 @@
 import { DetailBox } from "components/SheetCardExtension";
 import { DetailCard } from "components/SheetCardExtension";
-import SheetComponent from "components/ui/SheetComponent";
 import moment from "moment"; // Ensure moment is installed and imported
 import { useState, useEffect } from "react";
 import CircularActionButtons from "components/CircularActionButtons";
@@ -8,15 +7,27 @@ import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
 import AddShiftForm from "./AddShiftForm";
 import axios from "axios";
+import { ViewDetailSheetCardExtension } from "components";
 
-const ViewShift = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
+const ViewShift = ({ 
+  isOpen, 
+  setIsOpen, 
+  data, 
+  reload = () => {}, 
+  ShiftList = [] 
+}) => {
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [editShift, setEditShift] = useState(false);
-  const [viewData, setViewData] = useState(data);
+  const [currentShift, setCurrentShift] = useState(data);
+  const [currentShiftId, setCurrentShiftId] = useState(data?.id);
 
+  // Reset to original data when sheet opens
   useEffect(() => {
-    setViewData(data);
-  }, [data]);
+    if (isOpen && data) {
+      setCurrentShift(data);
+      setCurrentShiftId(data.id);
+    }
+  }, [isOpen]);
 
   const formSheetData = {
     triggerText: null,
@@ -45,9 +56,50 @@ const ViewShift = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
     setOpenDeleteAlert(true);
   };
 
+  const handleNext = () => {
+    // Ensure ShiftList is an array
+    const validList = Array.isArray(ShiftList) ? ShiftList : [];
+    if (validList.length === 0) return;
+    
+    const currentIndex = validList.findIndex(
+      (item) => item.id === currentShiftId
+    );
+    
+    if (currentIndex < validList.length - 1) {
+      const nextShift = validList[currentIndex + 1];
+      setCurrentShiftId(nextShift?.id);
+      setCurrentShift(nextShift);
+    } else {
+      // Loop to first item
+      const firstShift = validList[0];
+      setCurrentShiftId(firstShift?.id);
+      setCurrentShift(firstShift);
+    }
+  };
+
+  const handlePrevious = () => {
+    // Ensure ShiftList is an array
+    const validList = Array.isArray(ShiftList) ? ShiftList : [];
+    if (validList.length === 0) return;
+    
+    const currentIndex = validList.findIndex(
+      (item) => item.id === currentShiftId
+    );
+    if (currentIndex > 0) {
+      const prevShift = validList[currentIndex - 1];
+      setCurrentShiftId(prevShift?.id);
+      setCurrentShift(prevShift);
+    } else {
+      // Loop to last item
+      const lastShift = validList[validList.length - 1];
+      setCurrentShiftId(lastShift?.id);
+      setCurrentShift(lastShift);
+    }
+  };
+
   const confirmDelete = async () => {
     try {
-      await deleteRecord(`/shift/${viewData?.id}`, viewData?.name);
+      await deleteRecord(`/shift/${currentShift?.id}`, currentShift?.name);
       setIsOpen(false);
       if (typeof reload === 'function') {
         reload(true);
@@ -59,10 +111,9 @@ const ViewShift = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
 
   const refreshData = async () => {
     try {
-      const response = await axios.get(`/shift/${viewData.id}`);
+      const response = await axios.get(`/shift/${currentShiftId}`);
       if (response.data) {
-        console.log("Fetched updated shift data:", response.data);
-        setViewData(response.data);
+        setCurrentShift(response.data);
       }
     } catch (error) {
       console.error("Failed to fetch updated shift data:", error);
@@ -83,9 +134,8 @@ const ViewShift = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
 
   const handleFormUpdate = async (formData) => {
     // This function will be called after successful form submission
-    console.log("Shift updated with data:", formData);
-    setViewData({
-      ...viewData,
+    setCurrentShift({
+      ...currentShift,
       ...formData
     });
     return true;
@@ -93,32 +143,37 @@ const ViewShift = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
 
   return (
     <>
-      <SheetComponent
-        {...formSheetData}
+      <ViewDetailSheetCardExtension
         isOpen={isOpen}
-        setIsOpen={(open) => {
-          setIsOpen(open);
-          if (!open && typeof reload === 'function') {
-            reload(true); // Ensure table is reloaded when view is closed
-          }
-        }}
-        width="568px"
+        setIsOpen={setIsOpen}
+        title="Shift Detail"
+        handlePrevious={handlePrevious}
+        handleNext={handleNext}
       >
-        <div className="flex justify-end mb-4 space-x-2">
-          <CircularActionButtons 
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            editTooltip="Edit Shift"
-            deleteTooltip="Delete Shift"
-          />
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-end mt-4 space-x-2">
+            <CircularActionButtons 
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              editTooltip="Edit Shift"
+              deleteTooltip="Delete Shift"
+            />
+          </div>
+
+          <DetailCard detailCardTitle="Shift Details" date={currentShift?.created_at} dateTitle="Created At">
+            <DetailBox label="Name" value={currentShift?.name} />
+            <DetailBox label="Shift Type" value={currentShift?.type} />
+            <DetailBox label="Start Time" value={formatTime(currentShift?.starttime)} />
+            <DetailBox label="End Time" value={formatTime(currentShift?.endtime)} />
+            {ShiftList.length > 0 && (
+              <DetailBox 
+                label="Position" 
+                value={`${(Array.isArray(ShiftList) ? ShiftList.findIndex(item => item.id === currentShiftId) : -1) + 1} of ${Array.isArray(ShiftList) ? ShiftList.length : 0}`} 
+              />
+            )}
+          </DetailCard>
         </div>
-        <DetailCard detailCardTitle="Shift Details" date={viewData?.created_at}>
-          <DetailBox label="Name" value={viewData?.name} />
-          <DetailBox label="Shift Type" value={viewData?.type} />
-          <DetailBox label="Start Time" value={formatTime(viewData?.starttime)} />
-          <DetailBox label="End Time" value={formatTime(viewData?.endtime)} />
-        </DetailCard>
-      </SheetComponent>
+      </ViewDetailSheetCardExtension>
 
       {openDeleteAlert && (
         <AlertDialogue
@@ -134,21 +189,22 @@ const ViewShift = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
       )}
 
       {editShift && (
-        <SheetComponent
-          {...updateSheetData}
+        <ViewDetailSheetCardExtension
           isOpen={editShift}
           setIsOpen={handleEditClose}
-          width="568px"
+          title="Update Shift"
+          handlePrevious={() => {}}
+          handleNext={() => {}}
         >
           <AddShiftForm
             isOpen={editShift}
             setIsOpen={handleEditClose}
-            shiftData={viewData}
+            shiftData={currentShift}
             setEdit={() => {}}
             reload={reload}
             onUpdateSuccess={handleFormUpdate}
           />
-        </SheetComponent>
+        </ViewDetailSheetCardExtension>
       )}
     </>
   );

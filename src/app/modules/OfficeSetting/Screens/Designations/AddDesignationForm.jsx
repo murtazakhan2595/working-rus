@@ -114,17 +114,19 @@ const AddDesignationForm = ({
           }
         );
 
-        if (typeof reload === "function") {
-          reload(true);
-        }
+        console.log("🚀 Form update successful, calling callbacks...");
 
         // Call the update success callback if provided
         if (onUpdateSuccess && typeof onUpdateSuccess === "function") {
+          console.log("🚀 Calling onUpdateSuccess...");
           await onUpdateSuccess(submitData);
+          console.log("🚀 onUpdateSuccess completed");
         }
 
         resetForm();
-        setIsOpen(false); // Close only the edit form, keep view sheet open
+        console.log("🚀 About to call setIsOpen(true) to close edit sheet...");
+        setIsOpen(true); // Pass true to indicate successful update
+        console.log("🚀 setIsOpen(true) called");
       }
     } catch (error) {
       console.log("API call error:", error);

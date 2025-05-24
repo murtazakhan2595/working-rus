@@ -1,21 +1,40 @@
 import { DetailBox } from "components/SheetCardExtension";
 import { DetailCard } from "components/SheetCardExtension";
-import SheetComponent from "components/ui/SheetComponent";
 import { useState, useEffect } from "react";
 import CircularActionButtons from "components/CircularActionButtons";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
 import AddOnboardingForm from "./AddOnboardingForm";
 import axios from "axios";
+import { ViewDetailSheetCardExtension } from "components";
 
-const ViewOnboarding = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
+const ViewOnboarding = ({ 
+  isOpen, 
+  setIsOpen, 
+  data, 
+  reload = () => {},
+  OnboardingList = []
+}) => {
+  console.log("📋 ViewOnboarding render - isOpen:", isOpen);
+  
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [editDocument, setEditDocument] = useState(false);
-  const [viewData, setViewData] = useState(data);
+  const [currentDocument, setCurrentDocument] = useState(data);
+  const [currentDocumentId, setCurrentDocumentId] = useState(data?.id);
 
+  // Track when main setIsOpen might be called
+  const wrappedSetIsOpen = (value) => {
+    console.log("📋 Main ViewOnboarding setIsOpen called with:", value);
+    setIsOpen(value);
+  };
+
+  // Reset to original data when sheet opens
   useEffect(() => {
-    setViewData(data);
-  }, [data]);
+    if (isOpen && data) {
+      setCurrentDocument(data);
+      setCurrentDocumentId(data.id);
+    }
+  }, [isOpen]);
 
   const formSheetData = {
     triggerText: null,
@@ -39,9 +58,49 @@ const ViewOnboarding = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
     setOpenDeleteAlert(true);
   };
 
+  const handleNext = () => {
+    // Ensure OnboardingList is an array
+    const validList = Array.isArray(OnboardingList) ? OnboardingList : [];
+    if (validList.length === 0) return;
+    
+    const currentIndex = validList.findIndex(
+      (item) => item.id === currentDocumentId
+    );
+    if (currentIndex < validList.length - 1) {
+      const nextDocument = validList[currentIndex + 1];
+      setCurrentDocumentId(nextDocument?.id);
+      setCurrentDocument(nextDocument);
+    } else {
+      // Loop to first item
+      const firstDocument = validList[0];
+      setCurrentDocumentId(firstDocument?.id);
+      setCurrentDocument(firstDocument);
+    }
+  };
+
+  const handlePrevious = () => {
+    // Ensure OnboardingList is an array
+    const validList = Array.isArray(OnboardingList) ? OnboardingList : [];
+    if (validList.length === 0) return;
+    
+    const currentIndex = validList.findIndex(
+      (item) => item.id === currentDocumentId
+    );
+    if (currentIndex > 0) {
+      const prevDocument = validList[currentIndex - 1];
+      setCurrentDocumentId(prevDocument?.id);
+      setCurrentDocument(prevDocument);
+    } else {
+      // Loop to last item
+      const lastDocument = validList[validList.length - 1];
+      setCurrentDocumentId(lastDocument?.id);
+      setCurrentDocument(lastDocument);
+    }
+  };
+
   const confirmDelete = async () => {
     try {
-      await deleteRecord(`/onboarding-document/${viewData?.id}`, viewData?.name);
+      await deleteRecord(`/onboarding-document/${currentDocument?.id}`, currentDocument?.name);
       setIsOpen(false);
       if (typeof reload === 'function') {
         reload(true);
@@ -53,10 +112,9 @@ const ViewOnboarding = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
 
   const refreshData = async () => {
     try {
-      const response = await axios.get(`/onboarding-document/${viewData.id}`);
+      const response = await axios.get(`/onboarding-document/${currentDocumentId}`);
       if (response.data) {
-        console.log("Fetched updated document data:", response.data);
-        setViewData(response.data);
+        setCurrentDocument(response.data);
       }
     } catch (error) {
       console.error("Failed to fetch updated document data:", error);
@@ -64,22 +122,33 @@ const ViewOnboarding = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
   };
 
   const handleEditClose = async (updated = false) => {
+    console.log("📋 handleEditClose called with updated:", updated);
+    console.log("📋 Before: editDocument =", editDocument, "isOpen =", isOpen);
+    
     setEditDocument(false);
+    console.log("📋 Edit sheet closed, editDocument set to false");
     
     if (updated) {
+      console.log("📋 Update detected, refreshing data...");
       await refreshData();
+      console.log("📋 Data refreshed");
+      
       // Also reload the table
       if (typeof reload === 'function') {
+        console.log("📋 Calling reload(true)...");
         reload(true);
+        console.log("📋 Reload called");
       }
+      console.log("📋 View sheet should remain open");
     }
+    
+    console.log("📋 handleEditClose completed");
   };
 
   const handleFormUpdate = async (formData) => {
     // This function will be called after successful form submission
-    console.log("Document updated with data:", formData);
-    setViewData({
-      ...viewData,
+    setCurrentDocument({
+      ...currentDocument,
       ...formData
     });
     return true;
@@ -87,29 +156,28 @@ const ViewOnboarding = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
 
   return (
     <>
-      <SheetComponent
-        {...formSheetData}
+      <ViewDetailSheetCardExtension
         isOpen={isOpen}
-        setIsOpen={(open) => {
-          setIsOpen(open);
-          if (!open && typeof reload === 'function') {
-            reload(true); // Ensure table is reloaded when view is closed
-          }
-        }}
-        width="568px"
+        setIsOpen={wrappedSetIsOpen}
+        title="Document Detail"
+        handlePrevious={handlePrevious}
+        handleNext={handleNext}
       >
-        <div className="flex justify-end mb-4 space-x-2">
-          <CircularActionButtons 
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            editTooltip="Edit Document"
-            deleteTooltip="Delete Document"
-          />
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-end mt-4 space-x-2">
+            <CircularActionButtons 
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              editTooltip="Edit Document"
+              deleteTooltip="Delete Document"
+            />
+          </div>
+
+          <DetailCard detailCardTitle="Document Details" date={currentDocument?.created_at}>
+            <DetailBox label="Document Name" value={currentDocument?.name} />
+          </DetailCard>
         </div>
-        <DetailCard detailCardTitle="Document Details" date={viewData?.created_at}>
-          <DetailBox label="Document Name" value={viewData?.name} />
-        </DetailCard>
-      </SheetComponent>
+      </ViewDetailSheetCardExtension>
 
       {openDeleteAlert && (
         <AlertDialogue
@@ -125,21 +193,22 @@ const ViewOnboarding = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
       )}
 
       {editDocument && (
-        <SheetComponent
-          {...updateSheetData}
+        <ViewDetailSheetCardExtension
           isOpen={editDocument}
           setIsOpen={handleEditClose}
-          width="568px"
+          title="Update Document"
+          handlePrevious={() => {}}
+          handleNext={() => {}}
         >
           <AddOnboardingForm
             isOpen={editDocument}
             setIsOpen={handleEditClose}
-            edit={{ open: true, data: viewData }}
+            edit={{ open: true, data: currentDocument }}
             setEdit={() => {}}
             reload={reload}
             onUpdateSuccess={handleFormUpdate}
           />
-        </SheetComponent>
+        </ViewDetailSheetCardExtension>
       )}
     </>
   );

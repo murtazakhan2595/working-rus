@@ -75,7 +75,7 @@ const WorkingHours = ({ data, reload }) => {
       </CardHeader>
       <CardContent>
         <TableCustom
-          columns={WorkingHoursColumn(reload)}
+          columns={WorkingHoursColumn(reload, data || [])}
           data={filteredData}
           pagination={false}
           itemsPerPage={100}

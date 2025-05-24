@@ -119,7 +119,7 @@ const Designations = ({
             </CardHeader>
             <CardContent>
               <TableCustom
-                columns={DesignationColumn(forceReload)}
+                columns={DesignationColumn(forceReload, designation?.results || [])}
                 data={designation?.results || []}
                 dataTotalSize={designation?.count || 0}
                 pagination={true}

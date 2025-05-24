@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import SheetComponent from "components/ui/SheetComponent";
 import AddDepartmentForm from "./AddDepartmentForm";
 import ViewDepartment from "./ViewDepartment";
 import DropdownActionMenu from "components/DropdownActionMenu";
+import { ViewDetailSheetCardExtension } from "components";
 import useUserOrganization from "app/hooks/useUserOrganization";
 
-const DepartmentAction = ({ data, reload }) => {
+const DepartmentAction = ({ data, reload, DepartmentList = [] }) => {
   const [view, setView] = useState(null);
   const [deleteDept, setDeleteDept] = useState(null);
   const [edit, setEdit] = useState(null);
@@ -85,11 +85,12 @@ const DepartmentAction = ({ data, reload }) => {
       )}
 
       {edit?.open && (
-        <SheetComponent
-          {...formSheetData}
+        <ViewDetailSheetCardExtension
           isOpen={edit?.open}
           setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
-          width="568px"
+          title="Update Department"
+          handlePrevious={() => {}}
+          handleNext={() => {}}
         >
           <AddDepartmentForm
             isOpen={edit.open}
@@ -101,7 +102,7 @@ const DepartmentAction = ({ data, reload }) => {
             reload={reload}
             userOrganization={userOrganization}
           />
-        </SheetComponent>
+        </ViewDetailSheetCardExtension>
       )}
 
       {view?.visible && (
@@ -111,6 +112,8 @@ const DepartmentAction = ({ data, reload }) => {
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
           data={view.data}
+          reload={reload}
+          DepartmentList={DepartmentList}
         />
       )}
     </>
