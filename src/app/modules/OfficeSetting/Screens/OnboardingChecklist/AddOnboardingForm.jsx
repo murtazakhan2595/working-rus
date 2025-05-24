@@ -45,7 +45,6 @@ const AddOnboardingForm = ({
   const handleSubmit = async (values) => {
     try {
       setIsSubmitting(true);
-      console.log("VALUES in handle submit", values);
 
       const response = await saveOnboardingDocument(values?.id, values);
       if (response) {
@@ -56,18 +55,12 @@ const AddOnboardingForm = ({
           }
         );
 
-        console.log("📝 Form update successful, calling callbacks...");
-
         // Call the update success callback if provided
         if (onUpdateSuccess && typeof onUpdateSuccess === "function") {
-          console.log("📝 Calling onUpdateSuccess...");
           await onUpdateSuccess(values);
-          console.log("📝 onUpdateSuccess completed");
         }
 
-        console.log("📝 About to call setIsOpen(true) to close edit sheet...");
         setIsOpen(true); // Pass true to indicate successful update
-        console.log("📝 setIsOpen(true) called");
       }
     } catch (error) {
       console.error("Error during submission:", error);
@@ -103,7 +96,6 @@ const AddOnboardingForm = ({
         >
           {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
-              {console.log("FORMIK PROPS:", props.values)}
               <SheetCardExtension title="Document Details">
                 <TextInput
                   name="name"

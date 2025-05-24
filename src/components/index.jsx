@@ -20,6 +20,9 @@ import { ViewSignature } from "./FormControl/InputSignature";
 import ViewTreeUI  from "./ViewTreeUI";
 import DropdownActionMenu  from "./DropdownActionMenu";
 import SplitViewDetail  from "./SplitViewDetail";
+import NavigationSheetComponent from "./NavigationSheetComponent";
+import DetailContent from "./DetailContent";
+
 export {
   Header,
   PageLoader,
@@ -44,4 +47,6 @@ export {
   ViewTreeUI,
   DropdownActionMenu,
   SplitViewDetail,
+  NavigationSheetComponent,
+  DetailContent,
 };
