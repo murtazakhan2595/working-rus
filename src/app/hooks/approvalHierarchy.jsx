@@ -1,19 +1,17 @@
 import axios from "axios";
 import { toast } from "react-toastify";
-import { deleteRole } from "./general";
 import { initialState } from "state/slices/UserSlice";
-import { mapModuleListData } from "app/utils/MappingObjects/mapRolesPermissionData";
 import {
   mapApprovalHierarchyListData,
   mapApprovalHierarchyPayloadData,
   mapApprovalHierarchyData,
-  mapApprovalHierarchyHistoryLogsListData
+  mapApprovalHierarchyHistoryLogsListData,
+  mapHierarchyLevelData,
+  mapDelegateLevelPayloadData,
+  mapDelegateLevelListData
 } from "app/utils/MappingObjects/mapApprovalHierarchy";
-
 import { HandleLogout } from "./general";
 import { renderErrorMessages } from "utils/renderErrors";
-import { saveEmployeeWorkInformationData } from "./employee";
-import { FilterTreeBySelectedLeafs } from "utils/Lists";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -21,31 +19,7 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-export const getModuleList = async (payload) => {
-  const pageNo = payload?.options?.page ?? "";
-  const pageSize = payload?.options?.sizePerPage ?? "";
-  const filterData = payload?.filterData ?? {};
-  const ordering = payload?.ordering ?? "order";
-  try {
-    const URL = `/modules/?ordering=${ordering}&${
-      pageNo ? `page=${pageNo}&` : ""
-    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-      JSON.stringify(filterData)
-    )}`;
-    const response = await axios.get(`${baseUrl}${URL}`, {
-      headers: headers(),
-    });
-    if (response.status === 200) {
-      const moduleResponse = response.data;
-      // const moduleList = await mapmoduleList(moduleResponse?.results);
-      const moduleList = await mapModuleListData(moduleResponse?.results);
-      return { results: moduleList, count: moduleResponse.count };
-    } else return [];
-  } catch (error) {
-    console.error("Error fetching Personal Info data :", error);
-  }
-  return [];
-};
+
 // Get hierarchy list
 export const getApprovalHierarchyList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
@@ -155,4 +129,82 @@ export const getApprovalHierarchyHistoryLogsList = async (payload) => {
     console.error("Error fetching hierarchy data:", error);
     return { results: [], count: 0 };
   }
+};
+
+export const getHierarchyLevelData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/levels/${id}`, {
+      headers: headers(),
+    });
+    const HierarchyLevelData = mapHierarchyLevelData(response.data);
+
+    return HierarchyLevelData;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching data:", error);
+  }
+  return {};
+};
+
+export const saveUpdateDelegateLevel = async (payload, delegateID) => {
+  try {
+    const url = delegateID
+      ? `${baseUrl}/delegations/${delegateID}/`
+      : `${baseUrl}/delegations/`;
+
+    const method = delegateID ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = delegateID ? 200 : 201;
+    const finalPayload = mapDelegateLevelPayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdatedelegatelevel:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+
+export const getDelegationList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "order";
+  try {
+    const URL = `/delegations/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const delegationResponse = response.data;
+      const delegationList = await mapDelegateLevelListData(delegationResponse?.results);
+      return { results: delegationList, count: delegationResponse.count };
+    } else return [];
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
 };

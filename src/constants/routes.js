@@ -344,22 +344,22 @@ export const SidebarRoutes = [
         Config.APPROVAL_HIERARCHY && {
           path: "/office-settings/approval-hierarchy",
           component: <ApprovalHierarchy />,
-          name: "VIEW_ROLE_HISTORY_LOGS",
+          name: "APPROVAL_HIERARCHY",
         },
         Config.APPROVAL_HIERARCHY && {
           path: "/office-settings/approval-hierarchy/history",
           component: <ApprovalHierarchy active={"History & Logs"} />,
-          name: "VIEW_ROLE_HISTORY_LOGS",
+          name: "APPROVAL_HIERARCHY",
         },
         Config.APPROVAL_HIERARCHY && {
-          path: "/office-settings/approval-hierarchy/add-levels",
+          path: "/office-settings/approval-hierarchy/hierarchy-detail",
           component: <ApprovalHierarchyDetails />,
-          name: "VIEW_ROLE_HISTORY_LOGS",
+          name: "APPROVAL_HIERARCHY",
         },
         Config.APPROVAL_HIERARCHY && {
           path: "/office-settings/approval-hierarchy/history-logs",
           component: <ApprovalHierarchyHistoryLogs />,
-          name: "VIEW_ROLE_HISTORY_LOGS",
+          name: "APPROVAL_HIERARCHY",
         },
       ].filter(Boolean) // Filter out undefined route
     : []),

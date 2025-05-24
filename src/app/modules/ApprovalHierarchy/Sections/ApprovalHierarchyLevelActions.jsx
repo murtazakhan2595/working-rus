@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { ViewUserRole } from "app/modules/RoleAndPermissions/UserRole";
-import { AddUpdateApprovalHierarchy } from "app/modules/ApprovalHierarchy";
+import {
+  AddUpdateApprovalHierarchy,
+  AddUpdateDelegateLevels,
+} from "app/modules/ApprovalHierarchy";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { toast } from "react-toastify";
 import { deleteRecord } from "app/hooks/general";
@@ -36,15 +39,13 @@ const ApprovalHierarchyLevelActions = ({
       data: data,
     });
   };
-  const handleAddLevels = () => {
-    navigate("/office-settings/approval-hierarchy/add-levels", {
-      state: { GOTO_URL: "/office-settings/approval-hierarchy", id: data.id },
-    });
-  };
 
   const confirmDelete = async () => {
     try {
-      await deleteRecord(`/hierarchies/${data.id}`, data?.name);
+      await deleteRecord(
+        `/levels/${data.id}`,
+        `Level No ${data.level_number || ""}`
+      );
       setDeleteRoleState(null);
       // Ensure table is reloaded by calling reload function
       reloadData(true);
@@ -58,15 +59,15 @@ const ApprovalHierarchyLevelActions = ({
       <DropdownActionMenu
         onEdit={isEditUserRolePermitted ? handleEdit : null}
         onDelete={isEditUserRolePermitted ? handleDelete : null}
-        editText="Edit Hierarchy"
-        deleteText="Delete Hierarchy"
-        menuTooltip="Hierarchy Actions"
+        editText="Delegate Level"
+        deleteText="Delete Level"
+        menuTooltip="Hierarchy Level Actions"
       />
 
       {deleteRoleState?.open && (
         <AlertDialogue
           title="Confirm Delete?"
-          description={`This action can't be undone. All information associated with role "${deleteRoleState?.data?.name}" will be lost.`}
+          description={`This action can't be undone. All information associated with this level will be lost.`}
           isOpen={deleteRoleState.open}
           setIsOpen={(isOpen) =>
             setDeleteRoleState((prev) => ({ ...prev, open: isOpen }))
@@ -88,10 +89,13 @@ const ApprovalHierarchyLevelActions = ({
         />
       )}
       {openEditForm && (
-        <AddUpdateApprovalHierarchy
+        <AddUpdateDelegateLevels
           isOpen={openEditForm}
-          setReloadData={reloadData}
-          id={data.id}
+          setReloadData={() => {
+            reloadData(true);
+            setOpenEditForm(false);
+          }}
+          level_id={data.id}
         />
       )}
     </>

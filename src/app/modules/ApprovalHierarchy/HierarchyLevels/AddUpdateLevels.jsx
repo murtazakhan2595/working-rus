@@ -31,12 +31,13 @@ import { CardDescription } from "components/ui/card";
 import { CheckBoxInput } from "components/FormControl";
 
 const AddUpdateLevels = React.memo(
-  ({ isOpen, AddLevel = () => {}, currentLevelNo = 1, currentLevel }) => {
+  ({ isOpen, AddLevel = () => {}, currentLevelNo = 1, currentLevel, id }) => {
     const formData = currentLevel
       ? currentLevel
       : { ...ApprovalLevel, level_number: currentLevelNo }; // Ensure ApprovalLevel is defined/imported
     const Designations = useSelector((state) => state.common.designations);
     const Employees = useSelector((state) => state.emp.employees);
+    const isEditMode = Boolean(id);
 
     const handleLevelSubmit = (values) => {
       AddLevel(values);
@@ -47,6 +48,7 @@ const AddUpdateLevels = React.memo(
       description: null,
       footer: null,
     };
+
     return (
       <SheetUI
         isOpen={isOpen}

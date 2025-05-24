@@ -1,15 +1,23 @@
-import {ApprovalHierarchy,ApprovalHierarchyHistoryLogs} from 'app/utils/Types/ApprovalHierarchy';
+import {
+  ApprovalHierarchy,
+  ApprovalHierarchyHistoryLogs,
+  ApprovalLevel,
+  DelegateLevel,
+} from "app/utils/Types/ApprovalHierarchy";
 
 export function mapApprovalHierarchyData(data) {
-  const approvalHierarchyData = Object.keys(ApprovalHierarchy).reduce((acc, key) => {
-    if (data.hasOwnProperty(key)) {
-      acc[key] = data[key];
-    } else {
-      // Use default values from ApprovalHierarchy type
-      acc[key] = ApprovalHierarchy[key];
-    }
-    return acc;
-  }, {});
+  const approvalHierarchyData = Object.keys(ApprovalHierarchy).reduce(
+    (acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      } else {
+        // Use default values from ApprovalHierarchy type
+        acc[key] = ApprovalHierarchy[key];
+      }
+      return acc;
+    },
+    {}
+  );
 
   return approvalHierarchyData;
 }
@@ -32,11 +40,10 @@ export function mapApprovalHierarchyPayloadData(data, id) {
     if (
       data.hasOwnProperty(key) &&
       data[key] !== null &&
-      data[key] !== undefined
+      data[key] !== undefined &&
+      !["no_of_levels", "id", "has_delegation"].includes(key)
     ) {
-      if (key === "name")
-        payload[key] = data[key].trim();
-
+      if (key === "name") payload[key] = data[key].trim();
       else payload[key] = data[key];
     }
   }
@@ -71,4 +78,69 @@ export async function mapApprovalHierarchyHistoryLogsListData(data) {
   });
 
   return HistoryList;
+}
+
+export function mapHierarchyLevelData(data) {
+  const approvalHierarchyData = Object.keys(ApprovalLevel).reduce(
+    (acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      } else {
+        // Use default values from ApprovalHierarchy type
+        acc[key] = ApprovalLevel[key];
+      }
+      return acc;
+    },
+    {}
+  );
+
+  return approvalHierarchyData;
+}
+
+export function mapDelegateLevelPayloadData(data) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in DelegateLevel) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined &&
+      !["id"].includes(key)
+    ) {
+      if (key === "reason") payload[key] = data[key].trim();
+      else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+
+
+export function mapDelegateLevelData(data) {
+  const delegateLevelData = Object.keys(DelegateLevel).reduce(
+    (acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      } else {
+        // Use default values from ApprovalHierarchy type
+        acc[key] = DelegateLevel[key];
+      }
+      return acc;
+    },
+    {}
+  );
+
+  return delegateLevelData;
+}
+
+export async function mapDelegateLevelListData(data) {
+  if (!data || data.length === 0) return [];
+  const DelegateLevelList = await data?.map((delegateLevel) => {
+    return mapDelegateLevelData(delegateLevel);
+  });
+
+  return DelegateLevelList;
 }

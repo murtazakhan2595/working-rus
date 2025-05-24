@@ -250,47 +250,30 @@ const FeatureList = [
   "VIEW_USER_ROLE",
   "ADD_APPROVAL_HIERARCHY",
   "View_APPROVAL_HIERARCHY",
+  "VIEW_ASSIGNED_MY_ASSETS",
 ];
 
-// const new_submodule = {
-//   // Module ID: 12
-//   code_name: "ROLE_PERMISSIONS",
-//   name: "Role & Permissions",
-//   order: 7,
-//   feature_list: [
-//     {
-//       code_name: "VIEW_USER_ROLE",
-//       name: "View User Roles",
-//     },
-//     {
-//       code_name: "ADD_USER_ROLE",
-//       name: "Add User Role",
-//     },
-//     {
-//       code_name: "EDIT_USER_ROLE",
-//       name: "Edit User Role",
-//     },
-//     {
-//       code_name: "ASSIGN_USER_ROLE",
-//       name: "Assign Role",
-//     },
-//     {
-//       code_name: "EDIT_ASSIGNED_ROLE",
-//       name: "Edit Assigned Role",
-//     },
-//     {
-//       code_name: "VIEW_ASSIGNED_ROLES",
-//       name: "View Assigned Roles",
-//     },
-//     {
-//       code_name: "REMOVE_ASSIGNED_ROLE",
-//       name: "Remove Assigned Role",
-//     },
-//     {
-//       code_name: "VIEW_ROLE_HISTORY_LOGS",
-//       name: "View History & Logs",
-//     },
-//   ],
-// };
+// export const ApprovalHierarchyRequestType = [
+//   { label: "Leave", value: "MY_LEAVE_TRACKER", api_ednpoint: "/leave/" },
+//   {
+//     label: "Claims",
+//     value: "MY_CLAIMS",
+//     end_point: "/payroll/reimbursement/",
+//   },
+//   { label: "Transfer", value: "MY_TRANSFERS", end_point: "/employeetranfer/" },
+//   { label: "Assets", value: "MY_ASSETS", end_point: "asset_assignment/" },
+//   {
+//     label: "Temination",
+//     value: "EXIT_CLEARANCE_TERMINATION",
+//     end_point: "/employeeExit/",
+//     category: "Termination",
+//   },
+//   {
+//     label: "Resignation",
+//     value: "EXIT_CLEARANCE_RESIGNATION",
+//     end_point: "/employeeExit/",
+//     category: "Resignation",
+//   },
+// ];
 
 export { ModuleList, SubModuleList, FeatureList };
