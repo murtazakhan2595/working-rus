@@ -292,7 +292,7 @@ const ClaimRequest = ({ userProfile }) => {
             canRequestClaim ? (
               <ReimbursmentDetailsRequest reload={fetchMyClaims} />
             ) : (
-              <div className="p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+              <div className="p-2 text-sm text-red-700 border border-red-200 rounded bg-red-50">
                 You don't have permission to request claims
               </div>
             )
@@ -305,7 +305,7 @@ const ClaimRequest = ({ userProfile }) => {
                 Export to Excel
               </Button>
             ) : (
-              <div className="p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+              <div className="p-2 text-sm text-red-700 border border-red-200 rounded bg-red-50">
                 You don't have permission to export claims
               </div>
             )
