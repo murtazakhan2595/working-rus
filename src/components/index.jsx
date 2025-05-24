@@ -22,6 +22,7 @@ import DropdownActionMenu  from "./DropdownActionMenu";
 import SplitViewDetail  from "./SplitViewDetail";
 import NavigationSheetComponent from "./NavigationSheetComponent";
 import DetailContent from "./DetailContent";
+import UnauthorizedAccess from "./UnauthorizedAccess";
 
 export {
   Header,
@@ -49,4 +50,5 @@ export {
   SplitViewDetail,
   NavigationSheetComponent,
   DetailContent,
+  UnauthorizedAccess,
 };

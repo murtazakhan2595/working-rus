@@ -19,7 +19,7 @@ import {
   UserProfileTaskDetails,
   TaskEditAddViewDetails,
 } from "app/modules/TaskManagment";
-import ViewEmployee from "app/modules/Employees/Screens/View";
+import ViewEmployee from "app/modules/Employees/Screens/View/";
 import "react-toastify/dist/ReactToastify.css";
 import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
 import Employee from "app/modules/Employees/Employee.jsx";
