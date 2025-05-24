@@ -109,8 +109,8 @@ const ViewDepartment = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
         <DetailCard detailCardTitle="Department Details" date={viewData?.created_at} dateTitle="Created At">
           <DetailBox label="Name" value={viewData?.name} />
           <DetailBox label="Description" value={viewData?.description} />
-          <DetailBox label="Organization" value={viewData?.organization} />
-          <DetailBox label="Parent Department" value={viewData?.parent_department} />
+          {/* <DetailBox label="Organization" value={viewData?.organization} />
+          <DetailBox label="Parent Department" value={viewData?.parent_department} /> */}
         </DetailCard>
       </SheetComponent>
 

@@ -39,14 +39,6 @@ const AddDesignationForm = ({
   const userOrganizationId =
     userDetails?.organization_id || userDetails?.organization;
 
-  // Debug the incoming edit data
-  useEffect(() => {
-    console.log("AddDesignationForm edit prop:", edit);
-    console.log("Is edit an object?", typeof edit === "object");
-    console.log("Edit has data property?", edit?.data !== undefined);
-    console.log("Edit has open property?", edit?.open !== undefined);
-  }, [edit]);
-
   // Determine if we're in edit mode - handle both structures
   const isEditMode = Boolean(edit?.data) || Boolean(edit?.id);
 
@@ -59,13 +51,9 @@ const AddDesignationForm = ({
     ...(editData || {}),
   });
 
-  // Log when component mounts and when edit data changes
+  // Update form data when edit data changes
   useEffect(() => {
-    console.log("AddDesignationForm mounted, isEditMode:", isEditMode);
-    console.log("Initial edit data:", editData);
-
     if (editData) {
-      console.log("Setting form data with edit data:", editData);
       setFormData({
         ...DesignationInfo,
         ...(editData || {}),
@@ -101,6 +89,8 @@ const AddDesignationForm = ({
   };
 
   const handleSubmit = async (values, formikHelpers) => {
+    console.log("Form submitted with values:", values);
+    
     const { setSubmitting, setErrors, resetForm } = formikHelpers;
 
     // Get the ID from the appropriate source
@@ -112,8 +102,6 @@ const AddDesignationForm = ({
       organization:
         values.organization || editData?.organization || userOrganizationId,
     };
-
-    console.log("Submitting data with organization:", submitData);
 
     try {
       const response = await saveDesignation(submitData, designationId);
@@ -136,7 +124,7 @@ const AddDesignationForm = ({
         }
 
         resetForm();
-        setIsOpen(false);
+        setIsOpen(false); // Close only the edit form, keep view sheet open
       }
     } catch (error) {
       console.log("API call error:", error);
@@ -243,6 +231,11 @@ const AddDesignationForm = ({
                   size="lg"
                   variant="default"
                   disabled={props.isSubmitting || !props.isValid}
+                  onClick={(e) => {
+                    console.log("Update button clicked!");
+                    e.preventDefault();
+                    props.handleSubmit();
+                  }}
                 >
                   {props.isSubmitting
                     ? "Saving..."

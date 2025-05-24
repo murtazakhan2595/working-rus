@@ -7,6 +7,9 @@ import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
 import AddDesignationForm from "./AddDesignationForm";
 import axios from "axios";
+import { initialState } from "state/slices/UserSlice";
+
+const baseUrl = initialState.baseUrl;
 
 const ViewDesignation = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
@@ -31,8 +34,24 @@ const ViewDesignation = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
     footer: null,
   };
 
-  const handleEdit = () => {
-    console.log("Edit button clicked, setting edit mode with data:", viewData);
+  const handleEdit = async () => {
+    try {
+      // Fetch fresh data before opening edit form
+      const response = await axios.get(`${baseUrl}/designation/${viewData.id}`, {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (response.data) {
+        setViewData(response.data);
+      }
+    } catch (error) {
+      console.warn("Failed to fetch fresh designation data, using cached data:", error);
+      // Continue with cached data instead of blocking the edit
+    }
+    
     setEditDesignation(true);
   };
 
@@ -54,7 +73,7 @@ const ViewDesignation = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
 
   const refreshData = async () => {
     try {
-      const response = await axios.get(`/designation/${viewData.id}`);
+      const response = await axios.get(`${baseUrl}/designation/${viewData.id}`);
       if (response.data) {
         console.log("Fetched updated designation data:", response.data);
         setViewData(response.data);
@@ -73,6 +92,7 @@ const ViewDesignation = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
       if (typeof reload === 'function') {
         reload(true);
       }
+      // Keep view sheet open after successful update
     }
   };
 
@@ -101,7 +121,8 @@ const ViewDesignation = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
         }}
         width="568px"
       >
-        <div className="flex justify-end mb-4 space-x-2">
+        <div className="flex items-center justify-end pb-4 mb-4 border-b border-gray-200">
+        
           <CircularActionButtons 
             onEdit={handleEdit}
             onDelete={handleDelete}
@@ -109,10 +130,11 @@ const ViewDesignation = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
             deleteTooltip="Delete Designation"
           />
         </div>
+
         <DetailCard detailCardTitle="Designation Details" date={viewData?.created_at} dateTitle="Created At">
           <DetailBox label="Name" value={viewData?.name} />
           <DetailBox label="Description" value={viewData?.description} />
-          <DetailBox label="Organization" value={viewData?.organization} />
+          {/* <DetailBox label="Organization" value={viewData?.organization} /> */}
         </DetailCard>
       </SheetComponent>
 
