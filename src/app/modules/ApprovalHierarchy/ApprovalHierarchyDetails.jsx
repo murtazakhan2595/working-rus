@@ -181,7 +181,7 @@ const ApprovalHierarchyDetails = ({ setReloadData = () => {} }) => {
               setAddLevelsForm(true);
             }}
           >
-            Add New Request Initiator Level
+           Add Hierarchy Level by Initiator
           </Button>
         }
       />

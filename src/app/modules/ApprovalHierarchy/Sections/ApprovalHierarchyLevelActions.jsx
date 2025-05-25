@@ -58,9 +58,9 @@ const ApprovalHierarchyLevelActions = ({
     <>
       <DropdownActionMenu
         onEdit={isEditUserRolePermitted ? handleEdit : null}
-        onDelete={isEditUserRolePermitted ? handleDelete : null}
+        // onDelete={isEditUserRolePermitted ? handleDelete : null}
         editText="Delegate Level"
-        deleteText="Delete Level"
+        // deleteText="Delete Level"
         menuTooltip="Hierarchy Level Actions"
       />
 
