@@ -10,6 +10,7 @@ const ViewDetailSheetCardExtension = React.forwardRef(
       isOpen = true,
       title = null,
       setIsOpen = () => {},
+      positionIndicator = null,
       children,
     },
     ref
@@ -20,11 +21,18 @@ const ViewDetailSheetCardExtension = React.forwardRef(
           <div className="flex flex-col h-full">
             <SheetHeader>
               <div className="flex justify-between gap-x-3 items-center border-b border-[#D7E4FF] b-2">
-                <div className="flex flex-wrap">
+                <div className="flex flex-wrap items-center">
                   <div className="flex">
                     <span className="text-xl m-auto font-semibold">{title}</span>
                   </div>
-                  <div className="flex justify-center ">
+                  {positionIndicator && (
+                    <div className="ml-4">
+                      <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                        {positionIndicator}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex justify-center ml-auto">
                     <button
                       className="flex items-center px-2 py-2"
                       onClick={(e) => handlePrevious(e)}

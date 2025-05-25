@@ -116,7 +116,7 @@ const Branches = ({
           </CardHeader>
           <CardContent>
             <TableCustom
-              columns={BranchColumn(fetchData)}
+              columns={BranchColumn(fetchData, Branches?.results || [])}
               data={filteredData}
               tableOptions={tableOptions}
               dataTotalSize={Branches?.count || 0}

@@ -5,8 +5,9 @@ import SheetComponent from "components/ui/SheetComponent";
 import AddDesignationForm from "./AddDesignationForm";
 import ViewDesignation from "./ViewDesignation";
 import DropdownActionMenu from "components/DropdownActionMenu";
+import { ViewDetailSheetCardExtension } from "components";
 
-const DesignationAction = ({ data, reload }) => {
+const DesignationAction = ({ data, reload, DesignationList = [] }) => {
   const [view, setView] = useState(null);
   const [edit, setEdit] = useState(null);
   const [deleteDesignation, setDeleteDesignation] = useState(null);
@@ -98,14 +99,15 @@ const DesignationAction = ({ data, reload }) => {
       )}
 
       {edit?.open && (
-        <SheetComponent
-          {...formSheetData}
+        <ViewDetailSheetCardExtension
           isOpen={edit?.open}
           setIsOpen={(isOpen) => {
             console.log("Setting edit sheet open state to:", isOpen);
             setEdit((prev) => ({ ...prev, open: isOpen }));
           }}
-          width="568px"
+          title="Update Designation"
+          handlePrevious={() => {}}
+          handleNext={() => {}}
         >
           <AddDesignationForm
             isOpen={edit.open}
@@ -117,7 +119,7 @@ const DesignationAction = ({ data, reload }) => {
             setEdit={setEdit}
             reload={reload}
           />
-        </SheetComponent>
+        </ViewDetailSheetCardExtension>
       )}
       
       {view?.visible && (
@@ -128,6 +130,7 @@ const DesignationAction = ({ data, reload }) => {
           }
           data={view.data}
           reload={reload}
+          DesignationList={DesignationList}
         />
       )}
     </>

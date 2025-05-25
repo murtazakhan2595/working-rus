@@ -18,6 +18,7 @@ const AddBranchForm = ({
   editMode = false,
   branchData = {},
   reload = () => {},
+  onUpdateSuccess = null,
 }) => {
   const [closeSheet, setCloseSheet] = useState(false);
   const [showMap, setShowMap] = useState(false);
@@ -38,8 +39,13 @@ const AddBranchForm = ({
             position: toast.POSITION.TOP_RIGHT,
           }
         );
-        setIsOpen(false);
-        reload(true);
+
+        // Call the update success callback if provided
+        if (onUpdateSuccess && typeof onUpdateSuccess === "function") {
+          await onUpdateSuccess(values);
+        }
+
+        setIsOpen(true); // Pass true to indicate successful update
         dispatch(fetchBranches());
       }
     } catch (error) {

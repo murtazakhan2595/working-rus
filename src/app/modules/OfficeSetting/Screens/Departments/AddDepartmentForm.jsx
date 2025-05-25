@@ -107,18 +107,13 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization, 
           }
         );
 
-        // Ensure table is reloaded by calling reload function
-        if (typeof reload === 'function') {
-          reload(true);
-        }
-
         // Call the update success callback if provided
         if (onUpdateSuccess && typeof onUpdateSuccess === "function") {
           await onUpdateSuccess(payload);
         }
 
         resetForm();
-        setIsOpen(false); // Close form without triggering API refresh since data already updated
+        setIsOpen(true); // Pass true to indicate successful update
       }
     } catch (error) {
       // Handle specific API validation errors - if backend returns field-specific errors
