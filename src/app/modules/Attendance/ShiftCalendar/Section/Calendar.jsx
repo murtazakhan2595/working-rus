@@ -3,10 +3,40 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import moment from "moment";
+import { Button } from "components/ui/button";
+import { useSelector } from "react-redux";
+import { employeeData } from "app/hooks/attendance";
+import ShiftChangeRequestModal from "../ShiftChangeRequestModal";
 
 const Calendar = ({ shift, scheduleShifts, employeeId }) => {
   const [events, setEvents] = useState([]);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
   const prevDataRef = useRef(null);
+
+  const userProfile = useSelector((state) => state.user.userProfile);
+
+  // Check if user is Branch Manager or Cluster Manager
+  const canRequestShiftChange =true
+
+  // Fetch employee data when employeeId changes
+  useEffect(() => {
+    const fetchEmployee = async () => {
+      if (employeeId) {
+        try {
+          const empData = await employeeData(employeeId);
+          setSelectedEmployee(empData);
+        } catch (error) {
+          console.error("Error fetching employee data:", error);
+          setSelectedEmployee(null);
+        }
+      } else {
+        setSelectedEmployee(null);
+      }
+    };
+
+    fetchEmployee();
+  }, [employeeId]);
 
   useEffect(() => {
     // Skip if no employee selected
@@ -233,6 +263,18 @@ const Calendar = ({ shift, scheduleShifts, employeeId }) => {
     return events;
   };
 
+  const handleRequestShiftChange = () => {
+    if (!selectedEmployee) {
+      return;
+    }
+    setIsRequestModalOpen(true);
+  };
+
+  const handleRequestSuccess = () => {
+    // You can refresh the calendar or show a success message here
+    console.log("Shift change request submitted successfully");
+  };
+
   return (
     <div className="min-w-[75%] p-4 bg-gray-100 rounded-lg shadow-lg">
       {employeeId && (
@@ -271,6 +313,19 @@ const Calendar = ({ shift, scheduleShifts, employeeId }) => {
         moreLinkClick="popover"
       />
 
+      {/* Request Shift Change Button - Only visible to Branch/Cluster Managers */}
+      {employeeId && canRequestShiftChange && (
+        <div className="mt-4 p-3 bg-white rounded-lg shadow-sm">
+          <Button
+            onClick={handleRequestShiftChange}
+            className="w-full"
+            size="lg"
+          >
+            Request Shift Change
+          </Button>
+        </div>
+      )}
+
       {/* Legend */}
       <div className="mt-4 p-3 bg-white rounded-lg shadow-sm">
         <div className="text-sm font-medium mb-2">Legend:</div>
@@ -297,6 +352,16 @@ const Calendar = ({ shift, scheduleShifts, employeeId }) => {
           </div>
         </div>
       </div>
+
+      {/* Shift Change Request Modal */}
+      {isRequestModalOpen && selectedEmployee && (
+        <ShiftChangeRequestModal
+          isOpen={isRequestModalOpen}
+          setIsOpen={setIsRequestModalOpen}
+          employee={selectedEmployee}
+          onRequestSuccess={handleRequestSuccess}
+        />
+      )}
     </div>
   );
 };
