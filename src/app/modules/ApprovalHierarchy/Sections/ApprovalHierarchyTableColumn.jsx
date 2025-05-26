@@ -62,48 +62,55 @@ export const ApprovalHierarchyColumn = (reload = () => {}) => [
   },
 ];
 
-export const HierarchyLevelsColumn = (reload = () => {}) => [
-  {
-    dataField: "level_number",
-    text: "Level Number",
-  },
+export const HierarchyLevelsColumn = (reload = () => {}, viewMode) =>
+  [
+    {
+      dataField: "level_number",
+      text: "Level Number",
+    },
 
-  {
-    dataField: "designation",
-    text: "Designation",
-    formatter: (cell, row) =>
-      cell ? (
-        <div>
-          <DesignationName value={cell} />
-        </div>
-      ) : (
-        <div>
-          <EmployeeName value={row.user} fallBackText={"--"} />
-          <div>User</div>
-        </div>
+    {
+      dataField: "designation",
+      text: "Designation",
+      formatter: (cell, row) =>
+        cell ? (
+          <div>
+            <DesignationName value={cell} />
+          </div>
+        ) : (
+          <div>
+            <EmployeeName value={row.user} fallBackText={"--"} />
+            <div>User</div>
+          </div>
+        ),
+    },
+    {
+      dataField: "auto_forward_enabled",
+      text: "Auto Forward",
+      dataSort: true,
+      formatter: (cell) => (
+        <StatusLabel variant="info">
+          {cell ? "Enabled" : "Disabled"}
+        </StatusLabel>
       ),
-  },
-  {
-    dataField: "auto_forward_enabled",
-    text: "Auto Forward",
-    dataSort: true,
-    formatter: (cell) => (
-      <StatusLabel variant="info">{cell ? "Enabled" : "Disabled"}</StatusLabel>
-    ),
-  },
-  {
-    text: "Action",
-    formatter: (cell, row, data_list) => (
-      <ApprovalHierarchyLevelActions
-        data={row}
-        reloadData={reload}
-        ApprovalHierarchyList={data_list}
-      />
-    ),
-    classes: "text-center",
-    headerClasses: "text-center",
-  },
-];
+    },
+    ...(!viewMode
+      ? [
+          {
+            text: "Action",
+            formatter: (cell, row, data_list) => (
+              <ApprovalHierarchyLevelActions
+                data={row}
+                reloadData={reload}
+                ApprovalHierarchyList={data_list}
+              />
+            ),
+            classes: "text-center",
+            headerClasses: "text-center",
+          },
+        ]
+      : []),
+  ].filter(Boolean);
 
 export const HierarchyHistoryColumn = [
   // {
@@ -205,7 +212,7 @@ export const HierarchyHistoryDetailsColumn = [
   },
 ];
 
-export const DelegateLevelsColumn = (reload = () => {}) => [
+export const DelegateLevelsColumn = (reload = () => {},viewMode) => [
   {
     dataField: "branch",
     text: "Branch",
@@ -240,16 +247,20 @@ export const DelegateLevelsColumn = (reload = () => {}) => [
     dataField: "reason",
     text: "Reason",
   },
-  {
-    text: "Action",
-    formatter: (cell, row, data_list) => (
-      <LevelDelegateActions
-        data={row}
-        reloadData={reload}
-        LevelDelegateList={data_list}
-      />
-    ),
-    classes: "text-center",
-    headerClasses: "text-center",
-  },
+  ...(!viewMode
+    ? [
+        {
+          text: "Action",
+          formatter: (cell, row, data_list) => (
+            <LevelDelegateActions
+              data={row}
+              reloadData={reload}
+              LevelDelegateList={data_list}
+            />
+          ),
+          classes: "text-center",
+          headerClasses: "text-center",
+        },
+      ]
+    : []),
 ];

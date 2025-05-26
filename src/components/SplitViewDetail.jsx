@@ -48,7 +48,7 @@ const SplitViewDetail = ({
           </Card>
         </div>
         <div className={`w-full min-h-full ${renderConfig?.className || ""}`}>
-          <Card>
+          <Card className='h-full'>
             <CardTitle className="p-3 pb-1 text-lg text-neutral-1100">
               {renderConfig?.title}
             </CardTitle>

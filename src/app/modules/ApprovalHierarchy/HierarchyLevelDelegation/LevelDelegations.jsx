@@ -31,7 +31,7 @@ import { CardDescription, CardTitle } from "components/ui/card";
 import { ApprovalHierarchyRequestTypeName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
 
-const LevelDelegations = ({ heirarchy_id }) => {
+const LevelDelegations = ({ heirarchy_id , viewMode=false}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [Delegations, setDelegations] = useState({});
   const Departments = useSelector((state) => state.common.departments);
@@ -123,7 +123,7 @@ const LevelDelegations = ({ heirarchy_id }) => {
           onChange={handleFilterChange}
         />
         <TableCustom
-          columns={DelegateLevelsColumn(fetchData)}
+          columns={DelegateLevelsColumn(fetchData, viewMode)}
           data={Delegations.results || []}
           dataTotalSize={Delegations?.count || 0}
           pagination={true}
