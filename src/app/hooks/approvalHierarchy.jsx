@@ -8,7 +8,8 @@ import {
   mapApprovalHierarchyHistoryLogsListData,
   mapHierarchyLevelData,
   mapDelegateLevelPayloadData,
-  mapDelegateLevelListData
+  mapDelegateLevelListData,
+  mapDelegateLevelData,
 } from "app/utils/MappingObjects/mapApprovalHierarchy";
 import { HandleLogout } from "./general";
 import { renderErrorMessages } from "utils/renderErrors";
@@ -204,7 +205,28 @@ export const getDelegationList = async (payload) => {
       return { results: delegationList, count: delegationResponse.count };
     } else return [];
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching Personal Info data :", error);
   }
   return [];
+};
+
+
+export const getDelegateLevelData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/delegations/${id}`, {
+      headers: headers(),
+    });
+    const DelegateLevelData = mapDelegateLevelData(response.data);
+
+    return DelegateLevelData;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching data:", error);
+  }
+  return {};
 };

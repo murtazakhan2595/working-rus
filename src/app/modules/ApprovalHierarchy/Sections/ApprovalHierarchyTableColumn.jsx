@@ -7,6 +7,7 @@ import {
   ApprovalHierarchyActions,
   ApprovalHierarchyLogsActions,
   ApprovalHierarchyLevelActions,
+  LevelDelegateActions,
 } from "app/modules/ApprovalHierarchy/Sections";
 
 import { renderDate } from "utils/renderValues";
@@ -242,10 +243,10 @@ export const DelegateLevelsColumn = (reload = () => {}) => [
   {
     text: "Action",
     formatter: (cell, row, data_list) => (
-      <ApprovalHierarchyLevelActions
+      <LevelDelegateActions
         data={row}
         reloadData={reload}
-        ApprovalHierarchyList={data_list}
+        LevelDelegateList={data_list}
       />
     ),
     classes: "text-center",

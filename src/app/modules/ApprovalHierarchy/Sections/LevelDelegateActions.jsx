@@ -1,20 +1,18 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { ViewUserRole } from "app/modules/RoleAndPermissions/UserRole";
 import {
-  AddUpdateApprovalHierarchy,
+  DelegateDetails,
   AddUpdateDelegateLevels,
 } from "app/modules/ApprovalHierarchy";
 import DropdownActionMenu from "components/DropdownActionMenu";
-import { toast } from "react-toastify";
 import { deleteRecord } from "app/hooks/general";
 import { useNavigate } from "react-router-dom";
 import { HasAccess } from "utils/PermissionUtils";
 
-const ApprovalHierarchyLevelActions = ({
+const LevelDelegateActions = ({
   data,
   reloadData = () => {},
-  ApprovalHierarchyList = [],
+  LevelDelegateList = [],
 }) => {
   const isEditUserRolePermitted = HasAccess("EDIT_USER_ROLE");
   const [view, setView] = useState(null);
@@ -23,10 +21,7 @@ const ApprovalHierarchyLevelActions = ({
   const navigate = useNavigate();
 
   const handleView = () => {
-    setView({
-      visible: true,
-      data: data,
-    });
+    setView(true);
   };
 
   const handleEdit = () => {
@@ -42,10 +37,7 @@ const ApprovalHierarchyLevelActions = ({
 
   const confirmDelete = async () => {
     try {
-      await deleteRecord(
-        `/levels/${data.id}`,
-        `Level No ${data.level_number || ""}`
-      );
+      await deleteRecord(`/delegations/${data.id}`, "Delegate");
       setDeleteRoleState(null);
       // Ensure table is reloaded by calling reload function
       reloadData(true);
@@ -57,17 +49,19 @@ const ApprovalHierarchyLevelActions = ({
   return (
     <>
       <DropdownActionMenu
+        // onView={handleView}
         onEdit={isEditUserRolePermitted ? handleEdit : null}
-        // onDelete={isEditUserRolePermitted ? handleDelete : null}
-        editText="Delegate Level"
-        // deleteText="Delete Level"
-        menuTooltip="Hierarchy Level Actions"
+        onDelete={isEditUserRolePermitted ? handleDelete : null}
+        // viewText="View Delegate"
+        editText="Edit Delegate"
+        deleteText="Delete Delegate"
+        menuTooltip="Delegates Actions"
       />
 
       {deleteRoleState?.open && (
         <AlertDialogue
           title="Confirm Delete?"
-          description={`This action can't be undone. All information associated with this level will be lost.`}
+          description={`This action can't be undone. All information associated with delegate will be lost.`}
           isOpen={deleteRoleState.open}
           setIsOpen={(isOpen) =>
             setDeleteRoleState((prev) => ({ ...prev, open: isOpen }))
@@ -76,16 +70,15 @@ const ApprovalHierarchyLevelActions = ({
         />
       )}
 
-      {view?.visible && (
-        <ViewUserRole
-          isOpen={view.visible}
-          setIsOpen={(isOpen) =>
-            setView((prev) => ({ ...prev, visible: isOpen }))
-          }
-          data={view.data}
-          reload={reloadData}
-          UserRoleList={ApprovalHierarchyList}
-          roleID={view?.data?.id}
+      {view && (
+        <DelegateDetails
+          isOpen={view}
+          setIsOpen={() => {
+            setView(false);
+          }}
+          current_id={data.id}
+          reloadData={reloadData}
+          LevelDelegateList={LevelDelegateList}
         />
       )}
       {openEditForm && (
@@ -98,11 +91,11 @@ const ApprovalHierarchyLevelActions = ({
           setIsOpen={() => {
             setOpenEditForm(false);
           }}
-          level_id={data.id}
+          id={data.id}
         />
       )}
     </>
   );
 };
 
-export default ApprovalHierarchyLevelActions;
+export default LevelDelegateActions;
