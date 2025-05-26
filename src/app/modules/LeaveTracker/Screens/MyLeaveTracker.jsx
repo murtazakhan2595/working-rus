@@ -27,8 +27,15 @@ import { getLeaveComponents } from "app/hooks/leaveTracker";
 import { getLeaveComponentsWithUsed } from "app/hooks/leaveTracker";
 import { PageLoader } from "components";
 import { LeaveTrackerOptions } from "data/Data";
+import { HasAccess } from "utils/PermissionUtils";
 
 const MyLeaveTracker = ({ userProfile }) => {
+  // Permission checks for leave features
+  const canAddLeaveRequest = HasAccess("ADD_LEAVE_REQUEST");
+  const canViewLeavesApplied = HasAccess("VIEW_LEAVES_APPLIED");
+  const canDeleteLeaveRequest = HasAccess("DELETE_LEAVE_REQUEST");
+  const canViewConsumedLeaves = HasAccess("VIEW_CONSUMED_LEAVES");
+
   const [leaveData, setLeaveData] = useState({});
   const [selectedLeaveApplication, setSelectedLeaveApplication] =
     useState(null);
@@ -142,54 +149,72 @@ const MyLeaveTracker = ({ userProfile }) => {
                 My Leave Tracker
               </div>
             </div>
-            <ApplyLeaveSheet
-              reload={async () => {
-                await Promise.all([fetchData(), fetchLeaveTransaction()]);
-              }}
-            />
+            {/* Apply Leave Button - Only show if user can add leave requests */}
+            {canAddLeaveRequest && (
+              <ApplyLeaveSheet
+                reload={async () => {
+                  await Promise.all([fetchData(), fetchLeaveTransaction()]);
+                }}
+              />
+            )}
           </div>
-          <div className="p-6">
-            <section className="flex flex-wrap gap-4 items-center">
-              {LeaveTrackerStats.map((item, index) => (
-                <React.Fragment key={item.title}>
-                  <div className="flex-1 shrink min-w-[240px]">
-                    <div className="pb-2">
-                      <h2 className="text-sm font-medium tracking-tight leading-none text-neutral-800">
-                        {item.title}
-                      </h2>
+
+          {/* Leave Statistics - Only show if user can view applied leaves */}
+          {canViewLeavesApplied && (
+            <div className="p-6">
+              <section className="flex flex-wrap gap-4 items-center">
+                {LeaveTrackerStats.map((item, index) => (
+                  <React.Fragment key={item.title}>
+                    <div className="flex-1 shrink min-w-[240px]">
+                      <div className="pb-2">
+                        <h2 className="text-sm font-medium tracking-tight leading-none text-neutral-800">
+                          {item.title}
+                        </h2>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold leading-tight text-fuchsia-700">
+                          {item.value}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-2xl font-bold leading-tight text-fuchsia-700">
-                        {item.value}
-                      </p>
-                    </div>
-                  </div>
-                  {index < LeaveTrackerStats.length - 1 && (
-                    <div className="relative">
-                      <div className="w-[70px] h-[1px]  rotate-90 border border-[#deade2] absolute top-0 right-[55px]"></div>
-                    </div>
-                  )}
-                </React.Fragment>
-              ))}
-            </section>
-          </div>
+                    {index < LeaveTrackerStats.length - 1 && (
+                      <div className="relative">
+                        <div className="w-[70px] h-[1px]  rotate-90 border border-[#deade2] absolute top-0 right-[55px]"></div>
+                      </div>
+                    )}
+                  </React.Fragment>
+                ))}
+              </section>
+            </div>
+          )}
+
           <div className="flex items-start justify-center gap-4">
-            <AppliedLeaves
-              leaveTransaction={leaveTransaction}
-              setSelectedLeaveApplication={setSelectedLeaveApplication}
-              setIsOpen={setIsOpen}
-              handleFilterChange={handleFilterChange}
-              componentsWithUsed={componentsWithUsed}
-              isLeaveTransactionLoading={isLeaveTransactionLoading}
-            />{" "}
-            <ConsumedLeaves componentsWithUsed={componentsWithUsed} />
+            {/* Applied Leaves Section - Only show if user can view applied leaves */}
+            {canViewLeavesApplied && (
+              <AppliedLeaves
+                leaveTransaction={leaveTransaction}
+                setSelectedLeaveApplication={setSelectedLeaveApplication}
+                setIsOpen={setIsOpen}
+                handleFilterChange={handleFilterChange}
+                componentsWithUsed={componentsWithUsed}
+                isLeaveTransactionLoading={isLeaveTransactionLoading}
+                canDeleteLeave={canDeleteLeaveRequest}
+              />
+            )}
+            
+            {/* Consumed Leaves Section - Only show if user can view consumed leaves */}
+            {canViewConsumedLeaves && (
+              <ConsumedLeaves componentsWithUsed={componentsWithUsed} />
+            )}
           </div>
+
           {selectedLeaveApplication && (
             <ViewLeaveSheet
               leaveApplication={selectedLeaveApplication}
               isOpen={isOpen}
               setIsOpen={setIsOpen}
               isMyLeave={true}
+              canDelete={canDeleteLeaveRequest}
               onClose={() => {
                 setSelectedLeaveApplication(null);
                 setIsOpen(false);
@@ -217,6 +242,7 @@ function AppliedLeaves({
   handleFilterChange,
   componentsWithUsed,
   isLeaveTransactionLoading,
+  canDeleteLeave,
 }) {
   return (
     <Card className="w-full">
