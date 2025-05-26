@@ -4,8 +4,8 @@ import ScheduleShift from "./Section/ScheduleShift";
 import PendingSchedule from "./Section/PendingSchedule";
 import ShiftRequest from "./Section/ShiftRequest";
 import ShiftCalendarView from "./Section/ShiftCalendarView";
-import Emplist from "./Section/Emplist";
-import Calendar from "./Section/Calendar";
+import Emplist from "./ShiftCalendarTab/Emplist";
+import Calendar from "./ShiftCalendarTab/Calendar";
 import AssignShift from "./Section/AssignShift";
 
 export {

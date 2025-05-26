@@ -6,7 +6,7 @@ import moment from "moment";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
 import { employeeData } from "app/hooks/attendance";
-import ShiftChangeRequestModal from "../ShiftChangeRequestModal";
+import ShiftChangeRequestModal from "./ShiftChangeRequestModal";
 
 const Calendar = ({ shift, scheduleShifts, employeeId }) => {
   const [events, setEvents] = useState([]);

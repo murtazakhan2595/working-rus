@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 import { getShiftSchedule } from "app/hooks/shiftManagement";
 import CustomTable from "components/CustomTable";
 import { CardDescription } from "components/ui/card";
-import { EmployeeColumns } from "../ShiftCalendarTab/shiftChangeRequestColumns";
+import { EmployeeColumns } from "./shiftChangeRequestColumns";
 
 const Emplist = ({ teamMembers }) => {
   const [activeMember, setActiveMember] = useState(null);

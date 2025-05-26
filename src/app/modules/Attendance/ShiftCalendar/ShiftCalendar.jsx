@@ -10,7 +10,7 @@ import { Header } from "components";
 import { useSelector } from "react-redux";
 import { getEmployeeCustomList } from "app/hooks/general";
 import AssignShift from "./Section/AssignShift";
-import Emplist from "./Section/Emplist";
+import Emplist from "./ShiftCalendarTab/Emplist";
 import ShiftRequest from "./Section/ShiftRequest";
 import ShiftCalendarFilters from "./Section/ShiftCalendarFilters";
 import PendingSchedule from "./PendingSchedule/PendingSchedule";

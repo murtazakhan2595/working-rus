@@ -67,8 +67,10 @@ const ShiftChangeRequestModal = ({
         // Need to get employee data to get shift_management field
         const empData = await employeeData(employeeId);
 
-        if (empData?.shift_management) {
-          directOrgShift = await getShiftById(empData.shift_management);
+        if (empData?.shift_assignment) {
+          console.log("Fetching direct org shift for employee:", empData);
+          directOrgShift = await getShiftById(empData.shift_assignment);
+          console.log("Direct org shift:", directOrgShift);
 
           if (!directOrgShift) {
             toast.error("No shift assigned to this employee");
@@ -500,7 +502,6 @@ const ShiftChangeRequestModal = ({
           {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
               {/* Employee Information */}
-              {console.log("props", props)}
               <SheetCardExtension title="Employee Information">
                 <EmployeeOverview
                   id={employee?.id}
