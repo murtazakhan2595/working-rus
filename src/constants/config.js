@@ -14,6 +14,7 @@ const Config = {
   MY_TRANSFERS: true,
   DOCUMENTS: true, // My HR Documents
   MY_ASSETS: true,
+  MY_SHIFT_CALENDAR: true,
   EXIT: true,
 
   //----------------TEAM_MANAGEMENT------------

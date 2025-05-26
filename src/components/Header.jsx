@@ -84,6 +84,7 @@ const pathNames = () => {
     "my-tranfers": "My Tranfers",
     assets: "Assets",
     "my-assets": "My Assets",
+    "my-shift-calendar": "My Shift Calendar",
     "request-and-assign": "Request and Assign",
     documents: "HR Documents",
     "my-documents": "HR Documents",

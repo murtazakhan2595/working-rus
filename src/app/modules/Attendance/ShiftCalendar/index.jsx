@@ -1,15 +1,16 @@
 // src/app/modules/Attendance/ShiftCalendar/index.jsx
 import ShiftCalendar from "./ShiftCalendar";
 import ScheduleShift from "./Section/ScheduleShift";
-import PendingSchedule from "./Section/PendingSchedule";
 import ShiftRequest from "./Section/ShiftRequest";
 import ShiftCalendarView from "./Section/ShiftCalendarView";
 import Emplist from "./ShiftCalendarTab/Emplist";
 import Calendar from "./ShiftCalendarTab/Calendar";
 import AssignShift from "./Section/AssignShift";
+import PendingSchedule from "./PendingSchedule/PendingSchedule"
+import  MyShiftCalendar  from './MyShiftCalendar/EmployeeShiftCalendar';
 
 export {
-  ShiftCalendar as default,
+  ShiftCalendar,
   ScheduleShift,
   PendingSchedule,
   ShiftRequest,
@@ -17,4 +18,5 @@ export {
   Emplist,
   Calendar,
   AssignShift,
+  MyShiftCalendar
 };

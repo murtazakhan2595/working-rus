@@ -1,4 +1,4 @@
-// src/app/modules/Attendance/ShiftCalendar/Section/PendingSchedule.jsx
+// src/app/modules/Attendance/ShiftCalendar/PendingSchedule/PendingSchedule.jsx
 import React, { useState, useEffect } from "react";
 import {
   Card,

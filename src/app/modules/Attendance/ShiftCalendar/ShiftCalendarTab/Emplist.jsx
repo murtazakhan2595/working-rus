@@ -13,6 +13,7 @@ import { getShiftSchedule } from "app/hooks/shiftManagement";
 import CustomTable from "components/CustomTable";
 import { CardDescription } from "components/ui/card";
 import { EmployeeColumns } from "./shiftChangeRequestColumns";
+import moment from "moment";
 
 const Emplist = ({ teamMembers }) => {
   const [activeMember, setActiveMember] = useState(null);
@@ -26,9 +27,9 @@ const Emplist = ({ teamMembers }) => {
     count: 0,
   });
   const [options, setOptions] = useState({
-      page: 1,
-      sizePerPage: 10,
-    });
+    page: 1,
+    sizePerPage: 10,
+  });
   const [ordering, setOrdering] = useState("-id");
   console.log("scheduleShifts", scheduleShifts);
   const onPageChange = (name, value) => {
@@ -116,23 +117,119 @@ const Emplist = ({ teamMembers }) => {
     }
   }, [teamMembers, activeMember]);
 
+  // Add this function above your component or import it
+  const getChangeRequestComparison = async (changeRequest) => {
+    // Find all approved schedules that overlap with this date range
+    const overlappingSchedules = await getShiftSchedule({
+      filterData: {
+        employee: changeRequest.employee,
+        end_date_gte: changeRequest.start_date,
+        start_date_lte: changeRequest.end_date,
+        status: "Approved",
+        is_change_request: false,
+      },
+    });
+
+    // Build comparison data
+    const comparisonData = [];
+    const startDate = moment(changeRequest.start_date);
+    const endDate = moment(changeRequest.end_date);
+
+    let current = startDate.clone();
+    while (current.isSameOrBefore(endDate)) {
+      const dateStr = current.format("YYYY-MM-DD");
+
+      // Find original shift from overlapping schedules
+      let originalShift = "No Shift";
+
+      for (const schedule of overlappingSchedules.results || []) {
+        if (
+          current.isBetween(schedule.start_date, schedule.end_date, "day", "[]")
+        ) {
+          if (schedule.custom_schedule && schedule.custom_schedule[dateStr]) {
+            const day = schedule.custom_schedule[dateStr];
+            if (day.is_off) {
+              originalShift = "OFF";
+            } else if (day.is_split) {
+              originalShift = `Split: ${day.start_time_1}-${day.end_time_1}, ${day.start_time_2}-${day.end_time_2}`;
+            } else {
+              originalShift = `${day.start_time}-${day.end_time}`;
+            }
+          }
+          break;
+        }
+      }
+
+      // Get requested shift
+      let requestedShift = "No Shift";
+      if (changeRequest.custom_schedule[dateStr]) {
+        const day = changeRequest.custom_schedule[dateStr];
+        if (day.is_off) {
+          requestedShift = "OFF";
+        } else if (day.is_split) {
+          requestedShift = `Split: ${day.start_time_1}-${day.end_time_1}, ${day.start_time_2}-${day.end_time_2}`;
+        } else {
+          requestedShift = `${day.start_time}-${day.end_time}`;
+        }
+      }
+
+      if (originalShift !== requestedShift) {
+        comparisonData.push({
+          date: dateStr,
+          current_shift: originalShift,
+          requested_shift: requestedShift,
+          has_change: true,
+        });
+      }
+
+      current.add(1, "day");
+    }
+
+    return comparisonData;
+  };
+
+  // Update your useEffect
   useEffect(() => {
     const fetchShiftChangeRequests = async () => {
       try {
         const response = await getShiftSchedule({
-          filterData: { status: "Pending", is_change_request: true },
+          filterData: {
+            status: "Pending",
+            is_change_request: true,
+            // Add any branch/employee filters based on user role
+            ordering: ordering,
+            page: options.page,
+            page_size: options.sizePerPage,
+          },
         });
-        if (response) {
-          setShiftChangeRequests(response);
+
+        if (response && response.results) {
+          // Load comparison data for each request
+          const requestsWithComparison = await Promise.all(
+            response.results.map(async (request) => {
+              const comparisonData = await getChangeRequestComparison(request);
+              return {
+                ...request,
+                comparison_data: comparisonData,
+              };
+            })
+          );
+
+          setShiftChangeRequests({
+            ...response,
+            results: requestsWithComparison,
+          });
         }
       } catch (error) {
         console.error("Error fetching shift change requests:", error);
+        toast.error("Failed to load shift change requests");
       }
     };
 
     fetchShiftChangeRequests();
-  }, []);
+  }, [ordering, options.page, options.sizePerPage]);
 
+  console.log("shiftChangeRequests", shiftChangeRequests);
   return (
     <div>
       <div className="flex gap-2">
