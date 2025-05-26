@@ -4,8 +4,8 @@ export const ApprovalLevel = {
   designation: null,
   user: null,
   is_final_approval: false,
-  auto_forward_enabled: false,
   auto_forward_threshold: null,
+  auto_forward_enabled: false,
   id:null,
   initiative_designation:null,
 };
@@ -38,7 +38,7 @@ export const ApprovalHierarchyHistoryLogs = {
 
 export const DelegateLevel = {
   level: null,
-  branch: 1,
+  branch: null,
   department: null,
   delegate: null,
   start_date: null,

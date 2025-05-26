@@ -3,7 +3,6 @@ import AlertDialogue from "components/ui/AlertDialogue";
 import { ViewUserRole } from "app/modules/RoleAndPermissions/UserRole";
 import { AddUpdateApprovalHierarchy } from "app/modules/ApprovalHierarchy";
 import DropdownActionMenu from "components/DropdownActionMenu";
-import { toast } from "react-toastify";
 import { deleteRecord } from "app/hooks/general";
 import { useNavigate } from "react-router-dom";
 import { HasAccess } from "utils/PermissionUtils";
@@ -13,7 +12,9 @@ const ApprovalHierarchyActions = ({
   reloadData = () => {},
   ApprovalHierarchyList = [],
 }) => {
-  const isEditUserRolePermitted = HasAccess("EDIT_USER_ROLE");
+  const isEditHierarchyPermitted = HasAccess("EDIT_APPROVAL_HIERARCHY");
+  const isAddHierarchyPermitted = HasAccess("ADD_APPROVAL_HIERARCHY");
+  const isDeleteHierarchyPermitted = HasAccess("Delete_APPROVAL_HIERARCHY");
   const [view, setView] = useState(null);
   const [deleteRoleState, setDeleteRoleState] = useState(null);
   const [openEditForm, setOpenEditForm] = useState(false);
@@ -56,16 +57,22 @@ const ApprovalHierarchyActions = ({
   return (
     <>
       <DropdownActionMenu
-        onView={handleAddLevels}
-        onEdit={isEditUserRolePermitted ? handleEdit : null}
-        onDelete={isEditUserRolePermitted ? handleDelete : null}
+        onView={
+          isAddHierarchyPermitted || isEditHierarchyPermitted
+            ? handleAddLevels
+            : null
+        }
+        onEdit={isEditHierarchyPermitted ? handleEdit : null}
+        onDelete={isDeleteHierarchyPermitted ? handleDelete : null}
         viewText="View Hierarchy Detail"
         editText="Edit Hierarchy"
         deleteText="Delete Hierarchy"
         menuTooltip="Hierarchy Actions"
-        additionalOptionsConfig={[
-          { action: handleAddLevels, text: "Add Hierarchy Levels" },
-        ]}
+        additionalOptionsConfig={
+          isAddHierarchyPermitted || isEditHierarchyPermitted
+            ? [{ action: handleAddLevels, text: "Add Hierarchy Levels" }]
+            : []
+        }
       />
 
       {deleteRoleState?.open && (

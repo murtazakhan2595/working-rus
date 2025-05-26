@@ -6,7 +6,6 @@ import {
 } from "app/modules/ApprovalHierarchy";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { deleteRecord } from "app/hooks/general";
-import { useNavigate } from "react-router-dom";
 import { HasAccess } from "utils/PermissionUtils";
 
 const LevelDelegateActions = ({
@@ -14,11 +13,12 @@ const LevelDelegateActions = ({
   reloadData = () => {},
   LevelDelegateList = [],
 }) => {
-  const isEditUserRolePermitted = HasAccess("EDIT_USER_ROLE");
+  const isEditDelegatePermitted = HasAccess("EDIT_LEVEL_DELEGATE");
+  const isDeleteDelegatePermitted = HasAccess("DELETE_LEVEL_DELEGATE");
+
   const [view, setView] = useState(null);
   const [deleteRoleState, setDeleteRoleState] = useState(null);
   const [openEditForm, setOpenEditForm] = useState(false);
-  const navigate = useNavigate();
 
   const handleView = () => {
     setView(true);
@@ -50,8 +50,8 @@ const LevelDelegateActions = ({
     <>
       <DropdownActionMenu
         // onView={handleView}
-        onEdit={isEditUserRolePermitted ? handleEdit : null}
-        onDelete={isEditUserRolePermitted ? handleDelete : null}
+        onEdit={isEditDelegatePermitted ? handleEdit : null}
+        onDelete={isDeleteDelegatePermitted ? handleDelete : null}
         // viewText="View Delegate"
         editText="Edit Delegate"
         deleteText="Delete Delegate"

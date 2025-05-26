@@ -31,7 +31,7 @@ import { CardDescription, CardTitle } from "components/ui/card";
 import { ApprovalHierarchyRequestTypeName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
 
-const LevelDelegations = ({ heirarchy_id , viewMode=false}) => {
+const LevelDelegations = ({ heirarchy_id , viewMode=false , reloadData}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [Delegations, setDelegations] = useState({});
   const Departments = useSelector((state) => state.common.departments);
@@ -97,6 +97,16 @@ const LevelDelegations = ({ heirarchy_id , viewMode=false}) => {
       return updatedFilters;
     });
   };
+
+  useEffect(() => {
+      let isMounted = true;
+      onPageChange("page", 1);
+      setOrdering("-id");
+      fetchData(true);
+      return () => {
+        isMounted = false;
+      };
+    }, [reloadData]);
 
   return (
     <Card>
