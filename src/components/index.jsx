@@ -22,6 +22,7 @@ import DropdownActionMenu  from "./DropdownActionMenu";
 import SplitViewDetail  from "./SplitViewDetail";
 import NavigationSheetComponent from "./NavigationSheetComponent";
 import DetailContent from "./DetailContent";
+import UnauthorizedAccess from "./UnauthorizedAccess";
 
 import CircularActionButtons from "components/CircularActionButtons";
 
@@ -51,5 +52,6 @@ export {
   SplitViewDetail,
   NavigationSheetComponent,
   DetailContent,
-  CircularActionButtons,
+  UnauthorizedAccess,
+  CircularActionButtons
 };
