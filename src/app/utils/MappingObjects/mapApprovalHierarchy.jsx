@@ -77,7 +77,6 @@ export function mapLevelPayloadData(data) {
     ) {
       if (key === "auto_forward_threshold") {
         if (data.auto_forward_enabled && data[key]) {
-          debugger;
 
           const threshold = parseFloat(data[key]);
           const totalSeconds = Math.floor(threshold * 3600);
@@ -105,12 +104,12 @@ export function mapLevelPayloadData(data) {
 export function mapApprovalHierarchyHistoryLogsData(data) {
   const historyData = Object.keys(ApprovalHierarchyHistoryLogs).reduce(
     (acc, key) => {
-      if (key === "feature_ids") acc[key] = data.details.feature_ids;
-      else if (key === "permission_changed")
-        acc[key] = data.details.permission_changed;
-      else if (key === "employee_id") acc[key] = data.employee.id;
-      else if (key === "employee_name") acc[key] = data.employee.name;
-      else if (data.hasOwnProperty(key)) {
+      // if (key === "feature_ids") acc[key] = data.details.feature_ids;
+      // else if (key === "permission_changed")
+      //   acc[key] = data.details.permission_changed;
+      // else if (key === "employee_id") acc[key] = data.employee.id;
+      // else if (key === "employee_name") acc[key] = data.employee.name;
+      if (data.hasOwnProperty(key)) {
         acc[key] = data[key];
       }
       return acc;

@@ -28,7 +28,7 @@ const ApprovalHierarchyHistoryLogs = () => {
   const [roles, setRoles] = useState({ results: [], count: 0 });
   const [loading, setLoading] = useState(false);
   const [HierarchyDetails, setHierarchyDetails] = useState(null);
-  const [filterData, setFilterData] = useState({ employee: id });
+  const [filterData, setFilterData] = useState({ hierarchy: id });
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
 

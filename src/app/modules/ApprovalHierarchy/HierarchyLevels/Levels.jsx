@@ -67,7 +67,7 @@ const Levels = React.memo(
                     </StatusLabel>
                   ))}
                 </div>
-                {!viewMode && !isEditHierarchyPermitted && (
+                {!viewMode && isEditHierarchyPermitted && (
                   <Button
                     onClick={(event) => {
                       event.preventDefault();

@@ -8,6 +8,7 @@ export const ApprovalLevel = {
   auto_forward_enabled: false,
   id:null,
   initiative_designation:null,
+
 };
 
 export const ApprovalHierarchy = {
@@ -16,6 +17,7 @@ export const ApprovalHierarchy = {
   request_type: null,
   levels: [],
   request_initiative: [],
+  created_by:null,
 };
 
 export const ApprovalHierarchyHistoryLogs = {
