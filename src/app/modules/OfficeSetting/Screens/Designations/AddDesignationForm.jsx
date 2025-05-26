@@ -174,8 +174,9 @@ const AddDesignationForm = ({
               />
             )}
 
-            <SheetCardExtension
+            <SheetCardExtension 
               title={`${isEditMode ? "Edit" : "Add"} Designation`}
+              className="mt-8"
             >
               <TextInput
                 name="name"

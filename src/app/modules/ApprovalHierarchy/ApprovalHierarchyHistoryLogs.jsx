@@ -16,6 +16,7 @@ import {
   HierarchyLevelsColumn,
   HierarchyHistoryDetailsColumn,
 } from "app/modules/ApprovalHierarchy/Sections";
+import { Levels,LevelDelegations } from "app/modules/ApprovalHierarchy";
 import { useNavigate, useLocation } from "react-router-dom";
 import { EmployeeDetailUI } from "components";
 import { DetailBox } from "components/SheetCardExtension";
@@ -86,14 +87,15 @@ const ApprovalHierarchyHistoryLogs = () => {
       return updatedFilters;
     });
   };
-  console.log(roles, "rolesrolesroles");
   return (
-    <>
+    <div className="flex flex-col gap-5">
       <Header
         showBackButton={true}
-        navigationLink={GOTO_URLS || "/office-settings/approval-hierarchy/history"}
+        navigationLink={
+          GOTO_URLS || "/office-settings/approval-hierarchy/history"
+        }
       />
-      <Card className="mb-5">
+      <Card className="">
         <CardTitle className="text-primary px-6 pt-6">
           Hierarchy Details
         </CardTitle>
@@ -124,21 +126,22 @@ const ApprovalHierarchyHistoryLogs = () => {
               />
             )}
           </div>
-          <div className="text-primary text-lg font-[inter] font-semiBold">
-            Levels
-          </div>
-          <div>
-            <TableCustom
-              columns={HierarchyLevelsColumn()}
-              data={roles?.results || []}
-              tableOptions={tableOptions}
-              dataTotalSize={roles?.count || 0}
-              pagination={true}
-              className="roles-table"
-            />
-          </div>
         </CardContent>
       </Card>
+      <Card>
+        <CardTitle className="text-primary p-6">Hierarchy Levels</CardTitle>
+        <CardDescription></CardDescription>
+        <CardContent>
+          <Levels
+            HierarchyDetails={HierarchyDetails}
+            fetchData={fetchData}
+            hierarchy_id={id}
+            viewMode={true}
+          />
+        </CardContent>
+      </Card>
+      <LevelDelegations heirarchy_id={id}  viewMode={true} />
+
       <Card>
         <CardTitle className="text-primary pt-6 px-6">History & Logs</CardTitle>
         <CardDescription className="text-neutral-1100 px-6 pb-6">
@@ -146,7 +149,7 @@ const ApprovalHierarchyHistoryLogs = () => {
         </CardDescription>
         <CardContent>
           <div className="flex flex-col gap-4">
-            <FilterInput
+            {/* <FilterInput
               filters={[
                 {
                   type: "search",
@@ -156,7 +159,7 @@ const ApprovalHierarchyHistoryLogs = () => {
               ]}
               className="justify-end"
               onChange={handleFilterChange}
-            />
+            /> */}
 
             {loading ? (
               <PageLoader />
@@ -173,7 +176,7 @@ const ApprovalHierarchyHistoryLogs = () => {
           </div>
         </CardContent>
       </Card>
-    </>
+    </div>
   );
 };
 

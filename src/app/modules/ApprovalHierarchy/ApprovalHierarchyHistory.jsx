@@ -67,7 +67,7 @@ const ApprovalHierarchyHistory = () => {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "status") setSelectedRequestType(filterValue);
+    if (filterName === "request_type") setSelectedRequestType(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -96,7 +96,7 @@ const ApprovalHierarchyHistory = () => {
           {
             type: "select-one",
             placeholder: "RequestType",
-            name: "status",
+            name: "request_type",
             option: ApprovalHierarchyRequestType,
             values: selectedRequestType,
           },

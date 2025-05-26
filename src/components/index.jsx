@@ -24,6 +24,8 @@ import NavigationSheetComponent from "./NavigationSheetComponent";
 import DetailContent from "./DetailContent";
 import UnauthorizedAccess from "./UnauthorizedAccess";
 
+import CircularActionButtons from "components/CircularActionButtons";
+
 export {
   Header,
   PageLoader,
@@ -51,4 +53,5 @@ export {
   NavigationSheetComponent,
   DetailContent,
   UnauthorizedAccess,
+  CircularActionButtons
 };

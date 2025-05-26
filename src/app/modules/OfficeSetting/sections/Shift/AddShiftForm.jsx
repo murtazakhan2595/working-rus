@@ -53,7 +53,7 @@ const AddShiftForm = ({
 
       console.log(updatedValues, "UPDATE VALUES");
 
-      const response = await saveShift(updatedValues?.id, updatedValues);
+      const response = await saveShift(updatedValues);
       if (response) {
         toast.success(`Shift ${shiftData ? "Updated" : "Added"} Successfully!`, {
           position: toast.POSITION.TOP_RIGHT,
@@ -96,7 +96,7 @@ const AddShiftForm = ({
       >
         {(props) => (
           <form onSubmit={props?.handleSubmit}>
-            <SheetCardExtension title="Shift Details">
+            <SheetCardExtension title="Shift Details" className="mt-8">
               <div className="mb-6 space-y-2">
               <TextInput
                 name="name"
