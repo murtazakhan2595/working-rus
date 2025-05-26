@@ -19,7 +19,7 @@ export default function ApprovalHierarchy({ active = "Approval Hierarchy" }) {
   const isViewHierarchyPermitted = HasAccess("VIEW_APPROVAL_HIERARCHY");
   const isAddHierarchyPermitted = HasAccess("ADD_APPROVAL_HIERARCHY");
   const isViewHierarchyLogsPermitted = HasAccess(
-    "VIEW_APPROVAL_HIERARCHY_HISTORY_LOGS"
+    "View_APPROVAL_HIERARCHY_HISTORY_LOGS"
   );
   const [activeApprovalHierarchyTab, setActiveApprovalHierarchyTab] =
     useState(active);

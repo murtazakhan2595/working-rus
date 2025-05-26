@@ -185,7 +185,9 @@ export const HierarchyHistoryDetailsColumn = [
   {
     dataField: "from_value",
     text: "From -> To",
-    formatter: (cell, row) => `${cell} -> ${row.to_value}`,
+    formatter: (cell, row) =>
+      `${cell ?? ""}${cell && row.to_value ? " -> " : ""}${row.to_value ?? ""}`,
+    maxWidth:'200px'
   },
   {
     dataField: "changed_by",
@@ -206,13 +208,13 @@ export const HierarchyHistoryDetailsColumn = [
     formatter: (cell) => <DepartmentName value={cell} fallBackText=" " />,
   },
   {
-    text: "timestamp",
+    text: "Timestamp",
     dataField: "timestamp",
     formatter: (cell) => renderDate(cell, "--", "datetime"),
   },
 ];
 
-export const DelegateLevelsColumn = (reload = () => {},viewMode) => [
+export const DelegateLevelsColumn = (reload = () => {}, viewMode) => [
   {
     dataField: "branch",
     text: "Branch",

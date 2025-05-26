@@ -119,6 +119,7 @@ export const getApprovalHierarchyHistoryLogsList = async (payload) => {
       headers: headers(),
     });
     if (response.status === 200) {
+      debugger
       const hierarchyResponse = response.data;
       const hierarchyList = await mapApprovalHierarchyHistoryLogsListData(
         hierarchyResponse?.results
