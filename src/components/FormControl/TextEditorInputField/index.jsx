@@ -351,6 +351,7 @@ function TextEditorInputField({
 
   const handlePaste = async (e) => {
     e.preventDefault();
+
     const clipboardData = e.clipboardData || window.Clipboard;
     const items = clipboardData.items;
     let TextAdded = "";
@@ -367,28 +368,22 @@ function TextEditorInputField({
               handleFileChange(uploadedImage);
             }
           }
-        } else if (
-          itemType.startsWith("text/html") ||
-          itemType.startsWith("text/plain")
-        ) {
-          const html = clipboardData.getData("text/html");
-          const text = clipboardData.getData("text/plain");
-          if (text.startsWith("http")) {
-            execCommand(
-              "insertHTML",
-              `<a href="${text}" target="_blank">${text}</a>`
-            );
-            return;
-          } else {
-            if (html && html !== TextAdded) {
-              execCommand("insertHTML", html);
-              TextAdded = html;
-            } else if (text && text !== TextAdded) {
+        } else if (itemType.startsWith("text/html")) {
+            const html = clipboardData.getData("text/html");
+            execCommand("insertHTML", html);
+            return; // Avoid further processing
+          } else if (itemType.startsWith("text/plain")) {
+            const text = clipboardData.getData("text/plain");
+            if (text.startsWith("http")) {
+              execCommand(
+                "insertHTML",
+                `<a href="${text}" target="_blank" rel="noopener noreferrer">${text}</a>`
+              );
+            } else {
               execCommand("insertText", text);
-              TextAdded = text;
             }
+            return; // Avoid fallback
           }
-        }
       }
     }
   };
