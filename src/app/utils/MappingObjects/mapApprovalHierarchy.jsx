@@ -77,7 +77,6 @@ export function mapLevelPayloadData(data) {
     ) {
       if (key === "auto_forward_threshold") {
         if (data.auto_forward_enabled && data[key]) {
-          debugger;
 
           const threshold = parseFloat(data[key]);
           const totalSeconds = Math.floor(threshold * 3600);
