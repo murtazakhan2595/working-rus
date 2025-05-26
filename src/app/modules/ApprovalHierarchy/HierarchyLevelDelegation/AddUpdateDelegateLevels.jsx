@@ -1,7 +1,8 @@
 import {
   getHierarchyLevelData,
   saveUpdateDelegateLevel,
-  getApprovalHierarchyData,
+  getDelegationList,
+  getDelegateLevelData,
 } from "app/hooks/approvalHierarchy";
 import {
   DelegateLevel,
@@ -29,16 +30,20 @@ import { CheckBoxInput } from "components/FormControl";
 import { AddUpdateLevels } from "app/modules/ApprovalHierarchy";
 import { DateInput } from "components/FormControl";
 import { TextAreaInput } from "components/FormControl";
+import { SelectMultiInputComponent } from "components/FormControl";
 
 const AddUpdateDelegateLevels = React.memo(
-  ({ isOpen, setReloadData = () => {}, id, level_id }) => {
+  ({ isOpen, setIsOpen, reloadData = () => {}, id, level_id }) => {
     const [FormData, setFormData] = useState(DelegateLevel);
+    const [HeirarchyLevelData, setHeirarchyLevelData] = useState({});
     const [FormValues, setFormValues] = useState(DelegateLevel);
     const Departments = useSelector((state) => state.common.departments);
+    const Designations = useSelector((state) => state.common.designations);
     const Branches = useSelector((state) => state.common.branches);
     const Employees = useSelector((state) => state.emp.employees);
     const isEditMode = Boolean(id);
     const [isLoading, setIsLoading] = useState(false);
+    const [isDelegateExit, setIsDelegateExit] = useState(false);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const FilteredEmployees = React.useMemo(() => {
       return Employees?.filter(
@@ -50,7 +55,7 @@ const AddUpdateDelegateLevels = React.memo(
     const FormSheetData = React.useMemo(() => {
       return {
         triggerText: "",
-        title: `${isEditMode ? "Add" : "Update"} Delegation`,
+        title: `${isEditMode ? "Update" : "Add"} Delegation`,
         description: null,
         footer: null,
       };
@@ -70,7 +75,7 @@ const AddUpdateDelegateLevels = React.memo(
               position: toast.POSITION.TOP_RIGHT,
             }
           );
-          handleClose();
+          handleClose(true);
         }
       } catch (error) {
         // Show error message
@@ -87,9 +92,16 @@ const AddUpdateDelegateLevels = React.memo(
     const fetchData = async (isMounted, id) => {
       try {
         setIsLoading(true);
-        const response = await getHierarchyLevelData(id);
+        const response = await getDelegateLevelData(id);
         if (isMounted) {
-          // setFormData(response);
+          if (response.level) {
+            const levelData = await getHierarchyLevelData(response.level);
+            if (isMounted) {
+              setHeirarchyLevelData(levelData);
+            }
+          }
+          setFormData(response);
+          setFormValues(response);
         }
       } catch (error) {
         console.error("Error fetching roles:", error);
@@ -105,18 +117,79 @@ const AddUpdateDelegateLevels = React.memo(
         isMounted = false;
       };
     }, [id]);
-    const handleClose = () => {
-      setReloadData(true);
-      // if (GOTO_URLS)
-      //   navigate(GOTO_URLS, {
-      //     state: {
-      //       // activeView: activeView,
-      //       // projectId: taskProjectId,
-      //     },
-      //   });
-      // else {
-      //   navigate(`/office-settings/approval-hierarchy`);
-      // }
+
+    const fetchLevelData = async (isMounted) => {
+      if (level_id) {
+        try {
+          setIsLoading(true);
+          const response = await getHierarchyLevelData(level_id);
+          if (isMounted) {
+            setHeirarchyLevelData(response);
+          }
+        } catch (error) {
+          console.error("Error fetching roles:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    useEffect(() => {
+      let isMounted = true;
+      if (level_id) fetchLevelData(isMounted);
+      return () => {
+        isMounted = false;
+      };
+    }, [level_id]);
+
+    const validateDelegateeLevelExist = React.useCallback(
+      async (values) => {
+        try {
+          const { branch, department, delegate, start_date } = values;
+          if (branch && department && delegate && start_date) {
+            const filterData = {
+              ...(level_id ? { level: level_id } : {}),
+              branch,
+              department,
+              delegate,
+              start_date,
+            };
+
+            const delegations = await getDelegationList({ filterData });
+            const delegationList = Array.isArray(delegations?.results)
+              ? delegations.results
+              : [];
+            if (!isEditMode) {
+              const isDelegateExist = delegationList.length > 0;
+              setIsDelegateExit(isDelegateExist);
+              return isDelegateExist;
+            } else {
+              const DelegateLevels = delegationList.filter(
+                (delegateObj) => delegateObj.id !== id
+              );
+              const isDelegateExist =
+                DelegateLevels &&
+                Array.isArray(DelegateLevels) &&
+                DelegateLevels.length > 0;
+
+              setIsDelegateExit(isDelegateExist);
+              return isDelegateExist;
+            }
+          }
+          setIsDelegateExit(false);
+          return false;
+        } catch (error) {
+          console.error("Failed to validate delegatee existence:", error);
+          setIsDelegateExit(false);
+          return false;
+        }
+      },
+      [level_id]
+    );
+
+    const handleClose = (update = false) => {
+      setIsOpen(false);
+      if (update) reloadData(true);
     };
 
     return (
@@ -129,23 +202,48 @@ const AddUpdateDelegateLevels = React.memo(
           initialValues: FormData,
           enableReinitialize: true,
           handleSubmit: handleSubmit,
-          // onSubmitClick: (values) => {
-          //   validateUserRoleName(values.name);
-          //   validateRequestType(values.request_type);
-          // },
+          onSubmitClick: async (values) => {
+            await validateDelegateeLevelExist(values);
+          },
           renderUpdatedFormValues: setFormValues,
           validateFormSchema: (values) => {
             const errors = validateDelegateLevelFormSchema(values);
+            if (isDelegateExit)
+              errors.level_delegate_details = `Selected delegate user is already delegated for this level in given start date.`;
             return errors;
           },
-          submitButtonText: "Add Level",
+          submitButtonText: "Submit",
           cancelButtonText: "Cancel",
           columns: 2,
           disableSubmit: isLoading || isSubmittingForm,
           loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
           formFiels: [
             {
-              sheetCardExtension: false,
+              sheetCardExtension: true,
+              sheetCardTitle: `Hierarchy Level Details`,
+              InputFields: [
+                {
+                  InputField: SelectMultiInputComponent,
+                  name: "initiative_designation",
+                  label: "Request Initiators",
+                  value: HeirarchyLevelData.initiative_designation,
+                  options: Designations,
+                  disabled: true,
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "designation",
+                  label: "Level Designation",
+                  options: Designations,
+                  disabled: true,
+                  value: HeirarchyLevelData.designation,
+                },
+              ],
+            },
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: `Level Delegate Details`,
+              sheetCardName: "level_delegate_details",
               InputFields: [
                 {
                   InputField: SelectInputComponent,
@@ -153,6 +251,9 @@ const AddUpdateDelegateLevels = React.memo(
                   label: "Branch",
                   required: true,
                   options: Branches,
+                  onFieldUpdate: async (_, __, currentFormValues) => {
+                    await validateDelegateeLevelExist(currentFormValues);
+                  },
                 },
                 {
                   InputField: SelectInputComponent,
@@ -160,6 +261,9 @@ const AddUpdateDelegateLevels = React.memo(
                   label: "Department",
                   options: Departments,
                   required: true,
+                  onFieldUpdate: async (_, __, currentFormValues) => {
+                    await validateDelegateeLevelExist(currentFormValues);
+                  },
                 },
                 {
                   InputField: SelectInputComponent,
@@ -167,6 +271,9 @@ const AddUpdateDelegateLevels = React.memo(
                   label: "Delegate User",
                   options: FilteredEmployees,
                   required: true,
+                  onFieldUpdate: async (_, __, currentFormValues) => {
+                    await validateDelegateeLevelExist(currentFormValues);
+                  },
                 },
                 {
                   InputField: DateInput,
@@ -174,6 +281,9 @@ const AddUpdateDelegateLevels = React.memo(
                   label: "Start Date",
                   required: true,
                   minDate: new Date(),
+                  onFieldUpdate: async (_, __, currentFormValues) => {
+                    await validateDelegateeLevelExist(currentFormValues);
+                  },
                 },
                 {
                   InputField: DateInput,

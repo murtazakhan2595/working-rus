@@ -23,6 +23,8 @@ import SplitViewDetail  from "./SplitViewDetail";
 import NavigationSheetComponent from "./NavigationSheetComponent";
 import DetailContent from "./DetailContent";
 
+import CircularActionButtons from "components/CircularActionButtons";
+
 export {
   Header,
   PageLoader,
@@ -49,4 +51,5 @@ export {
   SplitViewDetail,
   NavigationSheetComponent,
   DetailContent,
+  CircularActionButtons,
 };
