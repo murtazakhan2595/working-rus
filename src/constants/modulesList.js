@@ -249,31 +249,17 @@ const FeatureList = [
   "VIEW_ROLE_HISTORY_LOGS",
   "VIEW_USER_ROLE",
   "ADD_APPROVAL_HIERARCHY",
-  "View_APPROVAL_HIERARCHY",
+  "VIEW_APPROVAL_HIERARCHY",
   "VIEW_ASSIGNED_MY_ASSETS",
+  "Delete_APPROVAL_HIERARCHY",
+  "VIEW_APPROVAL_HIERARCHY_HISTORY_LOGS",
+  "EDIT_APPROVAL_HIERARCHY",
+  "ADD_LEVEL_DELEGATE",
+  "VIEW_LEVEL_DELEGATE",
+  "DELETE_LEVEL_DELEGATE",
+  "EDIT_LEVEL_DELEGATE",
 ];
 
-// export const ApprovalHierarchyRequestType = [
-//   { label: "Leave", value: "MY_LEAVE_TRACKER", api_ednpoint: "/leave/" },
-//   {
-//     label: "Claims",
-//     value: "MY_CLAIMS",
-//     end_point: "/payroll/reimbursement/",
-//   },
-//   { label: "Transfer", value: "MY_TRANSFERS", end_point: "/employeetranfer/" },
-//   { label: "Assets", value: "MY_ASSETS", end_point: "asset_assignment/" },
-//   {
-//     label: "Temination",
-//     value: "EXIT_CLEARANCE_TERMINATION",
-//     end_point: "/employeeExit/",
-//     category: "Termination",
-//   },
-//   {
-//     label: "Resignation",
-//     value: "EXIT_CLEARANCE_RESIGNATION",
-//     end_point: "/employeeExit/",
-//     category: "Resignation",
-//   },
-// ];
+
 
 export { ModuleList, SubModuleList, FeatureList };

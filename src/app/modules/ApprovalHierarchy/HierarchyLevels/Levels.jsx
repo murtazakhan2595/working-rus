@@ -1,32 +1,13 @@
-import {
-  getApprovalHierarchyList,
-  saveUpdateApprovalHierarchy,
-  getApprovalHierarchyData,
-} from "app/hooks/approvalHierarchy";
-import {
-  ApprovalHierarchy,
-  ApprovalLevel,
-} from "app/utils/Types/ApprovalHierarchy";
-import { TextInput, SelectInputComponent } from "components/FormControl";
-import { validateHierarchyLevelFormSchema } from "app/utils/FormSchema/ApprovalHierarchyFormSchema";
 import { HierarchyLevelsColumn } from "app/modules/ApprovalHierarchy/Sections";
 import { AddEditApprovalHierarchyLevels } from "app/modules/ApprovalHierarchy";
-import React, { useEffect, useState, useCallback } from "react";
-import { toast } from "react-toastify";
+import React, { useState } from "react";
 import { StatusLabel, SplitViewDetail, TableCustom } from "components";
-import { Card } from "components/ui/card";
-import { CardContent } from "components/ui/card";
-import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { ApprovalHierarchyRequestType } from "data/Data";
 import { Button } from "components/ui/button";
-import { NumberInput } from "components/FormControl";
-import { DetailBox } from "components/SheetCardExtension";
 import { DesignationName } from "utils/getValuesFromTables";
 import { FilterInput } from "components/FormControl";
-import { CardTitle } from "reactstrap";
-import { CardDescription } from "components/ui/card";
 import { getLabelByValue } from "utils/getValuesFromTables";
+import { HasAccess } from "utils/PermissionUtils";
 
 const Levels = React.memo(
   ({
@@ -34,7 +15,9 @@ const Levels = React.memo(
     fetchData = () => {},
     hierarchy_id,
     viewMode = false,
+    setReloadData = () => {},
   }) => {
+    const isEditHierarchyPermitted = HasAccess("EDIT_APPROVAL_HIERARCHY");
     const [RequestInitiatorListToEdit, setRequestInitiatorListToEdit] =
       useState(null);
     const Designations = useSelector((state) => state.common.designations);
@@ -84,7 +67,7 @@ const Levels = React.memo(
                     </StatusLabel>
                   ))}
                 </div>
-                {!viewMode && (
+                {!viewMode && !isEditHierarchyPermitted && (
                   <Button
                     onClick={(event) => {
                       event.preventDefault();
@@ -153,6 +136,7 @@ const Levels = React.memo(
               setRequestInitiatorListToEdit(null);
               setAddLevelsForm(false);
               fetchData(true);
+              setReloadData();
             }}
             id={hierarchy_id}
             request_initiative={RequestInitiatorListToEdit}

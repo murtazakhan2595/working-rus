@@ -49,7 +49,7 @@ export const ApprovalHierarchyColumn = (reload = () => {}) => [
     ),
   },
   {
-    text: "Action",
+    text: "",
     formatter: (cell, row, data_list) => (
       <ApprovalHierarchyActions
         data={row}
@@ -97,7 +97,7 @@ export const HierarchyLevelsColumn = (reload = () => {}, viewMode) =>
     ...(!viewMode
       ? [
           {
-            text: "Action",
+            text: "",
             formatter: (cell, row, data_list) => (
               <ApprovalHierarchyLevelActions
                 data={row}
@@ -154,7 +154,7 @@ export const HierarchyHistoryColumn = [
     ),
   },
   {
-    text: "Action",
+    text: "",
     formatter: (_, row) => <ApprovalHierarchyLogsActions data={row} />,
     classes: "text-center",
     headerClasses: "text-center",
@@ -250,7 +250,7 @@ export const DelegateLevelsColumn = (reload = () => {},viewMode) => [
   ...(!viewMode
     ? [
         {
-          text: "Action",
+          text: "",
           formatter: (cell, row, data_list) => (
             <LevelDelegateActions
               data={row}

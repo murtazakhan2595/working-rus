@@ -1,4 +1,4 @@
-import React, { useState, useMemo ,useEffect} from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   ViewApprovalHierarchy,
   ApprovalHierarchyHistory,
@@ -12,23 +12,25 @@ import {
 import { Card, CardContent } from "components/ui/card";
 import { Header } from "components";
 import { Button } from "components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { HasAccess } from "utils/PermissionUtils";
 import { AddUpdateApprovalHierarchy } from "app/modules/ApprovalHierarchy";
 
-export default function ApprovalHierarchy({active = "Approval Hierarchy"}) {
-  const navigate = useNavigate();
-  const isViewUserRolePermitted = HasAccess("VIEW_USER_ROLE");
+export default function ApprovalHierarchy({ active = "Approval Hierarchy" }) {
+  const isViewHierarchyPermitted = HasAccess("VIEW_APPROVAL_HIERARCHY");
+  const isAddHierarchyPermitted = HasAccess("ADD_APPROVAL_HIERARCHY");
+  const isViewHierarchyLogsPermitted = HasAccess(
+    "VIEW_APPROVAL_HIERARCHY_HISTORY_LOGS"
+  );
   const [activeApprovalHierarchyTab, setActiveApprovalHierarchyTab] =
     useState(active);
   const [reloadData, setReloadData] = useState(false);
   const [openHierarchyForm, setopenHierarchyForm] = useState(false);
   const ApprovalHierarchyTab = useMemo(() => {
     return [
-      ...(isViewUserRolePermitted ? ["Approval Hierarchy"] : []),
-      ...(isViewUserRolePermitted ? ["History & Logs"] : []),
+      ...(isViewHierarchyPermitted ? ["Approval Hierarchy"] : []),
+      ...(isViewHierarchyLogsPermitted ? ["History & Logs"] : []),
     ];
-  }, [isViewUserRolePermitted]);
+  }, [isViewHierarchyPermitted, isViewHierarchyLogsPermitted]);
   useEffect(() => {
     let isMounted = true;
     setActiveApprovalHierarchyTab(active);
@@ -43,17 +45,18 @@ export default function ApprovalHierarchy({active = "Approval Hierarchy"}) {
       <Header
         content={
           <>
-            {activeApprovalHierarchyTab === "Approval Hierarchy" && (
-              <Button
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (activeApprovalHierarchyTab === "Approval Hierarchy")
-                    setopenHierarchyForm(true);
-                }}
-              >
-                Add Approval Hierarchy
-              </Button>
-            )}
+            {activeApprovalHierarchyTab === "Approval Hierarchy" &&
+              isAddHierarchyPermitted && (
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (activeApprovalHierarchyTab === "Approval Hierarchy")
+                      setopenHierarchyForm(true);
+                  }}
+                >
+                  Add Approval Hierarchy
+                </Button>
+              )}
           </>
         }
       />

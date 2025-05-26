@@ -20,7 +20,6 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-
 // Get hierarchy list
 export const getApprovalHierarchyList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
@@ -60,7 +59,7 @@ export const saveUpdateApprovalHierarchy = async (payload, hierarchyID) => {
 
     const method = hierarchyID ? "PATCH" : "POST"; // Determine method based on existence of id
     const expectedStatus = hierarchyID ? 200 : 201;
-    const finalPayload = mapApprovalHierarchyPayloadData(payload);
+    const finalPayload = await mapApprovalHierarchyPayloadData(payload);
     const response = await axios({
       method,
       url,
@@ -93,7 +92,7 @@ export const getApprovalHierarchyData = async (id) => {
     const response = await axios.get(`${baseUrl}/hierarchies/${id}`, {
       headers: headers(),
     });
-    const ApprovalHierarchyData = mapApprovalHierarchyData(response.data);
+    const ApprovalHierarchyData = await mapApprovalHierarchyData(response.data);
 
     return ApprovalHierarchyData;
   } catch (error) {
@@ -128,6 +127,9 @@ export const getApprovalHierarchyHistoryLogsList = async (payload) => {
     } else return { results: [], count: 0 };
   } catch (error) {
     console.error("Error fetching hierarchy data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     return { results: [], count: 0 };
   }
 };
@@ -201,7 +203,9 @@ export const getDelegationList = async (payload) => {
     });
     if (response.status === 200) {
       const delegationResponse = response.data;
-      const delegationList = await mapDelegateLevelListData(delegationResponse?.results);
+      const delegationList = await mapDelegateLevelListData(
+        delegationResponse?.results
+      );
       return { results: delegationList, count: delegationResponse.count };
     } else return [];
   } catch (error) {
@@ -212,7 +216,6 @@ export const getDelegationList = async (payload) => {
   }
   return [];
 };
-
 
 export const getDelegateLevelData = async (id) => {
   try {
