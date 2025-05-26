@@ -11,50 +11,64 @@ const NavigationSheetComponent = ({
   setIsOpen,
   title,
   data,
+  currentItemDetails,
   dataList = [],
-  reload = () => {},
+  reloadData = () => {},
+  loading = false,
 
   // Content and actions
   children,
   editComponent: EditComponent,
-  
+
   // API endpoints
-  deleteEndpoint,
+  apiEndpoint,
   refreshEndpoint,
-  
+
+  // Data functions
+  fetchCurrentItemDetails = () => {},
+
   // Labels and text
   deleteItemName = "item",
   editTooltip = "Edit Item",
   deleteTooltip = "Delete Item",
-  
+
   // Callbacks
   onUpdateSuccess = null,
   additionalEditProps = {},
 }) => {
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [currentItem, setCurrentItem] = useState(data);
-  const [currentItemId, setCurrentItemId] = useState(data?.id);
-
+  const [currentItem, setCurrentItem] = useState(currentItemDetails);
+  const [currentItemId, setCurrentItemId] = useState(currentItemDetails?.id);
+  console.log(currentItem, "currentItemDetailscurrentItemDetails");
   // Reset to original data when sheet opens
   useEffect(() => {
-    if (isOpen && data) {
-      setCurrentItem(data);
-      setCurrentItemId(data.id);
+    if (isOpen && currentItemDetails) {
+      setCurrentItem(currentItemDetails);
+      setCurrentItemId(currentItemDetails.id);
+      // if (DataList && Array.isArray(DataList) && DataList.length) {
+      //   const updatedList = DataList.map((item) =>
+      //     item.id === currentItemDetails.id ? currentItemDetails : item
+      //   );
+      //   setDataList(updatedList)
+      // }
     }
-  }, [isOpen, data]);
+  }, [isOpen, currentItemDetails]);
 
   const handleEdit = async () => {
     // Fetch fresh data before opening edit form if refresh endpoint provided
     if (refreshEndpoint) {
       try {
-        const response = await axios.get(`${refreshEndpoint}/${currentItemId}`, {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        });
-        
+        const response = await axios.get(
+          `${refreshEndpoint}/${currentItemId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
         if (response.data) {
           setCurrentItem(response.data);
         }
@@ -62,7 +76,7 @@ const NavigationSheetComponent = ({
         console.warn("Failed to fetch fresh data, using cached data:", error);
       }
     }
-    
+
     setEditMode(true);
   };
 
@@ -74,11 +88,11 @@ const NavigationSheetComponent = ({
     // Ensure dataList is an array
     const validList = Array.isArray(dataList) ? dataList : [];
     if (validList.length === 0) return;
-    
+
     const currentIndex = validList.findIndex(
       (item) => item.id === currentItemId
     );
-    
+
     if (currentIndex < validList.length - 1) {
       const nextItem = validList[currentIndex + 1];
       setCurrentItemId(nextItem?.id);
@@ -95,11 +109,11 @@ const NavigationSheetComponent = ({
     // Ensure dataList is an array
     const validList = Array.isArray(dataList) ? dataList : [];
     if (validList.length === 0) return;
-    
+
     const currentIndex = validList.findIndex(
       (item) => item.id === currentItemId
     );
-    
+
     if (currentIndex > 0) {
       const prevItem = validList[currentIndex - 1];
       setCurrentItemId(prevItem?.id);
@@ -114,10 +128,13 @@ const NavigationSheetComponent = ({
 
   const confirmDelete = async () => {
     try {
-      await deleteRecord(deleteEndpoint, currentItem?.[deleteItemName] || currentItem?.name);
+      await deleteRecord(
+        `${apiEndpoint}${currentItem.id}`,
+        currentItem?.[deleteItemName] || deleteItemName
+      );
       setIsOpen(false);
-      if (typeof reload === 'function') {
-        reload(true);
+      if (typeof reloadData === "function") {
+        reloadData(true);
       }
     } catch (error) {
       console.error("ERROR", error);
@@ -126,7 +143,7 @@ const NavigationSheetComponent = ({
 
   const refreshData = async () => {
     if (!refreshEndpoint) return;
-    
+
     try {
       const response = await axios.get(`${refreshEndpoint}/${currentItemId}`);
       if (response.data) {
@@ -139,27 +156,21 @@ const NavigationSheetComponent = ({
 
   const handleEditClose = async (updated = false) => {
     setEditMode(false);
-    
     if (updated) {
       await refreshData();
-      // Note: No reload() call for edit operations to prevent parent component refresh
+      // Note: No reloadData() call for edit operations to prevent parent component refresh
     }
   };
 
-  const handleFormUpdate = async (formData) => {
-    // This function will be called after successful form submission
-    setCurrentItem({
-      ...currentItem,
-      ...formData
-    });
-    return true;
-  };
+  const handleDataListUpdate = async (formData) => {};
 
   // Generate position indicator
   const getPositionIndicator = () => {
     if (!Array.isArray(dataList) || dataList.length === 0) return null;
-    
-    const currentIndex = dataList.findIndex(item => item.id === currentItemId);
+
+    const currentIndex = dataList.findIndex(
+      (item) => item.id === currentItemId
+    );
     return `${currentIndex + 1} of ${dataList.length}`;
   };
 
@@ -175,7 +186,7 @@ const NavigationSheetComponent = ({
       >
         <div className="flex flex-col gap-4">
           <div className="flex justify-end mt-4 space-x-2">
-            <CircularActionButtons 
+            <CircularActionButtons
               onEdit={handleEdit}
               onDelete={handleDelete}
               editTooltip={editTooltip}
@@ -184,8 +195,8 @@ const NavigationSheetComponent = ({
           </div>
 
           {/* Render children with current item data (removed positionIndicator) */}
-          {React.cloneElement(children, { 
-            currentItem
+          {React.cloneElement(children, {
+            currentItem,
           })}
         </div>
       </ViewDetailSheetCardExtension>
@@ -204,30 +215,25 @@ const NavigationSheetComponent = ({
       )}
 
       {editMode && EditComponent && (
-        <ViewDetailSheetCardExtension
+        <EditComponent
           isOpen={editMode}
           setIsOpen={handleEditClose}
-          title={`Update ${title.replace(' Detail', '')}`}
-          handlePrevious={() => {}}
-          handleNext={() => {}}
-        >
-          <EditComponent
-            isOpen={editMode}
-            setIsOpen={handleEditClose}
-            edit={{ open: true, data: currentItem }}
-            setEdit={() => {}}
-            reload={reload}
-            onUpdateSuccess={handleFormUpdate}
-            // Special handling for different form prop patterns
-            editMode={true}
-            branchData={currentItem}
-            shiftData={currentItem}
-            {...additionalEditProps}
-          />
-        </ViewDetailSheetCardExtension>
+          reloadData={() => {
+            fetchCurrentItemDetails(currentItemId, true);
+          }}
+          id={currentItemId}
+          edit={{ open: true, data: currentItem }}
+          setEdit={() => {}}
+          onUpdateSuccess={handleDataListUpdate}
+          // Special handling for different form prop patterns
+          editMode={true}
+          branchData={currentItem}
+          shiftData={currentItem}
+          {...additionalEditProps}
+        />
       )}
     </>
   );
 };
 
-export default NavigationSheetComponent; 
+export default NavigationSheetComponent;
