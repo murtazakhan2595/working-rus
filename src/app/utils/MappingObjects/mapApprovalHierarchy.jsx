@@ -8,11 +8,12 @@ import { addSeconds, format } from "date-fns";
 
 export async function mapApprovalHierarchyData(data) {
   const approvalHierarchyData = {};
-
   for (const key of Object.keys(ApprovalHierarchy)) {
     if (data.hasOwnProperty(key)) {
       if (key === "levels") {
-        approvalHierarchyData[key] = await mapHierarchyLevelListData(data[key] || []);
+        approvalHierarchyData[key] = await mapHierarchyLevelListData(
+          data[key] || []
+        );
       } else {
         approvalHierarchyData[key] = data[key];
       }
@@ -24,15 +25,16 @@ export async function mapApprovalHierarchyData(data) {
   return approvalHierarchyData;
 }
 
-
 export async function mapApprovalHierarchyListData(data) {
-  if (!data || data.length === 0) return [];
-  const ApprovalHierarchyList = await data?.map((approvalHierarchy) => {
-    return mapApprovalHierarchyData(approvalHierarchy);
-  });
+  if (!Array.isArray(data) || data.length === 0) return [];
+
+  const ApprovalHierarchyList = await Promise.all(
+    data.map((approvalHierarchy) => mapApprovalHierarchyData(approvalHierarchy))
+  );
 
   return ApprovalHierarchyList;
 }
+
 
 export async function mapApprovalHierarchyPayloadData(data, id) {
   // Initialize an empty payload object
@@ -133,20 +135,25 @@ export function mapHierarchyLevelData(data) {
     (acc, key) => {
       if (data.hasOwnProperty(key)) {
         if (key === "auto_forward_threshold" && data[key]) {
-          const threshold = data[key];
-          const [dayPart, timePart] = threshold?.split(" ");
-          const days = parseInt(dayPart, 10) || 0;
-          const [hours = 0, minutes = 0, secondsWithMicro = "0"] =
-            timePart.split(":");
-          const [seconds = 0, micro = 0] = secondsWithMicro.split(".");
-          const totalHours =
-            days * 24 +
-            parseInt(hours, 10) +
-            parseInt(minutes, 10) / 60 +
-            parseInt(seconds, 10) / 3600 +
-            parseInt(micro, 10) / 1e6 / 3600;
+          try {
+            const threshold = data[key];
+            const [dayPart, timePart] = threshold?.split(" ");
+            const days = parseInt(dayPart, 10) || 0;
+            const [hours = 0, minutes = 0, secondsWithMicro = "0"] =
+              timePart.split(":");
+            const [seconds = 0, micro = 0] = secondsWithMicro.split(".");
+            const totalHours =
+              days * 24 +
+              parseInt(hours, 10) +
+              parseInt(minutes, 10) / 60 +
+              parseInt(seconds, 10) / 3600 +
+              parseInt(micro, 10) / 1e6 / 3600;
 
-          acc[key] = totalHours;
+            acc[key] = totalHours;
+          } catch (error) {
+            console.error(error);
+            acc[key] = null;
+          }
         } else acc[key] = data[key];
       } else {
         // Use default values from ApprovalHierarchy type
