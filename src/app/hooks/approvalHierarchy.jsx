@@ -127,6 +127,9 @@ export const getApprovalHierarchyHistoryLogsList = async (payload) => {
     } else return { results: [], count: 0 };
   } catch (error) {
     console.error("Error fetching hierarchy data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     return { results: [], count: 0 };
   }
 };
