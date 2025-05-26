@@ -184,7 +184,7 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization, 
       >
         {(props) => (
           <form onSubmit={props.handleSubmit}>
-            <SheetCardExtension title={`${isEditMode ? 'Edit' : 'Add'} Department`}>
+            <SheetCardExtension title={`${isEditMode ? 'Edit' : 'Add'} Department`} className="mt-8">
               {/* Department Name */}
               <TextInput
                 name="name"
@@ -218,6 +218,7 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization, 
                       type: "search",
                       placeholder: "Search modules...",
                       name: "search",
+                      className: "w-full",
                     },
                   ]}
                   onChange={(filterName, filterValue) => {
