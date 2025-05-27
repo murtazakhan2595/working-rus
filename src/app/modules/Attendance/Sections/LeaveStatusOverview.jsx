@@ -12,6 +12,7 @@ import {
 } from "components/ui/card";
 import { getLeaveStatusDaily } from "app/hooks/leaveTracker";
 import { FilterInput } from "components/FormControl";
+import { HasAccess } from "utils/PermissionUtils";
 
 // Define color mapping for different leave types
 const colorMap = {
@@ -23,10 +24,18 @@ const colorMap = {
 
 export function LeaveStatusOverview() {
   // Transform API data into chart format
+  const isViewStatus = HasAccess("VIEW_LEAVE_STATUS");
+  const isViewDptStatus = HasAccess("VIEW_DEPARTMENT_LEAVE_STATUS");
+  const isViewBrnStatus = HasAccess("VIEW_BRANCH_LEAVE_STATUS");
+  const isViewRLStatus = HasAccess("VIEW_REPORTING_LINE_LEAVE_STATUS");
   const Employees = useSelector((state) => state.emp.employees);
+  const { branch_id: user_branch, department_name: user_department } =
+    useSelector((state) => state.emp.user_details);
   const Departments = useSelector((state) => state.common.departments);
+  const Branches = useSelector((state) => state.common.branches);
   const [leaveStatusData, setLeaveStatusData] = useState({});
   const [selectedDepartment, setSelectDepartment] = useState("");
+  const [selectedBranch, setSelectBranch] = useState("");
   const [filterData, setFilterData] = useState({});
   const fetchData = async (isMounted) => {
     try {
@@ -46,6 +55,25 @@ export function LeaveStatusOverview() {
       isMounted = false;
     };
   }, [filterData]);
+
+  useEffect(() => {
+    let isMounted = true;
+    setFilterData(() => {
+      if (isViewStatus) return {};
+      else {
+        if (isViewBrnStatus) {
+          return { branch: user_branch };
+        } else if (isViewDptStatus) {
+          return { departments: user_department };
+        } else if (isViewRLStatus) {
+          return {};
+        }
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [isViewBrnStatus, isViewDptStatus, isViewRLStatus, isViewStatus]);
 
   const chartData =
     leaveStatusData?.leave_details?.map((item) => ({
@@ -67,6 +95,7 @@ export function LeaveStatusOverview() {
         ];
   const handleFilterChange = (filterName, filterValue) => {
     if (filterName === "departments") setSelectDepartment(filterValue);
+    if (filterName === "branches") setSelectBranch(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -77,22 +106,42 @@ export function LeaveStatusOverview() {
       return updatedFilters;
     });
   };
+  if (!isViewBrnStatus && !isViewDptStatus && !isViewRLStatus && !isViewStatus)
+    return null;
   return (
     <Card className="flex flex-col shadow-lg border rounded-xl bg-white min-w-[33%] gap-4">
       <CardHeader className="pb-4">
         <CardTitle className="flex flex-row flex-wrap gap-2 justify-between">
-          <div className="text-xl font-bold text-plum-900"> Leave Status Overview</div>
+          <div className="text-xl font-bold text-plum-900">
+            Leave Status Overview
+          </div>
           <FilterInput
             filters={[
-              {
-                type: "select-one",
-                option: Departments,
-                name: "departments",
-                placeholder: "Department",
-                values: selectedDepartment,
-              },
+              ...(isViewStatus || isViewBrnStatus
+                ? [
+                    {
+                      type: "select-one",
+                      option: Departments,
+                      name: "departments",
+                      placeholder: "Department",
+                      values: selectedDepartment,
+                    },
+                  ]
+                : []),
+              ...(isViewStatus || isViewDptStatus
+                ? [
+                    {
+                      type: "select-two",
+                      option: Branches,
+                      name: "branches",
+                      placeholder: "Branch",
+                      values: selectedBranch,
+                    },
+                  ]
+                : []),
             ]}
             onChange={handleFilterChange}
+            className="w-full justify-end"
           />
         </CardTitle>
       </CardHeader>
