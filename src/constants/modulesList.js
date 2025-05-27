@@ -23,6 +23,7 @@ const SubModuleList = [
   "MY_TRANSFERS",
   "DOCUMENTS",
   "MY_ASSETS",
+  "MY_SHIFT_CALENDAR",
   "EXIT",
   // Team Management
   "TEAM_PROFILE",
