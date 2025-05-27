@@ -75,6 +75,7 @@ import {
   AddUpdateUserRoleForm,
   RoleAssignmentEmployeeHistoryLogs,
 } from "app/modules/RoleAndPermissions";
+import { MyShiftCalendar } from "app/modules/Attendance/ShiftCalendar";
 
 export const SidebarRoutes = [
   {
@@ -128,6 +129,11 @@ export const SidebarRoutes = [
           path: "/my-assets",
           component: <MyAssets />,
           name: "MY_ASSETS",
+        },
+        Config.MY_SHIFT_CALENDAR && {
+          path: "/my-shift-calendar",
+          component: <MyShiftCalendar/>,
+          name: "MY_SHIFT_CALENDAR",
         },
         Config.EXIT && {
           path: "/exit-employee",

@@ -17,6 +17,7 @@ import PendingSchedule from "./PendingSchedule/PendingSchedule";
 import ScheduleShiftModal from "./Modals/ScheduleShiftModal";
 import { getShiftSchedule } from "app/hooks/shiftManagement";
 import { Button } from "components/ui/button";
+import EmployeeShiftCalendar from "./MyShiftCalendar/EmployeeShiftCalendar";
 
 const ShiftCalendar = () => {
   const [activeTab, setActiveTab] = useState("shift-calendar");
@@ -125,6 +126,11 @@ const ShiftCalendar = () => {
       value: "shift-request",
       label: "Shift Request",
       component: <ShiftRequest employees={teamMembers.results} />,
+    },
+    {
+      value: "my-shift-calendar",
+      label: "My Shift Calendar",
+      component: <EmployeeShiftCalendar />,
     },
   ];
 

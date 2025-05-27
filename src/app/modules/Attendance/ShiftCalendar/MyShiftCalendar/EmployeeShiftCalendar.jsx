@@ -13,11 +13,16 @@ import interactionPlugin from "@fullcalendar/interaction";
 import CustomTable from "components/CustomTable";
 import { toast } from "react-toastify";
 import ShiftChangeRequestModal from "../ShiftCalendarTab/ShiftChangeRequestModal";
+import {
+  filterOverlappingSchedules,
+  getChangeRequestComparison,
+} from "../ShiftCalendarTab/shiftScheduleUtils";
 
 const EmployeeShiftCalendar = () => {
   const [events, setEvents] = useState([]);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [employeeInfo, setEmployeeInfo] = useState(null);
+  const [directShift, setDirectShift] = useState(null);
   const [scheduleShifts, setScheduleShifts] = useState({
     results: [],
     count: 0,
@@ -34,7 +39,8 @@ const EmployeeShiftCalendar = () => {
   const [ordering, setOrdering] = useState("-id");
 
   const userProfile = useSelector((state) => state.user.userProfile);
-  const employeeId = userProfile?.employee_id || userProfile?.id;
+  const employeeId = 10;
+  // const employeeId = userProfile?.employee_id || userProfile?.id;
 
   // Fetch employee data and shifts
   useEffect(() => {
@@ -47,6 +53,14 @@ const EmployeeShiftCalendar = () => {
     try {
       const empData = await employeeData(employeeId);
       setEmployeeInfo(empData);
+
+      // Also fetch direct shift assignment if exists
+      if (empData?.shift_assignment) {
+        const shiftData = await getShiftById(empData.shift_assignment);
+        if (shiftData) {
+          setDirectShift(shiftData);
+        }
+      }
     } catch (error) {
       console.error("Error fetching employee data:", error);
     }
@@ -59,12 +73,21 @@ const EmployeeShiftCalendar = () => {
         filterData: {
           employee: employeeId,
           status: "Approved",
+          is_change_request: false, // Don't include change requests
         },
+        ordering: "-created_at", // Get newest first
       });
 
-      if (response) {
-        setScheduleShifts(response);
-        generateCalendarEvents(response.results);
+      if (response && response.results) {
+        // Filter out older overlapping schedules
+        const filteredSchedules = filterOverlappingSchedules(response.results);
+
+        setScheduleShifts({
+          results: filteredSchedules,
+          count: filteredSchedules.length,
+        });
+
+        generateCalendarEvents(filteredSchedules, directShift);
       }
     } catch (error) {
       console.error("Error fetching approved shifts:", error);
@@ -80,20 +103,39 @@ const EmployeeShiftCalendar = () => {
         filterData: {
           employee: employeeId,
           is_change_request: true,
+          ordering: "-created_at",
+          shift_requested: "Employee", // Only fetch employee-initiated requests
         },
       });
 
-      if (response) {
-        setChangeRequests(response);
+      if (response && response.results) {
+        // Add comparison data to each change request
+        const requestsWithComparison = await Promise.all(
+          response.results.map(async (request) => {
+            const comparisonData = await getChangeRequestComparison(
+              request,
+            );
+            return {
+              ...request,
+              comparison_data: comparisonData,
+            };
+          })
+        );
+
+        setChangeRequests({
+          ...response,
+          results: requestsWithComparison,
+        });
       }
     } catch (error) {
       console.error("Error fetching change requests:", error);
     }
   };
 
-  const generateCalendarEvents = (approvedSchedules) => {
+  const generateCalendarEvents = (approvedSchedules, directShiftData) => {
     const events = [];
 
+    // Generate events from approved schedules
     approvedSchedules.forEach((schedule) => {
       if (schedule.is_org_based && schedule.shift_details) {
         // Organization-based scheduled shift
@@ -104,13 +146,46 @@ const EmployeeShiftCalendar = () => {
       }
     });
 
+    // Only add direct shift events if no schedules exist
+    if (events.length === 0 && directShiftData) {
+      events.push(...generateDirectShiftEvents(directShiftData));
+    }
+
     setEvents(events);
+  };
+
+  const generateDirectShiftEvents = (shift) => {
+    const events = [];
+
+    // Show for current month only
+    const startOfMonth = moment().startOf("month");
+    const endOfMonth = moment().endOf("month");
+
+    let currentDate = startOfMonth.clone();
+    while (currentDate.isSameOrBefore(endOfMonth)) {
+      // Skip weekends for default org shifts (you can modify this logic)
+      if (currentDate.day() !== 0 && currentDate.day() !== 6) {
+        const startTime = moment(shift.starttime).format("HH:mm");
+        const endTime = moment(shift.endtime).format("HH:mm");
+
+        events.push({
+          title: `${shift.name} (${startTime} - ${endTime})`,
+          start: `${currentDate.format("YYYY-MM-DD")}T${startTime}:00`,
+          end: `${currentDate.format("YYYY-MM-DD")}T${endTime}:00`,
+          backgroundColor: "#3B82F6", // Blue for direct assignments
+          borderColor: "#2563EB",
+          textColor: "#FFFFFF",
+        });
+      }
+      currentDate.add(1, "day");
+    }
+
+    return events;
   };
 
   const generateOrgScheduleEvents = (schedule) => {
     const events = [];
     const shiftDetails = schedule.shift_details;
-
     if (!shiftDetails) return events;
 
     // Parse weekdays
@@ -133,11 +208,17 @@ const EmployeeShiftCalendar = () => {
       const dayName = currentDate.format("ddd").toLowerCase();
 
       if (shortWeekdays.includes(dayName)) {
-        const startTime = moment(shiftDetails.starttime).format("HH:mm");
-        const endTime = moment(shiftDetails.endtime).format("HH:mm");
+        const startTime = moment(shiftDetails.starttime, "HH:mm:ss").format(
+          "HH:mm"
+        );
+        const endTime = moment(shiftDetails.endtime, "HH:mm:ss").format(
+          "HH:mm"
+        );
+
+        const eventTitle = `${shiftDetails.name} (${startTime} - ${endTime})`;
 
         events.push({
-          title: `${shiftDetails.name} (${startTime} - ${endTime})`,
+          title: eventTitle,
           start: `${currentDate.format("YYYY-MM-DD")}T${startTime}:00`,
           end: `${currentDate.format("YYYY-MM-DD")}T${endTime}:00`,
           backgroundColor: "#10B981",
@@ -217,7 +298,7 @@ const EmployeeShiftCalendar = () => {
 
   const handleRequestSuccess = () => {
     fetchChangeRequests();
-    toast.success("Shift change request submitted successfully!");
+    fetchApprovedShifts(); // Also refresh the calendar
   };
 
   const onPageChange = (name, value) => {
@@ -237,7 +318,7 @@ const EmployeeShiftCalendar = () => {
   const changeRequestColumns = [
     {
       dataField: "start_date",
-      text: "Assigned Date",
+      text: "Request Period",
       formatter: (cell, row) => {
         return `${moment(row.start_date).format("DD MMM")} - ${moment(
           row.end_date
@@ -246,32 +327,27 @@ const EmployeeShiftCalendar = () => {
       dataSort: true,
     },
     {
-      dataField: "schedule_name",
-      text: "Assigned Shift",
-      formatter: (cell, row) => {
-        // Show original shift info
-        if (row.is_org_based && row.shift_details) {
-          return row.shift_details.name;
-        }
-        return "Custom Shift";
+      dataField: "comparison_data",
+      text: "Changes Summary",
+      formatter: (cell) => {
+        if (!cell || cell.length === 0) return "No changes";
+
+        const newCount = cell.filter((d) => d.is_new_shift).length;
+        const modifiedCount = cell.length - newCount;
+
+        return (
+          <div className="text-sm">
+            {modifiedCount > 0 && <div>{modifiedCount} modified days</div>}
+            {newCount > 0 && <div>{newCount} new days</div>}
+          </div>
+        );
       },
     },
     {
-      dataField: "custom_schedule",
-      text: "Requested Timing/Status",
-      formatter: (cell) => {
-        if (!cell) return "N/A";
-
-        // Show summary of requested changes
-        const dates = Object.keys(cell);
-        if (dates.length === 1) {
-          const daySchedule = cell[dates[0]];
-          if (daySchedule.is_off) return "OFF";
-          if (daySchedule.is_split) return "Split Shift";
-          return `${daySchedule.start_time} - ${daySchedule.end_time}`;
-        }
-        return `Changes for ${dates.length} days`;
-      },
+      dataField: "created_at",
+      text: "Requested On",
+      formatter: (cell) => moment(cell).format("DD MMM YYYY"),
+      dataSort: true,
     },
     {
       dataField: "status",
@@ -286,7 +362,7 @@ const EmployeeShiftCalendar = () => {
         return (
           <span
             className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
-              statusColors[cell] || "bg-gray-50 text-gray-700"
+              statusColors[cell] || ""
             }`}
           >
             {cell || "N/A"}
@@ -295,39 +371,54 @@ const EmployeeShiftCalendar = () => {
       },
       dataSort: true,
     },
+    {
+      dataField: "rejection_reason",
+      text: "Remarks",
+      formatter: (cell, row) => {
+        if (row.status === "Rejected" && cell) {
+          return <span className="text-red-600 text-sm">{cell}</span>;
+        }
+        return "-";
+      },
+    },
   ];
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">My Shift Calendar</h2>
-        <Button onClick={() => setIsRequestModalOpen(true)} size="lg">
+        <div>
+          <h2 className="text-2xl font-bold">My Shift Calendar</h2>
+          {scheduleShifts.count > 1 && (
+            <p className="text-sm text-orange-600 mt-1">
+              Showing effective schedule (latest schedules for overlapping
+              dates)
+            </p>
+          )}
+        </div>
+        <Button onClick={() => setIsRequestModalOpen(true)}>
           Request Shift Change
         </Button>
       </div>
 
       {/* Calendar View */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Approved Shift Schedule</CardTitle>
-        </CardHeader>
+      <Card className="pt-6">
         <CardContent>
           {loading ? (
             <div className="flex items-center justify-center h-[500px]">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <div className="text-gray-500 mt-2">Loading calendar...</div>
+                <div className=" mt-2">Loading calendar...</div>
               </div>
             </div>
           ) : (
             <div className="h-[600px]">
               <FullCalendar
-                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                plugins={[dayGridPlugin, interactionPlugin]}
                 headerToolbar={{
                   left: "prev,next today",
                   center: "title",
-                  right: "dayGridMonth,timeGridWeek",
+                  right: "dayGridMonth",
                 }}
                 initialView="dayGridMonth"
                 events={events}
@@ -338,6 +429,16 @@ const EmployeeShiftCalendar = () => {
                 eventTextColor="#ffffff"
                 nowIndicator={true}
                 weekends={true}
+                slotLabelFormat={{
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                }}
+                eventTimeFormat={{
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                }}
               />
             </div>
           )}
@@ -347,7 +448,7 @@ const EmployeeShiftCalendar = () => {
       {/* Change Request Records */}
       <Card>
         <CardHeader>
-          <CardTitle>Change Request Records</CardTitle>
+          <CardTitle>My Shift Change Requests</CardTitle>
         </CardHeader>
         <CardContent>
           <CustomTable
@@ -381,6 +482,10 @@ const EmployeeShiftCalendar = () => {
               <div className="w-3 h-3 bg-gray-500 rounded"></div>
               <span>OFF Day</span>
             </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-blue-500 rounded"></div>
+              <span>Direct Assignment (No Schedule)</span>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -392,6 +497,7 @@ const EmployeeShiftCalendar = () => {
           setIsOpen={setIsRequestModalOpen}
           employee={employeeInfo}
           onRequestSuccess={handleRequestSuccess}
+          shift_requested="Employee"
         />
       )}
     </div>

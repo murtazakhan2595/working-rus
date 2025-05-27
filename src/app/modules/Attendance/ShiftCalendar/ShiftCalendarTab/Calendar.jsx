@@ -360,6 +360,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId }) => {
           setIsOpen={setIsRequestModalOpen}
           employee={selectedEmployee}
           onRequestSuccess={handleRequestSuccess}
+          shift_requested="Manager"
         />
       )}
     </div>
