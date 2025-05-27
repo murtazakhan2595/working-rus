@@ -376,7 +376,7 @@ const AssetRequestViewSheet = ({
                 <div className="flex flex-col leading-none min-w-[88px] text-neutral-900 w-[132px]">
                   <div>Attachments</div>
                 </div>
-                <div className="flex-1 shrink leading-5 basis-0 text-neutral-800">
+                <div className="flex-1 leading-5 shrink basis-0 text-neutral-800">
                   {attachments.map(
                     (attachment, index) =>
                       attachment.attachment && (
@@ -397,7 +397,7 @@ const AssetRequestViewSheet = ({
         </DetailCard>
 
         {/* Approval Status Section */}
-        <DetailCard detailCardTitle="Request Status">
+        <DetailCard detailCardTitle="Request Status 1">
           <div className="flex items-center justify-between w-full gap-4">
             <section className="flex relative flex-col max-w-[382px] mt-3">
               <div className="flex absolute -bottom-0.5 z-0 justify-center items-start w-6 h-[150px] left-[5px] min-h-[150px]" />
@@ -431,8 +431,8 @@ const AssetRequestViewSheet = ({
         </DetailCard>
 
         {assetRequest?.rejection_reason && (
-          <div className="mt-4 p-3 border rounded-md bg-gray-50 text-sm text-gray-1100">
-            <div className="font-medium mb-1">Rejection Reason:</div>
+          <div className="p-3 mt-4 text-sm border rounded-md bg-gray-50 text-gray-1100">
+            <div className="mb-1 font-medium">Rejection Reason:</div>
             <div>{assetRequest.rejection_reason}</div>
           </div>
         )}
@@ -547,8 +547,8 @@ const AssetSelectionDialog = ({
           />
 
           {selectedAssetId && (
-            <div className="mt-4 p-3 border rounded-md bg-gray-50 text-sm">
-              <div className="font-medium mb-1">Selected Asset Details:</div>
+            <div className="p-3 mt-4 text-sm border rounded-md bg-gray-50">
+              <div className="mb-1 font-medium">Selected Asset Details:</div>
               {(() => {
                 const selectedAsset = assets.find(
                   (asset) => asset.value === selectedAssetId
