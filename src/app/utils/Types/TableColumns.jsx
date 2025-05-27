@@ -828,6 +828,50 @@ export const MyAssetRequestColumns = [
     },
     dataSort: true,
   },
+  {
+    dataField: "action",
+    text: "Action",
+    formatter: (cell, row) => {
+      const handleView = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("View asset request:", row);
+        // Add your view logic here - could open a modal or navigate to details page
+      };
+
+      const handleEdit = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Edit asset request:", row);
+        // Add your edit logic here - could open edit modal
+      };
+
+      const handleWithdraw = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Withdraw asset request:", row);
+        // Add your withdraw logic here
+      };
+
+      // Only show edit/withdraw for pending requests
+      const canEdit = row.asset_status === "Pending";
+      const canWithdraw = row.asset_status === "Pending";
+
+      return (
+        <div onClick={(e) => e.stopPropagation()}>
+          <DropdownActionMenu
+            onView={handleView}
+            onEdit={canEdit ? handleEdit : null}
+            onCustom={canWithdraw ? handleWithdraw : null}
+            viewText="View Request"
+            editText="Edit Request"
+            customText="Withdraw Request"
+            menuTooltip="Asset Request Actions"
+          />
+        </div>
+      );
+    },
+  },
 ];
 
 export const AssignedAssetsColumns = [
@@ -887,7 +931,7 @@ export const AssignedAssetsColumns = [
   },
 ];
 
-export const AssetRequestColumns = [
+export const AssetRequestColumns = (handleView, handleEdit, handleReject) => [
   {
     dataField: "asset_employee_id",
     text: "ID",
@@ -960,6 +1004,56 @@ export const AssetRequestColumns = [
           {cell || "N/A"}
         </span>
       );
+    },
+  },
+  {
+    dataField: "action",
+    text: "Action",
+    formatter: (cell, row) => {
+      const handleViewClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleView && handleView(row);
+      };
+
+      const handleEditClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleEdit && handleEdit(row);
+      };
+
+
+
+      const handleRejectClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleReject && handleReject(row);
+      };
+
+              // Determine available actions based on status
+        const isPending = row.asset_status === "Pending";
+        const isRejected = row.asset_status === "Rejected";
+        const isAccepted = row.asset_status === "Accepted";
+
+        // Show Edit for Pending and Rejected requests
+        // Show Reject for Pending requests only
+        // Always show View
+        const canEdit = isPending || isRejected;
+        const canReject = isPending;
+
+        return (
+          <div onClick={(e) => e.stopPropagation()}>
+            <DropdownActionMenu
+              onView={handleViewClick}
+              onEdit={canEdit ? handleEditClick : null}
+              onDelete={canReject ? handleRejectClick : null}
+              viewText="View Details"
+              editText="Edit Request"
+              deleteText="Reject Request"
+              menuTooltip="Request Actions"
+            />
+          </div>
+        );
     },
   },
 ];

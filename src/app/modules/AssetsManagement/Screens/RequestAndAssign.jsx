@@ -14,12 +14,13 @@ import {
 import { toast } from "react-toastify";
 import AssetRequestSheet from "./AssetRequestSheet";
 import AssetRequestViewSheet from "./AssetRequestViewSheet";
+import ViewAssetRequest from "./ViewAssetRequest";
 import { AssetRequestColumns } from "app/utils/Types/TableColumns";
 import { getEmployeeAssets } from "app/hooks/assets";
 
 
 
-const AssetRequests = ({ userProfile, departments }) => {
+const AssetRequests = ({ userProfile, departments, employees }) => {
   const [activeTab, setActiveTab] = useState("requests"); // "requests" or "assignments"
 
   // Common state
@@ -32,6 +33,8 @@ const AssetRequests = ({ userProfile, departments }) => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [editRequest, setEditRequest] = useState(null);
+
+
 
   // Asset request/assignment sheet state
   const [openAssetRequestSheet, setOpenAssetRequestSheet] = useState(false);
@@ -115,17 +118,6 @@ const AssetRequests = ({ userProfile, departments }) => {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
-    onRowClick: (row) => {
-      console.log("Row clicked:", row);
-      if (row.asset_status === "Pending" && row.asset_request_status ==="Requested"){
-        setEditRequest(row);
-      }
-      else{
-        setSelectedRequest(row);
-        setOpenRequestDetailSheet(true);
-
-      }
-    },
   };
 
   // Load data based on active tab
@@ -137,6 +129,35 @@ const AssetRequests = ({ userProfile, departments }) => {
     };
   }, [activeTab, options, filterData]);
 
+  // Action handlers for the dropdown menu
+  const handleViewRequest = (row) => {
+    console.log("View asset request:", row);
+    setSelectedRequest(row);
+    setOpenRequestDetailSheet(true);
+  };
+
+  const handleEditRequest = (row) => {
+    console.log("Edit asset request:", row);
+    
+    // Allow edit for Pending and Rejected requests
+    if ((row.asset_status === "Pending" || row.asset_status === "Rejected") && row.asset_request_status === "Requested") {
+      // Close the view sheet if it's open
+      setOpenRequestDetailSheet(false);
+      setSelectedRequest(null);
+      // Open the edit sheet
+      setEditRequest(row);
+    }
+  };
+
+
+
+  const handleRejectRequest = (row) => {
+    console.log("Reject asset request:", row);
+    // Open the assign sheet in reject mode
+    setSelectedRequest(row);
+    setEditRequest(row);
+  };
+
   // Tab configuration
   const tabsData = [
     { value: "requests", label: "Requested By Employee" },
@@ -144,7 +165,11 @@ const AssetRequests = ({ userProfile, departments }) => {
   ];
 
   const enhancedRequestColumns = [
-    ...AssetRequestColumns.filter((col) => col.dataField !== "id"), 
+    ...AssetRequestColumns(
+      handleViewRequest,
+      handleEditRequest,
+      handleRejectRequest
+    ).filter((col) => col.dataField !== "id"), 
   ];
 
   const filters = [
@@ -259,6 +284,7 @@ const AssetRequests = ({ userProfile, departments }) => {
           mode={assetSheetMode}
           reload={() => fetchRequestsData(true)}
           departments={departments}
+          employees={employees}
         />
       )}
       {editRequest && (
@@ -270,28 +296,35 @@ const AssetRequests = ({ userProfile, departments }) => {
           mode={"assign"}
           reload={() => fetchRequestsData(true)}
           departments={departments}
+          employees={employees}
           editData={editRequest}
         />
       )}
 
       {/* Asset Request Detail Sheet */}
       {openRequestDetailSheet && (
-        <AssetRequestViewSheet
+        <ViewAssetRequest
           isOpen={openRequestDetailSheet}
           setIsOpen={setOpenRequestDetailSheet}
-          request={selectedRequest}
+          data={selectedRequest}
           reload={() => fetchRequestsData(true)}
+          AssetRequestList={requestsData}
+          isMyRequest={false}
+          onEdit={handleEditRequest}
         />
       )}
+
+
     </div>
   );
 };
 
-// Connect to Redux to get departments and user profile
+// Connect to Redux to get departments, employees and user profile
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
     departments: state.common.departments,
+    employees: state.emp.employees,
   };
 };
 
