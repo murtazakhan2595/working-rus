@@ -8,6 +8,7 @@ import {
   ApprovalHierarchyLogsActions,
   ApprovalHierarchyLevelActions,
   LevelDelegateActions,
+  ApprovalHeirarchyStatusTogle,
 } from "app/modules/ApprovalHierarchy/Sections";
 
 import { renderDate } from "utils/renderValues";
@@ -41,12 +42,38 @@ export const ApprovalHierarchyColumn = (reload = () => {}) => [
     ),
   },
   {
-    dataField: "auto_forward_enabled",
+    dataField: "created_by",
+    text: "Created By",
+    dataSort: true,
+    formatter: (cell) => <EmployeeUsername value={cell} fallBackText={"--"} />,
+  },
+  {
+    dataField: "no_of_levels",
+    text: "No. of Levels",
+    dataSort: true,
+  },
+  {
+    dataField: "has_delegation",
+    text: "Delegated",
+    dataSort: true,
+    formatter: (cell) => (cell ? "Yes" : "NO"),
+  },
+  {
+    dataField: "has_auto_forward",
     text: "Auto Forward",
     dataSort: true,
     formatter: (cell) => (
       <StatusLabel variant="info">{cell ? "Enabled" : "Disabled"}</StatusLabel>
     ),
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell, row) => {
+      return (
+        <ApprovalHeirarchyStatusTogle data={row} status={cell} reloadData={reload} />
+      );
+    },
   },
   {
     text: "",
@@ -140,18 +167,32 @@ export const HierarchyHistoryColumn = [
     formatter: (cell) => <EmployeeUsername value={cell} fallBackText={"--"} />,
   },
   {
+    dataField: "no_of_levels",
+    text: "No. of Levels",
+    dataSort: true,
+  },
+  {
     dataField: "has_delegation",
     text: "Delegated",
     dataSort: true,
     formatter: (cell) => (cell ? "Yes" : "NO"),
   },
   {
-    dataField: "auto_forward_enabled",
+    dataField: "has_auto_forward",
     text: "Auto Forward",
     dataSort: true,
     formatter: (cell) => (
       <StatusLabel variant="info">{cell ? "Enabled" : "Disabled"}</StatusLabel>
     ),
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell, row) => {
+      return (
+        <StatusLabel variant={cell?'success':'error'}>{cell ? "Active" : "Inactive"}</StatusLabel>
+      );
+    },
   },
   {
     text: "",
@@ -187,7 +228,7 @@ export const HierarchyHistoryDetailsColumn = [
     text: "From -> To",
     formatter: (cell, row) =>
       `${cell ?? ""}${cell && row.to_value ? " -> " : ""}${row.to_value ?? ""}`,
-    maxWidth:'200px'
+    maxWidth: "200px",
   },
   {
     dataField: "changed_by",

@@ -9,6 +9,7 @@ import ApprovalHierarchyActions from "./ApprovalHierarchyActions";
 import ApprovalHierarchyLogsActions from "./ApprovalHierarchyLogsActions";
 import ApprovalHierarchyLevelActions from "./ApprovalHierarchyLevelActions";
 import LevelDelegateActions from "./LevelDelegateActions";
+import ApprovalHeirarchyStatusTogle from "./ApprovalHeirarchyStatusTogle";
 export {
   ApprovalHierarchyColumn,
   HierarchyLevelsColumn,
@@ -19,4 +20,5 @@ export {
   ApprovalHierarchyLevelActions,
   DelegateLevelsColumn,
   LevelDelegateActions,
+  ApprovalHeirarchyStatusTogle,
 };
