@@ -5,65 +5,10 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import moment from "moment";
 
-const pendingSchedule = {
-  id: 4,
-  employee: 104,
-  shift_id: null,
-  schedule_name: "Custom Arrangement - Week Jan 15-21",
-  start_date: "2024-01-15",
-  end_date: "2024-01-21",
-  is_org_based: false,
-  custom_schedule: {
-    "2025-05-22": {
-      is_off: false,
-      is_split: false,
-      start_time: "09:00",
-      end_time: "17:00",
-    },
-    "2025-05-23": {
-      is_off: false,
-      is_split: true,
-      start_time_1: "09:00",
-      end_time_1: "13:00",
-      start_time_2: "14:00",
-      end_time_2: "18:00",
-    },
-    "2025-05-24": {
-      is_off: true,
-    },
-    "2025-05-25": {
-      is_off: false,
-      is_split: false,
-      start_time: "10:00",
-      end_time: "18:00",
-    },
-    "2025-05-26": {
-      is_off: false,
-      is_split: false,
-      start_time: "16:00",
-      end_time: "00:00", // Next day
-    },
-  },
-  total_weekly_hours: 32.0,
-  status: "Pending",
-  assigned_by: 201,
-  approved_by: null,
-  approval_date: null,
-  created_at: "2024-01-10T10:30:00Z",
 
-  // No shift details for custom schedules
-  shiftDetails: null,
 
-  // Employee details
-  employeeDetails: {
-    id: 104,
-    first_name: "Alice",
-    last_name: "Brown",
-    employee_id: "EMP004",
-  },
-};
-
-const ScheduleCalendar = ({}) => {
+const ScheduleCalendar = ({ pendingSchedule }) => {
+  console.log("Pending Schedule", pendingSchedule);
   const [events, setEvents] = useState([]);
   const prevScheduleRef = useRef(null);
 
