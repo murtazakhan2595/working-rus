@@ -5,13 +5,17 @@ import moment from "moment";
 import ShiftChangeRequestActions from "./ShiftChangeRequestActions";
 
 
-export const EmployeeColumns = [
+ export const EmployeeColumns = [
   {
     dataField: "employee",
     text: "Employee",
-    formatter: (cell) => (
-      <EmployeeOverview id={cell} showPosition={true} showDepartment={true} />
-    ),
+    formatter: (cell, row) => {
+      return (
+        <>
+          <EmployeeOverview id={cell.id || cell} showBranchName={true}/>
+        </>
+      );
+    },
     dataSort: true,
   },
   {
@@ -104,7 +108,7 @@ export const EmployeeColumns = [
     dataField: "actions",
     text: "Actions",
     formatter: (cell, row) => (
-      <ShiftChangeRequestActions data={row} reload={()=>{}} />
+      <ShiftChangeRequestActions data={row} reload={() => {}} />
     ),
   },
 ];
