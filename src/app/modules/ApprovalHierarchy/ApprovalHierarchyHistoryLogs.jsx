@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { TableCustom, Header } from "components";
+import { TableCustom, Header, StatusLabel, PageLoader } from "components";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
-import PageLoader from "components/PageLoader";
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
@@ -16,11 +15,14 @@ import {
   HierarchyLevelsColumn,
   HierarchyHistoryDetailsColumn,
 } from "app/modules/ApprovalHierarchy/Sections";
-import { Levels,LevelDelegations } from "app/modules/ApprovalHierarchy";
+import { Levels, LevelDelegations } from "app/modules/ApprovalHierarchy";
 import { useNavigate, useLocation } from "react-router-dom";
 import { EmployeeDetailUI } from "components";
 import { DetailBox } from "components/SheetCardExtension";
-import { ApprovalHierarchyRequestTypeName } from "utils/getValuesFromTables";
+import {
+  ApprovalHierarchyRequestTypeName,
+  EmployeeUsername,
+} from "utils/getValuesFromTables";
 
 const ApprovalHierarchyHistoryLogs = () => {
   const location = useLocation();
@@ -118,13 +120,41 @@ const ApprovalHierarchyHistoryLogs = () => {
               }
               label="Request Type"
             />
-            {HierarchyDetails?.auto_forward_enabled && (
-              <DetailBox
-                orientation="horizontal"
-                value={`${HierarchyDetails?.auto_forward_threshold}hr`}
-                label="Auto-Forward Thershold"
-              />
-            )}
+            <DetailBox
+              orientation="horizontal"
+              value={<EmployeeUsername value={HierarchyDetails?.created_by} />}
+              label="Created By"
+            />
+            <DetailBox
+              orientation="horizontal"
+              value={`${HierarchyDetails?.no_of_levels || 0}`}
+              label="No. of Levels"
+            />
+            <DetailBox
+              orientation="horizontal"
+              value={`${HierarchyDetails?.has_delegation ? "Yes" : "NO"}`}
+              label="Delegated"
+            />
+            <DetailBox
+              orientation="horizontal"
+              value={
+                <StatusLabel variant="info">
+                  {HierarchyDetails?.has_auto_forward ? "Enabled" : "Disabled"}
+                </StatusLabel>
+              }
+              label="Auto Forward"
+            />
+            <DetailBox
+              orientation="horizontal"
+              value={
+                <StatusLabel
+                  variant={HierarchyDetails?.status ? "success" : "error"}
+                >
+                  {HierarchyDetails?.status ? "Active" : "Inactive"}
+                </StatusLabel>
+              }
+              label="Status"
+            />
           </div>
         </CardContent>
       </Card>
@@ -140,7 +170,7 @@ const ApprovalHierarchyHistoryLogs = () => {
           />
         </CardContent>
       </Card>
-      <LevelDelegations heirarchy_id={id}  viewMode={true} />
+      <LevelDelegations heirarchy_id={id} viewMode={true} />
 
       <Card>
         <CardTitle className="text-primary pt-6 px-6">History & Logs</CardTitle>

@@ -509,6 +509,7 @@ const FilterInput = ({
   const width = "w-56";
   const height = "h-[38px]";
   const [openRole, setOpenRole] = useState(false);
+  const [openFilterFour, setOpenFilterFour] = useState(false);
   const [openDesignation, setOpenDesignation] = useState(false);
   const [openDepartment, setOpenDepartment] = useState(false);
   const [inputValues, setInputValues] = useState({});
@@ -725,6 +726,8 @@ const FilterInput = ({
               );
             case "select-three":
               return renderPopoverSelect(filter, index, openRole, setOpenRole);
+            case "select-four":
+              return renderPopoverSelect(filter, index, openFilterFour, setOpenFilterFour);
             case "date":
               return renderDatePicker(filter, index);
             case "date-range":
