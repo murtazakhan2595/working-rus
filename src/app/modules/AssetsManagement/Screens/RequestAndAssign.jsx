@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Button } from "components/ui/button";
-import { Header } from "components";
+import { Header, UnauthorizedAccess } from "components";
 import CustomTable from "components/CustomTable";
 import { FilterInput } from "components/FormControl";
 import { Card, CardContent, CardDescription, CardTitle, CardHeader } from "components/ui/card";
@@ -17,10 +17,14 @@ import AssetRequestViewSheet from "./AssetRequestViewSheet";
 import ViewAssetRequest from "./ViewAssetRequest";
 import { AssetRequestColumns } from "app/utils/Types/TableColumns";
 import { getEmployeeAssets } from "app/hooks/assets";
-
-
+import { HasAccess } from "utils/PermissionUtils";
 
 const AssetRequests = ({ userProfile, departments, employees }) => {
+  // Permission checks for asset request management features
+  const canViewAssetRequests = HasAccess("VIEW_ASSETS_REQUEST");
+  const canApproveAssetRequests = HasAccess("MANAGE_ASSET_REQUEST");
+  const canAssignAssets = HasAccess("ASSIGN_ASSETS_TO_EMPLOYEE");
+
   const [activeTab, setActiveTab] = useState("requests"); // "requests" or "assignments"
 
   // Common state
@@ -33,8 +37,6 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [editRequest, setEditRequest] = useState(null);
-
-
 
   // Asset request/assignment sheet state
   const [openAssetRequestSheet, setOpenAssetRequestSheet] = useState(false);
@@ -149,8 +151,6 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
     }
   };
 
-
-
   const handleRejectRequest = (row) => {
     console.log("Reject asset request:", row);
     // Open the assign sheet in reject mode
@@ -199,10 +199,24 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
   ];
 
   const getActionButton = () => {
-    if (activeTab === "assignments") {
+    if (activeTab === "assignments" && canAssignAssets) {
       return <Button onClick={handleAssignAsset}>Assign Asset</Button>;
     }
+    return null;
   };
+
+  // If user has no asset request management permissions at all
+  if (!canViewAssetRequests) {
+    return (
+      <UnauthorizedAccess
+        title="Asset Request Management Access Denied"
+        featureName="asset request management"
+        message="You don't have permission to view or manage asset requests. Please contact your administrator to request access."
+        showButtons={true}
+        size="lg"
+      />
+    );
+  }
 
   return (
     <div
@@ -218,7 +232,7 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
         }}
         defaultValue="requests"
       >
-        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row mb-4">
+        <div className="flex flex-col items-start justify-between mb-4 lg:flex-row md:flex-row xl:flex-row">
           <TabsList className="flex justify-center mb-4">
             {tabsData?.map((tab) => (
               <TabsTrigger
@@ -245,39 +259,57 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
         </CardDescription>
         <div
             onClick={(e) => e.stopPropagation()}
-            className="mt-2 lg:mt-0 md:mt-0 xl:mt-0 justify-end flex"
+            className="flex justify-end mt-2 lg:mt-0 md:mt-0 xl:mt-0"
           >
             <FilterInput filters={filters} onChange={handleFilterChange} />
           </div>
         </CardHeader>
           <CardContent>
             <TabsContent value="requests">
-              <CustomTable
-                columns={enhancedRequestColumns}
-                data={isLoading ? [] : requestsData}
-                pagination={true}
-                dataTotalSize={totalCount}
-                tableOptions={tableOptions}
-                loading={isLoading}
-              />
+              {canViewAssetRequests ? (
+                <CustomTable
+                  columns={enhancedRequestColumns}
+                  data={isLoading ? [] : requestsData}
+                  pagination={true}
+                  dataTotalSize={totalCount}
+                  tableOptions={tableOptions}
+                  loading={isLoading}
+                />
+              ) : (
+                <UnauthorizedAccess
+                  title="Asset Requests Access Denied"
+                  featureName="asset requests"
+                  message="You don't have permission to view asset requests."
+                  size="md"
+                />
+              )}
             </TabsContent>
 
             <TabsContent value="assignments">
-              <CustomTable
-                columns={enhancedRequestColumns}
-                data={isLoading ? [] : requestsData}
-                pagination={true}
-                dataTotalSize={totalCount}
-                tableOptions={tableOptions}
-                loading={isLoading}
-              />
+              {canViewAssetRequests ? (
+                <CustomTable
+                  columns={enhancedRequestColumns}
+                  data={isLoading ? [] : requestsData}
+                  pagination={true}
+                  dataTotalSize={totalCount}
+                  tableOptions={tableOptions}
+                  loading={isLoading}
+                />
+              ) : (
+                <UnauthorizedAccess
+                  title="Asset Assignments Access Denied"
+                  featureName="asset assignments"
+                  message="You don't have permission to view asset assignments."
+                  size="md"
+                />
+              )}
             </TabsContent>
           </CardContent>
         </Card>
       </Tabs>
 
       {/* Combined Asset Request/Assignment Sheet */}
-      {openAssetRequestSheet && (
+      {openAssetRequestSheet && canAssignAssets && (
         <AssetRequestSheet
           isOpen={openAssetRequestSheet}
           setIsOpen={setOpenAssetRequestSheet}
@@ -287,7 +319,7 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
           employees={employees}
         />
       )}
-      {editRequest && (
+      {editRequest && canApproveAssetRequests && (
         <AssetRequestSheet
           isOpen={!!editRequest}
           setIsOpen={() => {
@@ -313,7 +345,6 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
           onEdit={handleEditRequest}
         />
       )}
-
 
     </div>
   );

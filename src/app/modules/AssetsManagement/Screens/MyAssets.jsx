@@ -7,10 +7,15 @@ import AssetRequestSheet from "./AssetRequestSheet";
 import AssetRequestViewSheet from "./AssetRequestViewSheet";
 import CustomTable from "components/CustomTable";
 import { MyAssetRequestColumns } from "app/utils/Types/TableColumns";
-import { Header } from "components";
+import { Header, UnauthorizedAccess } from "components";
 import { Card, CardContent } from "components/ui/card";
+import { HasAccess } from "utils/PermissionUtils";
 
 const MyAssetsPage = ({ userProfile }) => {
+  // Permission checks for my assets features
+  const canViewMyAssets = HasAccess("VIEW_ASSIGN_ASSETS");
+  const canRequestAsset = HasAccess("ADD_ASSET_REQUEST");
+
   const [assets, setAssets] = useState([]);
   const [isOpenRequest, setIsOpenRequest] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -79,30 +84,54 @@ const MyAssetsPage = ({ userProfile }) => {
     },
   };
 
+  // If user has no my assets permissions at all
+  if (!canViewMyAssets) {
+    return (
+      <UnauthorizedAccess
+        title="My Assets Access Denied"
+        featureName="your assets"
+        message="You don't have permission to view your assigned assets. Please contact your administrator to request access."
+        showButtons={true}
+        size="lg"
+      />
+    );
+  }
+
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
       <Header
         content={
-          <Button onClick={() => setIsOpenRequest(true)}>Request Asset</Button>
+          canRequestAsset ? (
+            <Button onClick={() => setIsOpenRequest(true)}>Request Asset</Button>
+          ) : null
         }
       />
       <Card>
         <CardContent>
-          <CustomTable
-            data={assets}
-            columns={MyAssetRequestColumns}
-            pagination={true}
-            dataTotalSize={totalCount}
-            tableOptions={myAssetsTableOptions}
-            loading={loading}
-          />
+          {canViewMyAssets ? (
+            <CustomTable
+              data={assets}
+              columns={MyAssetRequestColumns}
+              pagination={true}
+              dataTotalSize={totalCount}
+              tableOptions={myAssetsTableOptions}
+              loading={loading}
+            />
+          ) : (
+            <UnauthorizedAccess
+              title="Assets Access Denied"
+              featureName="your assets"
+              message="You don't have permission to view your assets."
+              size="md"
+            />
+          )}
         </CardContent>
       </Card>
 
       {/* Asset Request Sheet */}
-      {isOpenRequest && (
+      {isOpenRequest && canRequestAsset && (
         <AssetRequestSheet
           isOpen={isOpenRequest}
           setIsOpen={setIsOpenRequest}
