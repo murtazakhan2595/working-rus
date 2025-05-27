@@ -87,9 +87,10 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     if (!employeeData && !values.employee) {
       errors.employee = "Employee is required";
     }
-
-    if (!values.roles || values.roles.length === 0) {
-      errors.roles = "At least one role must be selected";
+    if (!isEditMode) {
+      if (!values.roles || values.roles.length === 0) {
+        errors.roles = "At least one role must be selected";
+      }
     }
 
     return errors;
@@ -98,7 +99,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const handleSubmit = async (values) => {
     const payload = {
       employeeId: employeeData?.id || employeeData?.value || values.employee,
-      roles: [...values.roles,default_role],
+      roles: [...values.roles, default_role],
     };
 
     setFormValues({ ...values, ...payload });
@@ -327,7 +328,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                 {
                   InputField: SelectMultiInputComponent,
                   name: "roles",
-                  required: true,
+                  required: !isEditMode,
                   label: "Select Roles",
                   options: roleOptions,
                   placeholder: "Select roles",
