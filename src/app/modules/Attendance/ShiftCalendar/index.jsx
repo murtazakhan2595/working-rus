@@ -1,7 +1,7 @@
 // src/app/modules/Attendance/ShiftCalendar/index.jsx
 import ShiftCalendar from "./ShiftCalendar";
 import ScheduleShift from "./Section/ScheduleShift";
-import ShiftRequest from "./Section/ShiftRequest";
+import ShiftRequest from "./ShiftRequest";
 import ShiftCalendarView from "./Section/ShiftCalendarView";
 import Emplist from "./ShiftCalendarTab/Emplist";
 import Calendar from "./ShiftCalendarTab/Calendar";

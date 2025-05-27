@@ -9,8 +9,13 @@ const getEmployeeActiveShift = async (employeeId, shiftId) => {
       employee: employeeId,
       status: "Approved",
       date: new Date().toISOString().split("T")[0],
+      // date: "2025-06-03",
     },
     ordering: "-id",
+    options: {
+      page: 1,
+      sizePerPage: 1, // Get only the latest schedule
+    },
   });
   if (scheduleResponse && scheduleResponse.count > 0) {
     return scheduleResponse.results[0];

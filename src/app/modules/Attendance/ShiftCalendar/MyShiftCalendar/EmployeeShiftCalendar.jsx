@@ -17,6 +17,7 @@ import {
   filterOverlappingSchedules,
   getChangeRequestComparison,
 } from "../ShiftCalendarTab/shiftScheduleUtils";
+import { getEmployeeActiveShift } from "../Section/getEmployeeActiveShift";
 
 const EmployeeShiftCalendar = () => {
   const [events, setEvents] = useState([]);
@@ -49,8 +50,11 @@ const EmployeeShiftCalendar = () => {
     fetchChangeRequests();
   }, [employeeId]);
 
+ 
+
   const fetchEmployeeData = async () => {
     try {
+
       const empData = await employeeData(employeeId);
       setEmployeeInfo(empData);
 

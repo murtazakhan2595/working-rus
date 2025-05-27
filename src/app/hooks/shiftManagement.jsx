@@ -84,7 +84,7 @@ const getShiftSchedule = async (payload) => {
   const sortField = payload?.ordering || "id";
   let URL = `/shift-schedules?ordering=${sortField}&${
     pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `size=${pageSize}&` : ""}search=${encodeURIComponent(
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
     JSON.stringify(filterData)
   )}`;
   try {
