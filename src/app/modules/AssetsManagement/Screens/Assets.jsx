@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Button } from "components/ui/button";
-import { Header, PageLoader } from "components";
+import { Header, PageLoader, UnauthorizedAccess } from "components";
 import CustomTable from "components/CustomTable";
 import { FilterInput } from "components/FormControl";
 import { Card, CardContent } from "components/ui/card";
@@ -23,16 +23,32 @@ import {
   getCategoryById,
 } from "app/hooks/assets";
 import { deleteRecord } from "app/hooks/general";
-import { AssetsColumns } from "app/utils/Types/TableColumns";
+import { AssetsColumns as BaseAssetsColumns } from "app/utils/Types/TableColumns";
 import AssetView from "./AssetView";
 import AlertDialogue from "components/ui/AlertDialogue";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { assetStatus } from "data/Data";
 import { CardHeader, CardTitle, CardDescription } from "components/ui/card";
-
+import { HasAccess } from "utils/PermissionUtils";
+import { useSelector } from "react-redux";
 
 const Assets = ({ userProfile }) => {
-  const [activeTab, setActiveTab] = useState("assets"); // "assets" or "categories"
+  // Permission checks for asset management features
+  const canViewAssets = HasAccess("VIEW_ASSET");
+  const canCreateAsset = HasAccess("ADD_ASSET");
+  const canUpdateAsset = HasAccess("EDIT_ASSET");
+  const canDeleteAsset = HasAccess("DELETE_ASSET");
+  const canExportAssets = HasAccess("EXPORT_ASSETS");
+  
+  // Permission checks for asset category features
+  const canViewCategories = HasAccess("VIEW_ASSET_CATEGORY");
+  const canCreateCategory = HasAccess("ADD_ASSET_CATEGORY");
+  const canUpdateCategory = HasAccess("EDIT_ASSET_CATEGORY");
+  const canDeleteCategory = HasAccess("DELETE_ASSET_CATEGORY");
+
+
+
+  const [activeTab, setActiveTab] = useState("assets");
 
   // Assets state
   const [isLoading, setIsLoading] = useState(false);
@@ -410,13 +426,103 @@ const Assets = ({ userProfile }) => {
         return (
           <div onClick={(e) => e.stopPropagation()}>
             <DropdownActionMenu
-              onView={handleView}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
+              onView={canViewCategories ? handleView : null}
+              onEdit={canUpdateCategory ? handleEdit : null}
+              onDelete={canDeleteCategory ? handleDelete : null}
               viewText="View Category"
               editText="Edit Category"
               deleteText="Delete Category"
               menuTooltip="Category Actions"
+              showEdit={canUpdateCategory}
+              showDelete={canDeleteCategory}
+              showView={canViewCategories}
+            />
+          </div>
+        );
+      },
+    },
+  ];
+
+  // Create permission-aware assets columns
+  const AssetsColumns = [
+    ...BaseAssetsColumns.slice(0, -1), // All columns except the last one (Actions)
+    {
+      dataField: "",
+      text: "Actions",
+      formatter: (cell, row, rowIndex, formatExtraData) => {
+        // Function to open the view sheet for an asset
+        const openAssetView = async () => {
+          try {
+            const viewModule = window.AssetsModule;
+            if (viewModule) {
+              const assetDetails = await getAssetById(row.id);
+              if (assetDetails) {
+                viewModule.setViewAsset(assetDetails);
+              }
+            }
+          } catch (error) {
+            console.error("Error fetching asset details:", error);
+            toast.error("Failed to load asset details");
+          }
+        };
+
+        // Function to open the edit sheet
+        const openAssetEdit = async () => {
+          try {
+            const viewModule = window.AssetsModule;
+            if (viewModule) {
+              const assetDetails = await getAssetById(row.id);
+              if (assetDetails) {
+                viewModule.setViewAsset(assetDetails);
+                viewModule.setCreateAsset(true);
+              }
+            }
+          } catch (error) {
+            console.error("Error fetching asset details:", error);
+            toast.error("Failed to load asset details");
+          }
+        };
+
+        // Function to open delete confirmation
+        const openDeleteConfirm = () => {
+          const viewModule = window.AssetsModule;
+          if (viewModule) {
+            viewModule.setAssetToDelete(row);
+            viewModule.setOpenDeleteAlert(true);
+          }
+        };
+
+        const handleView = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openAssetView();
+        };
+
+        const handleEdit = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openAssetEdit();
+        };
+
+        const handleDelete = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openDeleteConfirm();
+        };
+
+        return (
+          <div onClick={(e) => e.stopPropagation()}>
+            <DropdownActionMenu
+              onView={canViewAssets ? handleView : null}
+              onEdit={canUpdateAsset ? handleEdit : null}
+              onDelete={canDeleteAsset ? handleDelete : null}
+              viewText="View Asset"
+              editText="Edit Asset"
+              deleteText="Delete Asset"
+              menuTooltip="Asset Actions"
+              showView={canViewAssets}
+              showEdit={canUpdateAsset}
+              showDelete={canDeleteAsset}
             />
           </div>
         );
@@ -425,13 +531,14 @@ const Assets = ({ userProfile }) => {
   ];
 
   const getActionButton = () => {
-    if (activeTab === "assets") {
+    if (activeTab === "assets" && canCreateAsset) {
       return <Button onClick={()=>{setCreateAsset(true)}}>Add Asset</Button>;
-    } else {
+    } else if (activeTab === "categories" && canCreateCategory) {
       return (
         <Button onClick={() => setCreateCategory(true)}>Add Category</Button>
       );
     }
+    return null;
   };
 
   // Expose state setters for dropdown actions to access
@@ -479,6 +586,19 @@ const Assets = ({ userProfile }) => {
     }
   };
 
+  // If user has no asset management permissions at all
+  if (!canViewAssets && !canViewCategories) {
+    return (
+      <UnauthorizedAccess
+        title="Asset Management Access Denied"
+        featureName="asset management features"
+        message="You don't have permission to view or manage assets. Please contact your administrator to request access."
+        showButtons={true}
+        size="lg"
+      />
+    );
+  }
+
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -493,7 +613,7 @@ const Assets = ({ userProfile }) => {
         }}
         defaultValue="assets"
       >
-        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row mb-4">
+        <div className="flex flex-col items-start justify-between mb-4 lg:flex-row md:flex-row xl:flex-row">
           <TabsList className="flex justify-center mb-4">
             {tabsData?.map((tab) => (
               <TabsTrigger
@@ -518,7 +638,7 @@ const Assets = ({ userProfile }) => {
             </CardDescription>
             <div
             onClick={(e) => e.stopPropagation()}
-            className="mt-2 lg:mt-0 md:mt-0 xl:mt-0 justify-end flex"
+            className="flex justify-end mt-2 lg:mt-0 md:mt-0 xl:mt-0"
           >
             <FilterInput
               filters={
@@ -534,25 +654,43 @@ const Assets = ({ userProfile }) => {
           </CardHeader>
           <CardContent>
             <TabsContent value="assets">
-              <CustomTable
-                columns={AssetsColumns}
-                data={isLoading ? [] : assetsList}
-                pagination={true}
-                dataTotalSize={totalCount}
-                tableOptions={assetsTableOptions}
-                loading={isLoading}
-              />
+              {canViewAssets ? (
+                <CustomTable
+                  columns={AssetsColumns}
+                  data={isLoading ? [] : assetsList}
+                  pagination={true}
+                  dataTotalSize={totalCount}
+                  tableOptions={assetsTableOptions}
+                  loading={isLoading}
+                />
+              ) : (
+                <UnauthorizedAccess
+                  title="Assets Access Denied"
+                  featureName="assets"
+                  message="You don't have permission to view assets."
+                  size="md"
+                />
+              )}
             </TabsContent>
 
             <TabsContent value="categories">
-              <CustomTable
-                columns={categoriesColumns}
-                data={isLoading ? [] : categoriesList}
-                pagination={true}
-                dataTotalSize={categoriesTotalCount}
-                tableOptions={categoriesTableOptions}
-                loading={isLoading}
-              />
+              {canViewCategories ? (
+                <CustomTable
+                  columns={categoriesColumns}
+                  data={isLoading ? [] : categoriesList}
+                  pagination={true}
+                  dataTotalSize={categoriesTotalCount}
+                  tableOptions={categoriesTableOptions}
+                  loading={isLoading}
+                />
+              ) : (
+                <UnauthorizedAccess
+                  title="Categories Access Denied"
+                  featureName="asset categories"
+                  message="You don't have permission to view asset categories."
+                  size="md"
+                />
+              )}
             </TabsContent>
           </CardContent>
         </Card>
@@ -580,6 +718,8 @@ const Assets = ({ userProfile }) => {
           setIsOpen={() => setViewAsset(null)}
           reload={() => reloadAssets(true)}
           data={viewAsset}
+          canEdit={canUpdateAsset}
+          canDelete={canDeleteAsset}
         />
       )}
 
@@ -605,6 +745,8 @@ const Assets = ({ userProfile }) => {
           setIsOpen={() => setCategoryToView(null)}
           data={categoryToView}
           reload={() => fetchCategoriesData(true)}
+          canEdit={canUpdateCategory}
+          canDelete={canDeleteCategory}
         />
       )}
 
@@ -618,7 +760,7 @@ const Assets = ({ userProfile }) => {
                 This action will permanently delete the asset{" "}
                 <strong>"{assetToDelete?.asset_name}"</strong>.
               </p>
-              <p className="text-red-600 font-medium">
+              <p className="font-medium text-red-600">
                 This action cannot be undone. All information associated with
                 this asset will be permanently removed.
               </p>
@@ -644,7 +786,7 @@ const Assets = ({ userProfile }) => {
                 This action will permanently delete the category{" "}
                 <strong>"{categoryToDelete?.name}"</strong>.
               </p>
-              <p className="text-red-600 font-medium">
+              <p className="font-medium text-red-600">
                 This action cannot be undone. All assets associated with
                 this category may be affected.
               </p>
