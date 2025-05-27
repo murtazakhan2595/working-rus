@@ -55,7 +55,6 @@ const pathNames = () => {
     "user-role/edit": "Update User Role",
     "role-permission/history-logs": "Role Assignment History & Logs",
     "role-permission": "Role & Permission",
-    settings: "Settings",
     "travel-details": "Travel Details",
     "customise-employees": "Customize Employees",
     relocation: "Relocation",
@@ -78,7 +77,6 @@ const pathNames = () => {
     "job-application": "Job Application",
     "job-application-form": "Job Application Form",
     "job-description": "Job Description",
-    "office-settings": "Organization Setup",
     "my-attendance": "Attendance History",
     "employee-tranfer": "Employee Transfer",
     "my-tranfers": "My Tranfers",
@@ -89,6 +87,10 @@ const pathNames = () => {
     documents: "HR Documents",
     "my-documents": "HR Documents",
     "on-hold-salaries": "On-Hold Salaries",
+    "hierarchy-detail":"Approval Hierarchy Detail",
+    "office-settings/approval-hierarchy":"Approval Hierarchy",
+    "office-settings": "Organization Setup",
+    settings: "Settings",
   };
 };
 

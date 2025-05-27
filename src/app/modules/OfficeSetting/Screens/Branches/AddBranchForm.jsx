@@ -6,6 +6,8 @@ import { TextInput } from "components/FormControl";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { SheetCardExtension } from "components/SheetCardExtension";
 import { Button } from "components/ui/button";
+import { Switch } from "src/@/components/ui/switch";
+import { Label } from "src/@/components/ui/label";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -13,11 +15,42 @@ import { useDispatch } from "react-redux";
 import { fetchBranches } from "state/slices/CommonSlice";
 import { SelectLocationOnMap } from "components/FormControl";
 
+// Custom Status Switch Component
+const StatusSwitch = ({ name, label, value, error, touch, onChange, required }) => {
+  const isActive = value === "Active";
+  
+  const handleSwitchChange = (checked) => {
+    onChange(name, checked ? "Active" : "Inactive");
+  };
+
+  return (
+    <div className="space-y-2">
+      <Label className={`text-sm font-medium ${required ? "after:content-['*'] after:text-red-500 after:ml-1" : ""}`}>
+        {label}
+      </Label>
+      <div className="flex items-center space-x-3">
+        <Switch
+          id={name}
+          checked={isActive}
+          onCheckedChange={handleSwitchChange}
+        />
+        <span className={`text-sm font-medium ${isActive ? "text-green-600" : "text-red-600"}`}>
+          {value || "Inactive"}
+        </span>
+      </div>
+      {error && touch && (
+        <p className="text-sm text-red-500">{error}</p>
+      )}
+    </div>
+  );
+};
+
 const AddBranchForm = ({
   setIsOpen,
   editMode = false,
   branchData = {},
   reload = () => {},
+  onUpdateSuccess = null,
 }) => {
   const [closeSheet, setCloseSheet] = useState(false);
   const [showMap, setShowMap] = useState(false);
@@ -38,8 +71,13 @@ const AddBranchForm = ({
             position: toast.POSITION.TOP_RIGHT,
           }
         );
-        setIsOpen(false);
-        reload(true);
+
+        // Call the update success callback if provided
+        if (onUpdateSuccess && typeof onUpdateSuccess === "function") {
+          await onUpdateSuccess(values);
+        }
+
+        setIsOpen(true); // Pass true to indicate successful update
         dispatch(fetchBranches());
       }
     } catch (error) {
@@ -71,7 +109,7 @@ const handleLocationSave = (formik, locationData) => {
         setCloseSheet,
         setIsOpen,
       })}
-      <Formik
+      <Formik 
         initialValues={{
           ...formData,
           branch_coordinates: formData.branch_coordinates || { lat: 0, lng: 0 },
@@ -84,21 +122,20 @@ const handleLocationSave = (formik, locationData) => {
       >
         {(props) => (
           <form onSubmit={props?.handleSubmit}>
-            <SheetCardExtension title="Branch Details">
-              <RadioGroupInput
-                name={"branch_status"}
-                label={"Transfer Type"}
+            <SheetCardExtension title="Branch Details" className="mt-8">
+            <div className="flex flex-col gap-4 mb-6">  
+              <StatusSwitch
+                name="branch_status"
+                label="Branch Status"
+                value={props.values?.branch_status}
                 error={props.errors?.branch_status}
                 touch={props.touched?.branch_status}
-                value={props.values?.branch_status}
-                options={[
-                  { value: "Active", label: "Active" },
-                  { value: "Inactive", label: "Inactive" },
-                ]}
                 onChange={(field, value) => {
-                  props.handleChange(field)(value);
+                  props.setFieldValue(field, value);
                 }}
+                required
               />
+              </div>
               <TextInput
                 name="branch_name"
                 label="Branch Name"
@@ -110,6 +147,7 @@ const handleLocationSave = (formik, locationData) => {
                   props.handleChange(field)(value);
                 }}
               />
+             
               <TextInput
                 name="branch_number"
                 label="Branch Number"
@@ -121,6 +159,7 @@ const handleLocationSave = (formik, locationData) => {
                   props.handleChange(field)(value);
                 }}
               />
+              <div className="flex flex-col gap-4 mb-6">
 
               <TextAreaInput
                 name="branch_address"
@@ -133,9 +172,9 @@ const handleLocationSave = (formik, locationData) => {
                   props.handleChange(field)(value);
                 }}
               />
-
+              </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium  mb-1">
+                <label className="block mb-1 text-sm font-medium">
                   Branch Location
                 </label>
                 <div className="flex items-center gap-2">
@@ -161,7 +200,7 @@ const handleLocationSave = (formik, locationData) => {
                     <div className="grid grid-cols-2 gap-4 mt-2">
                       <div>
                         <span className="text-xs text-neutral-1000">Latitude:</span>
-                        <span className="text-sm ml-1">
+                        <span className="ml-1 text-sm">
                           {props.values.branch_coordinates.lat.toFixed(6)}
                         </span>
                       </div>
@@ -169,7 +208,7 @@ const handleLocationSave = (formik, locationData) => {
                         <span className="text-xs text-neutral-1000">
                           Longitude:
                         </span>
-                        <span className="text-sm ml-1">
+                        <span className="ml-1 text-sm">
                           {props.values.branch_coordinates.lng.toFixed(6)}
                         </span>
                       </div>
@@ -189,7 +228,7 @@ const handleLocationSave = (formik, locationData) => {
                 />
               )}
             </SheetCardExtension>
-            <div className="p-6 border-t border-gray-200 bg-gray-50 mt-5">
+            <div className="p-6 mt-5 border-t border-gray-200 bg-gray-50">
               <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
                 <Button
                   variant="outline"

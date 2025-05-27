@@ -10,10 +10,10 @@ import { Checkbox } from "src/@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "src/@/components/ui/collapsible";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
-const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization }) => {
+const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization, onUpdateSuccess = null }) => {
   const [closeSheet, setCloseSheet] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [permissions, setPermissions] = useState({});
+  const [permissions, setPermissions] = useState(edit?.data?.permissions || {});
   const isEditMode = Boolean(edit?.data);
 
   // Initialize form data with department values if in edit mode
@@ -62,11 +62,18 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization }
     });
   }, [edit?.data]);
 
+  // Update permissions when edit data changes
+  useEffect(() => {
+    if (edit?.data?.permissions) {
+      setPermissions(edit.data.permissions);
+    }
+  }, [edit?.data]);
+
   const handleClose = () => {
     setCloseSheet(true);
   };
 
-  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+  const handleSubmit = async (values, { setSubmitting, setErrors, resetForm }) => {
     // Simple validation - check if name is empty
     const errors = {};
     if (!values.name || values.name.trim() === '') {
@@ -76,21 +83,18 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization }
       return;
     }
     
-    // Ensure userOrganization and its id are available
-    if (!userOrganization?.id) {
-      toast.error("Organization information is missing. Please try again.");
-      setSubmitting(false);
-      return; // Stop submission if organization ID is missing
-    }
-
     try {
       // Explicitly construct the payload with required fields
       const payload = {
         name: values.name,
-        description: values.description, // Keep description, even if null
-        organization: userOrganization.id, // Assign the organization ID
-        permissions: permissions // Add permissions
+        description: values.description,
+        permissions: permissions
       };
+
+      // Only add organization for new departments
+      if (!isEditMode && userOrganization?.id) {
+        payload.organization = userOrganization.id;
+      }
 
       // Pass the department ID (if editing) and the structured payload
       const response = await saveDepartment(edit?.data?.id, payload);
@@ -102,12 +106,14 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization }
             position: toast.POSITION.TOP_RIGHT,
           }
         );
-        setIsOpen(false);
-        
-        // Ensure table is reloaded by calling reload function
-        if (typeof reload === 'function') {
-          reload();
+
+        // Call the update success callback if provided
+        if (onUpdateSuccess && typeof onUpdateSuccess === "function") {
+          await onUpdateSuccess(payload);
         }
+
+        resetForm();
+        setIsOpen(true); // Pass true to indicate successful update
       }
     } catch (error) {
       // Handle specific API validation errors - if backend returns field-specific errors
@@ -178,7 +184,7 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization }
       >
         {(props) => (
           <form onSubmit={props.handleSubmit}>
-            <SheetCardExtension title={`${isEditMode ? 'Edit' : 'Add'} Department`}>
+            <SheetCardExtension title={`${isEditMode ? 'Edit' : 'Add'} Department`} className="mt-8">
               {/* Department Name */}
               <TextInput
                 name="name"
@@ -212,6 +218,7 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization }
                       type: "search",
                       placeholder: "Search modules...",
                       name: "search",
+                      className: "w-full",
                     },
                   ]}
                   onChange={(filterName, filterValue) => {
@@ -225,17 +232,17 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization }
               <div className="max-h-[400px] overflow-y-auto space-y-2">
                 {filteredModules.length > 0 ? (
                   filteredModules.map((module, index) => (
-                    <Collapsible key={index} className="border rounded-md overflow-hidden">
-                      <div className="flex items-center justify-between p-4 bg-gray-50 cursor-pointer">
+                    <Collapsible key={index} className="overflow-hidden border rounded-md">
+                      <div className="flex items-center justify-between p-4 cursor-pointer bg-gray-50">
                         <div className="font-medium">{module.name}</div>
-                        <CollapsibleTrigger className="p-1 hover:bg-gray-200 rounded-full">
+                        <CollapsibleTrigger className="p-1 rounded-full hover:bg-gray-200">
                           {open => (
-                            open ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />
+                            open ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />
                           )}
                         </CollapsibleTrigger>
                       </div>
                       <CollapsibleContent>
-                        <div className="p-4 border-t grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-3 p-4 border-t">
                           {module.permissions.map((permission, i) => (
                             <div key={i} className="flex items-center space-x-2">
                               <Checkbox 
@@ -258,7 +265,7 @@ const AddDepartmentForm = ({ isOpen, setIsOpen, edit, reload, userOrganization }
                     </Collapsible>
                   ))
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="py-8 text-center text-gray-500">
                     No modules match your search
                   </div>
                 )}

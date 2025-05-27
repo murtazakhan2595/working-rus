@@ -67,7 +67,7 @@ const OnboardingChecklist = ({ data, reload }) => {
       </CardHeader>
       <CardContent>
         <TableCustom
-          columns={OnboardingChecklistColumn(reload)}
+          columns={OnboardingChecklistColumn(reload, data || [])}
           data={filteredData.length > 0 ? filteredData : data || []}
           pagination={false}
           itemsPerPage={100}

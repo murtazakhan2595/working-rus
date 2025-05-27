@@ -250,48 +250,17 @@ const FeatureList = [
   "VIEW_ROLE_HISTORY_LOGS",
   "VIEW_USER_ROLE",
   "ADD_APPROVAL_HIERARCHY",
-  "View_APPROVAL_HIERARCHY",
+  "VIEW_APPROVAL_HIERARCHY",
+  "VIEW_ASSIGNED_MY_ASSETS",
+  "Delete_APPROVAL_HIERARCHY",
+  "View_APPROVAL_HIERARCHY_HISTORY_LOGS",
+  "EDIT_APPROVAL_HIERARCHY",
+  "ADD_LEVEL_DELEGATE",
+  "VIEW_LEVEL_DELEGATE",
+  "DELETE_LEVEL_DELEGATE",
+  "EDIT_LEVEL_DELEGATE",
 ];
 
-// const new_submodule = {
-//   // Module ID: 12
-//   code_name: "ROLE_PERMISSIONS",
-//   name: "Role & Permissions",
-//   order: 7,
-//   feature_list: [
-//     {
-//       code_name: "VIEW_USER_ROLE",
-//       name: "View User Roles",
-//     },
-//     {
-//       code_name: "ADD_USER_ROLE",
-//       name: "Add User Role",
-//     },
-//     {
-//       code_name: "EDIT_USER_ROLE",
-//       name: "Edit User Role",
-//     },
-//     {
-//       code_name: "ASSIGN_USER_ROLE",
-//       name: "Assign Role",
-//     },
-//     {
-//       code_name: "EDIT_ASSIGNED_ROLE",
-//       name: "Edit Assigned Role",
-//     },
-//     {
-//       code_name: "VIEW_ASSIGNED_ROLES",
-//       name: "View Assigned Roles",
-//     },
-//     {
-//       code_name: "REMOVE_ASSIGNED_ROLE",
-//       name: "Remove Assigned Role",
-//     },
-//     {
-//       code_name: "VIEW_ROLE_HISTORY_LOGS",
-//       name: "View History & Logs",
-//     },
-//   ],
-// };
+
 
 export { ModuleList, SubModuleList, FeatureList };

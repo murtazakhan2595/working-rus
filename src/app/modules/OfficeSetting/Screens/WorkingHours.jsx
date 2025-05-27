@@ -3,19 +3,40 @@ import { CardTitle, CardHeader, CardContent, Card } from 'components/ui/card';
 import { WorkingHoursColumn } from '../sections/OfficeSettingTableColumns';
 import { CardDescription } from 'components/ui/card';
 import { FilterInput } from 'components/FormControl';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 const WorkingHours = ({ data, reload }) => {
   const [filteredData, setFilteredData] = useState(data || []);
   const [selectedType, setSelectedType] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
 
   useEffect(() => {
     setFilteredData(data || []);
   }, [data]);
 
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  // Calculate paginated data for client-side pagination
+  const paginatedData = useMemo(() => {
+    const startIndex = (options.page - 1) * options.sizePerPage;
+    const endIndex = startIndex + options.sizePerPage;
+    return filteredData.slice(startIndex, endIndex);
+  }, [filteredData, options.page, options.sizePerPage]);
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+  };
+
   const handleFilterChange = (filterName, filterValue) => {
     if (!data) return;
+
+    // Reset to first page when filtering
+    onPageChange("page", 1);
 
     if (filterName === 'shift_name') {
       setSearchTerm(filterValue);
@@ -75,10 +96,11 @@ const WorkingHours = ({ data, reload }) => {
       </CardHeader>
       <CardContent>
         <TableCustom
-          columns={WorkingHoursColumn(reload)}
-          data={filteredData}
-          pagination={false}
-          itemsPerPage={100}
+          columns={WorkingHoursColumn(reload, data || [])}
+          data={paginatedData}
+          tableOptions={tableOptions}
+          dataTotalSize={filteredData?.length || 0}
+          pagination={true}
           className="organization-table"
         />
       </CardContent>

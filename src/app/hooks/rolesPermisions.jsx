@@ -45,6 +45,9 @@ export const getModuleList = async (payload) => {
       return { results: moduleList, count: moduleResponse.count };
     } else return [];
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching Personal Info data :", error);
   }
   return [];
@@ -70,12 +73,14 @@ export const getUserRoleList = async (payload) => {
       return { results: rolesList, count: rolesResponse.count };
     } else return { results: [], count: 0 };
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching roles data:", error);
     return { results: [], count: 0 };
   }
 };
 
-// Get roles list
 export const getRoleAssignmentHistoryLogsList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -98,6 +103,9 @@ export const getRoleAssignmentHistoryLogsList = async (payload) => {
       return { results: rolesList, count: rolesResponse.count };
     } else return { results: [], count: 0 };
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error fetching roles data:", error);
     return { results: [], count: 0 };
   }
@@ -240,6 +248,9 @@ const saveAssignedRole = async (id, payload) => {
     const response = await saveEmployeeWorkInformationData(id, payload);
     return response;
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error saving assigned role:", error);
     throw error;
   }
@@ -255,6 +266,9 @@ const deleteAssignedRole = async (id, name) => {
       message: "Role assignments removed successfully",
     };
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error deleting assigned role:", error);
     throw error;
   }
@@ -291,6 +305,9 @@ const saveRolePermissions = async (id, roleId, featureIds) => {
       throw new Error("Failed to save role permissions");
     }
   } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     console.error("Error saving role permissions:", error);
     throw error;
   }
@@ -342,6 +359,9 @@ export const getMyEffectivePermissions = async (payload) => {
     } else return { results: [], count: 0 };
   } catch (error) {
     console.error("Error fetching roles data:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     return { results: [], count: 0 };
   }
 };

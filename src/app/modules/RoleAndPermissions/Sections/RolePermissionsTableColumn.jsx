@@ -69,9 +69,9 @@ export const RoleAssignmentHistoryLogsColumn = [
   {
     dataField: "action",
     text: "Action",
-    // formatter: (cell, row) => {
-    //   return <></>;
-    // },
+    formatter: (cell) => {
+      return <div className="text-capitalize">{cell}</div>;
+    },
   },
   {
     dataField: "performed_by",
@@ -79,8 +79,19 @@ export const RoleAssignmentHistoryLogsColumn = [
     formatter: (cell) => <EmployeeUsername value={cell} />,
   },
   {
+    dataField: "action",
     text: "Summary",
-    formatter: (cell, row) => <></>,
+    formatter: (cell, row) => (
+      <div>
+        {cell.toLowerCase() === "updated"
+          ? `The permission for ${row.role?.toLowerCase()} were updated`
+          : cell.toLowerCase() === "assigned"
+          ? `Assigned default ${row.role} access`
+          : cell.toLowerCase() === "removed"
+          ? `Removed ${row.role} access`
+          : null }
+      </div>
+    ),
     classes: "text-center",
     headerClasses: "text-center",
   },
@@ -113,8 +124,11 @@ export const RoleAssignmentEmployeesLogsColumn = [
             // Check the type of role to ensure it's processed correctly by UserRole component
             // The UserRole component in getValuesFromTables.js calls parseInt on the value
             // So we need to ensure each role is a value that can be found in the roles list
-            const roleValue = typeof role === 'object' && role !== null ? role.id || role.value : role;
-            
+            const roleValue =
+              typeof role === "object" && role !== null
+                ? role.id || role.value
+                : role;
+
             return (
               <span
                 key={index}

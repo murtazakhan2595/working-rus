@@ -19,7 +19,7 @@ import {
   UserProfileTaskDetails,
   TaskEditAddViewDetails,
 } from "app/modules/TaskManagment";
-import ViewEmployee from "app/modules/Employees/Screens/View";
+import ViewEmployee from "app/modules/Employees/Screens/View/";
 import "react-toastify/dist/ReactToastify.css";
 import CreateUpdateEmployee from "app/modules/Employees/Screens/Create.jsx";
 import Employee from "app/modules/Employees/Employee.jsx";
@@ -34,7 +34,11 @@ import { MyDtr } from "app/modules/DTR";
 import ForgotPassword from "app/modules/Login/ForgotPassword.jsx";
 import ResetPassword from "app/modules/Login/ResetPassword.jsx";
 import ComingSoon from "app/modules/comingSoon/ComingSoon.jsx";
-import { ApprovalHierarchy } from "app/modules/ApprovalHierarchy";
+import {
+  ApprovalHierarchy,
+  ApprovalHierarchyDetails,
+  ApprovalHierarchyHistoryLogs,
+} from "app/modules/ApprovalHierarchy";
 import CreateEmployeeProfile from "app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 import { ExitAndClearance, EmployeeExit } from "app/modules/ExitAndClearance";
 import { Exit, EOSSettlementDetails } from "app/modules/SelfService/Exit";
@@ -161,25 +165,6 @@ export const SidebarRoutes = [
         },
       ].filter(Boolean) // Filter out undefined route
     : []),
-  ...(Config.TEAM_MANAGEMENT
-    ? [
-        Config.TEAM_PROFILE && {
-          path: "/team-profile-management",
-          component: <TeamProfileMangement />,
-          name: "TEAM_PROFILE",
-        },
-        Config.TEAM_LEAVE_REQUEST && {
-          path: "/team-leave-request",
-          component: <LeaveRequests isTeamView={true} />,
-          name: "TEAM_LEAVE_REQUEST",
-        },
-        Config.TEAM_EXIT_CLEARANCE && {
-          path: "/team-exit-clearance",
-          component: <ExitAndClearance isTeamView={true} />,
-          name: "TEAM_EXIT_CLEARANCE",
-        },
-      ].filter(Boolean) // Filter out undefined route
-    : []),
   ...(Config.PEOPLE_TEAM
     ? [
         Config.PROFILE_MANAGEMENT && {
@@ -233,10 +218,35 @@ export const SidebarRoutes = [
     : []),
   ...(Config.TASK_MANAGEMENT
     ? [
-        Config.TASK_MANAGMENT && {
+        Config.PROJECT_BOARD && {
           path: "/projects",
           component: <Projects />,
           name: "PROJECT_BOARD",
+        },
+        Config.PROJECT_BOARD && {
+          path: "/project-board/card/add",
+          component: <TaskEditAddViewDetails />,
+          name: "VIEW_OWN_PROJECTS",
+        },
+        Config.PROJECT_BOARD && {
+          path: "/project-board/card/:taskId",
+          component: <TaskEditAddViewDetails />,
+          name: "VIEW_OWN_PROJECTS",
+        },
+        Config.PROJECT_BOARD && {
+          path: "/project-board/card/:parentTaskId/subtask/:subtaskId",
+          component: <TaskEditAddViewDetails />,
+          name: "VIEW_OWN_PROJECTS",
+        },
+        Config.PROJECT_BOARD && {
+          path: "/project-board/:projectId",
+          component: <Board />,
+          name: "VIEW_OWN_PROJECTS",
+        },
+        Config.PROJECT_BOARD && {
+          path: "/project-board/user/:userId",
+          component: <UserProfileTaskDetails />,
+          name: "VIEW_OWN_PROJECTS",
         },
       ].filter(Boolean) // Filter out undefined route
     : []),
@@ -265,6 +275,11 @@ export const SidebarRoutes = [
           path: "/job-post",
           component: <CreateUpdateJob />,
           name: "JOBS",
+        },
+        Config.JOBS && {
+          path: "/edit-post/:id",
+          component: <CreateUpdateJob />,
+          name: "EDIT_JOBS",
         },
         Config.TALENT_SPHERE && {
           path: "/applicants/:id",
@@ -309,6 +324,65 @@ export const SidebarRoutes = [
           component: <ShiftCalendar />,
           name: "SHIFT_CALENDAR",
         },
+        Config.EMPLOYEES_ATTENDANCE && {
+          path: "attendance-reports/:id",
+          component: <EmployeeAttendanceReport />,
+          name: "VIEW_EMPLOYEE_ATTENDANCE",
+        },
+        Config.EMPLOYEES_ATTENDANCE && {
+          path: "/attendance/:id",
+          component: <EmployeeAttendance />,
+          name: "VIEW_EMPLOYEE_ATTENDANCE",
+        },
+      ].filter(Boolean) // Filter out undefined route
+    : []),
+  ...(Config.PAYROLL
+    ? [
+        Config.PAY_RUN && {
+          path: "/payslip/:id",
+          component: <Payslip />,
+          name: "VIEW_PAYSLIPS",
+        },
+        Config.EMPLOYEES_PAYROLL && {
+          path: "/payroll",
+          component: <EmployeesPayroll />,
+          name: "EMPLOYEES_PAYROLL",
+        },
+        Config.SALARY_SETUP && {
+          path: "/payroll/salary-setup",
+          component: <SalarySetup />,
+          name: "SALARY_SETUP",
+        },
+        Config.CLAIM_REQUEST && {
+          path: "/claim-request",
+          component: <ClaimRequest />,
+          name: "CLAIM_REQUEST",
+        },
+        Config.PAY_RUN && {
+          path: "/pay-run",
+          component: <PayRun />,
+          name: "PAY_RUN",
+        },
+        Config.ON_HOLD_SALARIES && {
+          path: "/on-hold-salaries",
+          component: <OnHoldSalaries />,
+          name: "ON_HOLD_SALARIES",
+        },
+        Config.ON_HOLD_SALARIES && {
+          path: "/payroll/on-hold-salaries/:id",
+          component: <OnHoldSalaryDetails />,
+          name: "VIEW_ON_HOLD_SALARIES",
+        },
+        Config.END_OF_SERVICE && {
+          path: "/payroll/eos",
+          component: <EOSList />,
+          name: "END_OF_SERVICE",
+        },
+        Config.END_OF_SERVICE && {
+          path: "/payroll/eos/:id",
+          component: <EOSDetails />,
+          name: "VIEW_END_OF_SERVICE",
+        },
       ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.OFFICE_SETTING
@@ -348,8 +422,24 @@ export const SidebarRoutes = [
           component: <ApprovalHierarchy />,
           name: "APPROVAL_HIERARCHY",
         },
+        Config.APPROVAL_HIERARCHY && {
+          path: "/office-settings/approval-hierarchy/history",
+          component: <ApprovalHierarchy active={"History & Logs"} />,
+          name: "APPROVAL_HIERARCHY",
+        },
+        Config.APPROVAL_HIERARCHY && {
+          path: "/office-settings/approval-hierarchy/hierarchy-detail",
+          component: <ApprovalHierarchyDetails />,
+          name: "APPROVAL_HIERARCHY",
+        },
+        Config.APPROVAL_HIERARCHY && {
+          path: "/office-settings/approval-hierarchy/history-logs",
+          component: <ApprovalHierarchyHistoryLogs />,
+          name: "APPROVAL_HIERARCHY",
+        },
       ].filter(Boolean) // Filter out undefined route
     : []),
+
   {
     path: "/change-password",
     component: <ChangePassword />,
@@ -358,70 +448,18 @@ export const SidebarRoutes = [
 ];
 
 const RemainingSidebarRoutes = [
-  {
-    path: "/",
-    component: <Dashboard />,
-    name: "DASHBOARD",
-  },
-
-  Config.TASK_MANAGMENT && {
-    path: "/project-board/card/add",
-    component: <TaskEditAddViewDetails />,
-    name: "PROJECT_BOARD",
-  },
-  Config.TASK_MANAGMENT && {
-    path: "/project-board/card/:taskId",
-    component: <TaskEditAddViewDetails />,
-    name: "VIEW_ALL_PROJECTS",
-  },
-  Config.TASK_MANAGMENT && {
-    path: "/project-board/card/:parentTaskId/subtask/:subtaskId",
-    component: <TaskEditAddViewDetails />,
-    name: "VIEW_ALL_PROJECTS",
-  },
-  Config.TASK_MANAGMENT && {
-    path: "/project-board/:projectId",
-    component: <Board />,
-    name: "VIEW_ALL_PROJECTS",
-  },
-  Config.TASK_MANAGMENT && {
-    path: "/project-board/user/:userId",
-    component: <UserProfileTaskDetails />,
-    name: "VIEW_ALL_PROJECTS",
-  },
-
-  Config.TALENT_SPHERE && {
-    path: "/edit-post/:id",
-    component: <CreateUpdateJob />,
-    name: "JOBS",
-  },
-  Config.LEAVE_MANAGMENT && {
-    path: "/leave-tracker",
-    component: <LeaveTracker />,
-    name: "LEAVE_RECORDS",
-  },
-
   // Config.PAYROLL && {
   //   path: "/payroll/:id",
   //   component: <EmployeeSalaryDetails />,
   //   name: "Payroll Details",
   // },
-  Config.PAYROLL && {
-    path: "/payslip/:id",
-    component: <Payslip />,
-    name: "Payslip",
-  },
+
   Config.PAYROLL && {
     path: "/payslip-eos/:id",
     component: <Payslip />,
     name: "Payslip EOS",
   },
 
-  Config.PAYROLL && {
-    path: "/payroll",
-    component: <EmployeesPayroll />,
-    name: "Payroll",
-  },
   Config.PAYROLL && {
     path: "/payroll/salary-setup/:id",
     component: <EmployeeSalarySetup />,
@@ -452,76 +490,8 @@ const RemainingSidebarRoutes = [
     component: <PayrollPayrunDetail />,
     name: "Payroll Details",
   },
-  Config.PAYROLL && {
-    path: "/payroll/salary-setup",
-    component: <SalarySetup />,
-    name: "Salary Setup",
-  },
-  Config.PAYROLL && {
-    path: "/pay-run",
-    component: <PayRun />,
-    name: "Pay Run",
-  },
-  Config.PAYROLL && {
-    path: "/payroll/eos",
-    component: <EOSList />,
-    name: "End of Service",
-  },
-  Config.PAYROLL && {
-    path: "/payroll/eos/:id",
-    component: <EOSDetails />,
-    name: "EOS Details",
-  },
 
-  Config.ATTENDANCE && {
-    path: "attendance-reports/:id",
-    component: <EmployeeAttendanceReport />,
-    name: "Attendance Report",
-  },
-
-  Config.ATTENDANCE && {
-    path: "/attendance/:id",
-    component: <EmployeeAttendance />,
-    name: "Employee Attendance",
-  },
-
-  Config.TALENT_SPHERE &&
-    Config.TS_PERSONAL_REQUISITION && {
-      path: "/personnel-requisition",
-      component: <ComingSoon />,
-      name: "Personnel Requisition",
-    },
-
-  Config.TALENT_SPHERE &&
-    Config.TS_REFERRALS && {
-      path: "/referals",
-      component: <ComingSoon />,
-      name: "Referrals",
-    },
-
-  Config.TALENT_SPHERE &&
-    Config.TS_ON_BOARDING && {
-      path: "/on-boarding",
-      component: <ComingSoon />,
-      name: "Onboarding",
-    },
-
-  Config.PAYROLL && {
-    path: "/claim-request",
-    component: <ClaimRequest />,
-    name: "Claim Request",
-  },
-  Config.PAYROLL && {
-    path: "/on-hold-salaries",
-    component: <OnHoldSalaries />,
-    name: "On-Hold Salaries",
-  },
-  Config.PAYROLL && {
-    path: "/payroll/on-hold-salaries/:id",
-    component: <OnHoldSalaryDetails />,
-    name: "On-Hold Salary Details",
-  },
-
+ 
   {
     path: "/organizational-chart",
     component: <OrganizationalChart />,

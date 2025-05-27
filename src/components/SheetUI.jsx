@@ -8,6 +8,8 @@ import {
 import SheetComponent from "components/ui/CustomSheet";
 import { Formik } from "formik";
 import ActionAlert from "components/ui/ActionAlert";
+import get from "lodash/get";
+import { errorClassName, InvalidInput } from "components/FormControl";
 
 const SheetUI = forwardRef(
   (
@@ -104,14 +106,21 @@ const SheetUI = forwardRef(
               {children}
               {formFiels?.map(
                 (
-                  { InputFields, sheetCardExtension, sheetCardTitle },
+                  {
+                    InputFields,
+                    sheetCardExtension,
+                    sheetCardTitle,
+                    sheetCardName,
+                  },
                   index
                 ) => {
+                  const sheetCardError = get(props.errors, sheetCardName);
                   return (
                     <div key={index}>
                       <FormBody
                         sheetCardExtension={sheetCardExtension}
                         sheetCardTitle={sheetCardTitle}
+                        sheetCardError={sheetCardError}
                         columns={columns}
                       >
                         {InputFields?.map((fieldsConfig, index) => {
@@ -132,6 +141,7 @@ const SheetUI = forwardRef(
                             multiple,
                             subColumns,
                           } = fieldsConfig;
+                          const error = get(props.errors, name);
                           return (
                             <div
                               className={`space-y-4 ${
@@ -142,16 +152,16 @@ const SheetUI = forwardRef(
                               <InputField
                                 name={name}
                                 options={options}
-                                error={props?.errors[name]}
-                                touch={props?.touched[name]}
-                                value={value ? value : props?.values[name]}
+                                error={typeof error === "string" ? error : ""}
+                                touch={get(props?.touched, name)}
+                                value={value ? value : get(props?.values, name)}
                                 required={required}
                                 disabled={disabled}
                                 label={label}
                                 placeholder={placeholder}
                                 onChange={async (field, value) => {
                                   await props?.setFieldValue(field, value);
-                                  onFieldUpdate(field, value);
+                                  onFieldUpdate(field, value , props.values);
                                 }}
                                 maxRows={maxRows}
                                 date={date}
@@ -225,14 +235,19 @@ const FormBody = ({
   children,
   sheetCardExtension = false,
   sheetCardTitle = null,
+  sheetCardError = null,
   columns,
 }) => {
   const className = `grid grid-cols-1 gap-4 lg:grid-cols-${
     columns || 1
   } md:grid-cols-${parseInt((columns || 1) / 2 + 1)}`;
   return sheetCardExtension ? (
-    <SheetCardExtension title={sheetCardTitle}>
+    <SheetCardExtension
+      title={sheetCardTitle}
+      className={sheetCardError ? InvalidInput : ""}
+    >
       <div className={className}>{children}</div>
+      {sheetCardError && <div className={`${errorClassName} mt-4`}>{sheetCardError}</div>}
     </SheetCardExtension>
   ) : (
     <div className={className}>{children}</div>

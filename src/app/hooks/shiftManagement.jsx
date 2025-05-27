@@ -17,7 +17,7 @@ const saveShift = async (payload) => {
     console.log("payload", payload);
     if (payload?.id) {
       const response = await axios.patch(
-        `${baseUrl}/shift/${payload.id}/`,
+        `${baseUrl}/shift/${payload.id}`,
         payload,
         {
           headers: headers(),

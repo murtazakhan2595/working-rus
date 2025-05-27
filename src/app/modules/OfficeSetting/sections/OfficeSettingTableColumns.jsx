@@ -9,7 +9,7 @@ import OnboardingActions from "../Screens/OnboardingChecklist/OnboardingActions"
 import { FormatID } from "utils/getValuesFromTables";
 
 // 
-export const BranchColumn = (reload) => [
+export const BranchColumn = (reload, originalData = []) => [
   {
     dataField: "id",
     text: "ID",
@@ -33,12 +33,18 @@ export const BranchColumn = (reload) => [
 
   {
     text: "Action",
-    formatter: (cell, row) => <BranchAction reload={reload} data={row} />,
-      width: '200px',
+    formatter: (cell, row, rowIndex, data_list) => (
+      <BranchAction 
+        reload={reload} 
+        data={row}
+        BranchList={originalData.length > 0 ? originalData : data_list}
+      />
+    ),
+    width: '200px',
   },
 ];
 // 
-export const WorkingHoursColumn = (reload) => [
+export const WorkingHoursColumn = (reload, originalData = []) => [
   {
     dataField: "name",
     text: "Shift Name",
@@ -61,11 +67,17 @@ export const WorkingHoursColumn = (reload) => [
   },
   {
     text: "Action",
-    formatter: (cell, row) => <ShiftActions data={row} reload={reload} />,
+    formatter: (cell, row, rowIndex, data_list) => (
+      <ShiftActions 
+        data={row} 
+        reload={reload}
+        ShiftList={originalData.length > 0 ? originalData : data_list}
+      />
+    ),
   },
 ];
 // Department Column
-export const DepartmentColumn = (reload) => [
+export const DepartmentColumn = (reload, originalData = []) => [
   {
     dataField: "id",
     text: "ID",
@@ -90,18 +102,19 @@ export const DepartmentColumn = (reload) => [
  
   {
     text: "Action",
-    formatter: (cell, row) => (
+    formatter: (cell, row, rowIndex, data_list) => (
       <DepartmentAction
         // setEdit={setEdit}
         // setEditData={setEditData}
         reload={reload}
         data={row}
+        DepartmentList={originalData.length > 0 ? originalData : data_list}
       />
     ),
   },
 ];
 // Designation Column
-export const DesignationColumn = (reload) => [
+export const DesignationColumn = (reload, originalData = []) => [
   {
     dataField: "id",
     text: "ID",
@@ -125,21 +138,29 @@ export const DesignationColumn = (reload) => [
   // },
   {
     text: "Action",
-    formatter: (cell, row) => (
-      <DesignationAction reload={reload} data={row} />
+    formatter: (cell, row, rowIndex, data_list) => (
+      <DesignationAction 
+        reload={reload} 
+        data={row}
+        DesignationList={originalData.length > 0 ? originalData : data_list}
+      />
     ),
   },
 ];
 // Onboarding Checklist Column
-export const OnboardingChecklistColumn = (reload) => [
+export const OnboardingChecklistColumn = (reload, originalData = []) => [
   {
     dataField: "name",
     text: "Document Name",
   },
   {
     text: "Action",
-    formatter: (cell, row) => (
-      <OnboardingActions data={row} reload={reload} />
+    formatter: (cell, row, rowIndex, data_list) => (
+      <OnboardingActions 
+        data={row} 
+        reload={reload}
+        OnboardingList={originalData.length > 0 ? originalData : data_list}
+      />
     ),
   },
 ];

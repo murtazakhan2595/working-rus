@@ -8,16 +8,22 @@ import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
 import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
-import { getRoleAssignmentHistoryLogsList } from "app/hooks/rolesPermisions";
+import {
+  getRoleAssignmentHistoryLogsList,
+  getUserRoleList,
+} from "app/hooks/rolesPermisions";
 import { RoleAssignmentHistoryLogsColumn } from "app/modules/RoleAndPermissions/Sections";
 import { useNavigate, useLocation } from "react-router-dom";
-import { EmployeeDetailUI } from "components"; 
+import { EmployeeDetailUI } from "components";
+import { getDropdownList } from "utils/Lists";
 
 const RoleAssignmentEmployeeHistoryLogs = () => {
   const location = useLocation();
   const { GOTO_URLS, employee_id } = location.state || {};
   const [roles, setRoles] = useState({ results: [], count: 0 });
+  const [UserRoles, setUserRoles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("");
   const [filterData, setFilterData] = useState({ employee: employee_id });
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -64,8 +70,28 @@ const RoleAssignmentEmployeeHistoryLogs = () => {
     };
   }, [filterData, ordering, options]);
 
+  const fetchUserRoleData = async (isMounted) => {
+    try {
+      const response = await getUserRoleList();
+      if (isMounted) {
+        setUserRoles(getDropdownList(response.results));
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchUserRoleData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
+    if (filterName === "role") setSelectedRole(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -76,14 +102,13 @@ const RoleAssignmentEmployeeHistoryLogs = () => {
       return updatedFilters;
     });
   };
-console.log(roles,'rolesrolesroles')
   return (
     <>
       <Header
         showBackButton={true}
         navigationLink={GOTO_URLS || "/office-settings/role-permission/"}
       />
-      <Card className='mb-5'>
+      <Card className="mb-5">
         <CardTitle className="text-primary px-6 pt-6">
           Employee Details
         </CardTitle>
@@ -91,10 +116,10 @@ console.log(roles,'rolesrolesroles')
           Here is the employee informations
         </CardDescription>
         <CardContent>
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-5">
             <EmployeeDetailUI
               id={employee_id}
-              ViewVariant="vertical"
+              // ViewVariant="vertical"
               InformationKeys={[
                 "id",
                 "name",
@@ -116,9 +141,11 @@ console.log(roles,'rolesrolesroles')
             <FilterInput
               filters={[
                 {
-                  type: "search",
-                  placeholder: "Search Role Name",
+                  type: "select-one",
+                  placeholder: "Select Role",
                   name: "role",
+                  option: UserRoles,
+                  values: selectedRole,
                 },
               ]}
               className="justify-end"

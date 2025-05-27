@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import SheetComponent from "components/ui/SheetComponent";
 import ViewShift from "./ViewShift";
 import AddShiftForm from "./AddShiftForm";
 import DropdownActionMenu from "components/DropdownActionMenu";
+import { ViewDetailSheetCardExtension } from "components";
 
-const ShiftActions = ({ data, reload }) => {
+const ShiftActions = ({ data, reload, ShiftList = [] }) => {
   const [view, setView] = useState(null);
   const [deleteShift, setDeleteShift] = useState(null);
   const [edit, setEdit] = useState(null);
@@ -56,6 +56,11 @@ const ShiftActions = ({ data, reload }) => {
     }
   };
 
+  const handleFormUpdate = async (formData) => {
+    console.log("Shift updated with data:", formData);
+    return true;
+  };
+
   return (
     <>
       <DropdownActionMenu 
@@ -84,11 +89,12 @@ const ShiftActions = ({ data, reload }) => {
       )}
 
       {edit?.open && (
-        <SheetComponent
-          {...formSheetData}
+        <ViewDetailSheetCardExtension
           isOpen={edit?.open}
           setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
-          width="568px"
+          title="Update Shift"
+          handlePrevious={() => {}}
+          handleNext={() => {}}
         >
           <AddShiftForm
             isOpen={edit.open}
@@ -98,8 +104,9 @@ const ShiftActions = ({ data, reload }) => {
             shiftData={edit.data}
             setEdit={setEdit}
             reload={reload}
+            onUpdateSuccess={handleFormUpdate}
           />
-        </SheetComponent>
+        </ViewDetailSheetCardExtension>
       )}
 
       {view?.visible && (
@@ -109,6 +116,8 @@ const ShiftActions = ({ data, reload }) => {
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
           data={view.data}
+          reload={reload}
+          ShiftList={ShiftList}
         />
       )}
     </>
