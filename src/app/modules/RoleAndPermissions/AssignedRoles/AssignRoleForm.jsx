@@ -88,9 +88,9 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
       errors.employee = "Employee is required";
     }
 
-    if (!values.roles || values.roles.length === 0) {
-      errors.roles = "At least one role must be selected";
-    }
+    // if (!values.roles || values.roles.length === 0) {
+    //   errors.roles = "At least one role must be selected";
+    // }
 
     return errors;
   };
@@ -327,7 +327,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                 {
                   InputField: SelectMultiInputComponent,
                   name: "roles",
-                  required: true,
+                  // required: true,
                   label: "Select Roles",
                   options: roleOptions,
                   placeholder: "Select roles",
