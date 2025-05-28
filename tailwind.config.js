@@ -6,8 +6,7 @@ module.exports = {
     './components/**/*.{js,jsx}',
     './app/**/*.{js,jsx}',
     './src/**/*.{js,jsx}',
-
-
+    './src/app/modules/SelfService/components/PermissionWrapper.jsx',
   ],
   prefix: "",
   theme: {
