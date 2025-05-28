@@ -21,7 +21,7 @@ const ShiftChangeRequestModal = ({
   isOpen,
   setIsOpen,
   employee,
-  onRequestSuccess = () => {},
+  reload,
   shift_requested, // Manager, Employee
 }) => {
   const [closeSheet, setCloseSheet] = useState(false);
@@ -560,7 +560,7 @@ const ShiftChangeRequestModal = ({
 
       if (response) {
         toast.success("Shift change request submitted successfully!");
-        onRequestSuccess();
+        reload();
         setIsOpen(false);
         setCloseSheet(false);
         // Reset form data

@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { employeeData } from "app/hooks/attendance";
 import ShiftChangeRequestModal from "./ShiftChangeRequestModal";
 
-const Calendar = ({ shift, scheduleShifts, employeeId }) => {
+const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
   const [events, setEvents] = useState([]);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -17,7 +17,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId }) => {
   const userProfile = useSelector((state) => state.user.userProfile);
 
   // Check if user is Branch Manager or Cluster Manager
-  const canRequestShiftChange =true
+  const canRequestShiftChange = true;
 
   // Fetch employee data when employeeId changes
   useEffect(() => {
@@ -270,11 +270,6 @@ const Calendar = ({ shift, scheduleShifts, employeeId }) => {
     setIsRequestModalOpen(true);
   };
 
-  const handleRequestSuccess = () => {
-    // You can refresh the calendar or show a success message here
-    console.log("Shift change request submitted successfully");
-  };
-
   return (
     <div className="min-w-[75%] p-4 bg-gray-100 rounded-lg shadow-lg">
       {employeeId && (
@@ -359,7 +354,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId }) => {
           isOpen={isRequestModalOpen}
           setIsOpen={setIsRequestModalOpen}
           employee={selectedEmployee}
-          onRequestSuccess={handleRequestSuccess}
+          reload={reload}
           shift_requested="Manager"
         />
       )}

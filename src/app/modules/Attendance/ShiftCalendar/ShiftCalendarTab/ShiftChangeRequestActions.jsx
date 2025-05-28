@@ -39,6 +39,7 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
     try {
       const payload = {
         ...data,
+        employee: data.employee.id || data.employee,
         status: "Approved",
         approved_by: userProfile.employee_id || userProfile.id,
         approval_date: moment().format("YYYY-MM-DD"),
@@ -72,6 +73,7 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
     try {
       const payload = {
         ...data,
+        employee: data.employee.id || data.employee,
         status: "Rejected",
         approved_by: userProfile.employee_id || userProfile.id,
         approval_date: moment().format("YYYY-MM-DD"),

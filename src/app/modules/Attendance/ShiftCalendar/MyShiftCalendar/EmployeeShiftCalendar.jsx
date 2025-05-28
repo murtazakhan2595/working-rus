@@ -300,7 +300,7 @@ const EmployeeShiftCalendar = () => {
     return events;
   };
 
-  const handleRequestSuccess = () => {
+  const reload = () => {
     fetchChangeRequests();
     fetchApprovedShifts(); // Also refresh the calendar
   };
@@ -500,7 +500,7 @@ const EmployeeShiftCalendar = () => {
           isOpen={isRequestModalOpen}
           setIsOpen={setIsRequestModalOpen}
           employee={employeeInfo}
-          onRequestSuccess={handleRequestSuccess}
+          reload={reload}
           shift_requested="Employee"
         />
       )}
