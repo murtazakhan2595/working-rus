@@ -18,6 +18,7 @@ import ScheduleShiftModal from "./Modals/ScheduleShiftModal";
 import { getShiftSchedule } from "app/hooks/shiftManagement";
 import { Button } from "components/ui/button";
 import EmployeeShiftCalendar from "./MyShiftCalendar/EmployeeShiftCalendar";
+import HistoryAndLogs from "./HistoryAndLogs";
 
 const ShiftCalendar = () => {
   const [activeTab, setActiveTab] = useState("shift-calendar");
@@ -126,6 +127,11 @@ const ShiftCalendar = () => {
       value: "shift-request",
       label: "Shift Request",
       component: <ShiftRequest employees={teamMembers.results} />,
+    },
+    {
+      value: "history-logs",
+      label: "History & Logs",
+      component: <HistoryAndLogs />,
     },
   ];
 

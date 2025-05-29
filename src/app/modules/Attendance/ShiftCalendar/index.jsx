@@ -8,6 +8,7 @@ import Calendar from "./ShiftCalendarTab/Calendar";
 import AssignShift from "./Section/AssignShift";
 import PendingSchedule from "./PendingSchedule/PendingSchedule"
 import  MyShiftCalendar  from './MyShiftCalendar/EmployeeShiftCalendar';
+import ShiftCalendarHistoryLogs from "./HistoryAndLogs/ShiftCalendarHistoryLogs"
 
 export {
   ShiftCalendar,
@@ -18,5 +19,6 @@ export {
   Emplist,
   Calendar,
   AssignShift,
-  MyShiftCalendar
+  MyShiftCalendar,
+  ShiftCalendarHistoryLogs,
 };
