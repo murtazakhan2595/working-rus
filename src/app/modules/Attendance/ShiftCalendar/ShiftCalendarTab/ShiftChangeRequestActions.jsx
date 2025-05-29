@@ -43,7 +43,7 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
         status: "Approved",
         approved_by: userProfile.employee_id || userProfile.id,
         approval_date: moment().format("YYYY-MM-DD"),
-        is_change_request: false,
+        is_change_request: "false",
       };
 
       const response = await saveShiftSchedule(payload);

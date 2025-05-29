@@ -90,7 +90,7 @@ const Emplist = ({ teamMembers }) => {
       const response = await getShiftSchedule({
         filterData: {
           status: "Pending",
-          is_change_request: true,
+          is_change_request: "true",
           page: options.page,
           page_size: options.sizePerPage,
           shift_requested: "Manager",

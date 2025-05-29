@@ -546,7 +546,7 @@ const ShiftChangeRequestModal = ({
         status: isHr ? "Approved" : "Pending",
         is_off_day: Object.values(customSchedule).some((day) => day.is_off),
         // Additional fields to identify this as a change request
-        is_change_request: true,
+        is_change_request: "true",
         shift_requested: shift_requested,
         // Metadata about the request
         changed_days: changedDays,

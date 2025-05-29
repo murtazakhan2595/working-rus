@@ -70,7 +70,7 @@ const ShiftRequest = () => {
     setIsLoading(true);
     try {
       const filterData = {
-        is_change_request: true,
+        is_change_request: "true",
         page: options.page,
         page_size: options.sizePerPage,
         shift_requested: "Employee",

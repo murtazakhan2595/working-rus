@@ -105,7 +105,7 @@ const EmployeeShiftCalendar = () => {
       const response = await getShiftSchedule({
         filterData: {
           employee: employeeId,
-          is_change_request: true,
+          is_change_request: "true",
           ordering: "-created_at",
           shift_requested: "Employee", // Only fetch employee-initiated requests
         },
