@@ -57,7 +57,7 @@ const ShiftChangeRequestModal = ({
           end_date_gte: startDate,
           start_date_lte: endDate,
           status: "Approved",
-          is_change_request: false, 
+          is_change_request: "true,false",
         },
         ordering: "-id",
       });
@@ -324,7 +324,7 @@ const ShiftChangeRequestModal = ({
           end_date_gte: requestedStartDate,
           start_date_lte: requestedEndDate,
           status: "Approved",
-          is_change_request: false,
+          is_change_request: "true,false",
         },
         ordering: "start_date",
       });

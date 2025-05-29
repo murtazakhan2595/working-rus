@@ -70,7 +70,7 @@ const ShiftRequest = () => {
     setIsLoading(true);
     try {
       const filterData = {
-        // is_change_request: true,
+        is_change_request: true,
         page: options.page,
         page_size: options.sizePerPage,
         shift_requested: "Employee",
@@ -80,7 +80,8 @@ const ShiftRequest = () => {
           filterData.status = filters.status || "Pending";
         }
         else if(activeTab === "Record") {
-          filterData.status = filters.status || "Approved";
+          filterData.status = filters.status || "Approved,Rejected";
+          filterData.is_change_request = "true,false";
         }
       } else{
         if(filters.status){

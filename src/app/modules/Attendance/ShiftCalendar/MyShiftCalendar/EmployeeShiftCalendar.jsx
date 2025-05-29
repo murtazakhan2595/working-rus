@@ -76,7 +76,7 @@ const EmployeeShiftCalendar = () => {
         filterData: {
           employee: employeeId,
           status: "Approved",
-          is_change_request: false, // Don't include change requests
+          is_change_request: "true,false",
         },
         ordering: "-created_at", // Get newest first
       });
