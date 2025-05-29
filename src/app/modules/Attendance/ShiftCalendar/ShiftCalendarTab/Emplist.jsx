@@ -19,6 +19,7 @@ import {
 } from "./shiftScheduleUtils";
 
 const Emplist = ({ teamMembers }) => {
+
   const [activeMember, setActiveMember] = useState(null);
   const [employeeShift, setEmployeeShift] = useState(null);
   const [scheduleShifts, setScheduleShifts] = useState({
@@ -67,7 +68,6 @@ const Emplist = ({ teamMembers }) => {
     }
   };
 
-  // If active member is no longer in filtered list, reset the calendar view
   useEffect(() => {
     if (activeMember && teamMembers?.results) {
       const memberStillInList = teamMembers.results.some(

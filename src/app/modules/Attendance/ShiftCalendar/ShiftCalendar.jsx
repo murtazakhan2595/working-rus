@@ -127,14 +127,8 @@ const ShiftCalendar = () => {
       label: "Shift Request",
       component: <ShiftRequest employees={teamMembers.results} />,
     },
-    {
-      value: "my-shift-calendar",
-      label: "My Shift Calendar",
-      component: <EmployeeShiftCalendar />,
-    },
   ];
 
-  // Header content with both AssignShift and ScheduleShift buttons
   const headerContent = (
     <div className="flex gap-2">
       {activeTab === "shift-calendar" && (

@@ -239,9 +239,9 @@ export const fetchEmployeeShiftData = async (employeeId) => {
       filterData: {
         status: "Approved",
         employee: employeeId,
-        is_change_request: false, // Don't include change requests
+        is_change_request: false, 
       },
-      ordering: "-created_at", // Get newest first
+      ordering: "-created_at", 
     });
 
     let employeeShift = null;

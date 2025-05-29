@@ -40,8 +40,7 @@ const EmployeeShiftCalendar = () => {
   const [ordering, setOrdering] = useState("-id");
 
   const userProfile = useSelector((state) => state.user.userProfile);
-  const employeeId = 10;
-  // const employeeId = userProfile?.employee_id || userProfile?.id;
+  const employeeId = userProfile?.id;
 
   // Fetch employee data and shifts
   useEffect(() => {

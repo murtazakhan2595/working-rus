@@ -9,10 +9,12 @@ import { employeeData } from "app/hooks/attendance";
 import ShiftChangeRequestModal from "./ShiftChangeRequestModal";
 
 const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
+  const isHr = true;
   const [events, setEvents] = useState([]);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const prevDataRef = useRef(null);
+
 
   const userProfile = useSelector((state) => state.user.userProfile);
 
@@ -308,19 +310,6 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
         moreLinkClick="popover"
       />
 
-      {/* Request Shift Change Button - Only visible to Branch/Cluster Managers */}
-      {employeeId && canRequestShiftChange && (
-        <div className="mt-4 p-3 bg-white rounded-lg shadow-sm">
-          <Button
-            onClick={handleRequestShiftChange}
-            className="w-full"
-            size="lg"
-          >
-            Request Shift Change
-          </Button>
-        </div>
-      )}
-
       {/* Legend */}
       <div className="mt-4 p-3 bg-white rounded-lg shadow-sm">
         <div className="text-sm font-medium mb-2">Legend:</div>
@@ -347,6 +336,14 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
           </div>
         </div>
       </div>
+      {/* Request Shift Change Button - Only visible to Branch/Cluster Managers */}
+      {employeeId && canRequestShiftChange && (
+        <div className="mt-4 p-3 bg-white rounded-lg shadow-sm text-end">
+          <Button onClick={handleRequestShiftChange} className="" size="lg">
+            {isHr ? "Edit Employee Shift" : "Request Shift Change"}
+          </Button>
+        </div>
+      )}
 
       {/* Shift Change Request Modal */}
       {isRequestModalOpen && selectedEmployee && (

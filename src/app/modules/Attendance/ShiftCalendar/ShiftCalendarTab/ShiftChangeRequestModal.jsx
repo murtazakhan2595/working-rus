@@ -24,6 +24,7 @@ const ShiftChangeRequestModal = ({
   reload,
   shift_requested, // Manager, Employee
 }) => {
+  const isHr = true;
   const [closeSheet, setCloseSheet] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetchingShifts, setFetchingShifts] = useState(false);
@@ -542,7 +543,7 @@ const ShiftChangeRequestModal = ({
         custom_schedule: customSchedule, // Now includes ALL days from original schedules
         total_weekly_hours: calculateTotalWeeklyHours(),
         assigned_by: userProfile?.id,
-        status: "Pending",
+        status: isHr ? "Approved" : "Pending",
         is_off_day: Object.values(customSchedule).some((day) => day.is_off),
         // Additional fields to identify this as a change request
         is_change_request: true,
@@ -946,7 +947,13 @@ const ShiftChangeRequestModal = ({
                     !props.values.dailySchedule.length
                   }
                 >
-                  {loading ? "Submitting..." : "Submit Request"}
+                  {loading
+                    ? isHr
+                      ? "Updating Shift..."
+                      : "Submitting..."
+                    : isHr
+                    ? "Update Shift"
+                    : "Submit Request"}
                 </Button>
               </div>
             </form>
