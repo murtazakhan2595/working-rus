@@ -29,6 +29,7 @@ const Attendance = () => {
     "VIEW_DEPARTMENT_ATTENDANCE_OVERVIEW"
   );
   const Departments = useSelector((state) => state.common.departments);
+  const Branches = useSelector((state) => state.common.branches);
   const Designations = useSelector((state) => state.common.designations);
   const userProfile = useSelector((state) => state.user.userProfile);
   const [attendanceData, setAttendanceData] = useState([]);
@@ -37,6 +38,7 @@ const Attendance = () => {
     useState(false);
   const [weeklySummary, setWeeklySummary] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState("");
   const [activeTab, setActiveTab] = useState("Day");
   const [TotalDays, setTotalDays] = useState(1);
   const [filterData, setFilterData] = useState(
@@ -55,15 +57,16 @@ const Attendance = () => {
     }
   }, [dateRange]);
   const handleFilterChange = (filterName, filterValue) => {
-    if (filterName === "department_name") {
-      setSelectedDepartment(filterValue);
-    }
+    if (filterName === "department_name") setSelectedDepartment(filterValue);
+    if (filterName === "branch_id") setSelectedBranch(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
         delete updatedFilters[filterName];
       } else {
-        updatedFilters[filterName] = filterValue;
+        if (filterName === "branch_id")
+          updatedFilters[filterName] = [filterValue];
+        else updatedFilters[filterName] = filterValue;
       }
       return updatedFilters;
     });
@@ -166,6 +169,14 @@ const Attendance = () => {
                     name: "department_name",
                     placeholder: "Department",
                     values: selectedDepartment,
+                    width: "w-[175px]",
+                  },
+                  {
+                    type: "select-two",
+                    option: Branches,
+                    name: "branch_id",
+                    placeholder: "Branch",
+                    values: selectedBranch,
                     width: "w-[175px]",
                   },
                 ]}

@@ -62,7 +62,7 @@ export function LeaveStatusOverview() {
       if (isViewStatus) return {};
       else {
         if (isViewBrnStatus) {
-          return { branch: user_branch };
+          return { branch_ids: [user_branch] };
         } else if (isViewDptStatus) {
           return { departments: user_department };
         } else if (isViewRLStatus) {
@@ -95,13 +95,15 @@ export function LeaveStatusOverview() {
         ];
   const handleFilterChange = (filterName, filterValue) => {
     if (filterName === "departments") setSelectDepartment(filterValue);
-    if (filterName === "branches") setSelectBranch(filterValue);
+    if (filterName === "branch_ids") setSelectBranch(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
         delete updatedFilters[filterName];
       } else {
-        updatedFilters[filterName] = filterValue;
+        if (filterName === "branch_ids")
+          updatedFilters[filterName] = [filterValue];
+        else updatedFilters[filterName] = filterValue;
       }
       return updatedFilters;
     });
@@ -133,7 +135,7 @@ export function LeaveStatusOverview() {
                     {
                       type: "select-two",
                       option: Branches,
-                      name: "branches",
+                      name: "branch_ids",
                       placeholder: "Branch",
                       values: selectedBranch,
                     },
