@@ -38,7 +38,7 @@ export const getChangeRequestComparison = async(changeRequest)=> {
         end_date_gte: changeRequest.start_date, // overlaps start
         start_date_lte: changeRequest.end_date, // overlaps end
         status: "Approved",
-        is_change_request: false, // Only get regular approved schedules
+        is_change_request: "true,false",
       },
     });
 

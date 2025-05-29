@@ -19,6 +19,7 @@ import {
 } from "./shiftScheduleUtils";
 
 const Emplist = ({ teamMembers }) => {
+
   const [activeMember, setActiveMember] = useState(null);
   const [employeeShift, setEmployeeShift] = useState(null);
   const [scheduleShifts, setScheduleShifts] = useState({
@@ -67,7 +68,6 @@ const Emplist = ({ teamMembers }) => {
     }
   };
 
-  // If active member is no longer in filtered list, reset the calendar view
   useEffect(() => {
     if (activeMember && teamMembers?.results) {
       const memberStillInList = teamMembers.results.some(
@@ -85,44 +85,42 @@ const Emplist = ({ teamMembers }) => {
     }
   }, [teamMembers, activeMember]);
 
-  // Fetch shift change requests
-  useEffect(() => {
-    const fetchShiftChangeRequests = async () => {
-      try {
-        const response = await getShiftSchedule({
-          filterData: {
-            status: "Pending",
-            is_change_request: true,
-            page: options.page,
-            page_size: options.sizePerPage,
-            shift_requested: "Manager",
-          },
-          ordering: ordering,
+  const fetchShiftChangeRequests = async () => {
+    try {
+      const response = await getShiftSchedule({
+        filterData: {
+          status: "Pending",
+          is_change_request: "true",
+          page: options.page,
+          page_size: options.sizePerPage,
+          shift_requested: "Manager",
+        },
+        ordering: ordering,
+      });
+
+      if (response && response.results) {
+        // Load comparison data for each request
+        const requestsWithComparison = await Promise.all(
+          response.results.map(async (request) => {
+            const comparisonData = await getChangeRequestComparison(request);
+            return {
+              ...request,
+              comparison_data: comparisonData,
+            };
+          })
+        );
+
+        setShiftChangeRequests({
+          ...response,
+          results: requestsWithComparison,
         });
-
-        if (response && response.results) {
-          // Load comparison data for each request
-          const requestsWithComparison = await Promise.all(
-            response.results.map(async (request) => {
-              const comparisonData = await getChangeRequestComparison(request);
-              return {
-                ...request,
-                comparison_data: comparisonData,
-              };
-            })
-          );
-
-          setShiftChangeRequests({
-            ...response,
-            results: requestsWithComparison,
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching shift change requests:", error);
-        toast.error("Failed to load shift change requests");
       }
-    };
-
+    } catch (error) {
+      console.error("Error fetching shift change requests:", error);
+      toast.error("Failed to load shift change requests");
+    }
+  };
+  useEffect(() => {
     fetchShiftChangeRequests();
   }, [ordering, options.page, options.sizePerPage]);
 
@@ -159,6 +157,7 @@ const Emplist = ({ teamMembers }) => {
           shift={employeeShift}
           scheduleShifts={scheduleShifts}
           employeeId={activeMember}
+          reload={fetchShiftChangeRequests}
         />
       </div>
 
@@ -172,7 +171,7 @@ const Emplist = ({ teamMembers }) => {
         </CardHeader>
         <CardContent>
           <CustomTable
-            columns={EmployeeColumns}
+            columns={EmployeeColumns(fetchShiftChangeRequests)}
             data={shiftChangeRequests?.results || []}
             pagination={true}
             dataTotalSize={shiftChangeRequests?.count || 0}

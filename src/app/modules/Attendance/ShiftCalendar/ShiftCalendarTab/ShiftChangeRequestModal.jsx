@@ -21,9 +21,10 @@ const ShiftChangeRequestModal = ({
   isOpen,
   setIsOpen,
   employee,
-  onRequestSuccess = () => {},
+  reload,
   shift_requested, // Manager, Employee
 }) => {
+  const isHr = true;
   const [closeSheet, setCloseSheet] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetchingShifts, setFetchingShifts] = useState(false);
@@ -56,7 +57,7 @@ const ShiftChangeRequestModal = ({
           end_date_gte: startDate,
           start_date_lte: endDate,
           status: "Approved",
-          is_change_request: false, 
+          is_change_request: "true,false",
         },
         ordering: "-id",
       });
@@ -323,7 +324,7 @@ const ShiftChangeRequestModal = ({
           end_date_gte: requestedStartDate,
           start_date_lte: requestedEndDate,
           status: "Approved",
-          is_change_request: false,
+          is_change_request: "true,false",
         },
         ordering: "start_date",
       });
@@ -542,10 +543,10 @@ const ShiftChangeRequestModal = ({
         custom_schedule: customSchedule, // Now includes ALL days from original schedules
         total_weekly_hours: calculateTotalWeeklyHours(),
         assigned_by: userProfile?.id,
-        status: "Pending",
+        status: isHr ? "Approved" : "Pending",
         is_off_day: Object.values(customSchedule).some((day) => day.is_off),
         // Additional fields to identify this as a change request
-        is_change_request: true,
+        is_change_request: "true",
         shift_requested: shift_requested,
         // Metadata about the request
         changed_days: changedDays,
@@ -560,7 +561,7 @@ const ShiftChangeRequestModal = ({
 
       if (response) {
         toast.success("Shift change request submitted successfully!");
-        onRequestSuccess();
+        reload();
         setIsOpen(false);
         setCloseSheet(false);
         // Reset form data
@@ -946,7 +947,13 @@ const ShiftChangeRequestModal = ({
                     !props.values.dailySchedule.length
                   }
                 >
-                  {loading ? "Submitting..." : "Submit Request"}
+                  {loading
+                    ? isHr
+                      ? "Updating Shift..."
+                      : "Submitting..."
+                    : isHr
+                    ? "Update Shift"
+                    : "Submit Request"}
                 </Button>
               </div>
             </form>
