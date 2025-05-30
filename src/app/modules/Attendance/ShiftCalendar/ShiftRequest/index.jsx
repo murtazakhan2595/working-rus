@@ -16,8 +16,8 @@ import {
 } from "src/@/components/ui/tabs";
 import { HasAccess } from "utils/PermissionUtils";
 const ShiftRequest = () => {
-  // const isViewRecordsPermitted = HasAccess("VIEW_SHIFT_REQUEST_RECORDS");
-  const isViewRecordsPermitted = true;
+  const isViewRecordsPermitted = HasAccess("VIEW_SHIFT_REQUEST_RECORDS");
+  // const isViewRecordsPermitted = true;
   const [isLoading, setIsLoading] = useState(true);
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });

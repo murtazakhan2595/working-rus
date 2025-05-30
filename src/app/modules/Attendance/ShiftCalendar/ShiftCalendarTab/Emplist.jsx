@@ -168,8 +168,7 @@ const Emplist = ({ teamMembers }) => {
           <CardHeader>
             <CardTitle className="text-primary">Shift Change Requests</CardTitle>
             <CardDescription className="text-neutral-1100">
-              View and manage shift change requests from employees. You can
-              approve or reject requests directly from this section.
+              View and manage shift change requests from Managers.
             </CardDescription>
           </CardHeader>
           <CardContent>

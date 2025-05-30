@@ -145,8 +145,20 @@ const ShiftChangeRequestModal = ({
               shiftId: coveringSchedule.shift,
             };
 
-            // For org-based scheduled shifts, we need to fetch the shift details separately
-            // For now, we'll leave times null - you might want to fetch this
+            // Extract times from shift_details if available
+            if (coveringSchedule.shift_details) {
+              dayData.assignedStartTime = moment(
+                coveringSchedule.shift_details.starttime
+              ).format("HH:mm");
+              dayData.assignedEndTime = moment(
+                coveringSchedule.shift_details.endtime
+              ).format("HH:mm");
+            } else {
+              // If shift_details not available, we might need to fetch the shift
+              console.warn(
+                "Org-based schedule missing shift_details, times will be empty"
+              );
+            }
           } else if (
             coveringSchedule.custom_schedule &&
             coveringSchedule.custom_schedule[dateStr]
@@ -708,19 +720,13 @@ const ShiftChangeRequestModal = ({
                                       </span>{" "}
                                       {day.assignedShift.source ===
                                         "scheduled_org" &&
-                                        `Organization Schedule (ID: ${
-                                          day.assignedShift.scheduleId || "N/A"
-                                        })`}
+                                        `Organization Schedule `}
                                       {day.assignedShift.source ===
                                         "scheduled_custom" &&
-                                        `Custom Schedule (ID: ${
-                                          day.assignedShift.scheduleId || "N/A"
-                                        })`}
+                                        `Custom Schedule `}
                                       {day.assignedShift.source ===
                                         "direct_assignment" &&
-                                        `Direct Assignment (Shift ID: ${
-                                          day.assignedShift.shiftId || "N/A"
-                                        })`}
+                                        `Direct Assignment )`}
                                       {day.assignedShift.source === "none" &&
                                         "No Shift Assigned"}
                                     </p>

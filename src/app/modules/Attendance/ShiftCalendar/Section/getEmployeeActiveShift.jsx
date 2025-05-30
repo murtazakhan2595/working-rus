@@ -261,7 +261,7 @@ const getEmployeeActiveShift = async (employeeId, shiftId) => {
     requested_shift: requestedShift,
     approved_on: moment().format("YYYY-MM-DD HH:mm:ss"),
     status: status,
-    employee: scheduleData.employee,
+    employee: scheduleData.employee?.id || scheduleData.employee,
     action_by: userProfile?.employee_id || userProfile?.id,
     approved_by: userProfile?.employee_id || userProfile?.id,
   };
