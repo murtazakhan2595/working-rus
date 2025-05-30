@@ -5,8 +5,6 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import moment from "moment";
 
-
-
 const ScheduleCalendar = ({ pendingSchedule }) => {
   console.log("Pending Schedule", pendingSchedule);
   const [events, setEvents] = useState([]);
@@ -39,10 +37,12 @@ const ScheduleCalendar = ({ pendingSchedule }) => {
     try {
       const events = [];
 
-      if (schedule.is_org_based && schedule.shiftDetails) {
+      if (schedule.is_org_based && schedule.shift_details) {
+        console.log("INFO - Generating org-based schedule events 1", schedule);
         // Handle organization-based schedule
         events.push(...generateOrgScheduleEvents(schedule));
       } else if (schedule.custom_schedule) {
+        console.log("INFO 1 - Generating custom schedule events", schedule);
         // Handle custom schedule
         events.push(...generateCustomScheduleEvents(schedule));
       }
@@ -56,14 +56,23 @@ const ScheduleCalendar = ({ pendingSchedule }) => {
 
   const generateOrgScheduleEvents = (schedule) => {
     const events = [];
-    const shift = schedule.shiftDetails;
+    const shiftDetails = schedule.shift_details;
 
-    // Get weekdays array from shift
-    const weekdays = shift.weekdays
-      ? shift.weekdays.split(",")
-      : ["mon", "tue", "wed", "thu", "fri"];
+    if (!shiftDetails) return events;
 
-    // Create individual events for each day in the date range
+    // Parse weekdays from JSON string
+    let weekdays = [];
+    try {
+      weekdays = JSON.parse(shiftDetails.weekdays);
+    } catch (e) {
+      weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    }
+
+    // Convert to lowercase short form for moment.js
+    const shortWeekdays = weekdays.map((day) =>
+      day.toLowerCase().substring(0, 3)
+    );
+
     const startDate = moment(schedule.start_date);
     const endDate = moment(schedule.end_date);
 
@@ -71,31 +80,30 @@ const ScheduleCalendar = ({ pendingSchedule }) => {
     while (currentDate.isSameOrBefore(endDate)) {
       const dayName = currentDate.format("ddd").toLowerCase();
 
-      // Check if this day is in the shift's weekdays
-      if (weekdays.includes(dayName)) {
-        const eventStart =
-          currentDate.format("YYYY-MM-DD") + "T" + shift.starttime;
-        const eventEnd = currentDate.format("YYYY-MM-DD") + "T" + shift.endtime;
+      if (shortWeekdays.includes(dayName)) {
+        const startTime = moment(shiftDetails.starttime).format("HH:mm");
+        const endTime = moment(shiftDetails.endtime).format("HH:mm");
 
-        if (shift.type === "Split") {
-          events.push({
-            title: `${shift.name} (Split)`,
-            start: eventStart,
-            end: eventEnd,
-            backgroundColor: "#3B82F6",
-            borderColor: "#2563EB",
-            textColor: "#FFFFFF",
-          });
-        } else {
-          events.push({
-            title: shift.name,
-            start: eventStart,
-            end: eventEnd,
-            backgroundColor: "#10B981",
-            borderColor: "#059669",
-            textColor: "#FFFFFF",
-          });
+        // Handle overnight shifts
+        let eventEndDate = currentDate.format("YYYY-MM-DD");
+        if (endTime < startTime) {
+          // End time is next day
+          eventEndDate = currentDate.clone().add(1, "day").format("YYYY-MM-DD");
         }
+
+        events.push({
+          title: `${shiftDetails.name} (${startTime} - ${endTime})`,
+          start: `${currentDate.format("YYYY-MM-DD")}T${startTime}:00`,
+          end: `${eventEndDate}T${endTime}:00`,
+          backgroundColor: "#10B981", // Green for org shifts
+          borderColor: "#059669",
+          textColor: "#FFFFFF",
+          extendedProps: {
+            type: "org_schedule",
+            shiftName: shiftDetails.name,
+            scheduleId: schedule.id,
+          },
+        });
       }
 
       currentDate.add(1, "day");
@@ -212,11 +220,11 @@ const ScheduleCalendar = ({ pendingSchedule }) => {
             </span>
             <span>Total Hours: {pendingSchedule.total_weekly_hours}h</span>
           </div>
-          {pendingSchedule.is_org_based && pendingSchedule.shiftDetails && (
-            <div className="mt-1 text-sm text-gray-600">
-              Shift: {pendingSchedule.shiftDetails.name} (
-              {pendingSchedule.shiftDetails.starttime} -{" "}
-              {pendingSchedule.shiftDetails.endtime})
+          {pendingSchedule.is_org_based && pendingSchedule.shift_details && (
+            <div className="mt-1 text-sm">
+              Shift: {pendingSchedule.shift_details.name} (
+              {moment(pendingSchedule.shift_details.starttime).format("HH:mm")}{" "}
+              - {moment(pendingSchedule.shift_details.endtime).format("HH:mm")})
             </div>
           )}
         </div>
@@ -239,7 +247,7 @@ const ScheduleCalendar = ({ pendingSchedule }) => {
                 {eventInfo.event.title}
               </div>
               {!eventInfo.event.allDay && (
-                <div className="text-xs opacity-80">
+                <div className="text-xs ">
                   {moment(eventInfo.event.start).format("HH:mm")} -{" "}
                   {moment(eventInfo.event.end).format("HH:mm")}
                 </div>

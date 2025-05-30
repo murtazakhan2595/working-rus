@@ -17,6 +17,7 @@ import {
   fetchEmployeeShiftData,
   getChangeRequestComparison,
 } from "./shiftScheduleUtils";
+import { HasAccess } from "utils/PermissionUtils";
 
 const Emplist = ({ teamMembers }) => {
 
@@ -39,6 +40,7 @@ const Emplist = ({ teamMembers }) => {
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
+  const isViewShiftChangeRequestsPermitted= HasAccess("VIEW_SHIFT_CHANGE_REQUESTS")
 
   const tableOptions = {
     page: options.page,
@@ -161,24 +163,25 @@ const Emplist = ({ teamMembers }) => {
         />
       </div>
 
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle className="text-primary">Shift Change Requests</CardTitle>
-          <CardDescription className="text-neutral-1100">
-            View and manage shift change requests from employees. You can
-            approve or reject requests directly from this section.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CustomTable
-            columns={EmployeeColumns(fetchShiftChangeRequests)}
+      {isViewShiftChangeRequestsPermitted && (
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="text-primary">Shift Change Requests</CardTitle>
+            <CardDescription className="text-neutral-1100">
+              View and manage shift change requests from employees. You can
+              approve or reject requests directly from this section.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <CustomTable
+              columns={EmployeeColumns(fetchShiftChangeRequests)}
             data={shiftChangeRequests?.results || []}
             pagination={true}
             dataTotalSize={shiftChangeRequests?.count || 0}
             tableOptions={tableOptions}
           />
         </CardContent>
-      </Card>
+      </Card>)}
     </div>
   );
 };

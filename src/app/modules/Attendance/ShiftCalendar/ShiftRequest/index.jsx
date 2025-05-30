@@ -14,8 +14,10 @@ import {
   TabsTrigger,
   TabsContent,
 } from "src/@/components/ui/tabs";
+import { HasAccess } from "utils/PermissionUtils";
 const ShiftRequest = () => {
-  const isHr = true;
+  // const isViewRecordsPermitted = HasAccess("VIEW_SHIFT_REQUEST_RECORDS");
+  const isViewRecordsPermitted = true;
   const [isLoading, setIsLoading] = useState(true);
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -57,11 +59,11 @@ const ShiftRequest = () => {
     };
   }, []);
   useEffect(() => {
-    if (isHr) {
+    if (isViewRecordsPermitted) {
       setOptions((prev) => ({ ...prev, page: 1 }));
       setFilters((prev) => ({ ...prev, status: "" }));
     }
-  }, [activeTab, isHr]);
+  }, [activeTab, isViewRecordsPermitted]);
   useEffect(() => {
     fetchShiftRequests();
   }, [ordering, options.page, options.sizePerPage, filters, activeTab]);
@@ -75,7 +77,7 @@ const ShiftRequest = () => {
         page_size: options.sizePerPage,
         shift_requested: "Employee",
       };
-      if(isHr){
+      if(isViewRecordsPermitted){
         if(activeTab === "Request") {
           filterData.status = filters.status || "Pending";
         }
@@ -185,7 +187,7 @@ const ShiftRequest = () => {
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
-      {isHr ? (
+      {isViewRecordsPermitted ? (
         // HR View with Tabs
         <Tabs
           defaultValue="Request"

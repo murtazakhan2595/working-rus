@@ -112,11 +112,14 @@ const getEmployeeActiveShift = async (employeeId, shiftId) => {
 }) => {
   // Helper to format daily schedule into readable string
   const formatScheduleDetails = (schedule, dateRange = null) => {
+    console.log("Formatting Schedule Details:", schedule, dateRange);
     if (!schedule) return "No Previous Shift";
 
     // For organization shifts
     if (schedule.is_org_based && schedule.shift_details) {
       const shift = schedule.shift_details;
+
+      // Extract just the time part from starttime and endtime
       const startTime = moment(shift.starttime).format("HH:mm");
       const endTime = moment(shift.endtime).format("HH:mm");
 
@@ -128,35 +131,31 @@ const getEmployeeActiveShift = async (employeeId, shiftId) => {
         weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
       }
 
-      // Create a week pattern
-      const weekPattern = [];
-      const dayMap = {
-        Monday: "Mon",
-        Tuesday: "Tue",
-        Wednesday: "Wed",
-        Thursday: "Thu",
-        Friday: "Fri",
-        Saturday: "Sat",
-        Sunday: "Sun",
-      };
+      // Create a map for quick weekday lookup
+      const weekdaySet = new Set(weekdays);
 
-      [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-      ].forEach((day) => {
-        if (weekdays.includes(day)) {
-          weekPattern.push(`${dayMap[day]}: ${startTime}-${endTime}`);
+      // Get date range from schedule object
+      const startDate = moment(schedule.start_date);
+      const endDate = moment(schedule.end_date);
+
+      const dailyDetails = [];
+      let current = startDate.clone();
+
+      // Generate daily breakdown for the date range
+      while (current.isSameOrBefore(endDate)) {
+        const dateStr = current.format("MMM DD");
+        const dayName = current.format("dddd"); // Full day name (Monday, Tuesday, etc.)
+
+        if (weekdaySet.has(dayName)) {
+          dailyDetails.push(`${dateStr}: ${startTime}-${endTime}`);
         } else {
-          weekPattern.push(`${dayMap[day]}: OFF`);
+          dailyDetails.push(`${dateStr}: OFF`);
         }
-      });
 
-      return `[${shift.name}] ${weekPattern.join(", ")} (${
+        current.add(1, "day");
+      }
+
+      return `${dailyDetails.join(", ")} (${
         schedule.total_weekly_hours || "40"
       }h/week)`;
     }

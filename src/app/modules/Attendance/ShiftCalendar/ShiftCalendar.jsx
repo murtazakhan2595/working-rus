@@ -19,6 +19,7 @@ import { getShiftSchedule } from "app/hooks/shiftManagement";
 import { Button } from "components/ui/button";
 import EmployeeShiftCalendar from "./MyShiftCalendar/EmployeeShiftCalendar";
 import HistoryAndLogs from "./HistoryAndLogs";
+import { HasAccess } from "utils/PermissionUtils";
 
 const ShiftCalendar = () => {
   const [activeTab, setActiveTab] = useState("shift-calendar");
@@ -30,7 +31,10 @@ const ShiftCalendar = () => {
     results: [],
     count: 0,
   });
-
+  const isViewLogsPermitted = HasAccess("VIEW_SHIFT_HISTORY_LOGS")
+  const isViewShiftCalendarPermitted = HasAccess("VIEW_SHIFT_CALENDAR");
+  const isScheduleShiftPermitted = HasAccess("SCHEDULE_EMPLOYEE_SHIFT");
+  const isViewPendingSchedulesPermitted = HasAccess("VIEW_PENDING_SCHEDULES");
 
   const fetchUsers = async () => {
     try {
@@ -106,33 +110,45 @@ const ShiftCalendar = () => {
   };
 
   const tabsData = [
-    {
-      value: "shift-calendar",
-      label: "Shift Calendar",
-      component: <Emplist teamMembers={teamMembers} />,
-    },
-    {
-      value: "pending-schedule",
-      label: "Pending Schedule",
-      component: (
-        <PendingSchedule
-          pendingSchedules={pendingSchedules}
-          reload={fetchPendingSchedules}
-          employees={teamMembers.results}
-        />
-      ),
-    },
+    ...(isViewShiftCalendarPermitted
+      ? [
+          {
+            value: "shift-calendar",
+            label: "Shift Calendar",
+            component: <Emplist teamMembers={teamMembers} />,
+          },
+        ]
+      : []),
+    ...(isViewPendingSchedulesPermitted
+      ? [
+          {
+            value: "pending-schedule",
+            label: "Pending Schedule",
+            component: (
+              <PendingSchedule
+                pendingSchedules={pendingSchedules}
+                reload={fetchPendingSchedules}
+                employees={teamMembers.results}
+              />
+            ),
+          },
+        ]
+      : []),
 
     {
       value: "shift-request",
       label: "Shift Request",
       component: <ShiftRequest employees={teamMembers.results} />,
     },
-    {
-      value: "history-logs",
-      label: "History & Logs",
-      component: <HistoryAndLogs />,
-    },
+    ...(isViewLogsPermitted
+      ? [
+          {
+            value: "history-logs",
+            label: "History & Logs",
+            component: <HistoryAndLogs />,
+          },
+        ]
+      : []),
   ];
 
   const headerContent = (
@@ -140,7 +156,7 @@ const ShiftCalendar = () => {
       {activeTab === "shift-calendar" && (
         <AssignShift employees={teamMembers.results} />
       )}
-      {activeTab === "pending-schedule" && (
+      {activeTab === "pending-schedule" && isScheduleShiftPermitted && (
         <Button onClick={() => setIsScheduleModalOpen(true)}>
           Schedule Shift
         </Button>
