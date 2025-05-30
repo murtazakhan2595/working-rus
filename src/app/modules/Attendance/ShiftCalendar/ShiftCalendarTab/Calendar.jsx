@@ -7,14 +7,14 @@ import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
 import { employeeData } from "app/hooks/attendance";
 import ShiftChangeRequestModal from "./ShiftChangeRequestModal";
+import { HasAccess } from "utils/PermissionUtils";
 
 const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
-  const isHr = true;
   const [events, setEvents] = useState([]);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const prevDataRef = useRef(null);
-
+  const isEditEmployeeShiftPermitted = HasAccess("EDIT_EMPLOYEE_SHIFT");
 
   const userProfile = useSelector((state) => state.user.userProfile);
 
@@ -311,7 +311,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
       />
 
       {/* Legend */}
-      <div className="mt-4 p-3 bg-white rounded-lg shadow-sm">
+      {/* <div className="mt-4 p-3 bg-white rounded-lg shadow-sm">
         <div className="text-sm font-medium mb-2">Legend:</div>
         <div className="flex flex-wrap gap-4 text-xs">
           <div className="flex items-center gap-1">
@@ -335,12 +335,14 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
             <span>OFF Day</span>
           </div>
         </div>
-      </div>
+      </div> */}
       {/* Request Shift Change Button - Only visible to Branch/Cluster Managers */}
       {employeeId && canRequestShiftChange && (
         <div className="mt-4 p-3 bg-white rounded-lg shadow-sm text-end">
           <Button onClick={handleRequestShiftChange} className="" size="lg">
-            {isHr ? "Edit Employee Shift" : "Request Shift Change"}
+            {isEditEmployeeShiftPermitted
+              ? "Edit Employee Shift"
+              : "Request Shift Change"}
           </Button>
         </div>
       )}

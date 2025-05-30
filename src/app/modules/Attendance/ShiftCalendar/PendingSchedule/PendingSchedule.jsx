@@ -17,6 +17,8 @@ import { Button } from "components/ui/button";
 import AlertDialogue from "components/ui/AlertDialogue";
 import RejectReasonDialog from "./RejectReasonDialog";
 import ScheduleShiftModal from "../Modals/ScheduleShiftModal";
+import { generateShiftScheduleLog } from "../Section/getEmployeeActiveShift";
+import { HasAccess } from "utils/PermissionUtils";
 
 const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
   const [activeSchedule, setActiveSchedule] = useState(null);
@@ -27,6 +29,7 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const userProfile = useSelector((state) => state.user.userProfile);
+  const isApprovePermitted = HasAccess("APPROVE_SHIFT_SCHEDULES");
 
   console.log("Pending Schedules", pendingSchedules);
 
@@ -71,6 +74,12 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
   const confirmApprove = async () => {
     setProcessing(true);
     try {
+      await generateShiftScheduleLog({
+        scheduleData: approveState.data,
+        logType: "Change Request",
+        userProfile,
+        status: "Approved",
+      });
       const response = await saveShiftSchedule({
         id: approveState?.data?.id,
         approved_by: userProfile.id,
@@ -78,6 +87,7 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
       });
 
       if (response) {
+        
         toast.success("Schedule approved successfully!");
         setApproveState(null);
         setActiveSchedule(null); // Clear selection after approval
@@ -103,6 +113,12 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
 
     setProcessing(true);
     try {
+      await generateShiftScheduleLog({
+        scheduleData: rejectState.data,
+        logType: "Change Request",
+        userProfile,
+        status: "Rejected",
+      });
       const response = await saveShiftSchedule({
         id: rejectState?.data?.id,
         approved_by: userProfile.id,
@@ -187,21 +203,24 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
           >
             Edit Schedule
           </Button>
-          <Button
-            variant="outline"
-            onClick={handleReject}
-            disabled={!activeSchedule || processing}
-          >
-            {processing && rejectState?.open
-              ? "Processing..."
-              : "Reject with Reason"}
-          </Button>
-          <Button
-            onClick={handleApprove}
-            disabled={!activeSchedule || processing}
-          >
-            {processing && approveState?.open ? "Processing..." : "Approve"}
-          </Button>
+          {isApprovePermitted && (
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={handleReject}
+                disabled={!activeSchedule || processing}
+              >
+                {processing && rejectState?.open
+                  ? "Processing..."
+                  : "Reject with Reason"}
+              </Button>
+              <Button
+              onClick={handleApprove}
+              disabled={!activeSchedule || processing}
+            >
+              {processing && approveState?.open ? "Processing..." : "Approve"}
+            </Button>
+          </div>)}
         </div>
       </div>
 

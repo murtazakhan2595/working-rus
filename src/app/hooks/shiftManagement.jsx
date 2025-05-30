@@ -103,44 +103,6 @@ const getShiftSchedule = async (payload) => {
   }
 };
 
-// Shift Change Request Functions
-
-const saveShiftChangeRequest = async (payload) => {
-  try {
-    console.log("Shift change request payload", payload);
-    if (payload?.id) {
-      // Update existing request (approve/reject)
-      const response = await axios.patch(
-        `${baseUrl}/shift-change-requests/${payload.id}/`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
-      if (response.status === 200) {
-        return response.data;
-      }
-    } else {
-      // Create new shift change request
-      const response = await axios.post(
-        `${baseUrl}/shift-change-requests/`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
-      if (response.status === 201) {
-        return response.data;
-      }
-    }
-  } catch (error) {
-    console.error("Error saving shift change request:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    return false;
-  }
-};
 
 const getShiftChangeRequests = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
@@ -235,13 +197,61 @@ const getEmployeeEffectiveShift = async (employeeId, date) => {
   }
 };
 
+const saveShiftSchedulesLogs = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/shift-schedules-logs/`,
+      payload,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving shift schedules logs:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
+
+const getShiftSchedulesLogs = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "-id";
+  let URL = `/shift-schedules-logs?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching shift schedules logs:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
+
 export {
   saveShift,
   saveShiftSchedule,
   getShiftSchedule,
-  saveShiftChangeRequest,
   getShiftChangeRequests,
   getShiftChangeRequestById,
   getEmployeeShiftCalendar,
   getEmployeeEffectiveShift,
+  saveShiftSchedulesLogs,
+  getShiftSchedulesLogs,
 };

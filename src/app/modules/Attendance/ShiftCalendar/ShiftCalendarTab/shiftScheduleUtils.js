@@ -38,11 +38,7 @@ export const filterOverlappingSchedules = (schedules) => {
   return filteredSchedules;
 };
 
-/**
- * Get comparison data between change request and existing schedules
- * @param {Object} changeRequest - The shift change request object
- * @returns {Promise<Array>} Array of comparison data for changed/new days only
- */
+
 export const getChangeRequestComparison = async (
   changeRequest,
   shift_requested = "Manager"
@@ -68,7 +64,7 @@ export const getChangeRequestComparison = async (
   } catch (error) {
     console.error("Error fetching employee direct shift:", error);
   }
-
+  console.log("INFO INFO INFO", changeRequest, overlappingSchedules);
   // Build comparison data - ONLY for changed/new days
   const comparisonData = [];
   const startDate = moment(changeRequest.start_date);
@@ -224,11 +220,7 @@ export const getChangeRequestComparison = async (
   return comparisonData;
 };
 
-/**
- * Fetch employee shift data including direct assignment and scheduled shifts
- * @param {number} employeeId - The employee ID
- * @returns {Promise<Object>} Object containing employeeShift and scheduleShifts
- */
+
 export const fetchEmployeeShiftData = async (employeeId) => {
   try {
     // Fetch employee data

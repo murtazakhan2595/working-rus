@@ -16,6 +16,8 @@ import { SheetCardExtension } from "components/SheetCardExtension";
 import { EmployeeOverview } from "components";
 import { getShiftSchedule, saveShiftSchedule } from "app/hooks/shiftManagement";
 import { getShiftById, employeeData } from "app/hooks/attendance";
+import { generateShiftScheduleLog } from "../Section/getEmployeeActiveShift";
+import { HasAccess } from "utils/PermissionUtils";
 
 const ShiftChangeRequestModal = ({
   isOpen,
@@ -24,7 +26,7 @@ const ShiftChangeRequestModal = ({
   reload,
   shift_requested, // Manager, Employee
 }) => {
-  const isHr = true;
+  const isEditEmployeeShiftPermitted = HasAccess("EDIT_EMPLOYEE_SHIFT");
   const [closeSheet, setCloseSheet] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetchingShifts, setFetchingShifts] = useState(false);
@@ -143,8 +145,20 @@ const ShiftChangeRequestModal = ({
               shiftId: coveringSchedule.shift,
             };
 
-            // For org-based scheduled shifts, we need to fetch the shift details separately
-            // For now, we'll leave times null - you might want to fetch this
+            // Extract times from shift_details if available
+            if (coveringSchedule.shift_details) {
+              dayData.assignedStartTime = moment(
+                coveringSchedule.shift_details.starttime
+              ).format("HH:mm");
+              dayData.assignedEndTime = moment(
+                coveringSchedule.shift_details.endtime
+              ).format("HH:mm");
+            } else {
+              // If shift_details not available, we might need to fetch the shift
+              console.warn(
+                "Org-based schedule missing shift_details, times will be empty"
+              );
+            }
           } else if (
             coveringSchedule.custom_schedule &&
             coveringSchedule.custom_schedule[dateStr]
@@ -543,7 +557,7 @@ const ShiftChangeRequestModal = ({
         custom_schedule: customSchedule, // Now includes ALL days from original schedules
         total_weekly_hours: calculateTotalWeeklyHours(),
         assigned_by: userProfile?.id,
-        status: isHr ? "Approved" : "Pending",
+        status: isEditEmployeeShiftPermitted ? "Approved" : "Pending",
         is_off_day: Object.values(customSchedule).some((day) => day.is_off),
         // Additional fields to identify this as a change request
         is_change_request: "true",
@@ -556,6 +570,14 @@ const ShiftChangeRequestModal = ({
       };
 
       console.log("Shift Change Request Payload:", payload);
+      if (isEditEmployeeShiftPermitted) {
+        await generateShiftScheduleLog({
+          scheduleData: payload,
+          logType: "Manual Assignment",
+          userProfile: userProfile,
+          status: "Approved",
+        });
+      }
 
       const response = await saveShiftSchedule(payload);
 
@@ -698,19 +720,13 @@ const ShiftChangeRequestModal = ({
                                       </span>{" "}
                                       {day.assignedShift.source ===
                                         "scheduled_org" &&
-                                        `Organization Schedule (ID: ${
-                                          day.assignedShift.scheduleId || "N/A"
-                                        })`}
+                                        `Organization Schedule `}
                                       {day.assignedShift.source ===
                                         "scheduled_custom" &&
-                                        `Custom Schedule (ID: ${
-                                          day.assignedShift.scheduleId || "N/A"
-                                        })`}
+                                        `Custom Schedule `}
                                       {day.assignedShift.source ===
                                         "direct_assignment" &&
-                                        `Direct Assignment (Shift ID: ${
-                                          day.assignedShift.shiftId || "N/A"
-                                        })`}
+                                        `Direct Assignment )`}
                                       {day.assignedShift.source === "none" &&
                                         "No Shift Assigned"}
                                     </p>
@@ -902,7 +918,7 @@ const ShiftChangeRequestModal = ({
                                         </>
                                       )}
 
-                                      {/* Display requested hours */}
+                                      {/* Display requested hours 
                                       {day.requestedStartTime &&
                                         day.requestedEndTime &&
                                         !day.requestedIsSplit && (
@@ -915,6 +931,7 @@ const ShiftChangeRequestModal = ({
                                             hours
                                           </div>
                                         )}
+                                        */}
                                     </>
                                   )}
                                 </div>
@@ -948,10 +965,10 @@ const ShiftChangeRequestModal = ({
                   }
                 >
                   {loading
-                    ? isHr
+                    ? isEditEmployeeShiftPermitted
                       ? "Updating Shift..."
                       : "Submitting..."
-                    : isHr
+                    : isEditEmployeeShiftPermitted
                     ? "Update Shift"
                     : "Submit Request"}
                 </Button>

@@ -18,6 +18,7 @@ import {
   getChangeRequestComparison,
 } from "../ShiftCalendarTab/shiftScheduleUtils";
 import { getEmployeeActiveShift } from "../Section/getEmployeeActiveShift";
+import { HasAccess } from "utils/PermissionUtils";
 
 const EmployeeShiftCalendar = () => {
   const [events, setEvents] = useState([]);
@@ -38,6 +39,8 @@ const EmployeeShiftCalendar = () => {
     sizePerPage: 10,
   });
   const [ordering, setOrdering] = useState("-id");
+  const isRequestChangeShiftPermitted = HasAccess("REQUEST_MY_SHIFT_CHANGE");
+  const isViewMyShiftChangeRequestsPermitted = HasAccess("VIEW_MY_SHIFT_CHANGE_REQUESTS")
 
   const userProfile = useSelector((state) => state.user.userProfile);
   const employeeId = userProfile?.id;
@@ -399,9 +402,9 @@ const EmployeeShiftCalendar = () => {
             </p>
           )}
         </div>
-        <Button onClick={() => setIsRequestModalOpen(true)}>
+        {isRequestChangeShiftPermitted &&<Button onClick={() => setIsRequestModalOpen(true)}>
           Request Shift Change
-        </Button>
+        </Button>}
       </div>
 
       {/* Calendar View */}
@@ -448,22 +451,6 @@ const EmployeeShiftCalendar = () => {
         </CardContent>
       </Card>
 
-      {/* Change Request Records */}
-      <Card>
-        <CardHeader>
-          <CardTitle>My Shift Change Requests</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CustomTable
-            columns={changeRequestColumns}
-            data={changeRequests?.results || []}
-            pagination={true}
-            dataTotalSize={changeRequests?.count || 0}
-            tableOptions={tableOptions}
-          />
-        </CardContent>
-      </Card>
-
       {/* Legend */}
       <Card>
         <CardContent className="pt-6">
@@ -492,6 +479,22 @@ const EmployeeShiftCalendar = () => {
           </div>
         </CardContent>
       </Card>
+      {/* Change Request Records */}
+     {isViewMyShiftChangeRequestsPermitted && <Card>
+        <CardHeader>
+          <CardTitle>My Shift Change Requests</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CustomTable
+            columns={changeRequestColumns}
+            data={changeRequests?.results || []}
+            pagination={true}
+            dataTotalSize={changeRequests?.count || 0}
+            tableOptions={tableOptions}
+          />
+        </CardContent>
+      </Card>}
+
 
       {/* Reuse the same Shift Change Request Modal */}
       {isRequestModalOpen && employeeInfo && (

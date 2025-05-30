@@ -458,7 +458,6 @@ const ScheduleShiftModal = ({
             start_date: formatDateForBackend(startDate),
             end_date: formatDateForBackend(endDate),
             is_org_based: true,
-            custom_schedule: null,
             total_weekly_hours: "40.0",
             assigned_by: userProfile?.employee_id || userProfile?.id,
             status: "Pending", // Reset to pending after edit
@@ -556,7 +555,6 @@ const ScheduleShiftModal = ({
               start_date: formatDateForBackend(startDate),
               end_date: formatDateForBackend(endDate),
               is_org_based: true,
-              custom_schedule: null,
               total_weekly_hours: "40.0",
               assigned_by: userProfile?.employee_id || userProfile?.id,
               status: "Pending",
