@@ -18,6 +18,7 @@ import ScheduleShiftModal from "./Modals/ScheduleShiftModal";
 import { getShiftSchedule } from "app/hooks/shiftManagement";
 import { Button } from "components/ui/button";
 import EmployeeShiftCalendar from "./MyShiftCalendar/EmployeeShiftCalendar";
+import HistoryAndLogs from "./HistoryAndLogs";
 
 const ShiftCalendar = () => {
   const [activeTab, setActiveTab] = useState("shift-calendar");
@@ -128,13 +129,12 @@ const ShiftCalendar = () => {
       component: <ShiftRequest employees={teamMembers.results} />,
     },
     {
-      value: "my-shift-calendar",
-      label: "My Shift Calendar",
-      component: <EmployeeShiftCalendar />,
+      value: "history-logs",
+      label: "History & Logs",
+      component: <HistoryAndLogs />,
     },
   ];
 
-  // Header content with both AssignShift and ScheduleShift buttons
   const headerContent = (
     <div className="flex gap-2">
       {activeTab === "shift-calendar" && (

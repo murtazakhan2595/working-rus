@@ -40,8 +40,7 @@ const EmployeeShiftCalendar = () => {
   const [ordering, setOrdering] = useState("-id");
 
   const userProfile = useSelector((state) => state.user.userProfile);
-  const employeeId = 10;
-  // const employeeId = userProfile?.employee_id || userProfile?.id;
+  const employeeId = userProfile?.id;
 
   // Fetch employee data and shifts
   useEffect(() => {
@@ -77,7 +76,7 @@ const EmployeeShiftCalendar = () => {
         filterData: {
           employee: employeeId,
           status: "Approved",
-          is_change_request: false, // Don't include change requests
+          is_change_request: "true,false",
         },
         ordering: "-created_at", // Get newest first
       });
@@ -106,7 +105,7 @@ const EmployeeShiftCalendar = () => {
       const response = await getShiftSchedule({
         filterData: {
           employee: employeeId,
-          is_change_request: true,
+          is_change_request: "true",
           ordering: "-created_at",
           shift_requested: "Employee", // Only fetch employee-initiated requests
         },
@@ -300,7 +299,7 @@ const EmployeeShiftCalendar = () => {
     return events;
   };
 
-  const handleRequestSuccess = () => {
+  const reload = () => {
     fetchChangeRequests();
     fetchApprovedShifts(); // Also refresh the calendar
   };
@@ -500,7 +499,7 @@ const EmployeeShiftCalendar = () => {
           isOpen={isRequestModalOpen}
           setIsOpen={setIsRequestModalOpen}
           employee={employeeInfo}
-          onRequestSuccess={handleRequestSuccess}
+          reload={reload}
           shift_requested="Employee"
         />
       )}
