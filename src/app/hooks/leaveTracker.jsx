@@ -502,28 +502,47 @@ const getLeavestatesCustomApi = async (payload) => {
   }
 };
 
-const getLeaveStatusDaily = async (payload) => {
-  const departments = payload?.filterData?.department ?? "";
+const getLeaveStatusDaily = async (payload = {}) => {
   try {
-    const response = await axios.get(
-      `${baseUrl}/leaves_statistics?${
-        departments ? `departments=${departments}` : ""
-      }`,
-      {
-        headers: headers(),
-      }
-    );
-    if (response.status === 200) {
+    // Extract and sanitize filter data
+    const filterData = payload.filterData || {};
+    const departments = filterData.departments ?? "";
+    const branchIdsArray = Array.isArray(filterData.branch_ids)
+      ? filterData.branch_ids
+      : [];
+
+    // Convert branch_ids array [1,2,3] → {1,2,3}
+    const branch_ids = branchIdsArray.length
+      ? `{${branchIdsArray.join(",")}}`
+      : "";
+
+    // Construct query parameters
+    const queryParams = new URLSearchParams();
+    if (departments) queryParams.append("departments", departments);
+    if (branch_ids) queryParams.append("branch_ids", branch_ids);
+
+    const url = `${baseUrl}/leaves_statistics?${queryParams.toString()}`;
+
+    const response = await axios.get(url, {
+      headers: headers(),
+    });
+
+    if (response.status === 200 && response.data) {
       return response.data;
     }
+
+    return [];
   } catch (error) {
     console.error("Error fetching daily leave status:", error);
+
     if (error?.response?.status === 401) {
       HandleLogout();
     }
+
     return [];
   }
 };
+
 
 export {
   saveLeaveComponents,

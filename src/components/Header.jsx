@@ -91,6 +91,7 @@ const pathNames = () => {
     "office-settings/approval-hierarchy":"Approval Hierarchy",
     "office-settings": "Organization Setup",
     settings: "Settings",
+    'time-adjustments': "Time Ajustments",
   };
 };
 

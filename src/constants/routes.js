@@ -60,6 +60,7 @@ import {
   MyAttendance,
   EmployeeAttendance,
   EmployeeAttendanceReport,
+  TimeAdjustments
 } from "app/modules/Attendance";
 import StyleGuide from "app/modules/StyleGuide";
 import { OfficeSetting } from "app/modules/OfficeSetting";
@@ -316,6 +317,11 @@ export const SidebarRoutes = [
           path: "/attendance",
           component: <Attendance />,
           name: "EMPLOYEES_ATTENDANCE",
+        },
+        Config.TIME_ADJUSTMENTS && {
+          path: "/time-adjustments",
+          component: <TimeAdjustments />,
+           name: "TIME_ADJUSTMENTS",
         },
         Config.EMPLOYEE_DAILY_TASK_REPORT && {
           path: "/employee-dtrs",
