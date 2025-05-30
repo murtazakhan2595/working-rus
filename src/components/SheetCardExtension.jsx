@@ -28,12 +28,21 @@ export const DetailBox = ({
   orientation = "vertical",
   key = "",
   fallbackText = "N/A",
+  labelClassName = "",
+  valueClassName = "",
 }) => {
   if (orientation === "horizontal") {
     return (
       <div className={`flex flex-col w-full ${className}`} key={key || value}>
-        <div className="text-sm font-medium mb-2 text-neutral-900">{label}</div>
-        <div className="leading-5 text-neutral-1200">
+        <div
+          className={cn(
+            "text-sm font-medium mb-2 text-neutral-900",
+            labelClassName
+          )}
+        >
+          {label}
+        </div>
+        <div className={cn("leading-5 text-neutral-1200", valueClassName)}>
           {value ?? fallbackText}
         </div>
       </div>
@@ -45,10 +54,20 @@ export const DetailBox = ({
       className={`flex gap-4 items-center max-w-full ${className}`}
       key={key || value}
     >
-      <div className="flex flex-col leading-none min-w-[88px] w-[132px] text-neutral-900">
+      <div
+        className={cn(
+          "flex flex-col leading-none min-w-[88px] w-[132px] text-neutral-900",
+          labelClassName
+        )}
+      >
         <div>{label}</div>
       </div>
-      <div className="flex-1 shrink leading-5 basis-0 text-neutral-1200 capitalize">
+      <div
+        className={cn(
+          "flex-1 shrink leading-5 basis-0 text-neutral-1200 capitalize",
+          valueClassName
+        )}
+      >
         {value ?? "N/A"}
       </div>
     </div>

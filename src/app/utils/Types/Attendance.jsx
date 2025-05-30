@@ -21,3 +21,9 @@ export const Shift = {
   type: null,
   weekdays: null,
 };
+
+export const TimeAdjustment = {
+  attendance_id: null,
+  reason: null,
+  status: "PENDING",
+};

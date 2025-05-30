@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 const EmployeeDetailUI = React.memo(
   ({
     id,
-    className = null,
+    className = '',
     variant = "ViewMode", // othere options are [ViewMode,FormView]
     InformationKeys = [],
     ViewVariant='horizontal'
@@ -122,7 +122,7 @@ const EmployeeDetailUI = React.memo(
           ]
         : []),
     ].filter(Boolean);
-    return variant === "ViewMode"
+    return <div className={className}> {variant === "ViewMode"
       ? employeeDataList &&
           employeeDataList.map((data) => {
             return (
@@ -148,7 +148,7 @@ const EmployeeDetailUI = React.memo(
                 />
               </div>
             );
-          });
+          })}</div>
   }
 );
 
