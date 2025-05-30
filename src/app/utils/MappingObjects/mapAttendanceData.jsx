@@ -1,4 +1,4 @@
-import { Attendance, Shift } from "app/utils/Types/Attendance";
+import { Attendance, Shift, TimeAdjustment } from "app/utils/Types/Attendance";
 import { CalculateTotalWorkingHours } from "utils/renderValues";
 import moment from "moment";
 
@@ -76,6 +76,26 @@ export function mapAttendanceData(data, shiftDetails) {
           }
         }
       } else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+
+export function mapTimeAdjustmentPayloadeData(data) {
+  const payload = {};
+  // Iterate over the keys in the TimeAdjustment object
+  for (const key in TimeAdjustment) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== undefined &&
+      data[key] !== null
+    ) {
+      // Add the key and its value to the payload
+      if (key === "reason") payload[key] = data[key]?.trim();
+      else payload[key] = data[key];
     }
   }
 

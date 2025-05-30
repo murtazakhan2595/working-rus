@@ -65,6 +65,7 @@ const TimePicker = ({
               "px-4 py-2 border rounded-md cursor-pointer",
               className
             )}
+            disabled={disabled}
           >
             {`${hour}:${minute} ${period}`}
           </DropdownMenuTrigger>

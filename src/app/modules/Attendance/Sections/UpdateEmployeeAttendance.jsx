@@ -15,6 +15,7 @@ import {
   TimePicker,
   DateInput,
 } from "components/FormControl";
+import { HasAccess } from "utils/PermissionUtils";
 
 const FormSheetData = {
   triggerText: "Submit",
@@ -30,6 +31,12 @@ const UpdateEmployeeAttendance = ({
   setIsOpen = () => {},
   isEmployee = false,
 }) => {
+  const isDptAttendancePermitted = HasAccess("UPDATE_DPT_EMP_ATTENDANCE");
+  const isBrnAttendancePermitted = HasAccess("UPDATE_BRN_EMP_ATTENDANCE");
+  const isRLAttendancePermitted = HasAccess("UPDATE_RL_EMP_ATTENDANCE");
+  const isAttendancePermitted = HasAccess("UPDATE_EMPLOYEE_ATTENDANCE");
+  const { branch_id: user_branch, department_name: user_department } =
+    useSelector((state) => state.emp.user_details);
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
   const UserDetails = useSelector((state) => state.emp.user_details);
@@ -39,6 +46,39 @@ const UpdateEmployeeAttendance = ({
   const [formValues, setFormValues] = useState(Attendance);
   const [selectedEmployee, setSelectedEmployee] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const FilteredEmployees = React.useMemo(() => {
+    if (!Array.isArray(Employees) || Employees.length === 0) return [];
+
+    if (isAttendancePermitted) return Employees;
+
+    const labelFilter = isBrnAttendancePermitted
+      ? "branch_id"
+      : isDptAttendancePermitted
+      ? "department_name"
+      : null;
+
+    const valueFilter = isBrnAttendancePermitted
+      ? user_branch
+      : isDptAttendancePermitted
+      ? user_department
+      : null;
+
+    if (!labelFilter || valueFilter === null || valueFilter === undefined)
+      return [];
+
+    return Employees.filter((employee) => {
+      const employeeValue = employee[labelFilter];
+      if (employeeValue === undefined || employeeValue === null) return false;
+      return employeeValue;
+    });
+  }, [
+    Employees,
+    isAttendancePermitted,
+    isBrnAttendancePermitted,
+    isDptAttendancePermitted,
+    user_branch,
+    user_department,
+  ]);
 
   const fetchData = async (isMounted) => {
     try {
@@ -140,6 +180,7 @@ const UpdateEmployeeAttendance = ({
         cancelButtonText: "Cancel",
         columns: 3,
         renderUpdatedFormValues: setFormValues,
+        disableSubmit:isLoading,
         formFiels: [
           {
             sheetCardExtension: true,
@@ -158,7 +199,7 @@ const UpdateEmployeeAttendance = ({
                     );
                   else setSelectedEmployee({});
                 },
-                options: Employees,
+                options: FilteredEmployees,
               },
               {
                 InputField: SelectInputComponent,
@@ -199,6 +240,7 @@ const UpdateEmployeeAttendance = ({
                 name: "date",
                 required: true,
                 label: "Attendance Date",
+                maxDate:new Date()
               },
               ...(formValues?.status !== "Absent"
                 ? [

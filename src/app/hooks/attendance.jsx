@@ -4,6 +4,7 @@ import { HandleLogout } from "./general";
 import {
   mapAttendanceData,
   mapShiftData,
+  mapTimeAdjustmentPayloadeData,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
@@ -178,7 +179,7 @@ const getAttendanceSummary = async (payload) => {
   }
 };
 
-const saveAttendance = async (payload, userDetails, id) => {
+export const saveAttendance = async (payload, userDetails, id) => {
   const shift_id = userDetails?.shift_assignment;
   const attendanceId = id || payload?.id;
   try {
@@ -205,7 +206,7 @@ const saveAttendance = async (payload, userDetails, id) => {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    renderErrorMessages(error?.response?.data)
+    renderErrorMessages(error?.response?.data);
     return false;
   }
 };
@@ -554,6 +555,62 @@ export const getRecentActivities = async (payload, attendance, userProfile) => {
   return recentActivities;
 };
 
+export const getTimeAdjustmentListData = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "";
+  let URL = `/time-adjustments?${ordering ? `ordering=${ordering}&` : ""}${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching attendance list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+export const saveTimeAdjustment = async (payload, id) => {
+  const timeAdjustmentId = id || payload?.id;
+  try {
+    const finalPayload = mapTimeAdjustmentPayloadeData(payload);
+
+    const url = timeAdjustmentId
+      ? `${baseUrl}/time-adjustments/${timeAdjustmentId}/` // Use id if updating
+      : `${baseUrl}/time-adjustments/`; // No id means create new
+
+    const method = timeAdjustmentId ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
 export {
   getAttendanceStats,
   saveShiftAssignment,
@@ -561,7 +618,6 @@ export {
   getShift,
   getShiftAssignment,
   getAttendance,
-  saveAttendance,
   saveBreak,
   getBreak,
   calculateBreak,

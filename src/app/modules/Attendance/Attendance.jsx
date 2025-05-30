@@ -18,8 +18,11 @@ import { getLabelByValue } from "utils/getValuesFromTables";
 import { HasAccess } from "utils/PermissionUtils";
 
 const Attendance = () => {
-  const isViewLeaveStatusPermitted = HasAccess("VIEW_LEAVE_STATUS");
+  const isUpdateBrnAttendancePermitted = HasAccess("UPDATE_BRN_EMP_ATTENDANCE");
+  const isUpdateDptAttendancePermitted = HasAccess("UPDATE_DPT_EMP_ATTENDANCE");
   const isViewEmpAttendancePermitted = HasAccess("VIEW_EMPLOYEE_ATTENDANCE");
+  const isViewBrnEmpAttendancePermitted = HasAccess("VIEW_BRN_EMPS_ATTENDANCE");
+  const isViewDptEmpAttendancePermitted = HasAccess("VIEW_DPT_EMPS_ATTENDANCE");
   const isExportAttendancePermitted = HasAccess("EXPORT_ATTENDANCE");
   const isViewWeeklytatusPermitted = HasAccess("VIEW_WEEKLY_STATISTICS");
   const isUpdateEmpAttendancePermitted = HasAccess(
@@ -31,7 +34,8 @@ const Attendance = () => {
   const Departments = useSelector((state) => state.common.departments);
   const Branches = useSelector((state) => state.common.branches);
   const Designations = useSelector((state) => state.common.designations);
-  const userProfile = useSelector((state) => state.user.userProfile);
+  const { branch_id: user_branch, department_name: user_department } =
+    useSelector((state) => state.emp.user_details);
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [openUpdateEmployeeAttendance, setOpenUpdateEmployeeAttendance] =
@@ -41,9 +45,7 @@ const Attendance = () => {
   const [selectedBranch, setSelectedBranch] = useState("");
   const [activeTab, setActiveTab] = useState("Day");
   const [TotalDays, setTotalDays] = useState(1);
-  const [filterData, setFilterData] = useState(
-    userProfile.role === 2 ? { direct_report: userProfile.id } : {}
-  );
+  const [filterData, setFilterData] = useState({});
   const [dateRange, setDateRange] = useState(
     `${moment().format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`
   );
@@ -56,6 +58,27 @@ const Attendance = () => {
       }
     }
   }, [dateRange]);
+
+  useEffect(() => {
+    let isMounted = true;
+    setFilterData(() => {
+      if (isViewEmpAttendancePermitted) return {};
+      else {
+        if (isViewBrnEmpAttendancePermitted) {
+          return { branch_id: [user_branch] };
+        } else if (isViewDptEmpAttendancePermitted) {
+          return { department_name: user_department };
+        }
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    isViewBrnEmpAttendancePermitted,
+    isViewDptEmpAttendancePermitted,
+    isViewEmpAttendancePermitted,
+  ]);
   const handleFilterChange = (filterName, filterValue) => {
     if (filterName === "department_name") setSelectedDepartment(filterValue);
     if (filterName === "branch_id") setSelectedBranch(filterValue);
@@ -124,6 +147,7 @@ const Attendance = () => {
           Designations,
           "-"
         ),
+        Branch: await getLabelByValue(row["employee_branch id"], Branches, "-"),
         ...(activeTab.toUpperCase() === "DAY"
           ? { Status: row.daily_status }
           : {
@@ -145,13 +169,11 @@ const Attendance = () => {
         )}`}
       >
         <div className="flex gap-4">
-          {isViewLeaveStatusPermitted && <LeaveStatusOverview />}
-          {isViewWeeklytatusPermitted && (
-            <StatisticsChart weeklySummary={weeklySummary} />
-          )}
-          {isViewDptAttendancePermitted && <DepartmentOverview />}
+          <LeaveStatusOverview />
+          <StatisticsChart weeklySummary={weeklySummary} />
+          <DepartmentOverview />
         </div>
-        {isViewEmpAttendancePermitted && (
+        {(isViewEmpAttendancePermitted || isViewBrnEmpAttendancePermitted) && (
           <>
             <StatsCards />
             <div className="flex justify-end gap-3 flex-row flex-wrap">
@@ -171,14 +193,18 @@ const Attendance = () => {
                     values: selectedDepartment,
                     width: "w-[175px]",
                   },
-                  {
-                    type: "select-two",
-                    option: Branches,
-                    name: "branch_id",
-                    placeholder: "Branch",
-                    values: selectedBranch,
-                    width: "w-[175px]",
-                  },
+                  ...(isViewEmpAttendancePermitted
+                    ? [
+                        {
+                          type: "select-two",
+                          option: Branches,
+                          name: "branch_id",
+                          placeholder: "Branch",
+                          values: selectedBranch,
+                          width: "w-[175px]",
+                        },
+                      ]
+                    : []),
                 ]}
                 onChange={handleFilterChange}
               />
@@ -198,7 +224,9 @@ const Attendance = () => {
                   return;
                 }}
               />
-              {isUpdateEmpAttendancePermitted && (
+              {(isUpdateEmpAttendancePermitted ||
+                isUpdateBrnAttendancePermitted ||
+                isUpdateDptAttendancePermitted) && (
                 <Button
                   onClick={(e) => {
                     e.preventDefault();
