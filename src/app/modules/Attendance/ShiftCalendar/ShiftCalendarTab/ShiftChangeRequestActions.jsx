@@ -18,6 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "src/@/components/ui/dialog";
+import { generateShiftScheduleLog } from "../Section/getEmployeeActiveShift";
 
 const ShiftChangeRequestActions = ({ data, reload }) => {
   const [viewSheetOpen, setViewSheetOpen] = useState(false);
@@ -37,6 +38,12 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
 
     setIsSubmitting(true);
     try {
+      await generateShiftScheduleLog({
+        scheduleData: data,
+        logType: "Change Request",
+        userProfile: userProfile,
+        status: "Approved",
+      });
       const payload = {
         ...data,
         employee: data.employee.id || data.employee,
@@ -47,6 +54,7 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
       };
 
       const response = await saveShiftSchedule(payload);
+
 
       if (response) {
         toast.success("Shift change request approved successfully!");
@@ -70,6 +78,12 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
     }
 
     setIsSubmitting(true);
+    await generateShiftScheduleLog({
+      scheduleData: data,
+      logType: "Change Request",
+      userProfile: userProfile,
+      status: "Rejected",
+    });
     try {
       const payload = {
         ...data,

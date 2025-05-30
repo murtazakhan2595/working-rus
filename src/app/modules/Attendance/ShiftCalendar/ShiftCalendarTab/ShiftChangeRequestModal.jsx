@@ -16,6 +16,7 @@ import { SheetCardExtension } from "components/SheetCardExtension";
 import { EmployeeOverview } from "components";
 import { getShiftSchedule, saveShiftSchedule } from "app/hooks/shiftManagement";
 import { getShiftById, employeeData } from "app/hooks/attendance";
+import { generateShiftScheduleLog } from "../Section/getEmployeeActiveShift";
 
 const ShiftChangeRequestModal = ({
   isOpen,
@@ -556,6 +557,14 @@ const ShiftChangeRequestModal = ({
       };
 
       console.log("Shift Change Request Payload:", payload);
+      if(isHr) {
+        await generateShiftScheduleLog({
+          scheduleData: payload,
+          logType: "Manual Assignment",
+          userProfile: userProfile,
+          status: "Approved",
+        });
+      }
 
       const response = await saveShiftSchedule(payload);
 
@@ -902,7 +911,7 @@ const ShiftChangeRequestModal = ({
                                         </>
                                       )}
 
-                                      {/* Display requested hours */}
+                                      {/* Display requested hours 
                                       {day.requestedStartTime &&
                                         day.requestedEndTime &&
                                         !day.requestedIsSplit && (
@@ -915,6 +924,7 @@ const ShiftChangeRequestModal = ({
                                             hours
                                           </div>
                                         )}
+                                        */}
                                     </>
                                   )}
                                 </div>
