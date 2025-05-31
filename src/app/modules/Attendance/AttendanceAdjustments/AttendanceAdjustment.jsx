@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  TimeAdjustmentRecords,
+  AttendanceAdjustmentRecord,
   TimeAdjustmentsHistory,
 } from "app/modules/Attendance";
 import { useEffect, useState, useMemo } from "react";
@@ -19,7 +19,7 @@ import {
 import { Header } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 
-const TimeAdjustments = ({ activeView = "Time Adjustments" }) => {
+const AttendanceAdjustment = ({ activeView = "Attendance Adjustments" }) => {
   const isViewTAPermitted = HasAccess("VIEW_TIME_ADJ_REQUESTS");
   const isViewBTAPermitted = HasAccess("VIEW_BRN_TIME_ADJ_REQUESTS");
   const isViewDTAermitted = HasAccess("VIEW_DPT_TIME_ADJ_REQUESTS");
@@ -28,7 +28,7 @@ const TimeAdjustments = ({ activeView = "Time Adjustments" }) => {
   const TimeAdjustmentOuterTab = useMemo(() => {
     return [
       ...(isViewTAPermitted || isViewBTAPermitted || isViewDTAermitted
-        ? ["Time Adjustments"]
+        ? ["Attendance Adjustments"]
         : []),
       ...(isViewLogPermitted ? ["History & Logs"] : []),
     ];
@@ -45,7 +45,7 @@ const TimeAdjustments = ({ activeView = "Time Adjustments" }) => {
     >
       <Header />
       <Tabs
-        defaultValue="Time Adjustments"
+        defaultValue="Attendance Adjustments"
         className="w-full"
         onValueChange={(tab) => {
           setActiveTab(tab);
@@ -66,8 +66,8 @@ const TimeAdjustments = ({ activeView = "Time Adjustments" }) => {
           </TabsList>
         </div>
         <Card>
-          <TabsContent value="Time Adjustments">
-            <TimeAdjustmentRecords />
+          <TabsContent value="Attendance Adjustments">
+            <AttendanceAdjustmentRecord />
           </TabsContent>
           <TabsContent value="History & Logs">
             <TimeAdjustmentsHistory />
@@ -78,4 +78,4 @@ const TimeAdjustments = ({ activeView = "Time Adjustments" }) => {
   );
 };
 
-export default TimeAdjustments;
+export default AttendanceAdjustment;

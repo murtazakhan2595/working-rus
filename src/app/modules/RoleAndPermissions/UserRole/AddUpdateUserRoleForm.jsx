@@ -32,7 +32,7 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
   const [RoleNameExist, setRoleNameExist] = useState(false);
   const isEditMode = Boolean(id);
   const ModuleTree = useSelector((state) => state.roles_permissions.modules);
-    const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false);
 
   const FormSheetData = {
     triggerText: "",
@@ -108,7 +108,7 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
   };
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
-    if (!values?.feature_ids) 
+    if (!values?.feature_ids)
       return toast.error("Please select at least one permission", {
         position: toast.POSITION.TOP_RIGHT,
       });
@@ -198,8 +198,8 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
               submitButtonText: "Submit",
               cancelButtonText: "Cancel",
               columns: 3,
-              disableSubmit: isLoading||isSubmittingForm,
-              loadingMessage: isSubmittingForm?'Submitting Form...':'',
+              disableSubmit: isLoading || isSubmittingForm,
+              loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
               formFiels: [
                 {
                   sheetCardExtension: true,

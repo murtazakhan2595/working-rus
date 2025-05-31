@@ -21,7 +21,7 @@ const getDepartmentList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const ordering = payload?.ordering ?? "created_at";
+  const ordering = payload?.ordering ?? "name";
   try {
     const URL = `/department/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
@@ -261,7 +261,7 @@ const getManagersList = async () => {
 const getEmployeeList = async (payload) => {
   try {
     const pageNo = payload?.options?.page ?? "";
-    const ordering = payload?.ordering ?? "-id";
+    const ordering = payload?.ordering ?? "first_name";
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData
       ? {
@@ -282,7 +282,7 @@ const getEmployeeList = async (payload) => {
       const employeeList = await employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
-        label: `${employee.first_name} ${employee.last_name}`,
+        label: `${employee.first_name} ${employee.last_name} - ${employee.username}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
         department_name: employee.department_name,

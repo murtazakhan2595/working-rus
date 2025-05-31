@@ -72,6 +72,9 @@ export const ApprovalHierarchyRequestType = [
   ...(Config.EXIT_CLEARANCE
     ? [{ label: "Resignation", value: "EXIT_CLEARANCE_RESIGNATION" }]
     : []),
+  ...(Config.TIME_ADJUSTMENTS
+    ? [{ label: "Time Adjustments", value: "TIME_ADJUSTMENT" }]
+    : []),
 ];
 
 export const statusOptions = [

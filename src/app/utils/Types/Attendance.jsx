@@ -26,4 +26,20 @@ export const TimeAdjustment = {
   attendance_id: null,
   reason: null,
   status: "PENDING",
+  id: null,
+};
+export const TimeAdjustmentLogs = {
+  employee_id: null,
+  employee_name: null,
+  employee_email: null,
+  branch: null,
+  department: null,
+  checkin_time: null,
+  reason: null,
+  shift_start: null,
+  shift_end: null,
+  submission_time: null,
+  approval_status: null,
+  action_by_name: null,
+  action_time: null,
 };

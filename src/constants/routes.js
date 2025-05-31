@@ -60,7 +60,9 @@ import {
   MyAttendance,
   EmployeeAttendance,
   EmployeeAttendanceReport,
-  TimeAdjustments
+  TimeAdjustments,
+  AttendanceAdjustment,
+  TimeAdjustmentHistoryDetails,
 } from "app/modules/Attendance";
 import StyleGuide from "app/modules/StyleGuide";
 import { OfficeSetting } from "app/modules/OfficeSetting";
@@ -318,10 +320,25 @@ export const SidebarRoutes = [
           component: <Attendance />,
           name: "EMPLOYEES_ATTENDANCE",
         },
+        Config.ATTENDANCE_UPDATES && {
+          path: "/attendance-adjustment",
+          component: <AttendanceAdjustment />,
+          name: "ATTENDANCE_UPDATES",
+        },
         Config.TIME_ADJUSTMENTS && {
           path: "/time-adjustments",
           component: <TimeAdjustments />,
-           name: "TIME_ADJUSTMENTS",
+          name: "TIME_ADJUSTMENTS",
+        },
+        Config.TIME_ADJUSTMENTS && {
+          path: "time-adjustments/history",
+          component: <TimeAdjustments activeView='History & Logs'/>,
+          name: "TIME_ADJUSTMENTS",
+        },
+        Config.TIME_ADJUSTMENTS && {
+          path: "/time-adjustments/history-details",
+          component: <TimeAdjustmentHistoryDetails />,
+          name: "VIEW_TIME_ADJ_LOGS",
         },
         Config.EMPLOYEE_DAILY_TASK_REPORT && {
           path: "/employee-dtrs",
@@ -505,7 +522,6 @@ const RemainingSidebarRoutes = [
     name: "Payroll Details",
   },
 
- 
   {
     path: "/organizational-chart",
     component: <OrganizationalChart />,
