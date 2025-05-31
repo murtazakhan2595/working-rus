@@ -14,7 +14,7 @@ import { PageLoader, TableCustom } from "components";
 
 const innerTabClassName =
   "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
-const TimeAdjustmentRecords = ({}) => {
+const AttendanceAdjustmentRecord = ({}) => {
   const [activeInnerTab, setActiveInnerTab] = useState("Requests");
   const [TimeAdjustmentList, setTimeAdjustmentList] = useState({
     results: [],
@@ -123,7 +123,7 @@ const TimeAdjustmentRecords = ({}) => {
       <div>
         <div className="flex flex-col gap-4 px-6">
           <CardTitle className="text-primary pt-6">
-            Time Adjustments {activeInnerTab}
+            Attandance Adjustments {activeInnerTab}
           </CardTitle>
           <CardDescription className="text-neutral-1100">
             Here you can manage time adjustments. View, reject, or approve as
@@ -163,4 +163,4 @@ const TimeAdjustmentRecords = ({}) => {
   );
 };
 
-export default TimeAdjustmentRecords;
+export default AttendanceAdjustmentRecord;

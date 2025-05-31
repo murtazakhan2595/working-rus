@@ -17,7 +17,7 @@ import { exportRecordToExcel } from "utils/downloadUtils";
 import { getLabelByValue } from "utils/getValuesFromTables";
 import { HasAccess } from "utils/PermissionUtils";
 
-const Attendance = () => {
+const Attendance = ({ isTeamView = false }) => {
   const isUpdateBrnAttendancePermitted = HasAccess("UPDATE_BRN_EMP_ATTENDANCE");
   const isUpdateDptAttendancePermitted = HasAccess("UPDATE_DPT_EMP_ATTENDANCE");
   const isViewEmpAttendancePermitted = HasAccess("VIEW_EMPLOYEE_ATTENDANCE");
@@ -34,7 +34,7 @@ const Attendance = () => {
   const Departments = useSelector((state) => state.common.departments);
   const Branches = useSelector((state) => state.common.branches);
   const Designations = useSelector((state) => state.common.designations);
-  const { branch_id: user_branch, department_name: user_department } =
+  const { branch_id: user_branch, department_name: user_department , id:user_id} =
     useSelector((state) => state.emp.user_details);
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -175,7 +175,7 @@ const Attendance = () => {
         </div>
         {(isViewEmpAttendancePermitted || isViewBrnEmpAttendancePermitted) && (
           <>
-            <StatsCards />
+            <StatsCards isTeamView={isTeamView} filterData={filterData} user_id={user_id}/>
             <div className="flex justify-end gap-3 flex-row flex-wrap">
               <FilterInput
                 filters={[

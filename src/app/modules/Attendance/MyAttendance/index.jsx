@@ -13,7 +13,7 @@ import {
 } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import { PageLoader, UnauthorizedAccess } from "components";
-import { toast } from "react-toastify";
+import { UpdateEmployeeAttendance } from "app/modules/Attendance/Sections";
 import { calculateBreak } from "app/hooks/attendance";
 import { getBreakStatus } from "app/hooks/attendance";
 import { endBreak, getShiftById } from "app/hooks/attendance";
@@ -32,8 +32,9 @@ const Attendance = () => {
   const canMarkAttendance = HasAccess("MARK_ATTENDANCE");
   const canMarkBreak = HasAccess("MARK_BREAK");
   const canViewAttendance = HasAccess("VIEW_ATTENDANCE");
+  const canUpdateAttendance = HasAccess("UPDATE_ATTENDANCE_REQUEST");
   const canDownloadReport = HasAccess("VIEW_ATTENDANCE"); // Using same permission for download
-
+  const [openUpdateAttendance, setOpenUpdateAttendance] = useState(false);
   const [attendance, setAttendance] = useState(null);
   const navigate = useNavigate();
   const [attendanceData, setAttendanceData] = useState([]);
@@ -196,14 +197,16 @@ const Attendance = () => {
               </CardContent>
             </Card>
           )}
-          
+
           {/* Recent Activities */}
           {canViewAttendance ? (
             <RecentActivities attendance={attendance} />
           ) : (
             <Card>
               <CardHeader>
-                <CardTitle className="text-plum-900">Recent Activities</CardTitle>
+                <CardTitle className="text-plum-900">
+                  Recent Activities
+                </CardTitle>
               </CardHeader>
               <CardContent className="p-4">
                 <UnauthorizedAccess
@@ -230,6 +233,16 @@ const Attendance = () => {
                   handleFilterChange(dateRange);
                 }}
               />
+            )}
+            {canUpdateAttendance && (
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setOpenUpdateAttendance(true);
+                }}
+              >
+                Update Attendance
+              </Button>
             )}
             {canDownloadReport && canViewAttendance && (
               <Button variant="outline" onClick={downloadAttendance}>
@@ -258,6 +271,16 @@ const Attendance = () => {
           </CardContent>
         </Card>
       </div>
+      {openUpdateAttendance && (
+        <UpdateEmployeeAttendance
+          isOpen={openUpdateAttendance}
+          isEmployee={true}
+          setIsOpen={() => {
+            setOpenUpdateAttendance(false);
+            getAttendanceList(true);
+          }}
+        />
+      )}
     </>
   );
 };
