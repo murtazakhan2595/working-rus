@@ -7,7 +7,13 @@ import {
   TimeAdjustments,
   TimeAdjustmentRecords,
   TimeAdjustmentsActions,
+  TimeAdjustmentsHistory,
+  TimeAdjustmentHistoryDetails,
 } from "./TimeAdjustments";
+import {
+  AttendanceAdjustment,
+  AttendanceAdjustmentRecord,
+} from "./AttendanceAdjustments";
 export {
   Attendance,
   MyAttendance,
@@ -17,4 +23,8 @@ export {
   TimeAdjustments,
   TimeAdjustmentRecords,
   TimeAdjustmentsActions,
+  TimeAdjustmentsHistory,
+  TimeAdjustmentHistoryDetails,
+  AttendanceAdjustment,
+  AttendanceAdjustmentRecord,
 };

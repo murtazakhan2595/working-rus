@@ -7,6 +7,7 @@ import {
 } from "src/@/components/ui/dialog";
 import "react-toastify/dist/ReactToastify.css"; // Toastify styles
 import { cn } from "src/@/lib/utils";
+import { ScrollArea } from "src/@/components/ui/scroll-area";
 
 const DialogBox = ({
   isOpen,
@@ -23,7 +24,11 @@ const DialogBox = ({
           <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        {children}
+        <ScrollArea className="[&>div>div[style]]:!block">
+          <div className="space-y-3 h-[70vh] px-4">
+            {children}
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

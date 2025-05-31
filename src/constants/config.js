@@ -42,6 +42,7 @@ const Config = {
   SHIFT_CALENDAR:true,
   EMPLOYEE_DAILY_TASK_REPORT:true,
   TIME_ADJUSTMENTS:true,
+  ATTENDANCE_UPDATES:true,
 
   //-------------LEAVE_MANAGEMENT-----------
   LEAVE_MANAGEMENT: true,

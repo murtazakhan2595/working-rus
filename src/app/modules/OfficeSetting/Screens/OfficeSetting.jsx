@@ -11,9 +11,11 @@ import {
 } from "src/@/components/ui/tabs";
 import Departments from "./Departments";
 import Branches from "./Branches";
+import GraceTime from "./GraceTime";
 import Designations from "./Designations";
 import AddDepartment from "./Departments/AddDepartment";
 import AddBranch from "./Branches/AddBranch";
+import AddGraceTimeForm from "./GraceTime/AddGraceTimeForm";
 import { getOrganizationList } from "app/hooks/general";
 import { CardContent } from "components/ui/card";
 import AddDesignation from "./Designations/AddDesignation";
@@ -31,7 +33,11 @@ import { useSelector } from "react-redux";
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
-import { getCountryById, getRegionById, getCityById } from "app/hooks/officeSetting";
+import {
+  getCountryById,
+  getRegionById,
+  getCityById,
+} from "app/hooks/officeSetting";
 
 const OfficeSetting = () => {
   const [dataShift, setDataShift] = useState(null);
@@ -42,6 +48,7 @@ const OfficeSetting = () => {
   const [depLoading, setDepLoading] = useState(true);
   const [department, setDepartments] = useState(null);
   const [reloadBranchesData, setReloadBranchesData] = useState(false);
+  const [reloadGraceTimeData, setReloadGraceTimeData] = useState(false);
   const [depOptions, setdepOptions] = useState({ page: 1, sizePerPage: 10 });
   const [desigOptions, setDesigOptions] = useState({
     page: 1,
@@ -51,48 +58,56 @@ const OfficeSetting = () => {
   // Get user details from Redux store
   const userDetails = useSelector((state) => state.emp?.user_details);
   console.log("User details Or:", userDetails);
-  const userOrganizationId = userDetails?.organization_id || userDetails?.organization;
-  
+  const userOrganizationId =
+    userDetails?.organization_id || userDetails?.organization;
+
   console.log("User organization ID:", userOrganizationId);
   console.log("Full organization field from user:", userDetails?.organization);
-  
+
   const [filteredOrganizations, setFilteredOrganizations] = useState([]);
-  
+
   const [designLoading, setDesignLoading] = useState(true);
   const [designation, setDesignation] = useState(null);
   const [onboardingDocs, setOnboardingDocs] = useState([]);
   const [onboardingLoading, setOnboardingLoading] = useState(true);
-  
+
   const [countryData, setCountryData] = useState({});
   const [stateData, setStateData] = useState({});
   const [cityData, setCityData] = useState({});
 
-
   const getOrganization = async () => {
     try {
       console.log("Fetching organization data...");
-      console.log("Current user organization ID from Redux:", userOrganizationId);
+      console.log(
+        "Current user organization ID from Redux:",
+        userOrganizationId
+      );
       setLoading(true);
       const response = await getOrganizationList(true);
       console.log("Organization API response in component:", response);
       if (response) {
         if (response.results && response.results.length > 0) {
-          console.log("All organizations:", response.results.map(org => ({ id: org.id, name: org.name })));
-          
+          console.log(
+            "All organizations:",
+            response.results.map((org) => ({ id: org.id, name: org.name }))
+          );
+
           let orgToShow = [];
-          
+
           // Find user's organization if userOrganizationId exists
           if (userOrganizationId) {
             const userOrg = response.results.find(
-              org => String(org.id) === String(userOrganizationId)
+              (org) => String(org.id) === String(userOrganizationId)
             );
-            
+
             if (userOrg) {
               console.log("Found user's organization:", userOrg);
               orgToShow = [userOrg];
               fetchLocationDetails(userOrg);
             } else {
-              console.log("User organization not found. Showing first organization.");
+              console.log(
+                "User organization not found. Showing first organization."
+              );
               orgToShow = [response.results[0]];
               fetchLocationDetails(response.results[0]);
             }
@@ -102,7 +117,7 @@ const OfficeSetting = () => {
             orgToShow = [response.results[0]];
             fetchLocationDetails(response.results[0]);
           }
-          
+
           // Set filtered organizations to only show user's organization
           setFilteredOrganizations(orgToShow);
         }
@@ -135,18 +150,21 @@ const OfficeSetting = () => {
       setDepLoading(true);
       // Create filter data with organization ID if available
       const filterData = {};
-      
+
       // When showing all organizations, use the user's organization ID if available
       if (userOrganizationId) {
-        console.log("Filtering departments by user's organization ID:", userOrganizationId);
+        console.log(
+          "Filtering departments by user's organization ID:",
+          userOrganizationId
+        );
         filterData.organization = userOrganizationId;
       }
-      
+
       const departmentResponse = await getDepartmentList({
         options: depOptions,
-        filterData: filterData
+        filterData: filterData,
       });
-      
+
       console.log("Department data retrieved:", departmentResponse);
       setDepartments(departmentResponse);
     } catch (error) {
@@ -161,22 +179,25 @@ const OfficeSetting = () => {
     try {
       // Create filter data with organization ID if available
       const filterData = {};
-      
+
       // When showing all organizations, use the user's organization ID if available
       if (userOrganizationId) {
-        console.log("Filtering designations by user's organization ID:", userOrganizationId);
+        console.log(
+          "Filtering designations by user's organization ID:",
+          userOrganizationId
+        );
         filterData.organization = userOrganizationId;
       }
-      
+
       // Merge with any existing filter data from desigOptions
       const mergedFilterData = {
         ...filterData,
-        ...(desigOptions.filterData || {})
+        ...(desigOptions.filterData || {}),
       };
-      
+
       const response = await getDesignationList({
         options: desigOptions,
-        filterData: mergedFilterData
+        filterData: mergedFilterData,
       });
       setDesignation(response);
     } catch (error) {
@@ -207,31 +228,31 @@ const OfficeSetting = () => {
       if (organization?.country) {
         const countryResponse = await getCountryById(organization.country);
         if (countryResponse) {
-          setCountryData(prev => ({
+          setCountryData((prev) => ({
             ...prev,
-            [organization.id]: countryResponse
+            [organization.id]: countryResponse,
           }));
         }
       }
-      
+
       // Fetch state/region data if available
       if (organization?.state) {
         const stateResponse = await getRegionById(organization.state);
         if (stateResponse) {
-          setStateData(prev => ({
+          setStateData((prev) => ({
             ...prev,
-            [organization.id]: stateResponse
+            [organization.id]: stateResponse,
           }));
         }
       }
-      
+
       // Fetch city data if available
       if (organization?.city) {
         const cityResponse = await getCityById(organization.city);
         if (cityResponse) {
-          setCityData(prev => ({
+          setCityData((prev) => ({
             ...prev,
-            [organization.id]: cityResponse
+            [organization.id]: cityResponse,
           }));
         }
       }
@@ -251,13 +272,16 @@ const OfficeSetting = () => {
       console.log("Initial component load - User details:", userDetails);
       console.log("User organization ID before fetching:", userOrganizationId);
       console.log("Organization property:", userDetails?.organization);
-      
+
       // First get organization data
       await getOrganization();
-      
+
       // Log after fetching
-      console.log("After fetching - filtered organizations:", filteredOrganizations);
-      
+      console.log(
+        "After fetching - filtered organizations:",
+        filteredOrganizations
+      );
+
       // Then fetch the rest of the data that depends on organization
       await fetchShifts();
       await getDepartments();
@@ -280,7 +304,7 @@ const OfficeSetting = () => {
   // Helper function to get location names
   const getLocationName = (type, id, orgId) => {
     if (!id) return "N/A";
-    
+
     if (type === "country") {
       return countryData[orgId]?.name || "Loading...";
     } else if (type === "state") {
@@ -288,7 +312,7 @@ const OfficeSetting = () => {
     } else if (type === "city") {
       return cityData[orgId]?.name || "Loading...";
     }
-    
+
     return "N/A";
   };
 
@@ -297,11 +321,15 @@ const OfficeSetting = () => {
     // Enhance organization data with location names before setting to edit
     const enhancedData = {
       ...organization,
-      country_name: getLocationName("country", organization.country, organization.id),
+      country_name: getLocationName(
+        "country",
+        organization.country,
+        organization.id
+      ),
       state_name: getLocationName("state", organization.state, organization.id),
-      city_name: getLocationName("city", organization.city, organization.id)
+      city_name: getLocationName("city", organization.city, organization.id),
     };
-    
+
     setEditData(enhancedData);
     setEdit(true);
   };
@@ -313,6 +341,7 @@ const OfficeSetting = () => {
     { value: "branches", label: "Branches" },
     { value: "working-hours", label: "Working Hours" },
     { value: "onboarding", label: "Onboarding Checklist" },
+    { value: "grace-time", label: "Grace Time" },
   ];
 
   return (
@@ -333,6 +362,8 @@ const OfficeSetting = () => {
                 <Shift reload={fetchShifts} />
               ) : activeTab === "branches" ? (
                 <AddBranch reload={setReloadBranchesData} />
+              ) : activeTab === "grace-time" ? (
+                <AddGraceTimeForm reload={setReloadGraceTimeData} />
               ) : (
                 <OnboardingTab reload={getOnboardingDocuments} />
               )
@@ -342,30 +373,28 @@ const OfficeSetting = () => {
             value={activeTab}
             onValueChange={setActiveTab}
             defaultValue="offices"
+            className="flex flex-row gap-4"
           >
-            <div className="flex justify-start">
-              <TabsList className="flex justify-center mb-4">
-                {tabsData?.map((tab) => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className="data-[state=active]:bg-primary-200 w-40  data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-                  >
-                    {tab.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
+            <TabsList className="flex flex-col justify-start mb-4 h-[70vh] gap-4 items-start">
+              {tabsData?.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="justify-start data-[state=active]:bg-primary-200 w-40  data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
             <TabsContent value="offices">
               {filteredOrganizations.length > 0 ? (
                 <div className="space-y-8">
-                  <h2 className="mb-4 text-2xl font-medium text-primary">Organization Details</h2>
+                  <h2 className="mb-4 text-2xl font-medium text-primary">
+                    Organization Details
+                  </h2>
                   {/* Show user's organization */}
                   {filteredOrganizations.map((organization, index) => (
-                    <Card 
-                      key={organization.id || index} 
-                      className="mb-8"
-                    >
+                    <Card key={organization.id || index} className="mb-8">
                       <CardHeader className="flex flex-col items-start justify-between pb-2 border-b">
                         <div className="flex flex-row items-start justify-between w-full">
                           <div>
@@ -380,16 +409,16 @@ const OfficeSetting = () => {
                             onClick={() => handleEditClick(organization)}
                             title="Edit Organization"
                           >
-                            <svg 
-                              xmlns="http://www.w3.org/2000/svg" 
-                              width="16" 
-                              height="16" 
-                              viewBox="0 0 24 24" 
-                              fill="none" 
-                              stroke="currentColor" 
-                              strokeWidth="2" 
-                              strokeLinecap="round" 
-                              strokeLinejoin="round" 
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                               className="mr-1 lucide lucide-pencil"
                             >
                               <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
@@ -399,17 +428,30 @@ const OfficeSetting = () => {
                           </Button>
                         </div>
                         <CardDescription className="text-neutral-1100">
-                          {organization.company_description || "Organization details and information"}
+                          {organization.company_description ||
+                            "Organization details and information"}
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="py-4">
-                        <ViewOrganization 
+                        <ViewOrganization
                           data={{
                             ...organization,
-                            country_name: getLocationName("country", organization.country, organization.id),
-                            state_name: getLocationName("state", organization.state, organization.id),
-                            city_name: getLocationName("city", organization.city, organization.id)
-                          }} 
+                            country_name: getLocationName(
+                              "country",
+                              organization.country,
+                              organization.id
+                            ),
+                            state_name: getLocationName(
+                              "state",
+                              organization.state,
+                              organization.id
+                            ),
+                            city_name: getLocationName(
+                              "city",
+                              organization.city,
+                              organization.id
+                            ),
+                          }}
                         />
                       </CardContent>
                     </Card>
@@ -419,7 +461,10 @@ const OfficeSetting = () => {
                 <Card>
                   <CardContent>
                     <div className="py-8 text-center">
-                      <p className="text-gray-500">No organization data available. Please add an organization.</p>
+                      <p className="text-gray-500">
+                        No organization data available. Please add an
+                        organization.
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -459,12 +504,15 @@ const OfficeSetting = () => {
                 getDesignations={getDesignations}
               />
             </TabsContent>
-            <TabsContent value="working-hours">
+            <TabsContent value="working-hours" className="w-[calc(100%_-_170px)] mt-0">
               <WorkingHours
-               data={dataShift}
-               reload={fetchShifts}
-               organizationId={userOrganizationId}
-               />
+                data={dataShift}
+                reload={fetchShifts}
+                organizationId={userOrganizationId}
+              />
+            </TabsContent>
+            <TabsContent value="grace-time" className="w-[calc(100%_-_170px)] mt-0">
+              <GraceTime reload={reloadGraceTimeData} />
             </TabsContent>
             <TabsContent value="onboarding">
               {onboardingLoading ? (
@@ -477,7 +525,6 @@ const OfficeSetting = () => {
                 />
               )}
             </TabsContent>
-          
           </Tabs>
           {activeTab === "offices" && edit && (
             <AddOrganization

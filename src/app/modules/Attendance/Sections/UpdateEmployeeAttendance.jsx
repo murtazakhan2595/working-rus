@@ -16,6 +16,7 @@ import {
   DateInput,
 } from "components/FormControl";
 import { HasAccess } from "utils/PermissionUtils";
+import { TextAreaInput } from "components/FormControl";
 
 const FormSheetData = {
   triggerText: "Submit",
@@ -41,7 +42,7 @@ const UpdateEmployeeAttendance = ({
   const Designations = useSelector((state) => state.common.designations);
   const UserDetails = useSelector((state) => state.emp.user_details);
   const Mangers = useSelector((state) => state.emp.reportingManagers);
-  const Employees = useSelector((state) => state.emp.employees_detail);
+  const Employees = useSelector((state) => state.emp.employees);
   const [formData, setFormData] = useState(Attendance);
   const [formValues, setFormValues] = useState(Attendance);
   const [selectedEmployee, setSelectedEmployee] = useState({});
@@ -180,7 +181,7 @@ const UpdateEmployeeAttendance = ({
         cancelButtonText: "Cancel",
         columns: 3,
         renderUpdatedFormValues: setFormValues,
-        disableSubmit:isLoading,
+        disableSubmit: isLoading,
         formFiels: [
           {
             sheetCardExtension: true,
@@ -240,7 +241,7 @@ const UpdateEmployeeAttendance = ({
                 name: "date",
                 required: true,
                 label: "Attendance Date",
-                maxDate:new Date()
+                maxDate: new Date(),
               },
               ...(formValues?.status !== "Absent"
                 ? [
@@ -277,7 +278,20 @@ const UpdateEmployeeAttendance = ({
                   { value: "Weekend", label: "Weekend" },
                 ],
                 colsSpan: 3,
+                disabled: isEmployee,
               },
+              ...(isEmployee
+                ? [
+                    {
+                      InputField: TextAreaInput,
+                      name: "reason",
+                      required: true,
+                      label: "Reason",
+                      colsSpan: 3,
+                      rows: 3,
+                    },
+                  ]
+                : []),
             ].filter(Boolean),
           },
         ],

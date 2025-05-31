@@ -304,7 +304,7 @@ const Assets = ({ userProfile }) => {
   const assetsFilters = [
     {
       type: "search",
-      placeholder: "Asset Name",
+      placeholder: "Asset Name or ID",
       name: "asset_name",
     },
     {

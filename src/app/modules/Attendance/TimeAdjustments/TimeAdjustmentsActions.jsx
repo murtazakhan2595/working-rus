@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { ViewUserRole } from "app/modules/RoleAndPermissions/UserRole";
-import { AddUpdateApprovalHierarchy } from "app/modules/ApprovalHierarchy";
+import { TimeAdjustmentHistoryDetails } from "app/modules/Attendance";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { deleteRecord } from "app/hooks/general";
 import { useNavigate } from "react-router-dom";
@@ -9,83 +9,30 @@ import { HasAccess } from "utils/PermissionUtils";
 
 const TimeAdjustmentsActions = ({
   data,
+  isHistoryView = false,
   reloadData = () => {},
   TimeAdjustmentList = [],
 }) => {
-  const isEditHierarchyPermitted = HasAccess("EDIT_APPROVAL_HIERARCHY");
-  const isAddHierarchyPermitted = HasAccess("ADD_APPROVAL_HIERARCHY");
-  const isDeleteHierarchyPermitted = HasAccess("Delete_APPROVAL_HIERARCHY");
   const [view, setView] = useState(null);
-  const [deleteRoleState, setDeleteRoleState] = useState(null);
-  const [openEditForm, setOpenEditForm] = useState(false);
   const navigate = useNavigate();
-
+  const [ViewHistoryDetails, setViewHistoryDetails] = useState(null);
   const handleView = () => {
-    setView({
-      visible: true,
-      data: data,
-    });
-  };
-
-  const handleEdit = () => {
-    setOpenEditForm(true);
-  };
-
-  const handleDelete = () => {
-    setDeleteRoleState({
-      open: true,
-      data: data,
-    });
-  };
-  const handleAddLevels = () => {
-    navigate("/office-settings/approval-hierarchy/hierarchy-detail", {
-      state: { GOTO_URL: "/office-settings/approval-hierarchy", id: data.id },
-    });
-  };
-
-  const confirmDelete = async () => {
-    try {
-      await deleteRecord(`/hierarchies/${data.id}`, data?.name);
-      setDeleteRoleState(null);
-      // Ensure table is reloaded by calling reload function
-      reloadData(true);
-    } catch (error) {
-      console.error("ERROR", error);
-    }
+    if (isHistoryView)
+      navigate("/time-adjustments/history-details", {
+        state: { GOTO_URL: "/time-adjustments/history", id: data.id },
+      });
+    else setView(true);
   };
 
   return (
     <>
       <DropdownActionMenu
-        onView={
-          isAddHierarchyPermitted || isEditHierarchyPermitted
-            ? handleAddLevels
-            : null
-        }
-        onEdit={isEditHierarchyPermitted ? handleEdit : null}
-        onDelete={isDeleteHierarchyPermitted ? handleDelete : null}
-        viewText="View Hierarchy Detail"
-        editText="Edit Hierarchy"
-        deleteText="Delete Hierarchy"
-        menuTooltip="Hierarchy Actions"
-        additionalOptionsConfig={
-          isAddHierarchyPermitted || isEditHierarchyPermitted
-            ? [{ action: handleAddLevels, text: "Add Hierarchy Levels" }]
-            : []
-        }
+        onView={handleView}
+        viewText={`View Time Adjustment ${isHistoryView ? "History" : ""}`}
+        menuTooltip={`Time Adjustment  ${
+          isHistoryView ? "History" : ""
+        } Actions`}
       />
-
-      {deleteRoleState?.open && (
-        <AlertDialogue
-          title="Confirm Delete?"
-          description={`This action can't be undone. All information associated with role "${deleteRoleState?.data?.name}" will be lost.`}
-          isOpen={deleteRoleState.open}
-          setIsOpen={(isOpen) =>
-            setDeleteRoleState((prev) => ({ ...prev, open: isOpen }))
-          }
-          handleContinue={confirmDelete}
-        />
-      )}
 
       {view?.visible && (
         <ViewUserRole
@@ -97,13 +44,6 @@ const TimeAdjustmentsActions = ({
           reload={reloadData}
           UserRoleList={TimeAdjustmentList}
           roleID={view?.data?.id}
-        />
-      )}
-      {openEditForm && (
-        <AddUpdateApprovalHierarchy
-          isOpen={openEditForm}
-          setReloadData={reloadData}
-          id={data.id}
         />
       )}
     </>

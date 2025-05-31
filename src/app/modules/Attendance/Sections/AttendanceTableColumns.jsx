@@ -47,7 +47,12 @@ export const EmployeesAttendanceColumns = (
     dataField: "emp_name",
     text: "Employees",
     formatter: (cell, row) => (
-      <EmployeeOverview id={row.employee_id} showId showPosition showBranchName/>
+      <EmployeeOverview
+        id={row.employee_id}
+        showId
+        showPosition
+        showBranchName
+      />
     ),
     dataSort: true,
   },
@@ -192,7 +197,19 @@ export const AttendanceReportColumns = [
   { text: "Status", dataField: "status" },
 ];
 
-export const TimeAdjustmentsColumns =(reloadData)=> [
+export const TimeAdjustmentsColumns = (viewMode = false, reloadData) => [
+  {
+    text: "Employee",
+    dataField: "employee_id",
+    formatter: (cell) => (
+      <EmployeeOverview
+        id={cell}
+        showId={true}
+        showDepartment={true}
+        showBranchName={true}
+      />
+    ),
+  },
   {
     text: "Date",
     dataField: "date",
@@ -209,9 +226,42 @@ export const TimeAdjustmentsColumns =(reloadData)=> [
     maxWidth: "250px",
   },
   {
-    text: "Break",
-    dataField: "break_duration",
-    formatter: (cell) => <>{formatDuration(cell)}</>,
+    text: "Status",
+    dataField: "status",
+    formatter: (cell) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+  },
+  ...(!viewMode
+    ? [
+        {
+          text: "",
+          dataField: "",
+          formatter: (cell, row, dataList) => (
+            <TimeAdjustmentsActions
+              data={row}
+              reloadData={reloadData}
+              TimeAdjustmentList={dataList}
+            />
+          ),
+        },
+      ]
+    : []),
+];
+
+export const TimeAdjustmentLogsColumns = [
+  {
+    text: "Date",
+    dataField: "date",
+    formatter: (cell) => <>{`${renderDate(cell)}`}</>,
+  },
+  {
+    text: "Check In",
+    dataField: "checkin",
+    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+  },
+  {
+    text: "Reason",
+    dataField: "reason",
+    maxWidth: "250px",
   },
   {
     text: "Status",
@@ -221,12 +271,8 @@ export const TimeAdjustmentsColumns =(reloadData)=> [
   {
     text: "",
     dataField: "",
-    formatter: (cell, row, dataList) => (
-      <TimeAdjustmentsActions
-        data={row}
-        reloadData={reloadData}
-        TimeAdjustmentList={dataList}
-      />
+    formatter: (_, row) => (
+      <TimeAdjustmentsActions data={row} isHistoryView={true} />
     ),
   },
 ];
