@@ -18,14 +18,22 @@ import {
   getChangeRequestComparison,
 } from "./shiftScheduleUtils";
 import { HasAccess } from "utils/PermissionUtils";
+import { FilterInput } from "components/FormControl";
+import { useSelector } from "react-redux";
 
 const Emplist = ({ teamMembers }) => {
-
+  const isEditEmployeeShiftPermitted = HasAccess("EDIT_EMPLOYEE_SHIFT");
   const [activeMember, setActiveMember] = useState(null);
   const [employeeShift, setEmployeeShift] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState("");
   const [scheduleShifts, setScheduleShifts] = useState({
     results: [],
     count: 0,
+  });
+
+  const [filterData, setFilterData] = useState({
+    status: "",
   });
   const [shiftChangeRequests, setShiftChangeRequests] = useState({
     results: [],
@@ -41,7 +49,7 @@ const Emplist = ({ teamMembers }) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
   const isViewShiftChangeRequestsPermitted= HasAccess("VIEW_SHIFT_CHANGE_REQUESTS")
-
+ const Branches = useSelector((state) => state.common.branches);
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -91,11 +99,12 @@ const Emplist = ({ teamMembers }) => {
     try {
       const response = await getShiftSchedule({
         filterData: {
-          status: "Pending",
+          status: selectedStatus,
           is_change_request: "true",
           page: options.page,
           page_size: options.sizePerPage,
           shift_requested: "Manager",
+          employee_branch: selectedBranch ,
         },
         ordering: ordering,
       });
@@ -124,7 +133,26 @@ const Emplist = ({ teamMembers }) => {
   };
   useEffect(() => {
     fetchShiftChangeRequests();
-  }, [ordering, options.page, options.sizePerPage]);
+  }, [ordering, options.page, options.sizePerPage, filterData, ]);
+
+  const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
+    if(filterName === "status"){
+      setSelectedStatus(filterValue);
+    }
+    if(filterName === "employee_branch"){
+      setSelectedBranch(filterValue);
+    }
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
 
   return (
     <div>
@@ -166,21 +194,56 @@ const Emplist = ({ teamMembers }) => {
       {isViewShiftChangeRequestsPermitted && (
         <Card className="mt-6">
           <CardHeader>
-            <CardTitle className="text-primary">Shift Change Requests</CardTitle>
-            <CardDescription className="text-neutral-1100">
-              View and manage shift change requests from Managers.
-            </CardDescription>
+            <div>
+              <CardTitle className="text-primary">
+                Shift Change Requests
+              </CardTitle>
+              <CardDescription className="text-neutral-1100">
+                View and manage shift change requests from Managers.
+              </CardDescription>
+            </div>
+            <div className="flex justify-end">
+              <FilterInput
+                filters={[
+                  
+                  {
+                    type: "select-one",
+                    option: [
+                      { label: "Pending", value: "Pending" },
+                      { label: "Approved", value: "Approved" },
+                      { label: "Rejected", value: "Rejected" },
+                    ],
+                    name: "status",
+                    placeholder: "Status",
+                    values: selectedStatus,
+                  },
+                  ...(isEditEmployeeShiftPermitted
+                    ? [
+                        {
+                          type: "select-two",
+                          option: Branches,
+                          name: "employee_branch",
+                          placeholder: "Filter by Branch",
+                          values: selectedBranch,
+                        },
+                      ]
+                    : []),
+                ]}
+                onChange={handleFilterChange}
+              />
+            </div>
           </CardHeader>
           <CardContent>
             <CustomTable
               columns={EmployeeColumns(fetchShiftChangeRequests)}
-            data={shiftChangeRequests?.results || []}
-            pagination={true}
-            dataTotalSize={shiftChangeRequests?.count || 0}
-            tableOptions={tableOptions}
-          />
-        </CardContent>
-      </Card>)}
+              data={shiftChangeRequests?.results || []}
+              pagination={true}
+              dataTotalSize={shiftChangeRequests?.count || 0}
+              tableOptions={tableOptions}
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

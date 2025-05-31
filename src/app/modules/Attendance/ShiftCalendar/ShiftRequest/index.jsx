@@ -17,6 +17,7 @@ import {
 import { HasAccess } from "utils/PermissionUtils";
 const ShiftRequest = () => {
   const isViewRecordsPermitted = HasAccess("VIEW_SHIFT_REQUEST_RECORDS");
+  const isEditEmployeeShiftPermitted = HasAccess("EDIT_EMPLOYEE_SHIFT");
   // const isViewRecordsPermitted = true;
   const [isLoading, setIsLoading] = useState(true);
   const [ordering, setOrdering] = useState("-id");
@@ -29,7 +30,7 @@ const ShiftRequest = () => {
   });
   const [filters, setFilters] = useState({
     status: "",
-    requestor_role: "",
+    assigned_by_id: "",
   });
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -90,8 +91,8 @@ const ShiftRequest = () => {
           filterData.status = filters.status;
         }
       }
-      if (filters.requestor_role) {
-        filterData.requestor_role = filters.requestor_role;
+      if (filters.assigned_by_id) {
+        filterData.assigned_by_id = filters.assigned_by_id;
       }
       if (filters.branch) {
         filterData.branch = filters.branch;
@@ -143,28 +144,35 @@ const ShiftRequest = () => {
   const ShiftRequestTabs = ["Request", "Record"].filter(Boolean);
 
   const FiltersSection = (
-    <div className="w-full sm:w-auto">
+    <div className="">
       <FilterInput
         filters={[
+          ...(activeTab === "Record"
+            ? [
+                {
+                  type: "select-one",
+                  option: [
+                    { label: "Approved", value: "Approved" },
+                    { label: "Rejected", value: "Rejected" },
+                  ],
+                  name: "status",
+                  placeholder: "Status",
+                  values: filters.status,
+                },
+              ]
+            : []),
           {
-            type: "select",
-            option: [],
-            name: "status",
-            placeholder: "Filter by Status",
-            values: filters.status,
-            width: "w-full sm:w-56",
-          },
-          {
-            type: "select",
-            option: roles,
-            name: "requestor_role",
+            type: "select-two",
+            option: roles.map((role) => ({
+              label: role.name,
+              value: role.id,
+            })),
+            name: "assigned_by_id",
             placeholder: "Filter by Requestor",
-            values: filters.requestor_role,
-            width: "w-full sm:w-56",
+            values: filters.assigned_by_id,
           },
         ]}
         onChange={handleFilterChange}
-        className="w-full flex flex-col sm:flex-row gap-2"
       />
     </div>
   );
