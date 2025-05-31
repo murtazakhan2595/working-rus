@@ -181,33 +181,8 @@ const DashboardEmployee = [
   {
     type: "div",
     className: `w-full`,
-    content: <EventCalendar />,
-    value: "EventCalendar",
-  },
-  {
-    type: "div",
-    className: `w-full`,
-    content: <ProfileCompletion />,
-    value: "ProfileCompletion",
-  },
-
-  {
-    type: "div",
-    className: "w-full col-span-2",
-    content: <MyLeaves />,
-    value: "MyLeaves",
-  },
-  {
-    type: "div",
-    className: "w-full",
     content: <ShiftDetailsWidget />,
     value: "ShiftDetailsWidget",
-  },
-  {
-    type: "div",
-    className: "w-full",
-    content: <ExpiredDocuments />,
-    value: "ExpiredDocuments",
   },
   {
     type: "div",
@@ -221,6 +196,30 @@ const DashboardEmployee = [
     content: <MonthlyAttendanceCalendar />,
     value: "MonthlyAttendanceCalendar",
   },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <EventCalendar />,
+    value: "EventCalendar",
+  },
+  {
+    type: "div",
+    className: `w-full`,
+    content: <ProfileCompletion />,
+    value: "ProfileCompletion",
+  },
+  {
+    type: "div",
+    className: "w-full",
+    content: <MyLeaves />,
+    value: "MyLeaves",
+  },
+  {
+    type: "div",
+    className: "w-full",
+    content: <ExpiredDocuments />,
+    value: "ExpiredDocuments",
+  }
 ];
 export const getDashboard = (userRole) => {
   if (userRole === 3 || userRole === 1) {

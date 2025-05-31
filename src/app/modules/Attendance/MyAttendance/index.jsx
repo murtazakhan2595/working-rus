@@ -26,6 +26,7 @@ import { HourlyStatistics } from "../EmployeeAttendance/Section";
 import { DateRangeFilter } from "components/FormControl";
 import { GetDateRange } from "utils/renderValues";
 import { HasAccess } from "utils/PermissionUtils";
+import DailyShiftDetailsCard from '../../../../components/DailyShiftDetailsCard';
 
 const Attendance = () => {
   // Permission checks for attendance features
@@ -281,6 +282,11 @@ const Attendance = () => {
           }}
         />
       )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2">
+          <DailyShiftDetailsCard userId={userProfile.id} isDashboard={false} />
+        </div>
+      </div>
     </>
   );
 };
