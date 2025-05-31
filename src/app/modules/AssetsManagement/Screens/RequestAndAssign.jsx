@@ -175,7 +175,7 @@ const AssetRequests = ({ userProfile, departments, employees }) => {
   const filters = [
     {
       type: "search",
-      placeholder: "Employee Name",
+      placeholder: "Employee Name or ID",
       name: "emp_name",
     },
     {
