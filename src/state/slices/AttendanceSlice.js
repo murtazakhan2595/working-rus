@@ -1,10 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getShiftById } from "app/hooks/attendance";
+import {
+  getShiftById,
+  getEmployeeAttendanceDetails,
+} from "app/hooks/attendance";
 
 // Define the initial state
 const initialState = {
   assignedShiftData: [], // Updated property name
-  attendance_details:[],
+  attendance_details: [],
   apiStatus: "idle",
   error: null,
 };
@@ -24,9 +27,9 @@ export const fetchShiftById = createAsyncThunk(
 // Define the thunk to fetch AssignedShiftData
 export const fetchUserAttendanceDetails = createAsyncThunk(
   "attendance/fetchUserAttendanceDetails", // Updated action type
-  async (shiftID) => {
+  async (user_id) => {
     try {
-      const response = await getShiftById(shiftID);
+      const response = await getEmployeeAttendanceDetails(user_id);
       return response;
     } catch (error) {
       throw error;

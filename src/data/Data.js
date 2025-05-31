@@ -24,7 +24,7 @@ import {
 } from "state/slices/EmpSlice";
 import { fetchLeaveComponents } from "state/slices/LeaveManagementSlice";
 import { fetchDocumentCategory } from "state/slices/HRDocumentsSlice";
-import { fetchShiftById } from "state/slices/AttendanceSlice";
+import { fetchShiftById ,fetchUserAttendanceDetails} from "state/slices/AttendanceSlice";
 import { ArrowDown, ArrowRight, ArrowUp, Timer } from "lucide-react";
 import { lightenColor } from "utils/renderValues";
 
@@ -864,6 +864,7 @@ export const handleUpdateProfile = async (dispatch, data) => {
   dispatch(fetchTerminationReasons());
   dispatch(fetchReportingManagers());
   dispatch(fetchLeaveComponents());
+  dispatch(fetchUserAttendanceDetails(userprofile.id));
   await dispatch(fetchProjects(userprofile));
   dispatch(fetchShiftById(employee_details?.payload?.shift_assignment));
 };

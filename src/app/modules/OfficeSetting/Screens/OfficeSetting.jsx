@@ -15,7 +15,7 @@ import GraceTime from "./GraceTime";
 import Designations from "./Designations";
 import AddDepartment from "./Departments/AddDepartment";
 import AddBranch from "./Branches/AddBranch";
-import AddGraceTimeForm from "./GraceTime/AddGraceTimeForm";
+import AddGraceTime from "./GraceTime/AddGraceTime";
 import { getOrganizationList } from "app/hooks/general";
 import { CardContent } from "components/ui/card";
 import AddDesignation from "./Designations/AddDesignation";
@@ -363,7 +363,11 @@ const OfficeSetting = () => {
               ) : activeTab === "branches" ? (
                 <AddBranch reload={setReloadBranchesData} />
               ) : activeTab === "grace-time" ? (
-                <AddGraceTimeForm reload={setReloadGraceTimeData} />
+                <AddGraceTime
+                  reloadData={() =>
+                    setReloadGraceTimeData(!reloadGraceTimeData)
+                  }
+                />
               ) : (
                 <OnboardingTab reload={getOnboardingDocuments} />
               )
@@ -504,14 +508,20 @@ const OfficeSetting = () => {
                 getDesignations={getDesignations}
               />
             </TabsContent>
-            <TabsContent value="working-hours" className="w-[calc(100%_-_170px)] mt-0">
+            <TabsContent
+              value="working-hours"
+              className="w-[calc(100%_-_170px)] mt-0"
+            >
               <WorkingHours
                 data={dataShift}
                 reload={fetchShifts}
                 organizationId={userOrganizationId}
               />
             </TabsContent>
-            <TabsContent value="grace-time" className="w-[calc(100%_-_170px)] mt-0">
+            <TabsContent
+              value="grace-time"
+              className="w-[calc(100%_-_170px)] mt-0"
+            >
               <GraceTime reload={reloadGraceTimeData} />
             </TabsContent>
             <TabsContent value="onboarding">

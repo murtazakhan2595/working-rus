@@ -611,6 +611,25 @@ export const saveTimeAdjustment = async (payload, id) => {
   }
 };
 
+export const getEmployeeAttendanceDetails = async (employee_id) => {
+  if (employee_id) {
+    try {
+      const response = await axios.get(`${baseUrl}/attendance/employee/${employee_id}/`, {
+        headers: headers(),
+      });
+      if(response){
+        return response.data;
+      }
+    } catch (error) {
+      console.error("Error fetching by id:", error);
+      if (error?.response?.status === 401) {
+        HandleLogout();
+      }
+      return false;
+    }
+  } else return {};
+};
+
 export {
   getAttendanceStats,
   saveShiftAssignment,
