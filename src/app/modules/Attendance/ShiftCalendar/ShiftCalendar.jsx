@@ -41,7 +41,12 @@ const ShiftCalendar = () => {
   const userData = Employees.find(
     (employee) => employee.id === userProfile?.id
   );
-  console.log("userProfile", userData);
+  // Handle tab change and reset filters
+  const handleTabChange = (newTab) => {
+    setActiveTab(newTab);
+    // Reset filters when changing tabs
+    setFilterData({});
+  };
 
   const fetchUsers = useCallback(
     async (filters = {}) => {
@@ -108,7 +113,7 @@ const ShiftCalendar = () => {
     [fetchUsers]
   );
 
-  // Apply client-side filters using useMemo to avoid unnecessary recalculations
+  // Apply client-side filters for team members
   const filteredTeamMembers = useMemo(() => {
     if (!teamMembers.results || !teamMembers.results.length) {
       return { results: [], count: 0 };
@@ -122,13 +127,11 @@ const ShiftCalendar = () => {
     let filteredResults = teamMembers.results;
 
     // Apply client-side filters
-    if (filterData.id_and_first_name) {
+    if (filterData.search_term) {
       filteredResults = filteredResults.filter((employee) => {
         const searchString =
           `${employee.id} ${employee.first_name} ${employee.last_name}`.toLowerCase();
-        return searchString.includes(
-          filterData.id_and_first_name.toLowerCase()
-        );
+        return searchString.includes(filterData.search_term.toLowerCase());
       });
     }
 
@@ -158,7 +161,60 @@ const ShiftCalendar = () => {
     };
   }, [teamMembers, filterData]);
 
-  const displayData = filteredTeamMembers;
+  // Apply filters to pending schedules
+  const filteredPendingSchedules = useMemo(() => {
+    if (!pendingSchedules.results || !pendingSchedules.results.length) {
+      return { results: [], count: 0 };
+    }
+
+    // If no filters are applied, return original data
+    if (!filterData || Object.keys(filterData).length === 0) {
+      return pendingSchedules;
+    }
+
+    let filteredResults = pendingSchedules.results;
+
+    // Apply search filter
+    if (filterData.search_term) {
+      filteredResults = filteredResults.filter((schedule) => {
+        // Find the employee in teamMembers to get their details
+        const employee = teamMembers.results?.find(
+          (emp) => emp.id === schedule.employee
+        );
+        if (employee) {
+          const searchString =
+            `${employee.id} ${employee.first_name} ${employee.last_name}`.toLowerCase();
+          return searchString.includes(filterData.search_term.toLowerCase());
+        }
+        // If employee not found in teamMembers, just search by employee ID
+        return schedule.employee?.toString().includes(filterData.search_term);
+      });
+    }
+
+    // Filter by department
+    if (filterData.department_name) {
+      filteredResults = filteredResults.filter((schedule) => {
+        // Find the employee in teamMembers to get their department
+        const employee = teamMembers.results?.find(
+          (emp) => emp.id === schedule.employee
+        );
+        return employee?.department_name === filterData.department_name;
+      });
+    }
+
+    return {
+      results: filteredResults,
+      count: filteredResults.length,
+    };
+  }, [pendingSchedules, filterData, teamMembers]);
+
+  // Decide which data to display based on active tab
+  const displayData =
+    activeTab === "shift-calendar" ? filteredTeamMembers : teamMembers;
+  const displayPendingSchedules =
+    activeTab === "pending-schedule"
+      ? filteredPendingSchedules
+      : pendingSchedules;
 
   const tabsData = [
     ...(isViewShiftCalendarPermitted
@@ -177,7 +233,7 @@ const ShiftCalendar = () => {
             label: "Pending Schedule",
             component: (
               <PendingSchedule
-                pendingSchedules={pendingSchedules}
+                pendingSchedules={displayPendingSchedules}
                 reload={fetchPendingSchedules}
                 employees={teamMembers.results}
               />
@@ -220,7 +276,7 @@ const ShiftCalendar = () => {
 
       <Tabs
         value={activeTab}
-        onValueChange={setActiveTab}
+        onValueChange={handleTabChange}
         defaultValue="shift-calendar"
       >
         <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row mb-4">
@@ -237,11 +293,14 @@ const ShiftCalendar = () => {
           </TabsList>
         </div>
 
-        {/* Add the filters component for the shift calendar tab */}
-        {activeTab === "shift-calendar" && (
+        {/* Show filters for both shift calendar and pending schedule tabs */}
+        {(activeTab === "shift-calendar" ||
+          activeTab === "pending-schedule") && (
           <ShiftCalendarFilters
+            key={activeTab} // Add key prop to force remount on tab change
             onFilterChange={handleFilterChange}
             teamMembers={teamMembers}
+            showShiftStatus={activeTab === "shift-calendar"} 
           />
         )}
 
@@ -259,9 +318,9 @@ const ShiftCalendar = () => {
           isOpen={isScheduleModalOpen}
           setIsOpen={setIsScheduleModalOpen}
           selectedDates={null}
-          employees={displayData}
+          employees={displayData.results}
           onScheduleSuccess={() => {
-            fetchPendingSchedules(); // Reload pending schedules after successful scheduling
+            fetchPendingSchedules(); 
           }}
         />
       )}

@@ -19,6 +19,7 @@ import {
 } from "../ShiftCalendarTab/shiftScheduleUtils";
 import { getEmployeeActiveShift } from "../Section/getEmployeeActiveShift";
 import { HasAccess } from "utils/PermissionUtils";
+import { FilterInput } from "components/FormControl";
 
 const EmployeeShiftCalendar = () => {
   const [events, setEvents] = useState([]);
@@ -33,6 +34,8 @@ const EmployeeShiftCalendar = () => {
     results: [],
     count: 0,
   });
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [filterData, setFilterData] = useState({})
   const [loading, setLoading] = useState(true);
   const [options, setOptions] = useState({
     page: 1,
@@ -50,7 +53,7 @@ const EmployeeShiftCalendar = () => {
     fetchEmployeeData();
     fetchApprovedShifts();
     fetchChangeRequests();
-  }, [employeeId]);
+  }, [employeeId, filterData, options, ordering]);
 
  
 
@@ -110,8 +113,11 @@ const EmployeeShiftCalendar = () => {
           employee: employeeId,
           is_change_request: "true",
           ordering: "-created_at",
-          shift_requested: "Employee", // Only fetch employee-initiated requests
+          shift_requested: "Employee", 
+          status: selectedStatus,
         },
+        options,
+        ordering
       });
 
       if (response && response.results) {
@@ -389,6 +395,22 @@ const EmployeeShiftCalendar = () => {
     },
   ];
 
+  const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
+    if (filterName === "status") {
+      setSelectedStatus(filterValue);
+    }
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -483,6 +505,24 @@ const EmployeeShiftCalendar = () => {
      {isViewMyShiftChangeRequestsPermitted && <Card>
         <CardHeader>
           <CardTitle>My Shift Change Requests</CardTitle>
+          <div className="flex justify-end">
+            <FilterInput
+              filters={[
+                {
+                  type: "select-one",
+                  option: [
+                    { label: "Pending", value: "Pending" },
+                    { label: "Approved", value: "Approved" },
+                    { label: "Rejected", value: "Rejected" },
+                  ],
+                  name: "status",
+                  placeholder: "Status",
+                  values: selectedStatus,
+                },
+              ]}
+              onChange={handleFilterChange}
+            />
+          </div>
         </CardHeader>
         <CardContent>
           <CustomTable

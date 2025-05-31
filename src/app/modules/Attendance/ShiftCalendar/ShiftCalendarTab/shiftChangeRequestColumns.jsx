@@ -85,6 +85,7 @@ import ShiftChangeRequestActions from "./ShiftChangeRequestActions";
      dataField: "assigned_by",
      text: "Requested By",
      formatter: (cell) => <EmployeeOverview id={cell} />,
+     dataSort: true,
    },
    {
      dataField: "status",
