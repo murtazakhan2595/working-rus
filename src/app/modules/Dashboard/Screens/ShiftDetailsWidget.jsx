@@ -58,14 +58,16 @@ export default function ShiftDetailsWidget() {
     const workDays = [];
     const absents = [];
 
-    daysInMonth.forEach((day) => {
-      const dayName = format(day, "EEEE"); // Get day name (Monday, Tuesday, etc.)
+    // Convert weekdays string to array if it's a string
+    const weekdaysArray = typeof shift.weekdays === 'string' 
+      ? shift.weekdays.split(',').map(day => day.trim()) 
+      : shift.weekdays || [];
 
-      // Check if this day is in the shift's weekdays
-      if (shift.weekdays.includes(dayName)) {
+    daysInMonth.forEach((day) => {
+      const dayName = format(day, "EEEE");
+      if (weekdaysArray.includes(dayName)) {
         workDays.push(getDate(day));
       } else {
-        // If it's a weekday but not in shift's weekdays, consider it absent
         if (
           ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].includes(
             dayName
@@ -80,98 +82,106 @@ export default function ShiftDetailsWidget() {
     setNonWorkingDays(absents);
   };
 
-  // Format days of the week for display
   const formatWeekdays = (weekdays) => {
-    // console.log("weekdays", weekdays);
-    // if (!weekdays || weekdays.length === 0) return "N/A";
-    // return weekdays?.join(", ");
-    return "N/A"
+    if (!weekdays) return "No working days set";
+    
+    // If weekdays is a string, split it and clean up
+    if (typeof weekdays === 'string') {
+      return weekdays.split(',')
+        .map(day => day.trim())
+        .join(', ');
+    }
+    
+    // If weekdays is an array
+    if (Array.isArray(weekdays)) {
+      return weekdays.join(', ');
+    }
+
+    return "No working days set";
   };
 
   return (
     <>
-      <CardHeader className="items-start pb-0">
-        <CardTitle className="flex flex-row justify-between w-full">
-          <div className="text-base font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
-            Shift Schedule
-          </div>
-          <Button
-            variant="ghost"
-            className=""
-            onClick={() => setShowAll(!showAll)}
-          >
-            {showAll ? "Hide Details" : "View Details"}
-          </Button>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="font-semibold text-plum-1100 xl:text-2xl lg:text-xl md:text-lg">
+          Shift Schedule
         </CardTitle>
+        <Button onClick={() => setShowAll(!showAll)} variant="ghost" size="sm" className="text-slate-900">
+          {showAll ? "Hide Details" : "View Details"}
+        </Button>
       </CardHeader>
       <CardContent className="p-4">
         {loading ? (
-          <div className="flex justify-center items-center h-20">
-            <p>Loading shift data...</p>
+          <div className="flex justify-center items-center h-40">
+            <p>Loading...</p>
           </div>
-        ) : shiftData ? (
-          <div>
-            <div className="p-3 bg-blue-50 rounded-md border border-blue-100">
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center">
-                  <span className="font-medium text-sm mr-2">Shift Name:</span>
-                  <span className="text-sm bg-blue-100 px-2 py-1 rounded">
-                    {shiftData.name}
+        ) : !shiftData ? (
+          <div className="flex flex-col justify-center items-center h-40 text-center">
+            <Clock className="h-12 w-12 text-gray-400 mb-2" />
+            <p className="text-neutral-1200">No shift assigned</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="bg-blue-50/80 rounded-lg p-4">
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-x-4">
+                  <div>
+                    <span className="text-gray-500 text-sm">Shift Name:</span>
+                    <div className="font-medium text-gray-900">{shiftData.name || 'PAK'}</div>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-sm">Type:</span>
+                    <div className="text-gray-900">{shiftData.type || 'Weekdays'}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-blue-500" />
+                  <span className="text-gray-900">
+                    {shiftData.starttime ? format(new Date(shiftData.starttime), 'hh:mm a') : '10:00 AM'} - {shiftData.endtime ? format(new Date(shiftData.endtime), 'hh:mm a') : '07:00 PM'}
                   </span>
                 </div>
-                <div className="flex items-center">
-                  <Clock className="h-4 w-4 mr-1 text-blue-500" />
-                  <span className="text-sm">
-                    {shiftData.shiftStartTime} - {shiftData.shiftEndTime}
-                  </span>
+
+                <div>
+                  <span className="text-gray-500 text-sm">Working Days:</span>
+                  <div className="text-gray-900 mt-1">
+                    {formatWeekdays(shiftData.weekdays) || 'Monday, Tuesday, Wednesday, Thursday, Friday'}
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  <span className="font-medium text-sm mr-2">Type:</span>
-                  <span className="text-sm">{shiftData.type}</span>
-                </div>
-              </div>
-              <div className="mt-2">
-                <span className="font-medium text-sm mr-2">Working Days:</span>
-                <span className="text-sm">
-                  {formatWeekdays(shiftData?.weekdays)}
-                </span>
               </div>
             </div>
 
             {showAll && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h3 className="text-sm font-medium mb-2">
-                      Working Days This Month
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {workingDays.map((day) => (
-                        <span
-                          key={`working-${day}`}
-                          className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-md"
-                        >
-                          {format(
-                            new Date(
-                              currentMonth.getFullYear(),
-                              currentMonth.getMonth(),
-                              day
-                            ),
-                            "MMM d"
-                          )}
-                        </span>
-                      ))}
-                    </div>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">Working Days This Month</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {workingDays.map((day) => (
+                      <span
+                        key={`working-${day}`}
+                        className="px-2.5 py-1 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
+                      >
+                        {format(
+                          new Date(
+                            currentMonth.getFullYear(),
+                            currentMonth.getMonth(),
+                            day
+                          ),
+                          "MMM d"
+                        )}
+                      </span>
+                    ))}
                   </div>
+                </div>
+
+                {nonWorkingDays.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-medium mb-2">
-                      Non-Working Days
-                    </h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-3">Non-Working Days</h3>
                     <div className="flex flex-wrap gap-2">
                       {nonWorkingDays.map((day) => (
                         <span
                           key={`nonwork-${day}`}
-                          className="px-2 py-1 text-xs bg-[#fee2e2] text-red-800 rounded-md"
+                          className="px-2.5 py-1 text-sm bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition-colors"
                         >
                           {format(
                             new Date(
@@ -185,13 +195,9 @@ export default function ShiftDetailsWidget() {
                       ))}
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
-          </div>
-        ) : (
-          <div className="p-3 bg-gray-50 rounded-md border border-gray-200">
-            <p className="text-sm text-gray-500">No shift assigned</p>
           </div>
         )}
       </CardContent>
