@@ -15,6 +15,7 @@ import {
   TabsContent,
 } from "src/@/components/ui/tabs";
 import { HasAccess } from "utils/PermissionUtils";
+import { PageLoader } from "components";
 const ShiftRequest = () => {
   const isViewRecordsPermitted = HasAccess("VIEW_SHIFT_REQUEST_RECORDS");
   const isEditEmployeeShiftPermitted = HasAccess("EDIT_EMPLOYEE_SHIFT");
@@ -30,7 +31,7 @@ const ShiftRequest = () => {
   });
   const [filters, setFilters] = useState({
     status: "",
-    assigned_by_id: "",
+    user_role: "",
   });
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -67,15 +68,13 @@ const ShiftRequest = () => {
   }, [activeTab, isViewRecordsPermitted]);
   useEffect(() => {
     fetchShiftRequests();
-  }, [ordering, options.page, options.sizePerPage, filters, activeTab]);
+  }, [ordering, options, filters, activeTab]);
 
   const fetchShiftRequests = async () => {
     setIsLoading(true);
     try {
       const filterData = {
         is_change_request: "true",
-        page: options.page,
-        page_size: options.sizePerPage,
         shift_requested: "Employee",
       };
       if(isViewRecordsPermitted){
@@ -91,8 +90,8 @@ const ShiftRequest = () => {
           filterData.status = filters.status;
         }
       }
-      if (filters.assigned_by_id) {
-        filterData.assigned_by_id = filters.assigned_by_id;
+      if (filters.user_role) {
+        filterData.user_role = filters.user_role;
       }
       if (filters.branch) {
         filterData.branch = filters.branch;
@@ -100,10 +99,11 @@ const ShiftRequest = () => {
       if (filters.search) {
         filterData.search = filters.search;
       }
-
+      
       const response = await getShiftSchedule({
         filterData,
         ordering: ordering,
+        options
       });
 
       if (response && response.results) {
@@ -165,11 +165,11 @@ const ShiftRequest = () => {
             type: "select-two",
             option: roles.map((role) => ({
               label: role.name,
-              value: role.id,
+              value: role.name,
             })),
-            name: "assigned_by_id",
-            placeholder: "Filter by Requestor",
-            values: filters.assigned_by_id,
+            name: "user_role",
+            placeholder: "Requestor Role",
+            values: filters.user_role,
           },
         ]}
         onChange={handleFilterChange}
@@ -180,14 +180,13 @@ const ShiftRequest = () => {
   const TableSection = (
     <Card>
       <CardContent>
-        <TableCustom
+        {isLoading ? <PageLoader/> :<TableCustom
           data={shiftRequests.results}
           columns={EmployeeColumns(fetchShiftRequests)}
           pagination={true}
           dataTotalSize={shiftRequests.count}
           tableOptions={tableOptions}
-          isLoading={isLoading}
-        />
+        />}
       </CardContent>
     </Card>
   );

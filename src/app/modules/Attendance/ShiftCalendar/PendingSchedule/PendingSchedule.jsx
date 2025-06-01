@@ -275,43 +275,78 @@ const ListView = ({ pendingShift, handleSelect, active, getShiftName }) => {
 
   return (
     <div
-      className={`flex flex-row items-center justify-start gap-4 py-3 px-2 border-b-2 hover:bg-plum-500 hover:text-plum-900 cursor-pointer rounded-md transition-colors duration-150 ${
-        isActive
-          ? "bg-plum-300 text-plum-1100 border-plum-400"
-          : "border-gray-200"
-      }`}
-      onClick={() => {
-        handleSelect(pendingShift);
-      }}
+      className={`
+        relative mb-3 p-4 rounded-lg border-2 cursor-pointer
+        transition-all duration-150 
+        ${isActive
+          ? "bg-plum-300 text-plum-1100 border-plum-400 shadow-md transform scale-[1.01]"
+          : "border-gray-200 hover:bg-plum-500 hover:text-plum-900 hover:border-plum-300"
+        }
+      `}
+      onClick={() => handleSelect(pendingShift)}
     >
-      <EmployeeOverview
-        id={pendingShift?.employee}
-        showPosition={true}
-        showDepartment={true}
-      />
-      <div className="flex flex-col justify-start gap-1 flex-1">
-        <div className="flex justify-start text-base font-medium text-neutral-1100">
-          {getShiftName(pendingShift)}
-        </div>
-        <div className="flex justify-start text-sm text-muted-foreground">
-          {moment(pendingShift.start_date).format("MMM DD, YYYY")} -{" "}
-          {moment(pendingShift.end_date).format("MMM DD, YYYY")}
-        </div>
-        <div className="flex justify-start text-xs text-muted-foreground">
-          Weekly Hours: {pendingShift.total_weekly_hours}h
-        </div>
-      </div>
+      {/* Active indicator bar */}
+      {isActive && (
+        <div className="absolute left-0 top-4 bottom-4 w-1 bg-plum-600 rounded-r-full" />
+      )}
 
-      {/* Status indicator */}
-      <div className="flex flex-col items-end">
-        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">
-          {pendingShift.status}
-        </span>
-        {pendingShift.is_org_based ? (
-          <span className="text-xs text-blue-600 mt-1">Org Shift</span>
-        ) : (
-          <span className="text-xs text-purple-600 mt-1">Custom</span>
-        )}
+      <div className="flex items-start justify-between gap-4">
+        {/* Left Section - Employee Info */}
+        <div className="flex-1">
+          <div className="mb-3">
+            <EmployeeOverview
+              id={pendingShift?.employee}
+              showPosition={true}
+              showDepartment={true}
+            />
+          </div>
+
+          {/* Shift Details - Better organized */}
+          <div className="space-y-1.5 pl-12">
+            <div className="text-base font-medium text-neutral-1100">
+              {getShiftName(pendingShift)}
+            </div>
+            
+            <div className="flex items-center gap-3 text-sm">
+              <span className="text-muted-foreground">
+                {moment(pendingShift.start_date).format("MMM DD, YYYY")}
+              </span>
+              <span className="text-muted-foreground">—</span>
+              <span className="text-muted-foreground">
+                {moment(pendingShift.end_date).format("MMM DD, YYYY")}
+              </span>
+            </div>
+            
+            <div className="text-xs text-muted-foreground">
+              Weekly Hours: {pendingShift.total_weekly_hours}h
+            </div>
+          </div>
+        </div>
+
+        {/* Right Section - Status & Type */}
+        <div className="flex flex-col items-end justify-center gap-2 min-w-[90px]">
+          <span className={`
+            px-3 py-1.5 rounded-full text-xs font-medium
+            ${pendingShift.status === 'Pending' 
+              ? 'bg-yellow-100 text-yellow-800' 
+              : pendingShift.status === 'Approved'
+              ? 'bg-green-100 text-green-800'
+              : 'bg-red-100 text-red-800'
+            }
+          `}>
+            {pendingShift.status}
+          </span>
+          
+          <span className={`
+            text-xs font-medium
+            ${pendingShift.is_org_based 
+              ? 'text-blue-600' 
+              : 'text-purple-600'
+            }
+          `}>
+            {pendingShift.is_org_based ? 'Org Shift' : 'Custom'}
+          </span>
+        </div>
       </div>
     </div>
   );
