@@ -159,6 +159,12 @@ const deleteAsset = async (assetId) => {
     );
     return response.status === 204;
   } catch (error) {
+    if (error?.response?.data?.detail) {
+      return {
+        status: false,
+        msg: error.response.data.detail
+      };
+    }
     console.error("Error deleting asset:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
