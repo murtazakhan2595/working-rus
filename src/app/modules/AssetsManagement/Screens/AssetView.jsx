@@ -52,19 +52,23 @@ const ViewAsset = ({ isOpen, setIsOpen, data, reload = () => {}, canEdit = true,
     setIsDeleting(true);
 
     try {
-      await deleteAsset(viewData.id);
+      const success = await deleteAsset(viewData.id);
+      if (success.hasOwnProperty('status') && success.status == false) {
+        toast.error(success.msg);  
+        setOpenDeleteAlert(false);
+      } else {
+        toast.success(`Asset "${viewData.asset_name}" deleted successfully`, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
 
-      toast.success(`Asset "${viewData.asset_name}" deleted successfully`, {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+        // Close all dialogs
+        setOpenDeleteAlert(false);
+        setIsOpen(false);
 
-      // Close all dialogs
-      setOpenDeleteAlert(false);
-      setIsOpen(false);
-
-      // Reload the table
-      if (typeof reload === "function") {
-        reload(true);
+        // Reload the table
+        if (typeof reload === "function") {
+          reload(true);
+        }
       }
     } catch (error) {
       console.error("Error deleting asset:", error);

@@ -208,11 +208,16 @@ const Assets = ({ userProfile }) => {
     setIsDeleting(true);
     try {
       const success = await deleteAsset(assetToDelete.id);
-      if (success) {
+      if (success && !success.hasOwnProperty('status')) {
         toast.success(`Asset "${assetToDelete.asset_name}" deleted successfully`);
         fetchAssetsData(true);
       } else {
-        toast.error("Failed to delete asset");
+
+        if (success.hasOwnProperty('status') && success.status == false) {
+          toast.error(success.msg);  
+        } else {
+          toast.error("Failed to delete asset");
+        }
       }
     } catch (error) {
       console.error("Error deleting asset:", error);
