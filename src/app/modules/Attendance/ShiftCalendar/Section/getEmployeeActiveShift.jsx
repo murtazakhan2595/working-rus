@@ -1,34 +1,119 @@
 import { employeeData } from "app/hooks/attendance";
 import moment from "moment";
 import { saveShiftSchedulesLogs } from "../../../../hooks/shiftManagement";
+import { getShiftById } from "app/hooks/attendance";
+import { getShiftSchedule } from "app/hooks/shiftManagement";
 
-const { getShiftById } = require("app/hooks/attendance");
-const { getShiftSchedule } = require("app/hooks/shiftManagement");
+const getEmployeeActiveShift = async (employeeId, date) => {
+  try {
+    const formattedDate = moment(date).format('YYYY-MM-DD');
+    
+    // First check for approved schedules for this date
+    const scheduleResponse = await getShiftSchedule({
+      filterData: {
+        employee: employeeId,
+        status: "Approved",
+        end_date_gte: formattedDate,
+        start_date_lte: formattedDate,
+        is_change_request: "true,false"
+      },
+      ordering: "-created_at",
+    });
 
-const getEmployeeActiveShift = async (employeeId, shiftId) => {
-  const scheduleResponse = await getShiftSchedule({
-    filterData: {
-      employee: employeeId,
-      status: "Approved",
-      date: new Date().toISOString().split("T")[0],
-      // date: "2025-06-03",
-    },
-    ordering: "-id",
-    options: {
-      page: 1,
-      sizePerPage: 1, // Get only the latest schedule
-    },
-  });
-  if (scheduleResponse && scheduleResponse.count > 0) {
-    return scheduleResponse.results[0];
+    // If we have approved schedules
+    if (scheduleResponse?.results?.length > 0) {
+      const schedule = scheduleResponse.results[0];
+      
+      // Check if it's a custom schedule
+      if (schedule.custom_schedule && schedule.custom_schedule[formattedDate]) {
+        const daySchedule = schedule.custom_schedule[formattedDate];
+        
+        // Check for off day
+        if (daySchedule.is_off) {
+          return {
+            status: 'off',
+            is_weekly_off: true
+          };
+        }
+        
+        // Check for split shift
+        if (daySchedule.is_split) {
+          return {
+            status: 'active',
+            is_split_shift: true,
+            split_shifts: [
+              {
+                start_time: `${formattedDate} ${daySchedule.start_time_1}`,
+                end_time: `${formattedDate} ${daySchedule.end_time_1}`
+              },
+              {
+                start_time: `${formattedDate} ${daySchedule.start_time_2}`,
+                end_time: `${formattedDate} ${daySchedule.end_time_2}`
+              }
+            ],
+            overtime_hours: daySchedule.overtime_hours || 0
+          };
+        }
+        
+        // Regular shift
+        return {
+          status: 'active',
+          start_time: `${formattedDate} ${daySchedule.start_time}`,
+          end_time: `${formattedDate} ${daySchedule.end_time}`,
+          overtime_hours: daySchedule.overtime_hours || 0
+        };
+      }
+    }
+
+    // If no schedule found, check employee's default shift assignment
+    const empData = await employeeData(employeeId);
+    if (empData?.shift_assignment) {
+      const shiftInfo = await getShiftById(empData.shift_assignment);
+      
+      if (shiftInfo) {
+        // Check if it's a working day (assuming Mon-Fri are working days)
+        const dayOfWeek = moment(date).day();
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+        
+        if (isWeekend) {
+          return {
+            status: 'off',
+            is_weekly_off: true
+          };
+        }
+
+        // Get the shift timing for the specific date
+        const startTime = moment(shiftInfo.starttime).format('HH:mm:ss');
+        const endTime = moment(shiftInfo.endtime).format('HH:mm:ss');
+
+        return {
+          status: 'active',
+          start_time: `${formattedDate} ${startTime}`,
+          end_time: `${formattedDate} ${endTime}`,
+          overtime_hours: 0
+        };
+      }
+    }
+
+    // Check for leave
+    // Note: You'll need to implement the leave check based on your leave management system
+    const isOnLeave = false; // Replace with actual leave check
+    if (isOnLeave) {
+      return {
+        status: 'off',
+        is_on_leave: true
+      };
+    }
+
+    // If no shift found
+    return {
+      status: 'no_shift'
+    };
+  } catch (error) {
+    console.error('Error in getEmployeeActiveShift:', error);
+    return null;
   }
-  const directShiftInfo = await getShiftById(shiftId);
-  if (directShiftInfo && directShiftInfo.id) {
-    return directShiftInfo;
-  }
-  return null;
 };
-
 
 // When displaying change request comparison
  const getChangeRequestComparison = async(changeRequest)=> {

@@ -27,6 +27,8 @@ const ScheduleShiftModal = ({
   onScheduleSuccess = () => {},
   editSchedule=null,
 }) => {
+
+  console.log("Edit Schedule Data:--------------------------------", employees);
   const isEditMode = Boolean(editSchedule);
   const [closeSheet, setCloseSheet] = useState(false);
   const [shifts, setShifts] = useState([]);
