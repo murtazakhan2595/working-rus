@@ -49,10 +49,10 @@ const LevelDelegateActions = ({
   return (
     <>
       <DropdownActionMenu
-        // onView={handleView}
+        onView={handleView}
         onEdit={isEditDelegatePermitted ? handleEdit : null}
         onDelete={isDeleteDelegatePermitted ? handleDelete : null}
-        // viewText="View Delegate"
+        viewText="View Delegate"
         editText="Edit Delegate"
         deleteText="Delete Delegate"
         menuTooltip="Delegates Actions"
@@ -75,6 +75,7 @@ const LevelDelegateActions = ({
           isOpen={view}
           setIsOpen={() => {
             setView(false);
+            reloadData(true);
           }}
           current_id={data.id}
           reloadData={reloadData}
