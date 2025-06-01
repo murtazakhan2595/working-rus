@@ -1,28 +1,34 @@
 import React from "react";
 import { DetailBox, DetailCard } from "components/SheetCardExtension";
 
-const DetailContent = ({ 
-  title, 
-  currentItem, 
-  fields = [],
-  dateField = "created_at",
-  dateTitle = "Created At"
-}) => {
+const DetailContent = ({ currentItem = {}, fields = [] }) => {
   return (
-    <DetailCard 
-      detailCardTitle={title} 
-      date={currentItem?.[dateField]} 
-      dateTitle={dateTitle}
-    >
-      {fields.map((field) => (
-        <DetailBox 
-          key={field.key}
-          label={field.label} 
-          value={field.formatter ? field.formatter(currentItem?.[field.key]) : currentItem?.[field.key]} 
-        />
+    <div>
+      {fields.map(({ field = [], title, footerField, footerTitle }) => (
+        <DetailCard
+          detailCardTitle={title}
+          date={currentItem?.[footerField]}
+          dateTitle={footerTitle}
+        >
+          {field.map(
+            ({ key, label, formatter, fallBackText = "N/A" }) => {
+              const value =
+                currentItem && currentItem[key]
+                  ? currentItem[key]
+                  : null;
+              return (
+                <DetailBox
+                  key={key}
+                  label={label}
+                  value={formatter ? formatter(value) : value ?? fallBackText}
+                />
+              );
+            }
+          )}
+        </DetailCard>
       ))}
-    </DetailCard>
+    </div>
   );
 };
 
-export default DetailContent; 
+export default DetailContent;
