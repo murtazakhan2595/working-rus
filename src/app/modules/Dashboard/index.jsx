@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { getDashboard } from "./Sections";
 import { Header } from "components";
 import { Card } from "components/ui/card";
-import ShiftDetailsWidget from './Screens/ShiftDetailsWidget';
-import DailyShiftDetailsCard from '../../../components/DailyShiftDetailsCard';
+import ShiftDetailsWidget from "./Screens/ShiftDetailsWidget";
+import { DailyShiftDetailsCard } from "app/modules/Attendance/MyAttendance/Section";
 
 const filters = {
   TalentSphere: "TalentSphere",
@@ -62,11 +62,11 @@ const Dashboard = ({ userProfile }) => {
 
   // Separate main content sections and sidebar sections
   const mainContentSections = DashBoardSections.slice(1).filter(
-    section => section.className !== 'w-full'
+    (section) => section.className !== "w-full"
   );
-  
+
   const sidebarSections = DashBoardSections.slice(1).filter(
-    section => section.className === 'w-full'
+    (section) => section.className === "w-full"
   );
 
   return (
@@ -83,18 +83,14 @@ const Dashboard = ({ userProfile }) => {
           )}
 
           {/* Shift Schedule Section */}
-          <div className="lg:col-span-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {/* New Shift Widget */}
-              <Card className="w-full h-full">
-                <ShiftDetailsWidget />
-              </Card>
-
-              {/* Daily Shift Details */}
-              <Card className="w-full h-full">
-                <DailyShiftDetailsCard userId={userProfile.id} isDashboard={true} />
-              </Card>
-            </div>
+          <div className="lg:col-span-2">
+            {/* Daily Shift Details */}
+            <Card className="w-full h-full">
+              <DailyShiftDetailsCard
+                userId={userProfile.id}
+                isDashboard={true}
+              />
+            </Card>
           </div>
 
           {/* Recent Activity */}

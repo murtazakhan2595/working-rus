@@ -5,6 +5,7 @@ import {
   mapAttendanceData,
   mapShiftData,
   mapTimeAdjustmentPayloadeData,
+  mapEmployeeAttendanceDetail,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
@@ -618,14 +619,15 @@ export const getEmployeeAttendanceDetails = async (employee_id) => {
         headers: headers(),
       });
       if(response){
-        return response.data;
+        const emp_attendance_data =  mapEmployeeAttendanceDetail(response.data);
+        return emp_attendance_data;
       }
     } catch (error) {
       console.error("Error fetching by id:", error);
       if (error?.response?.status === 401) {
         HandleLogout();
       }
-      return false;
+      return {};
     }
   } else return {};
 };
