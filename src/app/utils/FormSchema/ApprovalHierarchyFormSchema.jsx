@@ -4,9 +4,6 @@ export const validateApprovalHierarchyFormSchema = (values) => {
   const errors = {};
   if (!values?.name?.trim()) errors.name = "Name is required";
   if (!values?.request_type) errors.request_type = "Request type is required";
-  // if (values.auto_forward_enabled)
-  //   if (!values.auto_forward_threshold)
-  //     errors.auto_forward_threshold = "Threshold in hours is required";
   return errors;
 };
 
@@ -63,6 +60,10 @@ export const validateAddHierarchyLevelsForm = (
       } else {
         seenDesignations.add(level.designation);
       }
+
+      if (level.auto_forward_enabled)
+        if (!level.auto_forward_threshold)
+          levelErrors.auto_forward_threshold = "Threshold in hours is required";
 
       if (level.is_final_approval) {
         if (finalApprovalCount > 0)

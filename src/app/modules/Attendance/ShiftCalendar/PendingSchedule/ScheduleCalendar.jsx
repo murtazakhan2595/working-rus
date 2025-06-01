@@ -5,65 +5,8 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import moment from "moment";
 
-const pendingSchedule = {
-  id: 4,
-  employee: 104,
-  shift_id: null,
-  schedule_name: "Custom Arrangement - Week Jan 15-21",
-  start_date: "2024-01-15",
-  end_date: "2024-01-21",
-  is_org_based: false,
-  custom_schedule: {
-    "2025-05-22": {
-      is_off: false,
-      is_split: false,
-      start_time: "09:00",
-      end_time: "17:00",
-    },
-    "2025-05-23": {
-      is_off: false,
-      is_split: true,
-      start_time_1: "09:00",
-      end_time_1: "13:00",
-      start_time_2: "14:00",
-      end_time_2: "18:00",
-    },
-    "2025-05-24": {
-      is_off: true,
-    },
-    "2025-05-25": {
-      is_off: false,
-      is_split: false,
-      start_time: "10:00",
-      end_time: "18:00",
-    },
-    "2025-05-26": {
-      is_off: false,
-      is_split: false,
-      start_time: "16:00",
-      end_time: "00:00", // Next day
-    },
-  },
-  total_weekly_hours: 32.0,
-  status: "Pending",
-  assigned_by: 201,
-  approved_by: null,
-  approval_date: null,
-  created_at: "2024-01-10T10:30:00Z",
-
-  // No shift details for custom schedules
-  shiftDetails: null,
-
-  // Employee details
-  employeeDetails: {
-    id: 104,
-    first_name: "Alice",
-    last_name: "Brown",
-    employee_id: "EMP004",
-  },
-};
-
-const ScheduleCalendar = ({}) => {
+const ScheduleCalendar = ({ pendingSchedule }) => {
+  console.log("Pending Schedule", pendingSchedule);
   const [events, setEvents] = useState([]);
   const prevScheduleRef = useRef(null);
 
@@ -94,10 +37,12 @@ const ScheduleCalendar = ({}) => {
     try {
       const events = [];
 
-      if (schedule.is_org_based && schedule.shiftDetails) {
+      if (schedule.is_org_based && schedule.shift_details) {
+        console.log("INFO - Generating org-based schedule events 1", schedule);
         // Handle organization-based schedule
         events.push(...generateOrgScheduleEvents(schedule));
       } else if (schedule.custom_schedule) {
+        console.log("INFO 1 - Generating custom schedule events", schedule);
         // Handle custom schedule
         events.push(...generateCustomScheduleEvents(schedule));
       }
@@ -111,14 +56,23 @@ const ScheduleCalendar = ({}) => {
 
   const generateOrgScheduleEvents = (schedule) => {
     const events = [];
-    const shift = schedule.shiftDetails;
+    const shiftDetails = schedule.shift_details;
 
-    // Get weekdays array from shift
-    const weekdays = shift.weekdays
-      ? shift.weekdays.split(",")
-      : ["mon", "tue", "wed", "thu", "fri"];
+    if (!shiftDetails) return events;
 
-    // Create individual events for each day in the date range
+    // Parse weekdays from JSON string
+    let weekdays = [];
+    try {
+      weekdays = JSON.parse(shiftDetails.weekdays);
+    } catch (e) {
+      weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    }
+
+    // Convert to lowercase short form for moment.js
+    const shortWeekdays = weekdays.map((day) =>
+      day.toLowerCase().substring(0, 3)
+    );
+
     const startDate = moment(schedule.start_date);
     const endDate = moment(schedule.end_date);
 
@@ -126,31 +80,30 @@ const ScheduleCalendar = ({}) => {
     while (currentDate.isSameOrBefore(endDate)) {
       const dayName = currentDate.format("ddd").toLowerCase();
 
-      // Check if this day is in the shift's weekdays
-      if (weekdays.includes(dayName)) {
-        const eventStart =
-          currentDate.format("YYYY-MM-DD") + "T" + shift.starttime;
-        const eventEnd = currentDate.format("YYYY-MM-DD") + "T" + shift.endtime;
+      if (shortWeekdays.includes(dayName)) {
+        const startTime = moment(shiftDetails.starttime).format("HH:mm");
+        const endTime = moment(shiftDetails.endtime).format("HH:mm");
 
-        if (shift.type === "Split") {
-          events.push({
-            title: `${shift.name} (Split)`,
-            start: eventStart,
-            end: eventEnd,
-            backgroundColor: "#3B82F6",
-            borderColor: "#2563EB",
-            textColor: "#FFFFFF",
-          });
-        } else {
-          events.push({
-            title: shift.name,
-            start: eventStart,
-            end: eventEnd,
-            backgroundColor: "#10B981",
-            borderColor: "#059669",
-            textColor: "#FFFFFF",
-          });
+        // Handle overnight shifts
+        let eventEndDate = currentDate.format("YYYY-MM-DD");
+        if (endTime < startTime) {
+          // End time is next day
+          eventEndDate = currentDate.clone().add(1, "day").format("YYYY-MM-DD");
         }
+
+        events.push({
+          title: `${shiftDetails.name} (${startTime} - ${endTime})`,
+          start: `${currentDate.format("YYYY-MM-DD")}T${startTime}:00`,
+          end: `${eventEndDate}T${endTime}:00`,
+          backgroundColor: "#10B981", // Green for org shifts
+          borderColor: "#059669",
+          textColor: "#FFFFFF",
+          extendedProps: {
+            type: "org_schedule",
+            shiftName: shiftDetails.name,
+            scheduleId: schedule.id,
+          },
+        });
       }
 
       currentDate.add(1, "day");
@@ -267,11 +220,11 @@ const ScheduleCalendar = ({}) => {
             </span>
             <span>Total Hours: {pendingSchedule.total_weekly_hours}h</span>
           </div>
-          {pendingSchedule.is_org_based && pendingSchedule.shiftDetails && (
-            <div className="mt-1 text-sm text-gray-600">
-              Shift: {pendingSchedule.shiftDetails.name} (
-              {pendingSchedule.shiftDetails.starttime} -{" "}
-              {pendingSchedule.shiftDetails.endtime})
+          {pendingSchedule.is_org_based && pendingSchedule.shift_details && (
+            <div className="mt-1 text-sm">
+              Shift: {pendingSchedule.shift_details.name} (
+              {moment(pendingSchedule.shift_details.starttime).format("HH:mm")}{" "}
+              - {moment(pendingSchedule.shift_details.endtime).format("HH:mm")})
             </div>
           )}
         </div>
@@ -294,7 +247,7 @@ const ScheduleCalendar = ({}) => {
                 {eventInfo.event.title}
               </div>
               {!eventInfo.event.allDay && (
-                <div className="text-xs opacity-80">
+                <div className="text-xs ">
                   {moment(eventInfo.event.start).format("HH:mm")} -{" "}
                   {moment(eventInfo.event.end).format("HH:mm")}
                 </div>

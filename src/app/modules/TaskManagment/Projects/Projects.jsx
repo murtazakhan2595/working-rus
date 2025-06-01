@@ -30,14 +30,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
+import { HasAccess } from "utils/PermissionUtils";
 
 const Projects = ({ userProfile }) => {
   const dispatch = useDispatch();
-  const userRole = userProfile?.role;
+  const isEditProjectsPermitted = HasAccess("EDIT_PROJECTS");
+  const isViewAllProjectsPermitted = HasAccess("VIEW_ALL_PROJECTS");
+  const isAddProjectsPermitted = HasAccess("ADD_PROJECTS");
   const userId = userProfile?.id;
   const [isLoading, setIsLoading] = useState(true);
   const [filterData, setFilterData] = useState(
-    userRole === 2 || userRole === 4 ? { project_members: [userId] } : {}
+    !isViewAllProjectsPermitted ? { project_members: [userId] } : {}
   );
   const [viewProject, setViewProject] = useState(false);
   const [AllProjects, setAllProjects] = useState([]);
@@ -62,7 +65,7 @@ const Projects = ({ userProfile }) => {
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
     onRowClick: (row) => {
-      if (userRole !== 4) setViewProject(row);
+      if (isEditProjectsPermitted) setViewProject(row);
     },
   };
 
@@ -119,7 +122,7 @@ const Projects = ({ userProfile }) => {
     <div>
       <Header
         content={
-          userRole !== 4 ? (
+          isAddProjectsPermitted && (
             <Button
               onClick={(e) => {
                 e.preventDefault();
@@ -128,8 +131,6 @@ const Projects = ({ userProfile }) => {
             >
               Add Project
             </Button>
-          ) : (
-            <></>
           )
         }
       />
@@ -152,13 +153,6 @@ const Projects = ({ userProfile }) => {
             </button>
           </div>
 
-          {viewMode === "table" && userRole !== 4 && (
-            <RenderProject
-              toggleAddProject={toggleAddProject}
-              fetchData={fetchData}
-              userRole={userRole}
-            />
-          )}
           {viewMode === "table" ? (
             <Card>
               <CardContent>
@@ -190,7 +184,7 @@ const Projects = ({ userProfile }) => {
                   project={project}
                   toggleAddProject={toggleAddProject}
                   fetchData={fetchData}
-                  userRole={userRole}
+                  isEditProjectsPermitted={isEditProjectsPermitted}
                 />
               ))}
             </div>
@@ -221,11 +215,7 @@ const getStatusDotColor = (status) => {
   }
 };
 
-const RenderProject = ({
-  project,
-  fetchData = () => {},
-  userRole,
-}) => {
+const RenderProject = ({ project, fetchData = () => {}, isEditProjectsPermitted }) => {
   const navigate = useNavigate();
   const [isEditMode, setIsEditMode] = useState(false);
   const navigateToBoard = () => {
@@ -234,7 +224,7 @@ const RenderProject = ({
 
   const handleProjectClick = (event) => {
     event.preventDefault();
-    if (userRole !== 4) setIsEditMode(true);
+    if (isEditProjectsPermitted) setIsEditMode(true);
   };
   return (
     <Card className="rounded-lg">

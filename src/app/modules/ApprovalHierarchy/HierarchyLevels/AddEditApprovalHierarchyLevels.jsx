@@ -221,7 +221,6 @@ const AddEditApprovalHierarchyLevels = ({
                     label: "Designation",
                     options: Designations,
                     required: true,
-                    // value: level.designation,
                   },
                   {
                     InputField: RemoveHierarchyLevels,
@@ -230,9 +229,25 @@ const AddEditApprovalHierarchyLevels = ({
                   },
                   {
                     InputField: CheckBoxInput,
+                    name: `levels[${index}].auto_forward_enabled`,
+                    label: "Auto Forward",
+                  },
+                  ...(level.auto_forward_enabled
+                    ? [
+                        {
+                          InputField: NumberInput,
+                          name: `levels[${index}].auto_forward_threshold`,
+                          label: "Auto Farward Threshold Type",
+                          description:
+                            "Add the thershold time in hours. Request will be forwarded to next level automatically if not responded in mentioned time",
+                          min: 1,
+                        },
+                      ]
+                    : []),
+                  {
+                    InputField: CheckBoxInput,
                     name: `levels[${index}].is_final_approval`,
                     label: "Final Approver",
-                    // value: level.is_final_approval,
                     description:
                       "If selected this level will be the final approver",
                     colsSpan: 2,

@@ -82,13 +82,16 @@ const pathNames = () => {
     "my-tranfers": "My Tranfers",
     assets: "Assets",
     "my-assets": "My Assets",
+    "my-shift-calendar": "My Shift Calendar",
     "request-and-assign": "Request and Assign",
     documents: "HR Documents",
     "my-documents": "HR Documents",
     "on-hold-salaries": "On-Hold Salaries",
+    "hierarchy-detail":"Approval Hierarchy Detail",
     "office-settings/approval-hierarchy":"Approval Hierarchy",
     "office-settings": "Organization Setup",
     settings: "Settings",
+    'time-adjustments': "Time Ajustments",
   };
 };
 

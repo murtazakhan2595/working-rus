@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { FilterInput, SelectInputComponent } from "components/FormControl";
 import { useSelector } from "react-redux";
 
-const ShiftCalendarFilters = ({ onFilterChange, teamMembers }) => {
+const ShiftCalendarFilters = ({
+  onFilterChange,
+  showShiftStatus = true,
+  searchPlaceholder = "Search by ID and Name",
+}) => {
   const [filterData, setFilterData] = useState({});
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [shiftStatus, setShiftStatus] = useState("");
@@ -35,24 +39,38 @@ const ShiftCalendarFilters = ({ onFilterChange, teamMembers }) => {
     onFilterChange(filterData);
   }, [filterData, onFilterChange]);
 
+  // Reset internal state when filters are cleared externally
+  useEffect(() => {
+    if (Object.keys(filterData).length === 0) {
+      setSelectedDepartment("");
+      setShiftStatus("");
+    }
+  }, [filterData]);
+
   return (
     <div className="flex flex-col justify-between lg:flex-row md:flex-row xl:flex-row gap-2 mb-4">
-      <div className="flex">
-        <SelectInputComponent
-          name="shift_status"
-          value={shiftStatus}
-          placeholder="Shift Status"
-          options={shiftStatusOptions}
-          onChange={(name, value) => handleFilterChange("shift_status", value)}
-          classes="flex-row"
-        />
-      </div>
+      {showShiftStatus ? (
+        <div className="flex">
+          <SelectInputComponent
+            name="shift_status"
+            value={shiftStatus}
+            placeholder="Shift Status"
+            options={shiftStatusOptions}
+            onChange={(name, value) =>
+              handleFilterChange("shift_status", value)
+            }
+            classes="flex-row"
+          />
+        </div>
+      ) : (
+        <div></div>
+      )}
       <FilterInput
         filters={[
           {
             type: "search",
-            placeholder: "Search by ID and Name",
-            name: "id_and_first_name",
+            placeholder: searchPlaceholder,
+            name: "search_term",
           },
           {
             type: "select-one",

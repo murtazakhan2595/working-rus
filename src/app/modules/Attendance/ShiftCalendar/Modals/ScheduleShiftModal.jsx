@@ -1,4 +1,3 @@
-// src/app/modules/Attendance/ShiftCalendar/Modals/ScheduleShiftModal.jsx
 import React, { useState, useEffect } from "react";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import SheetComponent from "components/ui/CustomSheet";
@@ -19,14 +18,18 @@ import { validateScheduleShiftFormSchema } from "app/utils/FormSchema/ShiftManag
 import { ScheduleFormValues } from "app/utils/Types/ShiftManagement";
 import { getShift } from "app/hooks/attendance";
 import { saveShiftSchedule } from "app/hooks/shiftManagement";
-import { saveShift } from "app/hooks/shiftManagement";
 
 const ScheduleShiftModal = ({
   isOpen,
   setIsOpen,
   selectedDates = null,
   employees = [],
+  onScheduleSuccess = () => {},
+  editSchedule=null,
 }) => {
+
+  console.log("Edit Schedule Data:--------------------------------", employees);
+  const isEditMode = Boolean(editSchedule);
   const [closeSheet, setCloseSheet] = useState(false);
   const [shifts, setShifts] = useState([]);
   const [useCustomShift, setUseCustomShift] = useState(false);
@@ -39,7 +42,91 @@ const ScheduleShiftModal = ({
     completed: 0,
   });
   const userProfile = useSelector((state) => state.user.userProfile);
+  // Add these functions inside the component, before the useEffect hooks
 
+  // Transform edit schedule data to form format
+  const transformEditDataToFormData = (editSchedule) => {
+    const dateRange = `${editSchedule.start_date},${editSchedule.end_date}`;
+
+    // Generate daily schedule from edit data
+    const dailySchedule = generateDailyScheduleFromEdit(
+      editSchedule,
+      dateRange
+    );
+
+    return {
+      dateRange: dateRange,
+      shiftType: editSchedule.is_org_based ? "predefined" : "custom",
+      employee: editSchedule.employee, // Single employee for edit mode
+      employees: [editSchedule.employee], // Keep employees array for consistency
+      shiftId: editSchedule.is_org_based ? editSchedule.shift : "",
+      dailySchedule: dailySchedule,
+      totalHours: { daily: {}, weekly: 0 },
+    };
+  };
+
+  // Generate daily schedule from edit data
+  const generateDailyScheduleFromEdit = (editSchedule, dateRange) => {
+    const [startDate, endDate] = dateRange.split(",");
+    const start = moment(startDate);
+    const end = moment(endDate);
+    const days = [];
+
+    let current = start.clone();
+    while (current.isSameOrBefore(end)) {
+      const dateStr = current.format("YYYY-MM-DD");
+      const dayData = {
+        date: dateStr,
+        day: current.format("ddd"),
+        isOff: false,
+        isSplit: false,
+        startTime: null,
+        endTime: null,
+        splitStartTime1: null,
+        splitEndTime1: null,
+        splitStartTime2: null,
+        splitEndTime2: null,
+      };
+
+      // If custom schedule exists, populate from it
+      if (
+        editSchedule.custom_schedule &&
+        editSchedule.custom_schedule[dateStr]
+      ) {
+        const customDay = editSchedule.custom_schedule[dateStr];
+
+        if (customDay.is_off) {
+          dayData.isOff = true;
+        } else if (customDay.is_split) {
+          dayData.isSplit = true;
+          dayData.splitStartTime1 = customDay.start_time_1
+            ? moment(`${dateStr} ${customDay.start_time_1}`)
+            : null;
+          dayData.splitEndTime1 = customDay.end_time_1
+            ? moment(`${dateStr} ${customDay.end_time_1}`)
+            : null;
+          dayData.splitStartTime2 = customDay.start_time_2
+            ? moment(`${dateStr} ${customDay.start_time_2}`)
+            : null;
+          dayData.splitEndTime2 = customDay.end_time_2
+            ? moment(`${dateStr} ${customDay.end_time_2}`)
+            : null;
+        } else {
+          dayData.startTime = customDay.start_time
+            ? moment(`${dateStr} ${customDay.start_time}`)
+            : null;
+          dayData.endTime = customDay.end_time
+            ? moment(`${dateStr} ${customDay.end_time}`)
+            : null;
+        }
+      }
+
+      days.push(dayData);
+      current.add(1, "day");
+    }
+
+    return days;
+  };
   // Fetch shifts
   useEffect(() => {
     const fetchShifts = async () => {
@@ -56,11 +143,7 @@ const ScheduleShiftModal = ({
         }
       } catch (error) {
         console.error("Error fetching shifts:", error);
-        setShifts([
-          { value: 1, label: "Morning Shift (9:00 AM - 6:00 PM)" },
-          { value: 2, label: "Evening Shift (2:00 PM - 10:00 PM)" },
-          { value: 3, label: "Night Shift (10:00 PM - 6:00 AM)" },
-        ]);
+        toast.error("Failed to fetch shifts");
       }
     };
 
@@ -118,114 +201,33 @@ const ScheduleShiftModal = ({
   };
 
   useEffect(() => {
-    setFormData({
-      ...ScheduleFormValues,
-      dateRange: getInitialDateRange(),
-      shiftType: usePredefinedShift ? "predefined" : "custom",
-      employees: [],
-      shiftId: "",
-      dailySchedule: generateDailySchedule(getInitialDateRange()),
-      totalHours: { daily: {}, weekly: 0 },
-    });
-  }, [isOpen]);
+    if (isEditMode && editSchedule) {
+      // Edit mode: Transform edit data to form format
+      const transformedData = transformEditDataToFormData(editSchedule);
+      setFormData(transformedData);
 
-  // Helper to format just the time part (HH:MM) from an ISO string or moment
-  function formatTimeOnly(timeStr) {
-    if (!timeStr) return "null";
+      // Set UI state based on edit data
+      setUsePredefinedShift(editSchedule.is_org_based);
+      setUseCustomShift(!editSchedule.is_org_based);
 
-    // Convert to 24-hour format (HH:mm) regardless of the source format
-    const time = moment(timeStr);
-    return time.format("HH:mm");
-  }
-
-  // Helper to normalize moment times by stripping date info but preserving time
-  function normalizeMomentTime(timeStr) {
-    if (!timeStr) return null;
-
-    const time = moment(timeStr);
-    // Extract just hours and minutes from the time
-    const hours = time.hours();
-    const minutes = time.minutes();
-
-    // Create a new moment with today's date but the same time
-    return moment().startOf("day").hours(hours).minutes(minutes).toISOString();
-  }
-
-  // Helper function to group days by pattern
-  function groupDaysByPattern(dailySchedule) {
-    const offDays = [];
-    const regularPatterns = {};
-    const splitPatterns = {};
-
-    dailySchedule.forEach((day) => {
-      if (day.isOff) {
-        offDays.push(day);
-      } else if (day.isSplit) {
-        // For split shifts, create a simplified pattern key that will group identical patterns
-        // Remove timezone/date info to ensure proper grouping
-        const timeKey = `${formatTimeOnly(
-          day.splitStartTime1
-        )}-${formatTimeOnly(day.splitEndTime1)}-${formatTimeOnly(
-          day.splitStartTime2
-        )}-${formatTimeOnly(day.splitEndTime2)}`;
-
-        if (!splitPatterns[timeKey]) {
-          splitPatterns[timeKey] = [];
-        }
-        splitPatterns[timeKey].push(day);
-      } else {
-        // For regular shifts, simplify the pattern key to just hours/minutes
-        // This ensures shifts with same times but different dates group together
-        const timeKey = `${formatTimeOnly(day.startTime)}-${formatTimeOnly(
-          day.endTime
-        )}`;
-
-        if (!regularPatterns[timeKey]) {
-          regularPatterns[timeKey] = [];
-        }
-        regularPatterns[timeKey].push(day);
-      }
-    });
-
-    return {
-      off: offDays,
-      regular: regularPatterns,
-      split: splitPatterns,
-    };
-  }
-
-  // Helper function to get consecutive date ranges
-  function getConsecutiveDateRanges(dates) {
-    if (!dates || dates.length === 0) return [];
-
-    // Sort dates
-    const sortedDates = [...dates].sort();
-
-    const ranges = [];
-    let rangeStart = sortedDates[0];
-    let rangeEnd = sortedDates[0];
-
-    for (let i = 1; i < sortedDates.length; i++) {
-      const currentDate = moment(sortedDates[i]);
-      const previousDate = moment(rangeEnd);
-
-      // Check if current date is consecutive with previous date
-      if (currentDate.diff(previousDate, "days") === 1) {
-        // It's consecutive, extend the current range
-        rangeEnd = sortedDates[i];
-      } else {
-        // Not consecutive, save the current range and start a new one
-        ranges.push({ start: rangeStart, end: rangeEnd });
-        rangeStart = sortedDates[i];
-        rangeEnd = sortedDates[i];
-      }
+      // Check if any day has split shift
+      const hasSplitShift =
+        editSchedule.custom_schedule &&
+        Object.values(editSchedule.custom_schedule).some((day) => day.is_split);
+      setIsSplitShift(hasSplitShift);
+    } else {
+      // Create mode: Use default values
+      setFormData({
+        ...ScheduleFormValues,
+        dateRange: getInitialDateRange(),
+        shiftType: usePredefinedShift ? "predefined" : "custom",
+        employees: [],
+        shiftId: "",
+        dailySchedule: generateDailySchedule(getInitialDateRange()),
+        totalHours: { daily: {}, weekly: 0 },
+      });
     }
-
-    // Add the last range
-    ranges.push({ start: rangeStart, end: rangeEnd });
-
-    return ranges;
-  }
+  }, [isOpen, isEditMode, editSchedule]);
 
   // calculateHours with PM time correction
   const calculateHours = (values, setFieldValue) => {
@@ -344,394 +346,317 @@ const ScheduleShiftModal = ({
     });
   };
 
+  const formatDateForBackend = (dateStr) => {
+    return moment(dateStr).format("YYYY-MM-DD");
+  };
+  // Calculate total weekly hours from daily schedule
+  const calculateTotalWeeklyHours = (dailySchedule) => {
+    let totalHours = 0;
+    dailySchedule.forEach((day) => {
+      if (!day.isOff) {
+        if (day.isSplit) {
+          // Calculate split shift hours
+          if (day.splitStartTime1 && day.splitEndTime1) {
+            const start1 = moment(day.splitStartTime1);
+            const end1 = moment(day.splitEndTime1);
+            const startTimeStr = start1.format("hh:mm A");
+            const endTimeStr = end1.format("hh:mm A");
+
+            const baseDate = moment(day.date).startOf("day");
+            const correctedStart = moment(
+              `${baseDate.format("YYYY-MM-DD")} ${startTimeStr}`,
+              "YYYY-MM-DD hh:mm A"
+            );
+            const correctedEnd = moment(
+              `${baseDate.format("YYYY-MM-DD")} ${endTimeStr}`,
+              "YYYY-MM-DD hh:mm A"
+            );
+
+            if (correctedEnd.isBefore(correctedStart)) {
+              correctedEnd.add(1, "day");
+            }
+
+            totalHours += correctedEnd.diff(correctedStart, "hours", true);
+          }
+
+          if (day.splitStartTime2 && day.splitEndTime2) {
+            const start2 = moment(day.splitStartTime2);
+            const end2 = moment(day.splitEndTime2);
+            const startTimeStr = start2.format("hh:mm A");
+            const endTimeStr = end2.format("hh:mm A");
+
+            const baseDate = moment(day.date).startOf("day");
+            const correctedStart = moment(
+              `${baseDate.format("YYYY-MM-DD")} ${startTimeStr}`,
+              "YYYY-MM-DD hh:mm A"
+            );
+            const correctedEnd = moment(
+              `${baseDate.format("YYYY-MM-DD")} ${endTimeStr}`,
+              "YYYY-MM-DD hh:mm A"
+            );
+
+            if (correctedEnd.isBefore(correctedStart)) {
+              correctedEnd.add(1, "day");
+            }
+
+            totalHours += correctedEnd.diff(correctedStart, "hours", true);
+          }
+        } else {
+          // Calculate regular shift hours
+          if (day.startTime && day.endTime) {
+            const start = moment(day.startTime);
+            const end = moment(day.endTime);
+            const startTimeStr = start.format("hh:mm A");
+            const endTimeStr = end.format("hh:mm A");
+
+            const baseDate = moment(day.date).startOf("day");
+            const correctedStart = moment(
+              `${baseDate.format("YYYY-MM-DD")} ${startTimeStr}`,
+              "YYYY-MM-DD hh:mm A"
+            );
+            const correctedEnd = moment(
+              `${baseDate.format("YYYY-MM-DD")} ${endTimeStr}`,
+              "YYYY-MM-DD hh:mm A"
+            );
+
+            if (correctedEnd.isBefore(correctedStart)) {
+              correctedEnd.add(1, "day");
+            }
+
+            totalHours += correctedEnd.diff(correctedStart, "hours", true);
+          }
+        }
+      }
+    });
+    return Math.round(totalHours * 100) / 100; // Round to 2 decimal places
+  };
+      const formatTimeForBackend = (timeStr) => {
+        if (!timeStr) return null;
+        return moment(timeStr).format("HH:mm");
+      };
   const handleFormSubmit = async (values) => {
     setLoading(true);
-
+    // Helper function to format date for backend
     try {
-      // Prepare schedule data
-      const scheduleData = {
-        employees: values.employees,
-        dates: values.dailySchedule.map((day) => day.date),
-        shiftId: values.shiftId,
-        shiftName: shifts.find((s) => s.value === values.shiftId)?.label || "",
-        customShift: values.shiftType === "custom",
-        isOff: values.dailySchedule.some((day) => day.isOff),
-        startTime: values.dailySchedule[0]?.startTime || null,
-        endTime: values.dailySchedule[0]?.endTime || null,
-        splitShift: values.dailySchedule.some((day) => day.isSplit),
-        dailySchedule: values.dailySchedule,
-      };
+      if (isEditMode) {
+        // EDIT MODE: Update existing schedule
+        const [startDate, endDate] = values.dateRange.split(",");
 
-      console.log("Schedule Data:", scheduleData);
+        let payload;
 
-      // Track results
-      const results = {
-        success: [],
-        failed: [],
-      };
+        if (values.shiftType === "predefined" && values.shiftId) {
+          // Organization Shift Update
+          const selectedShift = shifts.find((s) => s.value === values.shiftId);
 
-      // Handle predefined shifts
-      if (!scheduleData.customShift) {
-        // Set progress for predefined shifts
+          payload = {
+            id: editSchedule.id,
+            employee: editSchedule.employee, // Keep original employee
+            shift: values.shiftId,
+            schedule_name: `${
+              selectedShift?.label || "Organization Shift"
+            } - ${moment(startDate).format("MMM DD")}-${moment(endDate).format(
+              "DD, YYYY"
+            )}`,
+            start_date: formatDateForBackend(startDate),
+            end_date: formatDateForBackend(endDate),
+            is_org_based: true,
+            total_weekly_hours: "40.0",
+            assigned_by: userProfile?.employee_id || userProfile?.id,
+            status: "Pending", // Reset to pending after edit
+            is_off_day: false,
+          };
+        } else {
+          // Custom Shift Update
+          const totalWeeklyHours = calculateTotalWeeklyHours(
+            values.dailySchedule
+          );
+
+          // Build custom_schedule object
+          const customSchedule = {};
+          values.dailySchedule.forEach((day) => {
+            if (day.isOff) {
+              customSchedule[day.date] = {
+                is_off: true,
+              };
+            } else if (day.isSplit) {
+              customSchedule[day.date] = {
+                is_off: false,
+                is_split: true,
+                start_time_1: formatTimeForBackend(day.splitStartTime1),
+                end_time_1: formatTimeForBackend(day.splitEndTime1),
+                start_time_2: formatTimeForBackend(day.splitStartTime2),
+                end_time_2: formatTimeForBackend(day.splitEndTime2),
+              };
+            } else {
+              customSchedule[day.date] = {
+                is_off: false,
+                is_split: false,
+                start_time: formatTimeForBackend(day.startTime),
+                end_time: formatTimeForBackend(day.endTime),
+              };
+            }
+          });
+
+          payload = {
+            id: editSchedule.id,
+            employee: editSchedule.employee, // Keep original employee
+            shift: null,
+            schedule_name: `Custom Schedule - ${moment(startDate).format(
+              "MMM DD"
+            )}-${moment(endDate).format("DD, YYYY")}`,
+            start_date: formatDateForBackend(startDate),
+            end_date: formatDateForBackend(endDate),
+            is_org_based: false,
+            custom_schedule: customSchedule,
+            total_weekly_hours: totalWeeklyHours.toString(),
+            assigned_by: userProfile?.employee_id || userProfile?.id,
+            status: "Pending", // Reset to pending after edit
+            is_off_day: values.dailySchedule.some((day) => day.isOff),
+          };
+        }
+
+        console.log("Edit Payload:", payload);
+        const response = await saveShiftSchedule(payload);
+
+        if (response) {
+          toast.success("Schedule updated successfully!");
+          onScheduleSuccess();
+        } else {
+          toast.error("Failed to update schedule");
+        }
+      } else {
+        // CREATE MODE: Original logic for multiple employees
+        const selectedEmployeeIds = values.employees;
+        const totalEmployees = selectedEmployeeIds.length;
+        let completedRequests = 0;
+
         setSavingProgress({
-          total: scheduleData.employees.length,
+          total: totalEmployees,
           completed: 0,
         });
 
-        // One schedule per employee for predefined shifts
-        for (const employeeId of scheduleData.employees) {
-          try {
-            const payload = {
+        // Process each employee (existing create logic)
+        for (const employeeId of selectedEmployeeIds) {
+          let payload;
+
+          if (values.shiftType === "predefined" && values.shiftId) {
+            // Organization Shift Payload
+            const [startDate, endDate] = values.dateRange.split(",");
+            const selectedShift = shifts.find(
+              (s) => s.value === values.shiftId
+            );
+
+            payload = {
               employee: employeeId,
-              shift: scheduleData.shiftId,
-              start_date: scheduleData.dates[0],
-              end_date: scheduleData.dates[scheduleData.dates.length - 1],
-              is_split_shift: scheduleData.splitShift,
-              is_off_day: false,
+              shift: values.shiftId,
+              schedule_name: `${
+                selectedShift?.label || "Organization Shift"
+              } - ${moment(startDate).format("MMM DD")}-${moment(
+                endDate
+              ).format("DD, YYYY")}`,
+              start_date: formatDateForBackend(startDate),
+              end_date: formatDateForBackend(endDate),
+              is_org_based: true,
+              total_weekly_hours: "40.0",
+              assigned_by: userProfile?.employee_id || userProfile?.id,
               status: "Pending",
-              assigned_by: userProfile.id,
+              is_off_day: false,
             };
-
-            console.log("Creating predefined shift schedule:", payload);
-            const response = await saveShiftSchedule(payload);
-
-            if (response) {
-              results.success.push(`Employee ${employeeId}`);
-            } else {
-              results.failed.push(`Employee ${employeeId}`);
-            }
-          } catch (error) {
-            console.error(`Error scheduling employee ${employeeId}:`, error);
-            results.failed.push(`Employee ${employeeId}`);
-          }
-
-          setSavingProgress((prev) => ({
-            ...prev,
-            completed: prev.completed + 1,
-          }));
-        }
-      } else {
-        // Handle custom shifts
-
-        // Normalize the times to ensure consistent comparison
-        const normalizedSchedule = scheduleData.dailySchedule.map((day) => {
-          // Only process days that have times (not off days)
-          if (!day.isOff) {
-            if (day.isSplit) {
-              return {
-                ...day,
-                splitStartTime1: day.splitStartTime1
-                  ? normalizeMomentTime(day.splitStartTime1)
-                  : null,
-                splitEndTime1: day.splitEndTime1
-                  ? normalizeMomentTime(day.splitEndTime1)
-                  : null,
-                splitStartTime2: day.splitStartTime2
-                  ? normalizeMomentTime(day.splitStartTime2)
-                  : null,
-                splitEndTime2: day.splitEndTime2
-                  ? normalizeMomentTime(day.splitEndTime2)
-                  : null,
-              };
-            } else {
-              return {
-                ...day,
-                startTime: day.startTime
-                  ? normalizeMomentTime(day.startTime)
-                  : null,
-                endTime: day.endTime ? normalizeMomentTime(day.endTime) : null,
-              };
-            }
-          }
-          return day;
-        });
-
-        // Group days by pattern
-        const { off, regular, split } = groupDaysByPattern(normalizedSchedule);
-
-        console.log("PATTERN GROUPS:");
-        console.log("Off days:", off);
-        console.log("Regular patterns:", regular);
-        console.log("Split patterns:", split);
-
-        // Calculate total API calls
-        const numRegularPatterns = Object.keys(regular).length;
-        const numSplitPatterns = Object.keys(split).length;
-        const hasOffDays = off.length > 0;
-
-        console.log(`Number of regular patterns: ${numRegularPatterns}`);
-        console.log(`Number of split patterns: ${numSplitPatterns}`);
-        console.log(`Has off days: ${hasOffDays}`);
-
-        const totalShifts = numRegularPatterns + numSplitPatterns;
-        const totalSchedules =
-          scheduleData.employees.length *
-          (numRegularPatterns + numSplitPatterns + (hasOffDays ? 1 : 0));
-
-        setSavingProgress({
-          total: totalShifts + totalSchedules,
-          completed: 0,
-        });
-
-        let progressCount = 0;
-
-        // Process regular shifts
-        for (const [patternKey, days] of Object.entries(regular)) {
-          try {
-            console.log(
-              `Processing regular pattern: ${patternKey} with ${days.length} days`
-            );
-            console.log("Days in pattern:", days);
-
-            // Create a shift for this pattern
-            const shiftPayload = {
-              name: `Regular Shift ${days[0].date.substring(5)} (${days
-                .map((d) => d.day.toLowerCase())
-                .join(",")})`,
-              type: "Regular",
-              weekdays: days.map((d) => d.day.toLowerCase()).join(","),
-              starttime: days[0].startTime,
-              endtime: days[0].endTime,
-              Is_org_based: false,
-              organization: userProfile.organization_id,
-            };
-
-            console.log("Creating shift:", shiftPayload);
-            const shiftResponse = await saveShift(shiftPayload);
-            progressCount++;
-            setSavingProgress((prev) => ({
-              ...prev,
-              completed: progressCount,
-            }));
-
-            if (shiftResponse && shiftResponse.id) {
-              const shiftId = shiftResponse.id;
-
-              // Get date ranges
-              const dateRanges = getConsecutiveDateRanges(
-                days.map((d) => d.date)
-              );
-              console.log("Date ranges for pattern:", dateRanges);
-
-              // Create schedules for each employee
-              for (const employeeId of scheduleData.employees) {
-                // For simplicity - when consecutive days have the same pattern,
-                // create just one schedule spanning both days
-                if (dateRanges.length === 1) {
-                  const schedulePayload = {
-                    employee: employeeId,
-                    shift: shiftId,
-                    start_date: dateRanges[0].start,
-                    end_date: dateRanges[0].end,
-                    is_split_shift: false,
-                    is_off_day: false,
-                    status: "Pending",
-                    assigned_by: userProfile.id,
-                  };
-
-                  console.log("Creating schedule:", schedulePayload);
-                  await saveShiftSchedule(schedulePayload);
-                  results.success.push(
-                    `Regular shift for Employee ${employeeId}`
-                  );
-                } else {
-                  // Multiple non-consecutive ranges
-                  for (const range of dateRanges) {
-                    const schedulePayload = {
-                      employee: employeeId,
-                      shift: shiftId,
-                      start_date: range.start,
-                      end_date: range.end,
-                      is_split_shift: false,
-                      is_off_day: false,
-                      status: "Pending",
-                      assigned_by: userProfile.id,
-                    };
-
-                    console.log(
-                      "Creating schedule for range:",
-                      schedulePayload
-                    );
-                    await saveShiftSchedule(schedulePayload);
-                    results.success.push(
-                      `Regular shift for Employee ${employeeId} (${range.start} to ${range.end})`
-                    );
-                  }
-                }
-
-                progressCount++;
-                setSavingProgress((prev) => ({
-                  ...prev,
-                  completed: progressCount,
-                }));
-              }
-            }
-          } catch (error) {
-            console.error(`Error processing regular pattern:`, error);
-            results.failed.push(`Regular shift pattern`);
-            progressCount++;
-            setSavingProgress((prev) => ({
-              ...prev,
-              completed: progressCount,
-            }));
-          }
-        }
-
-        // Process split shifts
-        for (const [patternKey, days] of Object.entries(split)) {
-          try {
-            console.log(
-              `Processing split pattern: ${patternKey} with ${days.length} days`
+          } else {
+            // Custom Shift Payload
+            const [startDate, endDate] = values.dateRange.split(",");
+            const totalWeeklyHours = calculateTotalWeeklyHours(
+              values.dailySchedule
             );
 
-            // Create a shift for this split pattern
-            const firstDay = days[0];
-            const shiftPayload = {
-              name: `Split Shift ${firstDay.date.substring(5)} (${days
-                .map((d) => d.day.toLowerCase())
-                .join(",")})`,
-              type: "Split",
-              weekdays: days.map((d) => d.day.toLowerCase()).join(","),
-              starttime: firstDay.splitStartTime1,
-              endtime: firstDay.splitEndTime1, // First part of the split shift
-              Is_org_based: false,
-              organization: userProfile.organization_id,
-            };
-
-            console.log("Creating split shift:", shiftPayload);
-            const shiftResponse = await saveShift(shiftPayload);
-            progressCount++;
-            setSavingProgress((prev) => ({
-              ...prev,
-              completed: progressCount,
-            }));
-
-            if (shiftResponse && shiftResponse.id) {
-              const shiftId = shiftResponse.id;
-
-              // Get date ranges
-              const dateRanges = getConsecutiveDateRanges(
-                days.map((d) => d.date)
-              );
-
-              // Create schedules for each employee
-              for (const employeeId of scheduleData.employees) {
-                for (const range of dateRanges) {
-                  const schedulePayload = {
-                    employee: employeeId,
-                    shift: shiftId,
-                    start_date: range.start,
-                    end_date: range.end,
-                    is_split_shift: true,
-                    split_start_time: firstDay.splitStartTime2, // Second part start
-                    split_end_time: firstDay.splitEndTime2, // Second part end
-                    is_off_day: false,
-                    status: "Pending",
-                    assigned_by: userProfile.id,
-                  };
-
-                  console.log("Creating split schedule:", schedulePayload);
-                  await saveShiftSchedule(schedulePayload);
-                  results.success.push(
-                    `Split shift for Employee ${employeeId} (${range.start} to ${range.end})`
-                  );
-                }
-
-                progressCount++;
-                setSavingProgress((prev) => ({
-                  ...prev,
-                  completed: progressCount,
-                }));
-              }
-            }
-          } catch (error) {
-            console.error(`Error processing split pattern:`, error);
-            results.failed.push(`Split shift pattern`);
-            progressCount++;
-            setSavingProgress((prev) => ({
-              ...prev,
-              completed: progressCount,
-            }));
-          }
-        }
-
-        // Process off days
-        if (off.length > 0) {
-          try {
-            console.log(`Processing ${off.length} off days`);
-
-            // Group off days into consecutive ranges
-            const offDateRanges = getConsecutiveDateRanges(
-              off.map((d) => d.date)
-            );
-            console.log("Off day ranges:", offDateRanges);
-
-            // Create an off schedule for each employee for each date range
-            for (const employeeId of scheduleData.employees) {
-              for (const range of offDateRanges) {
-                const offPayload = {
-                  employee: employeeId,
-                  shift: null, // No shift needed for off days
-                  start_date: range.start,
-                  end_date: range.end,
-                  is_split_shift: false,
-                  is_off_day: true,
-                  status: "Pending",
-                  assigned_by: userProfile.id,
+            const customSchedule = {};
+            values.dailySchedule.forEach((day) => {
+              if (day.isOff) {
+                customSchedule[day.date] = {
+                  is_off: true,
                 };
-
-                console.log("Creating off day schedule:", offPayload);
-                await saveShiftSchedule(offPayload);
-                results.success.push(
-                  `Off days for Employee ${employeeId} (${range.start} to ${range.end})`
-                );
+              } else if (day.isSplit) {
+                customSchedule[day.date] = {
+                  is_off: false,
+                  is_split: true,
+                  start_time_1: formatTimeForBackend(day.splitStartTime1),
+                  end_time_1: formatTimeForBackend(day.splitEndTime1),
+                  start_time_2: formatTimeForBackend(day.splitStartTime2),
+                  end_time_2: formatTimeForBackend(day.splitEndTime2),
+                };
+              } else {
+                customSchedule[day.date] = {
+                  is_off: false,
+                  is_split: false,
+                  start_time: formatTimeForBackend(day.startTime),
+                  end_time: formatTimeForBackend(day.endTime),
+                };
               }
+            });
 
-              progressCount++;
-              setSavingProgress((prev) => ({
-                ...prev,
-                completed: progressCount,
-              }));
-            }
-          } catch (error) {
-            console.error(`Error processing off days:`, error);
-            results.failed.push(`Off days`);
-            progressCount++;
-            setSavingProgress((prev) => ({
-              ...prev,
-              completed: progressCount,
-            }));
+            payload = {
+              employee: employeeId,
+              shift: null,
+              schedule_name: `Custom Schedule - ${moment(startDate).format(
+                "MMM DD"
+              )}-${moment(endDate).format("DD, YYYY")}`,
+              start_date: formatDateForBackend(startDate),
+              end_date: formatDateForBackend(endDate),
+              is_org_based: false,
+              custom_schedule: customSchedule,
+              total_weekly_hours: totalWeeklyHours.toString(),
+              assigned_by: userProfile?.employee_id || userProfile?.id,
+              status: "Pending",
+              is_off_day: values.dailySchedule.some((day) => day.isOff),
+            };
+          }
+
+          console.log(`Payload for Employee ${employeeId}:`, payload);
+          const response = await saveShiftSchedule(payload);
+
+          if (response) {
+            completedRequests++;
+            setSavingProgress({
+              total: totalEmployees,
+              completed: completedRequests,
+            });
+            console.log(
+              `Successfully saved schedule for employee ${employeeId}`
+            );
+          } else {
+            toast.error(`Failed to save schedule for employee ${employeeId}`);
+            console.error(`Failed to save schedule for employee ${employeeId}`);
           }
         }
-      }
 
-      // Show results
-      console.log("Save Results:", results);
-
-      if (results.failed.length === 0) {
-        toast.success("All shift schedules saved successfully");
-      } else if (results.success.length === 0) {
-        toast.error("Failed to save any shift schedules");
-      } else {
-        toast.warning(
-          `Saved ${results.success.length} schedules, failed to save ${results.failed.length}`
-        );
-      }
-
-      if (results.success.length > 0) {
-        setIsOpen(false);
+        // Show success message for create mode
+        if (completedRequests === totalEmployees) {
+          toast.success(
+            `Successfully scheduled shifts for ${completedRequests} employee(s)`
+          );
+          onScheduleSuccess();
+        } else {
+          toast.warning(
+            `Scheduled shifts for ${completedRequests} out of ${totalEmployees} employees`
+          );
+        }
       }
     } catch (error) {
-      console.error("Error saving shift schedule:", error);
-      toast.error(`Error: ${error.message || "Something went wrong"}`);
+      console.error("Error saving schedule:", error);
+      toast.error("An error occurred while saving the schedule");
     } finally {
       setLoading(false);
-      setSavingProgress({ total: 0, completed: 0 });
+      setIsOpen(false);
+      setCloseSheet(false);
+      setSavingProgress({
+        total: 0,
+        completed: 0,
+      });
     }
   };
 
   const formSheetData = {
-    title: "Schedule Shift",
+    title: isEditMode? "Edit Shift Schedule" : "Schedule Shift",
     description: null,
     footer: null,
   };
@@ -777,22 +702,38 @@ const ScheduleShiftModal = ({
                   />
                 </div>
 
-                <div className="flex-1 space-y-2 ">
-                  <SelectMultiInputComponent
-                    name="employees"
-                    label="Select Employees"
-                    options={employees.map((emp) => ({
-                      value: emp.id,
-                      label: `${emp.first_name} ${emp.last_name}`,
-                    }))}
-                    value={props.values.employees}
-                    error={props.errors.employees}
-                    touch={props.touched.employees}
-                    onChange={props.setFieldValue}
-                    required={true}
-                    showSelectedValuesBelow={true}
-                  />
-                </div>
+                {isEditMode ? (
+                  <div className="flex-1 space-y-2 ">
+                    <SelectInputComponent
+                      name="employee"
+                      label="Employee (Cannot be changed)"
+                      options={employees.map((emp) => ({
+                        value: emp.id,
+                        label: `${emp.first_name} ${emp.last_name}`,
+                      }))}
+                      value={editSchedule.employee}
+                      disabled={true}
+                      required={true}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex-1 space-y-2 ">
+                    <SelectMultiInputComponent
+                      name="employees"
+                      label="Select Employees"
+                      options={employees.map((emp) => ({
+                        value: emp.id,
+                        label: `${emp.first_name} ${emp.last_name}`,
+                      }))}
+                      value={props.values.employees}
+                      error={props.errors.employees}
+                      touch={props.touched.employees}
+                      onChange={props.setFieldValue}
+                      required={true}
+                      showSelectedValuesBelow={true}
+                    />
+                  </div>
+                )}
               </SheetCardExtension>
 
               <SheetCardExtension title="Shift Type">
@@ -1107,7 +1048,11 @@ const ScheduleShiftModal = ({
                   {loading
                     ? savingProgress.total > 0
                       ? `Saving... (${savingProgress.completed}/${savingProgress.total})`
+                      : isEditMode
+                      ? "Updating..."
                       : "Saving..."
+                    : isEditMode
+                    ? "Update Schedule"
                     : "Save"}
                 </Button>
               </div>

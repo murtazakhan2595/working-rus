@@ -24,8 +24,16 @@ import { DateInput } from "components/FormControl";
 import { claimExpenseChoices } from "app/hooks/payroll.jsx";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { HasAccess } from "utils/PermissionUtils";
+import { UnauthorizedAccess } from "components";
 
 const ClaimRequest = ({ userProfile }) => {
+  // Permission checks for claims features
+  const canRequestClaim = HasAccess("REQUEST_CLAIM");
+  const canViewClaims = HasAccess("VIEW_CLAIMS");
+  const canDeleteClaim = HasAccess("DELETE_CLAIM");
+  const canExportClaims = HasAccess("EXPORT_CLAIM_REQUEST") || HasAccess("VIEW_CLAIMS"); // Fallback permission
+
   const [filterData, setFilterData] = useState({});
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedExpenseType, setSelectedExpenseType] = useState("");
@@ -73,6 +81,11 @@ const ClaimRequest = ({ userProfile }) => {
   const isMyClaims = pathname === "/my-claims";
 
   const fetchMyClaims = async () => {
+    if (!canViewClaims) {
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     const payroll = await getEmployeePayroll({
       filterData: { employee_id: userProfile.id },
@@ -111,6 +124,11 @@ const ClaimRequest = ({ userProfile }) => {
   };
 
   const fetchClaimRequests = async () => {
+    if (!canViewClaims) {
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     let filter = {};
     if (userProfile.role === 2) {
@@ -140,6 +158,11 @@ const ClaimRequest = ({ userProfile }) => {
   };
 
   const exportToExcel = async () => {
+    if (!canExportClaims) {
+      toast.error("You don't have permission to export claims data.");
+      return;
+    }
+
     try {
       setLoading(true);
       // Get all data without pagination for export
@@ -236,6 +259,19 @@ const ClaimRequest = ({ userProfile }) => {
     setFilterDate(null);
   }, [isMyClaims]);
 
+  // If user has no claims permissions at all
+  if (!canViewClaims && !canRequestClaim) {
+    return (
+      <UnauthorizedAccess
+        title="Claims Access Denied"
+        featureName="claims management"
+        message="You don't have permission to view or manage claims. Please contact your administrator to request access."
+        showButtons={true}
+        size="lg"
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4 salary-startup">
       {isOpen && (
@@ -249,64 +285,89 @@ const ClaimRequest = ({ userProfile }) => {
           expenseTypeOptions={expenseTypeOptions}
         />
       )}
+
       <Header
         content={
           isMyClaims ? (
-            <ReimbursmentDetailsRequest reload={fetchMyClaims} />
+            canRequestClaim ? (
+              <ReimbursmentDetailsRequest reload={fetchMyClaims} />
+            ) : (
+              <div className="p-2 text-sm text-red-700 border border-red-200 rounded bg-red-50">
+                You don't have permission to request claims
+              </div>
+            )
           ) : (
-            <Button
-              onClick={exportToExcel}
-              disabled={loading}
-            >
-              Export to Excel
-            </Button>
+            canExportClaims ? (
+              <Button
+                onClick={exportToExcel}
+                disabled={loading}
+              >
+                Export to Excel
+              </Button>
+            ) : (
+              <div className="p-2 text-sm text-red-700 border border-red-200 rounded bg-red-50">
+                You don't have permission to export claims
+              </div>
+            )
           )
         }
       />
 
       <div className="flex items-center justify-end ">
         <div className="flex items-center gap-3 ">
-          <FilterInput
-            filters={[
-              {
-                type: "select-one",
-                option: expenseTypeOptions,
-                name: "expense_type",
-                placeholder: "Expense Type",
-                values: selectedExpenseType,
-                value: selectedExpenseType,
-              },
-              {
-                type: "select-two",
-                option: [
-                  { value: "pending", label: "Pending" },
-                  { value: "approved", label: "Approved" },
-                  { value: "rejected", label: "Rejected" },
-                ],
-                name: "status",
-                placeholder: "Status",
-                values: selectedStatus,
-                value: selectedStatus,
-              },
-            ]}
-            onChange={handleFilterChange}
-          />
-          <DateInput
-            placeholder="Date"
-            value={filterDate}
-            name="payment_date"
-            onChange={(field, value) => {
-              setFilterDate(value);
-              handleFilterChange(field, value);
-            }}
-            className="w-fit"
-          />
+          {canViewClaims && (
+            <>
+              <FilterInput
+                filters={[
+                  {
+                    type: "select-one",
+                    option: expenseTypeOptions,
+                    name: "expense_type",
+                    placeholder: "Expense Type",
+                    values: selectedExpenseType,
+                    value: selectedExpenseType,
+                  },
+                  {
+                    type: "select-two",
+                    option: [
+                      { value: "pending", label: "Pending" },
+                      { value: "approved", label: "Approved" },
+                      { value: "rejected", label: "Rejected" },
+                    ],
+                    name: "status",
+                    placeholder: "Status",
+                    values: selectedStatus,
+                    value: selectedStatus,
+                  },
+                ]}
+                onChange={handleFilterChange}
+              />
+              <DateInput
+                placeholder="Date"
+                value={filterDate}
+                name="payment_date"
+                onChange={(field, value) => {
+                  setFilterDate(value);
+                  handleFilterChange(field, value);
+                }}
+                className="w-fit"
+              />
+            </>
+          )}
         </div>
       </div>
+
       <Card>
         <CardContent>
           {loading ? (
             <PageLoader />
+          ) : !canViewClaims ? (
+            <UnauthorizedAccess
+              title="Claims View Access Denied"
+              featureName="claims data"
+              message="You don't have permission to view claims information. Please contact your administrator to request access."
+              size="md"
+            />
           ) : isMyClaims ? (
             <CustomTable
               data={myClaims?.results}

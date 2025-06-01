@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Button } from "components/ui/button";
-import { Header } from "components";
+import { Header, UnauthorizedAccess } from "components";
 import CustomTable from "components/CustomTable";
 import { FilterInput } from "components/FormControl";
 import { Card, CardContent, CardDescription, CardTitle, CardHeader } from "components/ui/card";
@@ -14,12 +14,17 @@ import {
 import { toast } from "react-toastify";
 import AssetRequestSheet from "./AssetRequestSheet";
 import AssetRequestViewSheet from "./AssetRequestViewSheet";
+import ViewAssetRequest from "./ViewAssetRequest";
 import { AssetRequestColumns } from "app/utils/Types/TableColumns";
 import { getEmployeeAssets } from "app/hooks/assets";
+import { HasAccess } from "utils/PermissionUtils";
 
+const AssetRequests = ({ userProfile, departments, employees }) => {
+  // Permission checks for asset request management features
+  const canViewAssetRequests = HasAccess("VIEW_ASSETS_REQUEST");
+  const canApproveAssetRequests = HasAccess("MANAGE_ASSET_REQUEST");
+  const canAssignAssets = HasAccess("ASSIGN_ASSETS_TO_EMPLOYEE");
 
-
-const AssetRequests = ({ userProfile, departments }) => {
   const [activeTab, setActiveTab] = useState("requests"); // "requests" or "assignments"
 
   // Common state
@@ -115,17 +120,6 @@ const AssetRequests = ({ userProfile, departments }) => {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
-    onRowClick: (row) => {
-      console.log("Row clicked:", row);
-      if (row.asset_status === "Pending" && row.asset_request_status ==="Requested"){
-        setEditRequest(row);
-      }
-      else{
-        setSelectedRequest(row);
-        setOpenRequestDetailSheet(true);
-
-      }
-    },
   };
 
   // Load data based on active tab
@@ -137,6 +131,33 @@ const AssetRequests = ({ userProfile, departments }) => {
     };
   }, [activeTab, options, filterData]);
 
+  // Action handlers for the dropdown menu
+  const handleViewRequest = (row) => {
+    console.log("View asset request:", row);
+    setSelectedRequest(row);
+    setOpenRequestDetailSheet(true);
+  };
+
+  const handleEditRequest = (row) => {
+    console.log("Edit asset request:", row);
+    
+    // Allow edit for Pending and Rejected requests
+    if ((row.asset_status === "Pending" || row.asset_status === "Rejected") && row.asset_request_status === "Requested") {
+      // Close the view sheet if it's open
+      setOpenRequestDetailSheet(false);
+      setSelectedRequest(null);
+      // Open the edit sheet
+      setEditRequest(row);
+    }
+  };
+
+  const handleRejectRequest = (row) => {
+    console.log("Reject asset request:", row);
+    // Open the assign sheet in reject mode
+    setSelectedRequest(row);
+    setEditRequest(row);
+  };
+
   // Tab configuration
   const tabsData = [
     { value: "requests", label: "Requested By Employee" },
@@ -144,13 +165,17 @@ const AssetRequests = ({ userProfile, departments }) => {
   ];
 
   const enhancedRequestColumns = [
-    ...AssetRequestColumns.filter((col) => col.dataField !== "id"), 
+    ...AssetRequestColumns(
+      handleViewRequest,
+      handleEditRequest,
+      handleRejectRequest
+    ).filter((col) => col.dataField !== "id"), 
   ];
 
   const filters = [
     {
       type: "search",
-      placeholder: "Employee Name",
+      placeholder: "Employee Name or ID",
       name: "emp_name",
     },
     {
@@ -174,10 +199,24 @@ const AssetRequests = ({ userProfile, departments }) => {
   ];
 
   const getActionButton = () => {
-    if (activeTab === "assignments") {
+    if (activeTab === "assignments" && canAssignAssets) {
       return <Button onClick={handleAssignAsset}>Assign Asset</Button>;
     }
+    return null;
   };
+
+  // If user has no asset request management permissions at all
+  if (!canViewAssetRequests) {
+    return (
+      <UnauthorizedAccess
+        title="Asset Request Management Access Denied"
+        featureName="asset request management"
+        message="You don't have permission to view or manage asset requests. Please contact your administrator to request access."
+        showButtons={true}
+        size="lg"
+      />
+    );
+  }
 
   return (
     <div
@@ -193,7 +232,7 @@ const AssetRequests = ({ userProfile, departments }) => {
         }}
         defaultValue="requests"
       >
-        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row mb-4">
+        <div className="flex flex-col items-start justify-between mb-4 lg:flex-row md:flex-row xl:flex-row">
           <TabsList className="flex justify-center mb-4">
             {tabsData?.map((tab) => (
               <TabsTrigger
@@ -220,48 +259,67 @@ const AssetRequests = ({ userProfile, departments }) => {
         </CardDescription>
         <div
             onClick={(e) => e.stopPropagation()}
-            className="mt-2 lg:mt-0 md:mt-0 xl:mt-0 justify-end flex"
+            className="flex justify-end mt-2 lg:mt-0 md:mt-0 xl:mt-0"
           >
             <FilterInput filters={filters} onChange={handleFilterChange} />
           </div>
         </CardHeader>
           <CardContent>
             <TabsContent value="requests">
-              <CustomTable
-                columns={enhancedRequestColumns}
-                data={isLoading ? [] : requestsData}
-                pagination={true}
-                dataTotalSize={totalCount}
-                tableOptions={tableOptions}
-                loading={isLoading}
-              />
+              {canViewAssetRequests ? (
+                <CustomTable
+                  columns={enhancedRequestColumns}
+                  data={isLoading ? [] : requestsData}
+                  pagination={true}
+                  dataTotalSize={totalCount}
+                  tableOptions={tableOptions}
+                  loading={isLoading}
+                />
+              ) : (
+                <UnauthorizedAccess
+                  title="Asset Requests Access Denied"
+                  featureName="asset requests"
+                  message="You don't have permission to view asset requests."
+                  size="md"
+                />
+              )}
             </TabsContent>
 
             <TabsContent value="assignments">
-              <CustomTable
-                columns={enhancedRequestColumns}
-                data={isLoading ? [] : requestsData}
-                pagination={true}
-                dataTotalSize={totalCount}
-                tableOptions={tableOptions}
-                loading={isLoading}
-              />
+              {canViewAssetRequests ? (
+                <CustomTable
+                  columns={enhancedRequestColumns}
+                  data={isLoading ? [] : requestsData}
+                  pagination={true}
+                  dataTotalSize={totalCount}
+                  tableOptions={tableOptions}
+                  loading={isLoading}
+                />
+              ) : (
+                <UnauthorizedAccess
+                  title="Asset Assignments Access Denied"
+                  featureName="asset assignments"
+                  message="You don't have permission to view asset assignments."
+                  size="md"
+                />
+              )}
             </TabsContent>
           </CardContent>
         </Card>
       </Tabs>
 
       {/* Combined Asset Request/Assignment Sheet */}
-      {openAssetRequestSheet && (
+      {openAssetRequestSheet && canAssignAssets && (
         <AssetRequestSheet
           isOpen={openAssetRequestSheet}
           setIsOpen={setOpenAssetRequestSheet}
           mode={assetSheetMode}
           reload={() => fetchRequestsData(true)}
           departments={departments}
+          employees={employees}
         />
       )}
-      {editRequest && (
+      {editRequest && canApproveAssetRequests && (
         <AssetRequestSheet
           isOpen={!!editRequest}
           setIsOpen={() => {
@@ -270,28 +328,34 @@ const AssetRequests = ({ userProfile, departments }) => {
           mode={"assign"}
           reload={() => fetchRequestsData(true)}
           departments={departments}
+          employees={employees}
           editData={editRequest}
         />
       )}
 
       {/* Asset Request Detail Sheet */}
       {openRequestDetailSheet && (
-        <AssetRequestViewSheet
+        <ViewAssetRequest
           isOpen={openRequestDetailSheet}
           setIsOpen={setOpenRequestDetailSheet}
-          request={selectedRequest}
+          data={selectedRequest}
           reload={() => fetchRequestsData(true)}
+          AssetRequestList={requestsData}
+          isMyRequest={false}
+          onEdit={handleEditRequest}
         />
       )}
+
     </div>
   );
 };
 
-// Connect to Redux to get departments and user profile
+// Connect to Redux to get departments, employees and user profile
 const mapStateToProps = (state) => {
   return {
     userProfile: state.user.userProfile,
     departments: state.common.departments,
+    employees: state.emp.employees,
   };
 };
 

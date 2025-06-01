@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import AddUpdateAssetCategory from "./AddUpdateAssetCategory";
 import { deleteRecord } from "app/hooks/general";
 
-const ViewCategory = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
+const ViewCategory = ({ isOpen, setIsOpen, data, reload = () => {}, canEdit = true, canDelete = true }) => {
   const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
   const [editCategory, setEditCategory] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -107,15 +107,19 @@ const ViewCategory = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
         width="568px"
       >
         {/* Action Buttons */}
-        <div className="flex justify-end mb-4 space-x-2">
-          <CircularActionButtons
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            editTooltip="Edit Category"
-            deleteTooltip="Delete Category"
-            disabled={isDeleting}
-          />
-        </div>
+        {(canEdit || canDelete) && (
+          <div className="flex justify-end mb-4 space-x-2">
+            <CircularActionButtons
+              onEdit={canEdit ? handleEdit : null}
+              onDelete={canDelete ? handleDelete : null}
+              editTooltip="Edit Category"
+              deleteTooltip="Delete Category"
+              disabled={isDeleting}
+              showEdit={canEdit}
+              showDelete={canDelete}
+            />
+          </div>
+        )}
 
         {/* Category Details Card */}
         <DetailCard

@@ -12,16 +12,16 @@ import {
 import { formatDuration, calculateTotal } from "utils/renderValues";
 
 const calculateAttendanceStats = (attendance) => {
-  const totalHours = CalculateHoursWorked(attendance);
+  const totalHours = calculateTotal(attendance,'total_hours');
   return totalHours.totalWorkedHours;
 };
 
 const HourlyStatistics = ({ userId }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [todayAttendanceData, setTodayAttendanceData] = useState(0);
   const [weeklyAttendanceData, setWeeklyAttendanceData] = useState(0);
   const [monthlyAttendanceData, setMonthlyAttendanceData] = useState(0);
-  const [remainingAttendanceData, setRemainingAttendanceData] = useState(0);
+  const [monthlyRemainingAttendanceData, setMonthlyRemainingAttendanceData] =
+    useState(0);
   const [overtimeAttendanceData, setOvertimeAttendanceData] = useState(0);
   const EmployeeShiftData = useSelector(
     (state) => state.attendance.assignedShiftData
@@ -57,17 +57,6 @@ const HourlyStatistics = ({ userId }) => {
     }
   };
 
-  const getTodayAttendanceStats = async () => {
-    const todayAttendance = await fetchAttendanceData(
-      {
-        date: moment().format("YYYY-MM-DD"),
-        employee_id: userId,
-      },
-      "day"
-    );
-    setTodayAttendanceData(calculateAttendanceStats(todayAttendance));
-  };
-
   const getWeeklyAttendanceStats = async () => {
     const weeklyAttendance = await fetchAttendanceData(
       {
@@ -90,7 +79,9 @@ const HourlyStatistics = ({ userId }) => {
 
     const monthlytAttendanceStats = calculateAttendanceStats(monthlyAttendance);
     setMonthlyAttendanceData(monthlytAttendanceStats);
-    setRemainingAttendanceData(MonthlyWorkingHours - monthlytAttendanceStats);
+    setMonthlyRemainingAttendanceData(
+      MonthlyWorkingHours - monthlytAttendanceStats
+    );
     setOvertimeAttendanceData(
       calculateTotal(monthlyAttendance, "overtime_hours")
     );
@@ -100,7 +91,6 @@ const HourlyStatistics = ({ userId }) => {
     if (!isMounted) return;
     try {
       await Promise.all([
-        await getTodayAttendanceStats(),
         await getWeeklyAttendanceStats(),
         await getMonthlyAttendanceStats(),
       ]);
@@ -130,28 +120,40 @@ const HourlyStatistics = ({ userId }) => {
   return (
     <div className="space-y-4">
       <Statistics
-        value={todayAttendanceData || 0}
-        label={"Today"}
-        total={TotalWorkingHours || 0}
-      />
-      <Statistics
         value={weeklyAttendanceData || 0}
-        label={"This Week"}
+        label={"Weekly Hours"}
         total={WeeklyWorkingHours || 0}
       />
       <Statistics
         value={monthlyAttendanceData || 0}
-        label={"This Month"}
+        label={"Monthly Hours"}
         total={MonthlyWorkingHours || 0}
       />
       <Statistics
-        value={remainingAttendanceData || 0}
-        label={"Remaining"}
+        value={monthlyRemainingAttendanceData || 0}
+        label={"Weekly Remaining Hours"}
         total={MonthlyWorkingHours || 0}
+      />
+      <Statistics
+        value={monthlyRemainingAttendanceData || 0}
+        label={"Monthly Remaining Hours"}
+        total={TotalWorkingHours || 0}
       />
       <Statistics
         value={overtimeAttendanceData || 0}
-        label={"Overtime"}
+        label={"Overtime  Hours"}
+        total={WeeklyWorkingHours || 0}
+        showTotal={false}
+      />
+      <Statistics
+        value={overtimeAttendanceData || 0}
+        label={"Adjusted Weekly Hours"}
+        total={WeeklyWorkingHours || 0}
+        showTotal={false}
+      />
+      <Statistics
+        value={overtimeAttendanceData || 0}
+        label={"Adjusted Monthly Hours"}
         total={WeeklyWorkingHours || 0}
         showTotal={false}
       />

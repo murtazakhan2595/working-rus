@@ -17,7 +17,7 @@ const statusVariants = cva("", {
       outline: "text-slate-900 dark:text-slate-50",
       plum: "bg-plum-300 text-plum-1100",
       error: "bg-red-50 text-red-400",
-      warning: "bg-amber-50 text-amber-700",
+      warning: "bg-amber-50 text-amber-500",
       success: "bg-emerald-50 text-emerald-700",
       neutral: "bg-neutral-300 text-neutral-1100",
       info: "bg-blue-100 text-blue-900",
@@ -39,7 +39,9 @@ export const getStatusVariant = (Status) => {
   const status = Status.toLowerCase();
   if (status.includes("approved")) return "success";
   else if (status.includes("accepted")) return "success";
+  else if (status.includes("present")) return "success";
   else if (status.includes("viewed")) return "warning";
+  else if (status.includes("late")) return "warning";
   else if (status.includes("success")) return "success";
   else if (status.includes("declined")) return "error";
   else if (status.includes("expired")) return "error";

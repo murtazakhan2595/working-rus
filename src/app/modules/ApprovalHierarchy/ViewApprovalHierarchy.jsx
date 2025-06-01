@@ -10,7 +10,7 @@ import { HasAccess } from "utils/PermissionUtils";
 import Error from "app/modules/Error";
 import { ApprovalHierarchyRequestType } from "data/Data";
 
-const ViewApprovalHierarchy = ({reload}) => {
+const ViewApprovalHierarchy = ({ reload }) => {
   const [ApprovalHierarchies, setApprovalHierarchies] = useState({
     results: [],
     count: 0,
@@ -19,7 +19,9 @@ const ViewApprovalHierarchy = ({reload}) => {
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [reloadCounter, setReloadCounter] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedDelegatedIndex, setSelectedDelegatedIndex] = useState("");
+  const [selectedAutoFowardIndex, setSelectedAutoFowardIndex] = useState("");
   const [selectedRequestType, setSelectedRequestType] = useState("");
 
   const onPageChange = (name, value) => {
@@ -66,6 +68,9 @@ const ViewApprovalHierarchy = ({reload}) => {
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
     if (filterName === "request_type") setSelectedRequestType(filterValue);
+    if (filterName === "status") setSelectedStatus(filterValue);
+    if (filterName === "has_auto_forward") setSelectedAutoFowardIndex(filterValue);
+    if (filterName === "has_delegation") setSelectedDelegatedIndex(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -107,6 +112,36 @@ const ViewApprovalHierarchy = ({reload}) => {
             name: "request_type",
             option: ApprovalHierarchyRequestType,
             values: selectedRequestType,
+          },
+          {
+            type: "select-two",
+            placeholder: "Status",
+            name: "status",
+            option: [
+              { label: "Active", value: true },
+              { label: "Inactive", value: false },
+            ],
+            values: selectedStatus,
+          },
+          {
+            type: "select-three",
+            placeholder: "Auto Forward",
+            name: "has_auto_forward",
+            option: [
+              { label: "Enable", value: true },
+              { label: "Disable", value: false },
+            ],
+            values: selectedAutoFowardIndex,
+          },
+          {
+            type: "select-four",
+            placeholder: "Delegated",
+            name: "has_delegation",
+            option: [
+              { label: "Yes", value: true },
+              { label: "No", value: false },
+            ],
+            values: selectedDelegatedIndex,
           },
         ]}
         className="justify-end"

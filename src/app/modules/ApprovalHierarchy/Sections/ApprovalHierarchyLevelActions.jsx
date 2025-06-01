@@ -16,7 +16,7 @@ const ApprovalHierarchyLevelActions = ({
   reloadData = () => {},
   ApprovalHierarchyList = [],
 }) => {
-  const isEditUserRolePermitted = HasAccess("EDIT_USER_ROLE");
+  const isAddDelegatePermitted = HasAccess("ADD_LEVEL_DELEGATE");
   const [view, setView] = useState(null);
   const [deleteRoleState, setDeleteRoleState] = useState(null);
   const [openEditForm, setOpenEditForm] = useState(false);
@@ -53,14 +53,15 @@ const ApprovalHierarchyLevelActions = ({
       console.error("ERROR", error);
     }
   };
+  if(!isAddDelegatePermitted) return null;
 
   return (
     <>
       <DropdownActionMenu
-        onEdit={isEditUserRolePermitted ? handleEdit : null}
-        onDelete={isEditUserRolePermitted ? handleDelete : null}
+        onEdit={isAddDelegatePermitted ? handleEdit : null}
+        // onDelete={isEditUserRolePermitted ? handleDelete : null}
         editText="Delegate Level"
-        deleteText="Delete Level"
+        // deleteText="Delete Level"
         menuTooltip="Hierarchy Level Actions"
       />
 
@@ -91,8 +92,11 @@ const ApprovalHierarchyLevelActions = ({
       {openEditForm && (
         <AddUpdateDelegateLevels
           isOpen={openEditForm}
-          setReloadData={() => {
+          reloadData={() => {
             reloadData(true);
+            setOpenEditForm(false);
+          }}
+          setIsOpen={() => {
             setOpenEditForm(false);
           }}
           level_id={data.id}

@@ -10,8 +10,12 @@ const validateAssetFormSchema = (values, category) => {
   if (!values.purchase_cost) errors.purchase_cost = "Purchase cost is required";
 
   // Purchase cost validation
-  if (values.purchase_cost && parseFloat(values.purchase_cost) < 1) {
-    errors.purchase_cost = "Purchase cost must be at least 1";
+  if (values.purchase_cost) {
+    if (isNaN(values.purchase_cost)) {
+      errors.purchase_cost = "Purchase cost must be a valid number";
+    } else if (parseFloat(values.purchase_cost) < 1) {
+      errors.purchase_cost = "Purchase cost must be at least 1";
+    }
   }
 
   // Warranty date validation

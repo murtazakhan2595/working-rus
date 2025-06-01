@@ -31,12 +31,14 @@ import { CardDescription, CardTitle } from "components/ui/card";
 import { ApprovalHierarchyRequestTypeName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
 
-const LevelDelegations = ({ setReloadData = () => {} }) => {
+const LevelDelegations = ({ heirarchy_id , viewMode=false , reloadData}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [Delegations, setDelegations] = useState({});
   const Departments = useSelector((state) => state.common.departments);
   const Branches = useSelector((state) => state.common.branches);
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({
+    delegation_hierarchy: heirarchy_id,
+  });
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedBranch, setSelectedBranch] = useState("");
@@ -58,7 +60,11 @@ const LevelDelegations = ({ setReloadData = () => {} }) => {
   const fetchData = async (isMounted) => {
     try {
       setIsLoading(true);
-      const delegation = await getDelegationList({filterData,ordering,options});
+      const delegation = await getDelegationList({
+        filterData,
+        ordering,
+        options,
+      });
       if (isMounted) {
         setDelegations(delegation);
       }
@@ -92,6 +98,16 @@ const LevelDelegations = ({ setReloadData = () => {} }) => {
     });
   };
 
+  useEffect(() => {
+      let isMounted = true;
+      onPageChange("page", 1);
+      setOrdering("-id");
+      fetchData(true);
+      return () => {
+        isMounted = false;
+      };
+    }, [reloadData]);
+
   return (
     <Card>
       <CardTitle className="text-primary px-6 pt-6 pb-2">Delegations</CardTitle>
@@ -117,7 +133,7 @@ const LevelDelegations = ({ setReloadData = () => {} }) => {
           onChange={handleFilterChange}
         />
         <TableCustom
-          columns={DelegateLevelsColumn(fetchData)}
+          columns={DelegateLevelsColumn(fetchData, viewMode)}
           data={Delegations.results || []}
           dataTotalSize={Delegations?.count || 0}
           pagination={true}

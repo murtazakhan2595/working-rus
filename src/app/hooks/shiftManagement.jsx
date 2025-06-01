@@ -12,13 +12,12 @@ const formDataHeader = () => ({
   // Don't explicitly set 'Content-Type' for FormData
 });
 
-
 const saveShift = async (payload) => {
   try {
     console.log("payload", payload);
-    if(payload?.id) {
+    if (payload?.id) {
       const response = await axios.patch(
-        `${baseUrl}/shift/${payload.id}/`,
+        `${baseUrl}/shift/${payload.id}`,
         payload,
         {
           headers: headers(),
@@ -27,14 +26,10 @@ const saveShift = async (payload) => {
       if (response.status === 200) {
         return response.data;
       }
-    } else{
-      const response = await axios.post(
-        `${baseUrl}/shift/`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
+    } else {
+      const response = await axios.post(`${baseUrl}/shift/`, payload, {
+        headers: headers(),
+      });
       if (response.status === 201) {
         return response.data;
       }
@@ -46,11 +41,11 @@ const saveShift = async (payload) => {
     }
     throw error;
   }
-}
+};
 
 const saveShiftSchedule = async (payload) => {
   try {
-    if(payload?.id) {
+    if (payload?.id) {
       const response = await axios.patch(
         `${baseUrl}/shift-schedules/${payload.id}/`,
         payload,
@@ -61,8 +56,7 @@ const saveShiftSchedule = async (payload) => {
       if (response.status === 200) {
         return response.data;
       }
-    }
-    else{
+    } else {
       const response = await axios.post(
         `${baseUrl}/shift-schedules/`,
         payload,
@@ -81,7 +75,7 @@ const saveShiftSchedule = async (payload) => {
     }
     return false;
   }
-}
+};
 
 const getShiftSchedule = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
@@ -90,7 +84,7 @@ const getShiftSchedule = async (payload) => {
   const sortField = payload?.ordering || "id";
   let URL = `/shift-schedules?ordering=${sortField}&${
     pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `size=${pageSize}&` : ""}search=${encodeURIComponent(
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
     JSON.stringify(filterData)
   )}`;
   try {
@@ -107,6 +101,157 @@ const getShiftSchedule = async (payload) => {
     }
     return false;
   }
+};
+
+
+const getShiftChangeRequests = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "-id";
+  let URL = `/shift-change-requests?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching shift change requests:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+const getShiftChangeRequestById = async (requestId) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/shift-change-requests/${requestId}/`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching shift change request:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+// Shift Calendar Related Functions
+
+const getEmployeeShiftCalendar = async (payload) => {
+  const employeeId = payload?.employeeId;
+  const startDate = payload?.startDate;
+  const endDate = payload?.endDate;
+
+  let URL = `/employees/${employeeId}/shift-calendar?`;
+  if (startDate) URL += `start_date=${startDate}&`;
+  if (endDate) URL += `end_date=${endDate}`;
+
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching employee shift calendar:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+const getEmployeeEffectiveShift = async (employeeId, date) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/employees/${employeeId}/effective-shift?date=${date}`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching effective shift:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+const saveShiftSchedulesLogs = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/shift-schedules-logs/`,
+      payload,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving shift schedules logs:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
 }
 
-export { saveShift, saveShiftSchedule, getShiftSchedule };
+const getShiftSchedulesLogs = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "-id";
+  let URL = `/shift-schedules-logs?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching shift schedules logs:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
+
+export {
+  saveShift,
+  saveShiftSchedule,
+  getShiftSchedule,
+  getShiftChangeRequests,
+  getShiftChangeRequestById,
+  getEmployeeShiftCalendar,
+  getEmployeeEffectiveShift,
+  saveShiftSchedulesLogs,
+  getShiftSchedulesLogs,
+};

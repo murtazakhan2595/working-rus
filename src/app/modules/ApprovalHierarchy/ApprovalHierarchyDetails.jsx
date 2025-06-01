@@ -1,80 +1,40 @@
-import {
-  getApprovalHierarchyList,
-  getDelegationList,
-  getApprovalHierarchyData,
-} from "app/hooks/approvalHierarchy";
-import {
-  ApprovalHierarchy,
-  ApprovalLevel,
-} from "app/utils/Types/ApprovalHierarchy";
-import { TextInput, SelectInputComponent } from "components/FormControl";
-import { validateApprovalHierarchyFormSchema } from "app/utils/FormSchema/ApprovalHierarchyFormSchema";
-import {
-  HierarchyLevelsColumn,
-  DelegateLevelsColumn,
-} from "app/modules/ApprovalHierarchy/Sections";
+import { getApprovalHierarchyData } from "app/hooks/approvalHierarchy";
+import { ApprovalHierarchy } from "app/utils/Types/ApprovalHierarchy";
 import {
   AddEditApprovalHierarchyLevels,
   LevelDelegations,
+  Levels,
 } from "app/modules/ApprovalHierarchy";
-import React, { useEffect, useState, useCallback } from "react";
-import { toast } from "react-toastify";
-import {
-  Header,
-  SheetUI,
-  TableCustom,
-  StatusLabel,
-  SplitViewDetail,
-} from "components";
+import React, { useEffect, useState } from "react";
+import { Header,StatusLabel } from "components";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { ApprovalHierarchyRequestType } from "data/Data";
+import { useLocation } from "react-router-dom";
 import { Button } from "components/ui/button";
-import { FilterInput } from "components/FormControl";
 import { DetailBox } from "components/SheetCardExtension";
-import { DesignationName } from "utils/getValuesFromTables";
-import { SwitchInput } from "components/FormControl";
 import { CardDescription, CardTitle } from "components/ui/card";
-import { ApprovalHierarchyRequestTypeName } from "utils/getValuesFromTables";
+import { ApprovalHierarchyRequestTypeName ,EmployeeUsername} from "utils/getValuesFromTables";
+import { HasAccess } from "utils/PermissionUtils";
 
-const groupByInitiative = (list) => {
-  const map = {};
-  list.forEach((item) => {
-    const key = JSON.stringify(item.initiative_designation.sort()); // Normalize array for consistent grouping
-    if (!map[key]) {
-      map[key] = [];
-    }
-    map[key].push(item);
-  });
-
-  return Object.values(map);
-};
-
-const ApprovalHierarchyDetails = ({ setReloadData = () => {} }) => {
-  const navigate = useNavigate();
+const ApprovalHierarchyDetails = ({}) => {
+  const isAddHierarchyPermitted = HasAccess("ADD_APPROVAL_HIERARCHY");
+  const isViewDelegatePermitted = HasAccess("VIEW_LEVEL_DELEGATE");
   const location = useLocation();
   const { GOTO_URLS, id } = location.state || {};
-  const [isLoading, setIsLoading] = useState(false);
+  const [reloadData, setReloadData] = useState(false);
   const [addLevelsForm, setAddLevelsForm] = useState(false);
   const [RequestInitiatorListToEdit, setRequestInitiatorListToEdit] =
     useState(null);
   const [Hierarchy, setHierarchy] = useState(ApprovalHierarchy);
-  const Designations = useSelector((state) => state.common.designations);
-  const [selectedDesignation, setSelectedDesignation] = useState("");
 
   const fetchData = async (isMounted) => {
     try {
-      setIsLoading(true);
       const response = await getApprovalHierarchyData(id);
       if (isMounted) {
         setHierarchy(response);
       }
     } catch (error) {
       console.error("Error fetching roles:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -86,22 +46,6 @@ const ApprovalHierarchyDetails = ({ setReloadData = () => {} }) => {
     };
   }, [id]);
 
-  const HierarchyLevels = React.useMemo(() => {
-    const levels = Hierarchy?.levels || [];
-    const filtered = selectedDesignation
-      ? levels.filter((item) =>
-          item.initiative_designation.includes(selectedDesignation)
-        )
-      : levels;
-    return groupByInitiative(filtered);
-  }, [Hierarchy?.levels, selectedDesignation]);
-
-  const RequestInitiatorDesignations = React.useMemo(() => {
-    const initiators = Hierarchy?.request_initiative;
-    if (!initiators || !Array.isArray(initiators)) return [];
-    return initiators;
-  }, [Hierarchy]);
-
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -110,109 +54,99 @@ const ApprovalHierarchyDetails = ({ setReloadData = () => {} }) => {
         showBackButton={true}
         navigationLink={GOTO_URLS || "/office-settings/approval-hierarchy"}
         content={
-          <Button
-            onClick={(event) => {
-              event.stopPropagation();
-              event.preventDefault();
-              setAddLevelsForm(true);
-            }}
-          >
-            Add New Request Initiator Level
-          </Button>
+          isAddHierarchyPermitted && (
+            <Button
+              onClick={(event) => {
+                event.stopPropagation();
+                event.preventDefault();
+                setAddLevelsForm(true);
+              }}
+            >
+              Add Hierarchy Level by Initiator
+            </Button>
+          )
         }
       />
       <Card>
         <CardTitle className="text-primary p-6">Hierarchy Details</CardTitle>
         <CardDescription></CardDescription>
         <CardContent>
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg-grid-cols-3">
-            <DetailBox value={Hierarchy.name} label="Name" />
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-5">
             <DetailBox
+              value={Hierarchy?.name}
+              label="Name"
+              orientation="horizontal"
+            />
+            <DetailBox
+              orientation="horizontal"
               value={
                 <ApprovalHierarchyRequestTypeName
-                  value={Hierarchy.request_type}
+                  value={Hierarchy?.request_type}
                 />
               }
               label="Request Type"
             />
-            {Hierarchy.auto_forward_enabled && (
-              <DetailBox
-                value={`${Hierarchy.auto_forward_threshold}hr`}
-                label="Auto Forward Thershold"
-              />
-            )}
+            <DetailBox
+              orientation="horizontal"
+              value={<EmployeeUsername value={Hierarchy?.created_by} />}
+              label="Created By"
+            />
+            <DetailBox
+              orientation="horizontal"
+              value={`${Hierarchy?.no_of_levels || 0}`}
+              label="No. of Levels"
+            />
+            <DetailBox
+              orientation="horizontal"
+              value={`${Hierarchy?.has_delegation ? "Yes" : "NO"}`}
+              label="Delegated"
+            />
+            <DetailBox
+              orientation="horizontal"
+              value={
+                <StatusLabel variant="info">
+                  {Hierarchy?.has_auto_forward ? "Enabled" : "Disabled"}
+                </StatusLabel>
+              }
+              label="Auto Forward"
+            />
+            <DetailBox
+              orientation="horizontal"
+              value={
+                <StatusLabel variant={Hierarchy?.status ? "success" : "error"}>
+                  {Hierarchy?.status ? "Active" : "Inactive"}
+                </StatusLabel>
+              }
+              label="Status"
+            />
           </div>
         </CardContent>
       </Card>
       <Card>
-        <CardContent className="flex flex-col gap-4 mt-6">
-          {/* <SplitViewDetail items={RequestInitiatorDesignations || []} /> */}
-          <FilterInput
-            filters={[
-              {
-                type: "select-one",
-                placeholder: "Designation",
-                name: "designation",
-                option: Designations,
-                values: selectedDesignation,
-              },
-            ]}
-            className="justify-end"
-            onChange={(filterName, filterValue) => {
-              if (filterName === "designation")
-                setSelectedDesignation(filterValue);
+        <CardTitle className="text-primary p-6">Hierarchy Levels</CardTitle>
+        <CardDescription></CardDescription>
+        <CardContent className="">
+          <Levels
+            HierarchyDetails={Hierarchy}
+            fetchData={fetchData}
+            hierarchy_id={id}
+            viewMode={false}
+            setReloadData={() => {
+              setReloadData(!reloadData);
             }}
           />
-          {HierarchyLevels && Array.isArray(HierarchyLevels)
-            ? HierarchyLevels?.map((levels) => {
-                const request_initiator_designation =
-                  levels && Array.isArray(levels) && levels.length > 0
-                    ? levels[0].initiative_designation
-                    : [];
-                return (
-                  <div className="flex flex-col gap-4">
-                    <div className="flex-row flex justify-between">
-                      <div className="font-[inter] text-neutral-1200 flex-inline flex items-center gap-2">
-                        Approval Level for Request Initiator as :
-                        {request_initiator_designation.map((designation) => (
-                          <StatusLabel key={designation} variant={"info"}>
-                            <DesignationName value={designation} />
-                          </StatusLabel>
-                        ))}
-                      </div>
-                      <Button
-                        onClick={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                          setRequestInitiatorListToEdit(
-                            request_initiator_designation
-                          );
-                          setAddLevelsForm(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    </div>
-                    <TableCustom
-                      columns={HierarchyLevelsColumn(fetchData)}
-                      data={levels || []}
-                      dataTotalSize={levels?.length || 0}
-                      pagination={false}
-                      className="ApprovalHierarchiesLevels-table"
-                    />
-                  </div>
-                );
-              })
-            : null}
         </CardContent>
       </Card>
-      <LevelDelegations />
+      {isViewDelegatePermitted && (
+        <LevelDelegations heirarchy_id={id} reloadData={reloadData} />
+      )}
       {addLevelsForm && (
         <AddEditApprovalHierarchyLevels
           isOpen={addLevelsForm}
           setReloadData={() => {
             setRequestInitiatorListToEdit(null);
             setAddLevelsForm(false);
+            setReloadData(!reloadData);
             fetchData(true);
           }}
           id={id}

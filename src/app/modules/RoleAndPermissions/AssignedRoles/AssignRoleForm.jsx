@@ -10,7 +10,7 @@ import {
 } from "components/FormControl";
 import { saveAssignedRole, getUserRoleList } from "app/hooks/rolesPermisions";
 import { useSelector } from "react-redux";
-import { DepartmentName, BranchName } from "utils/getValuesFromTables";
+import { GetDefaultUserRole } from "utils/getValuesFromTables";
 
 const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const [confirmSave, setConfirmSave] = useState(false);
@@ -18,6 +18,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const [employeeData, setEmployeeData] = useState(null);
   const [availableRoles, setAvailableRoles] = useState([]);
   const isEditMode = Boolean(edit?.data);
+  const default_role = GetDefaultUserRole()?.id;
 
   // Get employees from Redux state
   const employees = useSelector((state) => state.emp.employees);
@@ -30,7 +31,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     const fetchRoles = async () => {
       try {
         const response = await getUserRoleList({
-          filterData: { status:'active' },
+          filterData: { status: "active" },
         });
         setAvailableRoles(response.results);
       } catch (error) {
@@ -42,26 +43,41 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     fetchRoles();
   }, []);
 
-  // Update form data when edit data changes
   useEffect(() => {
-    if (edit?.data) {
-      setFormData({
-        ...edit.data,
-        employee: edit.data.employee?.id || "",
-        roles: edit?.data?.user_role, 
-      });
+    if (!edit?.data || typeof edit.data !== "object") return;
 
-      // If editing, set the employee data
-      if (edit?.data) {
-        setEmployeeData({
-          value: edit.data?.id,
-          label: `${edit.data?.first_name} ${edit.data?.last_name} (${edit.data?.serial_number})`,
-          employeeId: edit.data?.id,
-          department: edit.data?.department_name,
-          branch: edit.data?.branch,
-          email: edit.data?.email,
-        });
-      }
+    const {
+      employee,
+      user_role,
+      id,
+      first_name,
+      last_name,
+      serial_number,
+      department_name,
+      branch,
+      email,
+    } = edit.data;
+
+    // Safely extract and prepare formData
+    const updatedFormData = {
+      ...edit.data,
+      employee: employee?.id || "",
+      roles: Array.isArray(user_role)
+        ? user_role.filter((role) => role !== default_role)
+        : [],
+    };
+    setFormData(updatedFormData);
+
+    // Set employeeData safely
+    if (id && first_name && last_name && serial_number) {
+      setEmployeeData({
+        value: id,
+        label: `${first_name} ${last_name} (${serial_number})`,
+        employeeId: id,
+        department: department_name || "",
+        branch: branch || "",
+        email: email || "",
+      });
     }
   }, [edit?.data]);
 
@@ -72,9 +88,9 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
       errors.employee = "Employee is required";
     }
 
-    if (!values.roles || values.roles.length === 0) {
-      errors.roles = "At least one role must be selected";
-    }
+    // if (!values.roles || values.roles.length === 0) {
+    //   errors.roles = "At least one role must be selected";
+    // }
 
     return errors;
   };
@@ -82,7 +98,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const handleSubmit = async (values) => {
     const payload = {
       employeeId: employeeData?.id || employeeData?.value || values.employee,
-      roles: values.roles, 
+      roles: [...values.roles,default_role],
     };
 
     setFormValues({ ...values, ...payload });
@@ -127,26 +143,38 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   // Transform employees for SelectInputComponent
   const employeeOptions = employees.map((emp) => ({
     value: emp.value,
-    label: `dsfsadfksdfjshfk`,
+    label: `${emp.label} - ${emp.username}`,
     department: emp.department || "N/A",
     branch: emp.branch || "N/A",
     email: emp.email || "",
   }));
 
-  const roleOptions = availableRoles
-    .filter((role) => role.id !== 1 && role.name !== "Super Admin")
-    .map((role) => ({
-      value: role.id,
-      label: role.name,
-      description: role.description,
-    }));
+  const roleOptions = React.useMemo(() => {
+    if (!Array.isArray(availableRoles) || availableRoles.length === 0)
+      return [];
+
+    return availableRoles
+      .filter(
+        (role) =>
+          role &&
+          typeof role === "object" &&
+          role.id !== 1 &&
+          role.name !== "Super Admin" &&
+          role.id !== default_role
+      )
+      .map((role) => ({
+        value: role.id,
+        label: role.name,
+        description: role.description || "",
+      }));
+  }, [availableRoles, default_role]);
+
   const FormSheetData = {
     triggerText: "Assign Role",
     title: `${isEditMode ? "Edit" : "Assign"} Roles`,
     description: null,
     footer: null,
   };
-
 
   // Get employee display values with fallbacks
   const getEmployeeDisplayValues = () => {
@@ -277,7 +305,6 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
         setIsOpen={handleClose}
         variant=""
         sheetConfig={FormSheetData}
-       
         formConfig={{
           initialValues: formData,
           enableReinitialize: true,
@@ -300,7 +327,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
                 {
                   InputField: SelectMultiInputComponent,
                   name: "roles",
-                  required: true,
+                  // required: true,
                   label: "Select Roles",
                   options: roleOptions,
                   placeholder: "Select roles",
