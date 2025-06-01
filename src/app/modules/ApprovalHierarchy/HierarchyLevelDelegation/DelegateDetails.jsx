@@ -6,8 +6,6 @@ import {
   getHierarchyLevelData,
 } from "app/hooks/approvalHierarchy";
 import {
-  FormatID,
-  EmployeeUsername,
   DesignationName,
   BranchName,
   DepartmentName,
@@ -118,7 +116,7 @@ const DelegateDetails = ({
       reloadData={reloadData}
       editComponent={AddUpdateDelegateLevels}
       currentItem_Id={current_id}
-      apiEndpoint={`/delegations/`}
+      apiEndpoint={`/delegations/&{id}/`}
       fetchCurrentItemDetails={fetchData}
       deleteItemName="Delegate"
       editTooltip="Edit Delegate"

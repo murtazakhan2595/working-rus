@@ -9,15 +9,17 @@ import { FilterInput } from "components/FormControl";
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
+import { useSelector } from "react-redux";
 
 const GraceTime = ({ reload }) => {
+  const Branches = useSelector((state) => state.common.branches);
   const [GraceTimeList, setGraceTimeList] = useState({});
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [filteredData, setFilteredData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [selectedBranch, setSelectedBranch] = useState("");
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -62,7 +64,7 @@ const GraceTime = ({ reload }) => {
     let isMounted = true;
     onPageChange("page", 1);
     setOrdering("-id");
-    fetchData(isMounted)
+    fetchData(isMounted);
     return () => {
       isMounted = false;
     };
@@ -70,6 +72,7 @@ const GraceTime = ({ reload }) => {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
+    if (filterName === "branch") setSelectedBranch(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -97,6 +100,13 @@ const GraceTime = ({ reload }) => {
                   type: "search",
                   placeholder: "Search by name",
                   name: "name",
+                },
+                {
+                  type: "select-one",
+                  placeholder: "Branch",
+                  name: "branch",
+                  option: Branches,
+                  values: selectedBranch,
                 },
               ]}
               className="justify-end"

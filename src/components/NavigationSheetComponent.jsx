@@ -114,16 +114,31 @@ const NavigationSheetComponent = ({
 
   const confirmDelete = async () => {
     try {
-      await deleteRecord(
-        `${apiEndpoint}${currentItem.id}`,
-        currentItem?.[deleteItemName] || deleteItemName
-      );
+      // Check if required values exist
+      if (!apiEndpoint || !currentItemId) {
+        console.warn(
+          "Missing required data: API endpoint or item ID is not defined."
+        );
+        return;
+      }
+      const deleteAPI = apiEndpoint.replace("${id}", currentItemId);
+      // Check if deleteAPI is still valid after replacement
+      if (!deleteAPI.includes(currentItemId)) {
+        console.error("Invalid API endpoint after replacement.");
+        return;
+      }
+      const itemName =
+        currentItem?.[deleteItemName] || deleteItemName || "Item";
+      // Call the delete function
+      await deleteRecord(deleteAPI, itemName);
+      // Close the modal
       setIsOpen(false);
+      // Refresh data if applicable
       if (typeof reloadData === "function") {
         reloadData(true);
       }
     } catch (error) {
-      console.error("ERROR", error);
+      console.error("Failed to delete item:", error);
     }
   };
 
@@ -148,7 +163,7 @@ const NavigationSheetComponent = ({
         positionIndicator={getPositionIndicator()}
       >
         {isLoading ? (
-          <PageLoader />
+          <PageLoader height={"100vh"} />
         ) : (
           <div className="flex flex-col gap-4">
             <div className="flex justify-end mt-4 space-x-2">
