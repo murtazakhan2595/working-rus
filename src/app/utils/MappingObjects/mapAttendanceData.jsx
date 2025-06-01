@@ -1,4 +1,9 @@
-import { Attendance, Shift, TimeAdjustment } from "app/utils/Types/Attendance";
+import {
+  Attendance,
+  Shift,
+  TimeAdjustment,
+  AttendanceAdjustment,
+} from "app/utils/Types/Attendance";
 import { CalculateTotalWorkingHours } from "utils/renderValues";
 import moment from "moment";
 
@@ -116,8 +121,8 @@ export function mapEmployeeAttendanceDetail(data) {
     todays_shift.start_time === "00:00:00" &&
     todays_shift.end_time === "00:00:00"
   ) {
-    emp_attendance_data.todays_shift['start_time'] = todays_shift.start_time;
-    emp_attendance_data.todays_shift['end_time'] = todays_shift.end_time;
+    emp_attendance_data.todays_shift["start_time"] = todays_shift.start_time;
+    emp_attendance_data.todays_shift["end_time"] = todays_shift.end_time;
   }
 
   const yesterday_shift = data.yesterday_shift;
@@ -126,9 +131,9 @@ export function mapEmployeeAttendanceDetail(data) {
     yesterday_shift.start_time === "00:00:00" &&
     yesterday_shift.end_time === "00:00:00"
   ) {
-    emp_attendance_data.yesterday_shift['start_time'] =
+    emp_attendance_data.yesterday_shift["start_time"] =
       yesterday_shift.start_time;
-    emp_attendance_data.yesterday_shift['end_time'] = yesterday_shift.end_time;
+    emp_attendance_data.yesterday_shift["end_time"] = yesterday_shift.end_time;
   }
 
   const tomorrow_shift = data.tomorrow_shift;
@@ -137,8 +142,9 @@ export function mapEmployeeAttendanceDetail(data) {
     tomorrow_shift.start_time === "00:00:00" &&
     tomorrow_shift.end_time === "00:00:00"
   ) {
-    emp_attendance_data.tomorrow_shift['start_time'] = tomorrow_shift.start_time;
-    emp_attendance_data.tomorrow_shift['end_time'] = tomorrow_shift.end_time;
+    emp_attendance_data.tomorrow_shift["start_time"] =
+      tomorrow_shift.start_time;
+    emp_attendance_data.tomorrow_shift["end_time"] = tomorrow_shift.end_time;
   }
   emp_attendance_data.monthly_leaves = data.monthly_leaves;
   emp_attendance_data.weekly_leaves = data.weekly_leaves;
@@ -163,4 +169,69 @@ export function mapEmployeeAttendanceDetail(data) {
   emp_attendance_data.overtime = data.overtime;
 
   return emp_attendance_data;
+}
+
+export async function mapAttendanceAdjustmentData(data) {
+  const attendanceAdjustmentData = Object.keys(AttendanceAdjustment).reduce(
+    (acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
+  return attendanceAdjustmentData;
+}
+
+export async function mapAttendanceAdjustmentListData(data) {
+  if (!Array.isArray(data) || data.length === 0) return [];
+
+  const AttendanceAdjustmentList = await Promise.all(
+    data.map((attendanceAdjustment) =>
+      mapAttendanceAdjustmentData(attendanceAdjustment)
+    )
+  );
+
+  return AttendanceAdjustmentList;
+}
+
+export function mapAdjustmentFromAttendnaceData(data) {
+  const attendanceAdjustmentData = Object.keys(AttendanceAdjustment).reduce(
+    (acc, key) => {
+      if (key === "employee") acc[key] = data.employee_id;
+      else if (key === "attendance") acc[key] = data.id;
+      else if (key === "requested_checkin") acc[key] = data.checkin;
+      else if (key === "requested_checkout") acc[key] = data.checkout;
+      else if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
+  attendanceAdjustmentData.date = data.date;
+  attendanceAdjustmentData.employee_id = data.employee_id;
+  attendanceAdjustmentData.status = data.status;
+  return attendanceAdjustmentData;
+}
+
+export function mapAttendanceAdjustmentPayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in AttendanceAdjustment) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      if (key === "reason") payload[key] = data[key].trim();
+      else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
 }

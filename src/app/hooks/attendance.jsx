@@ -6,6 +6,7 @@ import {
   mapShiftData,
   mapTimeAdjustmentPayloadeData,
   mapEmployeeAttendanceDetail,
+  mapAttendanceAdjustmentPayloadData,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
@@ -630,6 +631,36 @@ export const getEmployeeAttendanceDetails = async (employee_id) => {
       return {};
     }
   } else return {};
+};
+
+export const saveUpdateAttendanceAdjustment = async (payload, id) => {
+  const attendanceId = id || payload?.id;
+  try {
+    const finalPayload = mapAttendanceAdjustmentPayloadData(payload);
+
+    const url = attendanceId
+      ? `${baseUrl}/attendance-adjustment/${attendanceId}/` // Use id if updating
+      : `${baseUrl}/attendance-adjustment/`; // No id means create new
+
+    const method = attendanceId ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
 };
 
 export {

@@ -178,7 +178,7 @@ const Attendance = () => {
           <div className="md:min-w-[300px] md:w-[32%] w-full">
             {/* Statistics Card */}
             {canViewAttendance ? (
-              <Card className='h-full'>
+              <Card className="h-full">
                 <CardHeader>
                   <CardTitle className="text-plum-900">Statistics</CardTitle>
                 </CardHeader>
@@ -187,7 +187,7 @@ const Attendance = () => {
                 </CardContent>
               </Card>
             ) : (
-              <Card className='h-full'>
+              <Card className="h-full">
                 <CardHeader>
                   <CardTitle className="text-plum-900">Statistics</CardTitle>
                 </CardHeader>
@@ -233,11 +233,11 @@ const Attendance = () => {
         </div>
 
         {/* Attendance History Section */}
-        <div className="flex gap-2 justify-between items-center">
-          <h3 className="text-2xl font-semibold leading-none tracking-tight flex flex-col space-y-1.5 p-6">
+        <div className="flex flex-col gap-2">
+          <h3 className="text-2xl font-semibold leading-none tracking-tight flex flex-col space-y-1.5 py-3">
             <div className="text-plum-900">Attendance History</div>
           </h3>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 justify-end items-center">
             {canViewAttendance && (
               <DateRangeFilter
                 activeDateRange={activeFilter}
@@ -294,11 +294,6 @@ const Attendance = () => {
           }}
         />
       )}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
-          <DailyShiftDetailsCard userId={userProfile.id} isDashboard={false} />
-        </div>
-      </div>
     </>
   );
 };
