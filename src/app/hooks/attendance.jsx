@@ -11,6 +11,10 @@ import {
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
+import {
+  getMontlyShiftData,
+  getThisWeekShiftData,
+} from "app/modules/Attendance/ShiftCalendar/Section/getEmployeeActiveShift";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -617,11 +621,26 @@ export const saveTimeAdjustment = async (payload, id) => {
 export const getEmployeeAttendanceDetails = async (employee_id) => {
   if (employee_id) {
     try {
-      const response = await axios.get(`${baseUrl}/attendance/employee/${employee_id}/`, {
-        headers: headers(),
-      });
-      if(response){
-        const emp_attendance_data =  mapEmployeeAttendanceDetail(response.data);
+      const response = await axios.get(
+        `${baseUrl}/attendance/employee/${employee_id}/`,
+        {
+          headers: headers(),
+        }
+      );
+      const MonthlytShiftData = await getMontlyShiftData(employee_id);
+      const WeeklyShiftData = await getThisWeekShiftData(MonthlytShiftData);
+      // console.log(MonthlytShiftData, "getMonthltShiftDatagetMonthltShiftData");
+      if (response) {
+        const emp_attendance_data = await mapEmployeeAttendanceDetail({
+          ...response.data,
+          monthly_shifts: MonthlytShiftData,
+          weekly_shifts: WeeklyShiftData,
+        });
+        console.log(
+          emp_attendance_data,
+          "getMonthltShiftDatagetMonthltShiftData"
+        );
+
         return emp_attendance_data;
       }
     } catch (error) {
@@ -669,18 +688,20 @@ export const getAttendanceAdjustmentListData = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "";
-  let URL = `/attendance-adjustment/?${ordering ? `ordering=${ordering}&` : ""}${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  let URL = `/attendance-adjustment/?${
+    ordering ? `ordering=${ordering}&` : ""
+  }${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
       const ResponseData = response.data;
-      const ResponseDataList = await mapAttendanceAdjustmentListData(ResponseData.results);
+      const ResponseDataList = await mapAttendanceAdjustmentListData(
+        ResponseData.results
+      );
       return { results: ResponseDataList, count: ResponseData.count };
     }
   } catch (error) {

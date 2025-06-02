@@ -28,7 +28,7 @@ const dayStyles = {
     title: "text-blue-700",
     icon: "text-blue-400",
   },
-  'Offset Count': {
+  "Offset Count": {
     border: "border-plum-300",
     bg: "bg-plum-200",
     text: "text-plum-1100",
@@ -37,98 +37,32 @@ const dayStyles = {
   },
 };
 
-const DailyShiftDetailsCard = ({ userId, isDashboard = false }) => {
+const DailyShiftDetailsCard = ({ isDashboard = false }) => {
   const emp_attendance_detail = useSelector(
     (state) => state.attendance.attendance_details
   );
-//   console.log(emp_attendance_detail, "emp_attendance_detail");
+  //   console.log(emp_attendance_detail, "emp_attendance_detail");
 
-  const [shiftDetails, setShiftDetails] = useState({
-    yesterday: null,
-    today: null,
-    tomorrow: null,
-  });
+  const [shiftDetails, setShiftDetails] = useState([]);
   const [offsetCount, setOffsetCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchShiftDetails();
-  }, [userId]);
+    setShiftDetails([
+      {
+        day: "yesterday",
+        details: emp_attendance_detail.yesterday_shift || {},
+      },
+      { day: "today", details: emp_attendance_detail.today_shift || {} },
+      { day: "tomorrow", details: emp_attendance_detail.tomorrow_shift || {} },
+    ]);
+  }, [emp_attendance_detail]);
 
-  const fetchShiftDetails = async () => {
-    try {
-      setLoading(true);
-      const dates = {
-        yesterday: new Date(Date.now() - 86400000),
-        today: new Date(),
-        tomorrow: new Date(Date.now() + 86400000),
-      };
-
-      const details = {};
-      let totalOvertimeHours = 0;
-
-      for (const [key, date] of Object.entries(dates)) {
-        const response = await getEmployeeActiveShift(userId, date);
-        if (response) {
-          details[key] = processShiftData(response);
-          if (response.overtime_hours) {
-            totalOvertimeHours += parseFloat(response.overtime_hours);
-          }
-        } else {
-          details[key] = { status: "No shift assigned" };
-        }
-      }
-
-      const calculatedOffsetCount = Math.floor(totalOvertimeHours / 9);
-      setOffsetCount(calculatedOffsetCount);
-      setShiftDetails(details);
-    } catch (error) {
-      console.error("Error fetching shift details:", error);
-      toast.error("Failed to fetch shift details");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const processShiftData = (shiftData) => {
-    if (!shiftData || shiftData.status === "no_shift") {
-      return { status: "No shift assigned" };
-    }
-
-    if (shiftData.status === "off") {
-      if (shiftData.is_on_leave) {
-        return { status: "Off (Leave)" };
-      }
-      if (shiftData.is_weekly_off) {
-        return { status: "Off (Weekly)" };
-      }
-      return { status: "Off" };
-    }
-
-    if (shiftData.status === "active") {
-      if (shiftData.is_split_shift && shiftData.split_shifts) {
-        return {
-          status: "active",
-          shifts: shiftData.split_shifts.map((shift) => ({
-            start: format(new Date(shift.start_time), "hh:mm a"),
-            end: format(new Date(shift.end_time), "hh:mm a"),
-          })),
-        };
-      }
-
-      return {
-        status: "active",
-        shifts: [
-          {
-            start: format(new Date(shiftData.start_time), "hh:mm a"),
-            end: format(new Date(shiftData.end_time), "hh:mm a"),
-          },
-        ],
-      };
-    }
-
-    return { status: "No shift assigned" };
-  };
+  console.log(
+    emp_attendance_detail,
+    shiftDetails,
+    "getMonthltShiftDatagetMonthltShiftData"
+  );
 
   if (loading) {
     return (
@@ -157,68 +91,27 @@ const DailyShiftDetailsCard = ({ userId, isDashboard = false }) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {Object.entries(shiftDetails).map(([day, detail]) => (
-            <>
-              <ShiftCard day={day} detail={detail} Icon={Clock} />
-              {/* <div
-                key={day}
-                className={`flex gap-2 justify-between px-2 py-1 rounded-md border transition-all duration-200 hover:shadow-md ${dayStyles[day].border} ${dayStyles[day].bg}`}
-              >
-                <div
-                  className={`flex items-center gap-1 font-medium capitalize text-lg ${dayStyles[day].title}`}
-                >
-                  <Clock className={`h-4 w-4 ${dayStyles[day].icon}`} />
-                  {day}
-                </div>
-                {detail.status === "active" ? (
-                  <div className="space-y-2">
-                    {detail.shifts.map((shift, index) => (
-                      <div
-                        key={index}
-                        className={`flex items-start gap-2 justify-between py-2 text-sm ${dayStyles[day].text}`}
-                      >
-                        <span className="font-medium">{shift.start}</span>
-                        <ArrowRight
-                          className={`h-4 w-4 ${dayStyles[day].icon}`}
-                        />
-                        <span className="font-medium">{shift.end}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div
-                    className={`text-center py-2 px-3 text-sm font-medium ${dayStyles[day].text}`}
-                  >
-                    {detail.status}
-                  </div>
-                )}
-              </div> */}
-            </>
+          {shiftDetails.map(({ day, details }) => (
+            <ShiftCard
+              day={day}
+              Icon={Clock}
+              shifts={details.shifts}
+              status={details.status}
+              OffLabel={details.OffLabel}
+            />
           ))}
           <ShiftCard
             day={"Offset Count"}
-            detail={{ status: `${offsetCount} Days` }}
             Icon={Clock}
+            OffLabel={`${offsetCount} Days`}
           />
-{/* 
-          <div className="mt-6 p-4 bg-plum-50/50 rounded-lg border border-plum-200">
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-2 font-medium text-plum-900">
-                <Clock className="h-4 w-4 text-plum-400" />
-                Offset Count
-              </span>
-              <span className="px-3 py-1 bg-white rounded-md font-medium text-plum-1100 shadow-sm">
-                {offsetCount} Days
-              </span>
-            </div>
-          </div> */}
         </div>
       </CardContent>
     </Card>
   );
 };
 
-const ShiftCard = ({ day, detail, Icon }) => {
+const ShiftCard = ({ day, Icon, shifts, status, OffLabel }) => {
   return (
     <div
       key={day}
@@ -230,24 +123,25 @@ const ShiftCard = ({ day, detail, Icon }) => {
         <Icon className={`h-4 w-4 ${dayStyles[day].icon}`} />
         {day}
       </div>
-      {detail.status === "active" ? (
-        <div className="space-y-2">
-          {detail.shifts.map((shift, index) => (
-            <div
-              key={index}
-              className={`flex items-center gap-2 justify-between py-1 px-2 text-sm ${dayStyles[day].text}`}
-            >
-              <span className="font-medium">{shift.start}</span>
-              <ArrowRight className={`h-3 w-3 ${dayStyles[day].icon}`} />
-              <span className="font-medium">{shift.end}</span>
-            </div>
-          ))}
+      {status ? (
+        <div className="">
+          {shifts &&
+            shifts.map((shift, index) => (
+              <div
+                key={index}
+                className={`flex items-center gap-2 justify-between py-1 px-2 text-sm ${dayStyles[day].text}`}
+              >
+                <span className="font-medium">{shift.start_time}</span>
+                <ArrowRight className={`h-3 w-3 ${dayStyles[day].icon}`} />
+                <span className="font-medium">{shift.end_time}</span>
+              </div>
+            ))}
         </div>
       ) : (
         <div
           className={`text-center py-1 px-2 text-sm font-medium ${dayStyles[day].text}`}
         >
-          {detail.status}
+          {OffLabel}
         </div>
       )}
     </div>

@@ -4,7 +4,7 @@ import {
   TimeAdjustment,
   AttendanceAdjustment,
 } from "app/utils/Types/Attendance";
-import { CalculateTotalWorkingHours } from "utils/renderValues";
+import { CalculateTotalWorkingHours, calculateTotal } from "utils/renderValues";
 import moment from "moment";
 
 export function mapShiftData(data) {
@@ -109,43 +109,34 @@ export function mapTimeAdjustmentPayloadeData(data) {
 }
 
 export function mapEmployeeAttendanceDetail(data) {
-  console.log(data, "emp_attendance_data");
   const emp_attendance_data = {};
+  const MonthlyShiftDataList = data.monthly_shifts;
+  const WeeklyShiftDataList = data.weekly_shifts;
+  const monthly_total_hours = calculateTotal(
+    MonthlyShiftDataList,
+    "total_hours"
+  );
+  const weekly_total_hours = calculateTotal(WeeklyShiftDataList, "total_hours");
+  const today_shift = MonthlyShiftDataList.find(
+    (shift) => shift.date === moment().format("YYYY-MM-DD")
+  );
+  const yesterday_shift = MonthlyShiftDataList.find(
+    (shift) => shift.date === moment().subtract(1, "day").format("YYYY-MM-DD")
+  );
+  const tomorrow_shift = MonthlyShiftDataList.find(
+    (shift) => shift.date === moment().add(1, "day").format("YYYY-MM-DD")
+  );
+
+  emp_attendance_data.monthly_total_hours = monthly_total_hours;
+  emp_attendance_data.weekly_total_hours = weekly_total_hours;
   emp_attendance_data.employee_id = data.employee_id;
+  emp_attendance_data.today_shift = today_shift || {};
+  emp_attendance_data.yesterday_shift = yesterday_shift || {};
+  emp_attendance_data.tomorrow_shift = tomorrow_shift || {};
   emp_attendance_data.checkin = data.check_in_time;
   emp_attendance_data.employee_name = data.employee_name;
   emp_attendance_data.employee_serial_number = data.employee_serial_number;
-  const todays_shift = data.todays_shift;
-  emp_attendance_data.todays_shift = todays_shift;
-  if (
-    todays_shift.start_time === "00:00:00" &&
-    todays_shift.end_time === "00:00:00"
-  ) {
-    emp_attendance_data.todays_shift["start_time"] = todays_shift.start_time;
-    emp_attendance_data.todays_shift["end_time"] = todays_shift.end_time;
-  }
 
-  const yesterday_shift = data.yesterday_shift;
-  emp_attendance_data.yesterday_shift = yesterday_shift;
-  if (
-    yesterday_shift.start_time === "00:00:00" &&
-    yesterday_shift.end_time === "00:00:00"
-  ) {
-    emp_attendance_data.yesterday_shift["start_time"] =
-      yesterday_shift.start_time;
-    emp_attendance_data.yesterday_shift["end_time"] = yesterday_shift.end_time;
-  }
-
-  const tomorrow_shift = data.tomorrow_shift;
-  emp_attendance_data.tomorrow_shift = tomorrow_shift;
-  if (
-    tomorrow_shift.start_time === "00:00:00" &&
-    tomorrow_shift.end_time === "00:00:00"
-  ) {
-    emp_attendance_data.tomorrow_shift["start_time"] =
-      tomorrow_shift.start_time;
-    emp_attendance_data.tomorrow_shift["end_time"] = tomorrow_shift.end_time;
-  }
   emp_attendance_data.monthly_leaves = data.monthly_leaves;
   emp_attendance_data.weekly_leaves = data.weekly_leaves;
   emp_attendance_data.is_leave_today = data.is_leave_today;

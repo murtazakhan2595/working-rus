@@ -34,8 +34,11 @@ const Attendance = ({ isTeamView = false }) => {
   const Departments = useSelector((state) => state.common.departments);
   const Branches = useSelector((state) => state.common.branches);
   const Designations = useSelector((state) => state.common.designations);
-  const { branch_id: user_branch, department_name: user_department , id:user_id} =
-    useSelector((state) => state.emp.user_details);
+  const {
+    branch_id: user_branch,
+    department_name: user_department,
+    id: user_id,
+  } = useSelector((state) => state.emp.user_details);
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [openUpdateEmployeeAttendance, setOpenUpdateEmployeeAttendance] =
@@ -175,7 +178,11 @@ const Attendance = ({ isTeamView = false }) => {
         </div>
         {(isViewEmpAttendancePermitted || isViewBrnEmpAttendancePermitted) && (
           <>
-            <StatsCards isTeamView={isTeamView} filterData={filterData} user_id={user_id}/>
+            <StatsCards
+              isTeamView={isTeamView}
+              isEmpView={isViewEmpAttendancePermitted}
+              isBranchView={isViewBrnEmpAttendancePermitted}
+            />
             <div className="flex justify-end gap-3 flex-row flex-wrap">
               <FilterInput
                 filters={[

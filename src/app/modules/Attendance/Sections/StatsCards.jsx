@@ -7,13 +7,17 @@ import { EmployeeOverview } from "components";
 import moment from "moment";
 import { TextInput } from "components/FormControl";
 
-export function StatsCards({ isTeamView, filterData, user_id }) {
+export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [ModalDetails, setModalDetails] = useState({});
   const [EmployeeDetails, setEmployeeDetails] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const {
+    branch_id: user_branch,
+    department_name: user_department,
+    id: user_id,
+  } = useSelector((state) => state.emp.user_details);
   const [cardStats, setCardStats] = useState({
     total: 0,
     present: 0,
@@ -25,6 +29,7 @@ export function StatsCards({ isTeamView, filterData, user_id }) {
     event.stopPropagation();
     try {
       const attendanceData = await getAttendanceSummary({
+        filterData: { ...(status ? { status: status } : {}) },
         dateRange: `${moment().format("YYYY-MM-DD")},${moment().format(
           "YYYY-MM-DD"
         )}`,
@@ -43,12 +48,15 @@ export function StatsCards({ isTeamView, filterData, user_id }) {
   const attendanceStats = async (isMounted) => {
     setLoading(true);
     try {
-      const { department_name, branch_id } = filterData;
       const FilterData = isTeamView
         ? { report_to: user_id }
+        : isEmpView
+        ? {}
+        : isBranchView
+        ? { branch_id: user_branch }
         : {
-            ...({ department_name } || {}),
-            ...({ branch_id } || {}),
+            // ...({ department_name } || {}),
+            // ...({ branch_id } || {}),
           };
       const response = await getAttendanceStats({ filterData: FilterData });
       if (response && isMounted) {
@@ -104,7 +112,7 @@ export function StatsCards({ isTeamView, filterData, user_id }) {
     {
       title: "On Leave",
       value: cardStats?.leave || 0,
-      status: "leave",
+      status: "Leave",
       description: "Here is the list of all employees on leave",
     },
   ];
