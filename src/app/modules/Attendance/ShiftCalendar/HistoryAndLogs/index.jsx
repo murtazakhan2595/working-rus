@@ -5,6 +5,8 @@ import { Card, CardContent } from "components/ui/card";
 import { TableCustom } from "components";
 import { HistoryColumns } from "./HistoryColumns";
 import { useNavigate } from "react-router-dom";
+import { FilterInput } from "components/FormControl";
+import { PageLoader } from "components";
 
 
 export default function HistoryAndLogs() {
@@ -14,7 +16,8 @@ export default function HistoryAndLogs() {
   const [ordering, setOrdering] = useState("-id");
   const [filterData, setFilterData] = useState({});
   const navigate = useNavigate();
-
+const Departments = useSelector((state) => state.common.departments);
+const Branches = useSelector((state) => state.common.branches);
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -27,36 +30,83 @@ export default function HistoryAndLogs() {
       setOrdering(sortName);
     },
   };
-
   const fetchEmployees = async () => {
-      try {
+    try {
+      setIsLoading(true);
         const response = await getEmployeeCustomList(
-          options,
+          {options,
           filterData,
-          ordering
+          ordering}
         );
         if (response) {
           setEmployees(response);
         }
+        setIsLoading(false);
       } catch (err) {
         console.error(err);
       }
+    setIsLoading(false);
     };
   useEffect(()=>{
     fetchEmployees();
-  },[])
-  console.log("Employees in HistoryAndLogs:", employees);
+  },[filterData, options, ordering]);
+
+  const handleFilterChange = (filterName, filterValue) => {
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
   return (
-    <Card>
-      <CardContent>
-        <TableCustom
-          data={employees.results}
-          columns={HistoryColumns(navigate)}
-          pagination={true}
-          dataTotalSize={employees.count || 0}
-          tableOptions={tableOptions}
+    <div
+      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
+    >
+      <div className="flex justify-end">
+        <FilterInput
+          filters={[
+            {
+              type: "search",
+              placeholder: "Search by ID and Name",
+              name: "emp_search",
+            },
+            {
+              type: "select-one",
+              option: Departments,
+              name: "department_name",
+              placeholder: "Department",
+              values: filterData.department_name || "",
+            },
+            {
+              type: "select-two",
+              option: Branches,
+              name: "branch_id",
+              placeholder: "Branch",
+              values: filterData.branch_id || "",
+            },
+          ]}
+          onChange={handleFilterChange}
         />
-      </CardContent>
-    </Card>
+      </div>
+      <Card>
+        <CardContent>
+          {isLoading ? (
+            <PageLoader />
+          ) : (
+            <TableCustom
+              data={employees.results}
+              columns={HistoryColumns(navigate)}
+              pagination={true}
+              dataTotalSize={employees.count || 0}
+              tableOptions={tableOptions}
+            />
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

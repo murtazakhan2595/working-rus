@@ -6,12 +6,11 @@ import { DepartmentName } from "utils/getValuesFromTables";
 import { EmployeeID } from "utils/getValuesFromTables";
 
 
-export const HistoryColumns = (navigate)=> [
+export const HistoryColumns = (navigate) => [
   {
     dataField: "id",
     text: "ID",
-    formatter: (cell, row) =>
-      row.serial_number ?? <EmployeeID value={cell} />,
+    formatter: (cell, row) => row.serial_number ?? <EmployeeID value={cell} />,
     dataSort: true,
   },
   {
@@ -24,11 +23,13 @@ export const HistoryColumns = (navigate)=> [
     dataField: "department_name",
     text: "Department",
     formatter: (cell, row) => <DepartmentName value={cell} />,
+    dataSort: true,
   },
   {
     dataField: "branch_id",
     text: "Branch",
     formatter: (cell, row) => <BranchName value={cell} fallbackText="" />,
+    dataSort: true,
   },
   {
     dataField: "",
