@@ -26,11 +26,8 @@ const FormSheetData = {
   className: "max-w-[678px] w-full",
 };
 
-const TimeAdjustmentRequest = ({
-  employee_id,
-  id,
-  attendance,
-}) => {
+const TimeAdjustmentRequest = ({ id, attendance }) => {
+  const { id: employee_id } = useSelector((state) => state.user.userProfile);
   const [formData, setFormData] = useState(TimeAdjustment);
   const [isOpen, setIsOpen] = useState(false);
   const [disableAdjustTimeButton, setDisableAdjustTimeButton] = useState(false);
@@ -50,11 +47,11 @@ const TimeAdjustmentRequest = ({
     // debugger;
     try {
       const response = await getTimeAdjustmentListData({
-         filterData: { attendance_id: attendanceId },
+        filterData: { attendance: attendanceId },
       });
       if (isMounted && response) {
         if (response.results && response.results.length > 0) {
-          //setDisableAdjustTimeButton(true);
+          setDisableAdjustTimeButton(true);
         } else {
           setDisableAdjustTimeButton(false);
         }
@@ -86,17 +83,17 @@ const TimeAdjustmentRequest = ({
 
   const handleSubmit = async (data) => {
     try {
-      const payload= {...data, attendance_id:attendance.id}
+      const payload = { ...data, attendance_id: attendance.id };
       const response = await saveTimeAdjustment(payload);
       // return
       if (response) {
         return {
-           status: true,
+          status: true,
           title: "Form Submitted Succesfully",
           description:
             "Your request of time adjustment has been sent successfully. It will be reviewed shortly.",
           messageType: "Success",
-        }
+        };
         setIsOpen(false);
       }
     } catch (error) {

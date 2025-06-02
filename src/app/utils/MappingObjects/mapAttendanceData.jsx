@@ -21,10 +21,9 @@ export function mapShiftData(data) {
   return shiftDetails;
 }
 export function mapAttendanceData(data, shiftDetails) {
-  const startTime = moment(shiftDetails.starttime);
-  const endTime = moment(shiftDetails.endtime);
+  const shiftStartTime = shiftDetails.start_time;
+  const Hours = shiftDetails.total_hours;
   // Initialize an empty payload object
-  const Hours = CalculateTotalWorkingHours(startTime, endTime, "day");
   const payload = { total_hours: Hours };
   // Iterate over the keys in the Task object
   for (const key in Attendance) {
@@ -35,19 +34,8 @@ export function mapAttendanceData(data, shiftDetails) {
       data[key] !== null
     ) {
       // Add the key and its value to the payload
-      if (key === "total_hours" && data.shift_id === shiftDetails.id) {
+      if (key === "total_hours") {
         payload["total_hours"] = Hours;
-      } else if (key === "status") {
-        if (data[key] === "Absent") payload["is_absent"] = true;
-        else if (data[key] === "Present") payload["is_absent"] = false;
-        else if (data[key] === "Late") {
-          payload["is_late"] = true;
-          payload["is_absent"] = false;
-        } else if (data[key] === "Weekend") {
-          payload["is_weekend"] = true;
-          payload["is_absent"] = false;
-        }
-        payload[key] = data[key];
       } else if (key === "checkin") {
         const checkInTime = moment(data[key]);
         payload[key] = data[key];
@@ -55,6 +43,18 @@ export function mapAttendanceData(data, shiftDetails) {
           payload.is_absent = false;
         }
         payload.is_weekend = [0, 6].includes(checkInTime.day());
+        // Assume shiftDetails.start_time and end_time are time strings like "09:00 AM"
+        const shiftDate = checkInTime.clone().startOf("day"); // Today's date (midnight)
+        // Combine date with shift time to make full datetime
+        const startTime = moment.utc(
+          `${shiftDate.format("YYYY-MM-DD")} ${shiftStartTime}`,
+          "YYYY-MM-DD hh:mm A"
+        );
+        // Now check if check-in is after the shift start
+        const isLate = checkInTime.isAfter(startTime);
+        payload['status'] = isLate ? "Late" : "Present";
+        payload["is_late"] = isLate;
+        payload["is_absent"] = false;
       } else if (key === "checkout") {
         debugger;
         const checkin = moment(payload.checkin);
@@ -166,7 +166,7 @@ export function mapEmployeeAttendanceDetail(data) {
   emp_attendance_data.overtime = data.overtime;
   emp_attendance_data.overtime = data.overtime;
   emp_attendance_data.overtime = data.overtime;
-
+  // console.log(data, emp_attendance_data, "getMonthltShiftDatagetMonthltShiftData");
   return emp_attendance_data;
 }
 

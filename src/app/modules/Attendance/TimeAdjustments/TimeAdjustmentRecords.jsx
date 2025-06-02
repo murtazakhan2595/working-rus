@@ -21,7 +21,7 @@ const TimeAdjustmentRecords = ({}) => {
     count: 0,
   });
   const [isloading, setIsLoading] = useState(false);
-  const [filterData, setFilterData] = useState({ status: "PENDING" });
+  const [filterData, setFilterData] = useState({ statuses: "PENDING" });
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -73,7 +73,7 @@ const TimeAdjustmentRecords = ({}) => {
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
     if (filterName === "request_type") setSelectedRequestType(filterValue);
-    if (filterName === "status") setSelectedStatus(filterValue);
+    if (filterName === "statuses") setSelectedStatus(filterValue);
     if (filterName === "has_auto_forward")
       setSelectedAutoFowardIndex(filterValue);
     if (filterName === "has_delegation") setSelectedDelegatedIndex(filterValue);
@@ -92,12 +92,12 @@ const TimeAdjustmentRecords = ({}) => {
     if (tab === "Requests") {
       setFilterData((prevFilters) => ({
         ...prevFilters,
-        status: "PENDING",
+        statuses: "PENDING",
       }));
     } else if (tab === "Records") {
       setFilterData((prevFilters) => ({
         ...prevFilters,
-        status: "APPROVED,REJECTED",
+        statuses: "APPROVED,REJECTED",
       }));
     }
   };

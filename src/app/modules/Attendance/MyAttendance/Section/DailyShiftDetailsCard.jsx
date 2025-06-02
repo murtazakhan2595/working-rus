@@ -61,14 +61,8 @@ const DailyShiftDetailsCard = ({ isDashboard = false }) => {
       emp_attendance_detail.monthly_overtime /
         emp_attendance_detail.monthly_total_hours
     );
-    setOffsetCount(offSetCount);
+    setOffsetCount(offSetCount||0);
   }, [emp_attendance_detail]);
-
-  console.log(
-    emp_attendance_detail,
-    shiftDetails,
-    "getMonthltShiftDatagetMonthltShiftData"
-  );
 
   if (loading) {
     return (

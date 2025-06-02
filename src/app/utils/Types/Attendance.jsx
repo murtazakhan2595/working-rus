@@ -8,7 +8,7 @@ export const Attendance = {
   checkout: null,
   date: null,
   is_weekend: false,
-  is_absent: false,
+  is_absent: true,
   is_late: false,
   status: "Present",
   employee_id: null,
