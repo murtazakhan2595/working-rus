@@ -5,6 +5,15 @@ import {
   getDelegateLevelData,
   getHierarchyLevelData,
 } from "app/hooks/approvalHierarchy";
+import {
+  DesignationName,
+  BranchName,
+  DepartmentName,
+  EmployeeName,
+} from "utils/getValuesFromTables";
+import { renderDate } from "utils/renderValues";
+import { StatusLabel } from "components";
+
 const DelegateDetails = ({
   isOpen,
   setIsOpen,
@@ -12,44 +21,91 @@ const DelegateDetails = ({
   reloadData = () => {},
   LevelDelegateList = [],
 }) => {
-  const [currentItemData, setCurrentItemData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-
   // Define the fields to display
   const fields = [
-    { key: "branch", label: "Branch" },
-    { key: "department", label: "Department" },
-    { key: "delegate", label: "Delegate User" },
-    { key: "start_date", label: "Start Date" },
-    { key: "end_date", label: "End Date" },
-    { key: "reason", label: "Reason" },
+    {
+      title: "Level Details",
+      field: [
+        {
+          key: "initiative_designation",
+          label: "Request Initiator",
+          formatter: (cell) => {
+            if (!cell || !Array.isArray(cell) || cell.length === 0) return "--";
+            return (
+              <div className="flex flex-wrap gap-2">
+                {cell.map((designation) => (
+                  <StatusLabel variant="info">
+                    <DesignationName value={designation} />
+                  </StatusLabel>
+                ))}
+              </div>
+            );
+          },
+        },
+        { key: "level_number", label: "Level Number" },
+        {
+          key: "designation",
+          label: "Designation",
+          formatter: (cell) => <DesignationName value={cell} />,
+        },
+        {
+          key: "auto_forward_enabled",
+          label: "Auto-Farword",
+          formatter: (cell) => (cell ? "Enabled" : "Disabled"),
+        },
+      ],
+    },
+    {
+      title: "Delegate Details",
+      field: [
+        {
+          key: "branch",
+          label: "Branch",
+          formatter: (cell) => <BranchName value={cell} />,
+        },
+        {
+          key: "department",
+          label: "Department",
+          formatter: (cell) => <DepartmentName value={cell} />,
+        },
+        {
+          key: "delegate",
+          label: "Delegate User",
+          formatter: (cell) => <EmployeeName value={cell} />,
+        },
+        {
+          key: "start_date",
+          label: "Start Date",
+          formatter: (cell) => renderDate(cell),
+        },
+        {
+          key: "end_date",
+          label: "End Date",
+          formatter: (cell) => renderDate(cell),
+        },
+        { key: "reason", label: "Reason" },
+      ],
+    },
+     
   ];
 
   const fetchData = async (id, isMounted) => {
     try {
-      setIsLoading(true);
       const response = await getDelegateLevelData(id);
       if (isMounted) {
         if (response.level) {
           const responseLevel = await getHierarchyLevelData(response.level);
-          setCurrentItemData({ ...responseLevel, ...response });
+          const delegationdata = { ...responseLevel, ...response };
+          return delegationdata;
         } else {
-          setCurrentItemData(response);
+          return response;
         }
       }
     } catch (error) {
       console.error("Error fetching roles:", error);
-    } finally {
-      setIsLoading(false);
+      return {};
     }
   };
-  useEffect(() => {
-    let isMounted = true;
-    if (current_id) fetchData(current_id, isMounted);
-    return () => {
-      isMounted = false;
-    };
-  }, [current_id]);
 
   return (
     <NavigationSheetComponent
@@ -57,12 +113,10 @@ const DelegateDetails = ({
       setIsOpen={setIsOpen}
       title="Delegate Detail"
       dataList={LevelDelegateList}
-      loading={isLoading}
       reloadData={reloadData}
       editComponent={AddUpdateDelegateLevels}
-      currentItemDetails={currentItemData}
-      apiEndpoint={`/delegations/`}
-      refreshEndpoint="/delegations"
+      currentItem_Id={current_id}
+      apiEndpoint={`/delegations/&{id}/`}
       fetchCurrentItemDetails={fetchData}
       deleteItemName="Delegate"
       editTooltip="Edit Delegate"

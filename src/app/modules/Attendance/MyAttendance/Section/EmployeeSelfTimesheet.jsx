@@ -34,7 +34,7 @@ export default function EmployeeSelfTimesheet({
   const [payableHours, setPayableHours] = useState(
     parseFloat(attendance?.payable_hours) || 0
   );
-
+  console.log(attendance?.payable_hours, payableHours, "emp_attendance_detail");
   const updateTimer = () => {
     const checkInDate = moment(attendance?.checkin); // Check-in time
     const now = moment(); // Current time
@@ -59,12 +59,16 @@ export default function EmployeeSelfTimesheet({
       const interval = setInterval(updateTimer, 1000); // Update every second
 
       return () => clearInterval(interval); // Cleanup on unmount
+    } else if (OnBreak) {
+      updateTimer();
+    } else {
+      setPayableHours(parseFloat(attendance?.payable_hours) || 0);
     }
   }, [attendance, OnBreak]);
 
   return (
     // if isDashboard is false, then the div will  have border and shadow
-    <div className={isDashboard ? "" : " rounded-lg shadow-sm bg-white"}>
+    <div className={isDashboard ? "" : " rounded-lg shadow-sm bg-white h-full"}>
       {/* if isDashboard is true, then the div will not have border and shadow */}
       <div className={isDashboard ? "" : "p-4 "}>
         <div className="flex items-center justify-between text-lg font-semibold">
@@ -83,7 +87,16 @@ export default function EmployeeSelfTimesheet({
                 : "Start working!"
             }
             valueClassName="text-end"
-            label="Checkin Time"
+            label="Check-in Time"
+          />
+          <DetailBox
+            value={
+              attendance?.checkout
+                ? renderDate(attendance?.checkout, "--", "time")
+                : "Still Working"
+            }
+            valueClassName="text-end"
+            label="Check-out Time"
           />
           <DetailBox
             value={

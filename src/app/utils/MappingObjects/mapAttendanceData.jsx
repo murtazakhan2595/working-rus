@@ -1,4 +1,9 @@
-import { Attendance, Shift, TimeAdjustment } from "app/utils/Types/Attendance";
+import {
+  Attendance,
+  Shift,
+  TimeAdjustment,
+  AttendanceAdjustment,
+} from "app/utils/Types/Attendance";
 import { CalculateTotalWorkingHours } from "utils/renderValues";
 import moment from "moment";
 
@@ -95,6 +100,134 @@ export function mapTimeAdjustmentPayloadeData(data) {
     ) {
       // Add the key and its value to the payload
       if (key === "reason") payload[key] = data[key]?.trim();
+      else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+
+export function mapEmployeeAttendanceDetail(data) {
+  console.log(data, "emp_attendance_data");
+  const emp_attendance_data = {};
+  emp_attendance_data.employee_id = data.employee_id;
+  emp_attendance_data.checkin = data.check_in_time;
+  emp_attendance_data.employee_name = data.employee_name;
+  emp_attendance_data.employee_serial_number = data.employee_serial_number;
+  const todays_shift = data.todays_shift;
+  emp_attendance_data.todays_shift = todays_shift;
+  if (
+    todays_shift.start_time === "00:00:00" &&
+    todays_shift.end_time === "00:00:00"
+  ) {
+    emp_attendance_data.todays_shift["start_time"] = todays_shift.start_time;
+    emp_attendance_data.todays_shift["end_time"] = todays_shift.end_time;
+  }
+
+  const yesterday_shift = data.yesterday_shift;
+  emp_attendance_data.yesterday_shift = yesterday_shift;
+  if (
+    yesterday_shift.start_time === "00:00:00" &&
+    yesterday_shift.end_time === "00:00:00"
+  ) {
+    emp_attendance_data.yesterday_shift["start_time"] =
+      yesterday_shift.start_time;
+    emp_attendance_data.yesterday_shift["end_time"] = yesterday_shift.end_time;
+  }
+
+  const tomorrow_shift = data.tomorrow_shift;
+  emp_attendance_data.tomorrow_shift = tomorrow_shift;
+  if (
+    tomorrow_shift.start_time === "00:00:00" &&
+    tomorrow_shift.end_time === "00:00:00"
+  ) {
+    emp_attendance_data.tomorrow_shift["start_time"] =
+      tomorrow_shift.start_time;
+    emp_attendance_data.tomorrow_shift["end_time"] = tomorrow_shift.end_time;
+  }
+  emp_attendance_data.monthly_leaves = data.monthly_leaves;
+  emp_attendance_data.weekly_leaves = data.weekly_leaves;
+  emp_attendance_data.is_leave_today = data.is_leave_today;
+  emp_attendance_data.leave_details = data.leave_details;
+  emp_attendance_data.break_hours = data.break_hours;
+  emp_attendance_data.this_month_offs = data.this_month_offs;
+  emp_attendance_data.this_week_offs = data.this_week_offs;
+  emp_attendance_data.checkout = data.check_out_time;
+  emp_attendance_data.total_hours = data.total_hours;
+  emp_attendance_data.break_time = data.break_time;
+  emp_attendance_data.break_object = data.break_object;
+  emp_attendance_data.overtime = data.overtime;
+  emp_attendance_data.is_off_today = data.is_off_today;
+  emp_attendance_data.is_off_yesterday = data.is_off_yesterday;
+  emp_attendance_data.off_today = data.off_today;
+  emp_attendance_data.off_yesterday = data.off_yesterday;
+  emp_attendance_data.off_tomorrow = data.off_tomorrow;
+  emp_attendance_data.is_off_tomorrow = data.is_off_tomorrow;
+  emp_attendance_data.overtime = data.overtime;
+  emp_attendance_data.overtime = data.overtime;
+  emp_attendance_data.overtime = data.overtime;
+
+  return emp_attendance_data;
+}
+
+export async function mapAttendanceAdjustmentData(data) {
+  const attendanceAdjustmentData = Object.keys(AttendanceAdjustment).reduce(
+    (acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
+  return attendanceAdjustmentData;
+}
+
+export async function mapAttendanceAdjustmentListData(data) {
+  if (!Array.isArray(data) || data.length === 0) return [];
+
+  const AttendanceAdjustmentList = await Promise.all(
+    data.map((attendanceAdjustment) =>
+      mapAttendanceAdjustmentData(attendanceAdjustment)
+    )
+  );
+
+  return AttendanceAdjustmentList;
+}
+
+export function mapAdjustmentFromAttendnaceData(data) {
+  const attendanceAdjustmentData = Object.keys(AttendanceAdjustment).reduce(
+    (acc, key) => {
+      if (key === "employee") acc[key] = data.employee_id;
+      else if (key === "attendance") acc[key] = data.id;
+      else if (key === "requested_checkin") acc[key] = data.checkin;
+      else if (key === "requested_checkout") acc[key] = data.checkout;
+      else if (data.hasOwnProperty(key)) {
+        acc[key] = data[key];
+      }
+      return acc;
+    },
+    {}
+  );
+  attendanceAdjustmentData.date = data.date;
+  attendanceAdjustmentData.employee_id = data.employee_id;
+  attendanceAdjustmentData.status = data.status;
+  return attendanceAdjustmentData;
+}
+
+export function mapAttendanceAdjustmentPayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in AttendanceAdjustment) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      if (key === "reason") payload[key] = data[key].trim();
       else payload[key] = data[key];
     }
   }

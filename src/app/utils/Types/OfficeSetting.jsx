@@ -20,15 +20,9 @@ export const Branch = {
 };
 
 export const GraceTime = {
-  id:null,
-  branch_name: "",
-  branch_number: "",
-  branch_status: "Active",
-  branch_address: "",
-  // Add these new fields
-  branch_location: "",
-  branch_coordinates: {
-    lat: 0,
-    lng: 0,
-  },
+  id: null,
+  name: null,
+  grace_time_minutes: null,
+  created_at: null,
+  branches: null,
 };
