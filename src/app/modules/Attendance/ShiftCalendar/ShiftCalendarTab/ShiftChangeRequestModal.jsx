@@ -565,8 +565,6 @@ const ShiftChangeRequestModal = ({
         // Metadata about the request
         changed_days: changedDays,
         requested_date_range: `${requestedStartDate},${requestedEndDate}`,
-        original_schedules:
-          overlappingSchedules?.results?.map((s) => s.id) || [],
       };
 
       console.log("Shift Change Request Payload:", payload);
