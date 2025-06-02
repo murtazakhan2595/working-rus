@@ -64,7 +64,6 @@ export const getChangeRequestComparison = async (
   } catch (error) {
     console.error("Error fetching employee direct shift:", error);
   }
-  console.log("INFO INFO INFO", changeRequest, overlappingSchedules);
   // Build comparison data - ONLY for changed/new days
   const comparisonData = [];
   const startDate = moment(changeRequest.start_date);
