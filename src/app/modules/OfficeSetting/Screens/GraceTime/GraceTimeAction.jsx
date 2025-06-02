@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
 import AddGraceTimeForm from "./AddGraceTimeForm";
-import ViewBranch from "app/modules/OfficeSetting/Screens/Branches/ViewBranch";
+import ViewGraceTime from "app/modules/OfficeSetting/Screens/GraceTime/ViewGraceTime";
 import DropdownActionMenu from "components/DropdownActionMenu";
-import { ViewDetailSheetCardExtension } from "components";
 
 const GraceTimeAction = ({ data, reloadData, DataList = [] }) => {
   const [view, setView] = useState(null);
@@ -41,9 +40,9 @@ const GraceTimeAction = ({ data, reloadData, DataList = [] }) => {
 
   const confirmDelete = async () => {
     try {
-      await deleteRecord(`/branch/${data?.id}`, data?.branch_name);
+      await deleteRecord(`/grace-times/${data?.id}/`, data?.name);
       if (typeof reloadData === "function") {
-        reloadData();
+        reloadData(true);
       }
     } catch (error) {
       console.log("ERROR", error);
@@ -89,17 +88,18 @@ const GraceTimeAction = ({ data, reloadData, DataList = [] }) => {
             setEdit(null);
           }}
           id={data.id}
-          IsOpen={edit?.open}
+          isOpen={edit?.open}
         />
       )}
 
       {view?.visible && (
-        <ViewBranch
+        <ViewGraceTime
           isOpen={view.visible}
           setIsOpen={(isOpen) =>
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
-          data={view.data}
+          data={data}
+          currentId={data?.id}
           reloadData={reloadData}
           DataList={DataList}
         />

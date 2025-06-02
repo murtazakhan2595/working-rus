@@ -5,6 +5,9 @@ import {
   mapAttendanceData,
   mapShiftData,
   mapTimeAdjustmentPayloadeData,
+  mapEmployeeAttendanceDetail,
+  mapAttendanceAdjustmentPayloadData,
+  mapAttendanceAdjustmentListData,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
@@ -607,6 +610,84 @@ export const saveTimeAdjustment = async (payload, id) => {
       HandleLogout();
     }
     renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const getEmployeeAttendanceDetails = async (employee_id) => {
+  if (employee_id) {
+    try {
+      const response = await axios.get(`${baseUrl}/attendance/employee/${employee_id}/`, {
+        headers: headers(),
+      });
+      if(response){
+        const emp_attendance_data =  mapEmployeeAttendanceDetail(response.data);
+        return emp_attendance_data;
+      }
+    } catch (error) {
+      console.error("Error fetching by id:", error);
+      if (error?.response?.status === 401) {
+        HandleLogout();
+      }
+      return {};
+    }
+  } else return {};
+};
+
+export const saveUpdateAttendanceAdjustment = async (payload, id) => {
+  const attendanceId = id || payload?.id;
+  try {
+    const finalPayload = mapAttendanceAdjustmentPayloadData(payload);
+
+    const url = attendanceId
+      ? `${baseUrl}/attendance-adjustment/${attendanceId}/` // Use id if updating
+      : `${baseUrl}/attendance-adjustment/`; // No id means create new
+
+    const method = attendanceId ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const getAttendanceAdjustmentListData = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "";
+  let URL = `/attendance-adjustment/?${ordering ? `ordering=${ordering}&` : ""}${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseDataList = await mapAttendanceAdjustmentListData(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error fetching attendance list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
     return false;
   }
 };

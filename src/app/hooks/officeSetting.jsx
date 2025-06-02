@@ -1,7 +1,13 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { HandleLogout } from "./general";
-import {mapGraceTimeList,mapGraceTimeData} from "app/utils/MappingObjects/mapOfficeSettingData";
+import {
+  mapGraceTimeList,
+  mapGraceTimeData,
+  mapGraceTimePayloadData,
+} from "app/utils/MappingObjects/mapOfficeSettingData";
+import { renderErrorMessages } from "utils/renderErrors";
+
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -290,9 +296,12 @@ export const getGraceTimeList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/regions?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const ordering = payload?.ordering ?? "id";
+  const URL = `/grace-times/?${ordering ? `ordering=${ordering}&` : ""}${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -313,11 +322,11 @@ export const getGraceTimeList = async (payload) => {
 
 export const getGraceTimeData = async (id) => {
   try {
-    const response = await axios.get(`${baseUrl}/onboardingdoc/${id}`, {
+    const response = await axios.get(`${baseUrl}/grace-times/${id}`, {
       headers: headers(),
     });
     if (response.status === 200) {
-      const ResponseData = mapGraceTimeData(response.data)
+      const ResponseData = mapGraceTimeData(response.data);
       return ResponseData;
     }
   } catch (error) {
@@ -326,6 +335,41 @@ export const getGraceTimeData = async (id) => {
       HandleLogout();
     }
     return [];
+  }
+};
+
+export const saveUpdateGraceTime = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/grace-times/${id}/`
+      : `${baseUrl}/grace-times/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapGraceTimePayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateUserRole:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
   }
 };
 

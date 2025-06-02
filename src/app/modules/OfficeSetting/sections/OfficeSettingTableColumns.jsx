@@ -8,6 +8,8 @@ import DesignationAction from "../Screens/Designations/DesignationAction";
 import { getDesignations } from "app/hooks/employee";
 import OnboardingActions from "../Screens/OnboardingChecklist/OnboardingActions";
 import { FormatID } from "utils/getValuesFromTables";
+import { BranchName } from "utils/getValuesFromTables";
+import { StatusLabel } from "components";
 
 //
 export const BranchColumn = (reload, originalData = []) => [
@@ -171,28 +173,42 @@ export const GraceTimeColumn = (reload) => [
     dataField: "id",
     text: "ID",
     dataSort: true,
-    formatter: (cell, row) => <FormatID value={cell} prefix={"BR-"} />,
+    formatter: (cell, row) => <FormatID value={cell} prefix={"GT-"} />,
   },
   {
-    dataField: "branch_name",
+    dataField: "name",
     dataSort: true,
     text: "Name",
   },
   {
-    dataField: "branch_number",
+    dataField: "grace_time_minutes",
+    text: "Grace Time",
     dataSort: true,
-    text: "Branch Number",
+    formatter: (cell) => `${cell}min`,
   },
   {
-    dataField: "branch_status",
-    text: "Status",
+    dataField: "branches",
+    text: "Branch",
+    formatter: (cell) => {
+      if (!cell || cell.length === 0) {
+        return "--";
+      }
+      return (
+        <div className="flex flex-wrap gap-1">
+          {cell.map((branch) => (
+            <StatusLabel variant={"info"}>
+              <BranchName value={branch} />
+            </StatusLabel>
+          ))}
+        </div>
+      );
+    },
   },
-
   {
     text: "Action",
     formatter: (_, row, data_list) => (
       <GraceTimeAction reloadData={reload} data={row} DataList={data_list} />
     ),
-    width: "200px",
+    width: "80px",
   },
 ];

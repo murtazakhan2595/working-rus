@@ -4,6 +4,7 @@ import moment from "moment";
 import {
   EmployeeSelfTimesheet,
   RecentActivities,
+  DailyShiftDetailsCard,
 } from "app/modules/Attendance/MyAttendance/Section";
 import {
   getAttendance,
@@ -26,7 +27,6 @@ import { HourlyStatistics } from "../EmployeeAttendance/Section";
 import { DateRangeFilter } from "components/FormControl";
 import { GetDateRange } from "utils/renderValues";
 import { HasAccess } from "utils/PermissionUtils";
-import DailyShiftDetailsCard from '../../../../components/DailyShiftDetailsCard';
 
 const Attendance = () => {
   // Permission checks for attendance features
@@ -147,85 +147,97 @@ const Attendance = () => {
 
   return (
     <>
-      <div className="p-4 space-y-4">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {/* Timesheet Section */}
-          {canMarkAttendance ? (
-            <EmployeeSelfTimesheet
-              employeeShift={EmployeeShiftData}
-              attendance={attendance}
-              OnBreak={onBreak}
-              canMarkBreak={canMarkBreak}
-              reloadData={() => {
-                getAttendanceList();
-                fetchTodayAttandanceData(true);
-              }}
-              setOnBreak={setOnBreak}
-            />
-          ) : (
-            <Card>
-              <CardContent className="p-4">
-                <UnauthorizedAccess
-                  title="Timesheet Access Denied"
-                  featureName="attendance marking"
-                  size="sm"
-                />
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Statistics Card */}
-          {canViewAttendance ? (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-plum-900">Statistics</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <HourlyStatistics userId={userProfile?.id} />
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-plum-900">Statistics</CardTitle>
-              </CardHeader>
-              <CardContent className="p-4">
-                <UnauthorizedAccess
-                  title="Statistics Access Denied"
-                  featureName="attendance statistics"
-                  size="sm"
-                />
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Recent Activities */}
-          {canViewAttendance ? (
-            <RecentActivities attendance={attendance} />
-          ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-plum-900">
-                  Recent Activities
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-4">
-                <UnauthorizedAccess
-                  title="Activities Access Denied"
-                  featureName="attendance activities"
-                  size="sm"
-                />
-              </CardContent>
-            </Card>
-          )}
+      <div className="p-4 space-y-4 w-full">
+        <div className="flex md:flex-row gap-4 md:flex-wrap flex-col w-full">
+          <div className="md:min-w-[300px] md:w-[32%] w-full">
+            {/* Timesheet Section */}
+            {canMarkAttendance ? (
+              <EmployeeSelfTimesheet
+                employeeShift={EmployeeShiftData}
+                attendance={attendance}
+                OnBreak={onBreak}
+                canMarkBreak={canMarkBreak}
+                reloadData={() => {
+                  getAttendanceList();
+                  fetchTodayAttandanceData(true);
+                }}
+                setOnBreak={setOnBreak}
+              />
+            ) : (
+              <Card>
+                <CardContent className="p-4">
+                  <UnauthorizedAccess
+                    title="Timesheet Access Denied"
+                    featureName="attendance marking"
+                    size="sm"
+                  />
+                </CardContent>
+              </Card>
+            )}
+          </div>
+          <div className="md:min-w-[300px] md:w-[32%] w-full">
+            {/* Statistics Card */}
+            {canViewAttendance ? (
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle className="text-plum-900">Statistics</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <HourlyStatistics userId={userProfile?.id} />
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle className="text-plum-900">Statistics</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <UnauthorizedAccess
+                    title="Statistics Access Denied"
+                    featureName="attendance statistics"
+                    size="sm"
+                  />
+                </CardContent>
+              </Card>
+            )}
+          </div>
+          <div className="md:min-w-[350px] md:w-[32%] w-full flex flex-col gap-2">
+            <div className="h-fit">
+              <DailyShiftDetailsCard
+                userId={userProfile.id}
+                isDashboard={false}
+              />
+            </div>
+            <div className="max-h-[390px]">
+              {/* Recent Activities */}
+              {canViewAttendance ? (
+                <RecentActivities attendance={attendance} />
+              ) : (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-plum-900">
+                      Recent Activities
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    <UnauthorizedAccess
+                      title="Activities Access Denied"
+                      featureName="attendance activities"
+                      size="sm"
+                    />
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Attendance History Section */}
-        <div className="flex gap-2 justify-between items-center">
-          <h3 className="text-2xl font-semibold leading-none tracking-tight flex flex-col space-y-1.5 p-6">
+        <div className="flex flex-col gap-2">
+          <h3 className="text-2xl font-semibold leading-none tracking-tight flex flex-col space-y-1.5 py-3">
             <div className="text-plum-900">Attendance History</div>
           </h3>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2 justify-end items-center">
             {canViewAttendance && (
               <DateRangeFilter
                 activeDateRange={activeFilter}
@@ -282,11 +294,6 @@ const Attendance = () => {
           }}
         />
       )}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
-          <DailyShiftDetailsCard userId={userProfile.id} isDashboard={false} />
-        </div>
-      </div>
     </>
   );
 };

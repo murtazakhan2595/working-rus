@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Attendance } from "app/utils/Types/Attendance";
-import { validateUpdateAttendanceFormSchema } from "app/utils/FormSchema/AttendanceFormSchema";
+import { Attendance, AttendanceAdjustment } from "app/utils/Types/Attendance";
+import { mapAdjustmentFromAttendnaceData } from "app/utils/MappingObjects/mapAttendanceData";
+import {
+  validateUpdateAttendanceFormSchema,
+  validateAttendanceAdjustmentFormSchema,
+} from "app/utils/FormSchema/AttendanceFormSchema";
 import { SheetUI } from "components";
 import {
   saveAttendance,
   getAttendanceData,
   getAttendance,
+  saveUpdateAttendanceAdjustment,
 } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import {
@@ -34,21 +39,31 @@ const UpdateEmployeeAttendance = ({
 }) => {
   const isDptAttendancePermitted = HasAccess("UPDATE_DPT_EMP_ATTENDANCE");
   const isBrnAttendancePermitted = HasAccess("UPDATE_BRN_EMP_ATTENDANCE");
-  const isRLAttendancePermitted = HasAccess("UPDATE_RL_EMP_ATTENDANCE");
   const isAttendancePermitted = HasAccess("UPDATE_EMPLOYEE_ATTENDANCE");
-  const { branch_id: user_branch, department_name: user_department } =
-    useSelector((state) => state.emp.user_details);
+  const {
+    branch_id: user_branch,
+    department_name: user_department,
+    id: user_id,
+  } = useSelector((state) => state.emp.user_details);
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
   const UserDetails = useSelector((state) => state.emp.user_details);
   const Mangers = useSelector((state) => state.emp.reportingManagers);
   const Employees = useSelector((state) => state.emp.employees);
-  const [formData, setFormData] = useState(Attendance);
-  const [formValues, setFormValues] = useState(Attendance);
+  const [formData, setFormData] = useState(
+    !isEmployee ? Attendance : AttendanceAdjustment
+  );
+  const [formValues, setFormValues] = useState(
+    !isEmployee ? Attendance : AttendanceAdjustment
+  );
   const [selectedEmployee, setSelectedEmployee] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const FilteredEmployees = React.useMemo(() => {
     if (!Array.isArray(Employees) || Employees.length === 0) return [];
+    if (isEmployee)
+      return Employees.filter(
+        (employee) => parseInt(employee.id) === parseInt(user_id)
+      );
 
     if (isAttendancePermitted) return Employees;
 
@@ -104,8 +119,15 @@ const UpdateEmployeeAttendance = ({
       });
       if (isMounted && response) {
         if (response.results && response.results.length > 0) {
-          setFormData(response.results[0]);
-          setFormValues(response.results[0]);
+          const attendanceRecord = response.results[0];
+          if (isEmployee) {
+            const data = mapAdjustmentFromAttendnaceData(attendanceRecord);
+            setFormData(data);
+            setFormValues(data);
+          } else {
+            setFormData(attendanceRecord);
+            setFormValues(attendanceRecord);
+          }
         }
       }
     } catch (error) {
@@ -139,14 +161,16 @@ const UpdateEmployeeAttendance = ({
     if (isEmployee) {
       setSelectedEmployee(UserDetails);
       setFormData((prev) => {
-        return { ...prev, employee_id: UserDetails.id };
+        return { ...prev, employee_id: user_id };
       });
     }
   }, [isEmployee]);
 
   const handleSubmit = async (data) => {
     try {
-      const response = await saveAttendance(data, selectedEmployee, id);
+      const response = isEmployee
+        ? await saveUpdateAttendanceAdjustment(data)
+        : await saveAttendance(data, selectedEmployee, id);
       // return
       if (response) {
         if (id) {
@@ -176,7 +200,9 @@ const UpdateEmployeeAttendance = ({
         initialValues: formData,
         enableReinitialize: true,
         handleSubmit: handleSubmit,
-        validateFormSchema: validateUpdateAttendanceFormSchema,
+        validateFormSchema: isEmployee
+          ? validateAttendanceAdjustmentFormSchema
+          : validateUpdateAttendanceFormSchema,
         submitButtonText: id ? "Update" : "Add",
         cancelButtonText: "Cancel",
         columns: 3,
@@ -243,28 +269,22 @@ const UpdateEmployeeAttendance = ({
                 label: "Attendance Date",
                 maxDate: new Date(),
               },
-              ...(formValues?.status !== "Absent"
-                ? [
-                    {
-                      InputField: TimePicker,
-                      name: "checkin",
-                      required: true,
-                      label: "Check-In Time",
-                      date: formValues?.date,
-                    },
-                  ]
-                : []),
-              ...(formValues?.status !== "Absent"
-                ? [
-                    {
-                      InputField: TimePicker,
-                      name: "checkout",
-                      required: true,
-                      label: "Check-Out Time",
-                      date: formValues?.date,
-                    },
-                  ]
-                : []),
+              {
+                InputField: TimePicker,
+                name: isEmployee ? "requested_checkin" : "checkin",
+                required: true,
+                label: "Check-In Time",
+                date: formValues?.date,
+              },
+
+              {
+                InputField: TimePicker,
+                name: isEmployee ? "requested_checkout" : "checkout",
+                required: true,
+                label: "Check-Out Time",
+                date: formValues?.date,
+              },
+
               {
                 InputField: RadioGroupInput,
                 name: "status",

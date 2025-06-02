@@ -51,7 +51,8 @@ export function mapBranchPayloadData(data) {
 export function mapGraceTimeData(data) {
   const graceTimeDetails = Object.keys(GraceTime).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
-      acc[key] = data[key];
+      if (key === "grace_time_minutes") acc[key] = parseInt(data[key] || "0");
+      else acc[key] = data[key];
     }
     return acc;
   }, {});
@@ -69,4 +70,26 @@ export async function mapGraceTimeList(data) {
   });
 
   return graceTimeList;
+}
+
+export function mapGraceTimePayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in GraceTime) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      if (key === "name") payload[key] = data[key].trim();
+      if (key === "grace_time_minutes")
+        payload[key] = parseInt(data[key] || "0");
+      else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
 }
