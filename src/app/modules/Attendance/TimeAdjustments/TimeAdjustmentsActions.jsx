@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
-import { ViewUserRole } from "app/modules/RoleAndPermissions/UserRole";
+import { TimeAdjustmentDetails } from "app/modules/Attendance";
 import { TimeAdjustmentHistoryDetails } from "app/modules/Attendance";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { deleteRecord } from "app/hooks/general";
@@ -34,16 +34,16 @@ const TimeAdjustmentsActions = ({
         } Actions`}
       />
 
-      {view?.visible && (
-        <ViewUserRole
-          isOpen={view.visible}
-          setIsOpen={(isOpen) =>
-            setView((prev) => ({ ...prev, visible: isOpen }))
-          }
-          data={view.data}
-          reload={reloadData}
-          UserRoleList={TimeAdjustmentList}
-          roleID={view?.data?.id}
+      {view && (
+        <TimeAdjustmentDetails
+          isOpen={view}
+          setIsOpen={() => {
+            setView(false);
+            reloadData(true);
+          }}
+          reloadData={reloadData}
+          DataList={TimeAdjustmentList}
+          currentId={data?.id}
         />
       )}
     </>

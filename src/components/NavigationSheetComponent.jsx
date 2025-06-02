@@ -13,6 +13,8 @@ const NavigationSheetComponent = ({
   currentItem_Id,
   dataList = [],
   reloadData = () => {},
+  allowEdit = true,
+  allowDelete = true,
 
   // Content and actions
   children,
@@ -168,10 +170,10 @@ const NavigationSheetComponent = ({
           <div className="flex flex-col gap-4">
             <div className="flex justify-end mt-4 space-x-2">
               <CircularActionButtons
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                editTooltip={editTooltip}
-                deleteTooltip={deleteTooltip}
+                onEdit={allowEdit ? handleEdit : null}
+                onDelete={allowDelete ? handleDelete : null}
+                editTooltip={allowEdit ? editTooltip : null}
+                deleteTooltip={allowDelete ? deleteTooltip : null}
               />
             </div>
 

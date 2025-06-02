@@ -588,6 +588,24 @@ export const getTimeAdjustmentListData = async (payload) => {
   }
 };
 
+export const getTimeAdjustmentData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/time-adjustments/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      // const ResponseData = mapGraceTimeData(response.data);
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
 export const saveTimeAdjustment = async (payload, id) => {
   const timeAdjustmentId = id || payload?.id;
   try {

@@ -134,6 +134,14 @@ export function mapEmployeeAttendanceDetail(data) {
   emp_attendance_data.yesterday_shift = yesterday_shift || {};
   emp_attendance_data.tomorrow_shift = tomorrow_shift || {};
   emp_attendance_data.checkin = data.check_in_time;
+  emp_attendance_data.monthly_overtime = parseFloat(data.monthly_overtime || 0);
+  emp_attendance_data.weekly_overtime = parseFloat(data.weekly_overtime || 0);
+  emp_attendance_data.monthly_payable_hours = parseFloat(
+    data.monthly_payable_hours || 0
+  );
+  emp_attendance_data.weekly_payable_hours = parseFloat(
+    data.weekly_payable_hours || 0
+  );
   emp_attendance_data.employee_name = data.employee_name;
   emp_attendance_data.employee_serial_number = data.employee_serial_number;
 
