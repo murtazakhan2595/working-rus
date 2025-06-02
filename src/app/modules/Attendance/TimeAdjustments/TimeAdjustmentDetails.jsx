@@ -1,5 +1,9 @@
 import React from "react";
-import { NavigationSheetComponent, DetailContent } from "components";
+import {
+  NavigationSheetComponent,
+  DetailContent,
+  StatusList,
+} from "components";
 // import AddGraceTimeForm from "./AddGraceTimeForm";
 import { FormatID } from "utils/getValuesFromTables";
 import { BranchName } from "utils/getValuesFromTables";
@@ -21,7 +25,6 @@ const TimeAdjustmentDetails = ({
     {
       customContent: true,
       renderContent: (data) => {
-        console.log(data,'TimeAdjustmentDetailsTimeAdjustmentDetails');
         return (
           <div className="flex flex-wrap justify-between gap-2">
             <div className="flex flex-col gap-2">
@@ -40,37 +43,23 @@ const TimeAdjustmentDetails = ({
     },
     {
       title: "Adjustment Details",
+      footerTitle: "Created At",
+      footerField: "created_at",
       field: [
         {
           key: "id",
           label: "Id",
           formatter: (cell, row) => <FormatID value={cell} prefix={"TA-"} />,
         },
-        { key: "name", label: "Name" },
         {
           key: "date",
           label: "Attendance Date",
           formatter: (cell) => renderDate(cell),
         },
         {
-          key: "reason",
-          label: "Reason",
-        },
-      ],
-    },
-      {
-      title: "Approval Details",
-      field: [
-        {
-          key: "id",
-          label: "Id",
-          formatter: (cell, row) => <FormatID value={cell} prefix={"TA-"} />,
-        },
-        { key: "name", label: "Name" },
-        {
-          key: "date",
-          label: "Attendance Date",
-          formatter: (cell) => renderDate(cell),
+          key: "checkin_time",
+          label: "Check-In Time",
+          formatter: (cell) => renderDate(cell, "--", "time"),
         },
         {
           key: "reason",
@@ -79,10 +68,22 @@ const TimeAdjustmentDetails = ({
       ],
     },
     {
+      title: "Approval Details",
+      field: [
+        {
+          key: "approval_logs",
+          formatter: (cell) => (
+            <StatusList status_list={cell} className="my-3" />
+          ),
+        },
+      ],
+    },
+    {
       customContent: true,
       renderContent: (data) => {
+        if (!data || data.status?.toLowerCase() !== "pending") return null;
         return (
-          <div className="flex flex-wrap justify-end gap-2 mt-5">
+          <div className="flex flex-wrap justify-end gap-2 my-5">
             <Button variant="success">Approve</Button>
             <Button variant="destructive">Reject</Button>
           </div>

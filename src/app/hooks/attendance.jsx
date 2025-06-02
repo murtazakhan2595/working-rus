@@ -8,6 +8,7 @@ import {
   mapEmployeeAttendanceDetail,
   mapAttendanceAdjustmentPayloadData,
   mapAttendanceAdjustmentListData,
+  mapTimeAdjustmentData,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
@@ -591,11 +592,11 @@ export const getTimeAdjustmentData = async (id) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      // const ResponseData = mapGraceTimeData(response.data);
+      const ResponseData = await mapTimeAdjustmentData(response.data);
       const currentapprover = await getCurrentRequestApprover(
-        response.data.request
+        ResponseData.request
       );
-      return { ...response.data, ...currentapprover };
+      return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);

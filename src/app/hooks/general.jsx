@@ -724,7 +724,6 @@ export const SubmitResetPassword = async (payload) => {
 
 export const getCurrentRequestApprover = async (request_id) => {
   try {
-    debugger;
     const URL = `/requests/${request_id}/`;
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),

@@ -52,7 +52,7 @@ export function mapAttendanceData(data, shiftDetails) {
         );
         // Now check if check-in is after the shift start
         const isLate = checkInTime.isAfter(startTime);
-        payload['status'] = isLate ? "Late" : "Present";
+        payload["status"] = isLate ? "Late" : "Present";
         payload["is_late"] = isLate;
         payload["is_absent"] = false;
       } else if (key === "checkout") {
@@ -166,7 +166,6 @@ export function mapEmployeeAttendanceDetail(data) {
   emp_attendance_data.overtime = data.overtime;
   emp_attendance_data.overtime = data.overtime;
   emp_attendance_data.overtime = data.overtime;
-  // console.log(data, emp_attendance_data, "getMonthltShiftDatagetMonthltShiftData");
   return emp_attendance_data;
 }
 
@@ -234,3 +233,31 @@ export function mapAttendanceAdjustmentPayloadData(data, id) {
   // Return the constructed payload
   return payload;
 }
+
+export async function mapTimeAdjustmentData(data) {
+  const timeAdjustmentDetails = {};
+
+  for (const key of Object.keys(TimeAdjustment)) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      if (key === "approval_logs") {
+        const approver_logs = data[key] || [];
+        const logs_list = approver_logs
+          .filter((log) => log.action_type !== "CREATED")
+          .map((log) => ({
+            status: log.action_type,
+            approver: log.changed_by,
+            level_number: log.level_number,
+            time: log.timestamp,
+          }))
+          .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
+
+        timeAdjustmentDetails[key] = logs_list;
+      } else {
+        timeAdjustmentDetails[key] = data[key];
+      }
+    }
+  }
+
+  return timeAdjustmentDetails;
+}
+

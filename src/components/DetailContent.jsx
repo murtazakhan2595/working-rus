@@ -24,12 +24,16 @@ const DetailContent = ({ currentItem = {}, fields = [] }) => {
               {field.map(({ key, label, formatter, fallBackText = "N/A" }) => {
                 const value =
                   currentItem && currentItem[key] ? currentItem[key] : null;
-                return (
+                return label ? (
                   <DetailBox
                     key={key}
                     label={label}
                     value={formatter ? formatter(value) : value ?? fallBackText}
                   />
+                ) : (
+                  <div>
+                    {formatter ? formatter(value) : value ?? fallBackText}
+                  </div>
                 );
               })}
             </DetailCard>
