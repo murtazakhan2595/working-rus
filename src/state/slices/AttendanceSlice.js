@@ -7,7 +7,7 @@ import {
 // Define the initial state
 const initialState = {
   assignedShiftData: [], // Updated property name
-  attendance_details: [],
+  attendance_details: {},
   apiStatus: "idle",
   error: null,
 };
@@ -30,7 +30,7 @@ export const fetchUserAttendanceDetails = createAsyncThunk(
   async (user_id) => {
     try {
       const response = await getEmployeeAttendanceDetails(user_id);
-      return response;
+      return response || {};
     } catch (error) {
       throw error;
     }

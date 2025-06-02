@@ -1,13 +1,24 @@
 import { employeeData } from "app/hooks/attendance";
 import moment from "moment";
+import { CalculateTotalWorkingHours } from "utils/renderValues";
 import { saveShiftSchedulesLogs } from "../../../../hooks/shiftManagement";
 import { getShiftById } from "app/hooks/attendance";
 import { getShiftSchedule } from "app/hooks/shiftManagement";
+import {
+  eachDayOfInterval,
+  startOfMonth,
+  endOfMonth,
+  endOfWeek,
+  startOfWeek,
+  parseISO,
+  isWithinInterval,
+  format,
+} from "date-fns";
 
 const getEmployeeActiveShift = async (employeeId, date) => {
   try {
-    const formattedDate = moment(date).format('YYYY-MM-DD');
-    
+    const formattedDate = moment(date).format("YYYY-MM-DD");
+
     // First check for approved schedules for this date
     const scheduleResponse = await getShiftSchedule({
       filterData: {
@@ -15,7 +26,7 @@ const getEmployeeActiveShift = async (employeeId, date) => {
         status: "Approved",
         end_date_gte: formattedDate,
         start_date_lte: formattedDate,
-        is_change_request: "true,false"
+        is_change_request: "true,false",
       },
       ordering: "-created_at",
     });
@@ -23,44 +34,44 @@ const getEmployeeActiveShift = async (employeeId, date) => {
     // If we have approved schedules
     if (scheduleResponse?.results?.length > 0) {
       const schedule = scheduleResponse.results[0];
-      
+
       // Check if it's a custom schedule
       if (schedule.custom_schedule && schedule.custom_schedule[formattedDate]) {
         const daySchedule = schedule.custom_schedule[formattedDate];
-        
+
         // Check for off day
         if (daySchedule.is_off) {
           return {
-            status: 'off',
-            is_weekly_off: true
+            status: "off",
+            is_weekly_off: true,
           };
         }
-        
+
         // Check for split shift
         if (daySchedule.is_split) {
           return {
-            status: 'active',
+            status: "active",
             is_split_shift: true,
             split_shifts: [
               {
                 start_time: `${formattedDate} ${daySchedule.start_time_1}`,
-                end_time: `${formattedDate} ${daySchedule.end_time_1}`
+                end_time: `${formattedDate} ${daySchedule.end_time_1}`,
               },
               {
                 start_time: `${formattedDate} ${daySchedule.start_time_2}`,
-                end_time: `${formattedDate} ${daySchedule.end_time_2}`
-              }
+                end_time: `${formattedDate} ${daySchedule.end_time_2}`,
+              },
             ],
-            overtime_hours: daySchedule.overtime_hours || 0
+            overtime_hours: daySchedule.overtime_hours || 0,
           };
         }
-        
+
         // Regular shift
         return {
-          status: 'active',
+          status: "active",
           start_time: `${formattedDate} ${daySchedule.start_time}`,
           end_time: `${formattedDate} ${daySchedule.end_time}`,
-          overtime_hours: daySchedule.overtime_hours || 0
+          overtime_hours: daySchedule.overtime_hours || 0,
         };
       }
     }
@@ -69,28 +80,28 @@ const getEmployeeActiveShift = async (employeeId, date) => {
     const empData = await employeeData(employeeId);
     if (empData?.shift_assignment) {
       const shiftInfo = await getShiftById(empData.shift_assignment);
-      
+
       if (shiftInfo) {
         // Check if it's a working day (assuming Mon-Fri are working days)
         const dayOfWeek = moment(date).day();
         const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-        
+
         if (isWeekend) {
           return {
-            status: 'off',
-            is_weekly_off: true
+            status: "off",
+            is_weekly_off: true,
           };
         }
 
         // Get the shift timing for the specific date
-        const startTime = moment(shiftInfo.starttime).format('HH:mm:ss');
-        const endTime = moment(shiftInfo.endtime).format('HH:mm:ss');
+        const startTime = moment(shiftInfo.starttime).format("HH:mm:ss");
+        const endTime = moment(shiftInfo.endtime).format("HH:mm:ss");
 
         return {
-          status: 'active',
+          status: "active",
           start_time: `${formattedDate} ${startTime}`,
           end_time: `${formattedDate} ${endTime}`,
-          overtime_hours: 0
+          overtime_hours: 0,
         };
       }
     }
@@ -100,23 +111,23 @@ const getEmployeeActiveShift = async (employeeId, date) => {
     const isOnLeave = false; // Replace with actual leave check
     if (isOnLeave) {
       return {
-        status: 'off',
-        is_on_leave: true
+        status: "off",
+        is_on_leave: true,
       };
     }
 
     // If no shift found
     return {
-      status: 'no_shift'
+      status: "no_shift",
     };
   } catch (error) {
-    console.error('Error in getEmployeeActiveShift:', error);
+    console.error("Error in getEmployeeActiveShift:", error);
     return null;
   }
 };
 
 // When displaying change request comparison
- const getChangeRequestComparison = async(changeRequest)=> {
+const getChangeRequestComparison = async (changeRequest) => {
   if (changeRequest.is_change_request) {
     // 2. Find all approved schedules that overlap with this date range
     const overlappingSchedules = await getShiftSchedule({
@@ -187,9 +198,9 @@ const getEmployeeActiveShift = async (employeeId, date) => {
       comparison_data: comparisonData,
     };
   }
-}
+};
 
- const generateShiftScheduleLog = async ({
+const generateShiftScheduleLog = async ({
   scheduleData,
   logType,
   userProfile,
@@ -355,4 +366,116 @@ const getEmployeeActiveShift = async (employeeId, date) => {
   await saveShiftSchedulesLogs(payload);
 };
 
-export { getEmployeeActiveShift, getChangeRequestComparison, generateShiftScheduleLog };
+export const getMontlyShiftData = async (employee_id) => {
+  if (!employee_id) return [];
+
+  try {
+    const datesOfMonth = eachDayOfInterval({
+      start: startOfMonth(new Date()),
+      end: endOfMonth(new Date()), // Only till today
+    });
+    const shiftPromises = datesOfMonth.map((date) =>
+      getEmployeeActiveShift(employee_id, date)
+        .then((res) => {
+          if (!res) return null;
+          const shift = { date: moment(date).format("YYYY-MM-DD") };
+          shift.is_split_shift = Boolean(res.is_split_shift);
+          shift.total_hours = 0;
+          shift.shifts = [];
+          if (res.status === "active") {
+            if (res.is_split_shift) {
+              shift.shifts = [
+                {
+                  start_time: format(
+                    new Date(res.split_shifts[0].start_time),
+                    "hh:mm a"
+                  ),
+                  end_time: format(
+                    new Date(res.split_shifts[0].end_time),
+                    "hh:mm a"
+                  ),
+                },
+                {
+                  start_time: format(
+                    new Date(res.split_shifts[1].start_time),
+                    "hh:mm a"
+                  ),
+                  end_time: format(
+                    new Date(res.split_shifts[1].end_time),
+                    "hh:mm a"
+                  ),
+                },
+              ];
+              const total_hours =
+                CalculateTotalWorkingHours(
+                  res.split_shifts[0].start_time,
+                  res.split_shifts[0].end_time
+                ) +
+                CalculateTotalWorkingHours(
+                  res.split_shifts[1].start_time,
+                  res.split_shifts[1].end_time
+                );
+              shift.total_hours = total_hours;
+            } else {
+              shift.shifts = [
+                {
+                  start_time: format(new Date(res.start_time), "hh:mm a"),
+                  end_time: format(new Date(res.end_time), "hh:mm a"),
+                },
+              ];
+              shift.start_time = res.start_time;
+              shift.end_time = res.end_time;
+              shift.total_hours = CalculateTotalWorkingHours(
+                res.start_time,
+                res.end_time
+              );
+            }
+            shift.status = true;
+          } else if (res.status === "off") {
+            shift.status = false;
+            shift.isOffToday = true;
+            shift.is_weekly_off = res.is_weekly_off || false;
+            if (res.is_weekly_off) {
+              shift.OffLabel = "Weekly Off";
+            }
+          }
+
+          return shift;
+        })
+        .catch((err) => {
+          console.error(`Error fetching shift for ${date}:`, err);
+          return null;
+        })
+    );
+
+    const shifts = await Promise.all(shiftPromises);
+    return shifts.filter(Boolean);
+  } catch (error) {
+    console.error("Error fetching monthly shift data:", error);
+    return [];
+  }
+};
+
+export const getThisWeekShiftData = (MonthlyShiftDataList) => {
+  if (!Array.isArray(MonthlyShiftDataList)) return [];
+
+  const today = new Date();
+  const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Monday as start
+  const weekEnd = endOfWeek(today, { weekStartsOn: 1 }); // Sunday as end
+
+  const thisWeekShifts = MonthlyShiftDataList.filter((shift) => {
+    const shiftDate =
+      typeof shift.date === "string"
+        ? parseISO(shift.date)
+        : new Date(shift.date);
+    return isWithinInterval(shiftDate, { start: weekStart, end: weekEnd });
+  });
+
+  return thisWeekShifts;
+};
+
+export {
+  getEmployeeActiveShift,
+  getChangeRequestComparison,
+  generateShiftScheduleLog,
+};
