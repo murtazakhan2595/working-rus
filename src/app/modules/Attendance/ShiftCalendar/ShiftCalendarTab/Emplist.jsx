@@ -99,14 +99,13 @@ const Emplist = ({ teamMembers }) => {
     try {
       const response = await getShiftSchedule({
         filterData: {
-          status: selectedStatus,
+          status: selectedStatus ? selectedStatus : undefined,
           is_change_request: "true",
-          page: options.page,
-          page_size: options.sizePerPage,
           shift_requested: "Manager",
-          employee_branch: selectedBranch ,
+          employee_branch: selectedBranch ? selectedBranch : undefined,
         },
         ordering: ordering,
+        options
       });
 
       if (response && response.results) {
@@ -133,7 +132,7 @@ const Emplist = ({ teamMembers }) => {
   };
   useEffect(() => {
     fetchShiftChangeRequests();
-  }, [ordering, options.page, options.sizePerPage, filterData, ]);
+  }, [ordering, options, filterData]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
