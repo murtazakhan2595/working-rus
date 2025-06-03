@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
-import {
-  CalendarIcon,
-  FilterIcon,
-  PlayCircle,
-  StopCircle,
-  PauseCircle,
-} from "lucide-react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { formatDuration } from "utils/renderValues";
@@ -336,7 +329,6 @@ const RenderLogInButton = ({
   };
 
   const endShift = async () => {
-    debugger;
     const checkout = moment().utc().toISOString();
     const payload = {
       break_duration: attendance?.break_duration,

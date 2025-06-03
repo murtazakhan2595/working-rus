@@ -6,14 +6,17 @@ import {
   Levels,
 } from "app/modules/ApprovalHierarchy";
 import React, { useEffect, useState } from "react";
-import { Header,StatusLabel } from "components";
+import { Header, StatusLabel } from "components";
 import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import { useLocation } from "react-router-dom";
 import { Button } from "components/ui/button";
 import { DetailBox } from "components/SheetCardExtension";
 import { CardDescription, CardTitle } from "components/ui/card";
-import { ApprovalHierarchyRequestTypeName ,EmployeeUsername} from "utils/getValuesFromTables";
+import {
+  ApprovalHierarchyRequestTypeName,
+  EmployeeUsername,
+} from "utils/getValuesFromTables";
 import { HasAccess } from "utils/PermissionUtils";
 
 const ApprovalHierarchyDetails = ({}) => {
@@ -128,7 +131,10 @@ const ApprovalHierarchyDetails = ({}) => {
         <CardContent className="">
           <Levels
             HierarchyDetails={Hierarchy}
-            fetchData={fetchData}
+            fetchData={() => {
+              fetchData(true);
+              setReloadData(!reloadData);
+            }}
             hierarchy_id={id}
             viewMode={false}
             setReloadData={() => {

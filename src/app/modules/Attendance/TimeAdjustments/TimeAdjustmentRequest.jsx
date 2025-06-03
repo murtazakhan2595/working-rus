@@ -43,7 +43,6 @@ const TimeAdjustmentRequest = ({ id, attendance }) => {
   };
 
   const fetchTimeAdjustmentData = async (isMounted, attendanceId) => {
-    // debugger;
     try {
       const response = await getTimeAdjustmentListData({
         filterData: { attendance: attendanceId },

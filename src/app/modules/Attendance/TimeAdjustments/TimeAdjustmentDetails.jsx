@@ -27,7 +27,6 @@ const TimeAdjustmentDetails = ({
   );
 
   const handleClick = async (event, status, id) => {
-    debugger;
     event.preventDefault();
     event.stopPropagation();
     try {

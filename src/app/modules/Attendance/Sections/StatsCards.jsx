@@ -69,7 +69,7 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
         });
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -102,7 +102,7 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
     },
     {
       title: "Not Arrived",
-      status: "not_arrived",
+      status: "not arrived",
       value:
         (parseInt(cardStats?.totalEmployees) || 0) -
         (parseInt(cardStats?.present) || 0),
@@ -112,7 +112,7 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
     {
       title: "On Leave",
       value: cardStats?.leave || 0,
-      status: "Leave",
+      status: "leave",
       description: "Here is the list of all employees on leave",
     },
   ];
@@ -146,8 +146,7 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
       {statsData.map((stat, index) => (
         <Card
           key={index}
-          className="flex flex-col justify-center shadow-md border rounded-lg"
-          value="cardslicked"
+          className="flex flex-col justify-center shadow-md border rounded-lg cursor-pointer"
           onClick={(event) => handleCardClicked(event, stat)}
         >
           {loading ? (
