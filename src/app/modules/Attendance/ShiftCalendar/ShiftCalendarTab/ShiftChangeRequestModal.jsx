@@ -558,6 +558,7 @@ const ShiftChangeRequestModal = ({
         total_weekly_hours: calculateTotalWeeklyHours(),
         assigned_by: userProfile?.id,
         status: isEditEmployeeShiftPermitted ? "Approved" : "Pending",
+        approved_by: isEditEmployeeShiftPermitted ? userProfile?.id : null,
         is_off_day: Object.values(customSchedule).some((day) => day.is_off),
         // Additional fields to identify this as a change request
         is_change_request: "true",
@@ -565,8 +566,7 @@ const ShiftChangeRequestModal = ({
         // Metadata about the request
         changed_days: changedDays,
         requested_date_range: `${requestedStartDate},${requestedEndDate}`,
-        original_schedules:
-          overlappingSchedules?.results?.map((s) => s.id) || [],
+
       };
 
       console.log("Shift Change Request Payload:", payload);
