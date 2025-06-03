@@ -9,6 +9,7 @@ import {
   mapAttendanceAdjustmentPayloadData,
   mapAttendanceAdjustmentListData,
   mapTimeAdjustmentData,
+  mapAttendanceAdjustmentData
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
@@ -22,7 +23,6 @@ const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
 });
-const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const saveShiftAssignment = async (payload) => {
   try {
@@ -667,7 +667,7 @@ export const getEmployeeAttendanceDetails = async (employee_id) => {
 };
 
 export const saveUpdateAttendanceAdjustment = async (payload, id) => {
-  const attendanceId = id || payload?.id;
+  const attendanceId = id;
   try {
     const finalPayload = mapAttendanceAdjustmentPayloadData(payload);
 
@@ -723,6 +723,57 @@ export const getAttendanceAdjustmentListData = async (payload) => {
       HandleLogout();
     }
     return false;
+  }
+};
+
+export const getAttendanceAdjustmentData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/attendance-adjustment/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = await mapAttendanceAdjustmentData(response.data);
+      const currentapprover = await getCurrentRequestApprover(
+        ResponseData.request
+      );
+      return { ...ResponseData, ...currentapprover };
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const getAttendanceAdjustmentLogsList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "";
+  let URL = `/attendance-update-logs/?${
+    ordering ? `ordering=${ordering}&` : ""
+  }${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      // const ResponseDataList = await mapAttendanceAdjustmentListData(
+      //   ResponseData.results
+      // );
+      return { results: ResponseData.result, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error fetching attendance list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
   }
 };
 

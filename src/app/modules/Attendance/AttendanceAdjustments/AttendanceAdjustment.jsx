@@ -1,7 +1,7 @@
 import React from "react";
 import {
   AttendanceAdjustmentRecord,
-  TimeAdjustmentsHistory,
+  AttendanceAdjustmentHistory,
 } from "app/modules/Attendance";
 import { useEffect, useState, useMemo } from "react";
 import "react-toastify/dist/ReactToastify.css";
@@ -20,24 +20,13 @@ import { Header } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 
 const AttendanceAdjustment = ({ activeView = "Attendance Adjustments" }) => {
-  const isViewTAPermitted = HasAccess("VIEW_TIME_ADJ_REQUESTS");
-  const isViewBTAPermitted = HasAccess("VIEW_BRN_TIME_ADJ_REQUESTS");
-  const isViewDTAermitted = HasAccess("VIEW_DPT_TIME_ADJ_REQUESTS");
-  const isViewLogPermitted = HasAccess("VIEW_TIME_ADJ_LOGS");
+  const isViewAAPermitted = HasAccess("VIEW_ATT_UPDATE_LOGS");
+  const isViewBAAPermitted = HasAccess("VIEW_BRN_ATT_UPDATES_LOGS");
+  const isViewDAAermitted = HasAccess("VIEW_DPT_ATT_UPDATES_LOGS");
   const [activeTab, setActiveTab] = useState(activeView);
   const TimeAdjustmentOuterTab = useMemo(() => {
-    return [
-      ...(isViewTAPermitted || isViewBTAPermitted || isViewDTAermitted
-        ? ["Attendance Adjustments"]
-        : []),
-      ...(isViewLogPermitted ? ["History & Logs"] : []),
-    ];
-  }, [
-    isViewDTAermitted,
-    isViewBTAPermitted,
-    isViewTAPermitted,
-    isViewLogPermitted,
-  ]);
+    return ["Attendance Adjustments", "History & Logs"];
+  }, []);
 
   return (
     <div
@@ -67,10 +56,15 @@ const AttendanceAdjustment = ({ activeView = "Attendance Adjustments" }) => {
         </div>
         <Card>
           <TabsContent value="Attendance Adjustments">
-            <AttendanceAdjustmentRecord />
+            <AttendanceAdjustmentRecord
+              isTeamView={false}
+              isDepartmentView={isViewDAAermitted}
+              isBranchView={isViewBAAPermitted}
+              adminView={isViewAAPermitted}
+            />
           </TabsContent>
           <TabsContent value="History & Logs">
-            <TimeAdjustmentsHistory />
+            <AttendanceAdjustmentHistory />
           </TabsContent>
         </Card>
       </Tabs>

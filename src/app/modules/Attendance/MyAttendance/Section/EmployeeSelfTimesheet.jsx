@@ -51,18 +51,13 @@ export default function EmployeeSelfTimesheet({
   };
 
   useEffect(() => {
-    const isSplitShit = today_shift?.is_split_shift;
     if (!OnBreak && attendance) {
       if (attendance?.checkin && !attendance.checkout) {
-        updateTimer(isSplitShit); // Initial update
+        updateTimer(); // Initial update
         const interval = setInterval(updateTimer, 1000); // Update every second
         return () => clearInterval(interval); // Cleanup on unmount
-      } else if (
-        isSplitShit &&
-        attendance?.second_checkin &&
-        !attendance.second_checkout
-      ) {
-        updateTimer(isSplitShit); // Initial update
+      } else if (attendance?.second_checkin && !attendance.second_checkout) {
+        updateTimer(); // Initial update
         const interval = setInterval(updateTimer, 1000); // Update every second
         return () => clearInterval(interval); // Cleanup on unmount
       } else {

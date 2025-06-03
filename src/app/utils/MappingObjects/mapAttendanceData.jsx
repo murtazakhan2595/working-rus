@@ -48,8 +48,7 @@ export function mapAttendanceData(data, shiftDetails) {
         const shiftDate = checkInTime.clone().startOf("day"); // Today's date (midnight)
         // Combine date with shift time to make full datetime
         const startTime = moment.utc(
-          `${shiftDate.format("YYYY-MM-DD")} ${shiftStartTime}`,
-          "YYYY-MM-DD hh:mm A"
+          `${shiftDate.format("YYYY-MM-DD")} ${shiftStartTime}`
         );
         // Now check if check-in is after the shift start
         const isLate = checkInTime.isAfter(startTime);
@@ -216,15 +215,29 @@ export function mapEmployeeAttendanceDetail(data) {
 }
 
 export async function mapAttendanceAdjustmentData(data) {
-  const attendanceAdjustmentData = Object.keys(AttendanceAdjustment).reduce(
-    (acc, key) => {
-      if (data.hasOwnProperty(key)) {
-        acc[key] = data[key];
+  const attendanceAdjustmentData = {};
+
+  for (const key of Object.keys(AttendanceAdjustment)) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      if (key === "approval_logs") {
+        const approver_logs = data[key] || [];
+        const logs_list = approver_logs
+          .filter((log) => log.action_type !== "CREATED" || log.action_type!=="REQUEST_CREATED")
+          .map((log) => ({
+            status: log.action_type,
+            approver: log.changed_by,
+            level_number: log.level_number,
+            time: log.timestamp,
+          }))
+          .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
+
+        attendanceAdjustmentData[key] = logs_list;
+      } else {
+        attendanceAdjustmentData[key] = data[key];
       }
-      return acc;
-    },
-    {}
-  );
+    }
+  }
+
   return attendanceAdjustmentData;
 }
 

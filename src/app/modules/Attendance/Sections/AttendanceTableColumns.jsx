@@ -1,5 +1,5 @@
 import { EmployeeAttendenceActions } from "app/modules/Attendance/Sections";
-import { TimeAdjustmentsActions } from "app/modules/Attendance";
+import { TimeAdjustmentsActions,AttendanceAdjustmentActions } from "app/modules/Attendance";
 import { calculatePercentage } from "utils/renderValues";
 import { EmployeeOverview } from "components";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
@@ -305,16 +305,47 @@ export const AttendanceAdjustmentsColumns = (viewMode = false, reloadData) => [
     text: "",
     dataField: "",
     formatter: (cell, row, dataList) => (
-      <TimeAdjustmentsActions
+      <AttendanceAdjustmentActions
         data={row}
         reloadData={reloadData}
-        TimeAdjustmentList={dataList}
+        DataList={dataList}
       />
     ),
   },
 ];
 
 export const TimeAdjustmentLogsColumns = [
+  {
+    text: "Date",
+    dataField: "date",
+    formatter: (cell) => <>{`${renderDate(cell)}`}</>,
+  },
+  {
+    text: "Check In",
+    dataField: "checkin",
+    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+  },
+  {
+    text: "Reason",
+    dataField: "reason",
+    maxWidth: "250px",
+  },
+  {
+    text: "Status",
+    dataField: "status",
+    formatter: (cell) => (
+      <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    ),
+  },
+  {
+    text: "",
+    dataField: "",
+    formatter: (_, row) => (
+      <TimeAdjustmentsActions data={row} isHistoryView={true} />
+    ),
+  },
+];
+export const AttendanceAdjustmentLogsColumns = [
   {
     text: "Date",
     dataField: "date",

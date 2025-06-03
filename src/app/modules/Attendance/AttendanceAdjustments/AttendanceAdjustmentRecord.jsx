@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from "react";
-
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "src/@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { FilterInput } from "components/FormControl";
 import { getAttendanceAdjustmentListData } from "app/hooks/attendance";
 import { AttendanceAdjustmentsColumns } from "app/modules/Attendance/Sections/AttendanceTableColumns";
 import { CardDescription, CardTitle, CardContent } from "components/ui/card";
 import { PageLoader, TableCustom } from "components";
+import { GetEmployeeFilteredList, GetCommonFilteredList } from "utils/Lists";
+import { GlobalStatusOptions } from "data/Data";
 
 const innerTabClassName =
   "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
-const AttendanceAdjustmentRecord = ({}) => {
+const AttendanceAdjustmentRecord = ({
+  isTeamView = false,
+  isDepartmentView = false,
+  isBranchView = false,
+  adminView = false,
+}) => {
+  const Employees = GetEmployeeFilteredList(
+    isTeamView,
+    adminView,
+    isBranchView,
+    isDepartmentView
+  );
+  const Department = GetCommonFilteredList("departments");
+  const Branches = GetCommonFilteredList("branches");
   const [activeInnerTab, setActiveInnerTab] = useState("Requests");
   const [TimeAdjustmentList, setTimeAdjustmentList] = useState({
     results: [],
@@ -25,9 +34,9 @@ const AttendanceAdjustmentRecord = ({}) => {
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedDelegatedIndex, setSelectedDelegatedIndex] = useState("");
-  const [selectedAutoFowardIndex, setSelectedAutoFowardIndex] = useState("");
-  const [selectedRequestType, setSelectedRequestType] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedEmployee, setSelectedEmployee] = useState("");
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -72,11 +81,10 @@ const AttendanceAdjustmentRecord = ({}) => {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "request_type") setSelectedRequestType(filterValue);
-    if (filterName === "status") setSelectedStatus(filterValue);
-    if (filterName === "has_auto_forward")
-      setSelectedAutoFowardIndex(filterValue);
-    if (filterName === "has_delegation") setSelectedDelegatedIndex(filterValue);
+    if (filterName === "employee") setSelectedEmployee(filterValue);
+    if (filterName === "statuses") setSelectedStatus(filterValue);
+    if (filterName === "branch_id") setSelectedBranch(filterValue);
+    if (filterName === "department_name") setSelectedDepartment(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -90,13 +98,9 @@ const AttendanceAdjustmentRecord = ({}) => {
 
   const handleTabChange = (tab) => {
     if (tab === "Requests") {
-      setFilterData(() => ({
-        statuses: "PENDING",
-      }));
+      setFilterData({ statuses: "PENDING" });
     } else if (tab === "Records") {
-      setFilterData(() => ({
-        statuses: "APPROVED,REJECTED",
-      }));
+      setFilterData({ statuses: "APPROVED,REJECTED" });
     }
   };
 
@@ -130,10 +134,45 @@ const AttendanceAdjustmentRecord = ({}) => {
           <FilterInput
             filters={[
               {
-                type: "search",
-                placeholder: "Search by ID",
-                name: "emp_serial_no",
+                type: "select-one",
+                placeholder: "Employee",
+                name: "employee",
+                option: Employees,
+                values: selectedEmployee,
               },
+              ...(adminView || isBranchView
+                ? [
+                    {
+                      type: "select-two",
+                      placeholder: "Department",
+                      name: "department_name",
+                      option: Department,
+                      values: selectedDepartment,
+                    },
+                  ]
+                : []),
+              ...(adminView || isDepartmentView
+                ? [
+                    {
+                      type: "select-three",
+                      placeholder: "Branch",
+                      name: "branch_id",
+                      option: Branches,
+                      values: selectedBranch,
+                    },
+                  ]
+                : []),
+              ...(activeInnerTab === "Records"
+                ? [
+                    {
+                      type: "select-four",
+                      placeholder: "Status",
+                      name: "statuses",
+                      option: GlobalStatusOptions(false),
+                      values: selectedStatus,
+                    },
+                  ]
+                : []),
             ]}
             onChange={handleFilterChange}
             className="justify-end"

@@ -24,6 +24,7 @@ import { HasAccess } from "utils/PermissionUtils";
 import { TextAreaInput } from "components/FormControl";
 import { GetEmployeeFilteredList } from "utils/Lists";
 import { GetEmployeeActiveShift } from "app/modules/Attendance/ShiftCalendar/Section/getEmployeeActiveShift";
+import { renderDate } from "utils/renderValues";
 const FormSheetData = {
   triggerText: "Submit",
   title: "Update Employee Attendance",
@@ -38,6 +39,9 @@ const UpdateEmployeeAttendance = ({
   setIsOpen = () => {},
   isEmployee = false,
 }) => {
+  const defaultShift = useSelector(
+    (state) => state.attendance.assignedShiftData
+  );
   const isDptAttendancePermitted = HasAccess("UPDATE_DPT_EMP_ATTENDANCE");
   const isBrnAttendancePermitted = HasAccess("UPDATE_BRN_EMP_ATTENDANCE");
   const isAttendancePermitted = HasAccess("UPDATE_EMPLOYEE_ATTENDANCE");
@@ -58,7 +62,7 @@ const UpdateEmployeeAttendance = ({
     !isEmployee ? Attendance : AttendanceAdjustment
   );
   const [selectedEmployee, setSelectedEmployee] = useState({});
-  const [activeSplitShift, setActiveAplitShift] = useState(false);
+  const [ActiveShift, setActiveShift] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const FilteredEmployees = React.useMemo(() => {
     if (!Array.isArray(Employees) || Employees.length === 0) return [];
@@ -90,15 +94,15 @@ const UpdateEmployeeAttendance = ({
       const response = await getAttendance({
         filterData: { date: date, employee_id: selectedEmployee.id },
       });
+      const active_shift = await GetEmployeeActiveShift(
+        selectedEmployee.id,
+        defaultShift,
+        date
+      );
+      setActiveShift(active_shift);
       if (isMounted && response) {
         if (response.results && response.results.length > 0) {
           const attendanceRecord = response.results[0];
-          const active_shift = await GetEmployeeActiveShift(
-            selectedEmployee.id,
-            {},
-            attendanceRecord.date
-          );
-          setActiveAplitShift(active_shift.is_split_shift);
           if (isEmployee) {
             const data = mapAdjustmentFromAttendnaceData(attendanceRecord);
             setFormData(data);
@@ -147,21 +151,36 @@ const UpdateEmployeeAttendance = ({
 
   const handleSubmit = async (data) => {
     try {
-      const response = isEmployee
-        ? await saveUpdateAttendanceAdjustment(data)
-        : await saveAttendance(data, selectedEmployee, id);
-      // return
-      if (response) {
-        if (id) {
-          toast.success("Attendance Updated Successfully!", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        } else {
-          toast.success("Attendance Submitted Successfully!", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
+      if (isEmployee) {
+        const response = await saveUpdateAttendanceAdjustment(data);
+        if (response)
+          return {
+            status: true,
+            messageType: "SUCCESS",
+            title: `Attendance Updated for ${selectedEmployee.name}`,
+            description: `Attendance updated for ${
+              selectedEmployee.name
+            } for ${renderDate(data.date)} `,
+          };
+      } else {
+        const payload = {
+          date: data.date,
+          id: id,
+          checkin: data.checkin,
+          checkout: data.checkout,
+        };
+        const response = await saveAttendance(payload, ActiveShift, id);
+        // return
+        if (response) {
+          return {
+            status: true,
+            messageType: "SUCCESS",
+            title: `Attendance Updated for ${selectedEmployee.name}`,
+            description: `Attendance updated for ${
+              selectedEmployee.name
+            } for ${renderDate(data.date)} `,
+          };
         }
-        setIsOpen(false);
       }
     } catch (error) {
       // Handle errors and rollback form data
