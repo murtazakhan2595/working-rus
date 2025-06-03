@@ -30,7 +30,7 @@ const TimeAdjustments = ({ activeView = "Time Adjustments" }) => {
       ...(isViewTAPermitted || isViewBTAPermitted || isViewDTAermitted
         ? ["Time Adjustments"]
         : []),
-      ...(isViewLogPermitted ? ["History & Logs"] : []),
+      // ...(isViewLogPermitted ? ["History & Logs"] : []),
     ];
   }, [
     isViewDTAermitted,

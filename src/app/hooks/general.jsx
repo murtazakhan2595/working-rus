@@ -281,7 +281,7 @@ const getEmployeeList = async (payload) => {
       const employeeList = await employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
-        label: `${employee.first_name} ${employee.last_name} - ${employee.username}`,
+        label: `${employee.first_name} ${employee.last_name} - ${employee.serial_number}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
         department_name: employee.department_name,

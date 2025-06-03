@@ -24,7 +24,10 @@ import {
 } from "state/slices/EmpSlice";
 import { fetchLeaveComponents } from "state/slices/LeaveManagementSlice";
 import { fetchDocumentCategory } from "state/slices/HRDocumentsSlice";
-import { fetchShiftById ,fetchUserAttendanceDetails} from "state/slices/AttendanceSlice";
+import {
+  fetchShiftById,
+  fetchUserAttendanceDetails,
+} from "state/slices/AttendanceSlice";
 import { ArrowDown, ArrowRight, ArrowUp, Timer } from "lucide-react";
 import { lightenColor } from "utils/renderValues";
 
@@ -741,6 +744,11 @@ export const revisionLetterOptions = [
 ];
 export const revisionStatusOptions = [
   { value: "PENDING", label: "Pending" },
+  { value: "APPROVED", label: "Approved" },
+  { value: "REJECTED", label: "Rejected" },
+];
+export const GlobalStatusOptions = (Records = true) => [
+  ...(Records ? [{ value: "PENDING", label: "Pending" }] : []),
   { value: "APPROVED", label: "Approved" },
   { value: "REJECTED", label: "Rejected" },
 ];
