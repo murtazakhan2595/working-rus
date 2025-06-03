@@ -356,12 +356,10 @@ const getEmployeeListWithDetail = async () => {
 
 const getOrganizationList = async (allData = false) => {
   try {
-    console.log(`API Request: ${baseUrl}/organization/`);
     const response = await axios.get(`${baseUrl}/organization/`, {
       headers: headers(),
     });
     if (response.status === 200) {
-      console.log("API Response:", response.data);
       const organizationResponse = response.data;
       const organizationList = organizationResponse?.results?.map(
         (organization) => ({

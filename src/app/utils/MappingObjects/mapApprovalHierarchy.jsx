@@ -35,7 +35,6 @@ export async function mapApprovalHierarchyListData(data) {
   return ApprovalHierarchyList;
 }
 
-
 export async function mapApprovalHierarchyPayloadData(data, id) {
   // Initialize an empty payload object
   const payload = {};
@@ -77,7 +76,6 @@ export function mapLevelPayloadData(data) {
     ) {
       if (key === "auto_forward_threshold") {
         if (data.auto_forward_enabled && data[key]) {
-
           const threshold = parseFloat(data[key]);
           const totalSeconds = Math.floor(threshold * 3600);
 
@@ -136,11 +134,24 @@ export function mapHierarchyLevelData(data) {
         if (key === "auto_forward_threshold" && data[key]) {
           try {
             const threshold = data[key];
-            const [dayPart, timePart] = threshold?.split(" ");
+            if (!threshold) {
+              acc[key] = null;
+              return;
+            }
+
+            let dayPart = "0";
+            let timePart = threshold;
+
+            // If format includes space, it has both day and time
+            if (threshold.includes(" ")) {
+              [dayPart, timePart] = threshold.split(" ");
+            }
+
             const days = parseInt(dayPart, 10) || 0;
             const [hours = 0, minutes = 0, secondsWithMicro = "0"] =
               timePart.split(":");
             const [seconds = 0, micro = 0] = secondsWithMicro.split(".");
+
             const totalHours =
               days * 24 +
               parseInt(hours, 10) +
@@ -150,7 +161,7 @@ export function mapHierarchyLevelData(data) {
 
             acc[key] = totalHours;
           } catch (error) {
-            console.error(error);
+            console.error("Threshold parsing error for key:", key, error);
             acc[key] = null;
           }
         } else acc[key] = data[key];

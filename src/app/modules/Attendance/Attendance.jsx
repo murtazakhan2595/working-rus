@@ -68,9 +68,9 @@ const Attendance = ({ isTeamView = false }) => {
       if (isViewEmpAttendancePermitted) return {};
       else {
         if (isViewBrnEmpAttendancePermitted) {
-          return { branch_id: [user_branch] };
+          return { branch: user_branch };
         } else if (isViewDptEmpAttendancePermitted) {
-          return { department_name: user_department };
+          return { department: user_department };
         }
       }
     });
@@ -83,16 +83,14 @@ const Attendance = ({ isTeamView = false }) => {
     isViewEmpAttendancePermitted,
   ]);
   const handleFilterChange = (filterName, filterValue) => {
-    if (filterName === "department_name") setSelectedDepartment(filterValue);
-    if (filterName === "branch_id") setSelectedBranch(filterValue);
+    if (filterName === "department") setSelectedDepartment(filterValue);
+    if (filterName === "branch") setSelectedBranch(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
         delete updatedFilters[filterName];
       } else {
-        if (filterName === "branch_id")
-          updatedFilters[filterName] = [filterValue];
-        else updatedFilters[filterName] = filterValue;
+        updatedFilters[filterName] = filterValue;
       }
       return updatedFilters;
     });
@@ -195,7 +193,7 @@ const Attendance = ({ isTeamView = false }) => {
                   {
                     type: "select-one",
                     option: Departments,
-                    name: "department_name",
+                    name: "department",
                     placeholder: "Department",
                     values: selectedDepartment,
                     width: "w-[175px]",
@@ -205,7 +203,7 @@ const Attendance = ({ isTeamView = false }) => {
                         {
                           type: "select-two",
                           option: Branches,
-                          name: "branch_id",
+                          name: "branch",
                           placeholder: "Branch",
                           values: selectedBranch,
                           width: "w-[175px]",

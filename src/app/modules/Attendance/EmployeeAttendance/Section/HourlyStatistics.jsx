@@ -18,12 +18,11 @@ const HourlyStatistics = ({ userId }) => {
       const weekly_th = data.weekly_total_hours;
       const weekly_ot = data.weekly_overtime;
       const weekly_rh = weekly_th - weekly_ph;
-      const weekly_ah = weekly_ot - weekly_rh;
+      const weekly_ah = formatDuration(weekly_ot - weekly_rh);
       const monthly_ph = data.monthly_payable_hours;
       const monthly_th = data.monthly_total_hours;
       const monthly_rh = monthly_th - monthly_ph;
-      const monthly_ah = data.monthly_overtime - monthly_rh;
-
+      const monthly_ah = formatDuration(data.monthly_overtime - monthly_rh);
       setWorkStatistics([
         {
           value: weekly_ph || 0,
@@ -73,11 +72,11 @@ const HourlyStatistics = ({ userId }) => {
       ))}
       <div>
         Adjusted Weekly Hours:{" "}
-        <span className="text-neutral-1100">{weeklyAdjHours}hr</span>
+        <span className="text-neutral-1100">{weeklyAdjHours}</span>
       </div>
       <div>
         Adjusted Monthly Hours:{" "}
-        <span className="text-neutral-1100">{monthlyAdjHours}hr</span>
+        <span className="text-neutral-1100">{monthlyAdjHours}</span>
       </div>
     </div>
   );

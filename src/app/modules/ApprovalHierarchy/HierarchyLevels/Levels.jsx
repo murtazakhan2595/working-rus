@@ -123,7 +123,6 @@ const Levels = React.memo(
           }}
           renderConfig={{
             title: "HierarchyDetails Levels",
-
             description:
               "Here you can manage and view the list of hierarchy levels against the selected request initiator",
           }}

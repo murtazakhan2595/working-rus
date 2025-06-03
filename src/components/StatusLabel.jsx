@@ -92,7 +92,7 @@ const StatusLabel = React.forwardRef(
           statusVariants({
             variant: StatusVariant,
           }),
-          "flex items-center text-capitalize",
+          "flex items-center capitalize-text",
           className
         )}
         ref={ref}

@@ -21,7 +21,7 @@ export function mapShiftData(data) {
   return shiftDetails;
 }
 export function mapAttendanceData(data, shiftDetails) {
-  const shiftStartTime = shiftDetails.start_time;
+  const [firstShift, secondShift] = shiftDetails?.shifts||[];
   const Hours = shiftDetails.total_hours;
   // Initialize an empty payload object
   const payload = { total_hours: Hours };
@@ -37,6 +37,7 @@ export function mapAttendanceData(data, shiftDetails) {
       if (key === "total_hours") {
         payload["total_hours"] = Hours;
       } else if (key === "checkin") {
+        const shiftStartTime = firstShift.start_time;
         const checkInTime = moment(data[key]);
         payload[key] = data[key];
         if (shiftDetails) {
@@ -56,7 +57,6 @@ export function mapAttendanceData(data, shiftDetails) {
         payload["is_late"] = isLate;
         payload["is_absent"] = false;
       } else if (key === "checkout") {
-        debugger;
         const checkin = moment(payload.checkin);
         payload[key] = data[key];
         const totalHoursWorked = CalculateTotalWorkingHours(
@@ -260,4 +260,3 @@ export async function mapTimeAdjustmentData(data) {
 
   return timeAdjustmentDetails;
 }
-

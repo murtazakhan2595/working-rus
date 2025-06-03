@@ -64,12 +64,12 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
           present: parseInt(response?.daily_stats?.Present),
           absent: response?.daily_stats?.Absent,
           late: response?.daily_stats?.Late,
-          leave: response?.daily_stats?.Leave,
+          leave: response?.daily_stats?.on_leave,
           totalEmployees: response?.valid_employee_count,
         });
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -102,7 +102,7 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
     },
     {
       title: "Not Arrived",
-      status: "not_arrived",
+      status: "not arrived",
       value:
         (parseInt(cardStats?.totalEmployees) || 0) -
         (parseInt(cardStats?.present) || 0),
@@ -112,7 +112,7 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
     {
       title: "On Leave",
       value: cardStats?.leave || 0,
-      status: "Leave",
+      status: "leave",
       description: "Here is the list of all employees on leave",
     },
   ];
@@ -146,8 +146,7 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
       {statsData.map((stat, index) => (
         <Card
           key={index}
-          className="flex flex-col justify-center shadow-md border rounded-lg"
-          value="cardslicked"
+          className="flex flex-col justify-center shadow-md border rounded-lg cursor-pointer"
           onClick={(event) => handleCardClicked(event, stat)}
         >
           {loading ? (
@@ -182,8 +181,8 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
         description={ModalDetails.description}
         className=""
       >
-        <div className="my-4">
-          <div className="w-50">
+        <div className="mt-2 mb-4">
+          <div className="w-50 mb-5">
             <TextInput
               name="document_name"
               placeholder="Search by employee name"
@@ -193,8 +192,13 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
               value={searchQuery}
             />
           </div>
+          {(!FilteredEmployees || FilteredEmployees.length === 0) && (
+            <div className="flex justify-center text-neutral-900 font-[inter] text-sm">
+              {ModalDetails.Title} Employee count is 0 for today
+            </div>
+          )}
           {FilteredEmployees.map(({ employee_id }) => (
-            <div key={`employee-${employee_id}`} className="my-2">
+            <div key={`employee-${employee_id}`} className="py-2 my-2">
               <EmployeeOverview
                 id={employee_id}
                 showId={true}

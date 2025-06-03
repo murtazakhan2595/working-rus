@@ -171,9 +171,10 @@ export function renderDate(date, fallbackValue = "N/A", variant = "date") {
 }
 
 export const formatDuration = (duration, calculateSeconds = false) => {
-  if (!duration || duration <= 0) return "0min";
-
-  const totalSeconds = Math.floor(duration * 3600); // Convert hours to seconds
+  if (!duration) return "0min";
+  
+  const Duration = parseFloat(duration < 0 ? Math.abs(duration) : duration);
+  const totalSeconds = Math.floor(Duration * 3600); // Convert hours to seconds
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
@@ -182,7 +183,7 @@ export const formatDuration = (duration, calculateSeconds = false) => {
   if (hours > 0) parts.push(`${hours}h`);
   parts.push(`${minutes}min`);
   if (seconds > 0 && calculateSeconds) parts.push(`${seconds}s`);
-  return parts.join(" ");
+  return `${duration < 0 ? "-" : ""}${parts.join(" ")}`;
 };
 
 export const GetDateRange = (period) => {
