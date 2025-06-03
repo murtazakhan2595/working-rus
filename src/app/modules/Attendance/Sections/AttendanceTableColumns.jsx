@@ -1,5 +1,5 @@
 import { EmployeeAttendenceActions } from "app/modules/Attendance/Sections";
-import { TimeAdjustmentsActions } from "app/modules/Attendance";
+import { TimeAdjustmentsActions,AttendanceAdjustmentActions } from "app/modules/Attendance";
 import { calculatePercentage } from "utils/renderValues";
 import { EmployeeOverview } from "components";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
@@ -104,16 +104,38 @@ export const MyAttendanceColumn = (reload) => [
   {
     text: "Check In",
     dataField: "checkin",
-    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+    formatter: (cell, row) => (
+      <div className="flex-col flex gap-1">
+        <span>{moment(cell).format("h:mm A")}</span>
+        <span>
+          {row.second_checkin
+            ? moment(row.second_checkin).format("h:mm A")
+            : ""}
+        </span>
+      </div>
+    ),
   },
   {
     text: "Check Out",
     dataField: "checkout",
     formatter: (cell, row) => {
-      return cell ? (
-        <span>{moment(cell).format("h:mm A")}</span>
-      ) : (
-        getCheckoutTime(row.checkin, cell)
+      return (
+        <div className="flex-col flex gap-2">
+          {cell ? (
+            <span>{moment(cell).format("h:mm A")}</span>
+          ) : (
+            getCheckoutTime(row.checkin, cell)
+          )}
+          {row.second_checkin ? (
+            row.second_checkout ? (
+              <span>{moment(row.second_checkout).format("h:mm A")}</span>
+            ) : (
+              getCheckoutTime(row.second_checkin, row.second_checkout)
+            )
+          ) : (
+            ""
+          )}
+        </div>
       );
     },
   },
@@ -228,7 +250,9 @@ export const TimeAdjustmentsColumns = (viewMode = false, reloadData) => [
   {
     text: "Status",
     dataField: "status",
-    formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
+    formatter: (cell) => (
+      <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    ),
   },
   {
     text: "",
@@ -238,6 +262,53 @@ export const TimeAdjustmentsColumns = (viewMode = false, reloadData) => [
         data={row}
         reloadData={reloadData}
         TimeAdjustmentList={dataList}
+      />
+    ),
+  },
+];
+export const AttendanceAdjustmentsColumns = (viewMode = false, reloadData) => [
+  {
+    text: "Employee",
+    dataField: "employee",
+    formatter: (cell) => (
+      <EmployeeOverview
+        id={cell}
+        showId={true}
+        showDepartment={true}
+        showBranchName={true}
+      />
+    ),
+  },
+  {
+    text: "Attendance Date",
+    dataField: "attendance_date",
+    formatter: (cell) => <>{`${renderDate(cell)}`}</>,
+  },
+  {
+    text: "Requested Check-In",
+    dataField: "requested_checkin",
+    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+  },
+  {
+    text: "Requested Check-Out",
+    dataField: "requested_checkout",
+    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+  },
+  {
+    text: "Status",
+    dataField: "status",
+    formatter: (cell) => (
+      <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    ),
+  },
+  {
+    text: "",
+    dataField: "",
+    formatter: (cell, row, dataList) => (
+      <AttendanceAdjustmentActions
+        data={row}
+        reloadData={reloadData}
+        DataList={dataList}
       />
     ),
   },
@@ -262,7 +333,40 @@ export const TimeAdjustmentLogsColumns = [
   {
     text: "Status",
     dataField: "status",
-    formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
+    formatter: (cell) => (
+      <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    ),
+  },
+  {
+    text: "",
+    dataField: "",
+    formatter: (_, row) => (
+      <TimeAdjustmentsActions data={row} isHistoryView={true} />
+    ),
+  },
+];
+export const AttendanceAdjustmentLogsColumns = [
+  {
+    text: "Date",
+    dataField: "date",
+    formatter: (cell) => <>{`${renderDate(cell)}`}</>,
+  },
+  {
+    text: "Check In",
+    dataField: "checkin",
+    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+  },
+  {
+    text: "Reason",
+    dataField: "reason",
+    maxWidth: "250px",
+  },
+  {
+    text: "Status",
+    dataField: "status",
+    formatter: (cell) => (
+      <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    ),
   },
   {
     text: "",

@@ -67,7 +67,8 @@ export function mapUserRoleData(data) {
 export async function mapUserRoleListData(data) {
   if (!data || data.length === 0) return [];
   const UserRoleList = await data?.map((userRole) => {
-    return mapUserRoleData(userRole);
+    const user_Role = mapUserRoleData(userRole);
+    return { label: user_Role.name, value: user_Role.id, ...user_Role };
   });
 
   return UserRoleList;
@@ -128,7 +129,6 @@ export function mapUserRolePermissionsPayloadData(data, id) {
 }
 
 export function mapRoleAssignmentHistoryLogsData(data) {
-  console.log(data, "mapRoleAssignmentHistoryLogsData");
   const historyData = Object.keys(RoleAssignmentHistoryLogs).reduce(
     (acc, key) => {
       if (key === "feature_ids") acc[key] = data.details.feature_ids;

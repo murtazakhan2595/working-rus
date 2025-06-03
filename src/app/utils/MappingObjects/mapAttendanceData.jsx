@@ -21,7 +21,7 @@ export function mapShiftData(data) {
   return shiftDetails;
 }
 export function mapAttendanceData(data, shiftDetails) {
-  const [firstShift, secondShift] = shiftDetails?.shifts||[];
+  const [firstShift, secondShift] = shiftDetails?.shifts || [];
   const Hours = shiftDetails.total_hours;
   // Initialize an empty payload object
   const payload = { total_hours: Hours };
@@ -38,6 +38,25 @@ export function mapAttendanceData(data, shiftDetails) {
         payload["total_hours"] = Hours;
       } else if (key === "checkin") {
         const shiftStartTime = firstShift.start_time;
+        const checkInTime = moment(data[key]);
+        payload[key] = data[key];
+        if (shiftDetails) {
+          payload.is_absent = false;
+        }
+        payload.is_weekend = [0, 6].includes(checkInTime.day());
+        // Assume shiftDetails.start_time and end_time are time strings like "09:00 AM"
+        const shiftDate = checkInTime.clone().startOf("day"); // Today's date (midnight)
+        // Combine date with shift time to make full datetime
+        const startTime = moment.utc(
+          `${shiftDate.format("YYYY-MM-DD")} ${shiftStartTime}`
+        );
+        // Now check if check-in is after the shift start
+        const isLate = checkInTime.isAfter(startTime);
+        payload["status"] = isLate ? "Late" : "Present";
+        payload["is_late"] = isLate;
+        payload["is_absent"] = false;
+      } else if (key === "second_checkin") {
+        const shiftStartTime = secondShift.start_time;
         const checkInTime = moment(data[key]);
         payload[key] = data[key];
         if (shiftDetails) {
@@ -65,6 +84,32 @@ export function mapAttendanceData(data, shiftDetails) {
         );
         const payableHours =
           totalHoursWorked - parseFloat(data.break_duration || 0);
+        payload["payable_hours"] = parseFloat(
+          parseFloat(payableHours).toFixed(2)
+        );
+        if (Hours > 0) {
+          if (
+            parseFloat(payload.payable_hours) > parseFloat(payload.total_hours)
+          ) {
+            payload["overtime_hours"] = parseFloat(
+              parseFloat(payload.payable_hours) -
+                parseFloat(payload.total_hours)
+            ).toFixed(2);
+          } else {
+            payload["overtime_hours"] = parseFloat(0).toFixed(2);
+          }
+        }
+      } else if (key === "second_checkout") {
+        const checkin = moment(payload.second_checkin);
+        payload[key] = data[key];
+        const totalHoursWorked = CalculateTotalWorkingHours(
+          checkin,
+          payload.checkout
+        );
+        const payableHours =
+          parseFloat(payload.payable_hours) +
+          totalHoursWorked -
+          parseFloat(data.break_duration || 0);
         payload["payable_hours"] = parseFloat(
           parseFloat(payableHours).toFixed(2)
         );
@@ -170,15 +215,29 @@ export function mapEmployeeAttendanceDetail(data) {
 }
 
 export async function mapAttendanceAdjustmentData(data) {
-  const attendanceAdjustmentData = Object.keys(AttendanceAdjustment).reduce(
-    (acc, key) => {
-      if (data.hasOwnProperty(key)) {
-        acc[key] = data[key];
+  const attendanceAdjustmentData = {};
+
+  for (const key of Object.keys(AttendanceAdjustment)) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      if (key === "approval_logs") {
+        const approver_logs = data[key] || [];
+        const logs_list = approver_logs
+          .filter((log) => log.action_type !== "CREATED" || log.action_type!=="REQUEST_CREATED")
+          .map((log) => ({
+            status: log.action_type,
+            approver: log.changed_by,
+            level_number: log.level_number,
+            time: log.timestamp,
+          }))
+          .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
+
+        attendanceAdjustmentData[key] = logs_list;
+      } else {
+        attendanceAdjustmentData[key] = data[key];
       }
-      return acc;
-    },
-    {}
-  );
+    }
+  }
+
   return attendanceAdjustmentData;
 }
 

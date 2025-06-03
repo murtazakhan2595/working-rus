@@ -27,8 +27,8 @@ const TimeAdjustmentRecords = ({
     isBranchView,
     isDepartmentView
   );
-  const Department = GetEmployeeFilteredList("department");
-  const Branches = GetEmployeeFilteredList("branches");
+  const Department = GetCommonFilteredList("departments");
+  const Branches = GetCommonFilteredList("branches");
   const [activeInnerTab, setActiveInnerTab] = useState("Requests");
   const [TimeAdjustmentList, setTimeAdjustmentList] = useState({
     results: [],
@@ -86,10 +86,10 @@ const TimeAdjustmentRecords = ({
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "employee_id") setSelectedEmployee(filterValue);
+    if (filterName === "employee") setSelectedEmployee(filterValue);
     if (filterName === "statuses") setSelectedStatus(filterValue);
-    if (filterName === "branch") setSelectedBranch(filterValue);
-    if (filterName === "department") setSelectedDepartment(filterValue);
+    if (filterName === "branch_id") setSelectedBranch(filterValue);
+    if (filterName === "department_name") setSelectedDepartment(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -154,7 +154,7 @@ const TimeAdjustmentRecords = ({
                     {
                       type: "select-two",
                       placeholder: "Department",
-                      name: "employee_id",
+                      name: "department_name",
                       option: Department,
                       values: selectedDepartment,
                     },
@@ -165,7 +165,7 @@ const TimeAdjustmentRecords = ({
                     {
                       type: "select-three",
                       placeholder: "Branch",
-                      name: "employee_id",
+                      name: "branch_id",
                       option: Branches,
                       values: selectedBranch,
                     },

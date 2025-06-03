@@ -7,7 +7,7 @@ import {
 // import AddGraceTimeForm from "./AddGraceTimeForm";
 import { FormatID } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
-import { getTimeAdjustmentData } from "app/hooks/attendance";
+import { getAttendanceAdjustmentData } from "app/hooks/attendance";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
 import { Button } from "components/ui/button";
@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { saveTimeAdjustment } from "app/hooks/attendance";
 
-const TimeAdjustmentDetails = ({
+const AttendanceAdjustmentDetails = ({
   isOpen,
   setIsOpen,
   currentId,
@@ -52,13 +52,14 @@ const TimeAdjustmentDetails = ({
       renderContent: (data) => {
         return (
           <div className="flex flex-wrap justify-between gap-2">
-            <div className="flex flex-col gap-2">
+            <div className="flex justify-between gap-2 item-center flex-wrap">
               <EmployeeOverview
-                id={data.employee_id}
+                id={data.employee}
                 showId={true}
                 showEmail={true}
                 showBranchName={true}
                 showDepartment={true}
+                avatarSize={16}
               />
               <StatusLabel className="ml-10" status={data.status}>
                 {data?.status?.toLowerCase()}
@@ -70,22 +71,27 @@ const TimeAdjustmentDetails = ({
     },
     {
       title: "Adjustment Details",
-      footerTitle: "Created At",
-      footerField: "created_at",
+      footerTitle: "Request At",
+      footerField: "request_datetime",
       field: [
         {
           key: "id",
           label: "Id",
-          formatter: (cell, row) => <FormatID value={cell} prefix={"TA-"} />,
+          formatter: (cell, row) => <FormatID value={cell} prefix={"AA-"} />,
         },
         {
-          key: "date",
+          key: "attendance_date",
           label: "Attendance Date",
           formatter: (cell) => renderDate(cell),
         },
         {
-          key: "checkin_time",
-          label: "Check-In Time",
+          key: "requested_checkin",
+          label: "Requested Check-In",
+          formatter: (cell) => renderDate(cell, "--", "time"),
+        },
+        {
+          key: "requested_checkout",
+          label: "Requested Check-Out",
           formatter: (cell) => renderDate(cell, "--", "time"),
         },
         {
@@ -133,7 +139,7 @@ const TimeAdjustmentDetails = ({
 
   const fetchData = async (id, isMounted) => {
     try {
-      const response = await getTimeAdjustmentData(id);
+      const response = await getAttendanceAdjustmentData(id);
       if (isMounted) {
         return response;
       }
@@ -146,7 +152,7 @@ const TimeAdjustmentDetails = ({
     <NavigationSheetComponent
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      title="Time Adjustment Details"
+      title="Attendandance Adjustment Details"
       currentItem_Id={currentId}
       dataList={DataList}
       reloadData={reloadData}
@@ -157,9 +163,9 @@ const TimeAdjustmentDetails = ({
       editTooltip="Edit Grace Time"
       deleteTooltip="Delete Geace Time"
     >
-      <DetailContent title="Adjustment Time Details" fields={fields} />
+      <DetailContent title="Adjustment Details" fields={fields} />
     </NavigationSheetComponent>
   );
 };
 
-export default TimeAdjustmentDetails;
+export default AttendanceAdjustmentDetails;

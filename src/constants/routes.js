@@ -423,10 +423,10 @@ export const SidebarRoutes = [
           component: <RoleAndPermissions />,
           name: "ROLE_PERMISSIONS",
         },
-        Config.OFFICE_SETTING && {
+        Config.ORGANIZATION && {
           path: "/office-settings",
           component: <OfficeSetting />,
-          name: "OFFICE_SETTING",
+          name: "ORGANIZATION",
         },
         Config.ROLE_PERMISSIONS && {
           path: "/office-settings/role-permission/user-role/add",

@@ -4,7 +4,7 @@ import { EmployeeColumns } from "app/utils/Types/TableColumns";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
 import Header from "../../../components/Header";
 import { FilterInput, SelectInputComponent } from "components/FormControl";
-import { UserRoles, employeeStatus } from "data/Data";
+import { employeeStatus } from "data/Data";
 import { getEmployeeCustomList } from "app/hooks/general";
 import { PageLoader } from "components";
 import Stats from "../../../components/ui/Stats";
@@ -31,6 +31,7 @@ export default function EmployeeManagement() {
   const [selectedRole, setSelectedRole] = useState("");
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
+  const UserRoles = useSelector((state) => state.roles_permissions.user_roles);
   const [ordering, setOrdering] = useState("-id");
 
   const onPageChange = (name, value) => {
