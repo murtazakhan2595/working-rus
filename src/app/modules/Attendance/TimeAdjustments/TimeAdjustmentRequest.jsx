@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { TimeAdjustment } from "app/utils/Types/Attendance";
 import { validateTimeAdjustmentFormSchema } from "app/utils/FormSchema/AttendanceFormSchema";
 import { SheetUI, EmployeeDetailUI } from "components";
@@ -94,7 +93,6 @@ const TimeAdjustmentRequest = ({ id, attendance }) => {
             "Your request of time adjustment has been sent successfully. It will be reviewed shortly.",
           messageType: "Success",
         };
-        setIsOpen(false);
       }
     } catch (error) {
       // Handle errors and rollback form data

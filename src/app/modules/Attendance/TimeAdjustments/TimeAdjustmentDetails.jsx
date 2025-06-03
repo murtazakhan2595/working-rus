@@ -6,12 +6,14 @@ import {
 } from "components";
 // import AddGraceTimeForm from "./AddGraceTimeForm";
 import { FormatID } from "utils/getValuesFromTables";
-import { BranchName } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
 import { getTimeAdjustmentData } from "app/hooks/attendance";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
 import { Button } from "components/ui/button";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { saveTimeAdjustment } from "app/hooks/attendance";
 
 const TimeAdjustmentDetails = ({
   isOpen,
@@ -20,6 +22,29 @@ const TimeAdjustmentDetails = ({
   reloadData = () => {},
   DataList = [],
 }) => {
+  const { id: user_id, role: user_role } = useSelector(
+    (state) => state.user.userProfile
+  );
+
+  const handleClick = async (event, status, id) => {
+    debugger;
+    event.preventDefault();
+    event.stopPropagation();
+    try {
+      const payload = {
+        status: status.toUpperCase(),
+      };
+      const response = await saveTimeAdjustment(payload, id);
+      // return
+      if (response) {
+        toast.success(`Request ${status} Successfully!`);
+        fetchData(id, true);
+      }
+    } catch (error) {
+      // Handle errors and rollback form data
+      console.error(error);
+    }
+  };
   // Define the fields to display
   const fields = [
     {
@@ -32,6 +57,8 @@ const TimeAdjustmentDetails = ({
                 id={data.employee_id}
                 showId={true}
                 showEmail={true}
+                showBranchName={true}
+                showDepartment={true}
               />
               <StatusLabel className="ml-10" status={data.status}>
                 {data?.status?.toLowerCase()}
@@ -81,13 +108,25 @@ const TimeAdjustmentDetails = ({
     {
       customContent: true,
       renderContent: (data) => {
-        if (!data || data.status?.toLowerCase() !== "pending") return null;
-        return (
-          <div className="flex flex-wrap justify-end gap-2 my-5">
-            <Button variant="success">Approve</Button>
-            <Button variant="destructive">Reject</Button>
-          </div>
-        );
+        if (
+          data &&
+          data.status?.toLowerCase() === "pending" &&
+          (data.current_approver === user_id || user_role.includes(1))
+        )
+          return (
+            <div className="flex flex-wrap justify-end gap-2 my-5">
+              <Button
+                variant="success"
+                onClick={(event) =>
+                  handleClick(event, "Approved", data.id)
+                }
+              >
+                Approve
+              </Button>
+              <Button variant="destructive">Reject</Button>
+            </div>
+          );
+        return null;
       },
     },
   ];

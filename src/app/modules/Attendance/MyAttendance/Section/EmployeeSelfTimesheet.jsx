@@ -24,7 +24,6 @@ import { StatusLabel } from "components";
 import { DetailBox } from "components/SheetCardExtension";
 
 export default function EmployeeSelfTimesheet({
-  employeeShift,
   attendance,
   OnBreak,
   disable,
@@ -37,7 +36,6 @@ export default function EmployeeSelfTimesheet({
   const [payableHours, setPayableHours] = useState(
     parseFloat(attendance?.payable_hours) || 0
   );
-  console.log(attendance?.payable_hours, payableHours, "emp_attendance_detail");
   const updateTimer = () => {
     const checkInDate = moment(attendance?.checkin); // Check-in time
     const now = moment(); // Current time
@@ -111,7 +109,7 @@ export default function EmployeeSelfTimesheet({
                     {start_time} - {end_time}
                   </span>
                 ))}
-                valueClassName="text-end"
+                valueClassName="text-end flex flex-col w-fil min-w-[165px]"
                 label="Shift Time"
               />
             )
@@ -328,7 +326,7 @@ const RenderLogInButton = ({
         employee_id: userProfile.id,
         date: moment().format("YYYY-MM-DD"),
       };
-      const response = await saveAttendance(payload, Shift, attendance.id);
+      const response = await saveAttendance(payload, Shift, attendance?.id);
       if (response) {
         toast.success("Shift started");
         reloadData(true);
@@ -341,8 +339,8 @@ const RenderLogInButton = ({
     debugger;
     const checkout = moment().utc().toISOString();
     const payload = {
-      break_duration: attendance.break_duration,
-      checkin: attendance.checkin,
+      break_duration: attendance?.break_duration,
+      checkin: attendance?.checkin,
       id: attendance?.id,
       checkout: checkout,
     };
