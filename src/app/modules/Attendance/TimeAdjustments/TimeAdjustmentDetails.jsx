@@ -26,12 +26,13 @@ const TimeAdjustmentDetails = ({
     (state) => state.user.userProfile
   );
 
-  const handleClick = async (event, status, id) => {
+  const handleClick = async (event, status, id,attendance_id) => {
     event.preventDefault();
     event.stopPropagation();
     try {
       const payload = {
         status: status.toUpperCase(),
+        attendance_id:attendance_id,
       };
       const response = await saveTimeAdjustment(payload, id);
       // return
@@ -117,7 +118,7 @@ const TimeAdjustmentDetails = ({
               <Button
                 variant="success"
                 onClick={(event) =>
-                  handleClick(event, "Approved", data.id)
+                  handleClick(event, "Approved", data.id,data.attendance_id)
                 }
               >
                 Approve

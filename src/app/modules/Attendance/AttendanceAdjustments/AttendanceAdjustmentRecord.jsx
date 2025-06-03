@@ -8,7 +8,7 @@ import {
 } from "src/@/components/ui/tabs";
 import { FilterInput } from "components/FormControl";
 import { getAttendanceAdjustmentListData } from "app/hooks/attendance";
-import { TimeAdjustmentsColumns } from "app/modules/Attendance/Sections/AttendanceTableColumns";
+import { AttendanceAdjustmentsColumns } from "app/modules/Attendance/Sections/AttendanceTableColumns";
 import { CardDescription, CardTitle, CardContent } from "components/ui/card";
 import { PageLoader, TableCustom } from "components";
 
@@ -21,7 +21,7 @@ const AttendanceAdjustmentRecord = ({}) => {
     count: 0,
   });
   const [isloading, setIsLoading] = useState(false);
-  const [filterData, setFilterData] = useState({ });
+  const [filterData, setFilterData] = useState({ statuses: "PENDING" });
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -90,14 +90,12 @@ const AttendanceAdjustmentRecord = ({}) => {
 
   const handleTabChange = (tab) => {
     if (tab === "Requests") {
-      setFilterData((prevFilters) => ({
-        ...prevFilters,
-        status: "PENDING",
+      setFilterData(() => ({
+        statuses: "PENDING",
       }));
     } else if (tab === "Records") {
-      setFilterData((prevFilters) => ({
-        ...prevFilters,
-        status: "APPROVED,REJECTED",
+      setFilterData(() => ({
+        statuses: "APPROVED,REJECTED",
       }));
     }
   };
@@ -145,7 +143,7 @@ const AttendanceAdjustmentRecord = ({}) => {
               <PageLoader />
             ) : (
               <TableCustom
-                columns={TimeAdjustmentsColumns(
+                columns={AttendanceAdjustmentsColumns(
                   activeInnerTab === "Records",
                   fetchData
                 )}

@@ -266,6 +266,53 @@ export const TimeAdjustmentsColumns = (viewMode = false, reloadData) => [
     ),
   },
 ];
+export const AttendanceAdjustmentsColumns = (viewMode = false, reloadData) => [
+  {
+    text: "Employee",
+    dataField: "employee",
+    formatter: (cell) => (
+      <EmployeeOverview
+        id={cell}
+        showId={true}
+        showDepartment={true}
+        showBranchName={true}
+      />
+    ),
+  },
+  {
+    text: "Attendance Date",
+    dataField: "attendance_date",
+    formatter: (cell) => <>{`${renderDate(cell)}`}</>,
+  },
+  {
+    text: "Requested Check-In",
+    dataField: "requested_checkin",
+    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+  },
+  {
+    text: "Requested Check-Out",
+    dataField: "requested_checkout",
+    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+  },
+  {
+    text: "Status",
+    dataField: "status",
+    formatter: (cell) => (
+      <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    ),
+  },
+  {
+    text: "",
+    dataField: "",
+    formatter: (cell, row, dataList) => (
+      <TimeAdjustmentsActions
+        data={row}
+        reloadData={reloadData}
+        TimeAdjustmentList={dataList}
+      />
+    ),
+  },
+];
 
 export const TimeAdjustmentLogsColumns = [
   {

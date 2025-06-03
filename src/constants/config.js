@@ -96,6 +96,7 @@ const Config = {
   ONBOARDING_CHECKLIST: false,
   ROLE_PERMISSIONS:true,
   APPROVAL_HIERARCHY:true,
+  LEAVE_SETUP:true,
 
 };
 

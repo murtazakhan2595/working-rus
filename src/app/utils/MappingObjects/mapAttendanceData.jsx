@@ -100,6 +100,32 @@ export function mapAttendanceData(data, shiftDetails) {
             payload["overtime_hours"] = parseFloat(0).toFixed(2);
           }
         }
+      } else if (key === "second_checkout") {
+        const checkin = moment(payload.second_checkin);
+        payload[key] = data[key];
+        const totalHoursWorked = CalculateTotalWorkingHours(
+          checkin,
+          payload.checkout
+        );
+        const payableHours =
+          parseFloat(payload.payable_hours) +
+          totalHoursWorked -
+          parseFloat(data.break_duration || 0);
+        payload["payable_hours"] = parseFloat(
+          parseFloat(payableHours).toFixed(2)
+        );
+        if (Hours > 0) {
+          if (
+            parseFloat(payload.payable_hours) > parseFloat(payload.total_hours)
+          ) {
+            payload["overtime_hours"] = parseFloat(
+              parseFloat(payload.payable_hours) -
+                parseFloat(payload.total_hours)
+            ).toFixed(2);
+          } else {
+            payload["overtime_hours"] = parseFloat(0).toFixed(2);
+          }
+        }
       } else payload[key] = data[key];
     }
   }

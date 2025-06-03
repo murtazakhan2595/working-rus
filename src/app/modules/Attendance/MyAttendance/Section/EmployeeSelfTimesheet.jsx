@@ -71,7 +71,7 @@ export default function EmployeeSelfTimesheet({
     } else if (OnBreak) {
       updateTimer();
     }
-  }, [attendance, OnBreak]);
+  }, [attendance, OnBreak, today_shift]);
 
   return (
     // if isDashboard is false, then the div will  have border and shadow
@@ -107,7 +107,7 @@ export default function EmployeeSelfTimesheet({
               label="Check-out Time"
             />
           )}
-          {today_shift?.assigned ? (
+          {today_shift?.shift_assigned ? (
             !today_shift?.isOffToday && (
               <DetailBox
                 value={today_shift?.shifts.map(({ start_time, end_time }) => (
@@ -355,9 +355,18 @@ const RenderLogInButton = ({
     const payload = {
       break_duration: attendance?.break_duration,
       checkin: attendance?.checkin,
+      second_checkin: attendance?.second_checkin,
       id: attendance?.id,
-      checkout: checkout,
+      payable_hours: attendance?.payable_hours,
     };
+    if (
+      isSplitShift &&
+      attendance?.second_checkin &&
+      !attendance?.second_checkout
+    )
+      payload.second_checkout = checkout;
+    else if (!attendance?.checkout) payload.checkout = checkout;
+
     const response = await saveAttendance(payload, Shift, attendance?.id);
     if (response) {
       toast.success("Shift ended");

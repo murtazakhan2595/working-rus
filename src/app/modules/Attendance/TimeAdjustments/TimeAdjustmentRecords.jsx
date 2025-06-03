@@ -27,8 +27,8 @@ const TimeAdjustmentRecords = ({
     isBranchView,
     isDepartmentView
   );
-  const Department = GetEmployeeFilteredList("department");
-  const Branches = GetEmployeeFilteredList("branches");
+  const Department = GetCommonFilteredList("department");
+  const Branches = GetCommonFilteredList("branches");
   const [activeInnerTab, setActiveInnerTab] = useState("Requests");
   const [TimeAdjustmentList, setTimeAdjustmentList] = useState({
     results: [],
