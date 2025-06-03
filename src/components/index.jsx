@@ -5,7 +5,7 @@ import EmployeeOverview from "./EmployeeOverview";
 import Table from "./CustomTable";
 import BarChart from "./BarChart";
 import ConfirmationModal from "./ConfirmationModal";
-import { StatusLabel, getStatusVariant } from "./StatusLabel";
+import { StatusLabel, getStatusVariant,StatusList } from "./StatusLabel";
 import ViewOptions from "components/ViewOtions";
 import TableCustom from "./CustomTable";
 import TextUI from "./TextUI";
@@ -53,5 +53,6 @@ export {
   NavigationSheetComponent,
   DetailContent,
   UnauthorizedAccess,
-  CircularActionButtons
+  CircularActionButtons,
+  StatusList
 };

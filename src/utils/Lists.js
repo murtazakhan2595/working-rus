@@ -1,6 +1,7 @@
 import moment from "moment";
 import { Badge } from "components/ui/badge";
 import { lightenColor } from "utils/renderValues";
+import { useSelector } from "react-redux";
 
 /**
  * Generates a dropdown list from an array of items.
@@ -330,7 +331,7 @@ export const ExtractFieldValueFromList = (dataList = [], key = []) => {
 /**
  * Recursively filters a tree, returning only the parts that contain nodes
  * matching any value in selectedLeafs (based on the provided label).
- * 
+ *
  * It includes matching nodes, their ancestors, and optionally their children.
  *
  * @param {Object} node - The current tree node to evaluate.
@@ -338,13 +339,17 @@ export const ExtractFieldValueFromList = (dataList = [], key = []) => {
  * @param {String} label - Key name to match values against (e.g., "id").
  * @returns {Object|null} - Filtered node (with matched children), or null if no match.
  */
-export const FilterTreeBySelectedLeafs = (node = {}, selectedLeafs = [], label = "id") => {
+export const FilterTreeBySelectedLeafs = (
+  node = {},
+  selectedLeafs = [],
+  label = "id"
+) => {
   const children = node.childrens || [];
 
   // Recursively filter children
   const filteredChildren = children
-    .map(child => FilterTreeBySelectedLeafs(child, selectedLeafs, label))
-    .filter(child => child !== null);
+    .map((child) => FilterTreeBySelectedLeafs(child, selectedLeafs, label))
+    .filter((child) => child !== null);
 
   const isMatch = selectedLeafs.includes(node[label]);
 
@@ -360,3 +365,47 @@ export const FilterTreeBySelectedLeafs = (node = {}, selectedLeafs = [], label =
   return null;
 };
 
+export const GetEmployeeFilteredList = (
+  isTeamView = false,
+  adminView = false,
+  isBranchView = false,
+  isDepartmentView = false
+) => {
+  const Employees = useSelector((state) => state.emp.employees);
+  const {
+    branch_id: user_branch,
+    department_name: user_department,
+    id: user_id,
+  } = useSelector((state) => state.emp.user_details);
+  if (!Array.isArray(Employees) || Employees.length === 0) return [];
+  if (adminView && !isTeamView) return Employees;
+  const labelFilter = isTeamView
+    ? "report_to"
+    : isBranchView
+    ? "branch_id"
+    : isDepartmentView
+    ? "department_name"
+    : null;
+
+  const valueFilter = isTeamView
+    ? user_id
+    : isBranchView
+    ? user_branch
+    : isDepartmentView
+    ? user_department
+    : null;
+
+  if (!labelFilter || valueFilter === null || valueFilter === undefined)
+    return [];
+
+  return Employees.filter((employee) => {
+    const employeeValue = employee[labelFilter];
+    if (employeeValue === undefined || employeeValue === null) return false;
+    return employeeValue;
+  });
+};
+
+export const GetCommonFilteredList = (label) => {
+  const List = useSelector((state) => state.common[label]);
+  return List;
+};

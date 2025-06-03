@@ -366,87 +366,116 @@ const generateShiftScheduleLog = async ({
   await saveShiftSchedulesLogs(payload);
 };
 
-export const getMontlyShiftData = async (employee_id) => {
+export const getMontlyShiftData = async (employee_id, default_shift = {}) => {
   if (!employee_id) return [];
-
   try {
+    const today = new Date();
     const datesOfMonth = eachDayOfInterval({
-      start: startOfMonth(new Date()),
-      end: endOfMonth(new Date()), // Only till today
+      start: startOfMonth(today),
+      end: endOfMonth(today),
     });
-    const shiftPromises = datesOfMonth.map((date) =>
-      getEmployeeActiveShift(employee_id, date)
-        .then((res) => {
-          if (!res) return null;
-          const shift = { date: moment(date).format("YYYY-MM-DD") };
-          shift.is_split_shift = Boolean(res.is_split_shift);
-          shift.total_hours = 0;
-          shift.shifts = [];
-          if (res.status === "active") {
-            if (res.is_split_shift) {
-              shift.shifts = [
-                {
-                  start_time: format(
-                    new Date(res.split_shifts[0].start_time),
-                    "hh:mm a"
-                  ),
-                  end_time: format(
-                    new Date(res.split_shifts[0].end_time),
-                    "hh:mm a"
-                  ),
-                },
-                {
-                  start_time: format(
-                    new Date(res.split_shifts[1].start_time),
-                    "hh:mm a"
-                  ),
-                  end_time: format(
-                    new Date(res.split_shifts[1].end_time),
-                    "hh:mm a"
-                  ),
-                },
-              ];
-              const total_hours =
-                CalculateTotalWorkingHours(
-                  res.split_shifts[0].start_time,
-                  res.split_shifts[0].end_time
-                ) +
-                CalculateTotalWorkingHours(
-                  res.split_shifts[1].start_time,
-                  res.split_shifts[1].end_time
-                );
-              shift.total_hours = total_hours;
-            } else {
-              shift.shifts = [
-                {
-                  start_time: format(new Date(res.start_time), "hh:mm a"),
-                  end_time: format(new Date(res.end_time), "hh:mm a"),
-                },
-              ];
-              shift.start_time = res.start_time;
-              shift.end_time = res.end_time;
-              shift.total_hours = CalculateTotalWorkingHours(
-                res.start_time,
-                res.end_time
-              );
-            }
-            shift.status = true;
-          } else if (res.status === "off") {
-            shift.status = false;
-            shift.isOffToday = true;
-            shift.is_weekly_off = res.is_weekly_off || false;
-            if (res.is_weekly_off) {
-              shift.OffLabel = "Weekly Off";
-            }
+
+    const isDefaultShiftValid =
+      typeof default_shift === "object" &&
+      default_shift.start_time &&
+      default_shift.end_time;
+
+    const default_starttime = isDefaultShiftValid ? default_shift.start_time : null;
+    const default_endtime = isDefaultShiftValid ? default_shift.end_time : null;
+    const weekend_shift = default_shift.type === "Weekend";
+
+    const shiftPromises = datesOfMonth.map(async (date) => {
+      const dateStr = moment(date).format("YYYY-MM-DD");
+
+      try {
+        const res = await getEmployeeActiveShift(employee_id, date);
+        if (!res) return null;
+
+        const shift = {
+          date: dateStr,
+          is_split_shift: Boolean(res.is_split_shift),
+          total_hours: 0,
+          shifts: [],
+          assigned: true,
+          status: res.status,
+        };
+
+        const isWeekend = moment(date).day() === 0 || moment(date).day() === 6;
+
+        if (res.status === "off") {
+          shift.status = false;
+          shift.isOffToday = true;
+          shift.is_weekly_off = res.is_weekly_off || false;
+          shift.OffLabel = shift.is_weekly_off ? "Weekly Off" : undefined;
+        } else if (res.status === "active") {
+          shift.isOffToday = false;
+
+          if (res.is_split_shift && Array.isArray(res.split_shifts)) {
+            const [first, second] = res.split_shifts;
+            shift.shifts = [
+              {
+                start_time: format(new Date(first.start_time), "hh:mm a"),
+                end_time: format(new Date(first.end_time), "hh:mm a"),
+              },
+              {
+                start_time: format(new Date(second.start_time), "hh:mm a"),
+                end_time: format(new Date(second.end_time), "hh:mm a"),
+              },
+            ];
+            shift.total_hours =
+              CalculateTotalWorkingHours(first.start_time, first.end_time) +
+              CalculateTotalWorkingHours(second.start_time, second.end_time);
+          } else {
+            shift.shifts = [
+              {
+                start_time: format(new Date(res.start_time), "hh:mm a"),
+                end_time: format(new Date(res.end_time), "hh:mm a"),
+              },
+            ];
+            shift.total_hours = CalculateTotalWorkingHours(res.start_time, res.end_time);
           }
 
-          return shift;
-        })
-        .catch((err) => {
-          console.error(`Error fetching shift for ${date}:`, err);
-          return null;
-        })
-    );
+          shift.status = true;
+        } else if (res.status === "no_shift") {
+          if (!isDefaultShiftValid) {
+            shift.status = false;
+            shift.assigned = false;
+            shift.total_hours = 0;
+            shift.shifts = [];
+            shift.isOffToday = true;
+            shift.is_weekly_off = res.is_weekly_off || false;
+            shift.OffLabel = shift.is_weekly_off ? "Weekly Off" : undefined;
+          } else {
+            if ((weekend_shift && isWeekend) || (!weekend_shift && !isWeekend)) {
+              shift.status = true;
+              shift.shifts = [
+                {
+                  start_time: format(new Date(default_starttime), "hh:mm a"),
+                  end_time: format(new Date(default_endtime), "hh:mm a"),
+                },
+              ];
+              shift.total_hours = CalculateTotalWorkingHours(
+                default_starttime,
+                default_endtime
+              );
+              shift.isOffToday = false;
+            } else {
+              shift.status = false;
+              shift.shifts = [];
+              shift.total_hours = 0;
+              shift.isOffToday = true;
+              shift.OffLabel = "Weekly Off";
+              shift.is_weekly_off = true;
+            }
+          }
+        }
+
+        return shift;
+      } catch (err) {
+        console.error(`Error fetching shift for ${dateStr}:`, err);
+        return null;
+      }
+    });
 
     const shifts = await Promise.all(shiftPromises);
     return shifts.filter(Boolean);

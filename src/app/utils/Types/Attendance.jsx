@@ -1,5 +1,5 @@
 export const Attendance = {
-  id:null,
+  id: null,
   break_duration: null,
   total_hours: null,
   overtime_hours: null,
@@ -8,7 +8,7 @@ export const Attendance = {
   checkout: null,
   date: null,
   is_weekend: false,
-  is_absent: false,
+  is_absent: true,
   is_late: false,
   status: "Present",
   employee_id: null,
@@ -28,6 +28,12 @@ export const TimeAdjustment = {
   reason: null,
   status: "PENDING",
   id: null,
+  approval_logs: null,
+  checkin_time:null,
+  date:null,
+  created_at:null,
+  request: null,
+  employee_id:null,
 };
 export const TimeAdjustmentLogs = {
   employee_id: null,

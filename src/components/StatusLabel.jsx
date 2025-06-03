@@ -8,6 +8,8 @@ import { Badge } from "components/ui/badge";
 import { CircleCheck, CircleDot, X } from "lucide-react";
 import { cn } from "src/@/lib/utils.js";
 import { cva } from "class-variance-authority";
+import { EmployeeName } from "utils/getValuesFromTables";
+import { renderDate } from "utils/renderValues";
 
 const statusVariants = cva("", {
   variants: {
@@ -90,7 +92,7 @@ const StatusLabel = React.forwardRef(
           statusVariants({
             variant: StatusVariant,
           }),
-          "flex items-center",
+          "flex items-center text-capitalize",
           className
         )}
         ref={ref}
@@ -101,7 +103,7 @@ const StatusLabel = React.forwardRef(
         {iconVariant && (
           <StatusIcon status={status} iconVariant={iconVariant} />
         )}
-        {props.children}
+       {props.children}
       </Badge>
     );
   }
@@ -181,28 +183,32 @@ export const StatusCircleLabel = ({ label, status }) => {
   );
 };
 
-export const StatusViewIcon = ({ status }) => {
+export const StatusViewIcon = ({ status, className }) => {
   if (!status) return <></>;
-  const className = "text-[20px] d-inline rounded-full mr-5";
+  const Status = status.toLowerCase();
+  const custonClassName = cn(
+    "text-[20px] d-inline rounded-full mr-5",
+    className
+  );
   const style = { padding: "3px" };
-  if (status === "Approved")
+  if (Status === "approved")
     return (
       <FaCheck
-        className={`${className} bg-[#00C483] text-white`}
+        className={`${custonClassName} bg-[#00C483] text-white`}
         style={style}
       />
     );
-  else if (status === "Rejected")
+  else if (Status === "rejected")
     return (
       <RxCross2
-        className={`${className} bg-[#EA4335] text-white`}
+        className={`${custonClassName} bg-[#EA4335] text-white`}
         style={style}
       />
     );
-  else if (status === "Pending")
+  else if (Status === "pending")
     return (
       <BsCircleFill
-        className={`${className} bg-[#E8E8E8]`}
+        className={`${custonClassName} bg-[#E8E8E8]`}
         style={{
           ...{ style },
           ...{ color: "#D9D9D9", border: "3px solid #E8E8E8" },
@@ -286,6 +292,31 @@ export const JobStatusLabel = ({ label, type }) => {
     >
       {label}
     </Badge>
+  );
+};
+
+export const StatusList = ({ status_list, className }) => {
+  if (!status_list || !Array.isArray(status_list) || status_list.length === 0)
+    return <></>;
+
+  return (
+    <div className={cn("flex flex-col gap-2", className)}>
+      {status_list.map(({ status, approver, time }, index) => {
+        return (
+          <div key={`status-list-${index}`} className="flex">
+            <StatusViewIcon status={status} className="mr-1 mt-1" />
+            <div className="flex flex-col">
+              <span className="text-capitalize">
+                {status.toLowerCase()} By <EmployeeName value={approver} />
+              </span>
+              <span className="text-xs text-neutral-900">
+                ({renderDate(time, "--", "date-time")})
+              </span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 

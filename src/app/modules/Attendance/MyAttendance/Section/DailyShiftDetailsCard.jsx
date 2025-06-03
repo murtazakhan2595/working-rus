@@ -56,13 +56,13 @@ const DailyShiftDetailsCard = ({ isDashboard = false }) => {
       { day: "today", details: emp_attendance_detail.today_shift || {} },
       { day: "tomorrow", details: emp_attendance_detail.tomorrow_shift || {} },
     ]);
-  }, [emp_attendance_detail]);
 
-  console.log(
-    emp_attendance_detail,
-    shiftDetails,
-    "getMonthltShiftDatagetMonthltShiftData"
-  );
+    const offSetCount = parseInt(
+      emp_attendance_detail.monthly_overtime /
+        emp_attendance_detail.monthly_total_hours
+    );
+    setOffsetCount(offSetCount||0);
+  }, [emp_attendance_detail]);
 
   if (loading) {
     return (

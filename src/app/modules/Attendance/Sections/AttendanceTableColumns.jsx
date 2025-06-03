@@ -217,7 +217,7 @@ export const TimeAdjustmentsColumns = (viewMode = false, reloadData) => [
   },
   {
     text: "Check In",
-    dataField: "checkin",
+    dataField: "checkin_time",
     formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
   },
   {
@@ -228,23 +228,19 @@ export const TimeAdjustmentsColumns = (viewMode = false, reloadData) => [
   {
     text: "Status",
     dataField: "status",
-    formatter: (cell) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+    formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
   },
-  ...(!viewMode
-    ? [
-        {
-          text: "",
-          dataField: "",
-          formatter: (cell, row, dataList) => (
-            <TimeAdjustmentsActions
-              data={row}
-              reloadData={reloadData}
-              TimeAdjustmentList={dataList}
-            />
-          ),
-        },
-      ]
-    : []),
+  {
+    text: "",
+    dataField: "",
+    formatter: (cell, row, dataList) => (
+      <TimeAdjustmentsActions
+        data={row}
+        reloadData={reloadData}
+        TimeAdjustmentList={dataList}
+      />
+    ),
+  },
 ];
 
 export const TimeAdjustmentLogsColumns = [
@@ -266,7 +262,7 @@ export const TimeAdjustmentLogsColumns = [
   {
     text: "Status",
     dataField: "status",
-    formatter: (cell) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+    formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
   },
   {
     text: "",

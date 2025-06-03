@@ -4,6 +4,7 @@ import TimeAdjustmentRecords from "./TimeAdjustmentRecords";
 import TimeAdjustmentsActions from "./TimeAdjustmentsActions";
 import TimeAdjustmentsHistory from "./TimeAdjustmentsHistory";
 import TimeAdjustmentHistoryDetails from "./TimeAdjustmentHistoryDetails";
+import TimeAdjustmentDetails from "./TimeAdjustmentDetails";
 export {
   TimeAdjustmentRequest,
   TimeAdjustments,
@@ -11,4 +12,5 @@ export {
   TimeAdjustmentsActions,
   TimeAdjustmentsHistory,
   TimeAdjustmentHistoryDetails,
+  TimeAdjustmentDetails,
 };

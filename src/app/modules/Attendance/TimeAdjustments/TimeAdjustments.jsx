@@ -30,7 +30,7 @@ const TimeAdjustments = ({ activeView = "Time Adjustments" }) => {
       ...(isViewTAPermitted || isViewBTAPermitted || isViewDTAermitted
         ? ["Time Adjustments"]
         : []),
-      ...(isViewLogPermitted ? ["History & Logs"] : []),
+      // ...(isViewLogPermitted ? ["History & Logs"] : []),
     ];
   }, [
     isViewDTAermitted,
@@ -67,7 +67,12 @@ const TimeAdjustments = ({ activeView = "Time Adjustments" }) => {
         </div>
         <Card>
           <TabsContent value="Time Adjustments">
-            <TimeAdjustmentRecords />
+            <TimeAdjustmentRecords
+              isTeamView={false}
+              isDepartmentView={isViewDTAermitted}
+              isBranchView={isViewBTAPermitted}
+              adminView = {isViewTAPermitted}
+            />
           </TabsContent>
           <TabsContent value="History & Logs">
             <TimeAdjustmentsHistory />

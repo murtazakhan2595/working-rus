@@ -31,6 +31,9 @@ export default function EmployeeSelfTimesheet({
   reloadData,
   isDashboard = false,
 }) {
+  const { today_shift } = useSelector(
+    (state) => state.attendance.attendance_details
+  );
   const [payableHours, setPayableHours] = useState(
     parseFloat(attendance?.payable_hours) || 0
   );
@@ -89,42 +92,54 @@ export default function EmployeeSelfTimesheet({
             valueClassName="text-end"
             label="Check-in Time"
           />
-          <DetailBox
-            value={
-              attendance?.checkout
-                ? renderDate(attendance?.checkout, "--", "time")
-                : "Still Working"
-            }
-            valueClassName="text-end"
-            label="Check-out Time"
-          />
-          <DetailBox
-            value={
-              employeeShift?.shiftStartTime && employeeShift?.shiftEndTime ? (
-                <span>
-                  {employeeShift.shiftStartTime} -{employeeShift.shiftEndTime}
-                </span>
-              ) : (
-                "No shift assigned"
-              )
-            }
-            valueClassName="text-end"
-            label="Shift Time"
-          />
-          <DetailBox
-            value={
-              attendance?.status ? (
-                <StatusLabel status={attendance?.status}>
-                  {attendance?.status}
-                </StatusLabel>
-              ) : (
-                "Check-in for today!"
-              )
-            }
-            label="Attendance Status"
-            labelClassName="w-50"
-            valueClassName="justify-end flex"
-          />
+          {attendance?.checkin && (
+            <DetailBox
+              value={
+                attendance?.checkout
+                  ? renderDate(attendance?.checkout, "--", "time")
+                  : "Still Working"
+              }
+              valueClassName="text-end"
+              label="Check-out Time"
+            />
+          )}
+          {today_shift?.assigned ? (
+            !today_shift?.isOffToday && (
+              <DetailBox
+                value={today_shift?.shifts.map(({ start_time, end_time }) => (
+                  <span>
+                    {start_time} - {end_time}
+                  </span>
+                ))}
+                valueClassName="text-end"
+                label="Shift Time"
+              />
+            )
+          ) : (
+            <DetailBox
+              value={"No shift assigned"}
+              valueClassName="text-end"
+              label="Shift Time"
+            />
+          )}
+          {attendance?.status && (
+            <DetailBox
+              value={
+                today_shift?.isOffToday ? (
+                  <StatusLabel variant="info">
+                    {today_shift?.OffLabel}
+                  </StatusLabel>
+                ) : (
+                  <StatusLabel status={attendance?.status}>
+                    {attendance?.status}
+                  </StatusLabel>
+                )
+              }
+              label="Attendance Status"
+              labelClassName="w-50"
+              valueClassName="justify-end flex"
+            />
+          )}
           <div className="flex flex-row flex-wrap items-center justify-center mt-4">
             <div className="relative">
               <svg className="w-32 h-32">
@@ -162,30 +177,28 @@ export default function EmployeeSelfTimesheet({
           </div>
           <div className="flex justify-between mt-4">
             <div>
-              {/* <div className="text-slate-1200">
-                Break ({formatDuration(attendance?.break_duration)})
-              </div> */}
               <div>
                 <RenderBreakButton
                   disable={disable}
                   attendance={attendance}
-                  employeeShift={employeeShift}
+                  Shift={today_shift}
                   OnBreak={OnBreak}
                   reloadData={reloadData}
                 />
               </div>
             </div>
             <div>
-              {/* <div className="text-slate-1200">Overtime</div>
-              <div>{formatDuration(attendance?.overtime_hours) ?? "0"}</div> */}
-              <div>
+              <div className="flex flex-col gap-2">
                 <RenderLogInButton
                   disable={disable}
                   attendance={attendance}
-                  employeeShift={employeeShift}
+                  Shift={today_shift}
                   OnBreak={OnBreak}
                   reloadData={reloadData}
                 />
+                {attendance?.status === "Late" && (
+                  <TimeAdjustmentRequest attendance={attendance} />
+                )}
               </div>
             </div>
           </div>
@@ -198,7 +211,7 @@ export default function EmployeeSelfTimesheet({
 const RenderBreakButton = ({
   disable,
   attendance,
-  employeeShift,
+  Shift,
   OnBreak,
   reloadData = () => {},
 }) => {
@@ -206,8 +219,7 @@ const RenderBreakButton = ({
   if (attendance && attendance?.checkout) {
     return null;
   }
-  if (!employeeShift?.shiftStartTime || !employeeShift?.shiftEndTime)
-    return null;
+  if (!Shift?.shifts || Shift?.shifts?.length === 0) return null;
 
   const disableBreakButton = disable || !attendance?.checkin;
 
@@ -289,7 +301,7 @@ const RenderBreakButton = ({
 const RenderLogInButton = ({
   disable,
   attendance,
-  employeeShift,
+  Shift,
   OnBreak,
   reloadData = () => {},
 }) => {
@@ -302,8 +314,7 @@ const RenderLogInButton = ({
   if (attendance && attendance?.checkout) {
     return null;
   }
-  if (!employeeShift?.shiftStartTime || !employeeShift?.shiftEndTime)
-    return null;
+  if (!Shift?.shifts || Shift?.shifts?.length === 0) return null;
   const startShift = async () => {
     if (attendance && attendance?.checkout) {
       toast.success("Shift already ended");
@@ -311,28 +322,13 @@ const RenderLogInButton = ({
     }
     if (!attendance) {
       const checkInTime = moment().utc().toISOString();
-      const checkInMoment = moment(checkInTime);
-      const shiftStartMoment = moment(employeeShift.starttime);
-      // Extract only hours and minutes for both times
-      const checkInTimeOnly = moment.utc(
-        `${checkInMoment.format("HH:mm")}`,
-        "HH:mm"
-      );
-      const shiftStartTimeOnly = moment.utc(
-        `${shiftStartMoment.format("HH:mm")}`,
-        "HH:mm"
-      );
-
       // Compare time only
-      const is_late = checkInTimeOnly.isAfter(shiftStartTimeOnly);
       const payload = {
         checkin: checkInTime,
-        status: is_late ? "Late" : "Present",
-        is_late: is_late,
         employee_id: userProfile.id,
         date: moment().format("YYYY-MM-DD"),
       };
-      const response = await saveAttendance(payload, user_details);
+      const response = await saveAttendance(payload, Shift, attendance.id);
       if (response) {
         toast.success("Shift started");
         reloadData(true);
@@ -342,9 +338,11 @@ const RenderLogInButton = ({
   };
 
   const endShift = async () => {
+    debugger;
     const checkout = moment().utc().toISOString();
     const payload = {
-      ...attendance,
+      break_duration: attendance.break_duration,
+      checkin: attendance.checkin,
       id: attendance?.id,
       checkout: checkout,
     };
@@ -394,12 +392,6 @@ const RenderLogInButton = ({
             />
           )}
         </>
-      )}
-      {attendance?.status === "Late" && (
-        <TimeAdjustmentRequest
-          employee_id={userProfile.id}
-          attendance={attendance}
-        />
       )}
     </div>
   );

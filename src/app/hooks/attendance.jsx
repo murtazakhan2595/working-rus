@@ -1,6 +1,6 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
-import { HandleLogout } from "./general";
+import { HandleLogout, getCurrentRequestApprover } from "./general";
 import {
   mapAttendanceData,
   mapShiftData,
@@ -8,6 +8,7 @@ import {
   mapEmployeeAttendanceDetail,
   mapAttendanceAdjustmentPayloadData,
   mapAttendanceAdjustmentListData,
+  mapTimeAdjustmentData,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
@@ -186,13 +187,10 @@ const getAttendanceSummary = async (payload) => {
   }
 };
 
-export const saveAttendance = async (payload, userDetails, id) => {
-  const shift_id = userDetails?.shift_assignment;
+export const saveAttendance = async (payload, shift_details, id) => {
   const attendanceId = id || payload?.id;
   try {
-    const shift = await getShiftById(shift_id);
-    const finalPayload = mapAttendanceData(payload, shift);
-
+    const finalPayload = mapAttendanceData(payload, shift_details);
     const url = attendanceId
       ? `${baseUrl}/attendance/${attendanceId}/` // Use id if updating
       : `${baseUrl}/attendance/`; // No id means create new
@@ -588,6 +586,27 @@ export const getTimeAdjustmentListData = async (payload) => {
   }
 };
 
+export const getTimeAdjustmentData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/time-adjustments/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = await mapTimeAdjustmentData(response.data);
+      const currentapprover = await getCurrentRequestApprover(
+        ResponseData.request
+      );
+      return { ...ResponseData, ...currentapprover };
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
 export const saveTimeAdjustment = async (payload, id) => {
   const timeAdjustmentId = id || payload?.id;
   try {
@@ -627,12 +646,15 @@ export const getEmployeeAttendanceDetails = async (employee_id) => {
           headers: headers(),
         }
       );
-      const MonthlytShiftData = await getMontlyShiftData(employee_id);
+      const ResponseData = response.data;
+      const MonthlytShiftData = await getMontlyShiftData(
+        employee_id,
+        ResponseData.default_shift
+      );
       const WeeklyShiftData = await getThisWeekShiftData(MonthlytShiftData);
-      // console.log(MonthlytShiftData, "getMonthltShiftDatagetMonthltShiftData");
       if (response) {
         const emp_attendance_data = await mapEmployeeAttendanceDetail({
-          ...response.data,
+          ...ResponseData,
           monthly_shifts: MonthlytShiftData,
           weekly_shifts: WeeklyShiftData,
         });
