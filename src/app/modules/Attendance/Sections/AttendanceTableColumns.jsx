@@ -228,7 +228,7 @@ export const TimeAdjustmentsColumns = (viewMode = false, reloadData) => [
   {
     text: "Status",
     dataField: "status",
-    formatter: (cell) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+    formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
   },
   {
     text: "",
@@ -262,7 +262,7 @@ export const TimeAdjustmentLogsColumns = [
   {
     text: "Status",
     dataField: "status",
-    formatter: (cell) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+    formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
   },
   {
     text: "",

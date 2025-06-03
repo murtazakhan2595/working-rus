@@ -34,7 +34,7 @@ const TimeAdjustmentDetails = ({
                 showEmail={true}
               />
               <StatusLabel className="ml-10" status={data.status}>
-                {data.status}
+                {data?.status?.toLowerCase()}
               </StatusLabel>
             </div>
           </div>

@@ -365,9 +365,44 @@ export const FilterTreeBySelectedLeafs = (
   return null;
 };
 
-export const GetEmployeeFilteredList = () => {
+export const GetEmployeeFilteredList = (
+  isTeamView = false,
+  adminView = false,
+  isBranchView = false,
+  isDepartmentView = false
+) => {
   const Employees = useSelector((state) => state.emp.employees);
-  return Employees;
+  const {
+    branch_id: user_branch,
+    department_name: user_department,
+    id: user_id,
+  } = useSelector((state) => state.emp.user_details);
+  if (!Array.isArray(Employees) || Employees.length === 0) return [];
+  if (adminView && !isTeamView) return Employees;
+  const labelFilter = isTeamView
+    ? "report_to"
+    : isBranchView
+    ? "branch_id"
+    : isDepartmentView
+    ? "department_name"
+    : null;
+
+  const valueFilter = isTeamView
+    ? user_id
+    : isBranchView
+    ? user_branch
+    : isDepartmentView
+    ? user_department
+    : null;
+
+  if (!labelFilter || valueFilter === null || valueFilter === undefined)
+    return [];
+
+  return Employees.filter((employee) => {
+    const employeeValue = employee[labelFilter];
+    if (employeeValue === undefined || employeeValue === null) return false;
+    return employeeValue;
+  });
 };
 
 export const GetCommonFilteredList = (label) => {

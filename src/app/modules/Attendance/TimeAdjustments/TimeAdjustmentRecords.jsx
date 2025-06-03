@@ -15,8 +15,18 @@ import { PageLoader, TableCustom } from "components";
 import { GetEmployeeFilteredList, GetCommonFilteredList } from "utils/Lists";
 const innerTabClassName =
   "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
-const TimeAdjustmentRecords = ({}) => {
-  const Employees = GetEmployeeFilteredList();
+const TimeAdjustmentRecords = ({
+  isTeamView = false,
+  isDepartmentView = false,
+  isBranchView = false,
+  adminView = false,
+}) => {
+  const Employees = GetEmployeeFilteredList(
+    isTeamView,
+    adminView,
+    isBranchView,
+    isDepartmentView
+  );
   const Department = GetEmployeeFilteredList("department");
   const Branches = GetEmployeeFilteredList("branches");
   const [activeInnerTab, setActiveInnerTab] = useState("Requests");
@@ -93,11 +103,11 @@ const TimeAdjustmentRecords = ({}) => {
 
   const handleTabChange = (tab) => {
     if (tab === "Requests") {
-      setFilterData((prevFilters) => ({
+      setFilterData(() => ({
         statuses: "PENDING",
       }));
     } else if (tab === "Records") {
-      setFilterData((prevFilters) => ({
+      setFilterData(() => ({
         statuses: "APPROVED,REJECTED",
       }));
     }
@@ -139,20 +149,28 @@ const TimeAdjustmentRecords = ({}) => {
                 option: Employees,
                 values: selectedEmployee,
               },
-              {
-                type: "select-two",
-                placeholder: "Department",
-                name: "employee_id",
-                option: Department,
-                values: selectedDepartment,
-              },
-              {
-                type: "select-three",
-                placeholder: "Branch",
-                name: "employee_id",
-                option: Branches,
-                values: selectedBranch,
-              },
+              ...(adminView || isBranchView
+                ? [
+                    {
+                      type: "select-two",
+                      placeholder: "Department",
+                      name: "employee_id",
+                      option: Department,
+                      values: selectedDepartment,
+                    },
+                  ]
+                : []),
+              ...(adminView || isDepartmentView
+                ? [
+                    {
+                      type: "select-three",
+                      placeholder: "Branch",
+                      name: "employee_id",
+                      option: Branches,
+                      values: selectedBranch,
+                    },
+                  ]
+                : []),
               ...(activeInnerTab === "Records"
                 ? [
                     {

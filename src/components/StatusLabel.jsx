@@ -92,7 +92,7 @@ const StatusLabel = React.forwardRef(
           statusVariants({
             variant: StatusVariant,
           }),
-          "flex items-center",
+          "flex items-center text-capitalize",
           className
         )}
         ref={ref}
@@ -103,7 +103,7 @@ const StatusLabel = React.forwardRef(
         {iconVariant && (
           <StatusIcon status={status} iconVariant={iconVariant} />
         )}
-        {props.children}
+       {props.children}
       </Badge>
     );
   }
