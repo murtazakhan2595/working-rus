@@ -104,16 +104,38 @@ export const MyAttendanceColumn = (reload) => [
   {
     text: "Check In",
     dataField: "checkin",
-    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+    formatter: (cell, row) => (
+      <div className="flex-col flex gap-1">
+        <span>{moment(cell).format("h:mm A")}</span>
+        <span>
+          {row.second_checkin
+            ? moment(row.second_checkin).format("h:mm A")
+            : ""}
+        </span>
+      </div>
+    ),
   },
   {
     text: "Check Out",
     dataField: "checkout",
     formatter: (cell, row) => {
-      return cell ? (
-        <span>{moment(cell).format("h:mm A")}</span>
-      ) : (
-        getCheckoutTime(row.checkin, cell)
+      return (
+        <div className="flex-col flex gap-2">
+          {cell ? (
+            <span>{moment(cell).format("h:mm A")}</span>
+          ) : (
+            getCheckoutTime(row.checkin, cell)
+          )}
+          {row.second_checkin ? (
+            row.second_checkout ? (
+              <span>{moment(row.second_checkout).format("h:mm A")}</span>
+            ) : (
+              getCheckoutTime(row.second_checkin, row.second_checkout)
+            )
+          ) : (
+            ""
+          )}
+        </div>
       );
     },
   },
@@ -228,7 +250,9 @@ export const TimeAdjustmentsColumns = (viewMode = false, reloadData) => [
   {
     text: "Status",
     dataField: "status",
-    formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
+    formatter: (cell) => (
+      <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    ),
   },
   {
     text: "",
@@ -262,7 +286,9 @@ export const TimeAdjustmentLogsColumns = [
   {
     text: "Status",
     dataField: "status",
-    formatter: (cell) => <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>,
+    formatter: (cell) => (
+      <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    ),
   },
   {
     text: "",

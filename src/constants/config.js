@@ -88,7 +88,7 @@ const Config = {
   //-------------OFFICE_SETTING-----------
   OFFICE_SETTING: true,
   //Sub Modules
-  ORGANIZATION: false,
+  ORGANIZATION: true,
   DEPARTMENTS: false,
   DESIGNATIONS: false,
   BRANCHES: false,

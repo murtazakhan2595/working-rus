@@ -60,12 +60,7 @@ const generateMenuItems = (moduleName, icon, moduleTree) => {
         route?.path || "#",
         currentNodeTree.name,
         icon,
-        moduleName === "OFFICE_SETTING"
-          ? [
-              ...getSubModuleMenuList(currentNodeTree),
-              createMenu('/office-settings', 'Office Setting'),
-            ]
-          : getSubModuleMenuList(currentNodeTree)
+        getSubModuleMenuList(currentNodeTree)
       ),
     ],
   };

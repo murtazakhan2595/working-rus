@@ -21,7 +21,7 @@ export function mapShiftData(data) {
   return shiftDetails;
 }
 export function mapAttendanceData(data, shiftDetails) {
-  const [firstShift, secondShift] = shiftDetails?.shifts||[];
+  const [firstShift, secondShift] = shiftDetails?.shifts || [];
   const Hours = shiftDetails.total_hours;
   // Initialize an empty payload object
   const payload = { total_hours: Hours };
@@ -38,6 +38,26 @@ export function mapAttendanceData(data, shiftDetails) {
         payload["total_hours"] = Hours;
       } else if (key === "checkin") {
         const shiftStartTime = firstShift.start_time;
+        const checkInTime = moment(data[key]);
+        payload[key] = data[key];
+        if (shiftDetails) {
+          payload.is_absent = false;
+        }
+        payload.is_weekend = [0, 6].includes(checkInTime.day());
+        // Assume shiftDetails.start_time and end_time are time strings like "09:00 AM"
+        const shiftDate = checkInTime.clone().startOf("day"); // Today's date (midnight)
+        // Combine date with shift time to make full datetime
+        const startTime = moment.utc(
+          `${shiftDate.format("YYYY-MM-DD")} ${shiftStartTime}`,
+          "YYYY-MM-DD hh:mm A"
+        );
+        // Now check if check-in is after the shift start
+        const isLate = checkInTime.isAfter(startTime);
+        payload["status"] = isLate ? "Late" : "Present";
+        payload["is_late"] = isLate;
+        payload["is_absent"] = false;
+      } else if (key === "second_checkin") {
+        const shiftStartTime = secondShift.start_time;
         const checkInTime = moment(data[key]);
         payload[key] = data[key];
         if (shiftDetails) {

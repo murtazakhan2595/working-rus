@@ -30,7 +30,11 @@ export default function EmployeeSelfTimesheet({
     parseFloat(attendance?.payable_hours) || 0
   );
   const updateTimer = () => {
-    const checkInDate = moment(attendance?.checkin); // Check-in time
+    const isSplitShit = today_shift?.is_split_shift;
+    const checkInDate =
+      isSplitShit && attendance?.second_checkin
+        ? moment(attendance?.second_checkin)
+        : moment(attendance?.checkin); // Check-in time
     const now = moment(); // Current time
 
     // Parse break duration (in hours) and convert to milliseconds
@@ -47,16 +51,25 @@ export default function EmployeeSelfTimesheet({
   };
 
   useEffect(() => {
-    if (!OnBreak && attendance?.checkin && !attendance?.checkout) {
-      updateTimer(); // Initial update
-
-      const interval = setInterval(updateTimer, 1000); // Update every second
-
-      return () => clearInterval(interval); // Cleanup on unmount
+    const isSplitShit = today_shift?.is_split_shift;
+    if (!OnBreak) {
+      if (attendance.checkin && !attendance.checkout) {
+        updateTimer(isSplitShit); // Initial update
+        const interval = setInterval(updateTimer, 1000); // Update every second
+        return () => clearInterval(interval); // Cleanup on unmount
+      } else if (
+        isSplitShit &&
+        attendance.second_checkin &&
+        !attendance.second_checkout
+      ) {
+        updateTimer(isSplitShit); // Initial update
+        const interval = setInterval(updateTimer, 1000); // Update every second
+        return () => clearInterval(interval); // Cleanup on unmount
+      } else {
+        setPayableHours(parseFloat(attendance?.payable_hours) || 0);
+      }
     } else if (OnBreak) {
       updateTimer();
-    } else {
-      setPayableHours(parseFloat(attendance?.payable_hours) || 0);
     }
   }, [attendance, OnBreak]);
 
@@ -206,13 +219,17 @@ const RenderBreakButton = ({
   OnBreak,
   reloadData = () => {},
 }) => {
+  const isSplitShift = Shift?.is_split_shift;
   const userProfile = useSelector((state) => state.user.userProfile);
-  if (attendance && attendance?.checkout) {
-    return null;
-  }
+  if (isSplitShift && attendance && attendance?.second_checkout) return null;
+  if (!isSplitShift && attendance && attendance?.checkout) return null;
+
   if (!Shift?.shifts || Shift?.shifts?.length === 0) return null;
 
-  const disableBreakButton = disable || !attendance?.checkin;
+  const disableBreakButton =
+    disable ||
+    !attendance?.checkin ||
+    (isSplitShift && !attendance?.second_checkin);
 
   const startBreak = async () => {
     const startTime = moment().utc().toISOString();
@@ -296,36 +313,41 @@ const RenderLogInButton = ({
   OnBreak,
   reloadData = () => {},
 }) => {
+  const isSplitShift = Shift?.is_split_shift;
   const userProfile = useSelector((state) => state.user.userProfile);
-  const user_details = useSelector((state) => state.emp.user_details);
   const [showCheckoutAlert, setShowCheckoutAlert] = useState(false);
   const handleCheckoutClick = () => {
     setShowCheckoutAlert(true);
   };
-  if (attendance && attendance?.checkout) {
-    return null;
-  }
+  if (isSplitShift && attendance && attendance?.second_checkout) return null;
+  if (!isSplitShift && attendance && attendance?.checkout) return null;
+
   if (!Shift?.shifts || Shift?.shifts?.length === 0) return null;
   const startShift = async () => {
-    if (attendance && attendance?.checkout) {
+    if (attendance && attendance?.checkout && !isSplitShift) {
       toast.success("Shift already ended");
       return;
     }
-    if (!attendance) {
-      const checkInTime = moment().utc().toISOString();
-      // Compare time only
-      const payload = {
-        checkin: checkInTime,
-        employee_id: userProfile.id,
-        date: moment().format("YYYY-MM-DD"),
-      };
-      const response = await saveAttendance(payload, Shift, attendance?.id);
-      if (response) {
-        toast.success("Shift started");
-        reloadData(true);
-      }
+    if (attendance && attendance?.second_checkout && isSplitShift) {
+      toast.success("Shift already ended");
       return;
     }
+    const checkInTime = moment().utc().toISOString();
+    // Compare time only
+    const payload = {
+      employee_id: userProfile.id,
+      date: moment().format("YYYY-MM-DD"),
+    };
+    if (isSplitShift && attendance?.checkin && !attendance?.second_checkin)
+      payload.second_checkin = checkInTime;
+    else if (!isSplitShift && !attendance?.checkin)
+      payload.checkin = checkInTime;
+    const response = await saveAttendance(payload, Shift, attendance?.id);
+    if (response) {
+      toast.success("Shift started");
+      reloadData(true);
+    }
+    return;
   };
 
   const endShift = async () => {
@@ -336,7 +358,7 @@ const RenderLogInButton = ({
       id: attendance?.id,
       checkout: checkout,
     };
-    const response = await saveAttendance(payload, user_details);
+    const response = await saveAttendance(payload, Shift, attendance?.id);
     if (response) {
       toast.success("Shift ended");
       reloadData(true);
@@ -346,9 +368,12 @@ const RenderLogInButton = ({
   const disableCheckOutButton = OnBreak || disable;
   const disableCheckInButton = disable;
   // If attendance exists and not on break, show Pause and Stop
+
+  const showCheckInButton =
+    !attendance?.checkin || (isSplitShift && !attendance?.second_checkin);
   return (
     <div className="flex flex-col gap-3">
-      {!attendance?.checkin ? (
+      {showCheckInButton ? (
         <Button
           variant="default"
           size="sm"
