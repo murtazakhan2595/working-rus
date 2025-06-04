@@ -14,11 +14,8 @@ import {
 } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import { PageLoader, UnauthorizedAccess } from "components";
-import { UpdateEmployeeAttendance } from "app/modules/Attendance/Sections";
-import { calculateBreak } from "app/hooks/attendance";
+import { AttendanceUpdateRequest } from "app/modules/Attendance";
 import { getBreakStatus } from "app/hooks/attendance";
-import { endBreak, getShiftById } from "app/hooks/attendance";
-import { getStats, employeeData } from "app/hooks/attendance";
 import TableCustom from "components/CustomTable";
 import { MyAttendanceColumn } from "app/modules/Attendance/Sections/AttendanceTableColumns";
 import { Button } from "components/ui/button";
@@ -35,7 +32,6 @@ const Attendance = () => {
   const canViewAttendance = HasAccess("VIEW_ATTENDANCE");
   const canUpdateAttendance = HasAccess("UPDATE_ATTENDANCE_REQUEST");
   const canDownloadReport = HasAccess("VIEW_ATTENDANCE"); // Using same permission for download
-  const [openUpdateAttendance, setOpenUpdateAttendance] = useState(false);
   const [attendance, setAttendance] = useState(null);
   const navigate = useNavigate();
   const [attendanceData, setAttendanceData] = useState([]);
@@ -247,16 +243,7 @@ const Attendance = () => {
                 }}
               />
             )}
-            {canUpdateAttendance && (
-              <Button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setOpenUpdateAttendance(true);
-                }}
-              >
-                Update Attendance
-              </Button>
-            )}
+            {canUpdateAttendance && <AttendanceUpdateRequest />}
             {canDownloadReport && canViewAttendance && (
               <Button variant="outline" onClick={downloadAttendance}>
                 Monthly Report
@@ -284,16 +271,6 @@ const Attendance = () => {
           </CardContent>
         </Card>
       </div>
-      {openUpdateAttendance && (
-        <UpdateEmployeeAttendance
-          isOpen={openUpdateAttendance}
-          isEmployee={true}
-          setIsOpen={() => {
-            setOpenUpdateAttendance(false);
-            getAttendanceList(true);
-          }}
-        />
-      )}
     </>
   );
 };

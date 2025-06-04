@@ -10,11 +10,14 @@ import moment from "moment";
 export function mapShiftData(data) {
   const shiftDetails = Object.keys(Shift).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
-      if (key === "starttime")
-        acc["shiftStartTime"] = moment(data[key]).format("hh:mm A");
-      if (key === "endtime")
-        acc["shiftEndTime"] = moment(data[key]).format("hh:mm A");
-      acc[key] = data[key];
+      if (key === "starttime") {
+        acc["start_time"] = moment(data[key]);
+        acc[key] = moment(data[key]).format('"hh:mm A"');
+      }
+      if (key === "endtime") {
+        acc["end_time"] = moment(data[key]);
+        acc[key] = moment(data[key]).format('"hh:mm A"');
+      } else acc[key] = data[key];
     }
     return acc;
   }, {});
@@ -222,7 +225,11 @@ export async function mapAttendanceAdjustmentData(data) {
       if (key === "approval_logs") {
         const approver_logs = data[key] || [];
         const logs_list = approver_logs
-          .filter((log) => log.action_type !== "CREATED" || log.action_type!=="REQUEST_CREATED")
+          .filter(
+            (log) =>
+              log.action_type !== "CREATED" ||
+              log.action_type !== "REQUEST_CREATED"
+          )
           .map((log) => ({
             status: log.action_type,
             approver: log.changed_by,

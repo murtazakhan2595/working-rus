@@ -17,6 +17,7 @@ import {
   AttendanceAdjustmentHistory,
   AttendanceAdjustmentActions,
   AttendanceAdjustmentDetails,
+  AttendanceUpdateRequest,
 } from "./AttendanceAdjustments";
 export {
   Attendance,
@@ -35,4 +36,5 @@ export {
   AttendanceAdjustmentHistory,
   AttendanceAdjustmentActions,
   AttendanceAdjustmentDetails,
+  AttendanceUpdateRequest,
 };

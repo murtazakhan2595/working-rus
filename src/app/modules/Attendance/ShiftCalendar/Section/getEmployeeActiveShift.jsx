@@ -38,6 +38,7 @@ const GetEmployeeActiveShift = async (
       shift_assigned: true,
       status: false,
       is_weekly_off: false,
+          isOffToday: false,
     };
 
     // 1. Fetch approved custom schedule
