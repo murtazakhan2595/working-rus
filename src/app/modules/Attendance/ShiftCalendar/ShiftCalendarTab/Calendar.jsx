@@ -126,8 +126,12 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
       const dayName = currentDate.format("ddd").toLowerCase();
 
       if (shortWeekdays.includes(dayName)) {
-        const startTime = moment(shiftDetails.starttime).format("HH:mm");
-        const endTime = moment(shiftDetails.endtime).format("HH:mm");
+        const startTime = moment(
+          shiftDetails.starttime.replace("Z", "")
+        ).format("HH:mm");
+        const endTime = moment(shiftDetails.endtime.replace("Z", "")).format(
+          "HH:mm"
+        );
 
         events.push({
           title: `${shiftDetails.name} (${startTime} - ${endTime})`,
@@ -243,8 +247,10 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
     while (currentDate.isSameOrBefore(endOfMonth)) {
       // Skip weekends for default org shifts (you can modify this logic)
       if (currentDate.day() !== 0 && currentDate.day() !== 6) {
-        const startTime = moment(shift.starttime).format("HH:mm");
-        const endTime = moment(shift.endtime).format("HH:mm");
+        const startTime = moment(shift.starttime.replace("Z", "")).format(
+          "HH:mm"
+        );
+        const endTime = moment(shift.endtime.replace("Z", "")).format("HH:mm");
 
         events.push({
           title: `${shift.name} (${startTime} - ${endTime})`,

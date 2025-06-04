@@ -93,13 +93,12 @@ export const getChangeRequestComparison = async (
           )
         ) {
           if (schedule.is_org_based && schedule.shift_details) {
-            // Organization-based schedule
-            const startTime = moment(schedule.shift_details.starttime).format(
-              "HH:mm"
-            );
-            const endTime = moment(schedule.shift_details.endtime).format(
-              "HH:mm"
-            );
+            const startTime = moment(
+              schedule.shift_details.starttime.replace("Z", "")
+            ).format("HH:mm");
+            const endTime = moment(
+              schedule.shift_details.endtime.replace("Z", "")
+            ).format("HH:mm");
             originalShift = `${startTime}-${endTime}`;
             originalShiftSource = "org_schedule";
           } else if (
@@ -126,8 +125,12 @@ export const getChangeRequestComparison = async (
         const dayOfWeek = current.day();
         // Assuming direct shifts apply Mon-Fri (you can adjust this logic)
         if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-          const startTime = moment(directShift.starttime).format("HH:mm");
-          const endTime = moment(directShift.endtime).format("HH:mm");
+          const startTime = moment(
+            directShift.starttime.replace("Z", "")
+          ).format("HH:mm");
+          const endTime = moment(directShift.endtime.replace("Z", "")).format(
+            "HH:mm"
+          );
           originalShift = `${startTime}-${endTime}`;
           originalShiftSource = "direct_assignment";
         }
