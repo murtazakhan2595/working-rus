@@ -104,6 +104,7 @@ const AddUpdateAsset = ({
             : null,
         condition: assetToEdit.asset_initial_condition,
         location: assetToEdit.asset_location,
+        asset_location: assetToEdit.asset_location,
         // Set attachments for the Attachments component
         attachment: processedAttachments,
       };
@@ -403,7 +404,7 @@ const AddUpdateAsset = ({
                       name={"asset_location"}
                       error={props.errors?.asset_location}
                       touch={props.touched?.asset_location}
-                      value={props.values?.location}
+                      value={props.values?.asset_location}
                       label={"Asset Location"}
                       required={true}
                       options={branches}
