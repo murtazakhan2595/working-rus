@@ -3,11 +3,6 @@ import moment from "moment";
 import { getShiftSchedule } from "app/hooks/shiftManagement";
 import { getShiftById, employeeData } from "app/hooks/attendance";
 
-/**
- * Filter out older overlapping schedules, keeping only the latest ones
- * @param {Array} schedules - Array of schedule objects sorted by newest first
- * @returns {Array} Filtered array with no overlapping schedules
- */
 export const filterOverlappingSchedules = (schedules) => {
   if (!schedules || schedules.length === 0) return [];
 
@@ -37,7 +32,6 @@ export const filterOverlappingSchedules = (schedules) => {
 
   return filteredSchedules;
 };
-
 
 export const getChangeRequestComparison = async (
   changeRequest,
@@ -273,11 +267,6 @@ export const fetchEmployeeShiftData = async (employeeId) => {
   }
 };
 
-/**
- * Format shift time string for display
- * @param {Object} shiftData - Object containing shift time information
- * @returns {string} Formatted shift time string
- */
 export const formatShiftDisplay = (shiftData) => {
   if (!shiftData) return "No Shift";
 
@@ -290,14 +279,6 @@ export const formatShiftDisplay = (shiftData) => {
   }
 };
 
-/**
- * Check if two date ranges overlap
- * @param {string} start1 - Start date of first range
- * @param {string} end1 - End date of first range
- * @param {string} start2 - Start date of second range
- * @param {string} end2 - End date of second range
- * @returns {boolean} True if ranges overlap
- */
 export const doDateRangesOverlap = (start1, end1, start2, end2) => {
   const startDate1 = moment(start1);
   const endDate1 = moment(end1);
