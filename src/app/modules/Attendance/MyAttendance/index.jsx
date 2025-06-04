@@ -32,7 +32,6 @@ const Attendance = () => {
   const canViewAttendance = HasAccess("VIEW_ATTENDANCE");
   const canUpdateAttendance = HasAccess("UPDATE_ATTENDANCE_REQUEST");
   const canDownloadReport = HasAccess("VIEW_ATTENDANCE"); // Using same permission for download
-  const [openUpdateAttendance, setOpenUpdateAttendance] = useState(false);
   const [attendance, setAttendance] = useState(null);
   const navigate = useNavigate();
   const [attendanceData, setAttendanceData] = useState([]);
@@ -244,17 +243,7 @@ const Attendance = () => {
                 }}
               />
             )}
-            {canUpdateAttendance && (
-              <Button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setOpenUpdateAttendance(true);
-                }}
-              >
-                Update Attendance
-              </Button>
-            )}
-            <AttendanceUpdateRequest />
+            {canUpdateAttendance && <AttendanceUpdateRequest />}
             {canDownloadReport && canViewAttendance && (
               <Button variant="outline" onClick={downloadAttendance}>
                 Monthly Report
@@ -282,15 +271,6 @@ const Attendance = () => {
           </CardContent>
         </Card>
       </div>
-      {openUpdateAttendance && (
-        <AttendanceUpdateRequest
-          isOpen={openUpdateAttendance}
-          setIsOpen={() => {
-            setOpenUpdateAttendance(false);
-            getAttendanceList(true);
-          }}
-        />
-      )}
     </>
   );
 };
