@@ -32,6 +32,7 @@ const DateRangeInput = React.memo(
     showManualInput = true, // New prop to enable/disable manual input
   }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [calendarMonth, setCalendarMonth] = useState(new Date());
 
     // Input pattern and format
     const inputPattern = "dd/MM/yyyy";
@@ -72,6 +73,26 @@ const DateRangeInput = React.memo(
 
     const [inputValues, setInputValues] = useState(getInputValues);
 
+    // Convert string value to date range object for Calendar component
+    const getSelectedDateRange = useCallback(() => {
+      if (!value) return { from: undefined, to: undefined };
+
+      const [startDate, endDate] = value.split(",");
+
+      return {
+        from: startDate ? parseDate(startDate) : undefined,
+        to: endDate ? parseDate(endDate) : undefined,
+      };
+    }, [value, parseDate]);
+
+    // Update calendar month when value changes
+    useEffect(() => {
+      const selectedRange = getSelectedDateRange();
+      if (selectedRange.from) {
+        setCalendarMonth(selectedRange.from);
+      }
+    }, [getSelectedDateRange]);
+
     // Update input values when value prop changes
     useEffect(() => {
       setInputValues(getInputValues());
@@ -102,18 +123,6 @@ const DateRangeInput = React.memo(
       },
       [parseDate]
     );
-
-    // Convert string value to date range object for Calendar component
-    const getSelectedDateRange = useCallback(() => {
-      if (!value) return { from: undefined, to: undefined };
-
-      const [startDate, endDate] = value.split(",");
-
-      return {
-        from: startDate ? parseDate(startDate) : undefined,
-        to: endDate ? parseDate(endDate) : undefined,
-      };
-    }, [value, parseDate]);
 
     // Validate date against min/max constraints
     const isDateValid = useCallback(
@@ -154,6 +163,9 @@ const DateRangeInput = React.memo(
           if (parsedDate && isDateValid(parsedDate)) {
             const formattedDate = format(parsedDate, "yyyy-MM-dd");
 
+            // Update calendar month to show the entered date
+            setCalendarMonth(parsedDate);
+
             // Update the value based on which field changed
             const currentRange = value ? value.split(",") : ["", ""];
             let newValue;
@@ -169,6 +181,7 @@ const DateRangeInput = React.memo(
             }
 
             onChange(name, newValue);
+            // Don't close the popover when typing - let user continue selecting
           }
         }
       },
@@ -230,6 +243,7 @@ const DateRangeInput = React.memo(
     const handleReset = useCallback(() => {
       onChange(name, null);
       setInputValues({ startInput: "", endInput: "" });
+      setCalendarMonth(new Date());
     }, [onChange, name]);
 
     return (
@@ -299,12 +313,14 @@ const DateRangeInput = React.memo(
               )}
               <Calendar
                 mode="range"
-                defaultMonth={getSelectedDateRange().from}
+                defaultMonth={getSelectedDateRange().from || calendarMonth}
                 selected={getSelectedDateRange()}
                 onSelect={handleDateSelect}
                 numberOfMonths={numberOfMonths}
                 disabled={handleDisabledDate}
                 initialFocus
+                month={calendarMonth}
+                onMonthChange={setCalendarMonth}
               />
               {showResetButton && value && (
                 <div className="flex justify-end p-2 border-t">
