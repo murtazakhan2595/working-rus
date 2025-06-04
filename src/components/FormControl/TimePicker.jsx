@@ -20,6 +20,7 @@ const TimePicker = ({
   date = null,
   onChange=()=>{},
   className,
+  description,
 }) => {
   const [time, setTime] = useState(() =>
     value ? moment(value).toISOString() : null
@@ -58,6 +59,7 @@ const TimePicker = ({
         touched={touch}
         className={className}
         disabled={disabled}
+        field_description={description}
       >
         <DropdownMenu>
           <DropdownMenuTrigger

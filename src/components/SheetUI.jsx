@@ -129,7 +129,7 @@ const SheetUI = forwardRef(
                             required,
                             disabled,
                             label,
-                            onFieldUpdate = () => {},
+                            onFieldUpdate = async () => {},
                             options,
                             value,
                             colsSpan,
@@ -160,8 +160,8 @@ const SheetUI = forwardRef(
                                 label={label}
                                 placeholder={placeholder}
                                 onChange={async (field, value) => {
+                                  await onFieldUpdate(field, value , props.values);
                                   await props?.setFieldValue(field, value);
-                                  onFieldUpdate(field, value , props.values);
                                 }}
                                 maxRows={maxRows}
                                 date={date}

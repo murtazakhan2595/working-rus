@@ -112,7 +112,7 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
     {
       title: "On Leave",
       value: cardStats?.leave || 0,
-      status: "leave",
+      status: "on leave",
       description: "Here is the list of all employees on leave",
     },
   ];

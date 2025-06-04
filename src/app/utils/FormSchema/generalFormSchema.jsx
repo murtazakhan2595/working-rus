@@ -67,5 +67,41 @@ export const validateStartAndEndDateField = (start_date, end_date) => {
       errors.end_date = "End cannot be before start date.";
     }
   }
-  return errors
+  return errors;
+};
+
+export const validateStartAndEndTimeField = (
+  start_time,
+  end_time,
+  date = moment().format("YYYY-MM-DD"),
+  label = "End Time"
+) => {
+  // Ensure both times are provided
+  if (!start_time) {
+    return true;
+  }
+  if (!end_time) {
+    return true;
+  }
+
+  // Only continue if both times exist
+  if (start_time && end_time) {
+    const start = moment(`${date} ${start_time}`, "YYYY-MM-DD HH:mm");
+    const end = moment(`${date} ${end_time}`, "YYYY-MM-DD HH:mm");
+
+    if (!start.isValid()) {
+      return true;
+    }
+    if (!end.isValid()) {
+      return true;
+    }
+
+    // Compare times only if valid
+    if (start.isValid() && end.isValid()) {
+      if (!start.isBefore(end)) {
+        return true;
+      }
+    }
+  }
+  return false;
 };

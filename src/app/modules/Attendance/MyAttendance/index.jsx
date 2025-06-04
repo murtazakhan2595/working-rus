@@ -14,11 +14,8 @@ import {
 } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import { PageLoader, UnauthorizedAccess } from "components";
-import { UpdateEmployeeAttendance } from "app/modules/Attendance/Sections";
-import { calculateBreak } from "app/hooks/attendance";
+import { AttendanceUpdateRequest } from "app/modules/Attendance";
 import { getBreakStatus } from "app/hooks/attendance";
-import { endBreak, getShiftById } from "app/hooks/attendance";
-import { getStats, employeeData } from "app/hooks/attendance";
 import TableCustom from "components/CustomTable";
 import { MyAttendanceColumn } from "app/modules/Attendance/Sections/AttendanceTableColumns";
 import { Button } from "components/ui/button";
@@ -257,6 +254,7 @@ const Attendance = () => {
                 Update Attendance
               </Button>
             )}
+            <AttendanceUpdateRequest />
             {canDownloadReport && canViewAttendance && (
               <Button variant="outline" onClick={downloadAttendance}>
                 Monthly Report
@@ -285,9 +283,8 @@ const Attendance = () => {
         </Card>
       </div>
       {openUpdateAttendance && (
-        <UpdateEmployeeAttendance
+        <AttendanceUpdateRequest
           isOpen={openUpdateAttendance}
-          isEmployee={true}
           setIsOpen={() => {
             setOpenUpdateAttendance(false);
             getAttendanceList(true);

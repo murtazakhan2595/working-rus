@@ -297,6 +297,7 @@ const getEmployeeList = async (payload) => {
         is_new: employee.is_new,
         joining_date: employee.joining_date,
         employee_status: employee.employee_status,
+        default_shift: employee.shift_assignment,
         user_role: employee.user_role,
         name_initials: `${
           employee?.first_name?.charAt(0)?.toUpperCase() || ""
