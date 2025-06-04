@@ -16,6 +16,7 @@ import ShiftChangeRequestModal from "../ShiftCalendarTab/ShiftChangeRequestModal
 import {
   filterOverlappingSchedules,
   getChangeRequestComparison,
+  fetchEmployeeShiftData,
 } from "../ShiftCalendarTab/shiftScheduleUtils";
 import { getEmployeeActiveShift } from "../Section/getEmployeeActiveShift";
 import { HasAccess } from "utils/PermissionUtils";
@@ -48,63 +49,49 @@ const EmployeeShiftCalendar = () => {
   const userProfile = useSelector((state) => state.user.userProfile);
   const employeeId = userProfile?.id;
 
-  // Fetch employee data and shifts
   useEffect(() => {
-    fetchEmployeeData();
-    fetchApprovedShifts();
-    fetchChangeRequests();
-  }, [employeeId, filterData, options, ordering]);
+    if (employeeId) {
+      fetchEmployeeShifts(); 
+      fetchChangeRequests();
+    }
+  }, [employeeId]);
+  useEffect(() => {
+    if (employeeId) {
+      fetchChangeRequests();
+    }
+  }, [filterData, options, ordering]);
 
- 
-
-  const fetchEmployeeData = async () => {
+  const fetchEmployeeShifts = async () => {
     try {
+      setLoading(true);
 
+      // Use the same utility function as emplist
+      const { employeeShift: shift, scheduleShifts: schedules } =
+        await fetchEmployeeShiftData(employeeId);
+
+      setDirectShift(shift);
+      setScheduleShifts(schedules);
+
+      // Also fetch basic employee info for the modal
       const empData = await employeeData(employeeId);
       setEmployeeInfo(empData);
 
-      // Also fetch direct shift assignment if exists
-      if (empData?.shift_assignment) {
-        const shiftData = await getShiftById(empData.shift_assignment);
-        if (shiftData) {
-          setDirectShift(shiftData);
-        }
-      }
+      // Generate calendar events with both direct shift and schedules
+      generateCalendarEvents(schedules.results, shift);
     } catch (error) {
-      console.error("Error fetching employee data:", error);
-    }
-  };
-
-  const fetchApprovedShifts = async () => {
-    try {
-      setLoading(true);
-      const response = await getShiftSchedule({
-        filterData: {
-          employee: employeeId,
-          status: "Approved",
-          is_change_request: "true,false",
-        },
-        ordering: "-created_at", // Get newest first
-      });
-
-      if (response && response.results) {
-        // Filter out older overlapping schedules
-        const filteredSchedules = filterOverlappingSchedules(response.results);
-
-        setScheduleShifts({
-          results: filteredSchedules,
-          count: filteredSchedules.length,
-        });
-
-        generateCalendarEvents(filteredSchedules, directShift);
-      }
-    } catch (error) {
-      console.error("Error fetching approved shifts:", error);
+      console.error("Error fetching employee shift data:", error);
       toast.error("Failed to load shift calendar");
+      setDirectShift(null);
+      setScheduleShifts({
+        results: [],
+        count: 0,
+      });
+      setEvents([]);
     } finally {
       setLoading(false);
     }
   };
+
 
   const fetchChangeRequests = async () => {
     try {
@@ -177,8 +164,11 @@ const EmployeeShiftCalendar = () => {
     while (currentDate.isSameOrBefore(endOfMonth)) {
       // Skip weekends for default org shifts (you can modify this logic)
       if (currentDate.day() !== 0 && currentDate.day() !== 6) {
-        const startTime = moment(shift.starttime).format("HH:mm");
-        const endTime = moment(shift.endtime).format("HH:mm");
+        const startTime = moment(shift.starttime.replace("Z", "")).format(
+          "HH:mm"
+        );
+        const endTime = moment(shift.endtime.replace("Z", "")).format("HH:mm");
+
 
         events.push({
           title: `${shift.name} (${startTime} - ${endTime})`,
@@ -220,10 +210,10 @@ const EmployeeShiftCalendar = () => {
       const dayName = currentDate.format("ddd").toLowerCase();
 
       if (shortWeekdays.includes(dayName)) {
-        const startTime = moment(shiftDetails.starttime, "HH:mm:ss").format(
-          "HH:mm"
-        );
-        const endTime = moment(shiftDetails.endtime, "HH:mm:ss").format(
+        const startTime = moment(
+          shiftDetails.starttime.replace("Z", "")
+        ).format("HH:mm");
+        const endTime = moment(shiftDetails.endtime.replace("Z", "")).format(
           "HH:mm"
         );
 
@@ -310,7 +300,7 @@ const EmployeeShiftCalendar = () => {
 
   const reload = () => {
     fetchChangeRequests();
-    fetchApprovedShifts(); // Also refresh the calendar
+    fetchEmployeeShifts(); 
   };
 
   const onPageChange = (name, value) => {
