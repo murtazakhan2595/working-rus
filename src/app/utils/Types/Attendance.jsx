@@ -63,7 +63,6 @@ export const AttendanceAdjustment = {
   attendance_date: null,
   department: null,
   employee_name: null,
-  reason: null,
   rejection_reason: null,
   request_datetime: null,
   request_id: null,
@@ -71,4 +70,5 @@ export const AttendanceAdjustment = {
   requested_checkout: null,
   reviewed_at: null,
   status: null,
+  is_second_shift:false,
 };

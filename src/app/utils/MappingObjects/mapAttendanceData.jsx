@@ -175,6 +175,7 @@ export function mapEmployeeAttendanceDetail(data) {
     (shift) => shift.date === moment().add(1, "day").format("YYYY-MM-DD")
   );
 
+  emp_attendance_data.default_shift = data.default_shift;
   emp_attendance_data.monthly_total_hours = monthly_total_hours;
   emp_attendance_data.weekly_total_hours = weekly_total_hours;
   emp_attendance_data.employee_id = data.employee_id;
@@ -211,8 +212,6 @@ export function mapEmployeeAttendanceDetail(data) {
   emp_attendance_data.off_yesterday = data.off_yesterday;
   emp_attendance_data.off_tomorrow = data.off_tomorrow;
   emp_attendance_data.is_off_tomorrow = data.is_off_tomorrow;
-  emp_attendance_data.overtime = data.overtime;
-  emp_attendance_data.overtime = data.overtime;
   emp_attendance_data.overtime = data.overtime;
   return emp_attendance_data;
 }
