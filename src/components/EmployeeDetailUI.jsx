@@ -67,6 +67,18 @@ const EmployeeDetailUI = React.memo(
             },
           ]
         : []),
+      ...(InformationKeys.includes("manager")
+        ? [
+            {
+              name: "report_to",
+              label: "Reporting Manager",
+              value: getLabelByValue(
+                userProfile.report_to,
+                Managers
+              ),
+            },
+          ]
+        : []),
       ...(InformationKeys.includes("branch")
         ? [
             {
@@ -129,7 +141,6 @@ const EmployeeDetailUI = React.memo(
               <DetailBox
                 orientation={ViewVariant}
                 key={data.label}
-                className=""
                 label={data.label}
                 value={data.value}
                 fallbackText={""}

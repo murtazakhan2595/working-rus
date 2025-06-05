@@ -6,6 +6,7 @@ import {
 } from "app/utils/Types/Attendance";
 import { CalculateTotalWorkingHours, calculateTotal } from "utils/renderValues";
 import moment from "moment";
+import { renderTime } from "utils/DateTimeUtils";
 
 export function mapShiftData(data) {
   const shiftDetails = Object.keys(Shift).reduce((acc, key) => {
@@ -26,6 +27,7 @@ export function mapShiftData(data) {
 export function mapAttendanceData(data, shiftDetails) {
   const [firstShift, secondShift] = shiftDetails?.shifts || [];
   const Hours = shiftDetails.total_hours;
+  const attendanceDate = data.date || moment();
   // Initialize an empty payload object
   const payload = { total_hours: Hours };
   // Iterate over the keys in the Task object
@@ -40,47 +42,42 @@ export function mapAttendanceData(data, shiftDetails) {
       if (key === "total_hours") {
         payload["total_hours"] = Hours;
       } else if (key === "checkin") {
-        const shiftStartTime = firstShift.start_time;
-        const checkInTime = moment(data[key]);
-        payload[key] = data[key];
+        const shiftStartTime = renderTime(
+          firstShift.start_time,
+          attendanceDate
+        );
+        payload[key] = renderTime(data[key], attendanceDate);
+        const checkInTime = moment(payload.checkin);
         if (shiftDetails) {
           payload.is_absent = false;
         }
-        payload.is_weekend = [0, 6].includes(checkInTime.day());
-        // Assume shiftDetails.start_time and end_time are time strings like "09:00 AM"
-        const shiftDate = checkInTime.clone().startOf("day"); // Today's date (midnight)
-        // Combine date with shift time to make full datetime
-        const startTime = moment.utc(
-          `${shiftDate.format("YYYY-MM-DD")} ${shiftStartTime}`
-        );
+        // payload.is_weekend = [0, 6].includes(moment(checkInTime).day());
+        
         // Now check if check-in is after the shift start
-        const isLate = checkInTime.isAfter(startTime);
+        const isLate = checkInTime.isAfter(shiftStartTime);
         payload["status"] = isLate ? "Late" : "Present";
         payload["is_late"] = isLate;
         payload["is_absent"] = false;
       } else if (key === "second_checkin") {
-        const shiftStartTime = secondShift.start_time;
-        const checkInTime = moment(data[key]);
-        payload[key] = data[key];
+        const shiftStartTime = renderTime(
+          secondShift.start_time,
+          attendanceDate
+        );
+        payload[key] = renderTime(data[key], attendanceDate);
+        const checkInTime = moment(payload.second_checkin);
         if (shiftDetails) {
           payload.is_absent = false;
         }
-        payload.is_weekend = [0, 6].includes(checkInTime.day());
-        // Assume shiftDetails.start_time and end_time are time strings like "09:00 AM"
-        const shiftDate = checkInTime.clone().startOf("day"); // Today's date (midnight)
-        // Combine date with shift time to make full datetime
-        const startTime = moment.utc(
-          `${shiftDate.format("YYYY-MM-DD")} ${shiftStartTime}`,
-          "YYYY-MM-DD hh:mm A"
-        );
+        //payload.is_weekend = [0, 6].includes(checkInTime.day());
+        
         // Now check if check-in is after the shift start
-        const isLate = checkInTime.isAfter(startTime);
+        const isLate = checkInTime.isAfter(shiftStartTime);
         payload["status"] = isLate ? "Late" : "Present";
         payload["is_late"] = isLate;
         payload["is_absent"] = false;
       } else if (key === "checkout") {
         const checkin = moment(payload.checkin);
-        payload[key] = data[key];
+        payload[key] = renderTime(data[key], attendanceDate);
         const totalHoursWorked = CalculateTotalWorkingHours(
           checkin,
           payload.checkout
@@ -104,7 +101,7 @@ export function mapAttendanceData(data, shiftDetails) {
         }
       } else if (key === "second_checkout") {
         const checkin = moment(payload.second_checkin);
-        payload[key] = data[key];
+        payload[key] = renderTime(data[key], attendanceDate);
         const totalHoursWorked = CalculateTotalWorkingHours(
           checkin,
           payload.checkout
@@ -264,8 +261,13 @@ export function mapAdjustmentFromAttendnaceData(data) {
     (acc, key) => {
       if (key === "employee") acc[key] = data.employee_id;
       else if (key === "attendance") acc[key] = data.id;
-      else if (key === "requested_checkin") acc[key] = data.checkin;
-      else if (key === "requested_checkout") acc[key] = data.checkout;
+      else if (key === "requested_checkin")
+        acc[key] = renderTime(data.checkin, data.date);
+      else if (key === "requested_checkout")
+        acc[key] = renderTime(data.checkout, data.date);
+      else if (key === "attendance_date") acc[key] = data.date;
+      else if (key === "is_second_shift") acc[key] = false;
+      else if (key === "reason") acc[key] = null;
       else if (data.hasOwnProperty(key)) {
         acc[key] = data[key];
       }
