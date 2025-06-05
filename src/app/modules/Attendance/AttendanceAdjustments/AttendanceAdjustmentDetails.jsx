@@ -8,6 +8,7 @@ import {
 import { FormatID } from "utils/getValuesFromTables";
 import { StatusLabel, SheetUI } from "components";
 import { getAttendanceAdjustmentData } from "app/hooks/attendance";
+import { handleRequest } from "app/hooks/general";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
 import { Button } from "components/ui/button";
@@ -37,7 +38,7 @@ const AttendanceAdjustmentDetails = ({
   const [RejectedData, setRejectData] = useState(false);
   const handleSubmit = async (
     status,
-    { attendance, employee, id, rejection_reason }
+    { attendance, employee, id, rejection_reason,request_id }
   ) => {
     try {
       const payload = {
@@ -46,7 +47,9 @@ const AttendanceAdjustmentDetails = ({
         employee: employee,
         rejection_reason: rejection_reason,
       };
-      const response = await saveUpdateAttendanceAdjustment(payload, id);
+      
+     // const response = await saveUpdateAttendanceAdjustment(payload, id);
+      const response = await handleRequest(request_id, status==='Approved');
       // return
       if (response) {
         toast.success(`Request ${status} Successfully!`);
@@ -127,7 +130,7 @@ const AttendanceAdjustmentDetails = ({
       title: "Approval Details",
       field: [
         {
-          key: "approval_logs",
+          key: "approval_details",
           formatter: (cell) => (
             <StatusList status_list={cell} className="my-3" />
           ),
@@ -142,6 +145,7 @@ const AttendanceAdjustmentDetails = ({
           data.status?.toLowerCase() === "pending" &&
           (data.current_approver === user_id || user_role.includes(1))
         )
+
           return (
             <div className="flex flex-wrap justify-end gap-2 my-5">
               <Button

@@ -1,12 +1,12 @@
-import { Button } from "components/ui/button";
-import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "../../../../components/ui/card";
+import React, { useEffect, useState, useMemo } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "components/ui/card";
 import { FilterInput } from "components/FormControl";
-import CustomTable from "components/CustomTable";
-import { connect } from "react-redux";
-
-import ViewLeaveSheet from "../LeaveTracker/ViewLeaveDetails";
-import { PageLoader } from "components";
+import { Header, PageLoader, TableCustom } from "components";
 import { getLeavestats } from "app/hooks/leaveTracker";
 import {
   getLeaveTransaction,
@@ -14,16 +14,21 @@ import {
 } from "app/hooks/leaveTracker";
 import { LeaveAplicationColumns } from "app/modules/LeaveTracker/Sections";
 import { LeaveTrackerOptions } from "data/Data";
-import { Header } from "components";
-import Stats from "components/ui/Stats";
 import { UserRoundCheck, UsersRound } from "lucide-react";
-import { GetEmployeeFilteredList, GetCommonFilteredList } from "utils/Lists";
+import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
+import { HasAccess } from "utils/PermissionUtils";
+import { GetStateList } from "utils/Lists";
 import { getDropdownList } from "utils/Lists";
 
-const LeaveRequests = ({ userProfile, departments, isTeamView = false }) => {
-  const Departments = GetCommonFilteredList("departments");
-  const Branches = GetCommonFilteredList("branches");
-  const userRole = isTeamView ? 2 : userProfile.role;
+const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
+  const Departments = GetStateList("departments", "common") || [];
+  const Branches = GetStateList("branches", "common") || [];
+  const { id: user_id } = GetStateList("user_details", "emp") || {};
+  const isViewLTPermitted = HasAccess("VIEW_ATT_UPDATE_LOGS");
+  const isViewBLTPermitted = HasAccess("VIEW_BRN_ATT_UPDATES_LOGS");
+  const isViewDLTermitted = HasAccess("VIEW_DPT_ATT_UPDATES_LOGS");
+  const [activeTab, setActiveTab] = useState(activeView);
+
   const [selectedLeaveApplication, setSelectedLeaveApplication] =
     useState(null);
   const [filterData, setFilterData] = useState({});
@@ -37,8 +42,11 @@ const LeaveRequests = ({ userProfile, departments, isTeamView = false }) => {
   const [selectedBranch, setSelectedBranch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedLeaveType, setSelectedLeaveType] = useState("");
-
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+
+  const TimeAdjustmentOuterTab = useMemo(() => {
+    return ["Requests", "Records"];
+  }, []);
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -47,10 +55,6 @@ const LeaveRequests = ({ userProfile, departments, isTeamView = false }) => {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
-    onRowClick: (row) => {
-      setSelectedLeaveApplication(row);
-      setIsOpen(true);
-    },
   };
 
   const [LeaveTrackerStats, setLeaveTrackerStats] = useState([
@@ -62,7 +66,7 @@ const LeaveRequests = ({ userProfile, departments, isTeamView = false }) => {
   useEffect(() => {
     let isMounted = true;
     setFilterData(() => {
-      if (isTeamView) return { managers: userProfile.id };
+      if (isTeamView) return { managers: user_id };
       else return {};
     });
     return () => {
@@ -155,19 +159,43 @@ const LeaveRequests = ({ userProfile, departments, isTeamView = false }) => {
       return updatedFilters;
     });
   };
+
   return (
-    <>
-      {loading ? (
-        <PageLoader />
-      ) : (
-        <div className="flex flex-col gap-4">
-          <Header />
-          {!isTeamView && (
-            <div className="p-6">
-              <Stats stats={LeaveTrackerStats} />
-            </div>
-          )}
-          <div className="self-end">
+    <div
+      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
+    >
+      <Header />
+      <Tabs
+        defaultValue="Requests"
+        className="w-full"
+        onValueChange={(tab) => {
+          setActiveTab(tab);
+        }}
+        value={activeTab}
+      >
+        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+          <TabsList className="flex items-center justify-center mb-4">
+            {TimeAdjustmentOuterTab.map((tab) => (
+              <TabsTrigger
+                key={tab}
+                value={tab}
+                className="data-[state=active]:bg-primary-200 w-fit data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+              >
+                {tab}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+        <Card>
+          <div className="flex flex-col gap-4 px-6">
+            <CardTitle className="text-primary pt-6">
+              Leave {activeTab}
+            </CardTitle>
+            <CardDescription className="text-neutral-1100">
+              {`Here you can ${
+                activeTab === "Requests" ? "manage and" : ""
+              } view leave ${activeTab.toLowerCase()}.`}
+            </CardDescription>
             <FilterInput
               filters={[
                 {
@@ -200,48 +228,26 @@ const LeaveRequests = ({ userProfile, departments, isTeamView = false }) => {
                 },
               ]}
               onChange={handleFilterChange}
+              className="justify-end"
             />
-          </div>
-          <Card>
-            <CardContent>
+            <CardContent className="px-0">
               {isLeaveTransactionLoading ? (
                 <PageLoader />
               ) : (
-                <CustomTable
+                <TableCustom
                   data={leaveTransaction?.results || []}
-                  columns={LeaveAplicationColumns}
+                  columns={LeaveAplicationColumns(false, fetchLeaveTransaction)}
                   pagination={true}
                   dataTotalSize={leaveTransaction?.count || 0}
                   tableOptions={tableOptions}
                 />
               )}
             </CardContent>
-          </Card>
-          {selectedLeaveApplication && (
-            <ViewLeaveSheet
-              leaveApplication={selectedLeaveApplication}
-              isOpen={isOpen}
-              setIsOpen={setIsOpen}
-              isMyLeave={false}
-              isTeamView={isTeamView}
-              reload={fetchData}
-              onClose={() => {
-                setIsOpen(false);
-                setSelectedLeaveApplication(null); // Reset the selected application
-              }}
-            />
-          )}
-        </div>
-      )}
-    </>
+          </div>
+        </Card>
+      </Tabs>
+    </div>
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    userProfile: state.user.userProfile,
-    departments: state.common.departments,
-  };
-};
-
-export default connect(mapStateToProps)(LeaveRequests);
+export default LeaveTracker;

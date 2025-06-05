@@ -246,10 +246,10 @@ export const TimeAdjustmentsColumns = (viewMode = false, reloadData) => [
     dataField: "checkin_time",
     formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
   },
-  {
-    text: "Reason",
-    dataField: "reason",
-    maxWidth: "250px",
+ {
+    text: "Submission Time",
+    dataField: "created_at",
+    formatter: (cell) => `${renderDate(cell,'--','date-time')}`,
   },
   {
     text: "Status",
@@ -330,9 +330,9 @@ export const TimeAdjustmentLogsColumns = [
     formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
   },
   {
-    text: "Reason",
-    dataField: "reason",
-    maxWidth: "250px",
+    text: "Submission Time",
+    dataField: "created_at",
+    formatter: (cell) => `${renderDate(cell,'--','date-time')}`,
   },
   {
     text: "Status",
@@ -360,7 +360,7 @@ export const AttendanceAdjustmentLogsColumns = [
   },
   {
     text: "Attendance Date",
-    dataField: "checkin",
+    dataField: "attendance_date",
     formatter: (cell) => renderDate(cell),
   },
   {
@@ -375,7 +375,7 @@ export const AttendanceAdjustmentLogsColumns = [
   },
   {
     text: "Status",
-    dataField: "approver_action",
+    dataField: "attendance_status",
     formatter: (cell) => (
       <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
     ),

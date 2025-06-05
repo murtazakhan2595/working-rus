@@ -30,12 +30,15 @@ export const TimeAdjustment = {
   reason: null,
   status: "PENDING",
   id: null,
-  approval_logs: null,
+  approval_details: null,
   checkin_time: null,
   date: null,
   created_at: null,
   request: null,
   employee_id: null,
+  is_second_shift: false,
+  shift_start_time: null,
+  shift_end_time: null,
 };
 export const TimeAdjustmentLogs = {
   employee_id: null,
@@ -58,7 +61,7 @@ export const AttendanceAdjustment = {
   attendance: null,
   reason: null,
   id: null,
-  approval_level: null,
+  approval_details: null,
   attendance: null,
   attendance_date: null,
   department: null,
@@ -70,5 +73,5 @@ export const AttendanceAdjustment = {
   requested_checkout: null,
   reviewed_at: null,
   status: null,
-  is_second_shift:false,
+  is_second_shift: false,
 };

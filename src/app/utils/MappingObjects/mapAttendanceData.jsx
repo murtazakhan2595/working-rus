@@ -26,10 +26,10 @@ export function mapShiftData(data) {
 }
 export function mapAttendanceData(data, shiftDetails) {
   const [firstShift, secondShift] = shiftDetails?.shifts || [];
-  const Hours = shiftDetails.total_hours;
+  const Hours = shiftDetails?.total_hours || 0;
   const attendanceDate = data.date || moment();
   // Initialize an empty payload object
-  const payload = { total_hours: Hours };
+  const payload = {};
   // Iterate over the keys in the Task object
   for (const key in Attendance) {
     // Check if the key exists in the data object
@@ -42,6 +42,7 @@ export function mapAttendanceData(data, shiftDetails) {
       if (key === "total_hours") {
         payload["total_hours"] = Hours;
       } else if (key === "checkin") {
+        payload["total_hours"] = Hours;
         const shiftStartTime = renderTime(
           firstShift.start_time,
           attendanceDate
@@ -52,7 +53,7 @@ export function mapAttendanceData(data, shiftDetails) {
           payload.is_absent = false;
         }
         // payload.is_weekend = [0, 6].includes(moment(checkInTime).day());
-        
+
         // Now check if check-in is after the shift start
         const isLate = checkInTime.isAfter(shiftStartTime);
         payload["status"] = isLate ? "Late" : "Present";
@@ -69,7 +70,7 @@ export function mapAttendanceData(data, shiftDetails) {
           payload.is_absent = false;
         }
         //payload.is_weekend = [0, 6].includes(checkInTime.day());
-        
+
         // Now check if check-in is after the shift start
         const isLate = checkInTime.isAfter(shiftStartTime);
         payload["status"] = isLate ? "Late" : "Present";
@@ -215,29 +216,37 @@ export function mapEmployeeAttendanceDetail(data) {
 
 export async function mapAttendanceAdjustmentData(data) {
   const attendanceAdjustmentData = {};
-
   for (const key of Object.keys(AttendanceAdjustment)) {
-    if (Object.prototype.hasOwnProperty.call(data, key)) {
-      if (key === "approval_logs") {
-        const approver_logs = data[key] || [];
-        const logs_list = approver_logs
-          .filter(
-            (log) =>
-              log.action_type !== "CREATED" ||
-              log.action_type !== "REQUEST_CREATED"
-          )
-          .map((log) => ({
-            status: log.action_type,
-            approver: log.changed_by,
-            level_number: log.level_number,
-            time: log.timestamp,
-          }))
-          .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
+    if (key === "approval_details") {
+      const approver_logs = data["approval_logs"] || [];
+      const approval_levels = data["approval_levels"] || [];
+      const level_list = approval_levels
+        .map((level) => {
+          const level_number = parseInt(level.level_number);
+          const logs = approver_logs.find(
+            (log) => parseInt(log.level_number) === level_number
+          );
+          const level_detail = {
+            status: "PENDING",
+            designation: level.designation,
+            level_number: level_number,
+            time: null,
+          };
+          if (level_number === parseInt(data.current_level)) {
+            level_detail.approver = data.current_approver;
+          } else if (logs) {
+            level_detail.status = logs.action_type;
+            level_detail.approver = logs.changed_by;
+            level_detail.time = logs.timestamp;
+          }
+          return level_detail;
+        })
+        .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
 
-        attendanceAdjustmentData[key] = logs_list;
-      } else {
+      attendanceAdjustmentData[key] = level_list;
+    } else {
+      if (Object.prototype.hasOwnProperty.call(data, key))
         attendanceAdjustmentData[key] = data[key];
-      }
     }
   }
 
@@ -305,25 +314,91 @@ export async function mapTimeAdjustmentData(data) {
   const timeAdjustmentDetails = {};
 
   for (const key of Object.keys(TimeAdjustment)) {
-    if (Object.prototype.hasOwnProperty.call(data, key)) {
-      if (key === "approval_logs") {
-        const approver_logs = data[key] || [];
-        const logs_list = approver_logs
-          .filter((log) => log.action_type !== "CREATED")
-          .map((log) => ({
-            status: log.action_type,
-            approver: log.changed_by,
-            level_number: log.level_number,
-            time: log.timestamp,
-          }))
-          .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
+    if (key === "approval_details") {
+      const approver_logs = data["approval_logs"] || [];
+      const approval_levels = data["approval_levels"] || [];
+      const level_list = approval_levels
+        .map((level) => {
+          const level_number = parseInt(level.level_number);
+          const logs = approver_logs.find(
+            (log) =>
+              parseInt(log.level_number) === level_number &&
+              log.action_type !== "CREATED"
+          );
+          const level_detail = {
+            status: "PENDING",
+            designation: level.designation,
+            level_number: level_number,
+            time: null,
+          };
+          if (level_number === parseInt(data.current_level)) {
+            level_detail.approver = data.current_approver;
+          } else if (logs) {
+            level_detail.status = logs.action_type;
+            level_detail.approver = logs.changed_by;
+            level_detail.time = logs.timestamp;
+          }
+          return level_detail;
+        })
+        .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
 
-        timeAdjustmentDetails[key] = logs_list;
-      } else {
+      timeAdjustmentDetails[key] = level_list;
+    } else {
+      if (Object.prototype.hasOwnProperty.call(data, key))
         timeAdjustmentDetails[key] = data[key];
-      }
     }
   }
 
   return timeAdjustmentDetails;
+}
+
+export function mapTimeAdjustmentFromAttendance(
+  attendance,
+  shiftDetails,
+  data = {}
+) {
+  const TimeAdjustmentObj = {};
+  const new_start_time = attendance?.second_checkin ?? attendance?.checkin;
+
+  for (const key of Object.keys(TimeAdjustment)) {
+    if (key === "attendance_id") {
+      TimeAdjustmentObj[key] = attendance?.id ?? null;
+    } else if (key === "checkin_time") {
+      TimeAdjustmentObj[key] = new_start_time ?? null;
+    } else if (key === "date") {
+      TimeAdjustmentObj[key] = attendance?.date ?? null;
+    } else if (key === "is_second_shift") {
+      TimeAdjustmentObj[key] = Boolean(attendance?.second_checkin);
+    } else if (key === "shift_end_time") {
+      try {
+        const { shifts = [] } = shiftDetails || {};
+        const [firstShift = {}, secondShift = {}] = shifts;
+        const selectedShift = attendance?.second_checkin
+          ? secondShift
+          : firstShift;
+
+        const { start_time, end_time } = selectedShift;
+        if (!start_time || !end_time || !new_start_time) {
+          TimeAdjustmentObj[key] = null;
+        } else {
+          const ShiftHours = CalculateTotalWorkingHours(start_time, end_time);
+          const EndTime = moment(new_start_time).add(ShiftHours, "hours");
+          TimeAdjustmentObj[key] = moment(EndTime).utc().toISOString();
+        }
+      } catch (err) {
+        console.error("Error calculating shift_end_time:", err);
+        TimeAdjustmentObj[key] = null;
+      }
+    } else if (key === "shift_start_time") {
+      TimeAdjustmentObj[key] = new_start_time ?? null;
+    } else {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        TimeAdjustmentObj[key] = data[key];
+      } else {
+        TimeAdjustmentObj[key] = null;
+      }
+    }
+  }
+
+  return TimeAdjustmentObj;
 }

@@ -1,4 +1,5 @@
 import moment from "moment";
+import { renderTime } from "./DateTimeUtils";
 
 export const formatNumber = (num) => {
   // const units = ["", "K", "M", "B", "T", "P", "E", "Z", "Y"];
@@ -172,7 +173,7 @@ export function renderDate(date, fallbackValue = "N/A", variant = "date") {
 
 export const formatDuration = (duration, calculateSeconds = false) => {
   if (!duration) return "0min";
-  
+
   const Duration = parseFloat(duration < 0 ? Math.abs(duration) : duration);
   const totalSeconds = Math.floor(Duration * 3600); // Convert hours to seconds
   const hours = Math.floor(totalSeconds / 3600);
@@ -202,13 +203,15 @@ export const GetDateRange = (period) => {
   else return period;
 };
 export const CalculateTotalWorkingHours = (start_time, end_time) => {
-  const startTime = moment.utc(start_time).format("HH:mm:ss");
-  const endTime = moment.utc(end_time).format("HH:mm:ss");
+  const today = moment().format("YYYY-MM-DD");
+  const startTime = renderTime(start_time, today);
+  const endTime = renderTime(end_time, today);
+  // const startTime = moment.utc(start_time).format("HH:mm:ss");
+  // const endTime = moment.utc(end_time).format("HH:mm:ss");
 
   // Parse both times on the same reference date (e.g., today)
-  const today = moment().format("YYYY-MM-DD");
-  let start = moment.utc(`${today}T${startTime}`);
-  let end = moment.utc(`${today}T${endTime}`);
+  let start = moment(startTime);
+  let end = moment(endTime);
 
   // Handle shift going past midnight
   if (end.isBefore(start)) {

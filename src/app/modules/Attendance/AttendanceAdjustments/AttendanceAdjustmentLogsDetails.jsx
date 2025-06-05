@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import { saveTimeAdjustment } from "app/hooks/attendance";
 import { EmployeeDetailUI } from "components";
 import { EmployeeUsername } from "utils/getValuesFromTables";
+import { EmployeeInfo } from "utils/getValuesFromTables";
 
 const AttendanceAdjustmentLogsDetails = ({
   isOpen,
@@ -118,11 +119,16 @@ const AttendanceAdjustmentLogsDetails = ({
           label: "Approval Level",
         },
         {
+          key: "approver_action",
+          label: "Approval Action",
+        },
+        {
           key: "approver",
           label: "Updated By",
           formatter: (cell) => (
             <>
-              <EmployeeUsername value={cell} /> {"-"}
+              <EmployeeUsername value={cell} /> {"-"}{" "}
+              <EmployeeInfo value={cell} label={"department_position"} />
             </>
           ),
         },

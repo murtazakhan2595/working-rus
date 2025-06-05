@@ -15,6 +15,7 @@ const NavigationSheetComponent = ({
   reloadData = () => {},
   allowEdit = true,
   allowDelete = true,
+  ForceItemLoad = false, //forceLoad  the Item in case of updation
 
   // Content and actions
   children,
@@ -54,7 +55,7 @@ const NavigationSheetComponent = ({
     return () => {
       isMounted = false;
     };
-  }, [currentItemId]);
+  }, [currentItemId, ForceItemLoad]);
 
   const handleNext = () => {
     // Ensure dataList is an array

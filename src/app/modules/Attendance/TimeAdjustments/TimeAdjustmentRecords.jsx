@@ -35,7 +35,7 @@ const TimeAdjustmentRecords = ({
     count: 0,
   });
   const [isloading, setIsLoading] = useState(false);
-  const [filterData, setFilterData] = useState({ statuses: "PENDING" });
+  const [filterData, setFilterData] = useState({ adjustment_status: "PENDING" });
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -86,10 +86,10 @@ const TimeAdjustmentRecords = ({
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "employee") setSelectedEmployee(filterValue);
-    if (filterName === "statuses") setSelectedStatus(filterValue);
-    if (filterName === "branch_id") setSelectedBranch(filterValue);
-    if (filterName === "department_name") setSelectedDepartment(filterValue);
+    if (filterName === "time_employee") setSelectedEmployee(filterValue);
+    if (filterName === "adjustment_status") setSelectedStatus(filterValue);
+    if (filterName === "time_branch") setSelectedBranch(filterValue);
+    if (filterName === "time_department") setSelectedDepartment(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -104,11 +104,11 @@ const TimeAdjustmentRecords = ({
   const handleTabChange = (tab) => {
     if (tab === "Requests") {
       setFilterData(() => ({
-        statuses: "PENDING",
+        adjustment_status: "PENDING",
       }));
     } else if (tab === "Records") {
       setFilterData(() => ({
-        statuses: "APPROVED,REJECTED",
+        adjustment_status: "APPROVED,REJECTED",
       }));
     }
   };
@@ -145,7 +145,7 @@ const TimeAdjustmentRecords = ({
               {
                 type: "select-one",
                 placeholder: "Employee",
-                name: "employee",
+                name: "time_employee",
                 option: Employees,
                 values: selectedEmployee,
               },
@@ -154,7 +154,7 @@ const TimeAdjustmentRecords = ({
                     {
                       type: "select-two",
                       placeholder: "Department",
-                      name: "department_name",
+                      name: "time_department",
                       option: Department,
                       values: selectedDepartment,
                     },
@@ -165,7 +165,7 @@ const TimeAdjustmentRecords = ({
                     {
                       type: "select-three",
                       placeholder: "Branch",
-                      name: "branch_id",
+                      name: "time_branch",
                       option: Branches,
                       values: selectedBranch,
                     },
@@ -176,7 +176,7 @@ const TimeAdjustmentRecords = ({
                     {
                       type: "select-four",
                       placeholder: "Status",
-                      name: "statuses",
+                      name: "adjustment_status",
                       option: GlobalStatusOptions(false),
                       values: selectedStatus,
                     },

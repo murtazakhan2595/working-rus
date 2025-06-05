@@ -5,11 +5,14 @@ import { BsCircleFill } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import { FaRegCircle } from "react-icons/fa";
 import { Badge } from "components/ui/badge";
-import { CircleCheck, CircleDot, X } from "lucide-react";
+import { Check, CircleCheck, CircleDot, X } from "lucide-react";
 import { cn } from "src/@/lib/utils.js";
 import { cva } from "class-variance-authority";
 import { EmployeeName } from "utils/getValuesFromTables";
 import { renderDate } from "utils/renderValues";
+import { DesignationName } from "utils/getValuesFromTables";
+import { EmployeeInfo } from "utils/getValuesFromTables";
+import statusPendingIcon from "assets/images/status-pending.svg";
 
 const statusVariants = cva("", {
   variants: {
@@ -103,7 +106,7 @@ const StatusLabel = React.forwardRef(
         {iconVariant && (
           <StatusIcon status={status} iconVariant={iconVariant} />
         )}
-       {props.children}
+        {props.children}
       </Badge>
     );
   }
@@ -187,33 +190,44 @@ export const StatusViewIcon = ({ status, className }) => {
   if (!status) return <></>;
   const Status = status.toLowerCase();
   const custonClassName = cn(
-    "text-[20px] d-inline rounded-full mr-5",
+    "flex justify-center items-center px-1 bg-white h-[33px] w-[33px] ",
     className
   );
+  const iconSize = "22";
+  const iconClassName =
+    "object-contain self-stretch my-auto aspect-square rounded-full";
   const style = { padding: "3px" };
   if (Status === "approved")
     return (
-      <FaCheck
-        className={`${custonClassName} bg-[#00C483] text-white`}
-        style={style}
-      />
+      <div className={`${custonClassName}`}>
+        <Check
+          className={`${iconClassName} bg-[#00C483] text-white`}
+          style={style}
+          size={iconSize}
+          strokeWidth={1.5}
+        />
+      </div>
     );
   else if (Status === "rejected")
     return (
-      <RxCross2
-        className={`${custonClassName} bg-[#EA4335] text-white`}
-        style={style}
-      />
+      <div className={`${custonClassName}`}>
+        <RxCross2
+          className={`${iconClassName} bg-[#EA4335] text-white`}
+          style={style}
+          size={iconSize}
+        />
+      </div>
     );
   else if (Status === "pending")
     return (
-      <BsCircleFill
-        className={`${custonClassName} bg-[#E8E8E8]`}
-        style={{
-          ...{ style },
-          ...{ color: "#D9D9D9", border: "3px solid #E8E8E8" },
-        }}
-      />
+      <div className={`${custonClassName}`}>
+        <img
+          loading="lazy"
+          src={statusPendingIcon}
+          alt=""
+          className={iconClassName}
+        />
+      </div>
     );
   else return <></>;
 };
@@ -301,16 +315,27 @@ export const StatusList = ({ status_list, className }) => {
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      {status_list.map(({ status, approver, time }, index) => {
+      {status_list.map(({ status, approver, time, designation }, index) => {
         return (
-          <div key={`status-list-${index}`} className="flex">
+          <div key={`status-list-${index}`} className="flex items-center">
             <StatusViewIcon status={status} className="mr-1 mt-1" />
             <div className="flex flex-col">
               <span className="text-capitalize">
-                {status.toLowerCase()} By <EmployeeName value={approver} />
+                {status.toLowerCase()} By{" "}
+                {approver ? (
+                  <>
+                    <EmployeeName value={approver} />-{" "}
+                    <EmployeeInfo
+                      value={approver}
+                      label={"department_position"}
+                    />
+                  </>
+                ) : (
+                  <DesignationName value={designation} />
+                )}
               </span>
               <span className="text-xs text-neutral-900">
-                ({renderDate(time, "--", "date-time")})
+                {renderDate(time, "", "date-time")}
               </span>
             </div>
           </div>

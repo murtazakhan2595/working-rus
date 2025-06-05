@@ -11,7 +11,6 @@ import {
 import {
   LeaveTracker,
   MyLeaveTracker,
-  LeaveRequests,
 } from "app/modules/LeaveTracker";
 import {
   Projects,
@@ -33,7 +32,6 @@ import { EditEmployeeProfile } from "app/modules/Employees/Screens/Profile";
 import { MyDtr } from "app/modules/DTR";
 import ForgotPassword from "app/modules/Login/ForgotPassword.jsx";
 import ResetPassword from "app/modules/Login/ResetPassword.jsx";
-import ComingSoon from "app/modules/comingSoon/ComingSoon.jsx";
 import {
   ApprovalHierarchy,
   ApprovalHierarchyDetails,
@@ -41,10 +39,9 @@ import {
 } from "app/modules/ApprovalHierarchy";
 import CreateEmployeeProfile from "app/modules/Employees/Screens/AddProfile/CreateEmployeeProfile.jsx";
 import { ExitAndClearance, EmployeeExit } from "app/modules/ExitAndClearance";
-import { Exit, EOSSettlementDetails } from "app/modules/SelfService/Exit";
+import { EOSSettlementDetails } from "app/modules/SelfService/Exit";
 import {
   Payslip,
-  EmployeeSalaryDetails,
   EmployeesPayroll,
   MyPayroll,
   SalarySetup,
@@ -160,8 +157,8 @@ export const SidebarRoutes = [
           name: "TEAM_PROFILE",
         },
         Config.TEAM_LEAVE_REQUEST && {
-          path: "/team-leave-request",
-          component: <LeaveRequests isTeamView={true} />,
+          path: "/team-leave-tracker",
+          component: <LeaveTracker isTeamView={true} />,
           name: "TEAM_LEAVE_REQUEST",
         },
         Config.TEAM_EXIT_CLEARANCE && {
@@ -264,8 +261,8 @@ export const SidebarRoutes = [
           name: "LEAVE_RECORDS",
         },
         Config.LEAVE_REQUEST && {
-          path: "/leave-request",
-          component: <LeaveRequests />,
+          path: "/leave-tracker",
+          component: <LeaveTracker />,
           name: "LEAVE_REQUEST",
         },
       ].filter(Boolean) // Filter out undefined route

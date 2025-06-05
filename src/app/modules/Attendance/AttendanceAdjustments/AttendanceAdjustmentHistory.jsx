@@ -26,7 +26,7 @@ const AttendanceAdjustmentHistory = ({
     count: 0,
   });
   const [isloading, setIsLoading] = useState(false);
-  const [filterData, setFilterData] = useState({ attendance: 20 });
+  const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedStatus, setSelectedStatus] = useState("");
