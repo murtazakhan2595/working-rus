@@ -89,6 +89,7 @@ const pathNames = () => {
     "on-hold-salaries": "On-Hold Salaries",
     "hierarchy-detail":"Approval Hierarchy Detail",
     "office-settings/approval-hierarchy":"Approval Hierarchy",
+    "leave-setup": "Leave Setup",
     "office-settings": "Organization Setup",
     settings: "Settings",
     'time-adjustments': "Time Ajustments",
