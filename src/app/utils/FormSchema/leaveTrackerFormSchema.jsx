@@ -17,4 +17,26 @@ const validateLeaveRequestFormSchema = (values) => {
   return errors;
 };
 
-export { validateLeaveRequestFormSchema };
+const validateLeaveDurationFormSchema = (values) => {
+  const errors = {}
+  if(!values.duration_name){
+    errors.duration_name = "Duration name is required";
+  }
+  if(!values.duration_hours){
+    errors.duration_hours = "Duration hours is required";
+  }else if(isNaN(values.duration_hours)){
+    errors.duration_hours = "Duration hours must be a number";
+  }
+  if(!values.nationalities){
+    errors.nationalities = "Nationalities are required";
+  }
+  if(!values.branches_ids){
+    errors.branches_ids = "Branches are required";
+  }
+  if(!values.departments_ids){
+    errors.departments_ids = "Departments are required";
+  }
+  return errors;
+}
+
+export { validateLeaveRequestFormSchema, validateLeaveDurationFormSchema };

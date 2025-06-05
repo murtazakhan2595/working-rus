@@ -6,11 +6,13 @@ import {
   ViewLeaveDetails,
 } from "./LeaveTracker";
 import { MyLeaveTracker } from "./MyLeaveTracker";
+import LeaveSetup from "./Screens/LeaveSetup";
 
 export {
   MyLeaveTracker,
   LeaveRequests,
   LeaveTracker,
   LeaveTrackerActions,
+  LeaveSetup,
   ViewLeaveDetails,
 };

@@ -542,8 +542,87 @@ const getLeaveStatusDaily = async (payload = {}) => {
   }
 };
 
+const saveLeaveDuration = async (payload) => {
+  try {
+    if (payload?.id) {
+      // If there's an ID, use PATCH to update the existing leave duration
+      const response = await axios.patch(
+        `${baseUrl}/leave-durations/${payload.id}/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200 || response.status === 201) {
+        return response.data;
+      }
+    } else {
+      // If no ID, use POST to create a new leave duration
+      const response = await axios.post(
+        `${baseUrl}/leave-durations/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return response.data;
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching daily leave status:", error);
+
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+
+    return [];
+  }
+}
+const getLeaveDurations =async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/leave-durations?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
+
+const deleteLeaveDuration = async (id) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/leave-durations/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 204) {
+      return true;
+    }
+  } catch (error) {
+    console.error("Error deleting leave duration:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
 
 export {
+  deleteLeaveDuration,
+  saveLeaveDuration,
   saveLeaveComponents,
   getLeaveComponents,
   deleteLeaveComponent,
@@ -559,4 +638,5 @@ export {
   getRemainingLeaves,
   getLeavestatesCustomApi,
   getLeaveStatusDaily,
+  getLeaveDurations,
 };

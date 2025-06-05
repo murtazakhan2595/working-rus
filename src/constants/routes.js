@@ -83,6 +83,7 @@ import {
   MyShiftCalendar,
   ShiftCalendarHistoryLogs,
 } from "app/modules/Attendance/ShiftCalendar";
+import { LeaveSetup } from "app/modules/LeaveTracker";
 
 export const SidebarRoutes = [
   {
@@ -465,6 +466,11 @@ export const SidebarRoutes = [
           component: <ApprovalHierarchyHistoryLogs />,
           name: "APPROVAL_HIERARCHY",
         },
+        Config.LEAVE_SETUP && {
+          path: "/office-settings/leave-setup",
+          component: <LeaveSetup />,
+          name: "LEAVE_SETUP",
+        }
       ].filter(Boolean) // Filter out undefined route
     : []),
 
