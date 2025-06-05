@@ -78,6 +78,9 @@ export const ApprovalHierarchyRequestType = [
   ...(Config.TIME_ADJUSTMENTS
     ? [{ label: "Time Adjustments", value: "TIME_ADJUSTMENT" }]
     : []),
+  ...(Config.MY_ATTENDANCE
+    ? [{ label: "Attendance Adjustments", value: "ATTENDANCE_UPDATION" }]
+    : []),
 ];
 
 export const statusOptions = [

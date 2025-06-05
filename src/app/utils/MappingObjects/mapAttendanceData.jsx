@@ -6,6 +6,7 @@ import {
 } from "app/utils/Types/Attendance";
 import { CalculateTotalWorkingHours, calculateTotal } from "utils/renderValues";
 import moment from "moment";
+import { renderTime } from "utils/DateTimeUtils";
 
 export function mapShiftData(data) {
   const shiftDetails = Object.keys(Shift).reduce((acc, key) => {
@@ -25,9 +26,10 @@ export function mapShiftData(data) {
 }
 export function mapAttendanceData(data, shiftDetails) {
   const [firstShift, secondShift] = shiftDetails?.shifts || [];
-  const Hours = shiftDetails.total_hours;
+  const Hours = shiftDetails?.total_hours || 0;
+  const attendanceDate = data.date || moment();
   // Initialize an empty payload object
-  const payload = { total_hours: Hours };
+  const payload = {};
   // Iterate over the keys in the Task object
   for (const key in Attendance) {
     // Check if the key exists in the data object
@@ -40,47 +42,43 @@ export function mapAttendanceData(data, shiftDetails) {
       if (key === "total_hours") {
         payload["total_hours"] = Hours;
       } else if (key === "checkin") {
-        const shiftStartTime = firstShift.start_time;
-        const checkInTime = moment(data[key]);
-        payload[key] = data[key];
+        payload["total_hours"] = Hours;
+        const shiftStartTime = renderTime(
+          firstShift.start_time,
+          attendanceDate
+        );
+        payload[key] = renderTime(data[key], attendanceDate);
+        const checkInTime = moment(payload.checkin);
         if (shiftDetails) {
           payload.is_absent = false;
         }
-        payload.is_weekend = [0, 6].includes(checkInTime.day());
-        // Assume shiftDetails.start_time and end_time are time strings like "09:00 AM"
-        const shiftDate = checkInTime.clone().startOf("day"); // Today's date (midnight)
-        // Combine date with shift time to make full datetime
-        const startTime = moment.utc(
-          `${shiftDate.format("YYYY-MM-DD")} ${shiftStartTime}`
-        );
+        // payload.is_weekend = [0, 6].includes(moment(checkInTime).day());
+
         // Now check if check-in is after the shift start
-        const isLate = checkInTime.isAfter(startTime);
+        const isLate = checkInTime.isAfter(shiftStartTime);
         payload["status"] = isLate ? "Late" : "Present";
         payload["is_late"] = isLate;
         payload["is_absent"] = false;
       } else if (key === "second_checkin") {
-        const shiftStartTime = secondShift.start_time;
-        const checkInTime = moment(data[key]);
-        payload[key] = data[key];
+        const shiftStartTime = renderTime(
+          secondShift.start_time,
+          attendanceDate
+        );
+        payload[key] = renderTime(data[key], attendanceDate);
+        const checkInTime = moment(payload.second_checkin);
         if (shiftDetails) {
           payload.is_absent = false;
         }
-        payload.is_weekend = [0, 6].includes(checkInTime.day());
-        // Assume shiftDetails.start_time and end_time are time strings like "09:00 AM"
-        const shiftDate = checkInTime.clone().startOf("day"); // Today's date (midnight)
-        // Combine date with shift time to make full datetime
-        const startTime = moment.utc(
-          `${shiftDate.format("YYYY-MM-DD")} ${shiftStartTime}`,
-          "YYYY-MM-DD hh:mm A"
-        );
+        //payload.is_weekend = [0, 6].includes(checkInTime.day());
+
         // Now check if check-in is after the shift start
-        const isLate = checkInTime.isAfter(startTime);
+        const isLate = checkInTime.isAfter(shiftStartTime);
         payload["status"] = isLate ? "Late" : "Present";
         payload["is_late"] = isLate;
         payload["is_absent"] = false;
       } else if (key === "checkout") {
         const checkin = moment(payload.checkin);
-        payload[key] = data[key];
+        payload[key] = renderTime(data[key], attendanceDate);
         const totalHoursWorked = CalculateTotalWorkingHours(
           checkin,
           payload.checkout
@@ -104,7 +102,7 @@ export function mapAttendanceData(data, shiftDetails) {
         }
       } else if (key === "second_checkout") {
         const checkin = moment(payload.second_checkin);
-        payload[key] = data[key];
+        payload[key] = renderTime(data[key], attendanceDate);
         const totalHoursWorked = CalculateTotalWorkingHours(
           checkin,
           payload.checkout
@@ -175,6 +173,7 @@ export function mapEmployeeAttendanceDetail(data) {
     (shift) => shift.date === moment().add(1, "day").format("YYYY-MM-DD")
   );
 
+  emp_attendance_data.default_shift = data.default_shift;
   emp_attendance_data.monthly_total_hours = monthly_total_hours;
   emp_attendance_data.weekly_total_hours = weekly_total_hours;
   emp_attendance_data.employee_id = data.employee_id;
@@ -212,36 +211,42 @@ export function mapEmployeeAttendanceDetail(data) {
   emp_attendance_data.off_tomorrow = data.off_tomorrow;
   emp_attendance_data.is_off_tomorrow = data.is_off_tomorrow;
   emp_attendance_data.overtime = data.overtime;
-  emp_attendance_data.overtime = data.overtime;
-  emp_attendance_data.overtime = data.overtime;
   return emp_attendance_data;
 }
 
 export async function mapAttendanceAdjustmentData(data) {
   const attendanceAdjustmentData = {};
-
   for (const key of Object.keys(AttendanceAdjustment)) {
-    if (Object.prototype.hasOwnProperty.call(data, key)) {
-      if (key === "approval_logs") {
-        const approver_logs = data[key] || [];
-        const logs_list = approver_logs
-          .filter(
-            (log) =>
-              log.action_type !== "CREATED" ||
-              log.action_type !== "REQUEST_CREATED"
-          )
-          .map((log) => ({
-            status: log.action_type,
-            approver: log.changed_by,
-            level_number: log.level_number,
-            time: log.timestamp,
-          }))
-          .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
+    if (key === "approval_details") {
+      const approver_logs = data["approval_logs"] || [];
+      const approval_levels = data["approval_levels"] || [];
+      const level_list = approval_levels
+        .map((level) => {
+          const level_number = parseInt(level.level_number);
+          const logs = approver_logs.find(
+            (log) => parseInt(log.level_number) === level_number
+          );
+          const level_detail = {
+            status: "PENDING",
+            designation: level.designation,
+            level_number: level_number,
+            time: null,
+          };
+          if (level_number === parseInt(data.current_level)) {
+            level_detail.approver = data.current_approver;
+          } else if (logs) {
+            level_detail.status = logs.action_type;
+            level_detail.approver = logs.changed_by;
+            level_detail.time = logs.timestamp;
+          }
+          return level_detail;
+        })
+        .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
 
-        attendanceAdjustmentData[key] = logs_list;
-      } else {
+      attendanceAdjustmentData[key] = level_list;
+    } else {
+      if (Object.prototype.hasOwnProperty.call(data, key))
         attendanceAdjustmentData[key] = data[key];
-      }
     }
   }
 
@@ -265,8 +270,13 @@ export function mapAdjustmentFromAttendnaceData(data) {
     (acc, key) => {
       if (key === "employee") acc[key] = data.employee_id;
       else if (key === "attendance") acc[key] = data.id;
-      else if (key === "requested_checkin") acc[key] = data.checkin;
-      else if (key === "requested_checkout") acc[key] = data.checkout;
+      else if (key === "requested_checkin")
+        acc[key] = renderTime(data.checkin, data.date);
+      else if (key === "requested_checkout")
+        acc[key] = renderTime(data.checkout, data.date);
+      else if (key === "attendance_date") acc[key] = data.date;
+      else if (key === "is_second_shift") acc[key] = false;
+      else if (key === "reason") acc[key] = null;
       else if (data.hasOwnProperty(key)) {
         acc[key] = data[key];
       }
@@ -304,25 +314,91 @@ export async function mapTimeAdjustmentData(data) {
   const timeAdjustmentDetails = {};
 
   for (const key of Object.keys(TimeAdjustment)) {
-    if (Object.prototype.hasOwnProperty.call(data, key)) {
-      if (key === "approval_logs") {
-        const approver_logs = data[key] || [];
-        const logs_list = approver_logs
-          .filter((log) => log.action_type !== "CREATED")
-          .map((log) => ({
-            status: log.action_type,
-            approver: log.changed_by,
-            level_number: log.level_number,
-            time: log.timestamp,
-          }))
-          .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
+    if (key === "approval_details") {
+      const approver_logs = data["approval_logs"] || [];
+      const approval_levels = data["approval_levels"] || [];
+      const level_list = approval_levels
+        .map((level) => {
+          const level_number = parseInt(level.level_number);
+          const logs = approver_logs.find(
+            (log) =>
+              parseInt(log.level_number) === level_number &&
+              log.action_type !== "CREATED"
+          );
+          const level_detail = {
+            status: "PENDING",
+            designation: level.designation,
+            level_number: level_number,
+            time: null,
+          };
+          if (level_number === parseInt(data.current_level)) {
+            level_detail.approver = data.current_approver;
+          } else if (logs) {
+            level_detail.status = logs.action_type;
+            level_detail.approver = logs.changed_by;
+            level_detail.time = logs.timestamp;
+          }
+          return level_detail;
+        })
+        .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
 
-        timeAdjustmentDetails[key] = logs_list;
-      } else {
+      timeAdjustmentDetails[key] = level_list;
+    } else {
+      if (Object.prototype.hasOwnProperty.call(data, key))
         timeAdjustmentDetails[key] = data[key];
-      }
     }
   }
 
   return timeAdjustmentDetails;
+}
+
+export function mapTimeAdjustmentFromAttendance(
+  attendance,
+  shiftDetails,
+  data = {}
+) {
+  const TimeAdjustmentObj = {};
+  const new_start_time = attendance?.second_checkin ?? attendance?.checkin;
+
+  for (const key of Object.keys(TimeAdjustment)) {
+    if (key === "attendance_id") {
+      TimeAdjustmentObj[key] = attendance?.id ?? null;
+    } else if (key === "checkin_time") {
+      TimeAdjustmentObj[key] = new_start_time ?? null;
+    } else if (key === "date") {
+      TimeAdjustmentObj[key] = attendance?.date ?? null;
+    } else if (key === "is_second_shift") {
+      TimeAdjustmentObj[key] = Boolean(attendance?.second_checkin);
+    } else if (key === "shift_end_time") {
+      try {
+        const { shifts = [] } = shiftDetails || {};
+        const [firstShift = {}, secondShift = {}] = shifts;
+        const selectedShift = attendance?.second_checkin
+          ? secondShift
+          : firstShift;
+
+        const { start_time, end_time } = selectedShift;
+        if (!start_time || !end_time || !new_start_time) {
+          TimeAdjustmentObj[key] = null;
+        } else {
+          const ShiftHours = CalculateTotalWorkingHours(start_time, end_time);
+          const EndTime = moment(new_start_time).add(ShiftHours, "hours");
+          TimeAdjustmentObj[key] = moment(EndTime).utc().toISOString();
+        }
+      } catch (err) {
+        console.error("Error calculating shift_end_time:", err);
+        TimeAdjustmentObj[key] = null;
+      }
+    } else if (key === "shift_start_time") {
+      TimeAdjustmentObj[key] = new_start_time ?? null;
+    } else {
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        TimeAdjustmentObj[key] = data[key];
+      } else {
+        TimeAdjustmentObj[key] = null;
+      }
+    }
+  }
+
+  return TimeAdjustmentObj;
 }

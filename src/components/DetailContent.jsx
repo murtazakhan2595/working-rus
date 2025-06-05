@@ -28,11 +28,11 @@ const DetailContent = ({ currentItem = {}, fields = [] }) => {
                   <DetailBox
                     key={key}
                     label={label}
-                    value={formatter ? formatter(value) : value ?? fallBackText}
+                    value={formatter ? formatter(value , currentItem) : value ?? fallBackText}
                   />
                 ) : (
                   <div>
-                    {formatter ? formatter(value) : value ?? fallBackText}
+                    {formatter ? formatter(value , currentItem) : value ?? fallBackText}
                   </div>
                 );
               })}

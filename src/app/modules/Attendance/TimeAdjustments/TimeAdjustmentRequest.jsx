@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { TimeAdjustment } from "app/utils/Types/Attendance";
 import { validateTimeAdjustmentFormSchema } from "app/utils/FormSchema/AttendanceFormSchema";
+import { mapTimeAdjustmentFromAttendance } from "app/utils/MappingObjects/mapAttendanceData";
 import { SheetUI, EmployeeDetailUI } from "components";
 import {
   saveTimeAdjustment,
@@ -17,6 +18,8 @@ import {
 import { Timer } from "lucide-react";
 import { Button } from "components/ui/button";
 import { TextAreaInput } from "components/FormControl";
+import moment from "moment";
+
 const FormSheetData = {
   triggerText: null,
   title: "Time Adjustment Request",
@@ -26,6 +29,9 @@ const FormSheetData = {
 };
 
 const TimeAdjustmentRequest = ({ id, attendance }) => {
+  const { today_shift } = useSelector(
+    (state) => state.attendance.attendance_details
+  );
   const { id: employee_id } = useSelector((state) => state.user.userProfile);
   const [formData, setFormData] = useState(TimeAdjustment);
   const [isOpen, setIsOpen] = useState(false);
@@ -102,8 +108,11 @@ const TimeAdjustmentRequest = ({ id, attendance }) => {
   const handleAdjustTimeClick = (event) => {
     event.preventDefault();
     event.stopPropagation();
+    const FormValues = mapTimeAdjustmentFromAttendance(attendance, today_shift);
+    setFormData(FormValues);
     setIsOpen(true);
   };
+  console.log(moment(formData.shift_start_time).format('hh:mm A'),'-',moment(formData.shift_end_time).format('hh:mm A'))
   return (
     <>
       <Button

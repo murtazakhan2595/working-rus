@@ -227,7 +227,6 @@ const getLeavestats = async (payload) => {
   }
 };
 const getLeaveTransaction = async (payload) => {
-  console.log("payload", payload);
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};

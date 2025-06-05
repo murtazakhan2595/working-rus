@@ -33,6 +33,9 @@ const FormSheetData = {
 };
 
 const AttendanceUpdateRequest = ({ id }) => {
+  const { default_shift } = useSelector(
+    (state) => state.attendance.attendance_details
+  );
   const [isOpen, setIsOpen] = useState(false);
   const [RecordExit, setRecordExit] = useState(false);
   const UserDetails = useSelector((state) => state.emp.user_details);
@@ -40,7 +43,7 @@ const AttendanceUpdateRequest = ({ id }) => {
   const [formValues, setFormValues] = useState(AttendanceAdjustment);
   const [selectedEmployee, setSelectedEmployee] = useState({});
   const [ActiveShift, setActiveShift] = useState(false);
-  const [DefaultShift, setDefaultShift] = useState(false);
+  const [DefaultShift, setDefaultShift] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchAttendanceAdjustmentData = async (isMounted, attendanceId) => {
@@ -80,9 +83,10 @@ const AttendanceUpdateRequest = ({ id }) => {
         const response = await getAttendance({
           filterData: { date: date, employee_id: selectedEmployee.id },
         });
+
         const active_shift = await GetEmployeeActiveShift(
           selectedEmployee.id,
-          DefaultShift,
+          default_shift,
           date
         );
         setActiveShift(active_shift);
@@ -120,9 +124,6 @@ const AttendanceUpdateRequest = ({ id }) => {
       setFormData((prev) => {
         return { ...prev, employee_id: UserDetails.id };
       });
-      const default_shift_id = UserDetails.shift_assignment;
-      const default_shift = await getShiftById(default_shift_id);
-      setDefaultShift(default_shift);
     }
   };
 
@@ -178,6 +179,7 @@ const AttendanceUpdateRequest = ({ id }) => {
               if (RecordExit)
                 error.date =
                   "Update request is already submitted for this date";
+
               if (values.date && !ActiveShift.status) {
                 if (!ActiveShift.shift_assigned) {
                   error.date = `No Shift was assigned to you for this date. Kindly update the shift to record attendance`;

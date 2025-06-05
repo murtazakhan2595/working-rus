@@ -9,7 +9,7 @@ import {
   workplaceTypes,
   GenderOptions,
   BloodGroupOptions,
-  ApprovalHierarchyRequestType
+  ApprovalHierarchyRequestType,
 } from "data/Data";
 import { useSelector } from "react-redux";
 import moment from "moment";
@@ -172,6 +172,18 @@ export function EmployeeUsername({ value, fallBackText = "N/A" }) {
   const employeeName = employee ? employee.username : fallBackText;
 
   return <>{employeeName}</>;
+}
+export function EmployeeInfo({ value, label, fallBackText = "N/A" }) {
+  const employees = useSelector((state) => state.emp.employees);
+  const employee = employees.find((option) => option.id === parseInt(value));
+  const employeeInfo = employee ? employee[label] ?? null : null;
+  if (employeeInfo) {
+    if (label === "department_position")
+      return (
+        <DesignationName value={employeeInfo} fallBackText={fallBackText} />
+      );
+  }
+  return null;
 }
 
 export function EmployeeNameList(employeeIdList) {

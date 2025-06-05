@@ -9,7 +9,7 @@ import {
   mapAttendanceAdjustmentPayloadData,
   mapAttendanceAdjustmentListData,
   mapTimeAdjustmentData,
-  mapAttendanceAdjustmentData
+  mapAttendanceAdjustmentData,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
@@ -728,15 +728,40 @@ export const getAttendanceAdjustmentListData = async (payload) => {
 
 export const getAttendanceAdjustmentData = async (id) => {
   try {
-    const response = await axios.get(`${baseUrl}/attendance-adjustment/${id}/`, {
-      headers: headers(),
-    });
+    const response = await axios.get(
+      `${baseUrl}/attendance-adjustment/${id}/`,
+      {
+        headers: headers(),
+      }
+    );
     if (response.status === 200) {
       const ResponseData = await mapAttendanceAdjustmentData(response.data);
       const currentapprover = await getCurrentRequestApprover(
-        ResponseData.request
+        ResponseData.request_id
       );
       return { ...ResponseData, ...currentapprover };
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const getAttendanceAdjustmentLogsData = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/attendance-update-logs/${id}/`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      const ResponseData = response.data;
+
+      return ResponseData;
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);
@@ -766,7 +791,7 @@ export const getAttendanceAdjustmentLogsList = async (payload) => {
       // const ResponseDataList = await mapAttendanceAdjustmentListData(
       //   ResponseData.results
       // );
-      return { results: ResponseData.result, count: ResponseData.count };
+      return { results: ResponseData.results, count: ResponseData.count };
     }
   } catch (error) {
     console.error("Error fetching attendance list:", error);

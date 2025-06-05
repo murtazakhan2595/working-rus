@@ -409,3 +409,15 @@ export const GetCommonFilteredList = (label) => {
   const List = useSelector((state) => state.common[label]);
   return List;
 };
+
+export const GetStateList = (label, list) => {
+  const List = useSelector((state) => {
+    if (!state || typeof state !== "object") return null;
+    if (!list || !label) return null;
+    if (!state.hasOwnProperty(list)) return null;
+    if (!state[list] || typeof state[list] !== "object") return null;
+    return state[list][label] ?? null;
+  });
+
+  return List;
+};

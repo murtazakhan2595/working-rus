@@ -1,5 +1,8 @@
 import { EmployeeAttendenceActions } from "app/modules/Attendance/Sections";
-import { TimeAdjustmentsActions,AttendanceAdjustmentActions } from "app/modules/Attendance";
+import {
+  TimeAdjustmentsActions,
+  AttendanceAdjustmentActions,
+} from "app/modules/Attendance";
 import { calculatePercentage } from "utils/renderValues";
 import { EmployeeOverview } from "components";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
@@ -8,6 +11,7 @@ import moment from "moment";
 import { StatusLabelAttendance } from "components/StatusLabel";
 import { renderDate, formatNumber } from "utils/renderValues";
 import { StatusLabel } from "components";
+import { EmployeeUsername } from "utils/getValuesFromTables";
 
 /**
  * AttendanceColumns
@@ -242,10 +246,10 @@ export const TimeAdjustmentsColumns = (viewMode = false, reloadData) => [
     dataField: "checkin_time",
     formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
   },
-  {
-    text: "Reason",
-    dataField: "reason",
-    maxWidth: "250px",
+ {
+    text: "Submission Time",
+    dataField: "created_at",
+    formatter: (cell) => `${renderDate(cell,'--','date-time')}`,
   },
   {
     text: "Status",
@@ -326,9 +330,9 @@ export const TimeAdjustmentLogsColumns = [
     formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
   },
   {
-    text: "Reason",
-    dataField: "reason",
-    maxWidth: "250px",
+    text: "Submission Time",
+    dataField: "created_at",
+    formatter: (cell) => `${renderDate(cell,'--','date-time')}`,
   },
   {
     text: "Status",
@@ -345,25 +349,33 @@ export const TimeAdjustmentLogsColumns = [
     ),
   },
 ];
+
 export const AttendanceAdjustmentLogsColumns = [
   {
-    text: "Date",
-    dataField: "date",
-    formatter: (cell) => <>{`${renderDate(cell)}`}</>,
+    text: "Employee",
+    dataField: "employee",
+    formatter: (cell) => (
+      <EmployeeOverview id={cell} showId={true} showDepartment={true} />
+    ),
   },
   {
-    text: "Check In",
-    dataField: "checkin",
-    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+    text: "Attendance Date",
+    dataField: "attendance_date",
+    formatter: (cell) => renderDate(cell),
   },
   {
-    text: "Reason",
-    dataField: "reason",
-    maxWidth: "250px",
+    text: "Updated By",
+    dataField: "approver",
+    formatter: (cell) => <EmployeeUsername value={cell} />,
+  },
+  {
+    text: "Updated On",
+    dataField: "modified_at",
+    formatter: (cell) => renderDate(cell),
   },
   {
     text: "Status",
-    dataField: "status",
+    dataField: "attendance_status",
     formatter: (cell) => (
       <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
     ),
@@ -371,8 +383,12 @@ export const AttendanceAdjustmentLogsColumns = [
   {
     text: "",
     dataField: "",
-    formatter: (_, row) => (
-      <TimeAdjustmentsActions data={row} isHistoryView={true} />
+    formatter: (_, row, dataList) => (
+      <AttendanceAdjustmentActions
+        data={row}
+        isHistoryView={true}
+        DataList={dataList}
+      />
     ),
   },
 ];
