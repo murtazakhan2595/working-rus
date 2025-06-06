@@ -71,7 +71,11 @@ export const ApprovalHierarchyColumn = (reload = () => {}) => [
     text: "Status",
     formatter: (cell, row) => {
       return (
-        <ApprovalHeirarchyStatusTogle data={row} status={cell} reloadData={reload} />
+        <ApprovalHeirarchyStatusTogle
+          data={row}
+          status={cell}
+          reloadData={reload}
+        />
       );
     },
   },
@@ -190,7 +194,9 @@ export const HierarchyHistoryColumn = [
     text: "Status",
     formatter: (cell, row) => {
       return (
-        <StatusLabel variant={cell?'success':'error'}>{cell ? "Active" : "Inactive"}</StatusLabel>
+        <StatusLabel variant={cell ? "success" : "error"}>
+          {cell ? "Active" : "Inactive"}
+        </StatusLabel>
       );
     },
   },
@@ -257,6 +263,38 @@ export const HierarchyHistoryDetailsColumn = [
 
 export const DelegateLevelsColumn = (reload = () => {}, viewMode) => [
   {
+    dataField: "initiative_designation",
+    text: "Request Initiator",
+    dataSort: true,
+    formatter: (cell) => {
+      if (!cell || cell.length === 0) return null;
+
+      const designations = cell.split(", ");
+      if (
+        !designations ||
+        !Array.isArray(designations) ||
+        designations.length === 0
+      )
+        return null;
+      return (
+        <div className="flex flex-wrap gap-1">
+          {designations.map((initiator, index) => {
+            return (
+              <StatusLabel variant="info" key={`initiator-${index}`}>
+                {initiator}
+              </StatusLabel>
+            );
+          })}
+        </div>
+      );
+    },
+  },
+  {
+    dataField: "level_number",
+    text: "Level Number",
+    dataSort: true,
+  },
+  {
     dataField: "branch",
     text: "Branch",
     dataSort: true,
@@ -285,10 +323,6 @@ export const DelegateLevelsColumn = (reload = () => {}, viewMode) => [
     text: "End Date",
     dataSort: true,
     formatter: (cell) => renderDate(cell),
-  },
-  {
-    dataField: "reason",
-    text: "Reason",
   },
   ...(!viewMode
     ? [

@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../../../src/@/components/ui/table";
-import ApplyLeaveSheet from "../Sections/ApplyLeaveSheet";
+import {LeaveRequest} from "app/modules/LeaveTracker";
 import { getLeaves } from "app/hooks/leaveTracker";
 import { connect } from "react-redux";
 import moment from "moment";
@@ -151,7 +151,7 @@ const MyLeaveTracker = ({ userProfile }) => {
             </div>
             {/* Apply Leave Button - Only show if user can add leave requests */}
             {canAddLeaveRequest && (
-              <ApplyLeaveSheet
+              <LeaveRequest
                 reload={async () => {
                   await Promise.all([fetchData(), fetchLeaveTransaction()]);
                 }}

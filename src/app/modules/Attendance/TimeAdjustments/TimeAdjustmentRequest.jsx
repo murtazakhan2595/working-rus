@@ -112,7 +112,6 @@ const TimeAdjustmentRequest = ({ id, attendance }) => {
     setFormData(FormValues);
     setIsOpen(true);
   };
-  console.log(moment(formData.shift_start_time).format('hh:mm A'),'-',moment(formData.shift_end_time).format('hh:mm A'))
   return (
     <>
       <Button

@@ -1,5 +1,6 @@
 import { getManagersList } from "app/hooks/general";
 import { getManagerSelected } from "data/Data";
+import { LeaveType } from "app/utils/Types/LeaveManagment";
 import moment from "moment";
 
 async function getLavefromEmployeeInfo(data) {
@@ -25,6 +26,34 @@ async function getLavefromEmployeeInfo(data) {
       : "Pending",
   };
   return leaveInfo;
+}
+
+export function mapLeaveTypeData(data) {
+  const responseDataData = Object.keys(LeaveType).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      acc[key] = data[key];
+    } else {
+      // Use default values from LeaveType type
+      acc[key] = LeaveType[key];
+    }
+    return acc;
+  }, {});
+
+  return responseDataData;
+}
+
+export async function mapLeaveTypeListData(data) {
+  if (!data || data.length === 0) return [];
+  const ResponseList = await data?.map((dataObj) => {
+    const formattedData = mapLeaveTypeData(dataObj);
+    return {
+      label: formattedData.name,
+      value: formattedData.id,
+      ...formattedData,
+    };
+  });
+
+  return ResponseList;
 }
 
 export { getLavefromEmployeeInfo };
