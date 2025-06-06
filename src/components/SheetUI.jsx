@@ -130,7 +130,7 @@ const SheetUI = forwardRef(
                             disabled,
                             label,
                             onFieldUpdate = async () => {},
-                            options,
+                            options = [],
                             value,
                             colsSpan,
                             date,
@@ -160,7 +160,11 @@ const SheetUI = forwardRef(
                                 label={label}
                                 placeholder={placeholder}
                                 onChange={async (field, value) => {
-                                  await onFieldUpdate(field, value , props.values);
+                                  await onFieldUpdate(
+                                    field,
+                                    value,
+                                    props.values
+                                  );
                                   await props?.setFieldValue(field, value);
                                 }}
                                 maxRows={maxRows}
@@ -203,7 +207,7 @@ const SheetUI = forwardRef(
                   >
                     {isSubmittingForm
                       ? "Submitting Form..."
-                      : loadingMessage
+                      : disableSubmit && loadingMessage
                       ? loadingMessage
                       : submitButtonText}
                   </Button>
@@ -247,7 +251,9 @@ const FormBody = ({
       className={sheetCardError ? InvalidInput : ""}
     >
       <div className={className}>{children}</div>
-      {sheetCardError && <div className={`${errorClassName} mt-4`}>{sheetCardError}</div>}
+      {sheetCardError && (
+        <div className={`${errorClassName} mt-4`}>{sheetCardError}</div>
+      )}
     </SheetCardExtension>
   ) : (
     <div className={className}>{children}</div>

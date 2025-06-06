@@ -5,7 +5,7 @@ import {
   LeaveTrackerActions,
   ViewLeaveDetails,
 } from "./LeaveTracker";
-import { MyLeaveTracker } from "./MyLeaveTracker";
+import { MyLeaveTracker,LeaveRequest } from "./MyLeaveTracker";
 import LeaveSetup from "./Screens/LeaveSetup";
 
 export {
@@ -15,4 +15,5 @@ export {
   LeaveTrackerActions,
   LeaveSetup,
   ViewLeaveDetails,
+  LeaveRequest,
 };

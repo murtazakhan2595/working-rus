@@ -318,6 +318,7 @@ const RenderLogInButton = ({
 
   if (!Shift?.shifts || Shift?.shifts?.length === 0) return null;
   const startShift = async () => {
+    debugger;
     if (attendance && attendance?.checkout && !isSplitShift) {
       toast.success("Shift already ended");
       return;
@@ -334,8 +335,7 @@ const RenderLogInButton = ({
     };
     if (isSplitShift && attendance?.checkin && !attendance?.second_checkin)
       payload.second_checkin = checkInTime;
-     else if (!isSplitShift && !attendance?.checkin)
-       payload.checkin = checkInTime;
+    else if (!attendance?.checkin) payload.checkin = checkInTime;
     const response = await saveAttendance(payload, Shift, attendance?.id);
     if (response) {
       toast.success("Shift started");
@@ -352,7 +352,7 @@ const RenderLogInButton = ({
       second_checkin: attendance?.second_checkin,
       id: attendance?.id,
       payable_hours: attendance?.payable_hours,
-      date:attendance.date,
+      date: attendance.date,
     };
     if (
       isSplitShift &&

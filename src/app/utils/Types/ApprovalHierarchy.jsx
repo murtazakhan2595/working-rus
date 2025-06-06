@@ -50,4 +50,6 @@ export const DelegateLevel = {
   end_date: null,
   reason: null,
   id: null,
+  initiative_designation:null,
+  level_number:null,
 };
