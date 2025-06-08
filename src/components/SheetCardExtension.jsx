@@ -4,6 +4,7 @@ import React from "react";
 import { Button } from "./ui/button";
 import AlertDialogue from "./ui/AlertDialogue";
 import { cn } from "src/@/lib/utils";
+import { renderDate } from "utils/renderValues";
 
 export const SheetCardExtension = ({ title, children, className }) => {
   return (
@@ -94,10 +95,10 @@ export const DetailCard = ({
           <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
             <div>
               <span className="text-[#8b8d98] text-xs font-medium  leading-tight">
-                {dateTitle}:
+                {dateTitle}:{' '}
               </span>
               <span className="text-[#8b8d98] text-xs font-normal  leading-3">
-                {` ${moment(date).format("MMMM DD, YYYY")}`}
+                {renderDate(date, "--", "date-time")}
               </span>
             </div>
           </div>

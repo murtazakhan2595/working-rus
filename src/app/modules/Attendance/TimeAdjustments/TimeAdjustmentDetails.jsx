@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   NavigationSheetComponent,
   DetailContent,
@@ -6,7 +6,7 @@ import {
 } from "components";
 // import AddGraceTimeForm from "./AddGraceTimeForm";
 import { FormatID } from "utils/getValuesFromTables";
-import { StatusLabel } from "components";
+import { StatusLabel, EmployeeDetailUI } from "components";
 import { getTimeAdjustmentData } from "app/hooks/attendance";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
@@ -14,6 +14,7 @@ import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { saveTimeAdjustment } from "app/hooks/attendance";
+import { handleRequest } from "app/hooks/general";
 
 const TimeAdjustmentDetails = ({
   isOpen,
@@ -25,20 +26,17 @@ const TimeAdjustmentDetails = ({
   const { id: user_id, role: user_role } = useSelector(
     (state) => state.user.userProfile
   );
+  const [forceLoad, setForceLoad] = useState(false);
 
-  const handleClick = async (event, status, id,attendance_id) => {
+  const handleClick = async (event, status, { request }) => {
     event.preventDefault();
     event.stopPropagation();
     try {
-      const payload = {
-        status: status.toUpperCase(),
-        attendance_id:attendance_id,
-      };
-      const response = await saveTimeAdjustment(payload, id);
+      const response = await handleRequest(request, status === "Approved");
       // return
       if (response) {
         toast.success(`Request ${status} Successfully!`);
-        fetchData(id, true);
+        setForceLoad(!forceLoad);
       }
     } catch (error) {
       // Handle errors and rollback form data
@@ -51,33 +49,48 @@ const TimeAdjustmentDetails = ({
       customContent: true,
       renderContent: (data) => {
         return (
-          <div className="flex flex-wrap justify-between gap-2">
-            <div className="flex flex-col gap-2">
-              <EmployeeOverview
-                id={data.employee_id}
-                showId={true}
-                showEmail={true}
-                showBranchName={true}
-                showDepartment={true}
-              />
-              <StatusLabel className="ml-10" status={data.status}>
-                {data?.status?.toLowerCase()}
-              </StatusLabel>
-            </div>
+          <div className="flex flex-wrap justify-between gap-2 flex-wrap items-center">
+            <EmployeeOverview
+              id={data.employee_id}
+              showId={true}
+              showEmail={true}
+              avatarSize={14}
+            />
+            <StatusLabel className="ml-10" status={data.status}>
+              {data?.status?.toLowerCase()}
+            </StatusLabel>
           </div>
         );
       },
     },
     {
-      title: "Adjustment Details",
-      footerTitle: "Created At",
-      footerField: "created_at",
+      title: "Employee Details",
       field: [
         {
-          key: "id",
-          label: "Id",
-          formatter: (cell, row) => <FormatID value={cell} prefix={"TA-"} />,
+          key: "employee_id",
+          label: "",
+          formatter: (cell) => (
+            <EmployeeDetailUI
+              id={cell}
+              InformationKeys={[
+                "name",
+                "department",
+                "position",
+                "branch",
+                "manager",
+              ]}
+              ViewVariant={"vertical"}
+              className
+            />
+          ),
         },
+      ],
+    },
+    {
+      title: "Adjustment Details",
+      footerTitle: "Submitted At",
+      footerField: "created_at",
+      field: [
         {
           key: "date",
           label: "Attendance Date",
@@ -89,6 +102,16 @@ const TimeAdjustmentDetails = ({
           formatter: (cell) => renderDate(cell, "--", "time"),
         },
         {
+          key: "shift_start_time",
+          label: "New Shift Hours",
+          formatter: (cell, data) => (
+            <>
+              {renderDate(cell, "--", "time")} -{" "}
+              {renderDate(data?.shift_end_time, "--", "time")}
+            </>
+          ),
+        },
+        {
           key: "reason",
           label: "Reason",
         },
@@ -98,7 +121,7 @@ const TimeAdjustmentDetails = ({
       title: "Approval Details",
       field: [
         {
-          key: "approval_logs",
+          key: "approval_details",
           formatter: (cell) => (
             <StatusList status_list={cell} className="my-3" />
           ),
@@ -117,13 +140,16 @@ const TimeAdjustmentDetails = ({
             <div className="flex flex-wrap justify-end gap-2 my-5">
               <Button
                 variant="success"
-                onClick={(event) =>
-                  handleClick(event, "Approved", data.id,data.attendance_id)
-                }
+                onClick={(event) => handleClick(event, "Approved", data)}
               >
                 Approve
               </Button>
-              <Button variant="destructive">Reject</Button>
+              <Button
+                variant="destructive"
+                onClick={(event) => handleClick(event, "Rejected", data)}
+              >
+                Reject
+              </Button>
             </div>
           );
         return null;
@@ -148,6 +174,7 @@ const TimeAdjustmentDetails = ({
       setIsOpen={setIsOpen}
       title="Time Adjustment Details"
       currentItem_Id={currentId}
+      ForceItemLoad={forceLoad}
       dataList={DataList}
       reloadData={reloadData}
       allowEdit={false}

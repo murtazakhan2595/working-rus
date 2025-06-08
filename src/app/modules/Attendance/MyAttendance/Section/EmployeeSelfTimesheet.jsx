@@ -35,8 +35,7 @@ export default function EmployeeSelfTimesheet({
       isSplitShit && attendance?.second_checkin
         ? moment(attendance?.second_checkin)
         : moment(attendance?.checkin); // Check-in time
-    const now = moment(); // Current time
-
+    const now = moment().utc(); // Current time
     // Parse break duration (in hours) and convert to milliseconds
     const breakMs = parseFloat(attendance?.break_duration || 0) * 3600 * 1000;
 
@@ -319,6 +318,7 @@ const RenderLogInButton = ({
 
   if (!Shift?.shifts || Shift?.shifts?.length === 0) return null;
   const startShift = async () => {
+    debugger;
     if (attendance && attendance?.checkout && !isSplitShift) {
       toast.success("Shift already ended");
       return;
@@ -335,8 +335,7 @@ const RenderLogInButton = ({
     };
     if (isSplitShift && attendance?.checkin && !attendance?.second_checkin)
       payload.second_checkin = checkInTime;
-    else if (!isSplitShift && !attendance?.checkin)
-      payload.checkin = checkInTime;
+    else if (!attendance?.checkin) payload.checkin = checkInTime;
     const response = await saveAttendance(payload, Shift, attendance?.id);
     if (response) {
       toast.success("Shift started");
@@ -353,6 +352,7 @@ const RenderLogInButton = ({
       second_checkin: attendance?.second_checkin,
       id: attendance?.id,
       payable_hours: attendance?.payable_hours,
+      date: attendance.date,
     };
     if (
       isSplitShift &&

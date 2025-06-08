@@ -64,7 +64,10 @@ const AttendanceAdjustment = ({ activeView = "Attendance Adjustments" }) => {
             />
           </TabsContent>
           <TabsContent value="History & Logs">
-            <AttendanceAdjustmentHistory />
+            <AttendanceAdjustmentHistory isTeamView={false}
+              isDepartmentView={isViewDAAermitted}
+              isBranchView={isViewBAAPermitted}
+              adminView={isViewAAPermitted} />
           </TabsContent>
         </Card>
       </Tabs>

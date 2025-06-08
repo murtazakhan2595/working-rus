@@ -74,7 +74,6 @@ export const validateStartAndEndTimeField = (
   start_time,
   end_time,
   date = moment().format("YYYY-MM-DD"),
-  label = "End Time"
 ) => {
   // Ensure both times are provided
   if (!start_time) {
@@ -98,7 +97,7 @@ export const validateStartAndEndTimeField = (
 
     // Compare times only if valid
     if (start.isValid() && end.isValid()) {
-      if (!start.isBefore(end)) {
+      if (end.isBefore(start)) {
         return true;
       }
     }

@@ -2,6 +2,7 @@ import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { getEmployeeCustomList, HandleLogout } from "./general";
 import moment from "moment";
+import { mapLeaveTypeListData } from "app/utils/MappingObjects/mapLeaveData";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -227,7 +228,6 @@ const getLeavestats = async (payload) => {
   }
 };
 const getLeaveTransaction = async (payload) => {
-  console.log("payload", payload);
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -579,15 +579,17 @@ const saveLeaveDuration = async (payload) => {
 
     throw error;
   }
-}
-const getLeaveDurations =async (payload) => {
+};
+const getLeaveDurations = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/leave-durations?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  let URL = `/leave-durations?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -602,7 +604,7 @@ const getLeaveDurations =async (payload) => {
     }
     return false;
   }
-}
+};
 
 const deleteLeaveDuration = async (id) => {
   try {
@@ -619,7 +621,42 @@ const deleteLeaveDuration = async (id) => {
     }
     return false;
   }
-}
+};
+
+export const getLeaveTypeListData = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/leave-types?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseList = await mapLeaveTypeListData(ResponseData.results);
+      return { results: ResponseList, count: ResponseData.count };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+// End points to remove
+// /employeeleavetransaction/
+// /leaveattachments
+// /leave
+// leaveComponents
 
 const saveLeaveType = async (payload) => {
   try {

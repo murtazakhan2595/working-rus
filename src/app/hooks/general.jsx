@@ -742,6 +742,32 @@ export const getCurrentRequestApprover = async (request_id) => {
   return {};
 };
 
+export const handleRequest = async (request_id, approve) => {
+  try {
+    const url = `${baseUrl}/requests/${request_id}/${
+      approve ? "approve" : "reject"
+    }/`;
+
+    const method = "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
 export {
   getDepartmentList,
   getManagersList,

@@ -5,19 +5,34 @@ import { AttendanceAdjustmentLogsColumns } from "app/modules/Attendance/Sections
 import { CardDescription, CardTitle, CardContent } from "components/ui/card";
 import { PageLoader, TableCustom } from "components";
 
-const AttendanceAdjustmentHistory = ({}) => {
+import { GetEmployeeFilteredList, GetCommonFilteredList } from "utils/Lists";
+import { GlobalStatusOptions } from "data/Data";
+const AttendanceAdjustmentHistory = ({
+  isTeamView = false,
+  isDepartmentView = false,
+  isBranchView = false,
+  adminView = false,
+}) => {
+  const Employees = GetEmployeeFilteredList(
+    isTeamView,
+    adminView,
+    isBranchView,
+    isDepartmentView
+  );
+  const Department = GetCommonFilteredList("departments");
+  const Branches = GetCommonFilteredList("branches");
   const [TimeAdjustmentLogsList, setTimeAdjustmentLogsList] = useState({
     results: [],
     count: 0,
   });
   const [isloading, setIsLoading] = useState(false);
-  const [filterData, setFilterData] = useState({attendance:20});
+  const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedDelegatedIndex, setSelectedDelegatedIndex] = useState("");
-  const [selectedAutoFowardIndex, setSelectedAutoFowardIndex] = useState("");
-  const [selectedRequestType, setSelectedRequestType] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedEmployee, setSelectedEmployee] = useState("");
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -35,7 +50,6 @@ const AttendanceAdjustmentHistory = ({}) => {
   const fetchData = async (isMounted) => {
     try {
       setIsLoading(true);
-
       const response = await getAttendanceAdjustmentLogsList({
         filterData,
         options,
@@ -62,11 +76,10 @@ const AttendanceAdjustmentHistory = ({}) => {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "request_type") setSelectedRequestType(filterValue);
-    if (filterName === "status") setSelectedStatus(filterValue);
-    if (filterName === "has_auto_forward")
-      setSelectedAutoFowardIndex(filterValue);
-    if (filterName === "has_delegation") setSelectedDelegatedIndex(filterValue);
+    if (filterName === "employee") setSelectedEmployee(filterValue);
+    if (filterName === "statuses") setSelectedStatus(filterValue);
+    if (filterName === "branch_id") setSelectedBranch(filterValue);
+    if (filterName === "department_name") setSelectedDepartment(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -81,18 +94,54 @@ const AttendanceAdjustmentHistory = ({}) => {
   return (
     <div className="flex flex-col gap-4 px-6">
       <CardTitle className="text-primary pt-6">
-        Time Adjustments History & Logs
+        Attendance Adjustments History & Logs
       </CardTitle>
       <CardDescription className="text-neutral-1100">
-        Here you can manage time adjustments. View, reject, or approve as
-        needed.
+        Here you can view attendance adjustments history of every request.
       </CardDescription>
       <FilterInput
         filters={[
           {
-            type: "search",
-            placeholder: "Search by ID",
-            name: "emp_serial_no",
+            type: "select-one",
+            placeholder: "Employee",
+            name: "employee",
+            option: Employees,
+            values: selectedEmployee,
+          },
+          ...(adminView || isBranchView
+            ? [
+                {
+                  type: "select-two",
+                  placeholder: "Department",
+                  name: "department_name",
+                  option: Department,
+                  values: selectedDepartment,
+                },
+              ]
+            : []),
+          ...(adminView || isDepartmentView
+            ? [
+                {
+                  type: "select-three",
+                  placeholder: "Branch",
+                  name: "branch_id",
+                  option: Branches,
+                  values: selectedBranch,
+                },
+              ]
+            : []),
+          {
+            type: "date-range",
+            placeholder: "Status",
+            name: "statuses",
+            values: selectedStatus,
+          },
+          {
+            type: "select-four",
+            placeholder: "Status",
+            name: "statuses",
+            option: GlobalStatusOptions(false),
+            values: selectedStatus,
           },
         ]}
         onChange={handleFilterChange}
