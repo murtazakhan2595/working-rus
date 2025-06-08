@@ -577,7 +577,7 @@ const saveLeaveDuration = async (payload) => {
       HandleLogout();
     }
 
-    return [];
+    throw error;
   }
 };
 const getLeaveDurations = async (payload) => {
@@ -658,7 +658,83 @@ export const getLeaveTypeListData = async (payload) => {
 // /leave
 // leaveComponents
 
+const saveLeaveType = async (payload) => {
+  try {
+    if (payload?.id) {
+      // If there's an ID, use PATCH to update the existing leave type
+      const response = await axios.patch(
+        `${baseUrl}/leave-types/${payload.id}/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200 || response.status === 201) {
+        return response.data;
+      }
+    } else {
+      // If no ID, use POST to create a new leave type
+      const response = await axios.post(`${baseUrl}/leave-types/`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201 || response.status === 200) {
+        return response.data;
+      }
+    }
+  } catch (error) {
+    console.error("Error saving leave type:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    throw error;
+  }
+}
+
+const getLeaveTypes = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/leave-types?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching leave types:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+}
+
+const deleteLeaveType = async (id) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/leave-types/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 204) {
+      return true;
+    }
+  } catch (error) {
+    console.error("Error deleting leave type:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+}
+
 export {
+  deleteLeaveType,
+  getLeaveTypes,
+  saveLeaveType,
   deleteLeaveDuration,
   saveLeaveDuration,
   saveLeaveComponents,
