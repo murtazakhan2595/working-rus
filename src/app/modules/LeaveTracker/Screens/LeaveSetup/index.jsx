@@ -11,6 +11,9 @@ import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
 import AddUpdateLeaveDuration from "./Sections/AddUpdateLeaveDuration"
 import { getLeaveDurations } from "app/hooks/leaveTracker";
+import LeaveTypes from "./LeaveTypes";
+import AddUpdateLeaveType from "./Sections/AddUpdateLeaveType";
+import { getLeaveTypes } from "app/hooks/leaveTracker";
 export default function LeaveSetup() {
   const [activeTab, setActiveTab] = useState("leave-duration");
   const [addDuration, setAddDuration] = useState(false);
@@ -19,14 +22,23 @@ export default function LeaveSetup() {
   const [filterData, setFilterData] = useState({});
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
+  const [addLeaveType, setAddLeaveType] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const payload = { options, ordering, filterData };
-      const response = await getLeaveDurations(payload);
-      if (response) {
-        setData(response);
+      console.log("Fetching data with payload:", activeTab)
+      if (activeTab === "leave-duration") {
+        const response = await getLeaveDurations(payload);
+        if (response) {
+          setData(response);
+        }
+      } else if (activeTab === "leave-types") {
+        const response = await getLeaveTypes(payload);
+        if (response) {
+          setData(response);
+        }
       }
     } catch (error) {
       console.error("Error fetching leave durations:", error);
@@ -37,7 +49,15 @@ export default function LeaveSetup() {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, [activeTab, fetchData]);
+
+  useEffect(() => {
+    // Reset options when switching tabs
+    setOptions({ page: 1, sizePerPage: 10 });
+    setOrdering("-id");
+    setFilterData({});
+  }, [activeTab]);
+  
 
   const onPageChange = (name, value) => {
     setOptions(prev => ({ ...prev, [name]: value }));
@@ -62,6 +82,24 @@ export default function LeaveSetup() {
           },
         ]
       : []),
+    ...(true
+      ? [
+          {
+            value: "leave-types",
+            label: "Leave Types",
+            component: (
+              <LeaveTypes
+                options={options}
+                onPageChange={onPageChange}
+                setOrdering={setOrdering}
+                loading={loading}
+                data={data}
+                reload={fetchData}
+              />
+            ),
+          },
+        ]
+      : []),
   ];
   return (
     <div className="flex flex-col gap-4">
@@ -75,6 +113,15 @@ export default function LeaveSetup() {
                 }}
               >
                 Add Duration
+              </Button>
+            )}
+            {activeTab === "leave-types" && (
+              <Button
+                onClick={() => {
+                  setAddLeaveType(true);
+                }}
+              >
+                Add Leave Type
               </Button>
             )}
           </>
@@ -109,7 +156,21 @@ export default function LeaveSetup() {
           </CardContent>
         </Card>
       </Tabs>
-      {addDuration && <AddUpdateLeaveDuration isOpen={addDuration} setIsOpen={setAddDuration} reload={fetchData}/> }
+      {addDuration && (
+        <AddUpdateLeaveDuration
+          isOpen={addDuration}
+          setIsOpen={setAddDuration}
+          reload={fetchData}
+        />
+      )}
+      {addLeaveType && (
+        <AddUpdateLeaveType
+          isOpen={addLeaveType}
+          setIsOpen={setAddLeaveType}
+          reload={fetchData}
+          isLeaveType={true}
+        />
+      )}
     </div>
   );
 }
