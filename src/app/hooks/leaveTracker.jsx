@@ -577,7 +577,7 @@ const saveLeaveDuration = async (payload) => {
       HandleLogout();
     }
 
-    return [];
+    throw error;
   }
 }
 const getLeaveDurations =async (payload) => {

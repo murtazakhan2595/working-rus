@@ -69,6 +69,18 @@ export default function AddUpdateLeaveDuration({
       const response = await saveLeaveDuration({
         ...values,
         id: data?.id,
+        nationalities:
+          !values.nationalities || values.nationalities.length === 0
+            ? null
+            : values.nationalities,
+        branches_ids:
+          !values.branches_ids || values.branches_ids.length === 0
+            ? null
+            : values.branches_ids,
+        departments_ids:
+          !values.departments_ids || values.departments_ids.length === 0
+            ? null
+            : values.departments_ids,
       });
       if (response) {
         toast.success(

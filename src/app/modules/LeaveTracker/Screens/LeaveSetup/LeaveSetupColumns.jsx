@@ -20,7 +20,7 @@ export const LeaveDurationColumn = (reload, data) => [
         return <span className="">All</span>;
       }
       if (!cell || cell.length === 0) {
-        return <span className="">No roles assigned</span>;
+        return <span className="">No nationalities assigned</span>;
       }
       return (
         <div className="flex flex-wrap gap-1">
