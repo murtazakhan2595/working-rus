@@ -93,24 +93,28 @@ const ShiftCalendar = () => {
 
       // Check if we need to fetch new data (for server-side filters)
       const serverSideFilters = {};
-      const hasServerSideFilters = Object.keys(newFilterData).some((key) => {
-        // Only department_name and branch_name are server-side filters
-        if (
-          (key === "department_name" || key === "branch_name") &&
-          newFilterData[key]
-        ) {
+      let hasServerSideFilters = false;
+
+      // Check for server-side filter keys that exist in newFilterData
+      const serverSideKeys = ["department_name", "branch_name"];
+
+      serverSideKeys.forEach((key) => {
+        if (key in newFilterData) {
+          // Include the filter even if it's empty (to clear server-side filter)
           serverSideFilters[key] = newFilterData[key];
-          return true;
+          hasServerSideFilters = true;
         }
-        return false;
       });
 
-      // If there are server-side filters, fetch new data
-      if (hasServerSideFilters) {
+      // Always fetch when server-side filters are involved (including clearing them)
+      if (
+        hasServerSideFilters ||
+        Object.keys(filterData).some((key) => serverSideKeys.includes(key))
+      ) {
         fetchUsers(serverSideFilters);
       }
     },
-    [fetchUsers]
+    [fetchUsers, filterData] // Add filterData to dependencies
   );
 
   // Apply client-side filters for team members
