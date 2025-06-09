@@ -410,7 +410,7 @@ export const GetCommonFilteredList = (label) => {
   return List;
 };
 
-export const GetStateList = (label, list) => {
+export const GetDispatchStateList = (label, list) => {
   const List = useSelector((state) => {
     if (!state || typeof state !== "object") return null;
     if (!list || !label) return null;

@@ -6,14 +6,14 @@ import {
   TabsTrigger,
   TabsContent,
 } from "src/@/components/ui/tabs";
-import LeaveDuration from "./LeaveDuration";
 import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
-import AddUpdateLeaveDuration from "./Sections/AddUpdateLeaveDuration";
+import {AddUpdateLeaveDuration,LeaveDuration,Holidays,AddUpdateHolidays} from "app/modules/LeaveTracker";
 import { getLeaveDurations } from "app/hooks/leaveTracker";
-export default function LeaveSetup() {
+export default function LeaveManagement() {
   const [activeTab, setActiveTab] = useState("leave-duration");
   const [addDuration, setAddDuration] = useState(false);
+  const [addHolidays, setAddHolidays] = useState(false);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
   const [filterData, setFilterData] = useState({});
@@ -66,7 +66,7 @@ export default function LeaveSetup() {
       value: "public-holidays",
       label: "Public Holidays",
       component: (
-        <LeaveDuration
+        <Holidays
           options={options}
           onPageChange={onPageChange}
           setOrdering={setOrdering}
@@ -89,6 +89,15 @@ export default function LeaveSetup() {
                 }}
               >
                 Add Duration
+              </Button>
+            )}
+            {activeTab === "public-holidays" && (
+              <Button
+                onClick={() => {
+                  setAddHolidays(true);
+                }}
+              >
+                Add Holidays
               </Button>
             )}
           </>
@@ -127,6 +136,13 @@ export default function LeaveSetup() {
         <AddUpdateLeaveDuration
           isOpen={addDuration}
           setIsOpen={setAddDuration}
+          reload={fetchData}
+        />
+      )}
+      {addHolidays && (
+        <AddUpdateHolidays
+          isOpen={addHolidays}
+          setIsOpen={setAddHolidays}
           reload={fetchData}
         />
       )}

@@ -9,22 +9,6 @@ const Leave = {
   total_days: null,
   reason: null,
   is_full_paid: true,
-
-  // employee_id: "",
-  // name: "",
-  // date: moment(new Date()).format("YYYY-MM-DD"),
-  // position: "",
-  // department: "",
-  // joining_date: "",
-  // nationality: "",
-  // last_work_day: "",
-  // rejoining_date: "",
-  // total_leave: "",
-  // reason: "",
-  // contact_no: "",
-  // country_code: "",
-  // report_to: "",
-  // address_during_leave: "",
 };
 
 const EmployeeLeaveTypesList = {
@@ -64,6 +48,15 @@ export const LeaveType = {
   tooltip_info: null,
   created_at: null,
   updated_at: null,
+};
+
+export const PublicHoliday = {
+  name: null,
+  date: null,
+  end_date: null,
+  branches: null,
+  country: null,
+  religion: null,
 };
 
 export { Leave, EmployeeLeaveTypesList };

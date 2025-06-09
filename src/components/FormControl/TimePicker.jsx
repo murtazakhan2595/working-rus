@@ -1,13 +1,13 @@
-import React, { useState,useEffect } from "react";
-import { cn } from "src/@/lib/utils"; // Import your `cn` utility if available
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuItem,
-} from "src/@/components/ui/dropdown-menu";
-import { FormField } from "components/FormControl";
+import React, { useState, useEffect } from "react";
+import { FormField, InvalidInput } from "components/FormControl";
 import moment from "moment";
+import { Input } from "components/ui/input";
+import { renderTime } from "utils/DateTimeUtils";
+import { renderDate } from "utils/renderValues";
+
+// const TimeRegex = /^[0-9:\s]*\s?(a|P|p|A|AM|PM)?$/i;
+const TimeRegex = /^(0?[1-9]|1[0-2]):([0-5][0-9])\s?(AM|PM)?$/i;
+const TypingRegex = /^[0-9]{0,2}(:[0-9]{0,2})?\s?(A|P|AM|PM|a|p|am|pm)?$/;
 
 const TimePicker = ({
   name = null,
@@ -18,36 +18,33 @@ const TimePicker = ({
   disabled = false,
   value = null,
   date = null,
-  onChange=()=>{},
+  onChange = () => {},
   className,
   description,
+  placeholder,
+  autoComplete = "new-password",
+  inputCustomStyle = "",
+  icon = null,
 }) => {
-  const [time, setTime] = useState(() =>
-    value ? moment(value).toISOString() : null
-  );
+  const [time, setTime] = useState(null);
 
   useEffect(() => {
     if (value) {
-      setTime(moment(value).toISOString());
-    }
+      const currentMoment = value && value.length > 7 ? moment(value) : null;
+      if (currentMoment && currentMoment.isValid) {
+        const formattedTime = renderDate(currentMoment, "--", "time");
+        setTime(formattedTime);
+      } else setTime(value);
+    } else setTime(null);
   }, [value]); // Runs whenever `value` changes
-  const handleTimeChange = (newHour, newMinute, newPeriod) => {
-    const updatedTime = (time ? moment(time) : moment(date || new Date()))
-      .hour(newPeriod === "PM" ? parseInt(newHour, 10) + 12 : newHour)
-      .minute(newMinute)
-      .second(0)
-      .toISOString();
-    setTime(updatedTime);
-    if (onChange) {
-      onChange(name, updatedTime);
-    //  console.log(updatedTime,moment(updatedTime).format("h:mm A"),"updatedTime")
+  const handleTimeChange = (inputValue) => {
+    if (inputValue.length === 8) {
+      const formattedTime = renderTime(inputValue, date);
+      onChange(name, formattedTime ? formattedTime : inputValue);
+    } else {
+      onChange(name, inputValue);
     }
   };
-
-  const currentMoment = time ? moment(time) : null;
-  const hour = currentMoment ? currentMoment.format("hh") : "00";
-  const minute = currentMoment ? currentMoment.format("mm") : "00";
-  const period = currentMoment ? currentMoment.format("A") : "AM";
 
   return (
     <>
@@ -61,57 +58,80 @@ const TimePicker = ({
         disabled={disabled}
         field_description={description}
       >
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            className={cn(
-              "px-4 py-2 border rounded-md cursor-pointer",
-              className
-            )}
-            disabled={disabled}
-          >
-            {`${hour}:${minute} ${period}`}
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="flex gap-2 p-4">
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium">Hours</span>
-              <input
-                type="number"
-                min="1"
-                max="12"
-                value={hour}
-                onChange={(e) =>
-                  handleTimeChange(e.target.value, minute, period)
+        <Input
+          type="text"
+          maxLength={20}
+          id={name}
+          name={name}
+          autoComplete={autoComplete}
+          placeholder={placeholder || `Enter ${label || "value"}`}
+          value={time ?? ""}
+          disabled={disabled}
+          className={error && touch ? InvalidInput : "text-neutral-1000"}
+          onChange={(event) => {
+            let inputValue = event.target.value;
+            const isBackspace =
+              event.nativeEvent.inputType === "deleteContentBackward";
+            const currentKeyInput = event.nativeEvent.data;
+            if (!inputValue || isBackspace) {
+              onChange(name, null);
+              setTime(null);
+              return;
+            }
+            // Allow typing only if partial format is valid
+            if (TypingRegex.test(inputValue)) {
+              if (currentKeyInput === ":" && inputValue.length === 2)
+                inputValue = "0" + inputValue;
+              if (
+                (currentKeyInput === "p" ||
+                  currentKeyInput === "a" ||
+                  currentKeyInput === "A" ||
+                  currentKeyInput === "P") &&
+                inputValue.length <= 5 &&
+                inputValue.length > 4 &&
+                inputValue.includes(":")
+              ) {
+                inputValue = inputValue.replace(currentKeyInput, "");
+                const [hours, minutes] = inputValue.split(":");
+                inputValue =
+                  String(hours).padStart(2, "0") +
+                  ":" +
+                  String(minutes).padStart(2, "0") +
+                  " " +
+                  currentKeyInput.toUpperCase() +
+                  "M";
+              }
+              if (currentKeyInput === " " && inputValue.length !== 6) return;
+
+              // Auto-insert ":" after hours
+              if (inputValue.length === 2 && !inputValue.includes(":")) {
+                const hours = parseInt(inputValue);
+                if (hours < 1 || hours > 12) return;
+                inputValue = inputValue + ":";
+              }
+
+              // Auto-insert space after minutes
+              if (inputValue.length === 5 && !inputValue.includes(" ")) {
+                const [hours, minutes] = inputValue.split(":");
+                if (parseInt(minutes) < 0 || parseInt(minutes) > 60) return;
+                inputValue = inputValue + " ";
+              }
+
+              // Auto-complete AM/PM
+              if (inputValue.length === 7) {
+                const timePeriod = inputValue.charAt(6).toUpperCase();
+                if (timePeriod === "A" || timePeriod === "P") {
+                  inputValue = inputValue.substring(0, 6) + timePeriod + "M";
                 }
-                className="border rounded-md p-1"
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium">Minutes</span>
-              <input
-                type="number"
-                min="0"
-                max="59"
-                value={minute}
-                onChange={(e) => handleTimeChange(hour, e.target.value, period)}
-                className="border rounded-md p-1"
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium">Period</span>
-              {["AM", "PM"].map((periodItem) => (
-                <DropdownMenuItem
-                  key={periodItem}
-                  className={cn("cursor-pointer", {
-                    "font-bold": periodItem === period,
-                  })}
-                  onClick={() => handleTimeChange(hour, minute, periodItem)}
-                >
-                  {periodItem}
-                </DropdownMenuItem>
-              ))}
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              }
+              setTime(inputValue);
+              // Send only if fully valid
+              if (TimeRegex.test(inputValue)) {
+                handleTimeChange(inputValue);
+              }
+            }
+          }}
+        />
       </FormField>
     </>
   );

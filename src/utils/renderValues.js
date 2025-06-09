@@ -161,7 +161,9 @@ export function numberToWords(number) {
 export function renderDate(date, fallbackValue = "N/A", variant = "date") {
   if (!date || !moment(date).isValid()) return fallbackValue;
   const format =
-    variant === "month"
+    variant === "month-day"
+      ? "MMM D"
+      : variant === "month"
       ? "MMMM YYYY"
       : variant === "date-time"
       ? "MMM DD, YYYY hh:mm A"

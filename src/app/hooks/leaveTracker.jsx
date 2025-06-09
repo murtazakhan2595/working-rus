@@ -2,7 +2,10 @@ import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { getEmployeeCustomList, HandleLogout } from "./general";
 import moment from "moment";
-import { mapLeaveTypeListData } from "app/utils/MappingObjects/mapLeaveData";
+import {
+  mapLeaveTypeListData,
+  mapLeaveTypeData,
+} from "app/utils/MappingObjects/mapLeaveData";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -629,6 +632,104 @@ export const getLeaveTypeListData = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
   let URL = `/leave-types?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseList = await mapLeaveTypeListData(ResponseData.results);
+      return { results: ResponseList, count: ResponseData.count };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+export const getLeaveTypeData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/leave-types/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+           debugger
+      const ResponseData = await mapLeaveTypeData(response.data.data);
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+export const getLeaveEligibleTypeDurations = async (isType = true) => {
+  let URL = `/employee-leaves/eligible_leave_types/`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      // const ResponseList = await mapLeaveTypeListData(ResponseData);
+      const ResponseList = ResponseData.data;
+      return ResponseList;
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const getLeaveListData = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/employee-leaves/applied_leaves/?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseList = await mapLeaveTypeListData(ResponseData.results);
+      return { results: ResponseList, count: ResponseData.count };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+export const getHolidaysListData = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/holidays?ordering=${sortField}&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
     JSON.stringify(filterData)
