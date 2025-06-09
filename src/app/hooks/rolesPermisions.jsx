@@ -367,7 +367,6 @@ export const getMyEffectivePermissions = async (payload) => {
 };
 
 export {
-  deleteRole,
   saveAssignedRole,
   deleteAssignedRole,
   saveRolePermissions,

@@ -9,7 +9,8 @@ import { AiOutlineDownload } from "react-icons/ai";
 import {
   LeaveTrackerActions,
   LeaveDurationAction,
-  LeaveTypeAction
+  LeaveTypeAction,
+  HolidayActions,
 } from "app/modules/LeaveTracker";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
 import { DepartmentName } from "utils/getValuesFromTables";
@@ -21,6 +22,7 @@ import DropdownActionMenu from "components/DropdownActionMenu";
 import { getAssetById } from "app/hooks/assets";
 import { toast } from "react-toastify";
 import { renderDate } from "utils/renderValues";
+import { BranchName } from "utils/getValuesFromTables";
 
 export const LeaveRecordColumns = [
   {
@@ -286,31 +288,33 @@ export const LeaveDurationColumn = (reload, data) => [
 
 export const PublicHolidaydsColumn = (reload, data) => [
   {
-    dataField: "duration_name",
-    text: "Duration Name",
+    dataField: "name",
+    text: "Holiday Name",
     dataSort: true,
   },
   {
-    dataField: "duration_hours",
-    text: "Duration Hours",
+    dataField: "date",
+    text: "Start date",
     dataSort: true,
+    formatter: (cell) => renderDate(cell),
   },
   {
-    dataField: "nationalities",
-    text: "Nationalities",
+    dataField: "end_date",
+    text: "End date",
+    dataSort: true,
+    formatter: (cell) => renderDate(cell),
+  },
+  {
+    dataField: "country",
+    text: "Countries",
     formatter: (cell) => {
-      if (!cell || cell.length === 0) {
-        return <span className="">All</span>;
+      if (!cell || cell?.length === 0) {
+        return <span className=""></span>;
       }
       return (
         <div className="flex flex-wrap gap-1">
-          {cell.map((nationality) => (
-            <span
-              key={nationality}
-              className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
-            >
-              {nationality}
-            </span>
+          {cell.map(({name}) => (
+            <StatusLabel variant='info'>{name}</StatusLabel>
           ))}
         </div>
       );
@@ -321,18 +325,15 @@ export const PublicHolidaydsColumn = (reload, data) => [
     dataField: "branches",
     text: "Branches",
     formatter: (cell) => {
-      if (!cell || cell.length === 0) {
-        return <span className="">All</span>;
+      if (!cell || cell?.length === 0) {
+        return <span className=""></span>;
       }
       return (
         <div className="flex flex-wrap gap-1">
-          {cell.map((branch) => (
-            <span
-              key={branch.id}
-              className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
-            >
-              {branch.branch_name}
-            </span>
+          {cell.map(({branch_name}) => (
+            <StatusLabel variant="info">
+              {branch_name}
+            </StatusLabel>
           ))}
         </div>
       );
@@ -340,37 +341,11 @@ export const PublicHolidaydsColumn = (reload, data) => [
     dataSort: true,
   },
   {
-    dataField: "departments",
-    text: "Departments",
-    formatter: (cell) => {
-      if (!cell || cell.length === 0) {
-        return <span className="">All</span>;
-      }
-      return (
-        <div className="flex flex-wrap gap-1">
-          {cell.map((dep) => (
-            <span
-              key={dep.id}
-              className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
-            >
-              {dep.name}
-            </span>
-          ))}
-        </div>
-      );
-    },
-    dataSort: true,
-  },
-  {
-    dataField: "actions",
+    dataField: "",
     text: "Actions",
     isDummyField: true,
-    formatter: (cell, row) => (
-      <LeaveDurationAction
-        data={row}
-        reload={reload}
-        leaveDurationList={data}
-      />
+    formatter: (_, row, dataList) => (
+      <HolidayActions data={row} reloadData={reload} DataList={dataList} />
     ),
     headerStyle: { width: "8%" },
     style: { textAlign: "center" },

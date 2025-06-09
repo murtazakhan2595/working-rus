@@ -5,7 +5,12 @@ import moment from "moment";
 import {
   mapLeaveTypeListData,
   mapLeaveTypeData,
+  mapPublicHolidayPayloadeData,
+  mapPublicHolidayListData,
+  mapPublicHolidayData
 } from "app/utils/MappingObjects/mapLeaveData";
+import { renderErrorMessages } from "utils/renderErrors";
+
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -740,7 +745,7 @@ export const getHolidaysListData = async (payload) => {
     });
     if (response.status === 200) {
       const ResponseData = response.data;
-      const ResponseList = await mapLeaveTypeListData(ResponseData.results);
+      const ResponseList = await mapPublicHolidayListData(ResponseData.results);
       return { results: ResponseList, count: ResponseData.count };
     }
     return { results: [], count: 0 };
@@ -752,6 +757,58 @@ export const getHolidaysListData = async (payload) => {
     return { results: [], count: 0 };
   }
 };
+
+export const saveUpdateHoliday = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+    const finalPayload = mapPublicHolidayPayloadeData(payload);
+
+    const url = ID
+      ? `${baseUrl}/holidays/${ID}/` // Use id if updating
+      : `${baseUrl}/holidays/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const getHolidayData = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/holidays/${id}/`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      const ResponseData = await mapPublicHolidayData(response.data);
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
 
 // End points to remove
 // /employeeleavetransaction/

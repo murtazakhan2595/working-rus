@@ -1,37 +1,35 @@
 import {
-  saveUpdateUserRole,
-  getUserRoleList,
-  saveUpdateUserRolePermission,
-  getUserRoleData,
-} from "app/hooks/rolesPermisions";
+  saveUpdateHoliday,
+  getHolidaysListData,
+  getHolidayData,
+} from "app/hooks/leaveTracker";
 import { PublicHoliday } from "app/utils/Types/LeaveManagment";
 import {
   SelectInputComponent,
   TextInput,
-  FilterInput,
+  SelectMultiInputComponent,
   DateInput,
 } from "components/FormControl";
-import { validateUserRoleFormSchema } from "app/utils/FormSchema/RolePermissionsFormSchema";
-import AlertDialogue from "components/ui/AlertDialogue";
+import { validatePublicHolidayFormSchema } from "app/utils/FormSchema/leaveTrackerFormSchema";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
-import { Header, SheetUI } from "components";
-import { Card } from "components/ui/card";
-import { CardContent } from "components/ui/card";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { SheetUI } from "components";
+import { countriesList } from "data/Data";
 import { GetDispatchStateList } from "utils/Lists";
+import { getDropdownList } from "utils/Lists";
 
-const AddUpdateHolidays = ({ isOpen = true, id }) => {
+const AddUpdateHolidays = ({
+  isOpen = false,
+  id,
+  setIsOpen = () => {},
+  reloadData = () => {},
+}) => {
   const Branches = GetDispatchStateList("branches", "common") || [];
-  const navigate = useNavigate();
-  const [confirmSave, setConfirmSave] = useState(false);
   const [formValues, setFormValues] = useState(PublicHoliday);
-  const [UserRoles, setUserRoles] = useState(null);
+  const [PublicHolidays, setPublicHolidays] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [RoleNameExist, setRoleNameExist] = useState(false);
+  const [NameExist, setNameExist] = useState(false);
   const isEditMode = Boolean(id);
-  const ModuleTree = useSelector((state) => state.roles_permissions.modules);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
 
   const FormSheetData = {
@@ -43,18 +41,20 @@ const AddUpdateHolidays = ({ isOpen = true, id }) => {
   // Initialize form data with role values if in edit mode
   const [formData, setFormData] = useState(PublicHoliday);
 
-  const fetchUserRolesData = async (isMounted) => {
+  const fetchPublicHolidaysData = async (isMounted) => {
     try {
       setIsLoading(true);
       // Add organizationId to filter if available
-      const response = await getUserRoleList();
+      const response = await getHolidaysListData();
 
       if (isMounted) {
-        setUserRoles(
-          response.results?.map((item) => {
-            return { name: item.name, id: item.id };
-          })
+        const responseData = response.results;
+        const dropDownOptions = await getDropdownList(
+          responseData,
+          "name",
+          "id"
         );
+        setPublicHolidays(dropDownOptions);
       }
     } catch (error) {
       console.error("Error fetching roles:", error);
@@ -65,7 +65,7 @@ const AddUpdateHolidays = ({ isOpen = true, id }) => {
 
   useEffect(() => {
     let isMounted = true;
-    fetchUserRolesData(isMounted);
+    fetchPublicHolidaysData(isMounted);
     return () => {
       isMounted = false;
     };
@@ -74,7 +74,7 @@ const AddUpdateHolidays = ({ isOpen = true, id }) => {
   const fetchData = async (isMounted, id) => {
     try {
       setIsLoading(true);
-      const response = await getUserRoleData(id);
+      const response = await getHolidayData(id);
       if (isMounted) {
         setFormData(response);
       }
@@ -93,38 +93,26 @@ const AddUpdateHolidays = ({ isOpen = true, id }) => {
     };
   }, [id]);
 
-  const handleClose = () => {};
-
-  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
-    if (!values?.feature_ids)
-      return toast.error("Please select at least one permission", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    setFormValues(values);
-    setConfirmSave(true);
+  const handleClose = () => {
+    setIsOpen(false);
+    reloadData(true);
   };
 
-  const confirmSubmit = async () => {
-    if (!formValues) return;
+  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     setIsSubmittingForm(true);
     try {
       // Save role
-      const response = await saveUpdateUserRole(formValues, id);
+      const response = await saveUpdateHoliday(values, id);
       if (response) {
-        if (response.id) {
-          await saveUpdateUserRolePermission(
-            { ...formValues, role: response.id },
-            formData.role_permission_id
-          );
-        }
         // Ensure table is reloaded
-        toast.success(
-          `User Role ${isEditMode ? "Updated" : "Added"} Successfully!`,
-          {
-            position: toast.POSITION.TOP_RIGHT,
-          }
-        );
-        handleClose();
+        return {
+          status: true,
+          title: "Form Submitted Succesfully",
+          description: `${values.name} as a public holiday has been ${
+            isEditMode ? "updated" : "added"
+          } successfully.`,
+          messageType: "Success",
+        };
       }
     } catch (error) {
       // Show error message
@@ -134,24 +122,23 @@ const AddUpdateHolidays = ({ isOpen = true, id }) => {
         `Failed to ${isEditMode ? "update" : "add"} role.`;
       toast.error(errorMessage);
     } finally {
-      setConfirmSave(false);
       setIsSubmittingForm(false);
     }
   };
 
-  const validateUserRoleName = useCallback(
-    (role_name) => {
-      if (!role_name) return false;
+  const validateHolidayName = useCallback(
+    (name) => {
+      if (!name) return false;
 
-      const user_role_name = UserRoles.filter(
-        (role) =>
-          role.name.toLowerCase() === role_name.trim().toLowerCase() &&
-          parseInt(role.id) !== parseInt(id)
+      const holiday_name = PublicHolidays.filter(
+        (holiday) =>
+          holiday.label.toLowerCase() === name.trim().toLowerCase() &&
+          parseInt(holiday.id) !== parseInt(id)
       );
 
-      setRoleNameExist(user_role_name.length > 0);
+      setNameExist(holiday_name.length > 0);
     },
-    [UserRoles, id] // dependencies
+    [PublicHolidays, id] // dependencies
   );
 
   return (
@@ -164,15 +151,16 @@ const AddUpdateHolidays = ({ isOpen = true, id }) => {
         formConfig={{
           initialValues: formData,
           enableReinitialize: true,
+          renderUpdatedFormValues:setFormValues,
           handleSubmit: handleSubmit,
           onSubmitClick: (values) => {
-            validateUserRoleName(values.name);
+            validateHolidayName(values.name);
           },
           validateFormSchema: (values) => {
-            const errors = validateUserRoleFormSchema(values);
-            if (values.name && RoleNameExist)
+            const errors = validatePublicHolidayFormSchema(values);
+            if (values.name && NameExist)
               errors.name =
-                "Role Name already exists. Please choose a different name";
+                "Name already exists. Please choose a different name";
             return errors;
           },
           submitButtonText: "Submit",
@@ -191,7 +179,7 @@ const AddUpdateHolidays = ({ isOpen = true, id }) => {
                   required: true,
                   label: "Holiday Name",
                   onFieldUpdate: (_, value) => {
-                    validateUserRoleName(value);
+                    validateHolidayName(value);
                   },
                 },
                 {
@@ -203,27 +191,26 @@ const AddUpdateHolidays = ({ isOpen = true, id }) => {
                 {
                   InputField: DateInput,
                   name: "end_date",
-                  required: true,
                   label: "End Date",
+                  minDate: formValues.data,
                 },
                 {
-                  InputField: SelectInputComponent,
+                  InputField: SelectMultiInputComponent,
                   name: "branches",
-                  required: true,
                   label: "Branches",
                   options: Branches,
+                  SelectAllOption: true,
                 },
                 {
-                  InputField: SelectInputComponent,
+                  InputField: SelectMultiInputComponent,
                   name: "country",
-                  required: true,
                   label: "Country",
-                  options: [],
+                  options: countriesList,
+                  SelectAllOption: true,
                 },
                 {
                   InputField: TextInput,
                   name: "religion",
-                  required: true,
                   label: "Religion",
                 },
               ],
@@ -231,22 +218,6 @@ const AddUpdateHolidays = ({ isOpen = true, id }) => {
           ],
         }}
       />
-      {confirmSave && (
-        <AlertDialogue
-          title={`Confirm ${isEditMode ? "Update" : "Create"} Role`}
-          description={`Are you sure you want to ${
-            isEditMode ? "update" : "create"
-          } this role with the selected permissions?`}
-          isOpen={confirmSave}
-          setIsOpen={setConfirmSave}
-          handleContinue={() => {
-            confirmSubmit();
-            setConfirmSave(false);
-          }}
-          buttonType="default"
-          className="text-neutral-1200"
-        />
-      )}
     </>
   );
 };

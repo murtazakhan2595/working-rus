@@ -57,6 +57,7 @@ export const PublicHoliday = {
   branches: null,
   country: null,
   religion: null,
+  id:null,
 };
 
 export { Leave, EmployeeLeaveTypesList };

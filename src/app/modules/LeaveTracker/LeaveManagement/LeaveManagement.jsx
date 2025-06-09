@@ -29,6 +29,7 @@ export default function LeaveManagement() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [addLeaveType, setAddLeaveType] = useState(false);
+  const [reloadHolidays, setReloadHolidays] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -115,7 +116,7 @@ export default function LeaveManagement() {
           setOrdering={setOrdering}
           loading={loading}
           data={data}
-          reload={fetchData}
+          reload={reloadHolidays}
         />
       ),
     },
@@ -195,7 +196,9 @@ export default function LeaveManagement() {
         <AddUpdateHolidays
           isOpen={addHolidays}
           setIsOpen={setAddHolidays}
-          reload={fetchData}
+          reloadData={() => {
+            setReloadHolidays(!reloadHolidays);
+          }}
         />
       )}
       {addLeaveType && (

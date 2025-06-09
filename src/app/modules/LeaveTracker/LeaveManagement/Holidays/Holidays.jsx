@@ -10,26 +10,17 @@ import { Header, PageLoader, TableCustom } from "components";
 import { LeaveAplicationColumns } from "app/modules/LeaveTracker/Sections";
 import { LeaveTrackerOptions } from "data/Data";
 import { GetDispatchStateList } from "utils/Lists";
-import { getDropdownList } from "utils/Lists";
+import { countriesList } from "data/Data";
 import { PublicHolidaydsColumn } from "app/modules/LeaveTracker/Sections";
 import { getHolidaysListData } from "app/hooks/leaveTracker";
 
-export default function Holidays({}) {
-  const Departments = GetDispatchStateList("departments", "common") || [];
+export default function Holidays({ reload = false }) {
   const Branches = GetDispatchStateList("branches", "common") || [];
-  const { id: user_id } = GetDispatchStateList("user_details", "emp") || {};
-  const [selectedLeaveApplication, setSelectedLeaveApplication] =
-    useState(null);
   const [filterData, setFilterData] = useState({});
   const [isloading, setIsLoading] = useState(true);
-  const [isOpen, setIsOpen] = useState(true);
   const [PublicHodidays, setPublicHodidays] = useState({});
-  const [leaveTransaction, setLeaveTransaction] = useState();
-  const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [selectedBranch, setSelectedBranch] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedLeaveType, setSelectedLeaveType] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [ordering, setOrdering] = useState("-id");
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -38,11 +29,18 @@ export default function Holidays({}) {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
   };
 
   const fetchData = async () => {
     setIsLoading(true);
-    const response = await getHolidaysListData({});
+    const response = await getHolidaysListData({
+      filterData,
+      options,
+      ordering,
+    });
     if (response) {
       setPublicHodidays(response);
     }
@@ -55,14 +53,23 @@ export default function Holidays({}) {
     return () => {
       isMounted = false;
     };
-  }, [filterData, options]);
+  }, [filterData, options, ordering]);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (isMounted) {
+      setOrdering("-id");
+      onPageChange("page", 1);
+      setFilterData({});
+      fetchData(true);
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [reload]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "departmentt") setSelectedDepartment(filterValue);
-    if (filterName === "status") setSelectedStatus(filterValue);
-    if (filterName === "leave_component_id") setSelectedLeaveType(filterValue);
-    if (filterName === "branch") setSelectedBranch(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
 
@@ -94,16 +101,38 @@ export default function Holidays({}) {
     <div className="flex flex-col gap-4 px-6">
       <CardTitle className="text-primary pt-6">Public Holidays</CardTitle>
       <CardDescription className="text-neutral-1100">
-        {`Here you can manage and view public holidays`}
+        {`Here you can add, edit, delete and view public holidays`}
       </CardDescription>
       <FilterInput
         filters={[
           {
-            type: "select-four",
-            option: Branches,
+            type: "search",
+            name: "name",
+            placeholder: "Serach by name",
+          },
+          {
+            type: "select",
+            options: Branches,
             name: "branch",
             placeholder: "Branch",
-            values: selectedBranch,
+          },
+          {
+            type: "select",
+            options: countriesList,
+            name: "country",
+            placeholder: "Country",
+          },
+          {
+            type: "select",
+            options: [],
+            name: "religion",
+            placeholder: "Religion",
+          },
+          {
+            type: "date-range",
+            options: Branches,
+            name: "date_range",
+            placeholder: "Start Date",
           },
         ]}
         onChange={handleFilterChange}

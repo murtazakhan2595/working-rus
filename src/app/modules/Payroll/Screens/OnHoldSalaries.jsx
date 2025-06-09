@@ -8,7 +8,7 @@ import { FilterInput } from "components/FormControl";
 import { useNavigate } from "react-router-dom";
 import { Eye } from "lucide-react";
 import moment from "moment";
-import DateInput from "components/FormControl/DateInput.jsx";
+import DateInput from "components/FormControl/DateInput";
 import { getPayun } from "../../../hooks/payroll.jsx";
 
 const OnHoldSalaries = () => {

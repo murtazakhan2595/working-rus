@@ -602,7 +602,7 @@ function HandleLogout(message = "Session Time Out") {
 }
 
 // Delete role
-const deleteRole = async (roleId, roleName) => {
+export const deleteRole = async (roleId, roleName) => {
   try {
     const response = await axios.delete(`${baseUrl}/userrole/${roleId}`, {
       headers: headers(),
@@ -784,6 +784,5 @@ export {
   getWorkingHours,
   getEmployeeListWithDetail,
   HandleLogout,
-  deleteRole,
   getRoleList,
 };
