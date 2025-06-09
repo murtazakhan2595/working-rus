@@ -98,28 +98,7 @@ export default function AddUpdateLeaveType({
       const response = await saveLeaveType({
         ...values,
         id: data?.id,
-        nationalities:
-          !values.nationalities || values.nationalities.length === 0
-            ? null
-            : values.nationalities,
-        branches_ids:
-          !values.branches_ids || values.branches_ids.length === 0
-            ? null
-            : values.branches_ids,
-        departments_ids:
-          !values.departments_ids || values.departments_ids.length === 0
-            ? null
-            : values.departments_ids,
-        genders:
-          !values.genders || values.genders.length === 0
-            ? null
-            : values.genders,
-        marital_statuses:
-          !values.marital_statuses || values.marital_statuses.length === 0
-            ? null
-            : values.marital_statuses,
-        grades:
-          !values.grades || values.grades.length === 0 ? null : values.grades,
+        
       });
       if (response) {
         toast.success(

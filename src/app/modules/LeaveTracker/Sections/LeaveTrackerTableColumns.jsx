@@ -208,11 +208,8 @@ export const LeaveDurationColumn = (reload, data) => [
     dataField: "nationalities",
     text: "Nationalities",
     formatter: (cell) => {
-      if (cell === null) {
-        return <span className="">All</span>;
-      }
       if (!cell || cell.length === 0) {
-        return <span className="">No roles assigned</span>;
+        return <span className="">All</span>;
       }
       return (
         <div className="flex flex-wrap gap-1">
@@ -233,11 +230,8 @@ export const LeaveDurationColumn = (reload, data) => [
     dataField: "branches",
     text: "Branches",
     formatter: (cell) => {
-      if (cell === null) {
-        return <span className="">All</span>;
-      }
       if (!cell || cell.length === 0) {
-        return <span className="">No roles assigned</span>;
+        return <span className="">All</span>;
       }
       return (
         <div className="flex flex-wrap gap-1">
@@ -258,11 +252,8 @@ export const LeaveDurationColumn = (reload, data) => [
     dataField: "departments",
     text: "Departments",
     formatter: (cell) => {
-      if (cell === null) {
-        return <span className="">All</span>;
-      }
       if (!cell || cell.length === 0) {
-        return <span className="">No roles assigned</span>;
+        return <span className="">All</span>;
       }
       return (
         <div className="flex flex-wrap gap-1">
