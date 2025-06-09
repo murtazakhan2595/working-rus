@@ -6,17 +6,23 @@ import {
   TabsTrigger,
   TabsContent,
 } from "src/@/components/ui/tabs";
-import LeaveDuration from "./LeaveDuration";
 import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
-import AddUpdateLeaveDuration from "./Sections/AddUpdateLeaveDuration";
+import {
+  AddUpdateLeaveDuration,
+  LeaveDuration,
+  Holidays,
+  AddUpdateHolidays,
+  LeaveTypes,
+  AddUpdateLeaveType,
+} from "app/modules/LeaveTracker";
 import { getLeaveDurations } from "app/hooks/leaveTracker";
-import LeaveTypes from "./LeaveTypes";
-import AddUpdateLeaveType from "./Sections/AddUpdateLeaveType";
 import { getLeaveTypes } from "app/hooks/leaveTracker";
-export default function LeaveSetup() {
+
+export default function LeaveManagement() {
   const [activeTab, setActiveTab] = useState("leave-duration");
   const [addDuration, setAddDuration] = useState(false);
+  const [addHolidays, setAddHolidays] = useState(false);
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
   const [filterData, setFilterData] = useState({});
@@ -28,7 +34,7 @@ export default function LeaveSetup() {
     setLoading(true);
     try {
       const payload = { options, ordering, filterData };
-      console.log("Fetching data with payload:", activeTab)
+      console.log("Fetching data with payload:", activeTab);
       if (activeTab === "leave-duration") {
         const response = await getLeaveDurations(payload);
         if (response) {
@@ -49,15 +55,7 @@ export default function LeaveSetup() {
 
   useEffect(() => {
     fetchData();
-  }, [activeTab, fetchData]);
-
-  useEffect(() => {
-    // Reset options when switching tabs
-    setOptions({ page: 1, sizePerPage: 10 });
-    setOrdering("-id");
-    setFilterData({});
-  }, [activeTab]);
-  
+  }, [fetchData]);
 
   const onPageChange = (name, value) => {
     setOptions((prev) => ({ ...prev, [name]: value }));
@@ -100,6 +98,20 @@ export default function LeaveSetup() {
           },
         ]
       : []),
+    {
+      value: "public-holidays",
+      label: "Public Holidays",
+      component: (
+        <Holidays
+          options={options}
+          onPageChange={onPageChange}
+          setOrdering={setOrdering}
+          loading={loading}
+          data={data}
+          reload={fetchData}
+        />
+      ),
+    },
   ];
   return (
     <div className="flex flex-col gap-4">
@@ -113,6 +125,15 @@ export default function LeaveSetup() {
                 }}
               >
                 Add Duration
+              </Button>
+            )}
+            {activeTab === "public-holidays" && (
+              <Button
+                onClick={() => {
+                  setAddHolidays(true);
+                }}
+              >
+                Add Holidays
               </Button>
             )}
             {activeTab === "leave-types" && (
@@ -160,6 +181,13 @@ export default function LeaveSetup() {
         <AddUpdateLeaveDuration
           isOpen={addDuration}
           setIsOpen={setAddDuration}
+          reload={fetchData}
+        />
+      )}
+      {addHolidays && (
+        <AddUpdateHolidays
+          isOpen={addHolidays}
+          setIsOpen={setAddHolidays}
           reload={fetchData}
         />
       )}

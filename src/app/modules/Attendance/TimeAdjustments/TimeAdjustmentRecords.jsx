@@ -104,7 +104,7 @@ const TimeAdjustmentRecords = ({
   const handleTabChange = (tab) => {
     if (tab === "Requests") {
       setFilterData(() => ({
-        // adjustment_status: "PENDING",
+        adjustment_status: "PENDING",
       }));
     } else if (tab === "Records") {
       setFilterData(() => ({

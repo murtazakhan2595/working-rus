@@ -5,8 +5,27 @@ import {
   LeaveTrackerActions,
   ViewLeaveDetails,
 } from "./LeaveTracker";
-import { MyLeaveTracker,LeaveRequest } from "./MyLeaveTracker";
+import {
+  MyLeaveTracker,
+  LeaveRequest,
+  AppliedLeaves,
+  AllocatedLeavesInfo,
+} from "./MyLeaveTracker";
 import LeaveSetup from "./Screens/LeaveSetup";
+
+import {
+  LeaveManagement,
+  AddUpdateLeaveDuration,
+  LeaveDuration,
+  LeaveDurationAction,
+  ViewLeaveDuration,
+  Holidays,
+  AddUpdateHolidays,
+  LeaveTypes,
+  LeaveTypeAction,
+  AddUpdateLeaveType,
+  ViewLeaveType,
+} from "./LeaveManagement";
 
 export {
   MyLeaveTracker,
@@ -16,4 +35,17 @@ export {
   LeaveSetup,
   ViewLeaveDetails,
   LeaveRequest,
+  AppliedLeaves,
+  AllocatedLeavesInfo,
+  LeaveManagement,
+  AddUpdateLeaveDuration,
+  LeaveDuration,
+  LeaveDurationAction,
+  ViewLeaveDuration,
+  Holidays,
+  AddUpdateHolidays,
+  LeaveTypes,
+  LeaveTypeAction,
+  AddUpdateLeaveType,
+  ViewLeaveType,
 };
