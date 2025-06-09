@@ -235,6 +235,7 @@ const LeaveRequest = ({ id }) => {
                     label: "Start Date",
                     required: true,
                     minDate: new Date(),
+                    disableHolidays:true,
                   },
                   {
                     InputField: DateInput,

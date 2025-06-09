@@ -1,6 +1,6 @@
 import { getManagersList } from "app/hooks/general";
 import { getManagerSelected } from "data/Data";
-import { LeaveType } from "app/utils/Types/LeaveManagment";
+import { LeaveType,PublicHoliday } from "app/utils/Types/LeaveManagment";
 import moment from "moment";
 
 async function getLavefromEmployeeInfo(data) {
@@ -56,4 +56,50 @@ export async function mapLeaveTypeListData(data) {
   return ResponseList;
 }
 
+export function mapPublicHolidayPayloadeData(data) {
+  const payload = {};
+  // Iterate over the keys in the PublicHoliday object
+  for (const key in PublicHoliday) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== undefined &&
+      data[key] !== null
+    ) {
+      // Add the key and its value to the payload
+      if (key === "name") payload[key] = data[key]?.trim();
+      else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+
+export function mapPublicHolidayData(data) {
+  const responseData = Object.keys(PublicHoliday).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      acc[key] = data[key];
+    } else {
+      acc[key] = PublicHoliday[key];
+    }
+    return acc;
+  }, {});
+
+  return responseData;
+}
+
+export async function mapPublicHolidayListData(data) {
+  if (!data || data.length === 0) return [];
+  const ResponseList = await data?.map((dataObj) => {
+    const formattedData = mapPublicHolidayData(dataObj);
+    return {
+      label: formattedData.name,
+      value: formattedData.id,
+      ...formattedData,
+    };
+  });
+
+  return ResponseList;
+}
 export { getLavefromEmployeeInfo };

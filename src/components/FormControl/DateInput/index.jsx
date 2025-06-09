@@ -8,9 +8,12 @@ import {
 } from "components/FormControl";
 import { format, parse, isValid } from "date-fns";
 import { Input } from "components/ui/input";
+import { TooltipText } from "components";
 import { Calendar } from "src/@/components/ui/calendar";
 import { PatternFormat } from "react-number-format";
 import moment from "moment";
+import { useSelector } from "react-redux";
+import { renderDate } from "utils/renderValues";
 
 const DateInput = React.memo(
   ({
@@ -29,7 +32,11 @@ const DateInput = React.memo(
     showMonthYearPicker = false, // Whether to show only month/year picker
     minDate,
     maxDate,
+    disableHolidays = false,
   }) => {
+    const CalendarContent = useSelector(
+      (state) => state.common.calendar_content
+    );
     const [isOpen, setIsOpen] = useState(false);
     const MinDate = React.useMemo(() => {
       return minDate ? moment(minDate).startOf("day") : null;
@@ -118,10 +125,7 @@ const DateInput = React.memo(
             if (maxDate && moment(parsedDate).isAfter(MaxDate)) {
               return; // Don't allow setting date earlier than minDate
             }
-            setDate(parsedDate);
-            setCalendarDate(parsedDate); // Sync with the calendar
-            onChange(name, format(parsedDate, dateFormat));
-            setIsOpen(false);
+            handleChange(parsedDate);
           }
         } catch (e) {
           // Invalid date, do nothing
@@ -139,12 +143,20 @@ const DateInput = React.memo(
         if (maxDate && moment(selectedDate).isAfter(MaxDate)) {
           return; // Ignore selection if before minDate
         }
-        setDate(selectedDate);
-        setInputValue(format(selectedDate, inputPattern));
-        setCalendarDate(selectedDate);
-        onChange(name, format(selectedDate, dateFormat));
-        setIsOpen(false);
+        handleChange(selectedDate);
       }
+    };
+    const handleChange = (value) => {
+      if (disableHolidays) {
+        const baseDate = moment(value).format("YYYY-MM-DD");
+        const disableHoliday = Boolean(CalendarContent[baseDate]);
+        if (disableHoliday) return null;
+      }
+      setDate(value);
+      setInputValue(format(value, inputPattern));
+      setCalendarDate(value);
+      onChange(name, format(value, dateFormat));
+      setIsOpen(false);
     };
 
     return (
@@ -192,7 +204,7 @@ const DateInput = React.memo(
             </div>
           }
           popoverContent={
-            <div className="flex flex-col p-2 space-y-2">
+            <div className="flex flex-col p-2 space-y-2 input-calendar">
               <PatternFormat
                 format={inputMask}
                 placeholder={inputPlaceholder}
@@ -214,10 +226,39 @@ const DateInput = React.memo(
                 // This works if the Calendar component supports it
                 showMonthYearPicker={showMonthYearPicker}
                 // ✅ Block past dates
-                disabled={(date) =>
-                  (minDate ? moment(date).isBefore(MinDate) : false) ||
-                  (maxDate ? moment(date).isAfter(MaxDate) : false)
-                }
+                disabled={(date) => {
+                  const disableMinDate = Boolean(
+                    minDate ? moment(date).isBefore(MinDate) : false
+                  );
+                  if (disableMinDate) return true;
+                  const disableMaxDate = Boolean(
+                    maxDate ? moment(date).isAfter(MaxDate) : false
+                  );
+                  if (disableMaxDate) return true;
+
+                  return false;
+                }}
+                components={{
+                  DayContent: ({ date }) => {
+                    const baseDate = moment(date).format("YYYY-MM-DD");
+                    const content = CalendarContent[baseDate];
+                    const className = `w-full h-full flex items-center justify-center ${
+                      disableHolidays && content ? "text-slate-500" : ""
+                    }`;
+                    return (
+                      <div className={className}>
+                        {content ? (
+                          <TooltipText
+                            tooltipTriggerText={date.getDate()}
+                            content={content}
+                          />
+                        ) : (
+                          date.getDate()
+                        )}
+                      </div>
+                    );
+                  },
+                }}
               />
             </div>
           }

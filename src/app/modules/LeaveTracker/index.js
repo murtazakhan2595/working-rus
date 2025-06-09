@@ -25,6 +25,8 @@ import {
   LeaveTypeAction,
   AddUpdateLeaveType,
   ViewLeaveType,
+  HolidayActions,
+  ViewHolidayDetail
 } from "./LeaveManagement";
 
 export {
@@ -48,4 +50,6 @@ export {
   LeaveTypeAction,
   AddUpdateLeaveType,
   ViewLeaveType,
+  HolidayActions,
+  ViewHolidayDetail,
 };

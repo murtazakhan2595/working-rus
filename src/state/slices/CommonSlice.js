@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
+import {mapCalendarContent} from 'app/utils/MappingObjects/mapGeneralData';
 import {
   getDepartmentList,
   getDesignationList,
@@ -8,12 +8,16 @@ import {
   getBranchList,
 } from "app/hooks/general";
 
+import { getHolidaysListData } from "app/hooks/leaveTracker";
+
 // Define the initial state
 const initialState = {
   departments: [],
   projects: [],
   designations: [],
   branches: [],
+  holidays: [],
+  calendar_content: [],
   apiStatus: "idle",
   error: null,
 };
@@ -37,7 +41,7 @@ export const fetchBranches = createAsyncThunk(
   async () => {
     try {
       const response = await getBranchList();
-      return response?.results||[];
+      return response?.results || [];
     } catch (error) {
       throw error;
     }
@@ -56,6 +60,35 @@ export const fetchDepartments = createAsyncThunk(
     }
   }
 );
+
+// Define the thunk to fetch holidays
+export const fetchHolidays = createAsyncThunk(
+  "common/fetchHolidays",
+  async () => {
+    try {
+      const response = await getHolidaysListData();
+      return response?.results || [];
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
+// Define the thunk to fetch Holidays Content
+export const fetchCalendarHoliday = createAsyncThunk(
+  "common/fetchCalendarHoliday",
+  async () => {
+    try {
+      const response = await getHolidaysListData();
+      const HolidayData = response?.results || [];
+      const CalendarContent = mapCalendarContent({holidays:HolidayData})
+      return CalendarContent
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
 // Define the thunk to fetch projects
 export const fetchProjects = createAsyncThunk(
   "common/fetchProjects",
@@ -90,7 +123,7 @@ const commonSlice = createSlice({
     // Add a reducer to set departments directly
     setDepartments: (state, action) => {
       state.departments = action.payload;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -103,6 +136,30 @@ const commonSlice = createSlice({
         state.departments = action.payload;
       })
       .addCase(fetchDepartments.rejected, (state, action) => {
+        state.apiStatus = "failed";
+        state.error = action.error.message;
+      })
+      //Holidays
+      .addCase(fetchHolidays.pending, (state) => {
+        state.apiStatus = "loading";
+      })
+      .addCase(fetchHolidays.fulfilled, (state, action) => {
+        state.apiStatus = "succeeded";
+        state.holidays = action.payload;
+      })
+      .addCase(fetchHolidays.rejected, (state, action) => {
+        state.apiStatus = "failed";
+        state.error = action.error.message;
+      })
+      //Calendar Holiday
+      .addCase(fetchCalendarHoliday.pending, (state) => {
+        state.apiStatus = "loading";
+      })
+      .addCase(fetchCalendarHoliday.fulfilled, (state, action) => {
+        state.apiStatus = "succeeded";
+        state.calendar_content = action.payload;
+      })
+      .addCase(fetchCalendarHoliday.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
       })

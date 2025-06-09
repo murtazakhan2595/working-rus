@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect, forwardRef, memo } from "react";
 // import Select from "react-select";
 import { Label } from "src/@/components/ui/label";
@@ -63,44 +60,16 @@ const FilterInput = ({
   className = "",
 }) => {
   const classNamesStyle = "";
-  const width = "w-56";
-  const height = "h-[38px]";
+  const DefaultWidth = "w-56";
+  const DefaultHeight = "h-[38px]";
   const [openRole, setOpenRole] = useState(false);
   const [openFilterFour, setOpenFilterFour] = useState(false);
   const [openDesignation, setOpenDesignation] = useState(false);
   const [openDepartment, setOpenDepartment] = useState(false);
   const [inputValues, setInputValues] = useState({});
 
-  const handleInputChange = (filter, event) => {
-    setInputValues((prev) => ({
-      ...prev,
-      [filter.name]: event.target.value,
-    }));
-    onChange(filter.name, event.target.value);
-  };
-
-  const renderInputField = (filter, index) => {
-    return (
-      <div
-        className={`${filter.className} ${filter.width ?? width} ${
-          filter.height ?? height
-        } relative`}
-      >
-        {!inputValues[filter.name] && (
-          <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-muted-foreground" />
-        )}
-        <Input
-          key={index}
-          type={filter.type}
-          placeholder={filter.placeholder}
-          className={`rounded-sm text-neutral-1000`}
-          name={filter.name}
-          id={filter.name}
-          value={inputValues[filter.name] || ""}
-          onChange={(event) => handleInputChange(filter, event)}
-        />
-      </div>
-    );
+  const handleInputChange = (field, value) => {
+    onChange(field, value);
   };
 
   const renderPopoverSelect = (filter, index, open, setOpen) => {
@@ -178,8 +147,8 @@ const FilterInput = ({
           name={filter.name}
           id={filter.name}
           className={`${filter.className ?? classNamesStyle} ${
-            filter.width ?? width
-          } ${filter.height ?? height}`}
+            filter.width ?? DefaultWidth
+          } ${filter.height ?? DefaultHeight}`}
           dropdownMode="select"
           placeholderText={filter.placeholder}
           selected={date}
@@ -264,9 +233,38 @@ const FilterInput = ({
     <div className={`${className} flex flex-wrap items-start gap-x-3 gap-y-3`}>
       {filters &&
         filters?.map((filter, index) => {
+          const {
+            className: FilterClassName,
+            width,
+            height,
+            placeholder,
+            name,
+            options = [],
+          } = filter;
           switch (filter.type) {
             case "search":
-              return renderInputField(filter, index);
+              return (
+                <RenderInputField
+                  className={FilterClassName}
+                  width={width ?? DefaultWidth}
+                  name={name}
+                  placeholder={placeholder}
+                  height={height ?? DefaultHeight}
+                  handleInputChange={handleInputChange}
+                />
+              );
+            case "select":
+              return (
+                <RenderSelectInputField
+                  className={FilterClassName}
+                  width={width ?? DefaultWidth}
+                  name={name}
+                  options={options}
+                  placeholder={`Search ${placeholder}`}
+                  height={height ?? DefaultHeight}
+                  handleInputChange={handleInputChange}
+                />
+              );
             case "select-one":
               return renderPopoverSelect(
                 filter,
@@ -284,11 +282,25 @@ const FilterInput = ({
             case "select-three":
               return renderPopoverSelect(filter, index, openRole, setOpenRole);
             case "select-four":
-              return renderPopoverSelect(filter, index, openFilterFour, setOpenFilterFour);
+              return renderPopoverSelect(
+                filter,
+                index,
+                openFilterFour,
+                setOpenFilterFour
+              );
             case "date":
               return renderDatePicker(filter, index);
             case "date-range":
-              return renderDateRangePicker(filter, index);
+              return (
+                <RenderDateRangeInputField
+                  className={FilterClassName}
+                  width={width ?? 'w-[235px]'}
+                  name={name}
+                  placeholder={`Search ${placeholder}`}
+                  height={height ?? DefaultHeight}
+                  handleInputChange={handleInputChange}
+                />
+              );
             default:
               return <div key={index}></div>;
           }
@@ -296,3 +308,107 @@ const FilterInput = ({
     </div>
   );
 };
+
+const RenderInputField = React.memo(
+  ({
+    className = "",
+    width = "",
+    name,
+    placeholder,
+    height = "",
+    handleInputChange = () => {},
+  }) => {
+    const [inputValue, setInputValue] = useState("");
+
+    return (
+      <div className={`${className} ${width} ${height} relative`}>
+        <TextInput
+          type={"text"}
+          placeholder={placeholder}
+          className={`rounded-sm text-neutral-1000`}
+          name={name}
+          value={inputValue || ""}
+          onChange={(field, value) => {
+            setInputValue(value);
+            handleInputChange(field, value);
+          }}
+        />
+        {!inputValue && (
+          <SearchIcon className="absolute w-4 h-4 right-[16px] top-[13px] text-neutral-800" />
+        )}
+      </div>
+    );
+  }
+);
+
+const RenderSelectInputField = React.memo(
+  ({
+    className = "",
+    width = "",
+    name,
+    placeholder,
+    height = "",
+    handleInputChange = () => {},
+    options = [],
+  }) => {
+    const [inputValue, setInputValue] = useState("");
+    // Add "All" option to the options array if it exists
+    const allOptions = React.useMemo(
+      () => (options ? [{ value: "All", label: "All" }, ...options] : []),
+      [options]
+    );
+    return (
+      <div className={`${className} ${width} ${height} relative`}>
+        <SelectInputComponent
+          type={"text"}
+          placeholder={placeholder}
+          className={`rounded-sm text-neutral-1000`}
+          name={name}
+          value={inputValue || ""}
+          onChange={(field, value) => {
+            setInputValue(value);
+            handleInputChange(
+              field,
+              value ? (value === "All" ? "" : value) : ""
+            );
+          }}
+          options={allOptions}
+        />
+      </div>
+    );
+  }
+);
+
+const RenderDateRangeInputField = React.memo(
+  ({
+    className = "",
+    width = "",
+    name,
+    placeholder,
+    height = "",
+    handleInputChange = () => {},
+  }) => {
+    const [inputValue, setInputValue] = useState("");
+    
+    return (
+      <div className={`${className} ${width} ${height} relative`}>
+        <DateRangeInput
+          type={"text"}
+          placeholder={placeholder}
+          className={`rounded-sm text-neutral-1000`}
+          name={name}
+          value={inputValue || ""}
+          onChange={(field, value) => {
+            setInputValue(value);
+            handleInputChange(
+              field,
+              value 
+            );
+          }}
+        />
+      </div>
+    );
+  }
+);
+
+export default FilterInput;

@@ -59,13 +59,13 @@ export const validatePasswordFieldSchema = (Password) => {
 
 export const validateStartAndEndDateField = (start_date, end_date) => {
   const errors = {};
-  if (!start_date) errors.start_date = "Start date is required";
-  if (!end_date) errors.end_date = "End date is required";
+  if (!start_date) errors.start_date = true;
+  if (!end_date) errors.end_date = true;
   if (start_date && end_date) {
     const startDate = moment(start_date).endOf("day");
     const endDate = moment(end_date).endOf("day");
     if (startDate.isAfter(endDate)) {
-      errors.end_date = "End cannot be before start date.";
+      errors.end_date_before = true;
     }
   }
   return errors;

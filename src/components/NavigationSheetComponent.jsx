@@ -117,6 +117,7 @@ const NavigationSheetComponent = ({
 
   const confirmDelete = async () => {
     try {
+      debugger
       // Check if required values exist
       if (!apiEndpoint || !currentItemId) {
         console.warn(
