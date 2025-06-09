@@ -25,6 +25,7 @@ export default function AddUpdateLeaveDuration({
   reload,
   data = null, // Accept data directly
 }) {
+
   const [formData, setFormData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
