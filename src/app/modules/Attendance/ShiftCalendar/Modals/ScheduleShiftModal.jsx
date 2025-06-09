@@ -28,7 +28,6 @@ const ScheduleShiftModal = ({
   editSchedule=null,
 }) => {
 
-  console.log("Edit Schedule Data:--------------------------------", employees);
   const isEditMode = Boolean(editSchedule);
   const [closeSheet, setCloseSheet] = useState(false);
   const [shifts, setShifts] = useState([]);
@@ -298,10 +297,24 @@ const ScheduleShiftModal = ({
           if (day.startTime && day.endTime) {
             const start = moment(day.startTime);
             const end = moment(day.endTime);
-
+            console.log("INOF", start, end)
+            console.log("🟪 calculateHours received moment objects:", {
+              dayDate: day.date,
+              startTime: day.startTime,
+              endTime: day.endTime,
+              startType: typeof day.startTime,
+              endType: typeof day.endTime,
+              startIsMoment: day.startTime && day.startTime._isAMomentObject,
+              endIsMoment: day.endTime && day.endTime._isAMomentObject,
+              startFormatted: day.startTime ? moment(day.startTime).format("YYYY-MM-DD HH:mm:ss") : null,
+              endFormatted: day.endTime ? moment(day.endTime).format("YYYY-MM-DD HH:mm:ss") : null,
+              startDisplay: day.startTime ? moment(day.startTime).format("hh:mm A") : null,
+              endDisplay: day.endTime ? moment(day.endTime).format("hh:mm A") : null
+            });
             // Get the time in 12-hour format with AM/PM indicator
             const startTimeStr = start.format("hh:mm A"); // e.g. "09:00 AM"
             const endTimeStr = end.format("hh:mm A"); // e.g. "05:00 PM"
+            console.log("INFO 2", startTimeStr, endTimeStr)
 
             // Parse these strings to get the correct hour (with proper AM/PM handling)
             const baseDate = moment(day.date).startOf("day");
@@ -845,17 +858,18 @@ const ScheduleShiftModal = ({
                                         value={day.startTime}
                                         date={day.date}
                                         onChange={(name, value) => {
-                                          props.setFieldValue(name, value);
-                                          // Recalculate hours after time change
-                                          setTimeout(
-                                            () =>
-                                              calculateHours(
-                                                props.values,
-                                                props.setFieldValue
-                                              ),
-                                            0
-                                          );
-                                        }}
+  props.setFieldValue(name, value);
+  
+  // Create updated values object manually
+  const updatedValues = {
+    ...props.values,
+    dailySchedule: props.values.dailySchedule.map((day, i) => 
+      i === index ? { ...day, [name.split('.').pop()]: value } : day
+    )
+  };
+  
+  setTimeout(() => calculateHours(updatedValues, props.setFieldValue), 0);
+}}
                                         required={true}
                                       />
                                       <TimePicker
@@ -864,17 +878,18 @@ const ScheduleShiftModal = ({
                                         value={day.endTime}
                                         date={day.date}
                                         onChange={(name, value) => {
-                                          props.setFieldValue(name, value);
-                                          // Recalculate hours after time change
-                                          setTimeout(
-                                            () =>
-                                              calculateHours(
-                                                props.values,
-                                                props.setFieldValue
-                                              ),
-                                            0
-                                          );
-                                        }}
+  props.setFieldValue(name, value);
+  
+  // Create updated values object manually
+  const updatedValues = {
+    ...props.values,
+    dailySchedule: props.values.dailySchedule.map((day, i) => 
+      i === index ? { ...day, [name.split('.').pop()]: value } : day
+    )
+  };
+  
+  setTimeout(() => calculateHours(updatedValues, props.setFieldValue), 0);
+}}
                                         required={true}
                                       />
                                     </div>
@@ -890,16 +905,18 @@ const ScheduleShiftModal = ({
                                           value={day.splitStartTime1}
                                           date={day.date}
                                           onChange={(name, value) => {
-                                            props.setFieldValue(name, value);
-                                            setTimeout(
-                                              () =>
-                                                calculateHours(
-                                                  props.values,
-                                                  props.setFieldValue
-                                                ),
-                                              0
-                                            );
-                                          }}
+  props.setFieldValue(name, value);
+  
+  // Create updated values object manually
+  const updatedValues = {
+    ...props.values,
+    dailySchedule: props.values.dailySchedule.map((day, i) => 
+      i === index ? { ...day, [name.split('.').pop()]: value } : day
+    )
+  };
+  
+  setTimeout(() => calculateHours(updatedValues, props.setFieldValue), 0);
+}}
                                           required={true}
                                         />
                                         <TimePicker
@@ -908,16 +925,18 @@ const ScheduleShiftModal = ({
                                           value={day.splitEndTime1}
                                           date={day.date}
                                           onChange={(name, value) => {
-                                            props.setFieldValue(name, value);
-                                            setTimeout(
-                                              () =>
-                                                calculateHours(
-                                                  props.values,
-                                                  props.setFieldValue
-                                                ),
-                                              0
-                                            );
-                                          }}
+  props.setFieldValue(name, value);
+  
+  // Create updated values object manually
+  const updatedValues = {
+    ...props.values,
+    dailySchedule: props.values.dailySchedule.map((day, i) => 
+      i === index ? { ...day, [name.split('.').pop()]: value } : day
+    )
+  };
+  
+  setTimeout(() => calculateHours(updatedValues, props.setFieldValue), 0);
+}}
                                           required={true}
                                         />
                                       </div>
@@ -931,16 +950,18 @@ const ScheduleShiftModal = ({
                                           value={day.splitStartTime2}
                                           date={day.date}
                                           onChange={(name, value) => {
-                                            props.setFieldValue(name, value);
-                                            setTimeout(
-                                              () =>
-                                                calculateHours(
-                                                  props.values,
-                                                  props.setFieldValue
-                                                ),
-                                              0
-                                            );
-                                          }}
+  props.setFieldValue(name, value);
+  
+  // Create updated values object manually
+  const updatedValues = {
+    ...props.values,
+    dailySchedule: props.values.dailySchedule.map((day, i) => 
+      i === index ? { ...day, [name.split('.').pop()]: value } : day
+    )
+  };
+  
+  setTimeout(() => calculateHours(updatedValues, props.setFieldValue), 0);
+}}
                                           required={true}
                                         />
                                         <TimePicker
@@ -949,16 +970,18 @@ const ScheduleShiftModal = ({
                                           value={day.splitEndTime2}
                                           date={day.date}
                                           onChange={(name, value) => {
-                                            props.setFieldValue(name, value);
-                                            setTimeout(
-                                              () =>
-                                                calculateHours(
-                                                  props.values,
-                                                  props.setFieldValue
-                                                ),
-                                              0
-                                            );
-                                          }}
+  props.setFieldValue(name, value);
+  
+  // Create updated values object manually
+  const updatedValues = {
+    ...props.values,
+    dailySchedule: props.values.dailySchedule.map((day, i) => 
+      i === index ? { ...day, [name.split('.').pop()]: value } : day
+    )
+  };
+  
+  setTimeout(() => calculateHours(updatedValues, props.setFieldValue), 0);
+}}
                                           required={true}
                                         />
                                       </div>
