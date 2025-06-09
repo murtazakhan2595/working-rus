@@ -2,11 +2,13 @@ import {
   LeaveAplicationColumns,
   MyLeaveAplicationColumns,
   LeaveDurationColumn,
-  PublicHolidaydsColumn
+  PublicHolidaydsColumn,
+  LeaveTypesColumns
 } from "app/modules/LeaveTracker/Sections/LeaveTrackerTableColumns";
 export {
   LeaveAplicationColumns,
   MyLeaveAplicationColumns,
   LeaveDurationColumn,
-  PublicHolidaydsColumn
+  PublicHolidaydsColumn,
+  LeaveTypesColumns
 };

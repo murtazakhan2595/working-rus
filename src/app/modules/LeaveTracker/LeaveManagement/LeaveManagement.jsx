@@ -8,8 +8,17 @@ import {
 } from "src/@/components/ui/tabs";
 import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
-import {AddUpdateLeaveDuration,LeaveDuration,Holidays,AddUpdateHolidays} from "app/modules/LeaveTracker";
+import {
+  AddUpdateLeaveDuration,
+  LeaveDuration,
+  Holidays,
+  AddUpdateHolidays,
+  LeaveTypes,
+  AddUpdateLeaveType,
+} from "app/modules/LeaveTracker";
 import { getLeaveDurations } from "app/hooks/leaveTracker";
+import { getLeaveTypes } from "app/hooks/leaveTracker";
+
 export default function LeaveManagement() {
   const [activeTab, setActiveTab] = useState("leave-duration");
   const [addDuration, setAddDuration] = useState(false);
@@ -19,14 +28,23 @@ export default function LeaveManagement() {
   const [filterData, setFilterData] = useState({});
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
+  const [addLeaveType, setAddLeaveType] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const payload = { options, ordering, filterData };
-      const response = await getLeaveDurations(payload);
-      if (response) {
-        setData(response);
+      console.log("Fetching data with payload:", activeTab);
+      if (activeTab === "leave-duration") {
+        const response = await getLeaveDurations(payload);
+        if (response) {
+          setData(response);
+        }
+      } else if (activeTab === "leave-types") {
+        const response = await getLeaveTypes(payload);
+        if (response) {
+          setData(response);
+        }
       }
     } catch (error) {
       console.error("Error fetching leave durations:", error);
@@ -51,6 +69,24 @@ export default function LeaveManagement() {
             label: "Leave Duration",
             component: (
               <LeaveDuration
+                options={options}
+                onPageChange={onPageChange}
+                setOrdering={setOrdering}
+                loading={loading}
+                data={data}
+                reload={fetchData}
+              />
+            ),
+          },
+        ]
+      : []),
+    ...(true
+      ? [
+          {
+            value: "leave-types",
+            label: "Leave Types",
+            component: (
+              <LeaveTypes
                 options={options}
                 onPageChange={onPageChange}
                 setOrdering={setOrdering}
@@ -100,6 +136,15 @@ export default function LeaveManagement() {
                 Add Holidays
               </Button>
             )}
+            {activeTab === "leave-types" && (
+              <Button
+                onClick={() => {
+                  setAddLeaveType(true);
+                }}
+              >
+                Add Leave Type
+              </Button>
+            )}
           </>
         }
       />
@@ -144,6 +189,14 @@ export default function LeaveManagement() {
           isOpen={addHolidays}
           setIsOpen={setAddHolidays}
           reload={fetchData}
+        />
+      )}
+      {addLeaveType && (
+        <AddUpdateLeaveType
+          isOpen={addLeaveType}
+          setIsOpen={setAddLeaveType}
+          reload={fetchData}
+          isLeaveType={true}
         />
       )}
     </div>

@@ -5,7 +5,14 @@ import {
   LeaveDurationAction,
   ViewLeaveDuration,
 } from "./LeaveDuration";
-import { Holidays ,AddUpdateHolidays} from "./Holidays";
+import { Holidays, AddUpdateHolidays } from "./Holidays";
+import {
+  LeaveTypes,
+  LeaveTypeAction,
+  AddUpdateLeaveType,
+  ViewLeaveType,
+} from "./LeaveTypes";
+
 export {
   LeaveManagement,
   AddUpdateLeaveDuration,
@@ -14,4 +21,8 @@ export {
   ViewLeaveDuration,
   Holidays,
   AddUpdateHolidays,
+  LeaveTypes,
+  LeaveTypeAction,
+  AddUpdateLeaveType,
+  ViewLeaveType,
 };

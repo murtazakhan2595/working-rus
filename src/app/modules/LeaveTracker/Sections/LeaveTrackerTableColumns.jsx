@@ -9,6 +9,7 @@ import { AiOutlineDownload } from "react-icons/ai";
 import {
   LeaveTrackerActions,
   LeaveDurationAction,
+  LeaveTypeAction
 } from "app/modules/LeaveTracker";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
 import { DepartmentName } from "utils/getValuesFromTables";
@@ -49,40 +50,6 @@ export const LeaveRecordColumns = [
   //   dataField: "total_balance_after",
   //   text: "Total Remaining",
   // },
-];
-
-export const LeaveTypesColumns = (onCheckedChange) => [
-  {
-    dataField: "name",
-    text: "Leave Type",
-  },
-  {
-    dataField: "max_days",
-    text: "Number of Days",
-  },
-  {
-    dataField: "status",
-    text: "Status",
-    formatter: (cell, row) => {
-      return (
-        <div
-          onClick={(event) => {
-            // Stop the event propagation to prevent onRowClick from being triggered
-            event.stopPropagation();
-          }}
-        >
-          <Switch
-            id="Status"
-            checked={cell}
-            onCheckedChange={(value) => {
-              // The event is handled by the div, so no need to stop it here
-              onCheckedChange(value, row);
-            }}
-          />
-        </div>
-      );
-    },
-  },
 ];
 
 export const LeaveAplicationColumns = (
@@ -425,5 +392,82 @@ export const PublicHolidaydsColumn = (reload, data) => [
     ),
     headerStyle: { width: "8%" },
     style: { textAlign: "center" },
+  },
+];
+
+export const LeaveTypesColumns = (reload, data) => [
+  {
+    dataField: "name",
+    text: "Leave Type Name",
+    dataSort: true,
+  },
+  {
+    dataField: "short_code",
+    text: "Short Code",
+    dataSort: true,
+  },
+  {
+    dataField: "leave_count",
+    text: "Leave Count",
+    dataSort: true,
+    style: { textAlign: "center" },
+  },
+  {
+    dataField: "day_count_type",
+    text: "Day Type",
+    formatter: (cell) => (
+      <span
+        className={`inline-block px-2 py-1 text-xs rounded-full ${
+          cell === "work_days"
+            ? "bg-blue-100 text-blue-800"
+            : "bg-green-100 text-green-800"
+        }`}
+      >
+        {cell === "work_days" ? "Work Days" : "Calendar Days"}
+      </span>
+    ),
+    dataSort: true,
+  },
+  {
+    dataField: "max_consecutive_days",
+    text: "Max Days",
+    dataSort: true,
+  },
+  {
+    dataField: "is_carry_forward_allowed",
+    text: "Carry Forward",
+    formatter: (cell) => (
+      <span
+        className={`inline-block px-2 py-1 text-xs rounded-full ${
+          cell ? "bg-green-100 text-green-800" : "bg-[#fee2e2] text-red-800"
+        }`}
+      >
+        {cell ? "Yes" : "No"}
+      </span>
+    ),
+    dataSort: true,
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell) => (
+      <span
+        className={`inline-block px-2 py-1 text-xs rounded-full ${
+          cell ? "bg-green-100 text-green-800" : "bg-[#fee2e2] text-red-800"
+        }`}
+      >
+        {cell ? "Active" : "Inactive"}
+      </span>
+    ),
+    dataSort: true,
+  },
+  {
+    dataField: "actions",
+    text: "Actions",
+    isDummyField: true,
+    formatter: (cell, row) => (
+      <LeaveTypeAction data={row} reload={reload} leaveTypeList={data} />
+    ),
+    headerStyle: { width: "8%" },
   },
 ];
