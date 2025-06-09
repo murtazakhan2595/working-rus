@@ -17,13 +17,13 @@ import { LeaveTrackerOptions } from "data/Data";
 import { UserRoundCheck, UsersRound } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { HasAccess } from "utils/PermissionUtils";
-import { GetStateList } from "utils/Lists";
+import { GetDispatchStateList } from "utils/Lists";
 import { getDropdownList } from "utils/Lists";
 
 const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
-  const Departments = GetStateList("departments", "common") || [];
-  const Branches = GetStateList("branches", "common") || [];
-  const { id: user_id } = GetStateList("user_details", "emp") || {};
+  const Departments = GetDispatchStateList("departments", "common") || [];
+  const Branches = GetDispatchStateList("branches", "common") || [];
+  const { id: user_id } = GetDispatchStateList("user_details", "emp") || {};
   const isViewLTPermitted = HasAccess("VIEW_ATT_UPDATE_LOGS");
   const isViewBLTPermitted = HasAccess("VIEW_BRN_ATT_UPDATES_LOGS");
   const isViewDLTermitted = HasAccess("VIEW_DPT_ATT_UPDATES_LOGS");

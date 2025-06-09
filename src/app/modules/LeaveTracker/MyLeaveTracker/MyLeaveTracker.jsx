@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../../../src/@/components/ui/table";
-import {LeaveRequest} from "app/modules/LeaveTracker";
+import { LeaveRequest } from "app/modules/LeaveTracker";
 import { getLeaves } from "app/hooks/leaveTracker";
 import { connect } from "react-redux";
 import moment from "moment";
@@ -23,7 +23,7 @@ import ViewLeaveSheet from "../LeaveTracker/ViewLeaveDetails";
 import { FilterInput } from "components/FormControl";
 import { getLeavestats } from "app/hooks/leaveTracker";
 import { getLeaveTransaction } from "app/hooks/leaveTracker";
-import { getLeaveComponents } from "app/hooks/leaveTracker";
+import { AppliedLeaves,AllocatedLeavesInfo } from "app/modules/LeaveTracker";
 import { getLeaveComponentsWithUsed } from "app/hooks/leaveTracker";
 import { PageLoader } from "components";
 import { LeaveTrackerOptions } from "data/Data";
@@ -189,24 +189,23 @@ const MyLeaveTracker = ({ userProfile }) => {
           )}
 
           <div className="flex items-start justify-center gap-4">
-            {/* Applied Leaves Section - Only show if user can view applied leaves */}
-            {canViewLeavesApplied && (
-              <AppliedLeaves
-                leaveTransaction={leaveTransaction}
-                setSelectedLeaveApplication={setSelectedLeaveApplication}
-                setIsOpen={setIsOpen}
-                handleFilterChange={handleFilterChange}
-                componentsWithUsed={componentsWithUsed}
-                isLeaveTransactionLoading={isLeaveTransactionLoading}
-                canDeleteLeave={canDeleteLeaveRequest}
-              />
-            )}
-            
             {/* Consumed Leaves Section - Only show if user can view consumed leaves */}
             {canViewConsumedLeaves && (
-              <ConsumedLeaves componentsWithUsed={componentsWithUsed} />
+              <AllocatedLeavesInfo componentsWithUsed={componentsWithUsed} />
             )}
           </div>
+          {/* Applied Leaves Section - Only show if user can view applied leaves */}
+          {canViewLeavesApplied && (
+            <AppliedLeaves
+              leaveTransaction={leaveTransaction}
+              setSelectedLeaveApplication={setSelectedLeaveApplication}
+              setIsOpen={setIsOpen}
+              handleFilterChange={handleFilterChange}
+              componentsWithUsed={componentsWithUsed}
+              isLeaveTransactionLoading={isLeaveTransactionLoading}
+              canDeleteLeave={canDeleteLeaveRequest}
+            />
+          )}
 
           {selectedLeaveApplication && (
             <ViewLeaveSheet
@@ -234,115 +233,6 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(MyLeaveTracker);
-
-function AppliedLeaves({
-  leaveTransaction,
-  setSelectedLeaveApplication,
-  setIsOpen,
-  handleFilterChange,
-  componentsWithUsed,
-  isLeaveTransactionLoading,
-  canDeleteLeave,
-}) {
-  return (
-    <Card className="w-full">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-2xl text-fuchsia-700">
-          Applied Leaves
-        </CardTitle>
-        <FilterInput
-          filters={[
-            {
-              type: "select-one",
-              option: LeaveTrackerOptions,
-              name: "status",
-              width: "max-w-[130px]",
-              placeholder: "Status",
-            },
-            {
-              type: "select-two",
-              width: "max-w-[130px]",
-              option: componentsWithUsed.map((leave) => ({
-                value: leave.leaveComponentId,
-                label: leave.name,
-              })),
-              name: "leave_component_id",
-              placeholder: "Leave Type",
-            },
-          ]}
-          onChange={handleFilterChange}
-        />
-      </CardHeader>
-      <CardContent className="scrollable table-container">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Leave Type</TableHead>
-              <TableHead>Days</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          {isLeaveTransactionLoading ? (
-            <TableBody>
-              <TableRow>
-                <TableCell colSpan={4}>
-                  <div className="w-full flex items-center justify-center">
-                    <PageLoader />
-                  </div>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          ) : (
-            <TableBody>
-              {leaveTransaction?.results?.map((leave, index) => (
-                <TableRow
-                  key={index}
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setSelectedLeaveApplication(leave);
-                    setIsOpen(true);
-                  }}
-                >
-                  <TableCell>{leave?.component_name}</TableCell>
-                  <TableCell>{leave?.leave_request?.no_of_days}</TableCell>
-                  <TableCell>
-                    {`${moment(leave?.leave_request?.start_date).format(
-                      "MMM D"
-                    )} - ${moment(leave?.leave_request?.end_date).format(
-                      "MMM D"
-                    )}`}
-                  </TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
-                        leave?.action_hr === "Approved" &&
-                        leave?.action_manager === "Approved"
-                          ? "bg-emerald-50 text-teal-700"
-                          : leave?.action_hr === "Declined" ||
-                            leave?.action_manager === "Declined"
-                          ? "bg-red-50 text-red-700"
-                          : "bg-[#f0f0f3] text-[#7f838d]"
-                      }`}
-                    >
-                      {leave?.action_hr === "Approved" &&
-                      leave?.action_manager === "Approved"
-                        ? "Approved"
-                        : leave?.action_hr === "Declined" ||
-                          leave?.action_manager === "Declined"
-                        ? "Declined"
-                        : "Pending"}
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          )}
-        </Table>
-      </CardContent>
-    </Card>
-  );
-}
 
 function ConsumedLeaves({ componentsWithUsed }) {
   function LeaveBar({

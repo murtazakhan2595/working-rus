@@ -121,12 +121,12 @@ const Dashboard = ({ userProfile }) => {
             </Card>
           )}
 
-          {/* My Leaves */}
+          {/* My Leaves
           {DashBoardSections[6] && (
             <Card className="w-full h-full lg:col-span-3">
               {DashBoardSections[6].content}
             </Card>
-          )}
+          )} */}
 
           {/* Expired Documents */}
           {DashBoardSections[7] && (

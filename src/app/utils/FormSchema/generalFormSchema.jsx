@@ -1,4 +1,5 @@
 import moment from "moment";
+import { renderTime } from "utils/DateTimeUtils";
 
 export const validateChangePasswordForm = (values) => {
   const errors = {};
@@ -73,7 +74,7 @@ export const validateStartAndEndDateField = (start_date, end_date) => {
 export const validateStartAndEndTimeField = (
   start_time,
   end_time,
-  date = moment().format("YYYY-MM-DD"),
+  date = moment().format("YYYY-MM-DD")
 ) => {
   // Ensure both times are provided
   if (!start_time) {
@@ -85,8 +86,8 @@ export const validateStartAndEndTimeField = (
 
   // Only continue if both times exist
   if (start_time && end_time) {
-    const start = moment(`${date} ${start_time}`, "YYYY-MM-DD HH:mm");
-    const end = moment(`${date} ${end_time}`, "YYYY-MM-DD HH:mm");
+    const start = moment(renderTime(start_time, date));
+    const end = moment(renderTime(end_time, date));
 
     if (!start.isValid()) {
       return true;

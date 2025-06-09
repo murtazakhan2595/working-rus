@@ -746,7 +746,7 @@ export const getAttendanceAdjustmentData = async (id) => {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return [];
+    return {};
   }
 };
 

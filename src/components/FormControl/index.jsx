@@ -102,12 +102,16 @@ export const FormField = memo(
             {children}
             {field_description && (
               <div
-                className={"text-neutral-900 text-xs font-[inter] font-normal mt-1"}
+                className={
+                  "text-neutral-900 text-xs font-[inter] font-normal mt-1"
+                }
               >
                 {field_description}
               </div>
             )}
-            {Boolean(error) && touched && <div className={errorClassName}>{error}</div>}
+            {Boolean(error) && touched && (
+              <div className={errorClassName}>{error}</div>
+            )}
           </div>
         </div>
       );
@@ -126,6 +130,7 @@ export const FormPopoverButton = memo(
         setOpen,
         disabled = false,
         invalidField = false,
+        popoverClassName,
       },
       ref
     ) => {
@@ -147,7 +152,9 @@ export const FormPopoverButton = memo(
               {triggerContent}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="min-w-[300px] w-auto p-0">
+          <PopoverContent
+            className={cn("min-w-[300px] w-auto p-0", popoverClassName)}
+          >
             {popoverContent}
           </PopoverContent>
         </Popover>
@@ -183,7 +190,6 @@ export const FormFieldIcon = memo(
     return <div className={cn("w-4", className)}>{icon}</div>;
   }
 );
-
 
 const FilterInput = ({
   filters,
@@ -415,7 +421,12 @@ const FilterInput = ({
             case "select-three":
               return renderPopoverSelect(filter, index, openRole, setOpenRole);
             case "select-four":
-              return renderPopoverSelect(filter, index, openFilterFour, setOpenFilterFour);
+              return renderPopoverSelect(
+                filter,
+                index,
+                openFilterFour,
+                setOpenFilterFour
+              );
             case "date":
               return renderDatePicker(filter, index);
             case "date-range":

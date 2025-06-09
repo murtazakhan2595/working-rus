@@ -120,12 +120,16 @@ const UpdateEmployeeAttendance = ({
     try {
       const payload = {
         date: data.date,
-        id: id,
+        id: data.id || id,
         checkin: data.checkin,
         checkout: data.checkout,
         employee_id: data.employee_id,
       };
-      const response = await saveAttendance(payload, ActiveShift, id);
+      const response = await saveAttendance(
+        payload,
+        ActiveShift,
+        data.id || id
+      );
       // return
       if (response) {
         return {
@@ -154,7 +158,10 @@ const UpdateEmployeeAttendance = ({
         enableReinitialize: true,
         handleSubmit: handleSubmit,
         validateFormSchema: (values) => {
-          const error = validateUpdateAttendanceFormSchema(values, Boolean(ActiveShift.status && ActiveShift.is_split_shift));
+          const error = validateUpdateAttendanceFormSchema(
+            values,
+            Boolean(ActiveShift.status && ActiveShift.is_split_shift)
+          );
           if (values.date && !ActiveShift.status) {
             if (!ActiveShift.shift_assigned) {
               error.date = `No Shift was assigned to ${selectedEmployee.name} for this date. Kindly update the shift to record attendance`;

@@ -11,6 +11,7 @@ import {
 import {
   LeaveTracker,
   MyLeaveTracker,
+  LeaveManagement,
 } from "app/modules/LeaveTracker";
 import {
   Projects,
@@ -83,7 +84,6 @@ import {
   MyShiftCalendar,
   ShiftCalendarHistoryLogs,
 } from "app/modules/Attendance/ShiftCalendar";
-import { LeaveSetup } from "app/modules/LeaveTracker";
 
 export const SidebarRoutes = [
   {
@@ -468,7 +468,7 @@ export const SidebarRoutes = [
         },
         Config.LEAVE_SETUP && {
           path: "/office-settings/leave-setup",
-          component: <LeaveSetup />,
+          component: <LeaveManagement />,
           name: "LEAVE_SETUP",
         }
       ].filter(Boolean) // Filter out undefined route
