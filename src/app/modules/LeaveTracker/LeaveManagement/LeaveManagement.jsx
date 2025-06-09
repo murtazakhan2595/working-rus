@@ -55,7 +55,14 @@ export default function LeaveManagement() {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, [fetchData, activeTab]);
+
+  useEffect(() => {
+    // Reset options and filterData when the active tab changes
+    setOptions({ page: 1, sizePerPage: 10 });
+    setFilterData({});
+    setOrdering("-id");
+  }, [activeTab]);
 
   const onPageChange = (name, value) => {
     setOptions((prev) => ({ ...prev, [name]: value }));

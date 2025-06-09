@@ -5,7 +5,7 @@ import CircularActionButtons from "components/CircularActionButtons";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { ViewDetailSheetCardExtension } from "components";
 import SheetComponent from "components/ui/SheetComponent";
-import AddUpdateLeaveType from "./AddUpdateLeaveType";
+import {AddUpdateLeaveType} from "app/modules/LeaveTracker";
 import { deleteLeaveType } from "app/hooks/leaveTracker";
 
 const ViewLeaveType = ({
@@ -84,64 +84,46 @@ const ViewLeaveType = ({
   };
 
   const renderNationalities = () => {
-    if (currentType.nationalities === null) {
-      return "All Nationalities";
-    }
     if (!currentType.nationalities || currentType.nationalities.length === 0) {
-      return "No nationalities assigned";
+      return <span className="">All Nationalities</span>;
     }
     return currentType.nationalities.join(", ");
   };
 
   const renderBranches = () => {
-    if (currentType.branches === null) {
-      return "All Branches";
-    }
     if (!currentType.branches || currentType.branches.length === 0) {
-      return "No branches assigned";
+      return <span className="">All Branches</span>;
     }
     return currentType.branches.map((branch) => branch.branch_name).join(", ");
   };
 
   const renderDepartments = () => {
-    if (currentType.departments === null) {
-      return "All Departments";
-    }
     if (!currentType.departments || currentType.departments.length === 0) {
-      return "No departments assigned";
+      return <span className="">All Departments</span>;
     }
     return currentType.departments.map((dept) => dept.name).join(", ");
   };
 
   const renderGenders = () => {
-    if (currentType.genders === null) {
-      return "All Genders";
-    }
     if (!currentType.genders || currentType.genders.length === 0) {
-      return "No genders assigned";
+      return <span className="">All Genders</span>;
     }
     return currentType.genders.join(", ");
   };
 
   const renderMaritalStatuses = () => {
-    if (currentType.marital_statuses === null) {
-      return "All Marital Statuses";
-    }
     if (
       !currentType.marital_statuses ||
       currentType.marital_statuses.length === 0
     ) {
-      return "No marital statuses assigned";
+      return <span className="">All Marital Statuses</span>;
     }
     return currentType.marital_statuses.join(", ");
   };
 
   const renderGrades = () => {
-    if (currentType.grades === null) {
-      return "All Grades";
-    }
     if (!currentType.grades || currentType.grades.length === 0) {
-      return "No grades assigned";
+      return <span className="">All Grades</span>;
     }
     return currentType.grades.join(", ");
   };

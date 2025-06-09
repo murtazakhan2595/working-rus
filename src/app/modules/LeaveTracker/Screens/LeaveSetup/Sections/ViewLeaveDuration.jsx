@@ -84,24 +84,18 @@ const ViewLeaveDuration = ({
   };
 
   const renderNationalities = () => {
-    if (currentDuration.nationalities === null) {
-      return "All Nationalities";
-    }
     if (
       !currentDuration.nationalities ||
       currentDuration.nationalities.length === 0
     ) {
-      return "No nationalities assigned";
+      return "All Nationalities";
     }
     return currentDuration.nationalities.join(", ");
   };
 
   const renderBranches = () => {
-    if (currentDuration.branches === null) {
-      return "All Branches";
-    }
     if (!currentDuration.branches || currentDuration.branches.length === 0) {
-      return "No branches assigned";
+      return "All Branches";
     }
     return currentDuration.branches
       .map((branch) => branch.branch_name)
@@ -109,14 +103,11 @@ const ViewLeaveDuration = ({
   };
 
   const renderDepartments = () => {
-    if (currentDuration.departments === null) {
-      return "All Departments";
-    }
     if (
       !currentDuration.departments ||
       currentDuration.departments.length === 0
     ) {
-      return "No departments assigned";
+      return "All Departments";
     }
     return currentDuration.departments.map((dept) => dept.name).join(", ");
   };
