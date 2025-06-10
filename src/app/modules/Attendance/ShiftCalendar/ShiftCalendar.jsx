@@ -70,6 +70,7 @@ const ShiftCalendar = () => {
     try {
       const response = await getShiftSchedule({
         filterData: { status: "Pending" },
+        ordering: "-id",
       });
       if (response) {
         setPendingSchedules(response);
