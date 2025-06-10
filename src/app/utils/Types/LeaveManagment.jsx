@@ -8,9 +8,16 @@ const Leave = {
   total_days: null,
   reason: null,
   is_full_paid: true,
-  status:null,
-  reason:null,
-  id:null,
+  status: null,
+  reason: null,
+  id: null,
+  leave_type_names: null,
+  leave_duration_name: null,
+  employee: null,
+  created_at: null,
+  request_id: null,
+  approval_details:null,
+  is_cancelled:null,
 };
 
 const EmployeeLeaveTypesList = {
@@ -59,7 +66,7 @@ export const PublicHoliday = {
   branches: null,
   country: null,
   religion: null,
-  id:null,
+  id: null,
 };
 
 export { Leave, EmployeeLeaveTypesList };

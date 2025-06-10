@@ -1,6 +1,6 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
-import { getEmployeeCustomList, HandleLogout } from "./general";
+import { getCurrentRequestApprover, HandleLogout } from "./general";
 import moment from "moment";
 import {
   mapLeaveTypeListData,
@@ -8,7 +8,8 @@ import {
   mapPublicHolidayPayloadeData,
   mapPublicHolidayListData,
   mapPublicHolidayData,
-  mapLeaveListData
+  mapLeaveListData,
+  mapLeaveData,
 } from "app/utils/MappingObjects/mapLeaveData";
 import { renderErrorMessages } from "utils/renderErrors";
 
@@ -708,7 +709,7 @@ export const getLeaveListData = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/employee-leaves/applied_leaves/?ordering=${sortField}&${
+  let URL = `/employee-leaves?ordering=${sortField}&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
     JSON.stringify(filterData)
@@ -719,7 +720,7 @@ export const getLeaveListData = async (payload) => {
     });
     if (response.status === 200) {
       const ResponseData = response.data;
-      const ResponseList = await mapLeaveListData(ResponseData.data);
+      const ResponseList = await mapLeaveListData(ResponseData.results);
       return { results: ResponseList, count: ResponseData.count };
     }
     return { results: [], count: 0 };
@@ -729,6 +730,27 @@ export const getLeaveListData = async (payload) => {
       HandleLogout();
     }
     return { results: [], count: 0 };
+  }
+};
+
+export const getLeaveData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/employee-leaves/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = await mapLeaveData(response.data);
+      const currentapprover = await getCurrentRequestApprover(
+        ResponseData.request_id
+      );
+      return { ...ResponseData, ...currentapprover };
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
   }
 };
 
@@ -767,8 +789,8 @@ export const saveUpdateLeave = async (payload, id) => {
     const finalPayload = payload;
 
     const url = ID
-      ? `${baseUrl}/employee-leaves/apply_leave/${ID}/` // Use id if updating
-      : `${baseUrl}/employee-leaves/apply_leave/`; // No id means create new
+      ? `${baseUrl}/employee-leaves/${ID}/` // Use id if updating
+      : `${baseUrl}/employee-leaves/`; // No id means create new
 
     const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
 
