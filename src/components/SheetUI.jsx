@@ -57,6 +57,7 @@ const SheetUI = forwardRef(
     const handleClose = () => {
       setIsCloseConfirmationOpen(true);
     };
+
     const HandleSubmit = async (values, resetForm) => {
       try {
         setIsSubmittingForm(true);
@@ -71,6 +72,7 @@ const SheetUI = forwardRef(
         setIsSubmittingForm(false);
       }
     };
+
     return (
       <SheetVariant
         isOpen={isOpen}
@@ -90,7 +92,6 @@ const SheetUI = forwardRef(
           }}
           validate={(values) => {
             const errors = validateFormSchema(values);
-            // if (errors)
             console.error("Form Errors:", errors, "Values:", values);
             if (renderUpdatedFormValues) {
               renderUpdatedFormValues(values);
@@ -140,7 +141,20 @@ const SheetUI = forwardRef(
                             variant,
                             multiple,
                             subColumns,
+                            shouldRender = true, // NEW: Default to true for backward compatibility
+                            renderCondition = true, // NEW: Alternative prop name for conditional rendering
                           } = fieldsConfig;
+
+                          // NEW: Check if field should be rendered
+                          // Support both shouldRender and renderCondition props for flexibility
+                          const isFieldVisible =
+                            shouldRender && renderCondition;
+
+                          // NEW: Skip rendering if field should not be visible
+                          if (!isFieldVisible) {
+                            return null;
+                          }
+
                           const error = get(props.errors, name);
                           return (
                             <div
@@ -235,6 +249,7 @@ const SheetUI = forwardRef(
     );
   }
 );
+
 const FormBody = ({
   children,
   sheetCardExtension = false,
@@ -259,6 +274,7 @@ const FormBody = ({
     <div className={className}>{children}</div>
   );
 };
+
 const SheetVariant = ({
   children,
   isOpen = true,
