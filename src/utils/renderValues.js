@@ -351,6 +351,22 @@ export const getWorkingDays = (startDate, endDate) => {
   return count;
 };
 
+export const getDateTimeDifference = (
+  startDate,
+  endDate,
+  variant = "days", // days,hours,
+  type = "work_days", //work_days, calendar_days
+) => {
+  let start = moment(startDate);
+  const end = moment(endDate);
+  let count = 0;
+
+  if (type === "work_days") count = getWorkingDays(start, end);
+  else if (type === "calendar_days") count = end.diff(start, variant) + 1;
+
+  return count;
+};
+
 export const ChildAnyNodeExist = (
   parent_node = {},
   selectedLeafs = [],

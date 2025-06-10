@@ -4,6 +4,7 @@ import { Leave } from "app/utils/Types/LeaveManagment";
 import {
   getLeaveTypeData,
   getEligibleLeaveTypeDurations,
+  saveUpdateLeave
 } from "app/hooks/leaveTracker";
 import { validateLeaveRequestFormSchema } from "app/utils/FormSchema/leaveTrackerFormSchema";
 import moment from "moment";
@@ -16,6 +17,7 @@ import { DateInput } from "components/FormControl";
 import { CheckBoxInput } from "components/FormControl";
 import { NumberInput } from "components/FormControl";
 import { getWorkingDays } from "utils/renderValues";
+import { TextAreaInput } from "components/FormControl";
 
 const LeaveRequest = ({ id }) => {
   const { id: user_id, branch_id: user_branch } = useSelector(
@@ -27,6 +29,7 @@ const LeaveRequest = ({ id }) => {
   const [LeaveTypeOptions, setLeaveTypeOptions] = useState([]);
   const [LeaveValidationInfo, setLeaveValidationInfo] = useState({});
   const [LeaveDurationOptions, setLeaveDurationOptions] = useState([]);
+   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const FormSheetData = React.useMemo(
     () => ({
       triggerText: null,
@@ -160,7 +163,26 @@ const LeaveRequest = ({ id }) => {
     return FormValues;
   };
 
-  const handleSubmit = (values) => {};
+   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+      setIsSubmittingForm(true);
+      try {
+        // Save role
+        const response = await saveUpdateLeave(values, id);
+        if (response) {
+          // Ensure table is reloaded
+          return {
+            status: true,
+            title: "Form Submitted Succesfully",
+            description: `Your leave request have been submitted successfully.`,
+            messageType: "Success",
+          };
+        }
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setIsSubmittingForm(false);
+      }
+    };
   const handleAddLeaveClick = (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -200,7 +222,7 @@ const LeaveRequest = ({ id }) => {
             renderUpdatedFormValues: SetLeaveFormValues,
             submitButtonText: "Submit Request",
             cancelButtonText: "Cancel",
-            disableSubmit: false,
+            disableSubmit: isSubmittingForm,
             loadingMessage: "Submiting Form",
             columns: 2,
             formFiels: [
@@ -262,6 +284,13 @@ const LeaveRequest = ({ id }) => {
                     options: LeaveDurationOptions,
                     required: true,
                   },
+                  {
+                    InputField: TextAreaInput,
+                    name: "reason",
+                    label: "Reason",
+                    required: true,
+                    rows:4,
+                  },
                   ...(LeaveValidationInfo.halfPaidAllowed
                     ? [
                         {
@@ -274,6 +303,7 @@ const LeaveRequest = ({ id }) => {
                         },
                       ]
                     : []),
+
                 ].filter(Boolean),
               },
             ],

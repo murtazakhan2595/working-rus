@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import {mapCalendarContent} from 'app/utils/MappingObjects/mapGeneralData';
+import { mapCalendarContent } from "app/utils/MappingObjects/mapGeneralData";
 import {
   getDepartmentList,
   getDesignationList,
@@ -77,12 +77,14 @@ export const fetchHolidays = createAsyncThunk(
 // Define the thunk to fetch Holidays Content
 export const fetchCalendarHoliday = createAsyncThunk(
   "common/fetchCalendarHoliday",
-  async () => {
+  async (user_id) => {
     try {
-      const response = await getHolidaysListData();
+      const response = await getHolidaysListData({
+        filterData: { employee: user_id },
+      });
       const HolidayData = response?.results || [];
-      const CalendarContent = mapCalendarContent({holidays:HolidayData})
-      return CalendarContent
+      const CalendarContent = mapCalendarContent({ holidays: HolidayData });
+      return CalendarContent;
     } catch (error) {
       throw error;
     }

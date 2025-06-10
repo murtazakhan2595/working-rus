@@ -12,6 +12,7 @@ import {
   AddUpdateLeaveDuration,
   LeaveDuration,
   Holidays,
+  AddUpdateOffsetLeave,
   AddUpdateHolidays,
   LeaveTypes,
   AddUpdateLeaveType,
@@ -29,6 +30,7 @@ export default function LeaveManagement() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [addLeaveType, setAddLeaveType] = useState(false);
+  const [addLeaveOffet, setAddLeaveOffet] = useState(false);
   const [reloadHolidays, setReloadHolidays] = useState(false);
 
   const fetchData = useCallback(async () => {
@@ -120,6 +122,20 @@ export default function LeaveManagement() {
         />
       ),
     },
+    {
+      value: "offset_leave_settings",
+      label: "Offset Leave Settings",
+      component: (
+        <Holidays
+          options={options}
+          onPageChange={onPageChange}
+          setOrdering={setOrdering}
+          loading={loading}
+          data={data}
+          reload={reloadHolidays}
+        />
+      ),
+    },
   ];
   return (
     <div className="flex flex-col gap-4">
@@ -153,6 +169,15 @@ export default function LeaveManagement() {
                 Add Leave Type
               </Button>
             )}
+            {activeTab === "offset_leave_settings" && (
+              <Button
+                onClick={() => {
+                  setAddLeaveOffet(true);
+                }}
+              >
+                Add Leave Offset
+              </Button>
+            )}
           </>
         }
       />
@@ -176,13 +201,11 @@ export default function LeaveManagement() {
         </div>
 
         <Card>
-          <CardContent>
             {tabsData.map((tab) => (
               <TabsContent key={tab.value} value={tab.value}>
                 {tab.component}
               </TabsContent>
             ))}
-          </CardContent>
         </Card>
       </Tabs>
       {addDuration && (
@@ -196,6 +219,15 @@ export default function LeaveManagement() {
         <AddUpdateHolidays
           isOpen={addHolidays}
           setIsOpen={setAddHolidays}
+          reloadData={() => {
+            setReloadHolidays(!reloadHolidays);
+          }}
+        />
+      )}
+      {addLeaveOffet && (
+        <AddUpdateOffsetLeave
+          isOpen={addLeaveOffet}
+          setIsOpen={setAddLeaveOffet}
           reloadData={() => {
             setReloadHolidays(!reloadHolidays);
           }}

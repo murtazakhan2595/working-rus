@@ -1,4 +1,3 @@
-import moment from "moment";
 const Leave = {
   leave_duration: null,
   leave_type: null,
@@ -9,6 +8,9 @@ const Leave = {
   total_days: null,
   reason: null,
   is_full_paid: true,
+  status:null,
+  reason:null,
+  id:null,
 };
 
 const EmployeeLeaveTypesList = {

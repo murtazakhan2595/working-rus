@@ -869,7 +869,7 @@ export const handleUpdateProfile = async (dispatch, data) => {
   dispatch(fetchBranches());
   dispatch(fetchDepartments());
   dispatch(fetchDesignations());
-  await dispatch(fetchCalendarHoliday());
+  await dispatch(fetchCalendarHoliday(userprofile.id));
   await dispatch(fetchDocumentCategory());
   dispatch(fetchOrganizations());
   dispatch(fetchTaskLabels());
