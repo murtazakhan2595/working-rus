@@ -19,6 +19,28 @@ import { getShiftById, employeeData } from "app/hooks/attendance";
 import { generateShiftScheduleLog } from "../Section/getEmployeeActiveShift";
 import { HasAccess } from "utils/PermissionUtils";
 
+const parseShiftTime = (timeString) => {
+  if (!timeString) return null;
+
+  let parsedTime;
+
+  if (timeString.includes("T")) {
+    // ISO format like "2025-06-09T12:00:00Z"
+    parsedTime = moment(timeString);
+  } else if (timeString.includes("M")) {
+    // 12-hour format like "05:00 PM" or "5:00 AM"
+    parsedTime = moment(timeString, ["hh:mm A", "h:mm A"]);
+  } else if (timeString.includes(":")) {
+    // 24-hour format like "17:00"
+    parsedTime = moment(timeString, "HH:mm");
+  } else {
+    // Fallback - try to parse as-is
+    parsedTime = moment(timeString);
+  }
+
+  return parsedTime.isValid() ? parsedTime.format("HH:mm") : null;
+};
+
 const ShiftChangeRequestModal = ({
   isOpen,
   setIsOpen,
@@ -36,6 +58,7 @@ const ShiftChangeRequestModal = ({
   const [formData, setFormData] = useState({
     dateRange: "",
     dailySchedule: [],
+    totalHours: { daily: {}, weekly: 0 },
   });
 
   const handleClose = () => {
@@ -147,12 +170,13 @@ const ShiftChangeRequestModal = ({
 
             // Extract times from shift_details if available
             if (coveringSchedule.shift_details) {
-              dayData.assignedStartTime = moment(
+              // ✅ FIXED: Use coveringSchedule.shift_details, not directOrgShift
+              dayData.assignedStartTime = parseShiftTime(
                 coveringSchedule.shift_details.starttime
-              ).format("HH:mm");
-              dayData.assignedEndTime = moment(
+              );
+              dayData.assignedEndTime = parseShiftTime(
                 coveringSchedule.shift_details.endtime
-              ).format("HH:mm");
+              );
             } else {
               // If shift_details not available, we might need to fetch the shift
               console.warn(
@@ -194,17 +218,12 @@ const ShiftChangeRequestModal = ({
             shiftId: directOrgShift.id,
           };
 
-          // Use the shift's start and end time for all days
-          dayData.assignedStartTime = moment(directOrgShift.starttime).format(
-            "HH:mm"
-          );
-          dayData.assignedEndTime = moment(directOrgShift.endtime).format(
-            "HH:mm"
-          );
+          // ✅ FIXED: Use parseShiftTime helper instead of hardcoded format
+          dayData.assignedStartTime = parseShiftTime(directOrgShift.starttime);
+          dayData.assignedEndTime = parseShiftTime(directOrgShift.endtime);
         }
 
         // Initialize requested with assigned values
-        // IMPORTANT: Convert time strings to full datetime for TimePicker
         dayData.requestedIsOff = dayData.assignedIsOff;
         dayData.requestedIsSplit = dayData.assignedIsSplit;
 
@@ -260,67 +279,128 @@ const ShiftChangeRequestModal = ({
       setFetchingShifts(false);
     }
   };
-  // Helper function to calculate total weekly hours
-  const calculateTotalWeeklyHours = (dailySchedule, useRequested = false) => {
-    let totalHours = 0;
 
-    dailySchedule.forEach((day) => {
-      const isOff = useRequested ? day.requestedIsOff : day.assignedIsOff;
-      const isSplit = useRequested ? day.requestedIsSplit : day.assignedIsSplit;
+  // Helper function for calculating hours from time strings (for display only)
+  const calculateHoursFromTimeStrings = (startTime, endTime) => {
+    if (!startTime || !endTime) return 0;
+    const start = moment(startTime, "HH:mm");
+    const end = moment(endTime, "HH:mm");
 
-      if (!isOff) {
-        if (isSplit) {
-          const start1 = useRequested
-            ? day.requestedSplitStart1
-            : day.assignedSplitStart1;
-          const end1 = useRequested
-            ? day.requestedSplitEnd1
-            : day.assignedSplitEnd1;
-          const start2 = useRequested
-            ? day.requestedSplitStart2
-            : day.assignedSplitStart2;
-          const end2 = useRequested
-            ? day.requestedSplitEnd2
-            : day.assignedSplitEnd2;
+    if (end.isBefore(start)) {
+      end.add(1, "day");
+    }
 
-          if (start1 && end1) {
-            const hours1 = moment(`${day.date} ${end1}`).diff(
-              moment(`${day.date} ${start1}`),
-              "hours",
-              true
+    return end.diff(start, "hours", true);
+  };
+
+  // Add this new function with safety check
+  const calculateHours = (values, setFieldValue) => {
+    const dailyHours = {};
+    let weeklyTotal = 0;
+
+    // MINIMAL FIX: Add safety check
+    if (!values.dailySchedule || !Array.isArray(values.dailySchedule)) {
+      console.log("dailySchedule is not available yet");
+      return;
+    }
+
+    values.dailySchedule.forEach((day) => {
+      let dayTotal = 0;
+
+      if (!day.requestedIsOff) {
+        if (day.requestedIsSplit) {
+          // Calculate hours for split shift
+          if (day.requestedSplitStart1 && day.requestedSplitEnd1) {
+            const start1 = moment(day.requestedSplitStart1);
+            const end1 = moment(day.requestedSplitEnd1);
+            const startTimeStr = start1.format("hh:mm A");
+            const endTimeStr = end1.format("hh:mm A");
+
+            const baseDate = moment(day.date).startOf("day");
+            const correctedStart = moment(
+              `${baseDate.format("YYYY-MM-DD")} ${startTimeStr}`,
+              "YYYY-MM-DD hh:mm A"
             );
-            totalHours += hours1 > 0 ? hours1 : hours1 + 24;
+            const correctedEnd = moment(
+              `${baseDate.format("YYYY-MM-DD")} ${endTimeStr}`,
+              "YYYY-MM-DD hh:mm A"
+            );
+
+            if (correctedEnd.isBefore(correctedStart)) {
+              correctedEnd.add(1, "day");
+            }
+
+            const hours1 = correctedEnd.diff(correctedStart, "hours", true);
+            dayTotal += hours1;
           }
 
-          if (start2 && end2) {
-            const hours2 = moment(`${day.date} ${end2}`).diff(
-              moment(`${day.date} ${start2}`),
-              "hours",
-              true
+          if (day.requestedSplitStart2 && day.requestedSplitEnd2) {
+            const start2 = moment(day.requestedSplitStart2);
+            const end2 = moment(day.requestedSplitEnd2);
+            const startTimeStr = start2.format("hh:mm A");
+            const endTimeStr = end2.format("hh:mm A");
+
+            const baseDate = moment(day.date).startOf("day");
+            const correctedStart = moment(
+              `${baseDate.format("YYYY-MM-DD")} ${startTimeStr}`,
+              "YYYY-MM-DD hh:mm A"
             );
-            totalHours += hours2 > 0 ? hours2 : hours2 + 24;
+            const correctedEnd = moment(
+              `${baseDate.format("YYYY-MM-DD")} ${endTimeStr}`,
+              "YYYY-MM-DD hh:mm A"
+            );
+
+            if (correctedEnd.isBefore(correctedStart)) {
+              correctedEnd.add(1, "day");
+            }
+
+            const hours2 = correctedEnd.diff(correctedStart, "hours", true);
+            dayTotal += hours2;
           }
         } else {
-          const startTime = useRequested
-            ? day.requestedStartTime
-            : day.assignedStartTime;
-          const endTime = useRequested
-            ? day.requestedEndTime
-            : day.assignedEndTime;
+          // Calculate hours for regular shift
+          if (day.requestedStartTime && day.requestedEndTime) {
+            const start = moment(day.requestedStartTime);
+            const end = moment(day.requestedEndTime);
+            const startTimeStr = start.format("hh:mm A");
+            const endTimeStr = end.format("hh:mm A");
 
-          if (startTime && endTime) {
-            const hours = moment(`${day.date} ${endTime}`).diff(
-              moment(`${day.date} ${startTime}`),
-              "hours",
-              true
+            const baseDate = moment(day.date).startOf("day");
+            const correctedStart = moment(
+              `${baseDate.format("YYYY-MM-DD")} ${startTimeStr}`,
+              "YYYY-MM-DD hh:mm A"
             );
-            totalHours += hours > 0 ? hours : hours + 24;
+            const correctedEnd = moment(
+              `${baseDate.format("YYYY-MM-DD")} ${endTimeStr}`,
+              "YYYY-MM-DD hh:mm A"
+            );
+
+            if (correctedEnd.isBefore(correctedStart)) {
+              correctedEnd.add(1, "day");
+            }
+
+            dayTotal = correctedEnd.diff(correctedStart, "hours", true);
           }
         }
       }
+
+      // Validate max 9 hours per day - only throw error if EXCEEDING 9 hours
+      if (dayTotal > 9) {
+        const roundedTotal = Math.round(dayTotal * 100) / 100;
+        if (roundedTotal > 9) {
+          toast.error(`Working hours for ${day.day} exceeds 9 hours limit!`);
+          dayTotal = 9; // Cap at 9 hours
+        }
+      }
+
+      dailyHours[day.date] = dayTotal;
+      weeklyTotal += dayTotal;
     });
 
-    return totalHours.toFixed(1);
+    setFieldValue("totalHours", {
+      daily: dailyHours,
+      weekly: weeklyTotal,
+    });
   };
 
   // Replace the existing handleFormSubmit function
@@ -566,7 +646,6 @@ const ShiftChangeRequestModal = ({
         // Metadata about the request
         changed_days: changedDays,
         requested_date_range: `${requestedStartDate},${requestedEndDate}`,
-
       };
 
       console.log("Shift Change Request Payload:", payload);
@@ -605,19 +684,6 @@ const ShiftChangeRequestModal = ({
     title: "Request Shift Change",
     description: null,
     footer: null,
-  };
-
-  // Calculate hours for display
-  const calculateHours = (startTime, endTime) => {
-    if (!startTime || !endTime) return 0;
-    const start = moment(startTime, "HH:mm");
-    const end = moment(endTime, "HH:mm");
-
-    if (end.isBefore(start)) {
-      end.add(1, "day");
-    }
-
-    return end.diff(start, "hours", true);
   };
 
   return (
@@ -672,6 +738,15 @@ const ShiftChangeRequestModal = ({
                           employee.id
                         );
                       props.setFieldValue("dailySchedule", dailySchedule);
+
+                      // Calculate initial hours
+                      setTimeout(() => {
+                        const updatedValues = {
+                          ...props.values,
+                          dailySchedule,
+                        };
+                        calculateHours(updatedValues, props.setFieldValue);
+                      }, 100);
                     }}
                     required={true}
                     minDate={moment().format("YYYY-MM-DD")} // Future dates only
@@ -758,13 +833,13 @@ const ShiftChangeRequestModal = ({
                                             <span className="font-medium">
                                               Time:
                                             </span>{" "}
-                                            {day.assignedStartTime} -{" "}
-                                            {day.assignedEndTime}
+                                            {day.assignedStartTime || "N/A"} -{" "}
+                                            {day.assignedEndTime || "N/A"}
                                             {day.assignedStartTime &&
                                               day.assignedEndTime && (
                                                 <span className="ml-2 text-muted-1100">
                                                   (
-                                                  {calculateHours(
+                                                  {calculateHoursFromTimeStrings(
                                                     day.assignedStartTime,
                                                     day.assignedEndTime
                                                   ).toFixed(1)}{" "}
@@ -803,6 +878,15 @@ const ShiftChangeRequestModal = ({
                                             false
                                           );
                                         }
+                                        // Recalculate hours after toggling OFF
+                                        setTimeout(
+                                          () =>
+                                            calculateHours(
+                                              props.values,
+                                              props.setFieldValue
+                                            ),
+                                          0
+                                        );
                                       }}
                                       disabled={!day.assignedIsOff}
                                     />
@@ -823,6 +907,14 @@ const ShiftChangeRequestModal = ({
                                         value={day.requestedIsSplit}
                                         onChange={(name, value) => {
                                           props.setFieldValue(name, value);
+                                          setTimeout(
+                                            () =>
+                                              calculateHours(
+                                                props.values,
+                                                props.setFieldValue
+                                              ),
+                                            0
+                                          );
                                         }}
                                       />
 
@@ -836,6 +928,32 @@ const ShiftChangeRequestModal = ({
                                             date={day.date}
                                             onChange={(name, value) => {
                                               props.setFieldValue(name, value);
+
+                                              // Create updated values object manually
+                                              const updatedValues = {
+                                                ...props.values,
+                                                dailySchedule:
+                                                  props.values.dailySchedule.map(
+                                                    (day, i) =>
+                                                      i === index
+                                                        ? {
+                                                            ...day,
+                                                            [name
+                                                              .split(".")
+                                                              .pop()]: value,
+                                                          }
+                                                        : day
+                                                  ),
+                                              };
+
+                                              setTimeout(
+                                                () =>
+                                                  calculateHours(
+                                                    updatedValues,
+                                                    props.setFieldValue
+                                                  ),
+                                                0
+                                              );
                                             }}
                                             required={true}
                                           />
@@ -846,6 +964,32 @@ const ShiftChangeRequestModal = ({
                                             date={day.date}
                                             onChange={(name, value) => {
                                               props.setFieldValue(name, value);
+
+                                              // Create updated values object manually
+                                              const updatedValues = {
+                                                ...props.values,
+                                                dailySchedule:
+                                                  props.values.dailySchedule.map(
+                                                    (day, i) =>
+                                                      i === index
+                                                        ? {
+                                                            ...day,
+                                                            [name
+                                                              .split(".")
+                                                              .pop()]: value,
+                                                          }
+                                                        : day
+                                                  ),
+                                              };
+
+                                              setTimeout(
+                                                () =>
+                                                  calculateHours(
+                                                    updatedValues,
+                                                    props.setFieldValue
+                                                  ),
+                                                0
+                                              );
                                             }}
                                             required={true}
                                           />
@@ -867,6 +1011,32 @@ const ShiftChangeRequestModal = ({
                                                   name,
                                                   value
                                                 );
+
+                                                // Create updated values object manually
+                                                const updatedValues = {
+                                                  ...props.values,
+                                                  dailySchedule:
+                                                    props.values.dailySchedule.map(
+                                                      (day, i) =>
+                                                        i === index
+                                                          ? {
+                                                              ...day,
+                                                              [name
+                                                                .split(".")
+                                                                .pop()]: value,
+                                                            }
+                                                          : day
+                                                    ),
+                                                };
+
+                                                setTimeout(
+                                                  () =>
+                                                    calculateHours(
+                                                      updatedValues,
+                                                      props.setFieldValue
+                                                    ),
+                                                  0
+                                                );
                                               }}
                                               required={true}
                                             />
@@ -879,6 +1049,32 @@ const ShiftChangeRequestModal = ({
                                                 props.setFieldValue(
                                                   name,
                                                   value
+                                                );
+
+                                                // Create updated values object manually
+                                                const updatedValues = {
+                                                  ...props.values,
+                                                  dailySchedule:
+                                                    props.values.dailySchedule.map(
+                                                      (day, i) =>
+                                                        i === index
+                                                          ? {
+                                                              ...day,
+                                                              [name
+                                                                .split(".")
+                                                                .pop()]: value,
+                                                            }
+                                                          : day
+                                                    ),
+                                                };
+
+                                                setTimeout(
+                                                  () =>
+                                                    calculateHours(
+                                                      updatedValues,
+                                                      props.setFieldValue
+                                                    ),
+                                                  0
                                                 );
                                               }}
                                               required={true}
@@ -898,6 +1094,32 @@ const ShiftChangeRequestModal = ({
                                                   name,
                                                   value
                                                 );
+
+                                                // Create updated values object manually
+                                                const updatedValues = {
+                                                  ...props.values,
+                                                  dailySchedule:
+                                                    props.values.dailySchedule.map(
+                                                      (day, i) =>
+                                                        i === index
+                                                          ? {
+                                                              ...day,
+                                                              [name
+                                                                .split(".")
+                                                                .pop()]: value,
+                                                            }
+                                                          : day
+                                                    ),
+                                                };
+
+                                                setTimeout(
+                                                  () =>
+                                                    calculateHours(
+                                                      updatedValues,
+                                                      props.setFieldValue
+                                                    ),
+                                                  0
+                                                );
                                               }}
                                               required={true}
                                             />
@@ -911,6 +1133,32 @@ const ShiftChangeRequestModal = ({
                                                   name,
                                                   value
                                                 );
+
+                                                // Create updated values object manually
+                                                const updatedValues = {
+                                                  ...props.values,
+                                                  dailySchedule:
+                                                    props.values.dailySchedule.map(
+                                                      (day, i) =>
+                                                        i === index
+                                                          ? {
+                                                              ...day,
+                                                              [name
+                                                                .split(".")
+                                                                .pop()]: value,
+                                                            }
+                                                          : day
+                                                    ),
+                                                };
+
+                                                setTimeout(
+                                                  () =>
+                                                    calculateHours(
+                                                      updatedValues,
+                                                      props.setFieldValue
+                                                    ),
+                                                  0
+                                                );
                                               }}
                                               required={true}
                                             />
@@ -918,20 +1166,19 @@ const ShiftChangeRequestModal = ({
                                         </>
                                       )}
 
-                                      {/* Display requested hours 
-                                      {day.requestedStartTime &&
-                                        day.requestedEndTime &&
-                                        !day.requestedIsSplit && (
-                                          <div className="mt-2 text-sm text-muted-1100">
-                                            Requested Hours:{" "}
-                                            {calculateHours(
-                                              day.requestedStartTime,
-                                              day.requestedEndTime
-                                            ).toFixed(1)}{" "}
-                                            hours
-                                          </div>
-                                        )}
-                                        */}
+                                      {/* MINIMAL FIX: Add working hours display */}
+                                      <div className="mt-4 text-sm">
+                                        <strong>Working Hours: </strong>
+                                        {props.values.totalHours?.daily?.[
+                                          day.date
+                                        ]
+                                          ? `${props.values.totalHours.daily[
+                                              day.date
+                                            ].toFixed(1)} hours`
+                                          : day.requestedIsOff
+                                          ? "OFF"
+                                          : "0 hours"}
+                                      </div>
                                     </>
                                   )}
                                 </div>

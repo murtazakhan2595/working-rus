@@ -15,6 +15,8 @@ import { employeeData } from "app/hooks/attendance";
 import ShiftChangeRequestModal from "./ShiftChangeRequestModal";
 import { HasAccess } from "utils/PermissionUtils";
 
+
+
 // Event Content Component with Tooltip
 const EventWithTooltip = ({ eventInfo }) => {
   const fullTitle = eventInfo.event.title;
@@ -146,24 +148,38 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
   const generateCalendarEvents = () => {
     try {
       const events = [];
+      const coveredDates = new Set(); // Track dates covered by schedules
 
-      // 1. PRIORITY: Add approved schedule shifts first
+      // 1. PRIORITY: Add approved schedule shifts first and track covered dates
       if (scheduleShifts?.results && scheduleShifts.results.length > 0) {
         scheduleShifts.results.forEach((schedule) => {
           if (schedule.is_org_based && schedule.shift_details) {
             // Organization-based scheduled shift
-            events.push(...generateOrgScheduleEvents(schedule));
+            const scheduleEvents = generateOrgScheduleEvents(schedule);
+            events.push(...scheduleEvents);
+            
+            // Track dates covered by this schedule
+            scheduleEvents.forEach(event => {
+              const eventDate = moment(event.start).format('YYYY-MM-DD');
+              coveredDates.add(eventDate);
+            });
           } else if (schedule.custom_schedule) {
             // Custom scheduled shift
-            events.push(...generateCustomScheduleEvents(schedule));
+            const scheduleEvents = generateCustomScheduleEvents(schedule);
+            events.push(...scheduleEvents);
+            
+            // Track dates covered by this schedule
+            Object.keys(schedule.custom_schedule).forEach(date => {
+              coveredDates.add(date);
+            });
           }
         });
       }
 
-      // 2. FALLBACK: Add direct shift assignment (only for dates not covered by schedules)
-      if (shift && events.length === 0) {
-        // Only show direct assignment if no schedules exist
-        events.push(...generateDirectShiftEvents(shift));
+      // 2. FALLBACK: Add direct shift assignment for dates NOT covered by schedules
+      if (shift) {
+        const directShiftEvents = generateDirectShiftEvents(shift, coveredDates);
+        events.push(...directShiftEvents);
       }
 
       setEvents(events);
@@ -318,13 +334,12 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
     return events;
   };
 
-  const generateDirectShiftEvents = (shift) => {
+  const generateDirectShiftEvents = (shift, coveredDates = new Set()) => {
     console.log("=== DEBUG: generateDirectShiftEvents ===");
     console.log("shift object:", shift);
     console.log("shift.starttime:", shift.starttime);
     console.log("shift.endtime:", shift.endtime);
-    console.log("typeof shift.starttime:", typeof shift.starttime);
-    console.log("typeof shift.endtime:", typeof shift.endtime);
+    console.log("coveredDates:", Array.from(coveredDates));
 
     const events = [];
 
@@ -370,11 +385,12 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
 
     let currentDate = startOfMonth.clone();
     while (currentDate.isSameOrBefore(endOfMonth)) {
-      // Skip weekends for default org shifts
-      if (currentDate.day() !== 0 && currentDate.day() !== 6) {
+      const dateKey = currentDate.format("YYYY-MM-DD");
+      
+      // Skip weekends for default org shifts AND skip dates covered by schedules
+      if (currentDate.day() !== 0 && currentDate.day() !== 6 && !coveredDates.has(dateKey)) {
         const startTime = shiftStart.format("HH:mm");
         const endTime = shiftEnd.format("HH:mm");
-        const dateKey = currentDate.format("YYYY-MM-DD");
 
         events.push({
           id: `direct-${shift.id}-${dateKey}`,
@@ -395,6 +411,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
       currentDate.add(1, "day");
     }
 
+    console.log("Generated direct shift events for uncovered dates:", events.length);
     return events;
   };
 
