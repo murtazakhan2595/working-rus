@@ -4,12 +4,86 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import moment from "moment";
 import { Button } from "components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "src/@/components/ui/tooltip";
 import { useSelector } from "react-redux";
 import { employeeData } from "app/hooks/attendance";
 import ShiftChangeRequestModal from "./ShiftChangeRequestModal";
 import { HasAccess } from "utils/PermissionUtils";
 
+// Event Content Component with Tooltip
+const EventWithTooltip = ({ eventInfo }) => {
+  const fullTitle = eventInfo.event.title;
+  const shortTitle =
+    fullTitle.length > 18 ? fullTitle.substring(0, 15) + "..." : fullTitle;
+
+  // Extract additional details from extendedProps
+  const { type, shiftName, scheduleId } = eventInfo.event.extendedProps;
+
+  // Create detailed tooltip content
+  const getTooltipContent = () => {
+    const start = moment(eventInfo.event.start).format("HH:mm");
+    const end = moment(eventInfo.event.end).format("HH:mm");
+
+    // Format type for display
+    const formatType = (type) => {
+      switch (type) {
+        case "direct_assignment":
+          return "Direct Assignment";
+        case "org_schedule":
+          return "Organization Schedule";
+        case "custom_regular":
+          return "Custom Schedule";
+        case "custom_split":
+          return "Split Shift";
+        case "custom_off":
+          return "Day Off";
+        default:
+          return "Scheduled Shift";
+      }
+    };
+
+    return (
+      <div className="space-y-1">
+        <p className="font-medium">{shiftName || eventInfo.event.title}</p>
+        <p className="text-xs">
+          Time: {start} - {end}
+        </p>
+        <p className="text-xs">Type: {formatType(type)}</p>
+        {scheduleId && <p className="text-xs">Schedule ID: {scheduleId}</p>}
+      </div>
+    );
+  };
+
+  return (
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="p-0.5 sm:p-1 overflow-hidden w-full cursor-pointer">
+            <div className="font-medium text-[8px] sm:text-[10px] lg:text-xs leading-tight truncate w-full">
+              {shortTitle}
+            </div>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs">
+          {getTooltipContent()}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
+
 const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
+  console.log("Shift Calendar Props:", {
+    shift,
+    scheduleShifts,
+    employeeId,
+  });
+
   const [events, setEvents] = useState([]);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -144,6 +218,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
             type: "org_schedule",
             shiftName: shiftDetails.name,
             scheduleId: schedule.id,
+            fullTitle: `${shiftDetails.name} (${startTime} - ${endTime})`,
           },
         });
       }
@@ -170,6 +245,8 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
           extendedProps: {
             type: "custom_off",
             scheduleId: schedule.id,
+            shiftName: "Day Off",
+            fullTitle: "Day Off",
           },
         });
       } else if (daySchedule.is_split) {
@@ -186,6 +263,8 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
               type: "custom_split",
               part: 1,
               scheduleId: schedule.id,
+              shiftName: `Split Shift Part 1`,
+              fullTitle: `Split 1 (${daySchedule.start_time_1} - ${daySchedule.end_time_1})`,
             },
           });
         }
@@ -207,6 +286,8 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
               type: "custom_split",
               part: 2,
               scheduleId: schedule.id,
+              shiftName: `Split Shift Part 2`,
+              fullTitle: `Split 2 (${daySchedule.start_time_2} - ${daySchedule.end_time_2})`,
             },
           });
         }
@@ -227,6 +308,8 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
           extendedProps: {
             type: "custom_regular",
             scheduleId: schedule.id,
+            shiftName: "Custom Shift",
+            fullTitle: `Custom (${daySchedule.start_time} - ${daySchedule.end_time})`,
           },
         });
       }
@@ -236,32 +319,76 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
   };
 
   const generateDirectShiftEvents = (shift) => {
+    console.log("=== DEBUG: generateDirectShiftEvents ===");
+    console.log("shift object:", shift);
+    console.log("shift.starttime:", shift.starttime);
+    console.log("shift.endtime:", shift.endtime);
+    console.log("typeof shift.starttime:", typeof shift.starttime);
+    console.log("typeof shift.endtime:", typeof shift.endtime);
+
     const events = [];
 
+    // Parse start time (ISO format)
+    const shiftStart = moment(shift.starttime);
+
+    // Parse end time (handle multiple formats)
+    let shiftEnd;
+
+    if (shift.endtime.includes("T")) {
+      // ISO format like "2025-06-09T12:00:00Z"
+      shiftEnd = moment(shift.endtime);
+    } else if (shift.endtime.includes("M")) {
+      // 12-hour format like "05:00 PM" or "5:00 AM"
+      shiftEnd = moment(shift.endtime, ["hh:mm A", "h:mm A"]);
+    } else if (shift.endtime.includes(":")) {
+      // 24-hour format like "17:00"
+      shiftEnd = moment(shift.endtime, "HH:mm");
+    } else {
+      // Fallback - try to parse as-is
+      shiftEnd = moment(shift.endtime);
+    }
+
+    console.log("Parsed times:", {
+      startValid: shiftStart.isValid(),
+      endValid: shiftEnd.isValid(),
+      startTime: shiftStart.isValid() ? shiftStart.format("HH:mm") : "Invalid",
+      endTime: shiftEnd.isValid() ? shiftEnd.format("HH:mm") : "Invalid",
+    });
+
+    // Only proceed if both times are valid
+    if (!shiftStart.isValid() || !shiftEnd.isValid()) {
+      console.error("Invalid time formats:", {
+        starttime: shift.starttime,
+        endtime: shift.endtime,
+      });
+      return events;
+    }
+
     // Generate recurring events for the direct shift assignment
-    // Show for current month only
     const startOfMonth = moment().startOf("month");
     const endOfMonth = moment().endOf("month");
 
     let currentDate = startOfMonth.clone();
     while (currentDate.isSameOrBefore(endOfMonth)) {
-      // Skip weekends for default org shifts (you can modify this logic)
+      // Skip weekends for default org shifts
       if (currentDate.day() !== 0 && currentDate.day() !== 6) {
-        const startTime = moment(shift.starttime.replace("Z", "")).format(
-          "HH:mm"
-        );
-        const endTime = moment(shift.endtime.replace("Z", "")).format("HH:mm");
+        const startTime = shiftStart.format("HH:mm");
+        const endTime = shiftEnd.format("HH:mm");
+        const dateKey = currentDate.format("YYYY-MM-DD");
 
         events.push({
+          id: `direct-${shift.id}-${dateKey}`,
           title: `${shift.name} (${startTime} - ${endTime})`,
-          start: `${currentDate.format("YYYY-MM-DD")}T${startTime}:00`,
-          end: `${currentDate.format("YYYY-MM-DD")}T${endTime}:00`,
+          start: `${dateKey}T${startTime}:00`,
+          end: `${dateKey}T${endTime}:00`,
           backgroundColor: "#3B82F6", // Blue for direct assignments
           borderColor: "#2563EB",
           textColor: "#FFFFFF",
           extendedProps: {
             type: "direct_assignment",
             shiftId: shift.id,
+            shiftName: shift.name,
+            fullTitle: `${shift.name} (${startTime} - ${endTime})`,
           },
         });
       }
@@ -279,13 +406,13 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
   };
 
   return (
-    <div className="min-w-[75%] p-4 bg-gray-100 rounded-lg shadow-lg">
+    <div className="w-full lg:min-w-[75%] p-2 sm:p-4 bg-gray-100 rounded-lg shadow-lg">
       {employeeId && (
         <div className="mb-4 p-3 bg-white rounded-lg shadow-sm">
-          <div className="text-lg font-semibold">
+          <div className="text-base sm:text-lg font-semibold">
             Employee Schedule Calendar
           </div>
-          <div className="flex gap-4 mt-2 text-sm text-muted-1100">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-muted-1100">
             <span>Direct Assignment: {shift ? shift.name : "None"}</span>
             <span>Approved Schedules: {scheduleShifts?.count || 0}</span>
           </div>
@@ -294,62 +421,54 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
 
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
-        height="70vh"
-        initialView="dayGridMonth" // Only monthly view
+        height="auto"
+        contentHeight="auto"
+        aspectRatio={
+          typeof window !== "undefined" && window.innerWidth < 768 ? 0.8 : 1.35
+        }
+        initialView="dayGridMonth"
         nowIndicator={true}
         headerToolbar={{
-          left: "prev,next today",
+          left: "prev,next",
           center: "title",
-          right: "", // Remove view switching buttons
+          right: "today",
         }}
-        events={events}
-        eventContent={(eventInfo) => {
-          return (
-            <div className="p-1">
-              <div className="font-semibold text-xs">
-                {eventInfo.event.title}
-              </div>
-            </div>
-          );
-        }}
-        dayMaxEvents={3} // Limit events per day for better visibility
+        dayMaxEvents={
+          typeof window !== "undefined" && window.innerWidth < 768 ? 2 : 3
+        }
         moreLinkClick="popover"
+        events={events}
+        eventContent={(eventInfo) => <EventWithTooltip eventInfo={eventInfo} />}
+        eventClassNames={() => [
+          "transition-all",
+          "hover:opacity-90",
+          "hover:scale-105",
+        ]}
+        dayCellContent={(dayInfo) => {
+          return {
+            html: `<div class="text-sm sm:text-base">${dayInfo.dayNumberText}</div>`,
+          };
+        }}
       />
 
-      {/* Legend */}
-      {/* <div className="mt-4 p-3 bg-white rounded-lg shadow-sm">
-        <div className="text-sm font-medium mb-2">Legend:</div>
-        <div className="flex flex-wrap gap-4 text-xs">
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-blue-500 rounded"></div>
-            <span>Direct Assignment</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-green-500 rounded"></div>
-            <span>Org Schedule</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-purple-500 rounded"></div>
-            <span>Custom Schedule</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-orange-500 rounded"></div>
-            <span>Split Shift</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-gray-500 rounded"></div>
-            <span>OFF Day</span>
-          </div>
-        </div>
-      </div> */}
-      {/* Request Shift Change Button - Only visible to Branch/Cluster Managers */}
+      {/* Request Shift Change Button */}
       {employeeId && canRequestShiftChange && (
-        <div className="mt-4 p-3 bg-white rounded-lg shadow-sm text-end">
-          <Button onClick={handleRequestShiftChange} className="" size="lg">
-            {isEditEmployeeShiftPermitted
-              ? "Edit Employee Shift"
-              : "Request Shift Change"}
-          </Button>
+        <div className="mt-4 p-3 bg-white rounded-lg shadow-sm">
+          <div className="flex justify-center sm:justify-end">
+            <Button
+              onClick={handleRequestShiftChange}
+              className="w-full sm:w-auto text-sm sm:text-base"
+              size={
+                typeof window !== "undefined" && window.innerWidth < 768
+                  ? "default"
+                  : "lg"
+              }
+            >
+              {isEditEmployeeShiftPermitted
+                ? "Edit Employee Shift"
+                : "Request Shift Change"}
+            </Button>
+          </div>
         </div>
       )}
 

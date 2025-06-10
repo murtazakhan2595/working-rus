@@ -251,9 +251,38 @@ const generateShiftScheduleLog = async ({
     if (schedule.is_org_based && schedule.shift_details) {
       const shift = schedule.shift_details;
 
-      // Extract just the time part from starttime and endtime
-      const startTime = moment(shift.starttime).format("HH:mm");
-      const endTime = moment(shift.endtime).format("HH:mm");
+      // Parse start time (ISO format)
+      const startMoment = moment(shift.starttime);
+
+      // Parse end time (handle multiple formats)
+      let endMoment;
+      if (shift.endtime.includes("T")) {
+        // ISO format like "2025-06-09T12:00:00Z"
+        endMoment = moment(shift.endtime);
+      } else if (shift.endtime.includes("M")) {
+        // 12-hour format like "05:00 PM" or "5:00 AM"
+        endMoment = moment(shift.endtime, ["hh:mm A", "h:mm A"]);
+      } else if (shift.endtime.includes(":")) {
+        // 24-hour format like "17:00"
+        endMoment = moment(shift.endtime, "HH:mm");
+      } else {
+        // Fallback - try to parse as-is
+        endMoment = moment(shift.endtime);
+      }
+
+      // Only proceed if both times are valid
+      if (!startMoment.isValid() || !endMoment.isValid()) {
+        console.error("Invalid time formats in generateShiftScheduleLog:", {
+          starttime: shift.starttime,
+          endtime: shift.endtime,
+          startValid: startMoment.isValid(),
+          endValid: endMoment.isValid(),
+        });
+        return "Invalid shift times";
+      }
+
+      const startTime = startMoment.format("HH:mm");
+      const endTime = endMoment.format("HH:mm");
 
       // Parse weekdays
       let weekdays = [];
@@ -318,8 +347,38 @@ const generateShiftScheduleLog = async ({
 
     // For direct shift assignment
     if (schedule.starttime && schedule.endtime) {
-      const startTime = moment(schedule.starttime).format("HH:mm");
-      const endTime = moment(schedule.endtime).format("HH:mm");
+      // Parse start time (ISO format)
+      const startMoment = moment(schedule.starttime);
+
+      // Parse end time (handle multiple formats)
+      let endMoment;
+      if (schedule.endtime.includes("T")) {
+        // ISO format like "2025-06-09T12:00:00Z"
+        endMoment = moment(schedule.endtime);
+      } else if (schedule.endtime.includes("M")) {
+        // 12-hour format like "05:00 PM" or "5:00 AM"
+        endMoment = moment(schedule.endtime, ["hh:mm A", "h:mm A"]);
+      } else if (schedule.endtime.includes(":")) {
+        // 24-hour format like "17:00"
+        endMoment = moment(schedule.endtime, "HH:mm");
+      } else {
+        // Fallback - try to parse as-is
+        endMoment = moment(schedule.endtime);
+      }
+
+      // Only proceed if both times are valid
+      if (!startMoment.isValid() || !endMoment.isValid()) {
+        console.error("Invalid time formats in direct shift assignment:", {
+          starttime: schedule.starttime,
+          endtime: schedule.endtime,
+          startValid: startMoment.isValid(),
+          endValid: endMoment.isValid(),
+        });
+        return "Invalid shift times";
+      }
+
+      const startTime = startMoment.format("HH:mm");
+      const endTime = endMoment.format("HH:mm");
 
       // If we have a date range, show daily breakdown
       if (dateRange) {

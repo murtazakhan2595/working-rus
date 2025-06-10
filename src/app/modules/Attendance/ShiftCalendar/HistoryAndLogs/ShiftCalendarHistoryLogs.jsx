@@ -83,64 +83,137 @@ export default function ShiftCalendarHistoryLogs() {
 
   // Parse shift string to extract individual day information
   const parseShiftString = (shiftString) => {
-    if (!shiftString) return [];
+    if (!shiftString || typeof shiftString !== 'string') return [];
 
-    // Remove the weekly hours part if present
-    const cleanString = shiftString.replace(/\s*\([^)]*h\/week\)\s*$/, "");
+    try {
+      // Remove the weekly hours part if present
+      const cleanString = shiftString.replace(/\s*\([^)]*h\/week\)\s*$/, "");
 
-    // Split by commas to get individual days
-    const dayParts = cleanString.split(",").map((part) => part.trim());
-    const shifts = [];
+      // Split by commas to get individual days
+      const dayParts = cleanString.split(",").map((part) => part.trim());
+      const shifts = [];
 
-    dayParts.forEach((part) => {
-      // Extract date and time/status
-      const match = part.match(/(\w+\s+\d+):\s*(.+)/);
-      if (match) {
-        const dateStr = match[1];
-        const timeOrStatus = match[2].trim();
+      dayParts.forEach((part) => {
+        try {
+          // Extract date and time/status - handle multiple formats
+          let match = part.match(/(\w+\s+\d+):\s*(.+)/);
+          
+          // Alternative pattern for different formats
+          if (!match) {
+            match = part.match(/(\d+\s+\w+):\s*(.+)/);
+          }
+          
+          if (match) {
+            const dateStr = match[1].trim();
+            const timeOrStatus = match[2].trim();
 
-        // Parse the date - we know it's 2025 data
-        const date = moment(dateStr + " 2025", "MMM DD YYYY");
+            // Try multiple date parsing formats
+            let date;
+            const currentYear = new Date().getFullYear();
+            
+            // Try different date formats
+            const formats = [
+              `MMM DD ${currentYear}`,
+              `DD MMM ${currentYear}`,
+              `MMM DD YYYY`,
+              `DD MMM YYYY`,
+              `MMM D ${currentYear}`,
+              `D MMM ${currentYear}`
+            ];
+            
+            for (const format of formats) {
+              date = moment(dateStr + ` ${currentYear}`, format);
+              if (date.isValid()) break;
+              
+              // Try with the original string if it already has year
+              date = moment(dateStr, format);
+              if (date.isValid()) break;
+            }
 
-        if (timeOrStatus === "OFF") {
-          shifts.push({
-            date: date.format("YYYY-MM-DD"),
-            isOff: true,
-            startTime: null,
-            endTime: null,
-            isSplit: false,
-          });
-        } else if (timeOrStatus.includes("/")) {
-          // Split shift format: "8:00-12:00 / 15:00-18:00"
-          const splitParts = timeOrStatus.split("/").map((p) => p.trim());
-          const times = splitParts.map((p) => {
-            const [start, end] = p.split("-").map((t) => t.trim());
-            return { start, end };
-          });
+            // Skip this entry if date is still invalid
+            if (!date || !date.isValid()) {
+              console.warn(`Invalid date format: "${dateStr}" in part: "${part}"`);
+              return; // Skip this iteration
+            }
 
-          shifts.push({
-            date: date.format("YYYY-MM-DD"),
-            isOff: false,
-            isSplit: true,
-            splitTimes: times,
-          });
-        } else {
-          // Regular shift format: "09:00-17:00"
-          const [startTime, endTime] = timeOrStatus
-            .split("-")
-            .map((t) => t.trim());
-          shifts.push({
-            date: date.format("YYYY-MM-DD"),
-            isOff: false,
-            startTime,
-            endTime,
-            isSplit: false,
-          });
+            // Validate time formats for non-OFF entries
+            if (timeOrStatus !== "OFF") {
+              if (timeOrStatus.includes("/")) {
+                // Split shift - validate both parts have proper time format
+                const splitParts = timeOrStatus.split("/").map((p) => p.trim());
+                const validTimes = splitParts.every(p => {
+                  const timeParts = p.split("-");
+                  return timeParts.length === 2 && 
+                         timeParts.every(t => /^\d{1,2}:\d{2}$/.test(t.trim()));
+                });
+                
+                if (!validTimes) {
+                  console.warn(`Invalid split time format: "${timeOrStatus}" in part: "${part}"`);
+                  return;
+                }
+              } else if (timeOrStatus.includes("-")) {
+                // Regular shift - validate time format
+                const timeParts = timeOrStatus.split("-");
+                const validTimes = timeParts.length === 2 && 
+                                   timeParts.every(t => /^\d{1,2}:\d{2}$/.test(t.trim()));
+                
+                if (!validTimes) {
+                  console.warn(`Invalid time format: "${timeOrStatus}" in part: "${part}"`);
+                  return;
+                }
+              }
+            }
+
+            const formattedDate = date.format("YYYY-MM-DD");
+
+            if (timeOrStatus === "OFF") {
+              shifts.push({
+                date: formattedDate,
+                isOff: true,
+                startTime: null,
+                endTime: null,
+                isSplit: false,
+              });
+            } else if (timeOrStatus.includes("/")) {
+              // Split shift format: "8:00-12:00 / 15:00-18:00"
+              const splitParts = timeOrStatus.split("/").map((p) => p.trim());
+              const times = splitParts.map((p) => {
+                const [start, end] = p.split("-").map((t) => t.trim());
+                return { start, end };
+              });
+
+              shifts.push({
+                date: formattedDate,
+                isOff: false,
+                isSplit: true,
+                splitTimes: times,
+              });
+            } else if (timeOrStatus.includes("-")) {
+              // Regular shift format: "09:00-17:00"
+              const [startTime, endTime] = timeOrStatus
+                .split("-")
+                .map((t) => t.trim());
+              shifts.push({
+                date: formattedDate,
+                isOff: false,
+                startTime,
+                endTime,
+                isSplit: false,
+              });
+            }
+          } else {
+            console.warn(`Could not parse shift part: "${part}"`);
+          }
+        } catch (error) {
+          console.error(`Error parsing shift part "${part}":`, error);
         }
-      }
-    });
+      });
 
-    return shifts;
+      return shifts;
+    } catch (error) {
+      console.error(`Error parsing shift string "${shiftString}":`, error);
+      return [];
+    }
   };
 
   // Generate events for weekly calendar view
@@ -158,6 +231,12 @@ export default function ShiftCalendarHistoryLogs() {
       // Process assigned shifts
       assignedShifts.forEach((shift) => {
         const shiftDate = moment(shift.date);
+
+        // Skip invalid dates
+        if (!shiftDate.isValid()) {
+          console.warn(`Skipping invalid date: ${shift.date}`);
+          return;
+        }
 
         if (shiftDate.isBetween(weekStart, weekEnd, "day", "[]")) {
           if (shift.isOff) {
@@ -199,6 +278,12 @@ export default function ShiftCalendarHistoryLogs() {
       // Process ALL requested shifts
       requestedShifts.forEach((shift) => {
         const shiftDate = moment(shift.date);
+
+        // Skip invalid dates
+        if (!shiftDate.isValid()) {
+          console.warn(`Skipping invalid requested date: ${shift.date}`);
+          return;
+        }
 
         if (shiftDate.isBetween(weekStart, weekEnd, "day", "[]")) {
           if (shift.isOff) {
@@ -257,6 +342,12 @@ export default function ShiftCalendarHistoryLogs() {
       assignedShifts.forEach((shift) => {
         const shiftDate = moment(shift.date);
 
+        // Skip invalid dates
+        if (!shiftDate.isValid()) {
+          console.warn(`Skipping invalid monthly date: ${shift.date}`);
+          return;
+        }
+
         if (shiftDate.isBetween(monthStart, monthEnd, "day", "[]")) {
           if (shift.isOff) {
             events.push({
@@ -298,6 +389,12 @@ export default function ShiftCalendarHistoryLogs() {
       // Process ALL requested shifts
       requestedShifts.forEach((shift) => {
         const shiftDate = moment(shift.date);
+
+        // Skip invalid dates
+        if (!shiftDate.isValid()) {
+          console.warn(`Skipping invalid monthly requested date: ${shift.date}`);
+          return;
+        }
 
         if (shiftDate.isBetween(monthStart, monthEnd, "day", "[]")) {
           if (shift.isOff) {
@@ -364,7 +461,7 @@ export default function ShiftCalendarHistoryLogs() {
         const assignedShifts = parseShiftString(log.assigned_shift);
         return assignedShifts.some((shift) => {
           const shiftDate = moment(shift.date);
-          return shiftDate.isBetween(week.start, week.end, "day", "[]");
+          return shiftDate.isValid() && shiftDate.isBetween(week.start, week.end, "day", "[]");
         });
       });
 
@@ -391,7 +488,7 @@ export default function ShiftCalendarHistoryLogs() {
       const assignedShifts = parseShiftString(log.assigned_shift);
       return assignedShifts.some((shift) => {
         const shiftDate = moment(shift.date);
-        return shiftDate.isBetween(weekStart, weekEnd, "day", "[]");
+        return shiftDate.isValid() && shiftDate.isBetween(weekStart, weekEnd, "day", "[]");
       });
     });
 
@@ -617,28 +714,6 @@ export default function ShiftCalendarHistoryLogs() {
                   />
                 </div>
 
-                {/* Legend */}
-                <div className="border-t pt-4 mt-4">
-                  <div className="text-sm font-medium mb-2">Legend:</div>
-                  <div className="flex flex-wrap gap-4 text-xs">
-                    <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 bg-green-500 rounded"></div>
-                      <span>Assigned Shift</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 bg-red-600 rounded"></div>
-                      <span>Requested </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 bg-orange-500 rounded"></div>
-                      <span>Split Shift</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 bg-gray-500 rounded"></div>
-                      <span>OFF Day</span>
-                    </div>
-                  </div>
-                </div>
                 {(() => {
                   const latestLog = getLatestLogForWeek();
                   return latestLog ? (
@@ -711,6 +786,28 @@ export default function ShiftCalendarHistoryLogs() {
                     eventDisplay="block"
                     eventTextColor="#ffffff"
                   />
+                </div>
+                {/* Legend - Shows for both Weekly and Monthly views */}
+                <div className="border-t pt-4 mt-4">
+                  <div className="text-sm font-medium mb-2">Legend:</div>
+                  <div className="flex flex-wrap gap-4 text-xs">
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-green-500 rounded"></div>
+                      <span>Assigned Shift</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-red-600 rounded"></div>
+                      <span>Requested Shift</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-orange-500 rounded"></div>
+                      <span>Split Shift</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-gray-500 rounded"></div>
+                      <span>OFF Day</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Monthly Summary */}
