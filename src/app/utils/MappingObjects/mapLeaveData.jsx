@@ -1,6 +1,10 @@
 import { getManagersList } from "app/hooks/general";
 import { getManagerSelected } from "data/Data";
-import { LeaveType, PublicHoliday } from "app/utils/Types/LeaveManagment";
+import {
+  LeaveType,
+  PublicHoliday,
+  Leave,
+} from "app/utils/Types/LeaveManagment";
 import moment from "moment";
 
 async function getLavefromEmployeeInfo(data) {
@@ -113,6 +117,29 @@ export async function mapPublicHolidayListData(data) {
     };
   });
 
+  return ResponseList;
+}
+
+export function mapLeaveData(data) {
+  const responseDataData = Object.keys(Leave).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      acc[key] = data[key];
+    } else {
+      // Use default values from Leave type
+      acc[key] = Leave[key];
+    }
+    return acc;
+  }, {});
+
+  return responseDataData;
+}
+
+export async function mapLeaveListData(data) {
+  if (!data || data.length === 0) return [];
+  const ResponseList = await data?.map((dataObj) => {
+    const formattedData = mapLeaveData(dataObj);
+    return formattedData;
+  });
   return ResponseList;
 }
 export { getLavefromEmployeeInfo };

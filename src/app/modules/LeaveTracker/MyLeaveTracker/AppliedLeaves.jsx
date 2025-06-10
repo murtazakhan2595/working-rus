@@ -30,13 +30,7 @@ import { LeaveTrackerOptions } from "data/Data";
 import { HasAccess } from "utils/PermissionUtils";
 
 export default function AppliedLeaves({
-  leaveTransaction,
-  setSelectedLeaveApplication,
-  setIsOpen,
-  handleFilterChange,
   componentsWithUsed,
-  isLeaveTransactionLoading,
-  canDeleteLeave,
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [ordering, setOrdering] = useState("id");
@@ -75,6 +69,19 @@ export default function AppliedLeaves({
     };
   }, [filterData, ordering, options]);
 
+   const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "" || filterValue === null) {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+
+      return updatedFilters;
+    });
+  };
   return (
     <Card className="w-full">
       <CardHeader className="">

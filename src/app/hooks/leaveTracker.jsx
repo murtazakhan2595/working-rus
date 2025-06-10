@@ -8,6 +8,7 @@ import {
   mapPublicHolidayPayloadeData,
   mapPublicHolidayListData,
   mapPublicHolidayData,
+  mapLeaveListData
 } from "app/utils/MappingObjects/mapLeaveData";
 import { renderErrorMessages } from "utils/renderErrors";
 
@@ -718,7 +719,7 @@ export const getLeaveListData = async (payload) => {
     });
     if (response.status === 200) {
       const ResponseData = response.data;
-      const ResponseList = await mapLeaveTypeListData(ResponseData.data);
+      const ResponseList = await mapLeaveListData(ResponseData.data);
       return { results: ResponseList, count: ResponseData.count };
     }
     return { results: [], count: 0 };
@@ -757,6 +758,36 @@ export const getHolidaysListData = async (payload) => {
       HandleLogout();
     }
     return { results: [], count: 0 };
+  }
+};
+
+export const saveUpdateLeave = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+    const finalPayload = payload;
+
+    const url = ID
+      ? `${baseUrl}/employee-leaves/apply_leave/${ID}/` // Use id if updating
+      : `${baseUrl}/employee-leaves/apply_leave/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
   }
 };
 
@@ -810,8 +841,7 @@ export const getHolidayData = async (id) => {
 
 export const cancelEmployeeLeave = async (id) => {
   try {
-
-    const url = `/employee-leaves/${id}/cancel_leave/`
+    const url = `/employee-leaves/${id}/cancel_leave/`;
 
     const method = "PATCH"; // Determine method based on existence of id
 

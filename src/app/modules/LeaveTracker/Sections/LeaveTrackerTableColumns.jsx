@@ -1,11 +1,5 @@
 import { EmployeeID, UserRole } from "utils/getValuesFromTables";
-import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
-import { dropdownOptions } from "data/Data";
 import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
-import EmployeeAction from "app/modules/Employees/Screens/Sections/EmployeeActions";
-import moment from "moment";
-import { formatNumber } from "utils/renderValues";
-import { AiOutlineDownload } from "react-icons/ai";
 import {
   LeaveTrackerActions,
   LeaveDurationAction,
@@ -13,17 +7,8 @@ import {
   HolidayActions,
   MyLeavesAction,
 } from "app/modules/LeaveTracker";
-import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
 import { DepartmentName } from "utils/getValuesFromTables";
-import { Switch } from "src/@/components/ui/switch";
-import { getExpenseType } from "utils/getValuesFromTables";
-import { Clock, MapPin, Tag } from "lucide-react";
-import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
-import DropdownActionMenu from "components/DropdownActionMenu";
-import { getAssetById } from "app/hooks/assets";
-import { toast } from "react-toastify";
 import { renderDate } from "utils/renderValues";
-import { BranchName } from "utils/getValuesFromTables";
 
 export const LeaveRecordColumns = [
   {
@@ -71,62 +56,40 @@ export const LeaveAplicationColumns = (
       />
     ),
   },
-
-  // {
-  //   dataField: "",
-  //   text: "Department",
-  //   formatter: (cell, row) => (
-  //     <>
-  //       <DepartmentName
-  //         value={row?.leave_request?.employee_info?.department_name}
-  //       />
-  //     </>
-  //   ),
-  // },
+   {
+    dataField: "leave_type_name",
+    text: "Leave Type",
+  },
   {
-    dataField: "",
+    dataField: "start_date",
     text: "Leave Period",
     formatter: (cell, row) => (
       <div className="flex flex-col">
         <span>
-          {`${moment(row?.leave_request?.start_date).format(
-            "MMM D"
-          )} - ${moment(row?.leave_request?.end_date).format("MMM D")}`}
+          {renderDate(cell, "--")} - {renderDate(row.end_date, "--")}
         </span>
-        <span>{row?.leave_request?.no_of_days} Days</span>
+        {/* <span>{row?.total_days} Days</span> */}
       </div>
     ),
   },
-  // {
-  //   dataField: "",
-  //   text: "Days",
-  //   formatter: (cell, row) => <>{row?.leave_request?.no_of_days}</>,
-  // },
   {
-    dataField: "component_name",
-    text: "Leave Type",
+    dataField: "total_days",
+    text: "Days",
+  },
+  {
+    dataField: "leave_duration_name",
+    text: "Leave Duration",
   },
   {
     dataField: "status",
     text: "Status",
-    formatter: (cell, row) => (
-      <span
-        className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
-          row?.action_hr === "Approved" && row?.action_manager === "Approved"
-            ? "bg-emerald-50 text-teal-700"
-            : row?.action_hr === "Declined" ||
-              row?.action_manager === "Declined"
-            ? "bg-red-50 text-red-700"
-            : "bg-[#f0f0f3] text-[#7f838d]"
-        }`}
-      >
-        {row?.action_hr === "Approved" && row?.action_manager === "Approved"
-          ? "Approved"
-          : row?.action_hr === "Declined" || row?.action_manager === "Declined"
-          ? "Declined"
-          : "Pending"}
-      </span>
-    ),
+    formatter: (cell) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+  },
+  {
+    dataField: "is_cancelled",
+    text: "",
+    formatter: (cell) =>
+      cell ? <StatusLabel status={"no"}>Cancelled</StatusLabel> : null,
   },
   {
     text: "",
@@ -144,42 +107,39 @@ export const LeaveAplicationColumns = (
 
 export const MyLeaveAplicationColumns = (realoadData = () => {}) => [
   {
-    dataField: "employee_id",
+    dataField: "leave_type_name",
     text: "Leave Type",
-    formatter: (cell) => (
-      <EmployeeOverview
-        id={cell}
-        showDepartment={true}
-        showBranchName={true}
-        showId={true}
-      />
-    ),
   },
   {
-    dataField: "",
+    dataField: "start_date",
     text: "Leave Period",
     formatter: (cell, row) => (
       <div className="flex flex-col">
         <span>
-          {renderDate(cell, "--", "month-day")} -{" "}
-          {renderDate(row?.leave_request?.end_date, "--", "month-day")}
+          {renderDate(cell, "--")} - {renderDate(row.end_date, "--")}
         </span>
-        <span>{row?.leave_request?.no_of_days} Days</span>
+        {/* <span>{row?.total_days} Days</span> */}
       </div>
     ),
   },
   {
-    dataField: "component_name",
+    dataField: "total_days",
     text: "Days",
   },
   {
-    dataField: "component_name",
+    dataField: "leave_duration_name",
     text: "Leave Duration",
   },
   {
     dataField: "status",
     text: "Status",
-    formatter: (cell, row) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+    formatter: (cell) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+  },
+  {
+    dataField: "is_cancelled",
+    text: "",
+    formatter: (cell) =>
+      cell ? <StatusLabel status={"no"}>Cancelled</StatusLabel> : null,
   },
   {
     text: "",

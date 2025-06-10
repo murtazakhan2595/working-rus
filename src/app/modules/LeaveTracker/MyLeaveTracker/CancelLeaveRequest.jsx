@@ -42,7 +42,6 @@ const CancelLeaveRequest = ({
       handleContinue={() => {
         confirmSubmit();
       }}
-      className="text-neutral-1200"
     />
   );
 };

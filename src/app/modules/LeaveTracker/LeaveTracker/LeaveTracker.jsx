@@ -7,18 +7,14 @@ import {
 } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { Header, PageLoader, TableCustom } from "components";
-import { getLeavestats,getLeaveListData } from "app/hooks/leaveTracker";
-import {
-  getLeaveTransaction,
-  getLeaveComponents,
-} from "app/hooks/leaveTracker";
+import { getLeavestats, getLeaveListData } from "app/hooks/leaveTracker";
 import { LeaveAplicationColumns } from "app/modules/LeaveTracker/Sections";
-import { LeaveTrackerOptions } from "data/Data";
-import { UserRoundCheck, UsersRound } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { HasAccess } from "utils/PermissionUtils";
 import { GetDispatchStateList } from "utils/Lists";
 import { getDropdownList } from "utils/Lists";
+import { GlobalStatusOptions } from "data/Data";
+import { getLeaveTypeListData } from "app/hooks/leaveTracker";
 
 const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
   const Departments = GetDispatchStateList("departments", "common") || [];
@@ -28,21 +24,13 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
   const isViewBLTPermitted = HasAccess("VIEW_BRN_ATT_UPDATES_LOGS");
   const isViewDLTermitted = HasAccess("VIEW_DPT_ATT_UPDATES_LOGS");
   const [activeTab, setActiveTab] = useState(activeView);
-
-  const [selectedLeaveApplication, setSelectedLeaveApplication] =
-    useState(null);
   const [filterData, setFilterData] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(true);
   const [leaveTypesData, setLeaveTypesData] = useState([]);
-  const [leaveTransaction, setLeaveTransaction] = useState();
-  const [isLeaveTransactionLoading, setIsLeaveTransactionLoading] =
-    useState(true);
-  const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [selectedBranch, setSelectedBranch] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedLeaveType, setSelectedLeaveType] = useState("");
+  const [Leaves, setLeaves] = useState();
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [ordering, setOrdering] = useState("-id");
 
   const TimeAdjustmentOuterTab = useMemo(() => {
     return ["Requests", "Records"];
@@ -55,105 +43,77 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
   };
-
-  const [LeaveTrackerStats, setLeaveTrackerStats] = useState([
-    { label: "Total Applications", value: 0, icon: UsersRound },
-    { label: "Pending Requests", value: 0, icon: UserRoundCheck },
-    { label: "Accepted Requests", value: 0, icon: UserRoundCheck },
-  ]);
 
   useEffect(() => {
     let isMounted = true;
-    setFilterData(() => {
-      if (isTeamView) return { managers: user_id };
-      else return {};
-    });
+    if (isMounted)
+      setFilterData(() => {
+        if (isTeamView) return { managers: user_id };
+        else return {};
+      });
     return () => {
       isMounted = false;
     };
   }, [isTeamView]);
 
-  const fetchData = async () => {
-    setLoading(true);
-    const statsData = await getLeavestats({});
-    if (statsData) {
-      setLeaveTrackerStats([
-        {
-          label: "Total Applications",
-          value: statsData?.total_applications,
-          icon: UsersRound,
-        },
-        {
-          label: "Pending Requests",
-          value: statsData?.pending_applications,
-          icon: UserRoundCheck,
-        },
-        {
-          label: "Accepted Requests",
-          value: statsData?.accepted_applications,
-          icon: UserRoundCheck,
-        },
-      ]);
-    }
-    setLoading(false);
-    const leaveTypesData = await getLeaveComponents({});
-    if (leaveTypesData) {
-      const dropdownList = await getDropdownList(leaveTypesData?.results || []);
-      setLeaveTypesData(dropdownList);
+  const fetchData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      const Leaves = await getLeaveListData({
+        filterData,
+        options,
+      });
+      if (Leaves && isMounted) {
+        setLeaves(Leaves);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  const fetchLeaveTransaction = async (isMounted) => {
-    setIsLeaveTransactionLoading(true);
-    const leaveTransaction = await getLeaveListData({
-      filterData,
-      options,
-    });
-    if (leaveTransaction && isMounted) {
-      setLeaveTransaction(leaveTransaction);
-    }
-    setIsLeaveTransactionLoading(false);
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   useEffect(() => {
     let isMounted = true;
-    fetchLeaveTransaction(isMounted);
+    fetchData(isMounted);
     return () => {
       isMounted = false;
     };
-  }, [filterData, options]);
+  }, [filterData, options, ordering]);
+  const fetchLeaveTypeData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      const LeavesTypes = await getLeaveTypeListData();
+      if (LeavesTypes && isMounted) {
+        setLeaveTypesData(LeavesTypes.results || []);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    let isMounted = true;
+    fetchLeaveTypeData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "departmentt") setSelectedDepartment(filterValue);
-    if (filterName === "status") setSelectedStatus(filterValue);
-    if (filterName === "leave_component_id") setSelectedLeaveType(filterValue);
-    if (filterName === "branch") setSelectedBranch(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-
-      if (filterName === "status") {
-        // Add both action_hr and action_manager
-        if (filterValue === "") {
-          // If filterValue is empty, remove both keys
-          delete updatedFilters["action_hr"];
-          delete updatedFilters["action_manager"];
-        } else {
-          // Set both action_hr and action_manager to the filterValue
-          updatedFilters["action_hr"] = filterValue;
-          updatedFilters["action_manager"] = filterValue;
-        }
+      // Handle other filters normally
+      if (filterValue === "" || filterValue === null) {
+        delete updatedFilters[filterName];
       } else {
-        // Handle other filters normally
-        if (filterValue === "") {
-          delete updatedFilters[filterName];
-        } else {
-          updatedFilters[filterName] = filterValue;
-        }
+        updatedFilters[filterName] = filterValue;
       }
 
       return updatedFilters;
@@ -200,42 +160,48 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
               filters={[
                 {
                   type: "select",
-                  option: Departments,
+                  options: Departments,
                   name: "departmentt",
                   placeholder: "Department",
                 },
                 {
                   type: "select",
-                  option: Branches,
+                  options: Branches,
                   name: "branch",
                   placeholder: "Branch",
                 },
+                ...(activeTab === "Records"
+                  ? [
+                      {
+                        type: "select",
+                        options: GlobalStatusOptions(false),
+                        name: "status",
+                        placeholder: "Status",
+                      },
+                    ]
+                  : []),
                 {
                   type: "select",
-                  option: LeaveTrackerOptions,
-                  name: "status",
-                  placeholder: "Status",
-                },
-                {
-                  type: "select-three",
-                  option: leaveTypesData || [],
+                  options: leaveTypesData || [],
                   name: "leave_component_id",
                   placeholder: "Leave Type",
-                  values: selectedLeaveType,
                 },
               ]}
               onChange={handleFilterChange}
               className="justify-end"
             />
             <CardContent className="px-0">
-              {isLeaveTransactionLoading ? (
+              {isLoading ? (
                 <PageLoader />
               ) : (
                 <TableCustom
-                  data={leaveTransaction?.results || []}
-                  columns={LeaveAplicationColumns(false, fetchLeaveTransaction)}
+                  data={Leaves?.results || []}
+                  columns={LeaveAplicationColumns(
+                    activeTab === "Requests",
+                    fetchData
+                  )}
                   pagination={true}
-                  dataTotalSize={leaveTransaction?.count || 0}
+                  dataTotalSize={Leaves?.count || 0}
                   tableOptions={tableOptions}
                 />
               )}
