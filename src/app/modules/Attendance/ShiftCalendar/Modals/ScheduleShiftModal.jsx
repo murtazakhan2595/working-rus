@@ -857,6 +857,8 @@ const ScheduleShiftModal = ({
                                         label="Start Time"
                                         value={day.startTime}
                                         date={day.date}
+                                        error={props.errors.dailySchedule?.[index]?.startTime}
+                                        touch={props.touched.dailySchedule?.[index]?.startTime}
                                         onChange={(name, value) => {
   props.setFieldValue(name, value);
   
@@ -877,6 +879,8 @@ const ScheduleShiftModal = ({
                                         label="End Time"
                                         value={day.endTime}
                                         date={day.date}
+                                        error={props.errors.dailySchedule?.[index]?.endTime}
+                                        touch={props.touched.dailySchedule?.[index]?.endTime}
                                         onChange={(name, value) => {
   props.setFieldValue(name, value);
   
@@ -904,6 +908,8 @@ const ScheduleShiftModal = ({
                                           label="Start Time"
                                           value={day.splitStartTime1}
                                           date={day.date}
+                                          error={props.errors.dailySchedule?.[index]?.splitStartTime1}
+                                          touch={props.touched.dailySchedule?.[index]?.splitStartTime1}
                                           onChange={(name, value) => {
   props.setFieldValue(name, value);
   
@@ -924,6 +930,8 @@ const ScheduleShiftModal = ({
                                           label="End Time"
                                           value={day.splitEndTime1}
                                           date={day.date}
+                                          error={props.errors.dailySchedule?.[index]?.splitEndTime1}
+                                          touch={props.touched.dailySchedule?.[index]?.splitEndTime1}
                                           onChange={(name, value) => {
   props.setFieldValue(name, value);
   
@@ -949,6 +957,8 @@ const ScheduleShiftModal = ({
                                           label="Start Time"
                                           value={day.splitStartTime2}
                                           date={day.date}
+                                          error={props.errors.dailySchedule?.[index]?.splitStartTime2}
+                                          touch={props.touched.dailySchedule?.[index]?.splitStartTime2}
                                           onChange={(name, value) => {
   props.setFieldValue(name, value);
   
@@ -969,6 +979,8 @@ const ScheduleShiftModal = ({
                                           label="End Time"
                                           value={day.splitEndTime2}
                                           date={day.date}
+                                          error={props.errors.dailySchedule?.[index]?.splitEndTime2}
+                                          touch={props.touched.dailySchedule?.[index]?.splitEndTime2}
                                           onChange={(name, value) => {
   props.setFieldValue(name, value);
   
