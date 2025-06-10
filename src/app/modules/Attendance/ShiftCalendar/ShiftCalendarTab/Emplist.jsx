@@ -100,7 +100,7 @@ const Emplist = ({ teamMembers }) => {
       const response = await getShiftSchedule({
         filterData: {
           status: selectedStatus ? selectedStatus : undefined,
-          is_change_request: "true",
+          is_change_request: "true,false",
           shift_requested: "Manager",
           employee_branch: selectedBranch ? selectedBranch : undefined,
         },

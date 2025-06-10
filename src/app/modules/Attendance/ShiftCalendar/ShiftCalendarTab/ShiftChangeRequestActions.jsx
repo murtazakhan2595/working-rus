@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from "src/@/components/ui/dialog";
 import { generateShiftScheduleLog } from "../Section/getEmployeeActiveShift";
+import { HasAccess } from "utils/PermissionUtils";
 
 const ShiftChangeRequestActions = ({ data, reload }) => {
   const [viewSheetOpen, setViewSheetOpen] = useState(false);
@@ -27,7 +28,8 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const userProfile = useSelector((state) => state.user.userProfile);
 
-  const canApprove = data.status === "Pending" && true;
+  const canApprove =
+    data.status === "Pending" && (HasAccess("EDIT_PENDING_SCHEDULES") || HasAccess("APPROVE_SHIFT_SCHEDULES"));
 
   const handleView = () => {
     setViewSheetOpen(true);
