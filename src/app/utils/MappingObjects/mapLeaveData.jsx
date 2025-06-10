@@ -1,6 +1,6 @@
 import { getManagersList } from "app/hooks/general";
 import { getManagerSelected } from "data/Data";
-import { LeaveType,PublicHoliday } from "app/utils/Types/LeaveManagment";
+import { LeaveType, PublicHoliday } from "app/utils/Types/LeaveManagment";
 import moment from "moment";
 
 async function getLavefromEmployeeInfo(data) {
@@ -79,7 +79,20 @@ export function mapPublicHolidayPayloadeData(data) {
 export function mapPublicHolidayData(data) {
   const responseData = Object.keys(PublicHoliday).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
-      acc[key] = data[key];
+      if (key === "branches") {
+        const branches = data[key] || [];
+        acc["branch_names"] = branches.map(({ branch_name }) => {
+          return branch_name;
+        });
+        acc["branches"] = branches.map(({ id }) => {
+          return id;
+        });
+      } else if (key === "country") {
+        const country = data[key] || [];
+        acc["country"] = country.map(({ name }) => {
+          return name;
+        });
+      } else acc[key] = data[key];
     } else {
       acc[key] = PublicHoliday[key];
     }

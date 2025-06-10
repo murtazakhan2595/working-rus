@@ -6,7 +6,7 @@ import {
 } from "components";
 // import AddGraceTimeForm from "./AddGraceTimeForm";
 import { FormatID } from "utils/getValuesFromTables";
-import { StatusLabel, SheetUI } from "components";
+import { StatusLabel, SheetUI ,EmployeeDetailUI} from "components";
 import { getAttendanceAdjustmentData } from "app/hooks/attendance";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
@@ -93,32 +93,59 @@ const ViewLeaveDetails = ({
       },
     },
     {
-      title: "Adjustment Details",
+      title: "Employee Details",
+      field: [
+        {
+          key: "employee_id",
+          label: "",
+          formatter: (cell) => (
+            <EmployeeDetailUI
+              id={cell}
+              InformationKeys={[
+                "name",
+                "department",
+                "position",
+                "branch",
+                "manager",
+              ]}
+              ViewVariant={"vertical"}
+              className
+            />
+          ),
+        },
+      ],
+    },
+    {
+      title: "Leave Details",
       footerTitle: "Request At",
       footerField: "request_datetime",
       field: [
         {
           key: "id",
-          label: "Id",
+          label: "Leave Type",
           formatter: (cell, row) => <FormatID value={cell} prefix={"AA-"} />,
         },
         {
           key: "attendance_date",
-          label: "Attendance Date",
+          label: "Alloted Leaves",
           formatter: (cell) => renderDate(cell),
         },
         {
           key: "requested_checkin",
-          label: "Requested Check-In",
+          label: "Consumed Leave",
           formatter: (cell) => renderDate(cell, "--", "time"),
         },
         {
-          key: "requested_checkout",
+          key: "Leave Period",
           label: "Requested Check-Out",
           formatter: (cell) => renderDate(cell, "--", "time"),
         },
         {
-          key: "reason",
+          key: "Total Days",
+          label: "Reason",
+        },
+        {
+          key: "Leave Duration",
           label: "Reason",
         },
       ],
@@ -179,7 +206,7 @@ const ViewLeaveDetails = ({
       <NavigationSheetComponent
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        title="Attendandance Adjustment Details"
+        title="Leave Details"
         currentItem_Id={currentId}
         dataList={DataList}
         reloadData={reloadData}
@@ -187,10 +214,10 @@ const ViewLeaveDetails = ({
         allowDelete={false}
         fetchCurrentItemDetails={fetchData}
         deleteItemName="name"
-        editTooltip="Edit Grace Time"
-        deleteTooltip="Delete Geace Time"
+        editTooltip="Edit Leave"
+        deleteTooltip="Delete Leavr"
       >
-        <DetailContent title="Adjustment Details" fields={fields} />
+        <DetailContent fields={fields} />
       </NavigationSheetComponent>
       {openRejectModal && (
         <SheetUI
@@ -236,10 +263,6 @@ const ViewLeaveDetails = ({
 };
 
 export default ViewLeaveDetails;
-
-
-
-
 
 // import { useEffect, useState } from "react";
 // import SheetComponent from "components/ui/SheetComponent";

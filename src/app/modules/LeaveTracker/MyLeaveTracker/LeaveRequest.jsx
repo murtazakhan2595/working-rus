@@ -3,19 +3,19 @@ import React, { useEffect, useState } from "react";
 import { Leave } from "app/utils/Types/LeaveManagment";
 import {
   getLeaveTypeData,
-  getLeaveDurations,
-  getLeaveEligibleTypeDurations,
+  getEligibleLeaveTypeDurations,
 } from "app/hooks/leaveTracker";
 import { validateLeaveRequestFormSchema } from "app/utils/FormSchema/leaveTrackerFormSchema";
 import moment from "moment";
 import { SheetUI, EmployeeDetailUI } from "components";
-import { GetEmployeeFilteredList, GetCommonFilteredList } from "utils/Lists";
+import { getActiveShiftList } from "app/hooks/shiftManagement";
 import { getDropdownList } from "utils/Lists";
 import { useSelector } from "react-redux";
 import { SelectInputComponent } from "components/FormControl";
 import { DateInput } from "components/FormControl";
 import { CheckBoxInput } from "components/FormControl";
 import { NumberInput } from "components/FormControl";
+import { getWorkingDays } from "utils/renderValues";
 
 const LeaveRequest = ({ id }) => {
   const { id: user_id, branch_id: user_branch } = useSelector(
@@ -25,7 +25,6 @@ const LeaveRequest = ({ id }) => {
   const [FormData, setFormData] = useState(Leave);
   const [FormValues, setFormValues] = useState(Leave);
   const [LeaveTypeOptions, setLeaveTypeOptions] = useState([]);
-  const [selectedLeaveType, setSelectedLeaveType] = useState({});
   const [LeaveValidationInfo, setLeaveValidationInfo] = useState({});
   const [LeaveDurationOptions, setLeaveDurationOptions] = useState([]);
   const FormSheetData = React.useMemo(
@@ -41,10 +40,8 @@ const LeaveRequest = ({ id }) => {
 
   const fetchLeaveTypeOption = async (isMounted) => {
     try {
-      const response = await getLeaveEligibleTypeDurations();
-      const responseDuration = await getLeaveDurations({
-        filterData: {},
-      });
+      const response = await getEligibleLeaveTypeDurations();
+      const responseDuration = await getEligibleLeaveTypeDurations(false);
       if (isMounted && response) {
         const leaveTypeDropdownOptions = await getDropdownList(
           response,
@@ -53,7 +50,7 @@ const LeaveRequest = ({ id }) => {
         );
         setLeaveTypeOptions(leaveTypeDropdownOptions);
         const durationDropDownList = await getDropdownList(
-          responseDuration.results || [],
+          responseDuration || [],
           "duration_name",
           "id"
         );
@@ -87,6 +84,7 @@ const LeaveRequest = ({ id }) => {
             halfPaidAllowed: !leaveType.is_all_paid,
             allowedHalfPaid: leaveType.half_paid_days,
             allowedFullPaid: leaveType.full_paid_days,
+            daysType: leaveType.day_count_type,
           });
         }
       } else {
@@ -99,6 +97,12 @@ const LeaveRequest = ({ id }) => {
 
   const SetLeaveFormValues = (values) => {
     const FormValues = { ...values };
+    const {
+      allowedHalfPaid = 0,
+      allowedFullPaid = 0,
+      daysType,
+      halfPaidAllowed,
+    } = LeaveValidationInfo;
 
     // Boundary checks
     if (!values?.start_date || !values?.end_date) {
@@ -113,18 +117,19 @@ const LeaveRequest = ({ id }) => {
         if (end.isBefore(start)) {
           FormValues.total_days = 0;
         } else {
+         // const Shift = getActiveShiftList(user_id, start, end);
           // Calculate total leave days (inclusive of both start and end date)
-          const duration = end.diff(start, "days") + 1;
-          FormValues.total_days = duration;
+          if (daysType === "work_days")
+            FormValues.total_days = getWorkingDays(start, end);
+          else FormValues.total_days = end.diff(start, "days") + 1;
         }
       }
     }
     const total_days = FormValues.total_days || 0;
-    if (total_days && LeaveValidationInfo?.halfPaidAllowed) {
+    if (total_days && halfPaidAllowed) {
       // Ensure defaults
       FormValues.full_paid_days = 0;
       FormValues.half_paid_days = 0;
-      const { allowedHalfPaid, allowedFullPaid } = LeaveValidationInfo;
 
       if (values.is_full_paid) {
         if (total_days > allowedFullPaid) {
@@ -235,7 +240,7 @@ const LeaveRequest = ({ id }) => {
                     label: "Start Date",
                     required: true,
                     minDate: new Date(),
-                    disableHolidays:true,
+                    disableHolidays: true,
                   },
                   {
                     InputField: DateInput,

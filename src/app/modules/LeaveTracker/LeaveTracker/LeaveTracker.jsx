@@ -7,7 +7,7 @@ import {
 } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { Header, PageLoader, TableCustom } from "components";
-import { getLeavestats } from "app/hooks/leaveTracker";
+import { getLeavestats,getLeaveListData } from "app/hooks/leaveTracker";
 import {
   getLeaveTransaction,
   getLeaveComponents,
@@ -106,12 +106,12 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
 
   const fetchLeaveTransaction = async (isMounted) => {
     setIsLeaveTransactionLoading(true);
-    const leaveTransaction = await getLeaveTransaction({
+    const leaveTransaction = await getLeaveListData({
       filterData,
       options,
     });
     if (leaveTransaction && isMounted) {
-      setLeaveTransaction(leaveTransaction?.results);
+      setLeaveTransaction(leaveTransaction);
     }
     setIsLeaveTransactionLoading(false);
   };
@@ -199,25 +199,22 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
             <FilterInput
               filters={[
                 {
-                  type: "select-one",
+                  type: "select",
                   option: Departments,
                   name: "departmentt",
                   placeholder: "Department",
-                  values: selectedDepartment,
                 },
                 {
-                  type: "select-four",
+                  type: "select",
                   option: Branches,
                   name: "branch",
                   placeholder: "Branch",
-                  values: selectedBranch,
                 },
                 {
-                  type: "select-two",
+                  type: "select",
                   option: LeaveTrackerOptions,
                   name: "status",
                   placeholder: "Status",
-                  values: selectedStatus,
                 },
                 {
                   type: "select-three",
