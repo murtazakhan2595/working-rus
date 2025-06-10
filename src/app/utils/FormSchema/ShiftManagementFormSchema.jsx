@@ -28,7 +28,6 @@ const validateShiftFormSchema = (values) => {
   return errors;
 };
 
-// Validation for scheduling shifts for employees
 const validateScheduleShiftFormSchema = (values) => {
   const errors = {};
 
@@ -44,7 +43,8 @@ const validateScheduleShiftFormSchema = (values) => {
 
   // Validate daily schedule if using custom shifts
   if (values.shiftType === "custom" && values.dailySchedule) {
-    const dailyScheduleErrors = [];
+    const dailyScheduleErrors = {}; // ✅ Use object instead of array
+    let hasErrors = false; // ✅ Track if any errors exist
 
     values.dailySchedule.forEach((day, index) => {
       const dayErrors = {};
@@ -69,17 +69,19 @@ const validateScheduleShiftFormSchema = (values) => {
 
       if (Object.keys(dayErrors).length > 0) {
         dailyScheduleErrors[index] = dayErrors;
+        hasErrors = true; // ✅ Mark that we have errors
       }
     });
 
-    if (dailyScheduleErrors.length > 0) {
+    if (hasErrors) {
+      // ✅ Use boolean check instead of length
       errors.dailySchedule = dailyScheduleErrors;
     }
   }
 
+  console.log("🔍 Validation errors:", errors); // ✅ Add debugging
   return errors;
 };
-
 // Validation for shift change requests
 const validateShiftRequestFormSchema = (values) => {
   const errors = {};

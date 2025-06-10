@@ -104,6 +104,7 @@ const ScheduleCalendar = ({ pendingSchedule }) => {
       prevScheduleRef.current &&
       prevScheduleRef.current.id === pendingSchedule.id
     ) {
+      console.log("INFO - Schedule hasn't changed");
       return;
     }
 
@@ -179,12 +180,8 @@ const ScheduleCalendar = ({ pendingSchedule }) => {
       const dayName = currentDate.format("ddd").toLowerCase();
 
       if (shortWeekdays.includes(dayName)) {
-        const startTime = moment(
-          shiftDetails.starttime.replace("Z", "")
-        ).format("HH:mm");
-        const endTime = moment(shiftDetails.endtime.replace("Z", "")).format(
-          "HH:mm"
-        );
+        const startTime = moment(shiftDetails.starttime).format("HH:mm");
+        const endTime = moment(shiftDetails.endtime).format("HH:mm");
 
         // Handle overnight shifts
         let eventEndDate = currentDate.format("YYYY-MM-DD");
