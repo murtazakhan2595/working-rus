@@ -51,9 +51,6 @@ const ShiftCalendar = () => {
   const fetchUsers = useCallback(
     async (filters = {}) => {
       try {
-        if (isRequestChangeForTeam) {
-          filters.branch_id = userProfile?.branch_id;
-        }
         const response = await getEmployeeCustomList({
           filterData: {
             ...filters,
