@@ -11,8 +11,7 @@ import {
   AppliedLeaves,
   AllocatedLeavesInfo,
 } from "./MyLeaveTracker";
-import LeaveSetup from "./Screens/LeaveSetup";
-
+import { EmployeeLeaveCount } from "./EmployeeLeaveCount";
 import {
   LeaveManagement,
   AddUpdateLeaveDuration,
@@ -26,7 +25,7 @@ import {
   AddUpdateLeaveType,
   ViewLeaveType,
   HolidayActions,
-  ViewHolidayDetail
+  ViewHolidayDetail,
 } from "./LeaveManagement";
 
 export {
@@ -34,7 +33,6 @@ export {
   LeaveRequests,
   LeaveTracker,
   LeaveTrackerActions,
-  LeaveSetup,
   ViewLeaveDetails,
   LeaveRequest,
   AppliedLeaves,
@@ -52,4 +50,5 @@ export {
   ViewLeaveType,
   HolidayActions,
   ViewHolidayDetail,
+  EmployeeLeaveCount,
 };

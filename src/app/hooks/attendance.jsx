@@ -378,27 +378,6 @@ function convertUTCToLocal(timeString) {
   return formattedDate;
 }
 
-function formatTimeWithAMPM(timeString) {
-  const date = new Date(timeString);
-
-  // Get the hour and minute
-  let hour = date.getHours();
-  const minute = date.getMinutes();
-
-  // Determine AM or PM
-  const ampm = hour >= 12 ? "PM" : "AM";
-
-  // Convert hour from 24-hour format to 12-hour format
-  hour = hour % 12;
-  hour = hour ? hour : 12; // the hour '0' should be '12'
-
-  // Format the minute to always have two digits
-  const formattedMinute = minute < 10 ? "0" + minute : minute;
-
-  // Return the formatted time in the desired format
-  return `${hour}:${formattedMinute} ${ampm}`;
-}
-
 const getStats = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/api/employee-hours${id}/`, {
@@ -816,7 +795,6 @@ export {
   endBreak,
   getLocalTime,
   convertUTCToLocal,
-  formatTimeWithAMPM,
   getStats,
   employeeData,
   getShiftById,

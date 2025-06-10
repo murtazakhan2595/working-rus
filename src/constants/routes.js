@@ -12,6 +12,7 @@ import {
   LeaveTracker,
   MyLeaveTracker,
   LeaveManagement,
+  EmployeeLeaveCount,
 } from "app/modules/LeaveTracker";
 import {
   Projects,
@@ -257,8 +258,8 @@ export const SidebarRoutes = [
   ...(Config.LEAVE_MANAGEMENT
     ? [
         Config.LEAVE_RECORDS && {
-          path: "/leave-records",
-          component: <LeaveTracker />,
+          path: "/employee-leave-count",
+          component: <EmployeeLeaveCount />,
           name: "LEAVE_RECORDS",
         },
         Config.LEAVE_REQUEST && {

@@ -313,8 +313,8 @@ export const PublicHolidaydsColumn = (reload, data) => [
       }
       return (
         <div className="flex flex-wrap gap-1">
-          {cell.map(({name}) => (
-            <StatusLabel variant='info'>{name}</StatusLabel>
+          {cell.map((name) => (
+            <StatusLabel variant="info">{name}</StatusLabel>
           ))}
         </div>
       );
@@ -322,7 +322,7 @@ export const PublicHolidaydsColumn = (reload, data) => [
     dataSort: true,
   },
   {
-    dataField: "branches",
+    dataField: "branch_names",
     text: "Branches",
     formatter: (cell) => {
       if (!cell || cell?.length === 0) {
@@ -330,10 +330,8 @@ export const PublicHolidaydsColumn = (reload, data) => [
       }
       return (
         <div className="flex flex-wrap gap-1">
-          {cell.map(({branch_name}) => (
-            <StatusLabel variant="info">
-              {branch_name}
-            </StatusLabel>
+          {cell.map((branch_name) => (
+            <StatusLabel variant="info">{branch_name}</StatusLabel>
           ))}
         </div>
       );

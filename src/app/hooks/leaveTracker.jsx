@@ -7,7 +7,7 @@ import {
   mapLeaveTypeData,
   mapPublicHolidayPayloadeData,
   mapPublicHolidayListData,
-  mapPublicHolidayData
+  mapPublicHolidayData,
 } from "app/utils/MappingObjects/mapLeaveData";
 import { renderErrorMessages } from "utils/renderErrors";
 
@@ -666,7 +666,7 @@ export const getLeaveTypeData = async (id) => {
       headers: headers(),
     });
     if (response.status === 200) {
-           debugger
+      debugger;
       const ResponseData = await mapLeaveTypeData(response.data.data);
       return ResponseData;
     }
@@ -678,8 +678,10 @@ export const getLeaveTypeData = async (id) => {
     return {};
   }
 };
-export const getLeaveEligibleTypeDurations = async (isType = true) => {
-  let URL = `/employee-leaves/eligible_leave_types/`;
+export const getEligibleLeaveTypeDurations = async (isType = true) => {
+  let URL = isType
+    ? `/employee-leaves/eligible_leave_types/`
+    : `/employee-leaves/eligible_leave_durations/`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -716,7 +718,7 @@ export const getLeaveListData = async (payload) => {
     });
     if (response.status === 200) {
       const ResponseData = response.data;
-      const ResponseList = await mapLeaveTypeListData(ResponseData.results);
+      const ResponseList = await mapLeaveTypeListData(ResponseData.data);
       return { results: ResponseList, count: ResponseData.count };
     }
     return { results: [], count: 0 };
@@ -790,12 +792,9 @@ export const saveUpdateHoliday = async (payload, id) => {
 
 export const getHolidayData = async (id) => {
   try {
-    const response = await axios.get(
-      `${baseUrl}/holidays/${id}/`,
-      {
-        headers: headers(),
-      }
-    );
+    const response = await axios.get(`${baseUrl}/holidays/${id}/`, {
+      headers: headers(),
+    });
     if (response.status === 200) {
       const ResponseData = await mapPublicHolidayData(response.data);
       return ResponseData;
@@ -808,7 +807,6 @@ export const getHolidayData = async (id) => {
     return {};
   }
 };
-
 
 // End points to remove
 // /employeeleavetransaction/
@@ -846,16 +844,18 @@ const saveLeaveType = async (payload) => {
     }
     throw error;
   }
-}
+};
 
 const getLeaveTypes = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/leave-types?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  let URL = `/leave-types?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -870,7 +870,7 @@ const getLeaveTypes = async (payload) => {
     }
     return [];
   }
-}
+};
 
 const deleteLeaveType = async (id) => {
   try {
@@ -887,7 +887,7 @@ const deleteLeaveType = async (id) => {
     }
     return false;
   }
-}
+};
 
 export {
   deleteLeaveType,
