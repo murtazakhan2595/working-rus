@@ -808,12 +808,30 @@ export const getHolidayData = async (id) => {
   }
 };
 
-// End points to remove
-// /employeeleavetransaction/
-// /leaveattachments
-// /leave
-// leaveComponents
+export const cancelEmployeeLeave = async (id) => {
+  try {
 
+    const url = `/employee-leaves/${id}/cancel_leave/`
+
+    const method = "PATCH"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
 const saveLeaveType = async (payload) => {
   try {
     if (payload?.id) {

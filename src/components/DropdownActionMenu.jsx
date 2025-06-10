@@ -49,7 +49,6 @@ const DropdownActionMenu = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log("View menu item clicked");
               onView(e);
             }}
             tabIndex="0"
@@ -63,7 +62,6 @@ const DropdownActionMenu = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log("Custom menu item clicked");
               onCustom(e);
             }}
             tabIndex="0"
@@ -77,7 +75,6 @@ const DropdownActionMenu = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log("Edit menu item clicked");
               onEdit(e);
             }}
             tabIndex="0"
@@ -91,7 +88,6 @@ const DropdownActionMenu = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log("Delete menu item clicked");
               onDelete(e);
             }}
             tabIndex="0"
@@ -107,7 +103,6 @@ const DropdownActionMenu = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log("Delete menu item clicked");
                 action(e);
               }}
               tabIndex="0"

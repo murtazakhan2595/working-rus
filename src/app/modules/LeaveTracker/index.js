@@ -10,6 +10,8 @@ import {
   LeaveRequest,
   AppliedLeaves,
   AllocatedLeavesInfo,
+  MyLeavesAction,
+  CancelLeaveRequest,
 } from "./MyLeaveTracker";
 import { EmployeeLeaveCount } from "./EmployeeLeaveCount";
 import {
@@ -35,6 +37,7 @@ export {
   MyLeaveTracker,
   LeaveRequests,
   LeaveTracker,
+  MyLeavesAction,
   LeaveTrackerActions,
   ViewLeaveDetails,
   LeaveRequest,
@@ -57,4 +60,5 @@ export {
   OffsetLeaves,
   AddUpdateOffsetLeave,
   ImportHolidays,
+  CancelLeaveRequest
 };

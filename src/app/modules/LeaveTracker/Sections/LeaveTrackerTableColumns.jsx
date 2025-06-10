@@ -11,6 +11,7 @@ import {
   LeaveDurationAction,
   LeaveTypeAction,
   HolidayActions,
+  MyLeavesAction,
 } from "app/modules/LeaveTracker";
 import { RenderResignedRow } from "app/modules/ExitAndClearance/Sections";
 import { DepartmentName } from "utils/getValuesFromTables";
@@ -184,7 +185,7 @@ export const MyLeaveAplicationColumns = (realoadData = () => {}) => [
     text: "",
     dataField: "",
     formatter: (_, row, dataList) => (
-      <LeaveTrackerActions
+      <MyLeavesAction
         data={row}
         realoadData={realoadData}
         DataList={dataList}
