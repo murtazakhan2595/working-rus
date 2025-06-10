@@ -42,9 +42,8 @@ export const validateAddHierarchyLevelsForm = (
       }
     }
   }
-
   // Validate levels
-  if (!values.levels || !Array.isArray(values.levels)) {
+  if (!values.levels || !Array.isArray(values.levels) || values.levels.length===0) {
     errors.levels = "At least one level is required";
   } else {
     const seenDesignations = new Set();

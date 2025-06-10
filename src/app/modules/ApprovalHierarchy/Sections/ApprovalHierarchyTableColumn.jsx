@@ -56,14 +56,20 @@ export const ApprovalHierarchyColumn = (reload = () => {}) => [
     dataField: "has_delegation",
     text: "Delegated",
     dataSort: true,
-    formatter: (cell) => (cell ? "Yes" : "NO"),
+    formatter: (cell) => (
+      <StatusLabel status={cell ? "Yes" : "NO"}>
+        {cell ? "Yes" : "No"}
+      </StatusLabel>
+    ),
   },
   {
     dataField: "has_auto_forward",
     text: "Auto Forward",
     dataSort: true,
     formatter: (cell) => (
-      <StatusLabel variant="info">{cell ? "Enabled" : "Disabled"}</StatusLabel>
+      <StatusLabel status={cell ? "Yes" : "NO"}>
+        {cell ? "Enabled" : "Disabled"}
+      </StatusLabel>
     ),
   },
   {
@@ -120,7 +126,7 @@ export const HierarchyLevelsColumn = (reload = () => {}, viewMode) =>
       text: "Auto Forward",
       dataSort: true,
       formatter: (cell) => (
-        <StatusLabel variant="info">
+        <StatusLabel status={cell ? "Yes" : "NO"}>
           {cell ? "Enabled" : "Disabled"}
         </StatusLabel>
       ),
@@ -186,7 +192,9 @@ export const HierarchyHistoryColumn = [
     text: "Auto Forward",
     dataSort: true,
     formatter: (cell) => (
-      <StatusLabel variant="info">{cell ? "Enabled" : "Disabled"}</StatusLabel>
+      <StatusLabel status={cell ? "Yes" : "NO"}>
+        {cell ? "Enabled" : "Disabled"}
+      </StatusLabel>
     ),
   },
   {
