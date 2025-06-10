@@ -1,6 +1,6 @@
 import { Card, CardContent } from "components/ui/card";
 import { Header, SheetUI } from "components";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   TextInput,
   NumberInput,
@@ -73,6 +73,7 @@ export default function AddUpdateLeaveType({
         short_code: "",
         leave_count: "",
         is_carry_forward_allowed: false,
+        max_carry_forward_limit: 0,
         is_encashable: false,
         requires_attachment: false,
         min_days_notice: "",
@@ -86,11 +87,193 @@ export default function AddUpdateLeaveType({
         day_count_type: "work_days",
         max_consecutive_days: "",
         is_all_paid: true,
+        full_paid_days: 0,
+        half_paid_days: 0,
         tooltip_info: "",
         status: true,
       });
     }
   }, [data]);
+
+  // Memoized form fields that depend on current form values
+  const getFormFields = useMemo(() => {
+    return [
+      {
+        sheetCardExtension: true,
+        sheetCardTitle: `Leave Type Details`,
+        InputFields: [
+          {
+            InputField: TextInput,
+            name: "name",
+            required: true,
+            label: "Leave Type Name",
+            placeholder: "e.g. Sick Leave, Annual Leave",
+          },
+          {
+            InputField: TextInput,
+            name: "short_code",
+            required: true,
+            label: "Short Code",
+            placeholder: "e.g. SL, AL",
+          },
+          {
+            InputField: NumberInput,
+            name: "leave_count",
+            required: true,
+            label: "Leave Count (Annual Quota)",
+            placeholder: "Total allowed per year",
+          },
+          {
+            InputField: SwitchInput,
+            name: "is_carry_forward_allowed",
+            label: "Is Carry Forward Allowed?",
+            description: "Leftover leaves carry to next year",
+          },
+          {
+            InputField: NumberInput,
+            name: "max_carry_forward_limit",
+            label: "Max Carry Forward Limit",
+            placeholder: "Maximum days to carry forward",
+            required: true,
+            shouldRender: formData.is_carry_forward_allowed,
+          },
+          {
+            InputField: SwitchInput,
+            name: "is_encashable",
+            label: "Is Encashable?",
+            description: "Encashment allowed at year end",
+          },
+          {
+            InputField: SwitchInput,
+            name: "requires_attachment",
+            label: "Requires Attachment?",
+            description: "Medical certificate required",
+          },
+          {
+            InputField: NumberInput,
+            name: "min_days_notice",
+            label: "Min Days Notice Required",
+            placeholder: "Days in advance to apply",
+          },
+          {
+            InputField: SwitchInput,
+            name: "is_all_paid",
+            label: "All Paid",
+            description: "Toggle OFF for partially paid leave",
+          },
+          {
+            InputField: NumberInput,
+            name: "full_paid_days",
+            label: "Full Paid Days",
+            placeholder: "Enter full paid days",
+            required: true,
+            shouldRender: !formData.is_all_paid,
+          },
+          {
+            InputField: NumberInput,
+            name: "half_paid_days",
+            label: "Half Paid Days",
+            placeholder: "Enter half paid days",
+            required: true,
+            shouldRender: !formData.is_all_paid,
+          },
+          {
+            InputField: SelectMultiInputComponent,
+            name: "nationalities",
+            required: true,
+            label: "Nationalities",
+            options: countriesList,
+            SelectAllOption: true,
+            placeholder: "Select nationalities",
+          },
+          {
+            InputField: SelectMultiInputComponent,
+            name: "branches_ids",
+            required: true,
+            label: "Branches",
+            options: Branches,
+            SelectAllOption: true,
+            placeholder: "Select branches",
+          },
+          {
+            InputField: SelectMultiInputComponent,
+            name: "departments_ids",
+            required: true,
+            label: "Departments",
+            options: Departments,
+            SelectAllOption: true,
+            placeholder: "Select departments",
+          },
+          {
+            InputField: SelectMultiInputComponent,
+            name: "genders",
+            label: "Genders",
+            options: GenderOptions,
+            SelectAllOption: true,
+            placeholder: "Select genders",
+          },
+          {
+            InputField: SelectMultiInputComponent,
+            name: "marital_statuses",
+            label: "Marital Statuses",
+            options: maritalStatus,
+            SelectAllOption: true,
+            placeholder: "Select marital statuses",
+          },
+          {
+            InputField: SelectMultiInputComponent,
+            name: "grades",
+            label: "Applicable Grades / Designations",
+            options: Designations,
+            placeholder: "Select job levels",
+          },
+          {
+            InputField: SwitchInput,
+            name: "probation_restriction",
+            label: "Probation Period Restriction",
+            description: "Restricted during probation",
+          },
+          {
+            InputField: RadioGroupInput,
+            name: "day_count_type",
+            label: "Work days or calendar days",
+            options: [
+              { label: "Work Days", value: "work_days" },
+              { label: "Calendar Days", value: "calendar_days" },
+            ],
+            required: true,
+          },
+          {
+            InputField: NumberInput,
+            name: "max_consecutive_days",
+            label: "Max Consecutive Days Allowed",
+            placeholder: "Max days in one go",
+            required: true,
+          },
+          {
+            InputField: SwitchInput,
+            name: "status",
+            label: "Status",
+            description: "Active/Inactive",
+          },
+          {
+            InputField: TextAreaInput,
+            name: "tooltip_info",
+            label: "Tooltip Information",
+            placeholder: "Add helpful information about this leave type...",
+            maxRows: 3,
+            colsSpan: 2,
+          },
+        ],
+      },
+    ];
+  }, [
+    formData.is_carry_forward_allowed,
+    formData.is_all_paid,
+    Branches,
+    Departments,
+    Designations,
+  ]);
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
@@ -151,189 +334,7 @@ export default function AddUpdateLeaveType({
                   ? "Updating..."
                   : "Submitting Form..."
                 : "",
-              formFiels: [
-                {
-                  sheetCardExtension: true,
-                  sheetCardTitle: `Leave Type Details`,
-                  InputFields: [
-                    {
-                      InputField: TextInput,
-                      name: "name",
-                      required: true,
-                      label: "Leave Type Name",
-                      placeholder: "e.g. Sick Leave, Annual Leave",
-                    },
-                    {
-                      InputField: TextInput,
-                      name: "short_code",
-                      required: true,
-                      label: "Short Code",
-                      placeholder: "e.g. SL, AL",
-                    },
-                    {
-                      InputField: NumberInput,
-                      name: "leave_count",
-                      required: true,
-                      label: "Leave Count (Annual Quota)",
-                      placeholder: "Total allowed per year",
-                    },
-                    {
-                      InputField: SwitchInput,
-                      name: "is_carry_forward_allowed",
-                      label: "Is Carry Forward Allowed?",
-                      description: "Leftover leaves carry to next year",
-                    },
-                    // Conditionally include Max Carry Forward Limit
-                    ...(formData.is_carry_forward_allowed
-                      ? [
-                          {
-                            InputField: NumberInput,
-                            name: "max_carry_forward_limit",
-                            label: "Max Carry Forward Limit",
-                            placeholder: "Maximum days to carry forward",
-                            required: true,
-                          },
-                        ]
-                      : []),
-                    {
-                      InputField: SwitchInput,
-                      name: "is_encashable",
-                      label: "Is Encashable?",
-                      description: "Encashment allowed at year end",
-                    },
-                    {
-                      InputField: SwitchInput,
-                      name: "requires_attachment",
-                      label: "Requires Attachment?",
-                      description: "Medical certificate required",
-                    },
-                    {
-                      InputField: NumberInput,
-                      name: "min_days_notice",
-                      label: "Min Days Notice Required",
-                      placeholder: "Days in advance to apply",
-                    },
-                    {
-                      InputField: SwitchInput,
-                      name: "is_all_paid",
-                      label: "All Paid",
-                      description: "Toggle OFF for partially paid leave",
-                    },
-                    // Conditionally include Full Paid Days
-                    ...(!formData.is_all_paid
-                      ? [
-                          {
-                            InputField: NumberInput,
-                            name: "full_paid_days",
-                            label: "Full Paid Days",
-                            placeholder: "Enter full paid days",
-                            required: true,
-                          },
-                        ]
-                      : []),
-                    // Conditionally include Half Paid Days
-                    ...(!formData.is_all_paid
-                      ? [
-                          {
-                            InputField: NumberInput,
-                            name: "half_paid_days",
-                            label: "Half Paid Days",
-                            placeholder: "Enter half paid days",
-                            required: true,
-                          },
-                        ]
-                      : []),
-                    {
-                      InputField: SelectMultiInputComponent,
-                      name: "nationalities",
-                      required: true,
-                      label: "Nationalities",
-                      options: countriesList,
-                      SelectAllOption: true,
-                      placeholder: "Select nationalities",
-                    },
-                    {
-                      InputField: SelectMultiInputComponent,
-                      name: "branches_ids",
-                      required: true,
-                      label: "Branches",
-                      options: Branches,
-                      SelectAllOption: true,
-                      placeholder: "Select branches",
-                    },
-                    {
-                      InputField: SelectMultiInputComponent,
-                      name: "departments_ids",
-                      required: true,
-                      label: "Departments",
-                      options: Departments,
-                      SelectAllOption: true,
-                      placeholder: "Select departments",
-                    },
-                    {
-                      InputField: SelectMultiInputComponent,
-                      name: "genders",
-                      label: "Genders",
-                      options: GenderOptions,
-                      SelectAllOption: true,
-                      placeholder: "Select genders",
-                    },
-                    {
-                      InputField: SelectMultiInputComponent,
-                      name: "marital_statuses",
-                      label: "Marital Statuses",
-                      options: maritalStatus,
-                      SelectAllOption: true,
-                      placeholder: "Select marital statuses",
-                    },
-                    {
-                      InputField: SelectMultiInputComponent,
-                      name: "grades",
-                      label: "Applicable Grades / Designations",
-                      options: Designations,
-                      placeholder: "Select job levels",
-                    },
-                    {
-                      InputField: SwitchInput,
-                      name: "probation_restriction",
-                      label: "Probation Period Restriction",
-                      description: "Restricted during probation",
-                    },
-                    {
-                      InputField: RadioGroupInput,
-                      name: "day_count_type",
-                      label: "Work days or calendar days",
-                      options: [
-                        { label: "Work Days", value: "work_days" },
-                        { label: "Calendar Days", value: "calendar_days" },
-                      ],
-                      required: true,
-                    },
-                    {
-                      InputField: NumberInput,
-                      name: "max_consecutive_days",
-                      label: "Max Consecutive Days Allowed",
-                      placeholder: "Max days in one go",
-                      required: true,
-                    },
-                    {
-                      InputField: SwitchInput,
-                      name: "status",
-                      label: "Status",
-                      description: "Active/Inactive",
-                    },
-                    {
-                      InputField: TextAreaInput,
-                      name: "tooltip_info",
-                      label: "Tooltip Information",
-                      placeholder:
-                        "Add helpful information about this leave type...",
-                      maxRows: 3,
-                      colsSpan: 2,
-                    },
-                  ],
-                },
-              ],
+              formFiels: getFormFields,
               onFormChange: (values) => {
                 // Update formData when form values change to trigger re-render
                 setFormData(values);

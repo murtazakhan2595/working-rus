@@ -91,6 +91,16 @@ const validateLeaveTypeFormSchema = (values) => {
     } else if (values.max_carry_forward_limit <= 0) {
       errors.max_carry_forward_limit =
         "Max carry forward limit must be greater than 0";
+    } else if (
+      parseInt(values.max_carry_forward_limit) > parseInt(values.leave_count)
+    ) {
+      errors.max_carry_forward_limit =
+        "Max carry forward limit cannot exceed total leave count";
+    }
+  } else {
+    // Clear the field when carry forward is disabled
+    if (values.max_carry_forward_limit) {
+      values.max_carry_forward_limit = 0;
     }
   }
 
@@ -106,7 +116,7 @@ const validateLeaveTypeFormSchema = (values) => {
   // Paid days validation (only if not all paid)
   if (!values.is_all_paid) {
     // Full Paid Days validation
-    if (!values.full_paid_days) {
+    if (!values.full_paid_days && values.full_paid_days !== 0) {
       errors.full_paid_days = "Full paid days is required when not all paid";
     } else if (isNaN(values.full_paid_days)) {
       errors.full_paid_days = "Full paid days must be a number";
@@ -115,7 +125,7 @@ const validateLeaveTypeFormSchema = (values) => {
     }
 
     // Half Paid Days validation
-    if (!values.half_paid_days) {
+    if (!values.half_paid_days && values.half_paid_days !== 0) {
       errors.half_paid_days = "Half paid days is required when not all paid";
     } else if (isNaN(values.half_paid_days)) {
       errors.half_paid_days = "Half paid days must be a number";
@@ -124,9 +134,14 @@ const validateLeaveTypeFormSchema = (values) => {
     }
 
     // Sum validation - Full + Half should not exceed total leave count
-    if (values.full_paid_days && values.half_paid_days && values.leave_count) {
+    if (
+      values.full_paid_days !== undefined &&
+      values.half_paid_days !== undefined &&
+      values.leave_count
+    ) {
       const totalPaidDays =
-        parseInt(values.full_paid_days) + parseInt(values.half_paid_days);
+        parseInt(values.full_paid_days || 0) +
+        parseInt(values.half_paid_days || 0);
       const leaveCount = parseInt(values.leave_count);
 
       if (totalPaidDays > leaveCount) {
@@ -134,22 +149,15 @@ const validateLeaveTypeFormSchema = (values) => {
         errors.half_paid_days = `Total paid days (${totalPaidDays}) cannot exceed leave count (${leaveCount})`;
       }
     }
+  } else {
+    // Clear the fields when all paid is enabled
+    if (values.full_paid_days) {
+      values.full_paid_days = 0;
+    }
+    if (values.half_paid_days) {
+      values.half_paid_days = 0;
+    }
   }
-
-  // // Nationalities validation
-  // if (!values.nationalities || values.nationalities.length === 0) {
-  //   errors.nationalities = "Nationalities selection is required";
-  // }
-
-  // // Branches validation
-  // if (!values.branches_ids || values.branches_ids.length === 0) {
-  //   errors.branches_ids = "Branches selection is required";
-  // }
-
-  // // Departments validation
-  // if (!values.departments_ids || values.departments_ids.length === 0) {
-  //   errors.departments_ids = "Departments selection is required";
-  // }
 
   // Work days or calendar days validation
   if (!values.day_count_type) {
@@ -163,6 +171,11 @@ const validateLeaveTypeFormSchema = (values) => {
     errors.max_consecutive_days = "Max consecutive days must be a number";
   } else if (values.max_consecutive_days <= 0) {
     errors.max_consecutive_days = "Max consecutive days must be greater than 0";
+  } else if (
+    parseInt(values.max_consecutive_days) > parseInt(values.leave_count)
+  ) {
+    errors.max_consecutive_days =
+      "Max consecutive days cannot exceed total leave count";
   }
 
   return errors;
