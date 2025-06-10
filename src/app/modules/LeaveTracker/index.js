@@ -26,6 +26,9 @@ import {
   ViewLeaveType,
   HolidayActions,
   ViewHolidayDetail,
+  OffsetLeaves,
+  AddUpdateOffsetLeave,
+  ImportHolidays,
 } from "./LeaveManagement";
 
 export {
@@ -51,4 +54,7 @@ export {
   HolidayActions,
   ViewHolidayDetail,
   EmployeeLeaveCount,
+  OffsetLeaves,
+  AddUpdateOffsetLeave,
+  ImportHolidays,
 };

@@ -889,6 +889,28 @@ const deleteLeaveType = async (id) => {
   }
 };
 
+export const uploadHolidaysData = async (formData) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/holidays/bulk-import/`,
+      formData,
+      {
+        headers: {
+          ...headers(),
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error uploading employees data:", error);
+    return error?.response?.data;
+  }
+};
+
 export {
   deleteLeaveType,
   getLeaveTypes,

@@ -133,31 +133,12 @@ const EmployeeLeaveCount = ({
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "departmentt") setSelectedDepartment(filterValue);
-    if (filterName === "status") setSelectedStatus(filterValue);
-    if (filterName === "leave_component_id") setSelectedLeaveType(filterValue);
-    if (filterName === "branch") setSelectedBranch(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-
-      if (filterName === "status") {
-        // Add both action_hr and action_manager
-        if (filterValue === "") {
-          // If filterValue is empty, remove both keys
-          delete updatedFilters["action_hr"];
-          delete updatedFilters["action_manager"];
-        } else {
-          // Set both action_hr and action_manager to the filterValue
-          updatedFilters["action_hr"] = filterValue;
-          updatedFilters["action_manager"] = filterValue;
-        }
+      if (filterValue === "" || filterValue === null) {
+        delete updatedFilters[filterName];
       } else {
-        // Handle other filters normally
-        if (filterValue === "") {
-          delete updatedFilters[filterName];
-        } else {
-          updatedFilters[filterName] = filterValue;
-        }
+        updatedFilters[filterName] = filterValue;
       }
 
       return updatedFilters;
@@ -203,7 +184,7 @@ const EmployeeLeaveCount = ({
               },
               {
                 type: "date-range",
-                name: "leave_type",
+                name: "date_range",
                 placeholder: "Leave Period",
               },
             ]}

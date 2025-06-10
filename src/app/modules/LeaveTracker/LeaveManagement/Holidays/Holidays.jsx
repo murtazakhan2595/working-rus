@@ -7,12 +7,13 @@ import {
 } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { Header, PageLoader, TableCustom } from "components";
-import { LeaveAplicationColumns } from "app/modules/LeaveTracker/Sections";
+import { ImportHolidays } from "app/modules/LeaveTracker";
 import { LeaveTrackerOptions } from "data/Data";
 import { GetDispatchStateList } from "utils/Lists";
 import { countriesList } from "data/Data";
 import { PublicHolidaydsColumn } from "app/modules/LeaveTracker/Sections";
 import { getHolidaysListData } from "app/hooks/leaveTracker";
+import { CardHeader } from "components/ui/card";
 
 export default function Holidays({ reload = false }) {
   const Branches = GetDispatchStateList("branches", "common") || [];
@@ -72,25 +73,10 @@ export default function Holidays({ reload = false }) {
     onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-
-      if (filterName === "status") {
-        // Add both action_hr and action_manager
-        if (filterValue === "") {
-          // If filterValue is empty, remove both keys
-          delete updatedFilters["action_hr"];
-          delete updatedFilters["action_manager"];
-        } else {
-          // Set both action_hr and action_manager to the filterValue
-          updatedFilters["action_hr"] = filterValue;
-          updatedFilters["action_manager"] = filterValue;
-        }
+      if (filterValue === "" || filterValue === null) {
+        delete updatedFilters[filterName];
       } else {
-        // Handle other filters normally
-        if (filterValue === "") {
-          delete updatedFilters[filterName];
-        } else {
-          updatedFilters[filterName] = filterValue;
-        }
+        updatedFilters[filterName] = filterValue;
       }
 
       return updatedFilters;
@@ -98,47 +84,52 @@ export default function Holidays({ reload = false }) {
   };
 
   return (
-    <div className="flex flex-col gap-4 px-6">
-      <CardTitle className="text-primary pt-6">Public Holidays</CardTitle>
-      <CardDescription className="text-neutral-1100">
-        {`Here you can add, edit, delete and view public holidays`}
-      </CardDescription>
-      <FilterInput
-        filters={[
-          {
-            type: "search",
-            name: "name",
-            placeholder: "Serach by name",
-          },
-          {
-            type: "select",
-            options: Branches,
-            name: "branch",
-            placeholder: "Branch",
-          },
-          {
-            type: "select",
-            options: countriesList,
-            name: "country",
-            placeholder: "Country",
-          },
-          {
-            type: "select",
-            options: [],
-            name: "religion",
-            placeholder: "Religion",
-          },
-          {
-            type: "date-range",
-            options: Branches,
-            name: "date_range",
-            placeholder: "Start Date",
-          },
-        ]}
-        onChange={handleFilterChange}
-        className="justify-end"
-      />
-      <CardContent className="px-0">
+    <div className="flex flex-col">
+      <CardHeader className="flex flex-row flex-wrap justify-between gap-2 items-center">
+        <div>
+          <CardTitle className="text-primary">Public Holidays</CardTitle>
+          <CardDescription className="text-neutral-1100">
+            {`Here you can add, edit, delete and view public holidays`}
+          </CardDescription>
+        </div>
+        <ImportHolidays />
+      </CardHeader>
+      <CardContent>
+        <FilterInput
+          filters={[
+            {
+              type: "search",
+              name: "name",
+              placeholder: "Serach by name",
+            },
+            {
+              type: "select",
+              options: Branches,
+              name: "branch",
+              placeholder: "Branch",
+            },
+            {
+              type: "select",
+              options: countriesList,
+              name: "country",
+              placeholder: "Country",
+            },
+            {
+              type: "select",
+              options: [],
+              name: "religion",
+              placeholder: "Religion",
+            },
+            {
+              type: "date-range",
+              options: Branches,
+              name: "date_range",
+              placeholder: "Start Date",
+            },
+          ]}
+          onChange={handleFilterChange}
+          className="justify-end mb-4"
+        />
         {isloading ? (
           <PageLoader />
         ) : (
