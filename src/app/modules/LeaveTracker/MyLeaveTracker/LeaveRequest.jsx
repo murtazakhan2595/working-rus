@@ -4,7 +4,7 @@ import { Leave } from "app/utils/Types/LeaveManagment";
 import {
   getLeaveTypeData,
   getEligibleLeaveTypeDurations,
-  saveUpdateLeave
+  saveUpdateLeave,
 } from "app/hooks/leaveTracker";
 import { validateLeaveRequestFormSchema } from "app/utils/FormSchema/leaveTrackerFormSchema";
 import moment from "moment";
@@ -18,8 +18,9 @@ import { CheckBoxInput } from "components/FormControl";
 import { NumberInput } from "components/FormControl";
 import { getWorkingDays } from "utils/renderValues";
 import { TextAreaInput } from "components/FormControl";
+import { CoverFileUpload } from "components/FormControl";
 
-const LeaveRequest = ({ id , reloadData=()=>{}}) => {
+const LeaveRequest = ({ id, reloadData = () => {} }) => {
   const { id: user_id, branch_id: user_branch } = useSelector(
     (state) => state.emp.user_details
   );
@@ -29,7 +30,7 @@ const LeaveRequest = ({ id , reloadData=()=>{}}) => {
   const [LeaveTypeOptions, setLeaveTypeOptions] = useState([]);
   const [LeaveValidationInfo, setLeaveValidationInfo] = useState({});
   const [LeaveDurationOptions, setLeaveDurationOptions] = useState([]);
-   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const FormSheetData = React.useMemo(
     () => ({
       triggerText: null,
@@ -120,7 +121,7 @@ const LeaveRequest = ({ id , reloadData=()=>{}}) => {
         if (end.isBefore(start)) {
           FormValues.total_days = 0;
         } else {
-         // const Shift = getActiveShiftList(user_id, start, end);
+          // const Shift = getActiveShiftList(user_id, start, end);
           // Calculate total leave days (inclusive of both start and end date)
           if (daysType === "work_days")
             FormValues.total_days = getWorkingDays(start, end);
@@ -155,7 +156,7 @@ const LeaveRequest = ({ id , reloadData=()=>{}}) => {
         }
       }
     } else {
-      FormValues.full_paid_days = 0;
+      FormValues.full_paid_days = total_days;
       FormValues.half_paid_days = 0;
     }
     setFormValues(FormValues);
@@ -163,26 +164,26 @@ const LeaveRequest = ({ id , reloadData=()=>{}}) => {
     return FormValues;
   };
 
-   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
-      setIsSubmittingForm(true);
-      try {
-        // Save role
-        const response = await saveUpdateLeave(values, id);
-        if (response) {
-          // Ensure table is reloaded
-          return {
-            status: true,
-            title: "Form Submitted Succesfully",
-            description: `Your leave request have been submitted successfully.`,
-            messageType: "Success",
-          };
-        }
-      } catch (error) {
-        console.error(error)
-      } finally {
-        setIsSubmittingForm(false);
+  const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+    setIsSubmittingForm(true);
+    try {
+      const payload = { ...values, employee: user_id };
+      const response = await saveUpdateLeave(payload, id);
+      if (response) {
+        // Ensure table is reloaded
+        return {
+          status: true,
+          title: "Form Submitted Succesfully",
+          description: `Your leave request have been submitted successfully.`,
+          messageType: "Success",
+        };
       }
-    };
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmittingForm(false);
+    }
+  };
   const handleAddLeaveClick = (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -198,9 +199,9 @@ const LeaveRequest = ({ id , reloadData=()=>{}}) => {
       {isOpen && (
         <SheetUI
           isOpen={isOpen}
-          setIsOpen={()=>{
+          setIsOpen={() => {
             setIsOpen(false);
-            reloadData(true)
+            reloadData(true);
           }}
           variant="sheet"
           sheetConfig={FormSheetData}
@@ -292,7 +293,13 @@ const LeaveRequest = ({ id , reloadData=()=>{}}) => {
                     name: "reason",
                     label: "Reason",
                     required: true,
-                    rows:4,
+                    rows: 4,
+                  },
+                  {
+                    InputField: CoverFileUpload,
+                    name: "attachment",
+                    label: "Attachment",
+                    required: true,
                   },
                   ...(LeaveValidationInfo.halfPaidAllowed
                     ? [
@@ -306,7 +313,6 @@ const LeaveRequest = ({ id , reloadData=()=>{}}) => {
                         },
                       ]
                     : []),
-
                 ].filter(Boolean),
               },
             ],

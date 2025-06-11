@@ -1,9 +1,11 @@
 import {
-  saveUpdateHoliday,
+  saveUpdateOffsetSettings,
   getHolidaysListData,
   getHolidayData,
+  getLeaveTypeListData,
+  getLeaveTypeData,
 } from "app/hooks/leaveTracker";
-import { PublicHoliday } from "app/utils/Types/LeaveManagment";
+import { LeaveOffsetSetting } from "app/utils/Types/LeaveManagment";
 import {
   SelectInputComponent,
   TextInput,
@@ -28,25 +30,30 @@ const AddUpdateOffsetLeave = ({
   const Branches = GetDispatchStateList("branches", "common") || [];
   const Departments = GetDispatchStateList("departments", "common") || [];
   const Designations = GetDispatchStateList("designations", "common") || [];
-  const [formValues, setFormValues] = useState(PublicHoliday);
+  const [formValues, setFormValues] = useState(LeaveOffsetSetting);
   const [PublicHolidays, setPublicHolidays] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [NameExist, setNameExist] = useState(false);
   const isEditMode = Boolean(id);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
-
+  const [leaveTypesOptions, setLeaveTypesOptions] = useState([]);
+  const [selectedLeaveType, setSelectedLeaveType] = useState({});
+  // Initialize form data with role values if in edit mode
+  const [formData, setFormData] = useState(LeaveOffsetSetting);
   const FormSheetData = {
     triggerText: "",
     title: isEditMode ? "Edit Holidays" : "Add New Holidays",
     description: null,
     footer: null,
   };
-  // Initialize form data with role values if in edit mode
-  const [formData, setFormData] = useState(PublicHoliday);
 
   const fetchPublicHolidaysData = async (isMounted) => {
     try {
       setIsLoading(true);
+      const LeavesTypes = await getLeaveTypeListData();
+      if (LeavesTypes && isMounted) {
+        setLeaveTypesOptions(LeavesTypes.results || []);
+      }
       // Add organizationId to filter if available
       const response = await getHolidaysListData();
 
@@ -105,15 +112,13 @@ const AddUpdateOffsetLeave = ({
     setIsSubmittingForm(true);
     try {
       // Save role
-      const response = await saveUpdateHoliday(values, id);
+      const response = await saveUpdateOffsetSettings(values, id);
       if (response) {
         // Ensure table is reloaded
         return {
           status: true,
           title: "Form Submitted Succesfully",
-          description: `${values.name} as a public holiday has been ${
-            isEditMode ? "updated" : "added"
-          } successfully.`,
+          description: `Offset leave setting have been saved successfully.`,
           messageType: "Success",
         };
       }
@@ -144,6 +149,31 @@ const AddUpdateOffsetLeave = ({
     [PublicHolidays, id] // dependencies
   );
 
+  const getLeaveTypeDetails = async (leaveTypeId) => {
+    try {
+      if (leaveTypeId) {
+        const leaveType = await getLeaveTypeData(leaveTypeId);
+        if (leaveType) {
+          setSelectedLeaveType(leaveType);
+          setFormData((prev) => ({
+            ...prev,
+            nationalities: leaveType.nationalities,
+            branches: leaveType.branches,
+            departments: leaveType.departments,
+            grades: leaveType.grades,
+            marital_statuses: leaveType.marital_statuses,
+            genders: leaveType.genders,
+            leave_type: leaveTypeId,
+          }));
+        }
+      } else {
+        setSelectedLeaveType({});
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <SheetUI
@@ -164,7 +194,7 @@ const AddUpdateOffsetLeave = ({
             if (values.name && NameExist)
               errors.name =
                 "Name already exists. Please choose a different name";
-            return errors;
+            // return errors;
           },
           submitButtonText: "Submit",
           cancelButtonText: "Cancel",
@@ -176,6 +206,16 @@ const AddUpdateOffsetLeave = ({
               sheetCardExtension: true,
               sheetCardTitle: `Eligibility Details`,
               InputFields: [
+                {
+                  InputField: SelectInputComponent,
+                  name: "leave_type",
+                  required: true,
+                  label: "Leave Type",
+                  options: leaveTypesOptions,
+                  onFieldUpdate: async (_, value) => {
+                    await getLeaveTypeDetails(value);
+                  },
+                },
                 {
                   InputField: SelectMultiInputComponent,
                   name: "nationalities",

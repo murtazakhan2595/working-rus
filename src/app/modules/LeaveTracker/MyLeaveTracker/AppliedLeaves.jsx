@@ -92,7 +92,9 @@ export default function AppliedLeaves({reload}) {
       if (filterValue === "" || filterValue === null) {
         delete updatedFilters[filterName];
       } else {
-        updatedFilters[filterName] = filterValue;
+         if (filterName === "status")
+          updatedFilters[filterName] = filterValue.toLowerCase();
+        else updatedFilters[filterName] = filterValue;
       }
 
       return updatedFilters;

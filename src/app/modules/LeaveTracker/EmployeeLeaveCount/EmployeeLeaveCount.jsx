@@ -9,8 +9,9 @@ import {
 import { FilterInput } from "components/FormControl";
 import { Header, PageLoader, TableCustom } from "components";
 import { getLeaveTypeListData, getLeaveListData } from "app/hooks/leaveTracker";
+import { getEmployeeList } from "app/hooks/general";
 import { getLabelByValue } from "utils/getValuesFromTables";
-import { LeaveAplicationColumns } from "app/modules/LeaveTracker/Sections";
+import { LeaveRecordColumns } from "app/modules/LeaveTracker/Sections";
 import { exportRecordToExcel } from "utils/downloadUtils";
 import { Button } from "components/ui/button";
 import { HasAccess } from "utils/PermissionUtils";
@@ -75,9 +76,10 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
   const fetchData = async (isMounted) => {
     try {
       setIsLoading(true);
-      const Leaves = await getLeaveListData({
+      const Leaves = await getEmployeeList({
         filterData,
         options,
+        ordering
       });
       if (Leaves && isMounted) {
         setLeaves(Leaves);
@@ -111,38 +113,6 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
     });
   };
 
-  const exportAttendanceToExcel = async (event) => {
-    event.preventDefault();
-    const data = Leaves.results || [];
-    if (!data || !Array.isArray(data)) return null;
-    const dataToExport = await Promise.all(
-      data?.map(async (row) => ({
-        "Employee Id": row.employee_serial_number,
-        "Employee Name": row.employee_name,
-        "Employee Department": row["employee_department_name"],
-        "Employee Designation": row["employee_designation_name"],
-        "Employee Branch": await getLabelByValue(
-          row["employee_branch_name"],
-          Branches,
-          "-"
-        ),
-        "Leave Type": row.leave_type_names,
-        "Leave Duration": row.leave_duration_name,
-        "Start Date": row.start_date,
-        "End Date": row.end_date,
-        "Total Days": row.total_days,
-        "Full Paid Days": row.full_paid_days,
-        "Half Paid Days": row.half_paid_days,
-        Reason: row.reason,
-      }))
-    );
-    exportRecordToExcel(
-      dataToExport,
-      "Leave",
-      `Employee-Leaves-Record${filterData.date_range || ""}`
-    );
-  };
-
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -156,9 +126,6 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
               {`Here you can view leaves of all employees.`}
             </CardDescription>
           </div>
-          <Button onClick={exportAttendanceToExcel} variant="continue">
-            Export
-          </Button>
         </CardHeader>
 
         <CardContent>
@@ -182,17 +149,6 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
                 name: "branch",
                 placeholder: "Branch",
               },
-              {
-                type: "select",
-                option: leaveTypesData || [],
-                name: "leave_type",
-                placeholder: "Leave Type",
-              },
-              {
-                type: "date-range",
-                name: "date_range",
-                placeholder: "Leave Period",
-              },
             ]}
             onChange={handleFilterChange}
             className="justify-end mb-4"
@@ -202,7 +158,7 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
           ) : (
             <TableCustom
               data={Leaves?.results || []}
-              columns={LeaveAplicationColumns(false, fetchData)}
+              columns={LeaveRecordColumns}
               pagination={true}
               dataTotalSize={Leaves?.count || 0}
               tableOptions={tableOptions}

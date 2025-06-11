@@ -5,6 +5,7 @@ import {
   StatusList,
 } from "components";
 // import AddGraceTimeForm from "./AddGraceTimeForm";
+import { FormatID } from "utils/getValuesFromTables";
 import { StatusLabel, SheetUI, EmployeeDetailUI } from "components";
 import { getLeaveData } from "app/hooks/leaveTracker";
 import { EmployeeOverview } from "components";
@@ -12,9 +13,17 @@ import { renderDate } from "utils/renderValues";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { TextAreaInput } from "components/FormControl";
 import { handleRequest } from "app/hooks/general";
 
-const ViewLeaveDetails = ({
+const FormSheetData = {
+  triggerText: "Submit",
+  title: "Reject Attendance Update Request",
+  description: null,
+  footer: null,
+  className: "max-w-[478px] w-full h-[400px]",
+};
+const ViewEmployeeLeaveCount = ({
   isOpen,
   setIsOpen,
   currentId,
@@ -25,6 +34,8 @@ const ViewLeaveDetails = ({
     (state) => state.user.userProfile
   );
   const [forceLoad, setForceLoad] = useState(false);
+  const [openRejectModal, setOpenRejectModal] = useState(false);
+  const [RejectedData, setRejectData] = useState(false);
   const handleSubmit = async (status, { request_id }) => {
     try {
       const response = await handleRequest(request_id, status === "Approved");
@@ -42,6 +53,12 @@ const ViewLeaveDetails = ({
     event.preventDefault();
     event.stopPropagation();
     handleSubmit(status, data);
+  };
+  const handleRejectClick = (event, data) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setOpenRejectModal(true);
+    setRejectData(data);
   };
   // Define the fields to display
   const fields = [
@@ -95,16 +112,16 @@ const ViewLeaveDetails = ({
           key: "leave_type_names",
           label: "Leave Type",
         },
-        // {
-        //   key: "attendance_date",
-        //   label: "Alloted Leaves",
-        //   formatter: (cell) => renderDate(cell),
-        // },
-        // {
-        //   key: "requested_checkin",
-        //   label: "Consumed Leave",
-        //   formatter: (cell) => renderDate(cell, "--", "time"),
-        // },
+        {
+          key: "attendance_date",
+          label: "Alloted Leaves",
+          formatter: (cell) => renderDate(cell),
+        },
+        {
+          key: "requested_checkin",
+          label: "Consumed Leave",
+          formatter: (cell) => renderDate(cell, "--", "time"),
+        },
         {
           key: "start_date",
           label: "Start Date",
@@ -166,7 +183,7 @@ const ViewLeaveDetails = ({
               </Button>
               <Button
                 variant="destructive"
-                onClick={(event) => handleClick(event, "Rejected", data)}
+                onClick={(event) => handleRejectClick(event, data)}
               >
                 Reject
               </Button>
@@ -207,8 +224,47 @@ const ViewLeaveDetails = ({
       >
         <DetailContent fields={fields} />
       </NavigationSheetComponent>
+      {openRejectModal && (
+        <SheetUI
+          isOpen={openRejectModal}
+          setIsOpen={setOpenRejectModal}
+          variant="modal"
+          sheetConfig={FormSheetData}
+          formConfig={{
+            initialValues: RejectedData,
+            enableReinitialize: true,
+            handleSubmit: (data) => {
+              handleSubmit("Rejected", data);
+            },
+            validateFormSchema: (values) => {
+              const error = {};
+              if (!values.rejection_reason)
+                error.rejection_reason = "Reason is required";
+              return error;
+            },
+            submitButtonText: "Submit",
+            cancelButtonText: "Cancel",
+            columns: 1,
+            formFiels: [
+              {
+                sheetCardExtension: false,
+                sheetCardTitle: "Attendance Details",
+                InputFields: [
+                  {
+                    InputField: TextAreaInput,
+                    name: "rejection_reason",
+                    required: true,
+                    label: "Rejection Reson",
+                    rows: 3,
+                  },
+                ].filter(Boolean),
+              },
+            ],
+          }}
+        ></SheetUI>
+      )}
     </>
   );
 };
 
-export default ViewLeaveDetails;
+export default ViewEmployeeLeaveCount;

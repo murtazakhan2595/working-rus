@@ -6,8 +6,13 @@ import {
   LeaveTypeAction,
   HolidayActions,
   MyLeavesAction,
+  LeaveCountAction,
 } from "app/modules/LeaveTracker";
-import { DepartmentName } from "utils/getValuesFromTables";
+import {
+  DepartmentName,
+  DesignationName,
+  BranchName,
+} from "utils/getValuesFromTables";
 import { renderDate } from "utils/renderValues";
 
 export const LeaveRecordColumns = [
@@ -30,14 +35,23 @@ export const LeaveRecordColumns = [
     text: "Department",
     formatter: (cell) => <DepartmentName value={cell} />,
   },
-  // {
-  //   dataField: "used_leaves",
-  //   text: "Total Used",
-  // },
-  // {
-  //   dataField: "total_balance_after",
-  //   text: "Total Remaining",
-  // },
+  {
+    dataField: "department_position",
+    text: "Designation",
+    formatter: (cell) => <DesignationName value={cell} />,
+  },
+  {
+    dataField: "branch_id",
+    text: "Branch",
+    formatter: (cell) => <BranchName value={cell} />,
+  },
+  {
+    dataField: "",
+    text: "",
+    formatter: (_, row, dataList) => (
+      <LeaveCountAction data={row} DataList={dataList} />
+    ),
+  },
 ];
 
 export const LeaveAplicationColumns = (
@@ -57,20 +71,21 @@ export const LeaveAplicationColumns = (
     ),
   },
   {
-    dataField: "leave_type_names",
+    dataField: "leave_type_name",
     text: "Leave Type",
   },
   {
     dataField: "start_date",
     text: "Leave Period",
     formatter: (cell, row) => (
-      <div className="flex flex-col">
+      <div className="flex flex-row flex-wrap">
         <span>
           {renderDate(cell, "--")} - {renderDate(row.end_date, "--")}
         </span>
         {/* <span>{row?.total_days} Days</span> */}
       </div>
     ),
+    minWidth: "120px",
   },
   {
     dataField: "total_days",
@@ -83,7 +98,7 @@ export const LeaveAplicationColumns = (
   {
     dataField: "status",
     text: "Status",
-    formatter: (cell,row) => {
+    formatter: (cell, row) => {
       const status = row.is_cancelled ? "Cancelled" : cell;
       return <StatusLabel status={status}>{status}</StatusLabel>;
     },
@@ -104,7 +119,7 @@ export const LeaveAplicationColumns = (
 
 export const MyLeaveAplicationColumns = (realoadData = () => {}) => [
   {
-    dataField: "leave_type_names",
+    dataField: "leave_type_name",
     text: "Leave Type",
   },
   {
@@ -130,7 +145,7 @@ export const MyLeaveAplicationColumns = (realoadData = () => {}) => [
   {
     dataField: "status",
     text: "Status",
-    formatter: (cell,row) => {
+    formatter: (cell, row) => {
       const status = row.is_cancelled ? "Cancelled" : cell;
       return <StatusLabel status={status}>{status}</StatusLabel>;
     },

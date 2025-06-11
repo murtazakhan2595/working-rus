@@ -4,6 +4,7 @@ import {
   CardContent,
   CardDescription,
   CardTitle,
+  CardHeader,
 } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { Header, PageLoader, TableCustom } from "components";
@@ -12,12 +13,15 @@ import { LeaveAplicationColumns } from "app/modules/LeaveTracker/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { HasAccess } from "utils/PermissionUtils";
 import { GetDispatchStateList } from "utils/Lists";
-import { getDropdownList } from "utils/Lists";
+import { exportRecordToExcel } from "utils/downloadUtils";
 import { GlobalStatusOptions } from "data/Data";
 import { getLeaveTypeListData } from "app/hooks/leaveTracker";
+import { Button } from "components/ui/button";
+import { getLabelByValue } from "utils/getValuesFromTables";
 
 const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
   const Departments = GetDispatchStateList("departments", "common") || [];
+  const Employees = GetDispatchStateList("employees", "emp") || [];
   const Branches = GetDispatchStateList("branches", "common") || [];
   const { id: user_id } = GetDispatchStateList("user_details", "emp") || {};
   const isViewLTPermitted = HasAccess("VIEW_ATT_UPDATE_LOGS");
@@ -111,9 +115,17 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
       const updatedFilters = { ...prevFilters };
       // Handle other filters normally
       if (filterValue === "" || filterValue === null) {
-        delete updatedFilters[filterName];
+        if (filterName === "status") {
+          if (activeTab === "Requests") {
+            updatedFilters[filterName] = "pending";
+          } else if (activeTab === "Records") {
+            updatedFilters[filterName] = "approved,rejected";
+          }
+        } else delete updatedFilters[filterName];
       } else {
-        updatedFilters[filterName] = filterValue;
+        if (filterName === "status")
+          updatedFilters[filterName] = filterValue.toLowerCase();
+        else updatedFilters[filterName] = filterValue;
       }
 
       return updatedFilters;
@@ -129,9 +141,36 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
     } else if (tab === "Records") {
       setFilterData((prev) => ({
         ...prev,
-        status: "approved,rejected",
+        status: "approved",
       }));
     }
+  };
+  const exportAttendanceToExcel = async (event) => {
+    event.preventDefault();
+    const data = Leaves.results || [];
+    if (!data || !Array.isArray(data)) return null;
+    const dataToExport = await Promise.all(
+      data?.map(async (row) => ({
+        "Employee Id": row.employee_serial_number,
+        "Employee Name": row.employee_name,
+        "Employee Department": row["employee_department_name"],
+        "Employee Designation": row["employee_designation"],
+        "Employee Branch": row["employee_branch_name"],
+        "Leave Type": row.leave_type_names,
+        "Leave Duration": row.leave_duration_name,
+        "Start Date": row.start_date,
+        "End Date": row.end_date,
+        "Total Days": row.total_days,
+        "Full Paid Days": row.full_paid_days,
+        "Half Paid Days": row.half_paid_days,
+        Reason: row.reason,
+      }))
+    );
+    exportRecordToExcel(
+      dataToExport,
+      "Leave",
+      `Employee-Leaves-Record${filterData.date_range || ""}`
+    );
   };
 
   return (
@@ -144,7 +183,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
         className="w-full"
         onValueChange={(tab) => {
           setActiveTab(tab);
-          handleTabChange(tab)
+          handleTabChange(tab);
         }}
         value={activeTab}
       >
@@ -162,21 +201,34 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
           </TabsList>
         </div>
         <Card>
-          <div className="flex flex-col gap-4 px-6">
-            <CardTitle className="text-primary pt-6">
-              Leave {activeTab}
-            </CardTitle>
-            <CardDescription className="text-neutral-1100">
-              {`Here you can ${
-                activeTab === "Requests" ? "manage and" : ""
-              } view leave ${activeTab.toLowerCase()}.`}
-            </CardDescription>
+          <CardHeader className="flex flex-row justify-between items-center gap-4">
+            <div>
+              <CardTitle className="text-primary">Leave {activeTab}</CardTitle>
+              <CardDescription className="text-neutral-1100">
+                {`Here you can ${
+                  activeTab === "Requests" ? "manage and" : ""
+                } view leave ${activeTab.toLowerCase()}.`}
+              </CardDescription>
+            </div>
+            {activeTab === "Records" && (
+              <Button onClick={exportAttendanceToExcel} variant="continue">
+                Export
+              </Button>
+            )}
+          </CardHeader>
+          <CardContent>
             <FilterInput
               filters={[
                 {
                   type: "select",
+                  options: Employees,
+                  name: "employee",
+                  placeholder: "Employee",
+                },
+                {
+                  type: "select",
                   options: Departments,
-                  name: "leave_department",
+                  name: "department",
                   placeholder: "Department",
                 },
                 {
@@ -185,43 +237,46 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
                   name: "branch",
                   placeholder: "Branch",
                 },
+                {
+                  type: "select",
+                  options: leaveTypesData || [],
+                  name: "leave_type",
+                  placeholder: "Leave Type",
+                },
+                {
+                  type: "date-range",
+                  name: "date_range",
+                  placeholder: "Leave Period",
+                },
                 ...(activeTab === "Records"
                   ? [
                       {
                         type: "select",
-                        options: GlobalStatusOptions(false),
+                        options: GlobalStatusOptions(false) || [],
                         name: "status",
                         placeholder: "Status",
                       },
                     ]
                   : []),
-                {
-                  type: "select",
-                  options: leaveTypesData || [],
-                  name: "leave_component_id",
-                  placeholder: "Leave Type",
-                },
               ]}
               onChange={handleFilterChange}
-              className="justify-end"
+              className="justify-end mb-4"
             />
-            <CardContent className="px-0">
-              {isLoading ? (
-                <PageLoader />
-              ) : (
-                <TableCustom
-                  data={Leaves?.results || []}
-                  columns={LeaveAplicationColumns(
-                    activeTab === "Requests",
-                    fetchData
-                  )}
-                  pagination={true}
-                  dataTotalSize={Leaves?.count || 0}
-                  tableOptions={tableOptions}
-                />
-              )}
-            </CardContent>
-          </div>
+            {isLoading ? (
+              <PageLoader />
+            ) : (
+              <TableCustom
+                data={Leaves?.results || []}
+                columns={LeaveAplicationColumns(
+                  activeTab === "Requests",
+                  fetchData
+                )}
+                pagination={true}
+                dataTotalSize={Leaves?.count || 0}
+                tableOptions={tableOptions}
+              />
+            )}
+          </CardContent>
         </Card>
       </Tabs>
     </div>
