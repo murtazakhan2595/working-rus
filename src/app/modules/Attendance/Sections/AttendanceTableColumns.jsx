@@ -163,6 +163,18 @@ export const MyAttendanceColumn = (reload) => [
     dataField: "payable_hours",
     formatter: (cell, row) => <>{row.checkout ? formatDuration(cell) : "--"}</>,
   },
+  {
+    text: "Remaining Hours",
+    dataField: "total_hours",
+    formatter: (cell, row) => {
+      if (!row.checkout) return "--";
+      const remaining_hours = Math.max(
+        0,
+        (cell ?? 0) - (row.payable_hours ?? 0)
+      );
+      return formatDuration(remaining_hours);
+    },
+  },
 
   {
     dataField: "status",

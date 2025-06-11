@@ -4,6 +4,7 @@ import {
   LeaveType,
   PublicHoliday,
   Leave,
+  LeaveOffsetSetting,
 } from "app/utils/Types/LeaveManagment";
 import moment from "moment";
 
@@ -35,7 +36,28 @@ async function getLavefromEmployeeInfo(data) {
 export function mapLeaveTypeData(data) {
   const responseDataData = Object.keys(LeaveType).reduce((acc, key) => {
     if (data.hasOwnProperty(key)) {
-      acc[key] = data[key];
+      if (key === "branches") {
+        const branches = data[key] || [];
+        acc["branch_names"] = branches.map(({ branch_name }) => {
+          return branch_name;
+        });
+        acc["branches"] = branches.map(({ id }) => {
+          return id;
+        });
+      } else if (key === "departments") {
+        const departments = data[key] || [];
+        acc["department_names"] = departments.map(({ name }) => {
+          return name;
+        });
+        acc["departments"] = departments.map(({ id }) => {
+          return id;
+        });
+      } else if (key === "grades") {
+        const grades = data[key] || [];
+        acc["grades"] = grades.map((grade) => {
+          return parseInt(grade);
+        });
+      } else acc[key] = data[key];
     } else {
       // Use default values from LeaveType type
       acc[key] = LeaveType[key];
@@ -173,4 +195,48 @@ export async function mapLeaveListData(data) {
   });
   return ResponseList;
 }
+
+export function mapLeavePayloadData(data) {
+  // Initialize an empty payload object
+  const formData = new FormData();
+  // Iterate over the keys in the Task object
+  for (const key in Leave) {
+    // Check if the key exists in the data object
+    if (data.hasOwnProperty(key) && data[key]) {
+      // Add the key and its value to the payload
+      if (key === "attachment") {
+        if (data[key] instanceof File) formData.append(key, data[key]);
+      } else formData.append(key, data[key]);
+    }
+  }
+
+  // Return the constructed payload
+  return formData;
+}
+
+export function mapLeaveOffsetSettingPayloadeData(data) {
+  const payload = {
+    nationalities: [],
+    branches: [],
+    grades: [],
+    departments: [],
+  };
+  // Iterate over the keys in the PublicHoliday object
+  for (const key in LeaveOffsetSetting) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== undefined &&
+      data[key] !== null
+    ) {
+      // Add the key and its value to the payload
+      // if (key === "name") payload[key] = data[key]?.trim();
+      payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}
+
 export { getLavefromEmployeeInfo };

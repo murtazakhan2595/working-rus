@@ -1,15 +1,10 @@
 import React, { useState } from "react";
-import { ViewLeaveDetails } from "app/modules/LeaveTracker";
+import { ViewEmployeeLeaveCount } from "app/modules/LeaveTracker";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { useNavigate } from "react-router-dom";
 import { HasAccess } from "utils/PermissionUtils";
 
-const LeaveTrackerActions = ({
-  data,
-  isHistoryView = false,
-  reloadData = () => {},
-  DataList = [],
-}) => {
+const LeaveCountAction = ({ data, DataList = [] }) => {
   const [view, setView] = useState(null);
   const handleView = () => {
     setView(true);
@@ -19,18 +14,16 @@ const LeaveTrackerActions = ({
     <>
       <DropdownActionMenu
         onView={handleView}
-        viewText={`View Leave`}
-        menuTooltip={`Leave Actions`}
+        viewText={`View Leave Count`}
+        menuTooltip={`Leave Count Actions`}
       />
 
       {view && (
-        <ViewLeaveDetails
+        <ViewEmployeeLeaveCount
           isOpen={view}
           setIsOpen={() => {
             setView(false);
-            reloadData(true);
           }}
-          reloadData={reloadData}
           DataList={DataList}
           currentId={data?.id}
         />
@@ -39,4 +32,4 @@ const LeaveTrackerActions = ({
   );
 };
 
-export default LeaveTrackerActions;
+export default LeaveCountAction;

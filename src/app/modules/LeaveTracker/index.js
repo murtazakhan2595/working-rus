@@ -13,7 +13,11 @@ import {
   MyLeavesAction,
   CancelLeaveRequest,
 } from "./MyLeaveTracker";
-import { EmployeeLeaveCount } from "./EmployeeLeaveCount";
+import {
+  EmployeeLeaveCount,
+  LeaveCountAction,
+  ViewEmployeeLeaveCount,
+} from "./EmployeeLeaveCount";
 import {
   LeaveManagement,
   AddUpdateLeaveDuration,
@@ -60,5 +64,7 @@ export {
   OffsetLeaves,
   AddUpdateOffsetLeave,
   ImportHolidays,
-  CancelLeaveRequest
+  CancelLeaveRequest,
+  LeaveCountAction,
+  ViewEmployeeLeaveCount,
 };

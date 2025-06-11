@@ -15,7 +15,7 @@ const MyLeavesAction = ({ data, reloadData = () => {}, DataList = [] }) => {
     setOpenCancelLeave(true);
   };
   const AllowCancelLeave = Boolean(
-    moment().startOf("day").isBefore(moment(data.start_date).startOf("day"))
+    moment().startOf("day").isBefore(moment(data.start_date).startOf("day")) || !data.is_cancelled
   );
 
   return (

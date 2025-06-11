@@ -102,45 +102,41 @@ const AttendanceAdjustmentHistory = ({
       <FilterInput
         filters={[
           {
-            type: "select-one",
+            type: "select",
             placeholder: "Employee",
             name: "employee",
-            option: Employees,
-            values: selectedEmployee,
+            options: Employees,
           },
           ...(adminView || isBranchView
             ? [
                 {
-                  type: "select-two",
+                  type: "select",
                   placeholder: "Department",
                   name: "department_name",
-                  option: Department,
-                  values: selectedDepartment,
+                  options: Department,
                 },
               ]
             : []),
           ...(adminView || isDepartmentView
             ? [
                 {
-                  type: "select-three",
+                  type: "select",
                   placeholder: "Branch",
                   name: "branch_id",
-                  option: Branches,
-                  values: selectedBranch,
+                  options: Branches,
                 },
               ]
             : []),
           {
             type: "date-range",
             placeholder: "Status",
-            name: "statuses",
-            values: selectedStatus,
+            name: "date_range",
           },
           {
-            type: "select-four",
+            type: "select",
             placeholder: "Status",
             name: "statuses",
-            option: GlobalStatusOptions(false),
+            options: GlobalStatusOptions(false),
             values: selectedStatus,
           },
         ]}

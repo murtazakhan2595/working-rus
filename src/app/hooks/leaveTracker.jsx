@@ -9,7 +9,9 @@ import {
   mapPublicHolidayListData,
   mapPublicHolidayData,
   mapLeaveListData,
+  mapLeaveOffsetSettingPayloadeData,
   mapLeaveData,
+  mapLeavePayloadData,
 } from "app/utils/MappingObjects/mapLeaveData";
 import { renderErrorMessages } from "utils/renderErrors";
 
@@ -668,7 +670,6 @@ export const getLeaveTypeData = async (id) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      debugger;
       const ResponseData = await mapLeaveTypeData(response.data.data);
       return ResponseData;
     }
@@ -786,7 +787,7 @@ export const getHolidaysListData = async (payload) => {
 export const saveUpdateLeave = async (payload, id) => {
   const ID = id || payload?.id;
   try {
-    const finalPayload = payload;
+    const finalPayload = mapLeavePayloadData(payload);
 
     const url = ID
       ? `${baseUrl}/employee-leaves/${ID}/` // Use id if updating
@@ -798,7 +799,7 @@ export const saveUpdateLeave = async (payload, id) => {
       method,
       url,
       data: finalPayload,
-      headers: headers(),
+      headers: formDataHeader(),
     });
     if (response.status === 200 || response.status === 201) {
       return response.data;
@@ -978,6 +979,37 @@ export const uploadHolidaysData = async (formData) => {
     }
     console.error("Error uploading employees data:", error);
     return error?.response?.data;
+  }
+};
+
+
+export const saveUpdateOffsetSettings = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+    const finalPayload = mapLeaveOffsetSettingPayloadeData(payload);
+
+    const url = ID
+      ? `${baseUrl}/leave-offset-settings/${ID}/` // Use id if updating
+      : `${baseUrl}/leave-offset-settings/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
   }
 };
 
