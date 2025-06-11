@@ -9,6 +9,9 @@ import { FilterInput } from "components/FormControl";
 import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
+import { OfficeSettingPermissionWrapper } from "../../components/PermissionWrapper";
+import { OFFICE_SETTING_PERMISSIONS } from "../../permissions/constants";
 
 const Branches = ({
   loading,
@@ -22,6 +25,7 @@ const Branches = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const permissions = useOfficeSettingPermissions();
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -73,60 +77,65 @@ const Branches = ({
   };
 
   return (
-    <div className="flex flex-col justify-end gap-4">
-     
-      {loading ? (
-        <PageLoader />
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-primary">Branch List</CardTitle>
-            <CardDescription className="text-neutral-1100">
-              Here you can manage your branches. Add, edit, or delete branches as needed.
-            </CardDescription>
-            <div className="flex justify-end">
-            <FilterInput
-        filters={[
-          {
-            type: "search",
-            placeholder: "Search Branch Name",
-            name: "branch_name",
-          },
-          {
-            type: "search",
-            placeholder: "Search Branch Number",
-            name: "branch_number",
-          },
-         
-          {
-            type: "select-one",
-            placeholder: "Status",
-            name: "branch_status",
-            values: selectedStatus,
-            option: [
-              { value: "Active", label: "Active" },
-              { value: "Inactive", label: "Inactive" }
-            ]
-          }
-        ]}
-        className='justify-end'
-        onChange={handleFilterChange}
-      />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <TableCustom
-              columns={BranchColumn(fetchData, Branches?.results || [])}
-              data={filteredData}
-              tableOptions={tableOptions}
-              dataTotalSize={Branches?.count || 0}
-              pagination={true}
-              className="organization-table"
-            />
-          </CardContent>
-        </Card>
-      )}
-    </div>
+    <OfficeSettingPermissionWrapper 
+      permissions={OFFICE_SETTING_PERMISSIONS.BRANCHES.VIEW}
+      showError={true}
+    >
+      <div className="flex flex-col justify-end gap-4">
+       
+        {loading ? (
+          <PageLoader />
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-primary">Branch List</CardTitle>
+              <CardDescription className="text-neutral-1100">
+                Here you can manage your branches. Add, edit, or delete branches as needed.
+              </CardDescription>
+              <div className="flex justify-end">
+              <FilterInput
+          filters={[
+            {
+              type: "search",
+              placeholder: "Search Branch Name",
+              name: "branch_name",
+            },
+            {
+              type: "search",
+              placeholder: "Search Branch Number",
+              name: "branch_number",
+            },
+           
+            {
+              type: "select-one",
+              placeholder: "Status",
+              name: "branch_status",
+              values: selectedStatus,
+              option: [
+                { value: "Active", label: "Active" },
+                { value: "Inactive", label: "Inactive" }
+              ]
+            }
+          ]}
+          className='justify-end'
+          onChange={handleFilterChange}
+        />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <TableCustom
+                columns={BranchColumn(fetchData, Branches?.results || [])}
+                data={filteredData}
+                tableOptions={tableOptions}
+                dataTotalSize={Branches?.count || 0}
+                pagination={true}
+                className="organization-table"
+              />
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </OfficeSettingPermissionWrapper>
   );
 };
 

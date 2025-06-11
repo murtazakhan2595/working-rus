@@ -6,11 +6,13 @@ import AddDesignationForm from "./AddDesignationForm";
 import ViewDesignation from "./ViewDesignation";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { ViewDetailSheetCardExtension } from "components";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
 const DesignationAction = ({ data, reload, DesignationList = [] }) => {
   const [view, setView] = useState(null);
   const [edit, setEdit] = useState(null);
   const [deleteDesignation, setDeleteDesignation] = useState(null);
+  const permissions = useOfficeSettingPermissions();
 
   const formSheetData = {
     triggerText: null,
@@ -74,9 +76,9 @@ const DesignationAction = ({ data, reload, DesignationList = [] }) => {
   return (
     <>
       <DropdownActionMenu 
-        onView={() => handleView(data)}
-        onEdit={() => handleEdit(data)}
-        onDelete={() => handleDelete(data)}
+        onView={permissions.designations.canView ? () => handleView(data) : null}
+        onEdit={permissions.designations.canUpdate ? () => handleEdit(data) : null}
+        onDelete={permissions.designations.canDelete ? () => handleDelete(data) : null}
         viewText="View Designation"
         editText="Edit Designation"
         deleteText="Delete Designation"

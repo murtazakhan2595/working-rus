@@ -4,6 +4,9 @@ import { WorkingHoursColumn } from '../sections/OfficeSettingTableColumns';
 import { CardDescription } from 'components/ui/card';
 import { FilterInput } from 'components/FormControl';
 import { useState, useEffect, useMemo } from 'react';
+import { useOfficeSettingPermissions } from "../hooks/useOfficeSettingPermissions";
+import { OfficeSettingPermissionWrapper } from "../components/PermissionWrapper";
+import { OFFICE_SETTING_PERMISSIONS } from "../permissions/constants";
 
 const WorkingHours = ({ data, reload }) => {
   const [filteredData, setFilteredData] = useState(data || []);
@@ -63,48 +66,53 @@ const WorkingHours = ({ data, reload }) => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-primary">Working Hours</CardTitle>
-        <CardDescription className="text-neutral-1100">
-          Here you can manage your working hours. Add, edit, or delete working hours as needed.
-        </CardDescription>
-        <div className="flex justify-end">
-          <FilterInput 
-            filters={[
-              {
-                type: "search",
-                placeholder: "Search Shift Name",
-                name: "shift_name",
-                values: searchTerm
-              },
-              {
-                type: "select-one",
-                placeholder: "Shift Type",
-                name: "type",
-                values: selectedType,
-                option: [
-                  { value: "Weekday", label: "Weekday" },
-                  { value: "Weekend", label: "Weekend" }
-                ]
-              }
-            ]} 
-            onChange={handleFilterChange} 
-            className="justify-end"
+    <OfficeSettingPermissionWrapper 
+      permissions={OFFICE_SETTING_PERMISSIONS.WORKING_HOURS.VIEW}
+      showError={true}
+    >
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-primary">Working Hours</CardTitle>
+          <CardDescription className="text-neutral-1100">
+            Here you can manage your working hours. Add, edit, or delete working hours as needed.
+          </CardDescription>
+          <div className="flex justify-end">
+            <FilterInput 
+              filters={[
+                {
+                  type: "search",
+                  placeholder: "Search Shift Name",
+                  name: "shift_name",
+                  values: searchTerm
+                },
+                {
+                  type: "select-one",
+                  placeholder: "Shift Type",
+                  name: "type",
+                  values: selectedType,
+                  option: [
+                    { value: "Weekday", label: "Weekday" },
+                    { value: "Weekend", label: "Weekend" }
+                  ]
+                }
+              ]} 
+              onChange={handleFilterChange} 
+              className="justify-end"
+            />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <TableCustom
+            columns={WorkingHoursColumn(reload, data || [])}
+            data={paginatedData}
+            tableOptions={tableOptions}
+            dataTotalSize={filteredData?.length || 0}
+            pagination={true}
+            className="organization-table"
           />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <TableCustom
-          columns={WorkingHoursColumn(reload, data || [])}
-          data={paginatedData}
-          tableOptions={tableOptions}
-          dataTotalSize={filteredData?.length || 0}
-          pagination={true}
-          className="organization-table"
-        />
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </OfficeSettingPermissionWrapper>
   );
 };
 

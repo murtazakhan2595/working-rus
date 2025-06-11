@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { SELF_SERVICE_PERMISSIONS } from '../permissions/constants';
 
 export const useSelfServicePermissions = () => {
-  const permissions = useSelector(state => state.auth.permissions);
+  const permissions = useSelector(state => state.roles_permissions?.my_permissions || []);
 
   return {
     // Profile Permissions

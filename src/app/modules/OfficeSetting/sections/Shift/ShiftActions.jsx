@@ -5,11 +5,13 @@ import ViewShift from "./ViewShift";
 import AddShiftForm from "./AddShiftForm";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { ViewDetailSheetCardExtension } from "components";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
 const ShiftActions = ({ data, reload, ShiftList = [] }) => {
   const [view, setView] = useState(null);
   const [deleteShift, setDeleteShift] = useState(null);
   const [edit, setEdit] = useState(null);
+  const permissions = useOfficeSettingPermissions();
 
   const formSheetData = {
     triggerText: null,
@@ -62,11 +64,11 @@ const ShiftActions = ({ data, reload, ShiftList = [] }) => {
   };
 
   return (
-    <>
-      <DropdownActionMenu 
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        <>
+      <DropdownActionMenu
+        onView={permissions.shift.canView ? handleView : null}
+        onEdit={permissions.shift.canUpdate ? handleEdit : null}
+        onDelete={permissions.shift.canDelete ? handleDelete : null}
         viewText="View Shift"
         editText="Edit Shift"
         deleteText="Delete Shift"
