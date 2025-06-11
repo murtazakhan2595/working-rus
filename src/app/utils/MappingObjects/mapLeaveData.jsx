@@ -116,11 +116,6 @@ export function mapPublicHolidayData(data) {
         acc["branches"] = branches.map(({ id }) => {
           return id;
         });
-      } else if (key === "country") {
-        const country = data[key] || [];
-        acc["country"] = country.map(({ name }) => {
-          return name;
-        });
       } else acc[key] = data[key];
     } else {
       acc[key] = PublicHoliday[key];

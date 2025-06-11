@@ -872,6 +872,7 @@ export const cancelEmployeeLeave = async (id) => {
       method,
       url,
       headers: headers(),
+      data: { is_cancelled: true },
     });
     if (response.status === 200 || response.status === 201) {
       return response.data;
@@ -981,7 +982,6 @@ export const uploadHolidaysData = async (formData) => {
     return error?.response?.data;
   }
 };
-
 
 export const saveUpdateOffsetSettings = async (payload, id) => {
   const ID = id || payload?.id;
