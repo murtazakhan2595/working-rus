@@ -11,7 +11,6 @@ import {
   AppliedLeaves,
   AllocatedLeavesInfo,
 } from "./MyLeaveTracker";
-import LeaveSetup from "./Screens/LeaveSetup";
 
 import {
   LeaveManagement,
@@ -32,7 +31,6 @@ export {
   LeaveRequests,
   LeaveTracker,
   LeaveTrackerActions,
-  LeaveSetup,
   ViewLeaveDetails,
   LeaveRequest,
   AppliedLeaves,
