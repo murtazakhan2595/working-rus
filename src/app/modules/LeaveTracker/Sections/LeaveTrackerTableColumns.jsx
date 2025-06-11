@@ -359,6 +359,98 @@ export const LeaveTypesColumns = (reload, data) => [
     dataSort: true,
   },
   {
+    dataField: "is_encashable",
+    text: "Encash",
+    formatter: (cell) => (
+      <span
+        className={`inline-block px-2 py-1 text-xs rounded-full ${
+          cell ? "bg-green-100 text-green-800" : "bg-[#fee2e2] text-red-800"
+        }`}
+      >
+        {cell ? "Yes" : "No"}
+      </span>
+    ),
+    dataSort: true,
+  },
+  {
+    dataField: "Applicable For",
+    text: "Applicable For",
+    formatter: (cell, row) => {
+      const {
+        nationalities = [],
+        branches = [],
+        departments = [],
+        genders = [],
+        marital_statuses = [],
+      } = row;
+
+      const applicableItems = [];
+
+      // Nationalities
+      applicableItems.push({
+        label: "Nationalities",
+        values:
+          nationalities.length === 0 ? ["All Nationalities"] : nationalities,
+        isAll: nationalities.length === 0,
+      });
+
+      // Branches
+      applicableItems.push({
+        label: "Branches",
+        values:
+          branches.length === 0
+            ? ["All Branches"]
+            : branches.map((branch) => branch.branch_name),
+        isAll: branches.length === 0,
+      });
+
+      // Departments
+      applicableItems.push({
+        label: "Departments",
+        values:
+          departments.length === 0
+            ? ["All Departments"]
+            : departments.map((dept) => dept.name),
+        isAll: departments.length === 0,
+      });
+
+      // Genders
+      applicableItems.push({
+        label: "Genders",
+        values: genders.length === 0 ? ["All Genders"] : genders,
+        isAll: genders.length === 0,
+      });
+
+      // Marital Status
+      applicableItems.push({
+        label: "Marital Status",
+        values:
+          marital_statuses.length === 0
+            ? ["All Marital Status"]
+            : marital_statuses,
+        isAll: marital_statuses.length === 0,
+      });
+
+      return (
+        <div className="flex flex-col gap-1">
+          {applicableItems.map((item, index) => (
+            <div key={index} className="flex flex-wrap gap-1">
+              <span className="text-xs font-medium mr-1">{item.label}:</span>
+              {item.values.map((value, valueIndex) => (
+                <span
+                  key={valueIndex}
+                  className={`inline-block px-2 py-1 text-xs rounded-full bg-[#f0f9ff] text-[#0369a1]`}
+                >
+                  {value}
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      );
+    },
+  },
+  {
     dataField: "status",
     text: "Status",
     formatter: (cell) => (
