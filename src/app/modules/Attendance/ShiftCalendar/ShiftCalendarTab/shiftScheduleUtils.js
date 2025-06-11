@@ -2,6 +2,7 @@
 import moment from "moment";
 import { getShiftSchedule } from "app/hooks/shiftManagement";
 import { getShiftById, employeeData } from "app/hooks/attendance";
+import { parseShiftTime } from "../Section/getEmployeeActiveShift";
 
 export const filterOverlappingSchedules = (schedules) => {
   if (!schedules || schedules.length === 0) return [];
@@ -38,7 +39,8 @@ export const getChangeRequestComparison = async (
   shift_requested = "Manager"
 ) => {
   // Find all approved schedules that overlap with this date range
-  const overlappingSchedules = await getShiftSchedule({
+  // EXCLUDE the current request to avoid comparing against itself
+  const overlappingSchedulesResponse = await getShiftSchedule({
     filterData: {
       employee: changeRequest.employee,
       end_date_gte: changeRequest.start_date,
@@ -47,6 +49,15 @@ export const getChangeRequestComparison = async (
       is_change_request: "true,false",
     },
   });
+
+  // Manually filter out the current request to avoid self-comparison
+  const overlappingSchedules = {
+    ...overlappingSchedulesResponse,
+    results: (overlappingSchedulesResponse.results || []).filter(
+      schedule => schedule.id !== changeRequest.id
+    )
+  };
+
 
   // Get employee's direct shift assignment as fallback
   let directShift = null;
@@ -87,14 +98,13 @@ export const getChangeRequestComparison = async (
           )
         ) {
           if (schedule.is_org_based && schedule.shift_details) {
-            const startTime = moment(
-              schedule.shift_details.starttime.replace("Z", "")
-            ).format("HH:mm");
-            const endTime = moment(
-              schedule.shift_details.endtime.replace("Z", "")
-            ).format("HH:mm");
-            originalShift = `${startTime}-${endTime}`;
-            originalShiftSource = "org_schedule";
+            // Use the parseShiftTime function for better time parsing
+            const startTime = parseShiftTime(schedule.shift_details.starttime);
+            const endTime = parseShiftTime(schedule.shift_details.endtime);
+            if (startTime && endTime) {
+              originalShift = `${startTime}-${endTime}`;
+              originalShiftSource = "org_schedule";
+            }
           } else if (
             schedule.custom_schedule &&
             schedule.custom_schedule[dateStr]
@@ -119,14 +129,12 @@ export const getChangeRequestComparison = async (
         const dayOfWeek = current.day();
         // Assuming direct shifts apply Mon-Fri (you can adjust this logic)
         if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-          const startTime = moment(
-            directShift.starttime.replace("Z", "")
-          ).format("HH:mm");
-          const endTime = moment(directShift.endtime.replace("Z", "")).format(
-            "HH:mm"
-          );
-          originalShift = `${startTime}-${endTime}`;
-          originalShiftSource = "direct_assignment";
+          const startTime = parseShiftTime(directShift.starttime);
+          const endTime = parseShiftTime(directShift.endtime);
+          if (startTime && endTime) {
+            originalShift = `${startTime}-${endTime}`;
+            originalShiftSource = "direct_assignment";
+          }
         }
       }
 
@@ -144,20 +152,37 @@ export const getChangeRequestComparison = async (
       // Check if there's actually a change
       const hasChange = originalShift !== requestedShift;
 
-      // ONLY include days with changes or new shifts
-      if (hasChange || originalShift === "No Shift") {
-        comparisonData.push({
-          date: dateStr,
-          day: current.format("ddd"),
-          current_shift: originalShift,
-          current_shift_source: originalShiftSource,
-          requested_shift: requestedShift,
-          has_change: true,
-          is_new_shift: originalShift === "No Shift",
-          // Check if this day was explicitly marked as changed
-          is_changed_day: changeRequest.changed_days
-            ? changeRequest.changed_days.includes(dateStr)
-            : true,
+      // Add to comparison data - either if there's a change OR if this is a new shift request
+      // For debugging purposes, we'll include all days for now
+      comparisonData.push({
+        date: dateStr,
+        day: current.format("ddd"),
+        current_shift: originalShift,
+        current_shift_source: originalShiftSource,
+        requested_shift: requestedShift,
+        has_change: hasChange,
+        is_new_shift: originalShift === "No Shift",
+        // Check if this day was explicitly marked as changed
+        is_changed_day: changeRequest.changed_days
+          ? changeRequest.changed_days.includes(dateStr)
+          : true,
+      });
+      
+      // Debug logging for problematic entries
+      if ([185, 186].includes(changeRequest.id)) {
+        console.log(`DEBUG - Entry ${changeRequest.id} Day ${dateStr}:`, {
+          originalShift,
+          requestedShift,
+          hasChange,
+          originalShiftSource,
+          matched_schedule_ids: overlappingSchedules.results?.filter(schedule => 
+            current.isBetween(
+              moment(schedule.start_date),
+              moment(schedule.end_date),
+              "day",
+              "[]"
+            )
+          ).map(s => s.id) || []
         });
       }
     }

@@ -92,11 +92,6 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
   const prevDataRef = useRef(null);
   const isEditEmployeeShiftPermitted = HasAccess("EDIT_EMPLOYEE_SHIFT");
 
-  const userProfile = useSelector((state) => state.user.userProfile);
-
-  // Check if user is Branch Manager or Cluster Manager
-  const canRequestShiftChange = true;
-
   // Fetch employee data when employeeId changes
   useEffect(() => {
     const fetchEmployee = async () => {
@@ -469,7 +464,7 @@ const Calendar = ({ shift, scheduleShifts, employeeId, reload }) => {
       />
 
       {/* Request Shift Change Button */}
-      {employeeId && canRequestShiftChange && (
+      {employeeId && (
         <div className="mt-4 p-3 bg-white rounded-lg shadow-sm">
           <div className="flex justify-center sm:justify-end">
             <Button

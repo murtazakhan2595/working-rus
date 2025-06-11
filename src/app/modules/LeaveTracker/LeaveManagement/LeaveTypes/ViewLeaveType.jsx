@@ -226,14 +226,12 @@ const ViewLeaveType = ({
             <DetailBox label="Grades" value={renderGrades()} />
           </SheetCardExtension>
 
-          {currentType?.tooltip_info && (
             <SheetCardExtension title={"Additional Information"}>
               <DetailBox
                 label="Tooltip Information"
-                value={currentType?.tooltip_info}
+                value={currentType?.tooltip_info || "Not specified"}
               />
             </SheetCardExtension>
-          )}
         </div>
       </ViewDetailSheetCardExtension>
 

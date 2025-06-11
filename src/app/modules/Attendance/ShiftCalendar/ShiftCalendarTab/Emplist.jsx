@@ -115,7 +115,7 @@ const Emplist = ({ teamMembers }) => {
             const comparisonData = await getChangeRequestComparison(request);
             return {
               ...request,
-              comparison_data: comparisonData,
+              comparison_data: comparisonData, // comparisonData is already the array we need
             };
           })
         );
@@ -133,6 +133,8 @@ const Emplist = ({ teamMembers }) => {
   useEffect(() => {
     fetchShiftChangeRequests();
   }, [ordering, options, filterData]);
+
+  console.log("IIIIINNNNNFFFFFFOOOO", shiftChangeRequests)
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);

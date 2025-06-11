@@ -16,30 +16,10 @@ import { SheetCardExtension } from "components/SheetCardExtension";
 import { EmployeeOverview } from "components";
 import { getShiftSchedule, saveShiftSchedule } from "app/hooks/shiftManagement";
 import { getShiftById, employeeData } from "app/hooks/attendance";
-import { generateShiftScheduleLog } from "../Section/getEmployeeActiveShift";
+import { generateShiftScheduleLog, parseShiftTime } from "../Section/getEmployeeActiveShift";
 import { HasAccess } from "utils/PermissionUtils";
 
-const parseShiftTime = (timeString) => {
-  if (!timeString) return null;
 
-  let parsedTime;
-
-  if (timeString.includes("T")) {
-    // ISO format like "2025-06-09T12:00:00Z"
-    parsedTime = moment(timeString);
-  } else if (timeString.includes("M")) {
-    // 12-hour format like "05:00 PM" or "5:00 AM"
-    parsedTime = moment(timeString, ["hh:mm A", "h:mm A"]);
-  } else if (timeString.includes(":")) {
-    // 24-hour format like "17:00"
-    parsedTime = moment(timeString, "HH:mm");
-  } else {
-    // Fallback - try to parse as-is
-    parsedTime = moment(timeString);
-  }
-
-  return parsedTime.isValid() ? parsedTime.format("HH:mm") : null;
-};
 
 const ShiftChangeRequestModal = ({
   isOpen,
@@ -218,7 +198,6 @@ const ShiftChangeRequestModal = ({
             shiftId: directOrgShift.id,
           };
 
-          // ✅ FIXED: Use parseShiftTime helper instead of hardcoded format
           dayData.assignedStartTime = parseShiftTime(directOrgShift.starttime);
           dayData.assignedEndTime = parseShiftTime(directOrgShift.endtime);
         }

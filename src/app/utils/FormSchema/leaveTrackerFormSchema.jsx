@@ -56,15 +56,6 @@ const validateLeaveDurationFormSchema = (values) => {
   } else if (isNaN(values.duration_hours)) {
     errors.duration_hours = "Duration hours must be a number";
   }
-  if (!values.nationalities) {
-    errors.nationalities = "Nationalities are required";
-  }
-  if (!values.branches_ids) {
-    errors.branches_ids = "Branches are required";
-  }
-  if (!values.departments_ids) {
-    errors.departments_ids = "Departments are required";
-  }
   return errors;
 };
 
