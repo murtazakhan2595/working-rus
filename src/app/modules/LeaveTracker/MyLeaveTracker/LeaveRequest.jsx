@@ -19,7 +19,7 @@ import { NumberInput } from "components/FormControl";
 import { getWorkingDays } from "utils/renderValues";
 import { TextAreaInput } from "components/FormControl";
 
-const LeaveRequest = ({ id }) => {
+const LeaveRequest = ({ id , reloadData=()=>{}}) => {
   const { id: user_id, branch_id: user_branch } = useSelector(
     (state) => state.emp.user_details
   );
@@ -198,7 +198,10 @@ const LeaveRequest = ({ id }) => {
       {isOpen && (
         <SheetUI
           isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          setIsOpen={()=>{
+            setIsOpen(false);
+            reloadData(true)
+          }}
           variant="sheet"
           sheetConfig={FormSheetData}
           formConfig={{

@@ -45,7 +45,7 @@ export const LeaveAplicationColumns = (
   realoadData = () => {}
 ) => [
   {
-    dataField: "employee_id",
+    dataField: "employee",
     text: "Employee",
     formatter: (cell) => (
       <EmployeeOverview
@@ -56,8 +56,8 @@ export const LeaveAplicationColumns = (
       />
     ),
   },
-   {
-    dataField: "leave_type_name",
+  {
+    dataField: "leave_type_names",
     text: "Leave Type",
   },
   {
@@ -83,13 +83,10 @@ export const LeaveAplicationColumns = (
   {
     dataField: "status",
     text: "Status",
-    formatter: (cell) => <StatusLabel status={cell}>{cell}</StatusLabel>,
-  },
-  {
-    dataField: "is_cancelled",
-    text: "",
-    formatter: (cell) =>
-      cell ? <StatusLabel status={"no"}>Cancelled</StatusLabel> : null,
+    formatter: (cell,row) => {
+      const status = row.is_cancelled ? "Cancelled" : cell;
+      return <StatusLabel status={status}>{status}</StatusLabel>;
+    },
   },
   {
     text: "",
@@ -107,7 +104,7 @@ export const LeaveAplicationColumns = (
 
 export const MyLeaveAplicationColumns = (realoadData = () => {}) => [
   {
-    dataField: "leave_type_name",
+    dataField: "leave_type_names",
     text: "Leave Type",
   },
   {
@@ -133,14 +130,12 @@ export const MyLeaveAplicationColumns = (realoadData = () => {}) => [
   {
     dataField: "status",
     text: "Status",
-    formatter: (cell) => <StatusLabel status={cell}>{cell}</StatusLabel>,
+    formatter: (cell,row) => {
+      const status = row.is_cancelled ? "Cancelled" : cell;
+      return <StatusLabel status={status}>{status}</StatusLabel>;
+    },
   },
-  {
-    dataField: "is_cancelled",
-    text: "",
-    formatter: (cell) =>
-      cell ? <StatusLabel status={"no"}>Cancelled</StatusLabel> : null,
-  },
+
   {
     text: "",
     dataField: "",

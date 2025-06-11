@@ -120,6 +120,20 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
     });
   };
 
+  const handleTabChange = (tab) => {
+    if (tab === "Requests") {
+      setFilterData((prev) => ({
+        ...prev,
+        status: "pending",
+      }));
+    } else if (tab === "Records") {
+      setFilterData((prev) => ({
+        ...prev,
+        status: "approved,rejected",
+      }));
+    }
+  };
+
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -130,6 +144,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
         className="w-full"
         onValueChange={(tab) => {
           setActiveTab(tab);
+          handleTabChange(tab)
         }}
         value={activeTab}
       >
@@ -161,7 +176,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
                 {
                   type: "select",
                   options: Departments,
-                  name: "departmentt",
+                  name: "leave_department",
                   placeholder: "Department",
                 },
                 {

@@ -8,35 +8,22 @@ import {
   CardTitle,
 } from "components/ui/card";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "src/@/components/ui/table";
 import { MyLeaveAplicationColumns } from "app/modules/LeaveTracker/Sections";
-import { getLeaveListData } from "app/hooks/leaveTracker";
-import { connect } from "react-redux";
-import moment from "moment";
-import ViewLeaveSheet from "../LeaveTracker/ViewLeaveDetails";
+import {
+  getLeaveListData,
+  getEligibleLeaveTypeDurations,
+} from "app/hooks/leaveTracker";
 import { FilterInput } from "components/FormControl";
-import { getLeavestats } from "app/hooks/leaveTracker";
-import { getLeaveTransaction } from "app/hooks/leaveTracker";
-import { getLeaveComponentsWithUsed } from "app/hooks/leaveTracker";
 import { PageLoader, TableCustom } from "components";
-import { LeaveTrackerOptions } from "data/Data";
-import { HasAccess } from "utils/PermissionUtils";
+import { GlobalStatusOptions } from "data/Data";
 
-export default function AppliedLeaves({
-  componentsWithUsed,
-}) {
+export default function AppliedLeaves({reload}) {
   const [isLoading, setIsLoading] = useState(false);
-  const [ordering, setOrdering] = useState("id");
+  const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [filterData, setFilterData] = useState({});
   const [Leaves, setLeaves] = useState({});
+  const [LeaveType, setLeaveType] = useState([]);
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
@@ -69,7 +56,36 @@ export default function AppliedLeaves({
     };
   }, [filterData, ordering, options]);
 
-   const handleFilterChange = (filterName, filterValue) => {
+  useEffect(() => {
+    let isMounted = true;
+    onPageChange("page", 1);
+    setOrdering('-id');
+    fetchData(true)
+    return () => {
+      isMounted = false;
+    };
+  }, [reload]);
+
+  const fetchLeaveType = async (isMounted) => {
+    try {
+      const response = await getEligibleLeaveTypeDurations({});
+      if (isMounted && response) {
+        setLeaveType(response || []);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchLeaveType(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -93,19 +109,21 @@ export default function AppliedLeaves({
           <FilterInput
             filters={[
               {
-                type: "select-one",
-                option: LeaveTrackerOptions,
-                name: "status",
-                placeholder: "Status",
+                type: "select",
+                options: LeaveType,
+                name: "leave_type",
+                placeholder: "Leave Type",
               },
               {
-                type: "select-two",
-                option: componentsWithUsed.map((leave) => ({
-                  value: leave.leaveComponentId,
-                  label: leave.name,
-                })),
-                name: "leave_component_id",
-                placeholder: "Leave Type",
+                type: "date-range",
+                name: "date_range",
+                placeholder: "Start Date",
+              },
+              {
+                type: "select",
+                options: GlobalStatusOptions(),
+                name: "status",
+                placeholder: "Status",
               },
             ]}
             onChange={handleFilterChange}

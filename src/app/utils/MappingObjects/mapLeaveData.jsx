@@ -61,7 +61,10 @@ export async function mapLeaveTypeListData(data) {
 }
 
 export function mapPublicHolidayPayloadeData(data) {
-  const payload = {};
+  const payload = {
+    branches: [],
+    country: [],
+  };
   // Iterate over the keys in the PublicHoliday object
   for (const key in PublicHoliday) {
     // Check if the key exists in the data object
@@ -121,17 +124,45 @@ export async function mapPublicHolidayListData(data) {
 }
 
 export function mapLeaveData(data) {
-  const responseDataData = Object.keys(Leave).reduce((acc, key) => {
-    if (data.hasOwnProperty(key)) {
-      acc[key] = data[key];
-    } else {
-      // Use default values from Leave type
-      acc[key] = Leave[key];
-    }
-    return acc;
-  }, {});
+  const LeaveDetails = {};
 
-  return responseDataData;
+  for (const key of Object.keys(Leave)) {
+    if (key === "approval_details") {
+      const approver_logs = data["approval_logs"] || [];
+      const approval_levels = data["approval_levels"] || [];
+      const level_list = approval_levels
+        .map((level) => {
+          const level_number = parseInt(level.level_number);
+          const logs = approver_logs.find(
+            (log) =>
+              parseInt(log.level_number) === level_number &&
+              log.action_type !== "CREATED"
+          );
+          const level_detail = {
+            status: "PENDING",
+            designation: level.designation,
+            level_number: level_number,
+            time: null,
+          };
+          if (level_number === parseInt(data.current_level)) {
+            level_detail.approver = data.current_approver;
+          } else if (logs) {
+            level_detail.status = logs.action_type;
+            level_detail.approver = logs.changed_by;
+            level_detail.time = logs.timestamp;
+          }
+          return level_detail;
+        })
+        .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
+
+      LeaveDetails[key] = level_list;
+    } else {
+      if (Object.prototype.hasOwnProperty.call(data, key))
+        LeaveDetails[key] = data[key];
+    }
+  }
+
+  return LeaveDetails;
 }
 
 export async function mapLeaveListData(data) {
