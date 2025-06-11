@@ -10,6 +10,9 @@ import { CardHeader } from "components/ui/card";
 import { CardTitle } from "components/ui/card";
 import { CardDescription } from "components/ui/card";
 import { useSelector } from "react-redux";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
+import { OfficeSettingPermissionWrapper } from "../../components/PermissionWrapper";
+import { OFFICE_SETTING_PERMISSIONS } from "../../permissions/constants";
 
 const GraceTime = ({ reload }) => {
   const Branches = useSelector((state) => state.common.branches);
@@ -85,51 +88,56 @@ const GraceTime = ({ reload }) => {
   };
 
   return (
-    <div className="flex flex-col justify-end gap-4 w-full">
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="text-primary">Grace Time List</CardTitle>
-          <CardDescription className="text-neutral-1100">
-            Here you can manage your grace time. Add, edit, or delete grace time
-            as needed.
-          </CardDescription>
-          <div className="flex justify-end">
-            <FilterInput
-              filters={[
-                {
-                  type: "search",
-                  placeholder: "Search by name",
-                  name: "name",
-                },
-                {
-                  type: "select-one",
-                  placeholder: "Branch",
-                  name: "branch",
-                  option: Branches,
-                  values: selectedBranch,
-                },
-              ]}
-              className="justify-end"
-              onChange={handleFilterChange}
-            />
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <PageLoader />
-          ) : (
-            <TableCustom
-              columns={GraceTimeColumn(fetchData)}
-              data={filteredData}
-              tableOptions={tableOptions}
-              dataTotalSize={GraceTimeList?.count || 0}
-              pagination={true}
-              className="organization-table"
-            />
-          )}
-        </CardContent>
-      </Card>
-    </div>
+    <OfficeSettingPermissionWrapper 
+      permissions={OFFICE_SETTING_PERMISSIONS.GRACE_TIME.VIEW}
+      showError={true}
+    >
+      <div className="flex flex-col justify-end gap-4 w-full">
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle className="text-primary">Grace Time List</CardTitle>
+            <CardDescription className="text-neutral-1100">
+              Here you can manage your grace time. Add, edit, or delete grace time
+              as needed.
+            </CardDescription>
+            <div className="flex justify-end">
+              <FilterInput
+                filters={[
+                  {
+                    type: "search",
+                    placeholder: "Search by name",
+                    name: "name",
+                  },
+                  {
+                    type: "select-one",
+                    placeholder: "Branch",
+                    name: "branch",
+                    option: Branches,
+                    values: selectedBranch,
+                  },
+                ]}
+                className="justify-end"
+                onChange={handleFilterChange}
+              />
+            </div>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <PageLoader />
+            ) : (
+              <TableCustom
+                columns={GraceTimeColumn(fetchData)}
+                data={filteredData}
+                tableOptions={tableOptions}
+                dataTotalSize={GraceTimeList?.count || 0}
+                pagination={true}
+                className="organization-table"
+              />
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </OfficeSettingPermissionWrapper>
   );
 };
 

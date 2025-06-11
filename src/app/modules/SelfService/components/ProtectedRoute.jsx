@@ -7,7 +7,7 @@ export const ProtectedRoute = ({
   component: Component,
   redirectPath = '/unauthorized'
 }) => {
-  const userPermissions = useSelector(state => state.auth.permissions);
+  const userPermissions = useSelector(state => state.roles_permissions?.my_permissions || []);
   
   const hasPermission = Array.isArray(permissions)
     ? permissions.every(permission => userPermissions.includes(permission))

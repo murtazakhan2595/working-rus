@@ -5,11 +5,13 @@ import AddBranchForm from "./AddBranchForm";
 import ViewBranch from "app/modules/OfficeSetting/Screens/Branches/ViewBranch";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { ViewDetailSheetCardExtension } from "components";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
 const BranchAction = ({ data, reload, BranchList = [] }) => {
   const [view, setView] = useState(null);
   const [edit, setEdit] = useState(null);
   const [deleteBranch, setDeleteBranch] = useState(null);
+  const permissions = useOfficeSettingPermissions();
 
   const formSheetData = {
     triggerText: 'Update Branch',
@@ -58,9 +60,9 @@ const BranchAction = ({ data, reload, BranchList = [] }) => {
   return (
     <>
       <DropdownActionMenu 
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onView={permissions.branches.canView ? handleView : null}
+        onEdit={permissions.branches.canUpdate ? handleEdit : null}
+        onDelete={permissions.branches.canDelete ? handleDelete : null}
         viewText="View Branch"
         editText="Edit Branch"
         deleteText="Delete Branch"

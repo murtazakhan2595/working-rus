@@ -4,11 +4,13 @@ import { deleteRecord } from "app/hooks/general";
 import AddGraceTimeForm from "./AddGraceTimeForm";
 import ViewGraceTime from "app/modules/OfficeSetting/Screens/GraceTime/ViewGraceTime";
 import DropdownActionMenu from "components/DropdownActionMenu";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
 const GraceTimeAction = ({ data, reloadData, DataList = [] }) => {
   const [view, setView] = useState(null);
   const [edit, setEdit] = useState(null);
   const [deleteBranch, setDeleteBranch] = useState(null);
+  const permissions = useOfficeSettingPermissions();
 
   const formSheetData = {
     triggerText: "Update Branch",
@@ -57,9 +59,9 @@ const GraceTimeAction = ({ data, reloadData, DataList = [] }) => {
   return (
     <>
       <DropdownActionMenu
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onView={permissions.graceTime.canView ? handleView : null}
+        onEdit={permissions.graceTime.canUpdate ? handleEdit : null}
+        onDelete={permissions.graceTime.canDelete ? handleDelete : null}
         viewText="View Grace Time"
         editText="Edit Grace Time"
         deleteText="Delete Grace Time"
