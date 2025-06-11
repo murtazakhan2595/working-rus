@@ -35,13 +35,11 @@ const TimeAdjustmentRecords = ({
     count: 0,
   });
   const [isloading, setIsLoading] = useState(false);
-  const [filterData, setFilterData] = useState({ adjustment_status: "PENDING" });
+  const [filterData, setFilterData] = useState({
+    adjustment_status: "PENDING",
+  });
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedBranch, setSelectedBranch] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [selectedEmployee, setSelectedEmployee] = useState("");
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -86,14 +84,16 @@ const TimeAdjustmentRecords = ({
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "time_employee") setSelectedEmployee(filterValue);
-    if (filterName === "adjustment_status") setSelectedStatus(filterValue);
-    if (filterName === "time_branch") setSelectedBranch(filterValue);
-    if (filterName === "time_department") setSelectedDepartment(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
+      if (filterValue === "" || filterValue === null) {
+        if (filterName === "adjustment_status") {
+          if (activeInnerTab === "Requests") {
+            updatedFilters[filterName] = "PENDING";
+          } else if (activeInnerTab === "Records") {
+            updatedFilters[filterName] = "APPROVED,REJECTED";
+          }
+        } else delete updatedFilters[filterName];
       } else {
         updatedFilters[filterName] = filterValue;
       }
@@ -143,42 +143,38 @@ const TimeAdjustmentRecords = ({
           <FilterInput
             filters={[
               {
-                type: "select-one",
+                type: "select",
                 placeholder: "Employee",
                 name: "time_employee",
-                option: Employees,
-                values: selectedEmployee,
+                options: Employees,
               },
               ...(adminView || isBranchView
                 ? [
                     {
-                      type: "select-two",
+                      type: "select",
                       placeholder: "Department",
                       name: "time_department",
-                      option: Department,
-                      values: selectedDepartment,
+                      options: Department,
                     },
                   ]
                 : []),
               ...(adminView || isDepartmentView
                 ? [
                     {
-                      type: "select-three",
+                      type: "select",
                       placeholder: "Branch",
                       name: "time_branch",
-                      option: Branches,
-                      values: selectedBranch,
+                      options: Branches,
                     },
                   ]
                 : []),
               ...(activeInnerTab === "Records"
                 ? [
                     {
-                      type: "select-four",
+                      type: "select",
                       placeholder: "Status",
                       name: "adjustment_status",
-                      option: GlobalStatusOptions(false),
-                      values: selectedStatus,
+                      options: GlobalStatusOptions(false),
                     },
                   ]
                 : []),

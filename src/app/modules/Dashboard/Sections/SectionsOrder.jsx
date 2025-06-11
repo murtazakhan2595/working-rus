@@ -222,7 +222,7 @@ const DashboardEmployee = [
   }
 ];
 export const getDashboard = (userRole) => {
-  if (userRole === 3 || userRole === 1) {
+  if (userRole.includes(1)) {
     return DashboardHR;
   } else if (userRole === 2) {
     return DashboardManager;

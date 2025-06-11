@@ -3,21 +3,23 @@ import React, { useEffect, useState } from "react";
 import { Leave } from "app/utils/Types/LeaveManagment";
 import {
   getLeaveTypeData,
-  getLeaveDurations,
-  getLeaveEligibleTypeDurations,
+  getEligibleLeaveTypeDurations,
+  saveUpdateLeave
 } from "app/hooks/leaveTracker";
 import { validateLeaveRequestFormSchema } from "app/utils/FormSchema/leaveTrackerFormSchema";
 import moment from "moment";
 import { SheetUI, EmployeeDetailUI } from "components";
-import { GetEmployeeFilteredList, GetCommonFilteredList } from "utils/Lists";
+import { getActiveShiftList } from "app/hooks/shiftManagement";
 import { getDropdownList } from "utils/Lists";
 import { useSelector } from "react-redux";
 import { SelectInputComponent } from "components/FormControl";
 import { DateInput } from "components/FormControl";
 import { CheckBoxInput } from "components/FormControl";
 import { NumberInput } from "components/FormControl";
+import { getWorkingDays } from "utils/renderValues";
+import { TextAreaInput } from "components/FormControl";
 
-const LeaveRequest = ({ id }) => {
+const LeaveRequest = ({ id , reloadData=()=>{}}) => {
   const { id: user_id, branch_id: user_branch } = useSelector(
     (state) => state.emp.user_details
   );
@@ -25,9 +27,9 @@ const LeaveRequest = ({ id }) => {
   const [FormData, setFormData] = useState(Leave);
   const [FormValues, setFormValues] = useState(Leave);
   const [LeaveTypeOptions, setLeaveTypeOptions] = useState([]);
-  const [selectedLeaveType, setSelectedLeaveType] = useState({});
   const [LeaveValidationInfo, setLeaveValidationInfo] = useState({});
   const [LeaveDurationOptions, setLeaveDurationOptions] = useState([]);
+   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const FormSheetData = React.useMemo(
     () => ({
       triggerText: null,
@@ -41,10 +43,8 @@ const LeaveRequest = ({ id }) => {
 
   const fetchLeaveTypeOption = async (isMounted) => {
     try {
-      const response = await getLeaveEligibleTypeDurations();
-      const responseDuration = await getLeaveDurations({
-        filterData: {},
-      });
+      const response = await getEligibleLeaveTypeDurations();
+      const responseDuration = await getEligibleLeaveTypeDurations(false);
       if (isMounted && response) {
         const leaveTypeDropdownOptions = await getDropdownList(
           response,
@@ -53,7 +53,7 @@ const LeaveRequest = ({ id }) => {
         );
         setLeaveTypeOptions(leaveTypeDropdownOptions);
         const durationDropDownList = await getDropdownList(
-          responseDuration.results || [],
+          responseDuration || [],
           "duration_name",
           "id"
         );
@@ -87,6 +87,7 @@ const LeaveRequest = ({ id }) => {
             halfPaidAllowed: !leaveType.is_all_paid,
             allowedHalfPaid: leaveType.half_paid_days,
             allowedFullPaid: leaveType.full_paid_days,
+            daysType: leaveType.day_count_type,
           });
         }
       } else {
@@ -99,6 +100,12 @@ const LeaveRequest = ({ id }) => {
 
   const SetLeaveFormValues = (values) => {
     const FormValues = { ...values };
+    const {
+      allowedHalfPaid = 0,
+      allowedFullPaid = 0,
+      daysType,
+      halfPaidAllowed,
+    } = LeaveValidationInfo;
 
     // Boundary checks
     if (!values?.start_date || !values?.end_date) {
@@ -113,18 +120,19 @@ const LeaveRequest = ({ id }) => {
         if (end.isBefore(start)) {
           FormValues.total_days = 0;
         } else {
+         // const Shift = getActiveShiftList(user_id, start, end);
           // Calculate total leave days (inclusive of both start and end date)
-          const duration = end.diff(start, "days") + 1;
-          FormValues.total_days = duration;
+          if (daysType === "work_days")
+            FormValues.total_days = getWorkingDays(start, end);
+          else FormValues.total_days = end.diff(start, "days") + 1;
         }
       }
     }
     const total_days = FormValues.total_days || 0;
-    if (total_days && LeaveValidationInfo?.halfPaidAllowed) {
+    if (total_days && halfPaidAllowed) {
       // Ensure defaults
       FormValues.full_paid_days = 0;
       FormValues.half_paid_days = 0;
-      const { allowedHalfPaid, allowedFullPaid } = LeaveValidationInfo;
 
       if (values.is_full_paid) {
         if (total_days > allowedFullPaid) {
@@ -155,7 +163,26 @@ const LeaveRequest = ({ id }) => {
     return FormValues;
   };
 
-  const handleSubmit = (values) => {};
+   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
+      setIsSubmittingForm(true);
+      try {
+        // Save role
+        const response = await saveUpdateLeave(values, id);
+        if (response) {
+          // Ensure table is reloaded
+          return {
+            status: true,
+            title: "Form Submitted Succesfully",
+            description: `Your leave request have been submitted successfully.`,
+            messageType: "Success",
+          };
+        }
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setIsSubmittingForm(false);
+      }
+    };
   const handleAddLeaveClick = (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -171,7 +198,10 @@ const LeaveRequest = ({ id }) => {
       {isOpen && (
         <SheetUI
           isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          setIsOpen={()=>{
+            setIsOpen(false);
+            reloadData(true)
+          }}
           variant="sheet"
           sheetConfig={FormSheetData}
           formConfig={{
@@ -195,7 +225,7 @@ const LeaveRequest = ({ id }) => {
             renderUpdatedFormValues: SetLeaveFormValues,
             submitButtonText: "Submit Request",
             cancelButtonText: "Cancel",
-            disableSubmit: false,
+            disableSubmit: isSubmittingForm,
             loadingMessage: "Submiting Form",
             columns: 2,
             formFiels: [
@@ -235,6 +265,7 @@ const LeaveRequest = ({ id }) => {
                     label: "Start Date",
                     required: true,
                     minDate: new Date(),
+                    disableHolidays: true,
                   },
                   {
                     InputField: DateInput,
@@ -256,6 +287,13 @@ const LeaveRequest = ({ id }) => {
                     options: LeaveDurationOptions,
                     required: true,
                   },
+                  {
+                    InputField: TextAreaInput,
+                    name: "reason",
+                    label: "Reason",
+                    required: true,
+                    rows:4,
+                  },
                   ...(LeaveValidationInfo.halfPaidAllowed
                     ? [
                         {
@@ -268,6 +306,7 @@ const LeaveRequest = ({ id }) => {
                         },
                       ]
                     : []),
+
                 ].filter(Boolean),
               },
             ],

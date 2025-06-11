@@ -7,14 +7,14 @@ import {
   CardDescription,
 } from "components/ui/card";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
-import { getLeaveEligibleTypeDurations } from "app/hooks/leaveTracker";
+import { getEligibleLeaveTypeDurations } from "app/hooks/leaveTracker";
 
 const AllocatedLeavesInfo = () => {
   const [allocatedLeaves, setAllocatedLeave] = useState([]);
 
   const fetchLeaveAllocated = async (isMounted) => {
     try {
-      const response = await getLeaveEligibleTypeDurations({});
+      const response = await getEligibleLeaveTypeDurations({});
       if (isMounted && response) {
         setAllocatedLeave(response || []);
       }
@@ -50,7 +50,7 @@ const AllocatedLeavesInfo = () => {
               return (
                 <div
                   key={`${leave.id}-${leave.name}`}
-                  className="flex flex-col gap-2 w-full lg:w-[50%]"
+                  className="flex flex-col gap-2 w-full lg:w-[70%]"
                 >
                   <div className="mt-4 first:mt-0">{leave.name}</div>
                   <div className="flex gap-1">

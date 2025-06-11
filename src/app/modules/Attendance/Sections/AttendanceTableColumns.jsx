@@ -246,10 +246,10 @@ export const TimeAdjustmentsColumns = (viewMode = false, reloadData) => [
     dataField: "checkin_time",
     formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
   },
- {
+  {
     text: "Submission Time",
     dataField: "created_at",
-    formatter: (cell) => `${renderDate(cell,'--','date-time')}`,
+    formatter: (cell) => `${renderDate(cell, "--", "date-time")}`,
   },
   {
     text: "Status",
@@ -332,7 +332,7 @@ export const TimeAdjustmentLogsColumns = [
   {
     text: "Submission Time",
     dataField: "created_at",
-    formatter: (cell) => `${renderDate(cell,'--','date-time')}`,
+    formatter: (cell) => `${renderDate(cell, "--", "date-time")}`,
   },
   {
     text: "Status",
@@ -376,9 +376,10 @@ export const AttendanceAdjustmentLogsColumns = [
   {
     text: "Status",
     dataField: "attendance_status",
-    formatter: (cell) => (
-      <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
-    ),
+    formatter: (cell) => {
+      const status = cell ? cell : "pending";
+      return <StatusLabel status={status}>{status?.toLowerCase()}</StatusLabel>;
+    },
   },
   {
     text: "",

@@ -6,15 +6,15 @@ import {
 } from "components";
 // import AddGraceTimeForm from "./AddGraceTimeForm";
 import { FormatID } from "utils/getValuesFromTables";
-import { StatusLabel, SheetUI } from "components";
-import { getAttendanceAdjustmentData } from "app/hooks/attendance";
+import { StatusLabel, SheetUI, EmployeeDetailUI } from "components";
+import { getLeaveData } from "app/hooks/leaveTracker";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { saveUpdateAttendanceAdjustment } from "app/hooks/attendance";
 import { TextAreaInput } from "components/FormControl";
+import { handleRequest } from "app/hooks/general";
 
 const FormSheetData = {
   triggerText: "Submit",
@@ -33,26 +33,16 @@ const ViewLeaveDetails = ({
   const { id: user_id, role: user_role } = useSelector(
     (state) => state.user.userProfile
   );
+  const [forceLoad, setForceLoad] = useState(false);
   const [openRejectModal, setOpenRejectModal] = useState(false);
   const [RejectedData, setRejectData] = useState(false);
-  const handleSubmit = async (
-    status,
-    { attendance, employee, id, rejection_reason }
-  ) => {
+  const handleSubmit = async (status, { request_id }) => {
     try {
-      const payload = {
-        status: status.toUpperCase(),
-        // attendance: attendance,
-        employee: employee,
-        rejection_reason: rejection_reason,
-      };
-      const response = await saveUpdateAttendanceAdjustment(payload, id);
+      const response = await handleRequest(request_id, status === "Approved");
       // return
       if (response) {
         toast.success(`Request ${status} Successfully!`);
-        fetchData(id, true);
-        setOpenRejectModal(false);
-        setRejectData(null);
+        setForceLoad(!forceLoad);
       }
     } catch (error) {
       // Handle errors and rollback form data
@@ -81,8 +71,6 @@ const ViewLeaveDetails = ({
               id={data.employee}
               showId={true}
               showEmail={true}
-              showBranchName={true}
-              showDepartment={true}
               avatarSize={16}
             />
             <StatusLabel className="ml-10" status={data.status}>
@@ -93,29 +81,72 @@ const ViewLeaveDetails = ({
       },
     },
     {
-      title: "Adjustment Details",
-      footerTitle: "Request At",
-      footerField: "request_datetime",
+      title: "Employee Details",
       field: [
         {
-          key: "id",
-          label: "Id",
-          formatter: (cell, row) => <FormatID value={cell} prefix={"AA-"} />,
+          key: "employee",
+          label: "",
+          formatter: (cell) => (
+            <EmployeeDetailUI
+              id={cell}
+              InformationKeys={[
+                "name",
+                "department",
+                "position",
+                "branch",
+                "manager",
+              ]}
+              ViewVariant={"vertical"}
+              className
+            />
+          ),
+        },
+      ],
+    },
+    {
+      title: "Leave Details",
+      footerTitle: "Request At",
+      footerField: "created_at",
+      field: [
+        {
+          key: "leave_type_names",
+          label: "Leave Type",
         },
         {
           key: "attendance_date",
-          label: "Attendance Date",
+          label: "Alloted Leaves",
           formatter: (cell) => renderDate(cell),
         },
         {
           key: "requested_checkin",
-          label: "Requested Check-In",
+          label: "Consumed Leave",
           formatter: (cell) => renderDate(cell, "--", "time"),
         },
         {
-          key: "requested_checkout",
-          label: "Requested Check-Out",
+          key: "start_date",
+          label: "Start Date",
           formatter: (cell) => renderDate(cell, "--", "time"),
+        },
+        {
+          key: "end_date",
+          label: "End Date",
+          formatter: (cell) => renderDate(cell, "--", "time"),
+        },
+        {
+          key: "leave_duration_name",
+          label: "Leave Duration",
+        },
+        {
+          key: "total_days",
+          label: "Total Days",
+        },
+        {
+          key: "full_paid_days",
+          label: "Full Paid Days",
+        },
+        {
+          key: "half_paid_days",
+          label: "Half Paid Days",
         },
         {
           key: "reason",
@@ -127,7 +158,7 @@ const ViewLeaveDetails = ({
       title: "Approval Details",
       field: [
         {
-          key: "approval_logs",
+          key: "approval_details",
           formatter: (cell) => (
             <StatusList status_list={cell} className="my-3" />
           ),
@@ -165,7 +196,7 @@ const ViewLeaveDetails = ({
 
   const fetchData = async (id, isMounted) => {
     try {
-      const response = await getAttendanceAdjustmentData(id);
+      const response = await getLeaveData(id);
       if (isMounted) {
         return response;
       }
@@ -179,18 +210,19 @@ const ViewLeaveDetails = ({
       <NavigationSheetComponent
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        title="Attendandance Adjustment Details"
+        title="Leave Details"
         currentItem_Id={currentId}
+        ForceItemLoad={forceLoad}
         dataList={DataList}
         reloadData={reloadData}
         allowEdit={false}
         allowDelete={false}
         fetchCurrentItemDetails={fetchData}
         deleteItemName="name"
-        editTooltip="Edit Grace Time"
-        deleteTooltip="Delete Geace Time"
+        editTooltip="Edit Leave"
+        deleteTooltip="Delete Leavr"
       >
-        <DetailContent title="Adjustment Details" fields={fields} />
+        <DetailContent fields={fields} />
       </NavigationSheetComponent>
       {openRejectModal && (
         <SheetUI
@@ -236,10 +268,6 @@ const ViewLeaveDetails = ({
 };
 
 export default ViewLeaveDetails;
-
-
-
-
 
 // import { useEffect, useState } from "react";
 // import SheetComponent from "components/ui/SheetComponent";

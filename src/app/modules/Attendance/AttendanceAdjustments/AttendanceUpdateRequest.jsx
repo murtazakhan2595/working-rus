@@ -97,7 +97,6 @@ const AttendanceUpdateRequest = ({ id }) => {
             setFormData(data);
             setFormValues(data);
             fetchAttendanceAdjustmentData(true, attendanceRecord.id);
-          } else {
           }
         }
       } catch (error) {
@@ -122,7 +121,7 @@ const AttendanceUpdateRequest = ({ id }) => {
     if (isMounted && UserDetails?.id) {
       setSelectedEmployee(UserDetails);
       setFormData((prev) => {
-        return { ...prev, employee_id: UserDetails.id };
+        return { ...prev, employee: UserDetails.id };
       });
     }
   };

@@ -44,11 +44,14 @@ export const getStatusVariant = (Status) => {
   const status = Status.toLowerCase();
   if (status.includes("approved")) return "success";
   else if (status.includes("accepted")) return "success";
+  else if (status.includes("yes")) return "success";
   else if (status.includes("present")) return "success";
   else if (status.includes("viewed")) return "warning";
   else if (status.includes("late")) return "warning";
   else if (status.includes("success")) return "success";
   else if (status.includes("declined")) return "error";
+  else if (status.includes("no")) return "error";
+  else if (status.includes("cancelled")) return "error";
   else if (status.includes("expired")) return "error";
   else if (status.includes("rejected")) return "error";
   else if (status.includes("acknowledge")) return "success";

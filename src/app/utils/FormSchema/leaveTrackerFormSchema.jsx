@@ -1,4 +1,6 @@
 import moment from "moment";
+import { getDateTimeDifference } from "utils/renderValues";
+import { validateStartAndEndDateField } from "app/utils/FormSchema/generalFormSchema";
 
 const validateLeaveRequestFormSchema = (values, validationObj) => {
   const errors = {};
@@ -17,7 +19,7 @@ const validateLeaveRequestFormSchema = (values, validationObj) => {
     }
   }
   if (validationObj) {
-    const { total_days = 0, start_date} = values;
+    const { total_days = 0, start_date } = values;
     const {
       allowedLeaves,
       allowedConsecutiveDays,
@@ -29,8 +31,16 @@ const validateLeaveRequestFormSchema = (values, validationObj) => {
         errors.total_days = `Cannot apply for more than ${allowedLeaves} leaves`;
       } else if (allowedConsecutiveDays && total_days > allowedConsecutiveDays)
         errors.total_days = `Cannot apply for more than ${allowedConsecutiveDays} leaves at once`;
-      if (noticeDays && start_date)
-        errors.start_date = `Leave must be applied before ${noticeDays} days for this leave type`;
+      if (noticeDays && start_date) {
+        const daysDifference = getDateTimeDifference(
+          start_date,
+          moment(),
+          "days",
+          "calendar_days"
+        );
+        if (daysDifference > noticeDays)
+          errors.start_date = `Leave must be applied before ${noticeDays} days for this leave type`;
+      }
     }
   }
   return errors;
@@ -171,4 +181,26 @@ const validateLeaveTypeFormSchema = (values) => {
 
   return errors;
 };
-export { validateLeaveRequestFormSchema, validateLeaveDurationFormSchema, validateLeaveTypeFormSchema };
+
+export const validatePublicHolidayFormSchema = (values) => {
+  const errors = {};
+  if (!values.name) {
+    errors.name = "Name is required";
+  }
+  const { start_date, end_date_before } = validateStartAndEndDateField(
+    values.date,
+    values.end_date
+  );
+  if (start_date) {
+    errors.date = start_date;
+  }
+  if (end_date_before) {
+    errors.end_date = end_date_before;
+  }
+  return errors;
+};
+export {
+  validateLeaveRequestFormSchema,
+  validateLeaveDurationFormSchema,
+  validateLeaveTypeFormSchema,
+};

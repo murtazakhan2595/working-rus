@@ -6,6 +6,7 @@ import {
   fetchProjects,
   fetchOrganizations,
   fetchBranches,
+  fetchCalendarHoliday,
 } from "state/slices/CommonSlice";
 import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
 import {
@@ -864,18 +865,18 @@ export const handleUpdateProfile = async (dispatch, data) => {
     })
   );
   await dispatch(fetchEmployees());
-  await dispatch(fetchEmployeesDetail());
-  await dispatch(fetchBranches());
-  await dispatch(fetchDepartments());
-  await dispatch(fetchDesignations());
+  dispatch(fetchEmployeesDetail());
+  dispatch(fetchBranches());
+  dispatch(fetchDepartments());
+  dispatch(fetchDesignations());
+  await dispatch(fetchCalendarHoliday(userprofile.id));
   await dispatch(fetchDocumentCategory());
   dispatch(fetchOrganizations());
   dispatch(fetchTaskLabels());
   await dispatch(fetchUserRoles());
   dispatch(fetchTerminationReasons());
   dispatch(fetchReportingManagers());
-  dispatch(fetchLeaveComponents());
-  dispatch(fetchUserAttendanceDetails(userprofile.id));
+  await dispatch(fetchUserAttendanceDetails(userprofile.id));
   await dispatch(fetchProjects(userprofile));
   dispatch(fetchShiftById(employee_details?.payload?.shift_assignment));
 };

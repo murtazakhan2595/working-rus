@@ -73,7 +73,11 @@ const Levels = React.memo(
                       event.preventDefault();
                       event.stopPropagation();
                       setRequestInitiatorListToEdit(
-                        request_initiator_designation
+                        request_initiator_designation &&
+                          Array.isArray(request_initiator_designation) &&
+                          request_initiator_designation.length > 0
+                          ? request_initiator_designation
+                          : [initiator]
                       );
                       setAddLevelsForm(true);
                     }}

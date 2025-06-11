@@ -1,284 +1,217 @@
-import React, { useEffect, useState } from "react";
-import { connect, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
-import { PageLoader, Header } from "components";
-import { MyLeavesColumns } from "app/utils/Types/TableColumns";
-import { fetchLeaveComponents } from "state/slices/LeaveManagementSlice";
-
-import { FaPlus } from "react-icons/fa";
-import { LeaveStatus } from "data/Data";
-// import {
-//   getLeaveApplications,
-//   getEmployeeLeaveTypes,
-//   deleteLeaveRequest,
-// } from "app/hooks/leaveManagment";
-import { FilterInput } from "components/FormControl";
-import { getEmployeeLeavesTypesList } from "utils/Lists";
-import CustomTable from "components/CustomTable";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "src/@/components/ui/tabs";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   Card,
   CardContent,
+  CardDescription,
+  CardTitle,
   CardHeader,
-} from "../../../../components/ui/card.jsx";
-import { LeaveRecordColumns } from "app/utils/Types/TableColumns";
-import { LeaveTypesColumns } from "app/utils/Types/TableColumns.jsx";
-import AddTypeSheet from "../Sections/AddTypeSheet";
-import { getLeaveComponents } from "app/hooks/leaveTracker.jsx";
-import { saveLeaveComponents } from "app/hooks/leaveTracker.jsx";
-import EmployeeLeavesDetailSheet from "../Sections/EmployeeLeavesDetailSheet.jsx";
-import { getLeaveStatsEmployee } from "app/hooks/leaveTracker.jsx";
-import { getLeavestatesCustomApi } from "app/hooks/leaveTracker.jsx";
+} from "components/ui/card";
+import { FilterInput } from "components/FormControl";
+import { Header, PageLoader, TableCustom } from "components";
+import { getLeaveTypeListData, getLeaveListData } from "app/hooks/leaveTracker";
+import { getLabelByValue } from "utils/getValuesFromTables";
+import { LeaveAplicationColumns } from "app/modules/LeaveTracker/Sections";
+import { exportRecordToExcel } from "utils/downloadUtils";
+import { Button } from "components/ui/button";
+import { HasAccess } from "utils/PermissionUtils";
+import { GetDispatchStateList } from "utils/Lists";
 
-const LeaveTracker = ({ userProfile, departments }) => {
-  const [Leave, setLeave] = useState([]);
-  let dispatch = useDispatch();
-  const [activeTab, setActiveTab] = useState("records");
-  const [recordsFilterData, setRecordsFilterData] = useState({});
-  const [typesFilterData, setTypesFilterData] = useState({});
-  const [leaveTpesData, setLeaveTypesData] = useState([]);
-  const [selectedType, setSelectedType] = useState(null);
-  const [selectedLeave, setSelectedLeave] = useState(null);
-  const [isSelectedLeaveSheet, setIsSelectedLeaveSheet] = useState(false);
-  const [empLeaveStats, setEmpLeaveStats] = useState([]);
-  const [isTypesLoading, setIsTypesLoading] = useState(true);
-  const [isRecordsLoading, setIsRecordsLoading] = useState(true);
-
-  const [options, setOptions] = useState({
-    page: 1, // Current page number
-    sizePerPage: 10, // Number of items per page
-  });
+const EmployeeLeaveCount = ({ isTeamView = false }) => {
+  const Departments = GetDispatchStateList("departments", "common") || [];
+  const Branches = GetDispatchStateList("branches", "common") || [];
+  const Employees = GetDispatchStateList("employees", "emp") || [];
+  const { id: user_id } = GetDispatchStateList("user_details", "emp") || {};
+  const isViewLTPermitted = HasAccess("VIEW_ATT_UPDATE_LOGS");
+  const isViewBLTPermitted = HasAccess("VIEW_BRN_ATT_UPDATES_LOGS");
+  const isViewDLTermitted = HasAccess("VIEW_DPT_ATT_UPDATES_LOGS");
+  const [filterData, setFilterData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [leaveTypesData, setLeaveTypesData] = useState([]);
+  const [Leaves, setLeaves] = useState({});
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [ordering, setOrdering] = useState("-id");
 
   const onPageChange = (name, value) => {
-    const pageOptions = options;
-    if (pageOptions[name] !== value) {
-      pageOptions[name] = value;
-      setOptions((prevOptions) => ({ ...prevOptions, ...pageOptions }));
-    }
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
-
-  const fetchLeaveTypesData = async () => {
-    setIsTypesLoading(true);
-    const leaveTypesData = await getLeaveComponents({
-      filterData: { ...typesFilterData, employee_id_and_org: "null,true" },
-    });
-    if (leaveTypesData) {
-      setLeaveTypesData(leaveTypesData?.results);
-    }
-    setIsTypesLoading(false);
-  };
-
-  const fetchData = async () => {
-    setIsRecordsLoading(true);
-    const filterData = {
-      ...recordsFilterData,
-      ...(userProfile.role === 2 ? { direct_report: userProfile.id } : {}),
-    };
-    const empLeaveStats = await getLeavestatesCustomApi({
-      filterData,
-      options,
-    });
-    if (empLeaveStats) {
-      setEmpLeaveStats(empLeaveStats);
-    }
-    setIsRecordsLoading(false);
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [recordsFilterData, options]);
-
-  useEffect(() => {
-    fetchLeaveTypesData();
-  }, [typesFilterData, options]);
-
-  // Separate handler for records filters
-  const handleRecordsFilterChange = (filterName, filterValue) => {
-    onPageChange("page", 1);
-    setRecordsFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
-
-  // Separate handler for types filters
-  const handleTypestFilterChange = (filterName, filterValue) => {
-    const updatedFilters = { ...typesFilterData };
-    if (filterValue === "") {
-      delete updatedFilters[filterName];
-    } else {
-      updatedFilters[filterName] = filterValue;
-    }
-    setTypesFilterData(updatedFilters); // Update component filters
-  };
-
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
     onPageChange: onPageChange,
-    onRowClick: (row) => {
-      console.log("Row clicked", row);
-      setIsSelectedLeaveSheet(true);
-      setSelectedLeave(row);
-    },
-  };
-  const leaveTypesTableOptions = {
-    onRowClick: (row) => {
-      setSelectedType(row);
-    },
   };
 
-  const tabsData = [
-    { value: "records", label: "Records" },
-    { value: "types", label: "Types" },
-  ];
-  const filters =
-    activeTab === "records"
-      ? [
-          {
-            type: "select-one",
-            option: departments,
-            name: "department_name",
-            placeholder: "Department",
-          },
-        ]
-      : [
-          {
-            type: "search",
-            placeholder: "Leave Type",
-            name: "name",
-          },
-          {
-            type: "select-two",
-            option: [
-              { value: true, label: "Active" },
-              { value: false, label: "Inactive" },
-            ],
-            name: "status",
-            placeholder: "Active",
-          },
-        ];
-  const onCheckedChange = async (value, type) => {
-    const updatedComponent = { ...type, status: value };
-    const response = await saveLeaveComponents(updatedComponent);
-    if (response) {
-      setLeaveTypesData((prevState) =>
-        prevState.map((item) =>
-          item.id === updatedComponent.id ? updatedComponent : item
-        )
-      );
-      dispatch(fetchLeaveComponents());
+  useEffect(() => {
+    let isMounted = true;
+    setFilterData(() => {
+      if (isTeamView) return { managers: user_id };
+      else return {};
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [isTeamView]);
+
+  const fetchLeaveTypeData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      const LeavesTypes = await getLeaveTypeListData();
+      if (LeavesTypes && isMounted) {
+        setLeaveTypesData(LeavesTypes.results || []);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    let isMounted = true;
+    fetchLeaveTypeData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const fetchData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      const Leaves = await getLeaveListData({
+        filterData,
+        options,
+      });
+      if (Leaves && isMounted) {
+        setLeaves(Leaves);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [filterData, options, ordering]);
+
+  const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "" || filterValue === null) {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+
+      return updatedFilters;
+    });
+  };
+
+  const exportAttendanceToExcel = async (event) => {
+    event.preventDefault();
+    const data = Leaves.results || [];
+    if (!data || !Array.isArray(data)) return null;
+    const dataToExport = await Promise.all(
+      data?.map(async (row) => ({
+        "Employee Id": row.employee_serial_number,
+        "Employee Name": row.employee_name,
+        "Employee Department": row["employee_department_name"],
+        "Employee Designation": row["employee_designation_name"],
+        "Employee Branch": await getLabelByValue(
+          row["employee_branch_name"],
+          Branches,
+          "-"
+        ),
+        "Leave Type": row.leave_type_names,
+        "Leave Duration": row.leave_duration_name,
+        "Start Date": row.start_date,
+        "End Date": row.end_date,
+        "Total Days": row.total_days,
+        "Full Paid Days": row.full_paid_days,
+        "Half Paid Days": row.half_paid_days,
+        Reason: row.reason,
+      }))
+    );
+    exportRecordToExcel(
+      dataToExport,
+      "Leave",
+      `Employee-Leaves-Record${filterData.date_range || ""}`
+    );
+  };
+
   return (
-    <div className="flex flex-col gap-4 profile-management">
-      <Header
-        content={
-          activeTab === "types" && (
-            <AddTypeSheet
-              triggerText="Add Component"
-              reload={fetchLeaveTypesData}
-            />
-          )
-        }
-      />
+    <div
+      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
+    >
+      <Header />
+      <Card>
+        <CardHeader className="flex flex-row justify-between items-center gap-4">
+          <div>
+            <CardTitle className="text-primary">Leave Records</CardTitle>
+            <CardDescription className="text-neutral-1100">
+              {`Here you can view leaves of all employees.`}
+            </CardDescription>
+          </div>
+          <Button onClick={exportAttendanceToExcel} variant="continue">
+            Export
+          </Button>
+        </CardHeader>
 
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        defaultValue="records"
-      >
-        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
-          {userProfile.role !== 2 ? (
-            <TabsList className="flex justify-center mb-4">
-              {tabsData?.map((tab) => (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-                >
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          ) : (
-            <div></div>
-          )}
+        <CardContent>
           <FilterInput
-            filters={filters}
-            onChange={
-              activeTab === "records"
-                ? handleRecordsFilterChange
-                : handleTypestFilterChange
-            }
+            filters={[
+              {
+                type: "select",
+                option: Employees,
+                name: "employee",
+                placeholder: "Employee",
+              },
+              {
+                type: "select",
+                option: Departments,
+                name: "departmentt",
+                placeholder: "Department",
+              },
+              {
+                type: "select",
+                option: Branches,
+                name: "branch",
+                placeholder: "Branch",
+              },
+              {
+                type: "select",
+                option: leaveTypesData || [],
+                name: "leave_type",
+                placeholder: "Leave Type",
+              },
+              {
+                type: "date-range",
+                name: "date_range",
+                placeholder: "Leave Period",
+              },
+            ]}
+            onChange={handleFilterChange}
+            className="justify-end mb-4"
           />
-        </div>
-
-        <Card>
-          <CardContent>
-            <TabsContent value="records">
-              {isRecordsLoading ? (
-                <PageLoader />
-              ) : (
-                <CustomTable
-                  data={empLeaveStats.results || []}
-                  columns={LeaveRecordColumns}
-                  dataTotalSize={empLeaveStats.count || 0}
-                  pagination={true}
-                  tableOptions={tableOptions}
-                />
-              )}
-            </TabsContent>
-            <TabsContent value="types">
-              {isTypesLoading ? (
-                <PageLoader />
-              ) : (
-                <CustomTable
-                  data={leaveTpesData || []}
-                  columns={LeaveTypesColumns(onCheckedChange)}
-                  pagination={false}
-                  tableOptions={leaveTypesTableOptions}
-                />
-              )}
-            </TabsContent>
-          </CardContent>
-        </Card>
-      </Tabs>
-      {selectedType && (
-        <AddTypeSheet
-          type={selectedType}
-          openSheet={true}
-          reload={fetchLeaveTypesData}
-          troggerText="Add Component"
-        />
-      )}
-      {selectedLeave && (
-        <EmployeeLeavesDetailSheet
-          employeeLeaves={selectedLeave}
-          isOpen={isSelectedLeaveSheet}
-          setIsOpen={setIsSelectedLeaveSheet}
-        />
-      )}
+          {isLoading ? (
+            <PageLoader />
+          ) : (
+            <TableCustom
+              data={Leaves?.results || []}
+              columns={LeaveAplicationColumns(false, fetchData)}
+              pagination={true}
+              dataTotalSize={Leaves?.count || 0}
+              tableOptions={tableOptions}
+            />
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    userProfile: state.user.userProfile,
-    departments: state.common.departments,
-  };
-};
-
-export default connect(mapStateToProps)(LeaveTracker);
+export default EmployeeLeaveCount;

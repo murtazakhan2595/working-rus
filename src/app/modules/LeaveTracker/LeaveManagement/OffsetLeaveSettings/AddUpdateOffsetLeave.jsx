@@ -8,23 +8,26 @@ import {
   SelectInputComponent,
   TextInput,
   SelectMultiInputComponent,
-  DateInput,
+  SwitchInput,
 } from "components/FormControl";
 import { validatePublicHolidayFormSchema } from "app/utils/FormSchema/leaveTrackerFormSchema";
 import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import { SheetUI } from "components";
-import { countriesList } from "data/Data";
+import { countriesList, maritalStatus, GenderOptions } from "data/Data";
 import { GetDispatchStateList } from "utils/Lists";
 import { getDropdownList } from "utils/Lists";
+import { NumberInput } from "components/FormControl";
 
-const AddUpdateHolidays = ({
+const AddUpdateOffsetLeave = ({
   isOpen = false,
   id,
   setIsOpen = () => {},
   reloadData = () => {},
 }) => {
   const Branches = GetDispatchStateList("branches", "common") || [];
+  const Departments = GetDispatchStateList("departments", "common") || [];
+  const Designations = GetDispatchStateList("designations", "common") || [];
   const [formValues, setFormValues] = useState(PublicHoliday);
   const [PublicHolidays, setPublicHolidays] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -151,7 +154,7 @@ const AddUpdateHolidays = ({
         formConfig={{
           initialValues: formData,
           enableReinitialize: true,
-          renderUpdatedFormValues:setFormValues,
+          renderUpdatedFormValues: setFormValues,
           handleSubmit: handleSubmit,
           onSubmitClick: (values) => {
             validateHolidayName(values.name);
@@ -171,47 +174,102 @@ const AddUpdateHolidays = ({
           formFiels: [
             {
               sheetCardExtension: true,
-              sheetCardTitle: `Holiday Details`,
+              sheetCardTitle: `Eligibility Details`,
               InputFields: [
                 {
-                  InputField: TextInput,
-                  name: "name",
-                  required: true,
-                  label: "Holiday Name",
-                  onFieldUpdate: (_, value) => {
-                    validateHolidayName(value);
-                  },
-                },
-                {
-                  InputField: DateInput,
-                  name: "date",
-                  required: true,
-                  label: "Start Date",
-                },
-                {
-                  InputField: DateInput,
-                  name: "end_date",
-                  label: "End Date",
-                  minDate: formValues.data,
-                },
-                {
                   InputField: SelectMultiInputComponent,
-                  name: "branches",
-                  label: "Branches",
-                  options: Branches,
-                  SelectAllOption: true,
-                },
-                {
-                  InputField: SelectMultiInputComponent,
-                  name: "country",
-                  label: "Country",
+                  name: "nationalities",
+                  required: true,
+                  label: "Nationalities",
                   options: countriesList,
                   SelectAllOption: true,
                 },
                 {
-                  InputField: TextInput,
-                  name: "religion",
-                  label: "Religion",
+                  InputField: SelectMultiInputComponent,
+                  name: "branches",
+                  required: true,
+                  label: "Branches",
+                  options: Branches,
+                  SelectAllOption: true,
+                  placeholder: "Select branches",
+                },
+                {
+                  InputField: SelectMultiInputComponent,
+                  name: "departments",
+                  required: true,
+                  label: "Departments",
+                  options: Departments,
+                  SelectAllOption: true,
+                },
+                {
+                  InputField: SelectMultiInputComponent,
+                  name: "genders",
+                  label: "Genders",
+                  options: GenderOptions,
+                  SelectAllOption: true,
+                },
+                {
+                  InputField: SelectMultiInputComponent,
+                  name: "marital_statuses",
+                  label: "Marital Statuses",
+                  options: maritalStatus,
+                  SelectAllOption: true,
+                },
+                {
+                  InputField: SelectMultiInputComponent,
+                  name: "grades",
+                  label: "Job Grades / Designations",
+                  options: Designations,
+                },
+              ],
+            },
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: `Conversion Rule`,
+              InputFields: [
+                {
+                  InputField: NumberInput,
+                  name: "conversion_ratio_hours",
+                  label: "Overtime Hours",
+                  required: true,
+                  description: "1 Offset Leave = X Overtime Hours",
+                },
+              ],
+            },
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: `Validity Details`,
+              InputFields: [
+                {
+                  InputField: NumberInput,
+                  name: "validity_months",
+                  label: "Validity Months",
+                  required: true,
+                  description:
+                    "Leave can be applied within the validity period after offset leave is alloted",
+                },
+                {
+                  InputField: SwitchInput,
+                  name: "leave_cap_enabled",
+                  label: "Leave Cap",
+                  description:
+                    "Enable or Disable (Maximum offset leaves per month/year)",
+                },
+                {
+                  InputField: NumberInput,
+                  name: "max_leaves_per_month",
+                  label: "Leave Per Months",
+                  required: true,
+                  description: "Maximum offset leaves allowed per month",
+                  shouldRender: formValues.leave_cap_enabled,
+                },
+                {
+                  InputField: NumberInput,
+                  name: "max_leaves_per_year",
+                  label: "Leave Per Year",
+                  required: true,
+                  description: "Maximum offset leaves allowed per year",
+                  shouldRender: formValues.leave_cap_enabled,
                 },
               ],
             },
@@ -222,4 +280,4 @@ const AddUpdateHolidays = ({
   );
 };
 
-export default AddUpdateHolidays;
+export default AddUpdateOffsetLeave;

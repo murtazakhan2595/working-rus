@@ -1,11 +1,18 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
-import { getEmployeeCustomList, HandleLogout } from "./general";
+import { getCurrentRequestApprover, HandleLogout } from "./general";
 import moment from "moment";
 import {
   mapLeaveTypeListData,
   mapLeaveTypeData,
+  mapPublicHolidayPayloadeData,
+  mapPublicHolidayListData,
+  mapPublicHolidayData,
+  mapLeaveListData,
+  mapLeaveData,
 } from "app/utils/MappingObjects/mapLeaveData";
+import { renderErrorMessages } from "utils/renderErrors";
+
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -661,7 +668,7 @@ export const getLeaveTypeData = async (id) => {
       headers: headers(),
     });
     if (response.status === 200) {
-           debugger
+      debugger;
       const ResponseData = await mapLeaveTypeData(response.data.data);
       return ResponseData;
     }
@@ -673,8 +680,10 @@ export const getLeaveTypeData = async (id) => {
     return {};
   }
 };
-export const getLeaveEligibleTypeDurations = async (isType = true) => {
-  let URL = `/employee-leaves/eligible_leave_types/`;
+export const getEligibleLeaveTypeDurations = async (isType = true) => {
+  let URL = isType
+    ? `/employee-leaves/eligible_leave_types/`
+    : `/employee-leaves/eligible_leave_durations/`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -700,7 +709,7 @@ export const getLeaveListData = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/employee-leaves/applied_leaves/?ordering=${sortField}&${
+  let URL = `/employee-leaves?ordering=${sortField}&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
     JSON.stringify(filterData)
@@ -711,7 +720,7 @@ export const getLeaveListData = async (payload) => {
     });
     if (response.status === 200) {
       const ResponseData = response.data;
-      const ResponseList = await mapLeaveTypeListData(ResponseData.results);
+      const ResponseList = await mapLeaveListData(ResponseData.results);
       return { results: ResponseList, count: ResponseData.count };
     }
     return { results: [], count: 0 };
@@ -721,6 +730,27 @@ export const getLeaveListData = async (payload) => {
       HandleLogout();
     }
     return { results: [], count: 0 };
+  }
+};
+
+export const getLeaveData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/employee-leaves/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = await mapLeaveData(response.data);
+      const currentapprover = await getCurrentRequestApprover(
+        ResponseData.request_id
+      );
+      return { ...ResponseData, ...currentapprover };
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
   }
 };
 
@@ -740,7 +770,7 @@ export const getHolidaysListData = async (payload) => {
     });
     if (response.status === 200) {
       const ResponseData = response.data;
-      const ResponseList = await mapLeaveTypeListData(ResponseData.results);
+      const ResponseList = await mapPublicHolidayListData(ResponseData.results);
       return { results: ResponseList, count: ResponseData.count };
     }
     return { results: [], count: 0 };
@@ -753,12 +783,107 @@ export const getHolidaysListData = async (payload) => {
   }
 };
 
-// End points to remove
-// /employeeleavetransaction/
-// /leaveattachments
-// /leave
-// leaveComponents
+export const saveUpdateLeave = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+    const finalPayload = payload;
 
+    const url = ID
+      ? `${baseUrl}/employee-leaves/${ID}/` // Use id if updating
+      : `${baseUrl}/employee-leaves/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const saveUpdateHoliday = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+    const finalPayload = mapPublicHolidayPayloadeData(payload);
+
+    const url = ID
+      ? `${baseUrl}/holidays/${ID}/` // Use id if updating
+      : `${baseUrl}/holidays/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const getHolidayData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/holidays/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = await mapPublicHolidayData(response.data);
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+export const cancelEmployeeLeave = async (id) => {
+  try {
+    const url = `/employee-leaves/${id}/cancel_leave/`;
+
+    const method = "PATCH"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
 const saveLeaveType = async (payload) => {
   try {
     if (payload?.id) {
@@ -789,16 +914,18 @@ const saveLeaveType = async (payload) => {
     }
     throw error;
   }
-}
+};
 
 const getLeaveTypes = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
-  let URL = `/leave-types?ordering=${sortField}&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  let URL = `/leave-types?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -813,7 +940,7 @@ const getLeaveTypes = async (payload) => {
     }
     return [];
   }
-}
+};
 
 const deleteLeaveType = async (id) => {
   try {
@@ -830,7 +957,29 @@ const deleteLeaveType = async (id) => {
     }
     return false;
   }
-}
+};
+
+export const uploadHolidaysData = async (formData) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/holidays/bulk-import/`,
+      formData,
+      {
+        headers: {
+          ...headers(),
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error uploading employees data:", error);
+    return error?.response?.data;
+  }
+};
 
 export {
   deleteLeaveType,
