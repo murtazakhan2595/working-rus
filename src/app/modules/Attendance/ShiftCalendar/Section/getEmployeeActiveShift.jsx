@@ -511,8 +511,32 @@ export const getThisWeekShiftData = (MonthlyShiftDataList) => {
   return thisWeekShifts;
 };
 
+
+const parseShiftTime = (timeString) => {
+  if (!timeString) return null;
+
+  let parsedTime;
+
+  if (timeString.includes("T")) {
+    // ISO format like "2025-06-09T12:00:00Z"
+    parsedTime = moment(timeString);
+  } else if (timeString.includes("M")) {
+    // 12-hour format like "05:00 PM" or "5:00 AM"
+    parsedTime = moment(timeString, ["hh:mm A", "h:mm A"]);
+  } else if (timeString.includes(":")) {
+    // 24-hour format like "17:00"
+    parsedTime = moment(timeString, "HH:mm");
+  } else {
+    // Fallback - try to parse as-is
+    parsedTime = moment(timeString);
+  }
+
+  return parsedTime.isValid() ? parsedTime.format("HH:mm") : null;
+};
+
 export {
   GetEmployeeActiveShift,
   getChangeRequestComparison,
   generateShiftScheduleLog,
+  parseShiftTime,
 };
