@@ -1,13 +1,16 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-export const PermissionWrapper = ({ 
+export const OfficeSettingPermissionWrapper = ({ 
   permissions, 
   children, 
   fallback = null,
   showError = false 
 }) => {
-  const userPermissions = useSelector(state => state.roles_permissions?.my_permissions || []);
+  const userPermissionsRaw = useSelector(state => state.roles_permissions?.my_permissions || []);
+  
+  // The permissions are already strings (permission codes), not objects
+  const userPermissions = userPermissionsRaw.filter(Boolean); // Remove any undefined/null values
   
   const hasPermission = Array.isArray(permissions)
     ? permissions.every(permission => userPermissions.includes(permission))
@@ -28,11 +31,11 @@ export const PermissionWrapper = ({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
-                d="M12 15v2m0 0v2m0-2h2m-2 0H8m4-6V4"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"
               />
             </svg>
             <p className="text-sm text-gray-600">
-              You don't have permission to view this content
+              You don't have permission to access this feature
             </p>
           </div>
         </div>
@@ -44,16 +47,16 @@ export const PermissionWrapper = ({
   return children;
 };
 
-// Higher Order Component version
-export const withPermission = (WrappedComponent, permissions, options = {}) => {
-  return function WithPermissionComponent(props) {
+// Higher Order Component version for OfficeSetting
+export const withOfficeSettingPermission = (WrappedComponent, permissions, options = {}) => {
+  return function WithOfficeSettingPermissionComponent(props) {
     return (
-      <PermissionWrapper
+      <OfficeSettingPermissionWrapper
         permissions={permissions}
         {...options}
       >
         <WrappedComponent {...props} />
-      </PermissionWrapper>
+      </OfficeSettingPermissionWrapper>
     );
   };
 }; 

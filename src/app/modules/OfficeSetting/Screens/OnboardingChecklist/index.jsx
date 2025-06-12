@@ -4,6 +4,9 @@ import { CardDescription } from "components/ui/card";
 import { OnboardingChecklistColumn } from "../../sections/OfficeSettingTableColumns";
 import { FilterInput } from "components/FormControl";
 import { useState, useEffect } from "react";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
+import { OfficeSettingPermissionWrapper } from "../../components/PermissionWrapper";
+import { OFFICE_SETTING_PERMISSIONS } from "../../permissions/constants";
 
 const OnboardingChecklist = ({ data, reload }) => {
   const [filterData, setFilterData] = useState({});
@@ -43,38 +46,43 @@ const OnboardingChecklist = ({ data, reload }) => {
   }, [data]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-primary">
-          Onboarding Document Checklist
-        </CardTitle>
-        <CardDescription className="text-neutral-1100">
-          Here you can manage your onboarding document checklist. Add, edit, or delete onboarding document checklist as needed.
-        </CardDescription>
-        <div className="flex justify-end">
-          <FilterInput 
-            filters={[
-              {
-                type: "search",
-                placeholder: "Search Document Name",
-                name: "document_name",
-              },
-            ]} 
-            onChange={handleFilterChange} 
-            className="justify-end"
+    <OfficeSettingPermissionWrapper 
+      permissions={OFFICE_SETTING_PERMISSIONS.ONBOARDING.VIEW}
+      showError={true}
+    >
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-primary">
+            Onboarding Document Checklist
+          </CardTitle>
+          <CardDescription className="text-neutral-1100">
+            Here you can manage your onboarding document checklist. Add, edit, or delete onboarding document checklist as needed.
+          </CardDescription>
+          <div className="flex justify-end">
+            <FilterInput 
+              filters={[
+                {
+                  type: "search",
+                  placeholder: "Search Document Name",
+                  name: "document_name",
+                },
+              ]} 
+              onChange={handleFilterChange} 
+              className="justify-end"
+            />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <TableCustom
+            columns={OnboardingChecklistColumn(reload, data || [])}
+            data={filteredData.length > 0 ? filteredData : data || []}
+            pagination={false}
+            itemsPerPage={100}
+            className="organization-table"
           />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <TableCustom
-          columns={OnboardingChecklistColumn(reload, data || [])}
-          data={filteredData.length > 0 ? filteredData : data || []}
-          pagination={false}
-          itemsPerPage={100}
-          className="organization-table"
-        />
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </OfficeSettingPermissionWrapper>
   );
 };
 

@@ -3,11 +3,16 @@ import SheetComponent from 'components/ui/SheetComponent'
 import React, { useState } from 'react'
 import AddDepartmentForm from './AddDepartmentForm';
 import useUserOrganization from 'app/hooks/useUserOrganization';
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
 const AddDepartment = ({ reload }) => {
   const [isOpen, setIsOpen] = useState(false);
-  
+  const permissions = useOfficeSettingPermissions();
   const userOrganization = useUserOrganization();
+
+  if (!permissions.departments.canCreate) {
+    return null;
+  }
 
   const formSheetData = {
     triggerText: "Add New Department",

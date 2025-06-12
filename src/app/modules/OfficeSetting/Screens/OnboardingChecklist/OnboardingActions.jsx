@@ -6,11 +6,13 @@ import AddOnboardingForm from "./AddOnboardingForm";
 import { deleteOnboardingDocument } from "app/hooks/officeSetting";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { ViewDetailSheetCardExtension } from "components";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
 const OnboardingActions = ({ data, reload, OnboardingList = [] }) => {
   const [view, setView] = useState(null);
   const [deleteDept, setDeleteDept] = useState(null);
   const [edit, setEdit] = useState(null);
+  const permissions = useOfficeSettingPermissions();
 
   const formSheetData = {
     triggerText: null,
@@ -60,9 +62,9 @@ const OnboardingActions = ({ data, reload, OnboardingList = [] }) => {
   return (
     <>
       <DropdownActionMenu 
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onView={permissions.onboarding.canView ? handleView : null}
+        onEdit={permissions.onboarding.canUpdate ? handleEdit : null}
+        onDelete={permissions.onboarding.canDelete ? handleDelete : null}
         viewText="View Document"
         editText="Edit Document"
         deleteText="Delete Document"

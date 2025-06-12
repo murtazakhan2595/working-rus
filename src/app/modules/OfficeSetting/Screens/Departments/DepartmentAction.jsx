@@ -6,12 +6,14 @@ import ViewDepartment from "./ViewDepartment";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { ViewDetailSheetCardExtension } from "components";
 import useUserOrganization from "app/hooks/useUserOrganization";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
 const DepartmentAction = ({ data, reload, DepartmentList = [] }) => {
   const [view, setView] = useState(null);
   const [deleteDept, setDeleteDept] = useState(null);
   const [edit, setEdit] = useState(null);
   const userOrganization = useUserOrganization();
+  const permissions = useOfficeSettingPermissions();
 
   const formSheetData = {
     triggerText: null,
@@ -60,9 +62,9 @@ const DepartmentAction = ({ data, reload, DepartmentList = [] }) => {
   return (
     <>
       <DropdownActionMenu 
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onView={permissions.departments.canView ? handleView : null}
+        onEdit={permissions.departments.canUpdate ? handleEdit : null}
+        onDelete={permissions.departments.canDelete ? handleDelete : null}
         viewText="View Department"
         editText="Edit Department"
         deleteText="Delete Department"

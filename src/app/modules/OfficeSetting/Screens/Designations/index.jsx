@@ -12,6 +12,9 @@ import { DesignationColumn } from "../../sections/OfficeSettingTableColumns";
 import { Input } from "components/ui/input";
 import { Search } from "lucide-react";
 import { FilterInput } from "components/FormControl";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
+import { OfficeSettingPermissionWrapper } from "../../components/PermissionWrapper";
+import { OFFICE_SETTING_PERMISSIONS } from "../../permissions/constants";
 
 const Designations = ({
   loading,
@@ -97,7 +100,10 @@ const Designations = ({
   ];
 
   return (
-    <>
+    <OfficeSettingPermissionWrapper 
+      permissions={OFFICE_SETTING_PERMISSIONS.DESIGNATIONS.VIEW}
+      showError={true}
+    >
       <div className="flex flex-col justify-end gap-4">
         
         {loading ? (
@@ -130,7 +136,7 @@ const Designations = ({
           </Card>
         )}
       </div>
-    </>
+    </OfficeSettingPermissionWrapper>
   );
 };
 

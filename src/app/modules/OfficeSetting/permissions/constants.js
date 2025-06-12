@@ -1,0 +1,74 @@
+export const OFFICE_SETTING_PERMISSIONS = {
+  // Organization Module
+  ORGANIZATION: {
+    VIEW: 'VIEW_ORGANIZATION',
+    CREATE: 'EDIT_ORGANIZATION', // Using EDIT as CREATE since no separate CREATE permission exists
+    UPDATE: 'EDIT_ORGANIZATION',
+    DELETE: 'DELETE_ORGANIZATION'
+  },
+
+  // Branches Module
+  BRANCHES: {
+    VIEW: 'VIEW_BRANCHES',
+    CREATE: 'ADD_BRANCHES',
+    UPDATE: 'EDIT_BRANCHES',
+    DELETE: 'DELETE_BRANCHES'
+  },
+
+  // Departments Module
+  DEPARTMENTS: {
+    VIEW: 'VIEW_DEPARTMENTS',
+    CREATE: 'ADD_DEPARTMENTS',
+    UPDATE: 'EDIT_DEPARTMENTS',
+    DELETE: 'DELETE_DEPARTMENTS',
+    ASSIGN_PERMISSIONS: 'ASSIGN_DEPARTMENT_PERMISSIONS'
+  },
+
+  // Designations Module
+  DESIGNATIONS: {
+    VIEW: 'VIEW_DESIGNATIONS',
+    CREATE: 'ADD_DESIGNATIONS',
+    UPDATE: 'EDIT_DESIGNATIONS',
+    DELETE: 'DELETE_DESIGNATIONS',
+    BULK_UPLOAD: 'BULK_UPLOAD_DESIGNATIONS'
+  },
+
+  // Grace Time Module (Note: No specific grace time permissions in API, using shifts as fallback)
+  GRACE_TIME: {
+    VIEW: 'VIEW_SHIFTS',
+    CREATE: 'ADD_SHIFTS',
+    UPDATE: 'EDIT_SHIFTS',
+    DELETE: 'DELETE_SHIFTS'
+  },
+
+  // Working Hours Module
+  WORKING_HOURS: {
+    VIEW: 'VIEW_SHIFTS',
+    CREATE: 'ADD_SHIFTS',
+    UPDATE: 'EDIT_SHIFTS',
+    DELETE: 'DELETE_SHIFTS'
+  },
+
+  // Shift Module
+  SHIFT: {
+    VIEW: 'VIEW_SHIFTS',
+    CREATE: 'ADD_SHIFTS',
+    UPDATE: 'EDIT_SHIFTS',
+    DELETE: 'DELETE_SHIFTS',
+    ASSIGN: 'ASSIGN_SHIFT'
+  },
+
+  // Onboarding Checklist Module
+  ONBOARDING: {
+    VIEW: 'VIEW_ONBOARDING_CHECKLIST',
+    CREATE: 'ADD_ONBOARDING_CHECKLIST',
+    UPDATE: 'EDIT_ONBOARDING_CHECKLIST',
+    DELETE: 'DELETE_ONBOARDING_CHECKLIST'
+  },
+
+  // Organizational Chart Module
+  ORG_CHART: {
+    VIEW: 'VIEW_ORGANIZATION_TREE',
+    MANAGE: 'MANAGE_ORGANIZATION_TREE'
+  }
+}; 
