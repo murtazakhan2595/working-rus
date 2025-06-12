@@ -768,6 +768,96 @@ export const handleRequest = async (request_id, approve) => {
   }
 };
 
+export const getDepartmentById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/department/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error('Failed to fetch department');
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    throw error;
+  }
+};
+
+export const getDesignationById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/designation/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error('Failed to fetch designation');
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    throw error;
+  }
+};
+
+export const getBranchById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/branch/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error('Failed to fetch branch');
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    throw error;
+  }
+};
+
+export const getShiftById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/shift/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error('Failed to fetch shift');
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    throw error;
+  }
+};
+
+export const getOnboardingDocumentById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/onboarding-document/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error('Failed to fetch onboarding document');
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    throw error;
+  }
+};
+
 export {
   getDepartmentList,
   getManagersList,
