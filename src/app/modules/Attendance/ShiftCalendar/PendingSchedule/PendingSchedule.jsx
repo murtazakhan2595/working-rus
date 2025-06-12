@@ -74,9 +74,16 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
   const confirmApprove = async () => {
     setProcessing(true);
     try {
+      // Generate log for the new approved entry
+      await generateShiftScheduleLog({
+        scheduleData: approveState.data,
+        logType: "Change Request",
+        userProfile,
+        status: "Approved",
+      });
       // Create a new approved record
       const originalSchedule = approveState.data;
-      
+
       // Prepare payload for new approved schedule
       const newApprovedPayload = {
         employee: originalSchedule.employee,
@@ -98,14 +105,6 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
       const newResponse = await saveShiftSchedule(newApprovedPayload);
 
       if (newResponse) {
-        // Generate log for the new approved entry
-        await generateShiftScheduleLog({
-          scheduleData: newResponse, // Use new created entry for logs
-          logType: "Change Request",
-          userProfile,
-          status: "Approved",
-        });
-
         // Delete the old pending schedule
         const deleteResponse = await deleteShiftSchedule(originalSchedule.id);
 

@@ -64,11 +64,9 @@ const ShiftCalendar = () => {
         const filterDataToSend = {
           ...filters,
         };
-        if (isEditPendingSchedulesPermitted && userProfile?.id) {
+        if (!isEditPendingSchedulesPermitted && userProfile?.id) {
           filterDataToSend.direct_report = userProfile.id;
         }
-        console.log("Fetching users with filters:", filterDataToSend);
-        console.log("isEditPendingSchedulesPermitted", isEditPendingSchedulesPermitted);
         const response = await getEmployeeCustomList({
           filterData: {
             ...filterDataToSend,
