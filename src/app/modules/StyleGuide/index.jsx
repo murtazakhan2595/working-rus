@@ -592,6 +592,12 @@ const typographyData = [
         {/* Calendar Example */}
         <Card className="p-6 max-w-[840px] mx-auto">
           <h2 className="mb-4 text-lg font-semibold">Calendar</h2>
+          <div className="mb-4">
+            <p className="text-sm text-neutral-700">
+              Enhanced calendar component with month and year dropdown selectors for easier navigation.
+              Click on the month or year to open the dropdown selector.
+            </p>
+          </div>
           <Calendar />
         </Card>
 
