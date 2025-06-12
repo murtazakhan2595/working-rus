@@ -453,7 +453,7 @@ const generateShiftScheduleLog = async ({
     approved_on: moment().format("YYYY-MM-DD HH:mm:ss"),
     status: status,
     employee: scheduleData.employee?.id || scheduleData.employee,
-    action_by: scheduleData?.assigned_by,
+    action_by: userProfile?.employee_id || userProfile?.id,
     approved_by: userProfile?.employee_id || userProfile?.id,
   };
 
