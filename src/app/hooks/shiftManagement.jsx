@@ -115,6 +115,9 @@ const getShiftSchedule = async (payload) => {
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
+  if (!filterData?.draft) {
+    filterData.draft = false; // Ensure draft is false by default
+  }
   let URL = `/shift-schedules?ordering=${sortField}&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
@@ -336,6 +339,7 @@ export async function getActiveShiftsData(
   customSchedule
 ) {
   try {
+    console.log()
     if (!employeeId || !date) return null;
     const formattedDate = moment(date).format("YYYY-MM-DD");
     const isWeekend = moment(date).day() === 0 || moment(date).day() === 6;
