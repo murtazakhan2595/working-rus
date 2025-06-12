@@ -45,7 +45,7 @@ const SheetUI = forwardRef(
       validateFormSchema,
       submitButtonText = "Submit",
       cancelButtonText,
-      formFiels,
+      formFields,
       renderUpdatedFormValues = () => {},
       columns,
       onFormChange,
@@ -105,17 +105,30 @@ const SheetUI = forwardRef(
           {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
               {children}
-              {formFiels?.map(
+              {formFields?.map(
                 (
                   {
                     InputFields,
                     sheetCardExtension,
                     sheetCardTitle,
                     sheetCardName,
+                    customComponent,
                   },
                   index
                 ) => {
                   const sheetCardError = get(props.errors, sheetCardName);
+                  
+                  // Handle custom component if provided
+                  if (customComponent) {
+                    return (
+                      <div key={index}>
+                        {typeof customComponent === 'function'
+                          ? customComponent({ form: props })
+                          : customComponent}
+                      </div>
+                    );
+                  }
+                  
                   return (
                     <div key={index}>
                       <FormBody
@@ -143,7 +156,22 @@ const SheetUI = forwardRef(
                             subColumns,
                             shouldRender = true, // NEW: Default to true for backward compatibility
                             renderCondition = true, // NEW: Alternative prop name for conditional rendering
+                            customComponent,
                           } = fieldsConfig;
+
+                          // Handle custom component inside InputFields
+                          if (customComponent) {
+                            return (
+                              <div 
+                                className={`space-y-4 ${colsSpan ? `col-span-${colsSpan || 1}` : ""}`}
+                                key={name || `custom-${index}`}
+                              >
+                                {typeof customComponent === 'function'
+                                  ? customComponent({ field: fieldsConfig, form: props })
+                                  : customComponent}
+                              </div>
+                            );
+                          }
 
                           // NEW: Check if field should be rendered
                           // Support both shouldRender and renderCondition props for flexibility

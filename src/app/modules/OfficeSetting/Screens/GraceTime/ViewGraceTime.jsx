@@ -1,5 +1,6 @@
 import React from "react";
-import { NavigationSheetComponent, DetailContent } from "components";
+import { NavigationSheetComponent } from "components"; 
+import { DetailContent } from "components";
 import AddGraceTimeForm from "./AddGraceTimeForm";
 import { FormatID } from "utils/getValuesFromTables";
 import { BranchName } from "utils/getValuesFromTables";
@@ -74,7 +75,7 @@ const ViewGraceTime = ({
       fetchCurrentItemDetails={fetchData}
       deleteItemName="name"
       editTooltip="Edit Grace Time"
-      deleteTooltip="Delete Geace Time"
+      deleteTooltip="Delete Grace Time"
     >
       <DetailContent title="Grace Time Details" fields={fields} />
     </NavigationSheetComponent>

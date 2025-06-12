@@ -1,72 +1,103 @@
 import { addUpdateBranch } from "app/hooks/general";
 import { Branch } from "app/utils/Types/OfficeSetting";
-import { RadioGroupInput } from "components/FormControl";
-import { TextAreaInput } from "components/FormControl";
-import { TextInput } from "components/FormControl";
-import { handleCloseWithConfirmation } from "components/SheetCardExtension";
-import { SheetCardExtension } from "components/SheetCardExtension";
-import { Button } from "components/ui/button";
-import { Switch } from "src/@/components/ui/switch";
-import { Label } from "src/@/components/ui/label";
-import { Formik } from "formik";
-import React, { useEffect, useState } from "react";
+import { TextAreaInput, TextInput, SelectLocationOnMap } from "components/FormControl";
+import SheetUI from "components/SheetUI";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchBranches } from "state/slices/CommonSlice";
-import { SelectLocationOnMap } from "components/FormControl";
+import { initialState } from "state/slices/UserSlice";
 
-// Custom Status Switch Component
-const StatusSwitch = ({ name, label, value, error, touch, onChange, required }) => {
+// Get the base URL from Redux store
+const baseUrl = initialState.baseUrl;
+
+// Custom Status component for SheetUI
+const StatusComponent = ({ value, onChange }) => {
   const isActive = value === "Active";
   
-  const handleSwitchChange = (checked) => {
-    onChange(name, checked ? "Active" : "Inactive");
+  const handleChange = (checked) => {
+    onChange(checked ? "Active" : "Inactive");
   };
 
   return (
-    <div className="space-y-2">
-      <Label className={`text-sm font-medium ${required ? "after:content-['*'] after:text-red-500 after:ml-1" : ""}`}>
-        {label}
-      </Label>
-      <div className="flex items-center space-x-3">
-        <Switch
-          id={name}
+    <div className="flex items-center space-x-3">
+      <label className="relative inline-flex items-center cursor-pointer">
+        <input 
+          type="checkbox" 
+          className="sr-only peer" 
           checked={isActive}
-          onCheckedChange={handleSwitchChange}
+          onChange={e => handleChange(e.target.checked)}
         />
-        <span className={`text-sm font-medium ${isActive ? "text-green-600" : "text-red-600"}`}>
-          {value || "Inactive"}
-        </span>
-      </div>
-      {error && touch && (
-        <p className="text-sm text-red-500">{error}</p>
-      )}
+        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+      </label>
+      <span className={`text-sm font-medium ${isActive ? "text-green-600" : "text-red-600"}`}>
+        {isActive ? "Active" : "Inactive"}
+      </span>
     </div>
   );
 };
 
 const AddBranchForm = ({
-  setIsOpen,
-  editMode = false,
-  branchData = {},
-  reload = () => {},
+  id = false,
+  reloadData = () => {},
+  isOpen = false,
+  setIsOpen = () => {},
   onUpdateSuccess = null,
 }) => {
-  const [closeSheet, setCloseSheet] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState(Branch);
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const [showMap, setShowMap] = useState(false);
-  const formData = editMode ? branchData : Branch;
   const dispatch = useDispatch();
+  const isEditMode = Boolean(id);
+
+  const FormSheetData = {
+    triggerText: `${isEditMode ? "Edit" : "Add"} Branch`,
+    title: `${isEditMode ? "Edit" : "Add"} Branch`,
+    description: null,
+    footer: null,
+  };
+
+  // Fetch branch data when editing
+  React.useEffect(() => {
+    const fetchBranchData = async () => {
+      if (id) {
+        setIsLoading(true);
+        try {
+          // Replace with your API call to get branch by ID
+          const response = await fetch(`${baseUrl}/branch/${id}/`, {
+            headers: {
+              Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+          });
+          const data = await response.json();
+          if (data) {
+            setFormData(data);
+          }
+        } catch (error) {
+          console.error("Error fetching branch data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    
+    fetchBranchData();
+  }, [id]);
 
   const handleClose = () => {
-    setCloseSheet(true);
+    setIsOpen(false);
+    reloadData(true);
   };
 
   const handleSubmit = async (values) => {
     try {
-      const response = await addUpdateBranch(values, branchData.id);
+      setIsSubmittingForm(true);
+      const response = await addUpdateBranch(values, id);
       if (response) {
         toast.success(
-          `Branch ${editMode ? "Updated" : "Added"} Successfully!`,
+          `Branch ${isEditMode ? "Updated" : "Added"} Successfully!`,
           {
             position: toast.POSITION.TOP_RIGHT,
           }
@@ -77,183 +108,174 @@ const AddBranchForm = ({
           await onUpdateSuccess(values);
         }
 
-        setIsOpen(true); // Pass true to indicate successful update
+        handleClose();
         dispatch(fetchBranches());
       }
     } catch (error) {
       console.error("ERROR", error);
+      
+      // Show error message
+      const errorMessage = error?.response?.data?.message || `Failed to ${isEditMode ? "update" : "add"} branch.`;
+      toast.error(errorMessage, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } finally {
+      setIsSubmittingForm(false);
     }
+  };
+
+  const handleMapOpen = () => {
+    setShowMap(true);
   };
 
   const handleMapClose = () => {
     setShowMap(false);
   };
 
-const handleLocationSave = (formik, locationData) => {
-  formik.setFieldValue("branch_coordinates", {
-    lat: locationData.coordinates.lat,
-    lng: locationData.coordinates.lng,
-  });
-  formik.setFieldValue("branch_location", locationData.formattedAddress);
+  const handleLocationSave = (locationData) => {
+    setFormData(prev => ({
+      ...prev,
+      branch_coordinates: {
+        lat: locationData.coordinates.lat,
+        lng: locationData.coordinates.lng,
+      },
+      branch_location: locationData.formattedAddress,
+      branch_address: locationData.formattedAddress,
+    }));
+    setShowMap(false);
+  };
 
-  // Also set the branch_address field with the same formatted address
-  formik.setFieldValue("branch_address", locationData.formattedAddress);
-
-  setShowMap(false);
-};
+  const validateForm = (values) => {
+    const errors = {};
+    
+    if (!values.branch_name) {
+      errors.branch_name = "Branch name is required";
+    }
+    
+    if (!values.branch_number) {
+      errors.branch_number = "Branch number is required";
+    }
+    
+    if (!values.branch_address) {
+      errors.branch_address = "Branch address is required";
+    }
+    
+    return errors;
+  };
 
   return (
     <>
-      {handleCloseWithConfirmation({
-        isOpen: closeSheet,
-        setCloseSheet,
-        setIsOpen,
-      })}
-      <Formik 
-        initialValues={{
-          ...formData,
-          branch_coordinates: formData.branch_coordinates || { lat: 0, lng: 0 },
-          branch_location: formData.branch_location || "",
-        }}
-        enableReinitialize
-        onSubmit={(values, { resetForm }) => {
-          handleSubmit(values, resetForm);
-        }}
-      >
-        {(props) => (
-          <form onSubmit={props?.handleSubmit}>
-            <SheetCardExtension title="Branch Details" className="mt-8">
-            <div className="flex flex-col gap-4 mb-6">  
-              <StatusSwitch
-                name="branch_status"
-                label="Branch Status"
-                value={props.values?.branch_status}
-                error={props.errors?.branch_status}
-                touch={props.touched?.branch_status}
-                onChange={(field, value) => {
-                  props.setFieldValue(field, value);
-                }}
-                required
-              />
-              </div>
-              <TextInput
-                name="branch_name"
-                label="Branch Name"
-                required
-                error={props.errors.branch_name}
-                touch={props.touched.branch_name}
-                value={props.values.branch_name}
-                onChange={(field, value) => {
-                  props.handleChange(field)(value);
-                }}
-              />
-             
-              <TextInput
-                name="branch_number"
-                label="Branch Number"
-                required
-                error={props.errors.branch_number}
-                touch={props.touched.branch_number}
-                value={props.values.branch_number}
-                onChange={(field, value) => {
-                  props.handleChange(field)(value);
-                }}
-              />
-              <div className="flex flex-col gap-4 mb-6">
-
-              <TextAreaInput
-                name="branch_address"
-                label="Branch Address"
-                required
-                error={props.errors.branch_address}
-                touch={props.touched.branch_address}
-                value={props.values.branch_address}
-                onChange={(field, value) => {
-                  props.handleChange(field)(value);
-                }}
-              />
-              </div>
-              <div className="mb-4">
-                <label className="block mb-1 text-sm font-medium">
-                  Branch Location
-                </label>
-                <div className="flex items-center gap-2">
-                  <TextInput
-                    name="branch_location"
-                    label=""
-                    placeholder="Select location on map"
-                    value={props.values.branch_location}
-                    disabled={true}
-                    // className="flex-1"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setShowMap(true)}
-                  >
-                    Open Map
-                  </Button>
-                </div>
-
-                {props.values.branch_coordinates &&
-                  props.values.branch_coordinates.lat !== 0 && (
-                    <div className="grid grid-cols-2 gap-4 mt-2">
-                      <div>
-                        <span className="text-xs text-neutral-1000">Latitude:</span>
-                        <span className="ml-1 text-sm">
-                          {props.values.branch_coordinates.lat.toFixed(6)}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs text-neutral-1000">
-                          Longitude:
-                        </span>
-                        <span className="ml-1 text-sm">
-                          {props.values.branch_coordinates.lng.toFixed(6)}
-                        </span>
-                      </div>
+      <SheetUI
+        isOpen={isOpen}
+        setIsOpen={handleClose}
+        variant="sheet"
+        sheetConfig={FormSheetData}
+        formConfig={{
+          initialValues: formData,
+          enableReinitialize: true,
+          handleSubmit: handleSubmit,
+          validateFormSchema: validateForm,
+          submitButtonText: isEditMode ? "Update" : "Add",
+          cancelButtonText: "Cancel",
+          columns: 1,
+          disableSubmit: isLoading || isSubmittingForm,
+          loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
+          formFields: [
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: "Branch Details",
+              InputFields: [
+                {
+                  label: "Branch Status",
+                  name: "branch_status",
+                  required: true,
+                  customComponent: ({ field, form }) => (
+                    <div className="mb-4">
+                      <label className="block mb-2 text-sm font-medium">Branch Status</label>
+                      <StatusComponent 
+                        value={form.values.branch_status} 
+                        onChange={(value) => form.setFieldValue('branch_status', value)} 
+                      />
                     </div>
-                  )}
-              </div>
+                  ),
+                },
+                {
+                  InputField: TextInput,
+                  name: "branch_name",
+                  label: "Branch Name",
+                  required: true,
+                },
+                {
+                  InputField: TextInput,
+                  name: "branch_number",
+                  label: "Branch Number",
+                  required: true,
+                },
+                {
+                  InputField: TextAreaInput,
+                  name: "branch_address",
+                  label: "Branch Address",
+                  required: true,
+                },
+                {
+                  label: "Branch Location",
+                  name: "branch_location",
+                  customComponent: ({ field, form }) => (
+                    <div className="mb-4">
+                      <label className="block mb-2 text-sm font-medium">Branch Location</label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          placeholder="Select location on map"
+                          value={form.values.branch_location || ""}
+                          disabled
+                        />
+                        <button
+                          type="button"
+                          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+                          onClick={handleMapOpen}
+                        >
+                          Open Map
+                        </button>
+                      </div>
+                      
+                      {form.values.branch_coordinates && form.values.branch_coordinates.lat !== 0 && (
+                        <div className="grid grid-cols-2 gap-4 mt-2">
+                          <div>
+                            <span className="text-xs text-neutral-1000">Latitude:</span>
+                            <span className="ml-1 text-sm">
+                              {form.values.branch_coordinates.lat.toFixed(6)}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-xs text-neutral-1000">
+                              Longitude:
+                            </span>
+                            <span className="ml-1 text-sm">
+                              {form.values.branch_coordinates.lng.toFixed(6)}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ),
+                },
+              ],
+            },
+          ],
+        }}
+      />
 
-              {showMap && (
-                <SelectLocationOnMap
-                  isOpen={showMap}
-                  onClose={handleMapClose}
-                  onSave={(locationData) =>
-                    handleLocationSave(props, locationData)
-                  }
-                  initialLocation={props.values.branch_location}
-                  initialCoordinates={props.values.branch_coordinates}
-                />
-              )}
-            </SheetCardExtension>
-            <div className="p-6 mt-5 border-t border-gray-200 bg-gray-50">
-              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  type="button"
-                  onClick={handleClose}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="lg"
-                  variant="default"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    props.handleSubmit();
-                  }}
-                >
-                  {editMode ? "Update" : "Add"}
-                </Button>
-              </div>
-            </div>
-          </form>
-        )}
-      </Formik>
+      {showMap && (
+        <SelectLocationOnMap
+          isOpen={showMap}
+          onClose={handleMapClose}
+          onSave={handleLocationSave}
+          initialLocation={formData.branch_location}
+          initialCoordinates={formData.branch_coordinates}
+        />
+      )}
     </>
   );
 };
