@@ -4,7 +4,6 @@ import { deleteRecord } from "app/hooks/general";
 import ViewShift from "./ViewShift";
 import AddShiftForm from "./AddShiftForm";
 import DropdownActionMenu from "components/DropdownActionMenu";
-import { ViewDetailSheetCardExtension } from "components";
 import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
 const ShiftActions = ({ data, reload, ShiftList = [] }) => {
@@ -12,13 +11,6 @@ const ShiftActions = ({ data, reload, ShiftList = [] }) => {
   const [deleteShift, setDeleteShift] = useState(null);
   const [edit, setEdit] = useState(null);
   const permissions = useOfficeSettingPermissions();
-
-  const formSheetData = {
-    triggerText: null,
-    title: "Update Shift Details",
-    description: null,
-    footer: null,
-  };
 
   const handleView = (event) => {
     event.preventDefault();
@@ -58,13 +50,8 @@ const ShiftActions = ({ data, reload, ShiftList = [] }) => {
     }
   };
 
-  const handleFormUpdate = async (formData) => {
-    console.log("Shift updated with data:", formData);
-    return true;
-  };
-
   return (
-        <>
+    <>
       <DropdownActionMenu
         onView={permissions.shift.canView ? handleView : null}
         onEdit={permissions.shift.canUpdate ? handleEdit : null}
@@ -91,24 +78,14 @@ const ShiftActions = ({ data, reload, ShiftList = [] }) => {
       )}
 
       {edit?.open && (
-        <ViewDetailSheetCardExtension
-          isOpen={edit?.open}
-          setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
-          title="Update Shift"
-          handlePrevious={() => {}}
-          handleNext={() => {}}
-        >
-          <AddShiftForm
-            isOpen={edit.open}
-            setIsOpen={(isOpen) =>
-              setEdit((prev) => ({ ...prev, open: isOpen }))
-            }
-            shiftData={edit.data}
-            setEdit={setEdit}
-            reload={reload}
-            onUpdateSuccess={handleFormUpdate}
-          />
-        </ViewDetailSheetCardExtension>
+        <AddShiftForm
+          isOpen={edit.open}
+          setIsOpen={() => {
+            reload(true);
+            setEdit(null);
+          }}
+          id={data.id}
+        />
       )}
 
       {view?.visible && (
@@ -117,9 +94,9 @@ const ShiftActions = ({ data, reload, ShiftList = [] }) => {
           setIsOpen={(isOpen) =>
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
-          data={view.data}
-          reload={reload}
-          ShiftList={ShiftList}
+          currentId={view?.data?.id}
+          reloadData={reload}
+          DataList={ShiftList}
         />
       )}
     </>

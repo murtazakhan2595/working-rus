@@ -822,20 +822,15 @@ export const getBranchById = async (id) => {
   }
 };
 
-export const getShiftById = async (id) => { 
+export const getShiftById = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/shift/${id}`, {
       headers: headers(),
     });
-    if (response.status === 200) {
-      return response.data;
-    } else {
-      throw new Error('Failed to fetch shift');
-    }
+    
+    return response.data;
   } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
+    console.error("Error fetching shift by ID:", error);
     throw error;
   }
 };
