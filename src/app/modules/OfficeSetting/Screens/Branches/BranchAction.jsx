@@ -4,7 +4,6 @@ import { deleteRecord } from "app/hooks/general";
 import AddBranchForm from "./AddBranchForm";
 import ViewBranch from "app/modules/OfficeSetting/Screens/Branches/ViewBranch";
 import DropdownActionMenu from "components/DropdownActionMenu";
-import { ViewDetailSheetCardExtension } from "components";
 import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
 const BranchAction = ({ data, reload, BranchList = [] }) => {
@@ -12,13 +11,6 @@ const BranchAction = ({ data, reload, BranchList = [] }) => {
   const [edit, setEdit] = useState(null);
   const [deleteBranch, setDeleteBranch] = useState(null);
   const permissions = useOfficeSettingPermissions();
-
-  const formSheetData = {
-    triggerText: 'Update Branch',
-    title: "Update Branch",
-    description: null,
-    footer: null,
-  };
 
   const handleView = () => {
     setView({
@@ -85,21 +77,13 @@ const BranchAction = ({ data, reload, BranchList = [] }) => {
       )}
 
       {edit?.open && (
-        <ViewDetailSheetCardExtension
-          isOpen={edit?.open}
+        <AddBranchForm
+          isOpen={edit.open}
           setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
-          title="Update Branch"
-          handlePrevious={() => {}}
-          handleNext={() => {}}
-        >
-          <AddBranchForm
-            setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
-            editMode={true}
-            reload={reload}
-            branchData={edit.data}
-            onUpdateSuccess={handleFormUpdate}
-          />
-        </ViewDetailSheetCardExtension>
+          id={data?.id}
+          reloadData={reload}
+          onUpdateSuccess={handleFormUpdate}
+        />
       )}
 
       {view?.visible && (

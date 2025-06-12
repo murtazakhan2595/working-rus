@@ -1,38 +1,33 @@
 import { getDepartmentList } from "app/hooks/general";
 import { saveDesignation } from "app/hooks/general";
 import { getOrganizationList } from "app/hooks/general";
+import { getDesignationById } from "app/hooks/general";
 import { DesignationInfo } from "app/utils/Types/Designation";
 import { SelectInputComponent } from "components/FormControl";
 import { TextAreaInput } from "components/FormControl";
 import { TextInput } from "components/FormControl";
-import { handleCloseWithConfirmation } from "components/SheetCardExtension";
-import { SheetCardExtension } from "components/SheetCardExtension";
-import { Button } from "components/ui/button";
-import { Formik } from "formik";
-import React, { useEffect, useState, useRef } from "react";
+import SheetUI from "components/SheetUI";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { Input } from "components/ui/input";
-import { Loader2, UploadCloud, Download } from "lucide-react";
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import BulkUploadSection from "components/BulkUploadSection";
 
 const baseUrl = initialState.baseUrl;
-const headers = () => ({
-  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-  "Content-Type": "application/json",
-});
 
 const AddDesignationForm = ({
-  isOpen,
-  setIsOpen,
+  id = false,
+  isOpen = false,
+  setIsOpen = () => {},
   edit,
-  setEdit,
-  reload,
+  reloadData = () => {},
+  userOrganization,
   onUpdateSuccess = null,
 }) => {
-  const [closeSheet, setCloseSheet] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState(DesignationInfo);
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false);
 
   // Get user details from Redux store to access organization ID
   const userDetails = useSelector((state) => state.emp?.user_details);
@@ -40,29 +35,55 @@ const AddDesignationForm = ({
     userDetails?.organization_id || userDetails?.organization;
 
   // Determine if we're in edit mode - handle both structures
-  const isEditMode = Boolean(edit?.data) || Boolean(edit?.id);
+  const isEditMode = Boolean(edit?.data) || Boolean(edit?.id) || Boolean(id);
 
   // Extract the actual data based on the structure provided
   const editData = edit?.data || edit;
 
-  // Initialize form data with designation values if in edit mode
-  const [formData, setFormData] = useState({
-    ...DesignationInfo,
-    ...(editData || {}),
-  });
+  const FormSheetData = {
+    triggerText: `${isEditMode ? "Edit" : "Add"} Designation`,
+    title: `${isEditMode ? "Edit" : "Add"} Designation`,
+    description: null,
+    footer: null,
+  };
 
   // Update form data when edit data changes
   useEffect(() => {
     if (editData) {
+      console.log("Setting form data from edit:", editData);
       setFormData({
         ...DesignationInfo,
-        ...(editData || {}),
+        ...editData,
       });
     }
-  }, [editData, isEditMode]);
+    
+    // If we have an ID but no edit data, fetch the designation data
+    if (id && !editData) {
+      const fetchDesignationData = async () => {
+        try {
+          setIsLoading(true);
+          const data = await getDesignationById(id);
+          if (data) {
+            console.log("Fetched designation data:", data);
+            setFormData({
+              ...DesignationInfo,
+              ...data,
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching designation data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchDesignationData();
+    }
+  }, [editData, id]);
 
   const handleClose = () => {
-    setCloseSheet(true);
+    setIsOpen(false);
+    reloadData(true);
   };
 
   // Form validation
@@ -88,22 +109,20 @@ const AddDesignationForm = ({
     return errors;
   };
 
-  const handleSubmit = async (values, formikHelpers) => {
-    console.log("Form submitted with values:", values);
-    
-    const { setSubmitting, setErrors, resetForm } = formikHelpers;
-
-    // Get the ID from the appropriate source
-    const designationId = editData?.id;
-
-    // Make sure organization is included
-    const submitData = {
-      ...values,
-      organization:
-        values.organization || editData?.organization || userOrganizationId,
-    };
-
+  const handleSubmit = async (values) => {
     try {
+      setIsSubmittingForm(true);
+      
+      // Get the ID from the appropriate source
+      const designationId = id || editData?.id;
+
+      // Make sure organization is included
+      const submitData = {
+        ...values,
+        organization:
+          values.organization || editData?.organization || userOrganizationId,
+      };
+
       const response = await saveDesignation(submitData, designationId);
 
       if (response) {
@@ -119,21 +138,11 @@ const AddDesignationForm = ({
           await onUpdateSuccess(submitData);
         }
 
-        resetForm();
-        setIsOpen(true); // Pass true to indicate successful update
+        handleClose();
       }
     } catch (error) {
-      console.log("API call error:", error);
-      console.log("Error response data:", error.response?.data);
-
-      // Set form errors if they come from the API
-      if (error.response?.data?.errors) {
-        setErrors(error.response.data.errors);
-      } else if (error.response?.data) {
-        // Handle Django REST framework error format
-        setErrors(error.response.data);
-      }
-
+      console.error("API call error:", error);
+      
       const errorMessage =
         error?.response?.data?.message ||
         `Failed to ${isEditMode ? "update" : "add"} designation.`;
@@ -141,111 +150,73 @@ const AddDesignationForm = ({
         position: toast.POSITION.TOP_RIGHT,
       });
     } finally {
-      setSubmitting(false);
+      setIsSubmittingForm(false);
     }
   };
 
-  return (
-    <>
-      {handleCloseWithConfirmation({
-        isOpen: closeSheet,
-        setCloseSheet,
-        setIsOpen,
-      })}
-      <Formik
-        initialValues={formData}
-        onSubmit={handleSubmit}
-        validate={validateForm}
-        validateOnChange={true}
-        validateOnBlur={true}
-        enableReinitialize={true}
-      >
-        {(props) => (
-          <form onSubmit={props?.handleSubmit}>
-            {!isEditMode && (
-              <BulkUploadSection
-                title="Bulk Upload Designations"
-                module="designation"
-                templateEndpoint={null}
-                uploadEndpoint={`${baseUrl}/designation/upload/`}
-                onUploadSuccess={reload}
-                organizationId={userOrganizationId}
-                showDivider={true}
-              />
-            )}
+  // Create customComponent for BulkUpload section (only shown in Add mode)
+  const BulkUploadComponent = !isEditMode ? (
+    <BulkUploadSection
+      title="Bulk Upload Designations"
+      module="designation"
+      templateEndpoint={null}
+      uploadEndpoint={`${baseUrl}/designation/upload/`}
+      onUploadSuccess={reloadData}
+      organizationId={userOrganizationId}
+      showDivider={true}
+    />
+  ) : null;
 
-            <SheetCardExtension 
-              title={`${isEditMode ? "Edit" : "Add"} Designation`}
-              className="mt-8"
-            >
-              <TextInput
-                name="name"
-                label="Designation"
-                required
-                error={props.errors.name}
-                touch={props.touched.name}
-                value={props.values.name}
-                onChange={(field, value) => {
-                  props.setFieldValue(field, value);
-                }}
-                onBlur={props.handleBlur}
-              />
-              <TextAreaInput
-                name="description"
-                label="Description"
-                required
-                error={props.errors.description}
-                touch={props.touched.description}
-                value={props.values.description}
-                onChange={(field, value) => {
-                  props.setFieldValue(field, value);
-                }}
-                onBlur={props.handleBlur}
-              />
-              {/* Hidden field for organization */}
-              <input
-                type="hidden"
-                name="organization"
-                value={
-                  props.values.organization ||
-                  editData?.organization ||
-                  userOrganizationId
-                }
-              />
-            </SheetCardExtension>
-            <div className="p-6 border-t border-gray-200 bg-gray-50">
-              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  type="button"
-                  onClick={handleClose}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="lg"
-                  variant="default"
-                  disabled={props.isSubmitting || !props.isValid}
-                  onClick={(e) => {
-                    console.log("Update button clicked!");
-                    e.preventDefault();
-                    props.handleSubmit();
-                  }}
-                >
-                  {props.isSubmitting
-                    ? "Saving..."
-                    : isEditMode
-                    ? "Update"
-                    : "Add"}
-                </Button>
-              </div>
-            </div>
-          </form>
-        )}
-      </Formik>
-    </>
+  return (
+    <SheetUI
+      isOpen={isOpen}
+      setIsOpen={handleClose}
+      variant="sheet"
+      sheetConfig={FormSheetData}
+      formConfig={{
+        initialValues: formData,
+        enableReinitialize: true,
+        handleSubmit: handleSubmit,
+        validateFormSchema: validateForm,
+        submitButtonText: isEditMode ? "Update" : "Add",
+        cancelButtonText: "Cancel",
+        columns: 1,
+        disableSubmit: isLoading || isSubmittingForm,
+        loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
+        formFields: [
+          !isEditMode && {
+            customComponent: BulkUploadComponent
+          },
+          {
+            sheetCardExtension: true,
+            sheetCardTitle: `${isEditMode ? 'Edit' : 'Add'} Designation`,
+            InputFields: [
+              {
+                InputField: TextInput,
+                name: "name",
+                label: "Designation",
+                required: true,
+              },
+              {
+                InputField: TextAreaInput,
+                name: "description",
+                label: "Description",
+                required: true,
+              },
+              // Hidden field for organization
+              {
+                InputField: TextInput,
+                name: "organization",
+                label: "Organization",
+                type: "hidden",
+                value: userOrganizationId,
+                hidden: true,
+              },
+            ],
+          },
+        ].filter(Boolean),
+      }}
+    />
   );
 };
 

@@ -117,7 +117,6 @@ const NavigationSheetComponent = ({
 
   const confirmDelete = async () => {
     try {
-      debugger
       // Check if required values exist
       if (!apiEndpoint || !currentItemId) {
         console.warn(
@@ -211,12 +210,9 @@ const NavigationSheetComponent = ({
             ReloadCurrentItemDetails(currentItemId, true);
           }}
           id={currentItemId}
-          // edit={{ open: true, data: currentItem }}
-          // setEdit={() => {}}
-          // // Special handling for different form prop patterns
-          // editMode={true}
-          // branchData={currentItem}
-          // shiftData={currentItem}
+          edit={{
+            data: currentItem
+          }}
           {...additionalEditProps}
         />
       )}
