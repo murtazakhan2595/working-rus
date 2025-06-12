@@ -339,6 +339,7 @@ export async function getActiveShiftsData(
   customSchedule
 ) {
   try {
+    console.log()
     if (!employeeId || !date) return null;
     const formattedDate = moment(date).format("YYYY-MM-DD");
     const isWeekend = moment(date).day() === 0 || moment(date).day() === 6;
@@ -466,6 +467,8 @@ export async function getActiveShiftsData(
     return null;
   }
 }
+
+
 
 export {
   saveShift,
