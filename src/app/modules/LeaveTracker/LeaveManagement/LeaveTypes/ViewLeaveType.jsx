@@ -5,7 +5,7 @@ import CircularActionButtons from "components/CircularActionButtons";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { ViewDetailSheetCardExtension } from "components";
 import SheetComponent from "components/ui/SheetComponent";
-import {AddUpdateLeaveType} from "app/modules/LeaveTracker";
+import { AddUpdateLeaveType } from "app/modules/LeaveTracker";
 import { deleteLeaveType } from "app/hooks/leaveTracker";
 
 const ViewLeaveType = ({
@@ -139,12 +139,14 @@ const ViewLeaveType = ({
       >
         <div className="flex flex-col gap-4">
           <div className="flex justify-end mt-4 space-x-2">
-            <CircularActionButtons
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              editTooltip="Edit Leave Type"
-              deleteTooltip="Delete Leave Type"
-            />
+            {currentType.id !== 1 && (
+              <CircularActionButtons
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                editTooltip="Edit Leave Type"
+                deleteTooltip="Delete Leave Type"
+              />
+            )}
           </div>
 
           <SheetCardExtension title={"Basic Details"} className="mb-4 gap-y-0">
@@ -226,12 +228,12 @@ const ViewLeaveType = ({
             <DetailBox label="Grades" value={renderGrades()} />
           </SheetCardExtension>
 
-            <SheetCardExtension title={"Additional Information"}>
-              <DetailBox
-                label="Tooltip Information"
-                value={currentType?.tooltip_info || "Not specified"}
-              />
-            </SheetCardExtension>
+          <SheetCardExtension title={"Additional Information"}>
+            <DetailBox
+              label="Tooltip Information"
+              value={currentType?.tooltip_info || "Not specified"}
+            />
+          </SheetCardExtension>
         </div>
       </ViewDetailSheetCardExtension>
 

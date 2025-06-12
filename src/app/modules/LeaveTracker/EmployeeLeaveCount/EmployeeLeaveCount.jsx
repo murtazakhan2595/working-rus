@@ -121,9 +121,9 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
       <Card>
         <CardHeader className="flex flex-row justify-between items-center gap-4">
           <div>
-            <CardTitle className="text-primary">Leave Records</CardTitle>
+            <CardTitle className="text-primary">Leave Count</CardTitle>
             <CardDescription className="text-neutral-1100">
-              {`Here you can view leaves of all employees.`}
+              {`Here you can view leaves alloted to all employees.`}
             </CardDescription>
           </div>
         </CardHeader>
@@ -133,20 +133,20 @@ const EmployeeLeaveCount = ({ isTeamView = false }) => {
             filters={[
               {
                 type: "select",
-                option: Employees,
-                name: "employee",
+                options: Employees,
+                name: "id",
                 placeholder: "Employee",
               },
               {
                 type: "select",
-                option: Departments,
-                name: "departmentt",
+                options: Departments,
+                name: "department_name",
                 placeholder: "Department",
               },
               {
                 type: "select",
-                option: Branches,
-                name: "branch",
+                options: Branches,
+                name: "branch_id",
                 placeholder: "Branch",
               },
             ]}

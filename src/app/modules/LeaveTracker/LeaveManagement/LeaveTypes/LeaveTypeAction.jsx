@@ -75,12 +75,15 @@ const LeaveTypeAction = ({ data, reload, leaveTypeList = [] }) => {
     }
   };
 
+  const ShowEdit = data.id !== 1;
+  const DeleteRecord = data.id !== 1;
+
   return (
     <>
       <DropdownActionMenu
         onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onEdit={ShowEdit ? handleEdit : null}
+        onDelete={DeleteRecord ? handleDelete : null}
         viewText="View Leave Type"
         editText="Edit Leave Type"
         deleteText="Delete Leave Type"
