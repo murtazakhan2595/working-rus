@@ -8,7 +8,7 @@ import {
 import { FormatID } from "utils/getValuesFromTables";
 import { StatusLabel, EmployeeDetailUI } from "components";
 import { getHolidayData } from "app/hooks/leaveTracker";
-import { EmployeeOverview } from "components";
+import { MultiStatusLabel } from "components";
 import { renderDate } from "utils/renderValues";
 import { Button } from "components/ui/button";
 import { BranchName } from "utils/getValuesFromTables";
@@ -47,41 +47,12 @@ const ViewHolidayDetail = ({
         {
           key: "country",
           label: "Countries",
-          formatter: (cell) => {
-            if (!cell || cell?.length === 0) {
-              return <span className="">All</span>;
-            }
-            return (
-              <div className="flex flex-wrap gap-1">
-                {cell.map((nationality) => (
-                  <span
-                    key={nationality}
-                    className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
-                  >
-                    {nationality}
-                  </span>
-                ))}
-              </div>
-            );
-          },
+          formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true}/>
         },
         {
-          key: "branches",
+          key: "branch_names",
           label: "Branches",
-          formatter: (cell) => {
-            if (!cell || cell?.length === 0) {
-              return <span className="">All</span>;
-            }
-            return (
-              <div className="flex flex-wrap gap-1">
-                {cell.map((branch) => (
-                  <StatusLabel variant="info">
-                    <BranchName value={branch} />
-                  </StatusLabel>
-                ))}
-              </div>
-            );
-          },
+          formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" displayAll={true}/>
         },
         {
           key: "religion",

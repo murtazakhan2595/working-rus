@@ -18,7 +18,12 @@ import {
   AddUpdateLeaveType,
   ViewLeaveType,
 } from "./LeaveTypes";
-import { OffsetLeaves,AddUpdateOffsetLeave } from "./OffsetLeaveSettings";
+import {
+  OffsetLeaves,
+  AddUpdateOffsetLeave,
+  ViewOffsetLeaveSetting,
+  OffsetLeaveSettingAction,
+} from "./OffsetLeaveSettings";
 export {
   LeaveManagement,
   AddUpdateLeaveDuration,
@@ -36,4 +41,6 @@ export {
   OffsetLeaves,
   AddUpdateOffsetLeave,
   ImportHolidays,
+  ViewOffsetLeaveSetting,
+  OffsetLeaveSettingAction,
 };

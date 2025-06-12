@@ -7,6 +7,7 @@ import {
   HolidayActions,
   MyLeavesAction,
   LeaveCountAction,
+  OffsetLeaveSettingAction,
 } from "app/modules/LeaveTracker";
 import {
   DepartmentName,
@@ -239,7 +240,6 @@ export const LeaveDurationColumn = (reload, data) => [
         </div>
       );
     },
-    dataSort: true,
   },
   {
     dataField: "actions",
@@ -262,21 +262,21 @@ export const PublicHolidaydsColumn = (reload, data) => [
     dataField: "name",
     text: "Holiday Name",
     dataSort: true,
-    minWidth:'120px',
+    minWidth: "120px",
   },
   {
     dataField: "date",
     text: "Start date",
     dataSort: true,
     formatter: (cell) => renderDate(cell),
-    minWidth:'125px',
+    minWidth: "125px",
   },
   {
     dataField: "end_date",
     text: "End date",
     dataSort: true,
     formatter: (cell) => renderDate(cell),
-    minWidth:'125px',
+    minWidth: "125px",
   },
   {
     dataField: "country",
@@ -284,13 +284,11 @@ export const PublicHolidaydsColumn = (reload, data) => [
     formatter: (cell) => {
       return <MultiStatusLabel statusList={cell} variant="info" />;
     },
-    dataSort: true,
   },
   {
     dataField: "branch_names",
     text: "Branches",
     formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />,
-    dataSort: true,
   },
   {
     dataField: "",
@@ -470,5 +468,59 @@ export const LeaveTypesColumns = (reload, data) => [
       <LeaveTypeAction data={row} reload={reload} leaveTypeList={data} />
     ),
     headerStyle: { width: "8%" },
+  },
+];
+
+export const LeaveOffsetSettingColumn = (reload, data) => [
+  {
+    dataField: "nationalities",
+    text: "Nationalities",
+    formatter: (cell) => {
+      return <MultiStatusLabel statusList={cell} variant="info" />;
+    },
+  },
+  {
+    dataField: "branches",
+    text: "Branches",
+    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />,
+  },
+  {
+    dataField: "departments",
+    text: "Departments",
+    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />,
+  },
+  {
+    dataField: "grades",
+    text: "Grades",
+    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />,
+  },
+  {
+    dataField: "genders",
+    text: "Genders",
+    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />,
+  },
+  {
+    dataField: "validity_months",
+    text: "Validity Months",
+    dataSort: true,
+  },
+  {
+    dataField: "conversion_ratio_hours",
+    text: "Convertion Hours",
+    dataSort: true,
+  },
+  {
+    dataField: "",
+    text: "Actions",
+    isDummyField: true,
+    formatter: (_, row, dataList) => (
+      <OffsetLeaveSettingAction
+        data={row}
+        reloadData={reload}
+        DataList={dataList}
+      />
+    ),
+    headerStyle: { width: "8%" },
+    style: { textAlign: "center" },
   },
 ];

@@ -51,7 +51,6 @@ const MembersList = ({
         >
           {displayedMembers?.map((member) => (
             <div key={member}>
-              {" "}
               <MembersAvatar member={member} />
             </div>
           ))}

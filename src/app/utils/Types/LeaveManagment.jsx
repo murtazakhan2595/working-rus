@@ -83,6 +83,7 @@ export const LeaveOffsetSetting = {
   max_leaves_per_month: null,
   max_leaves_per_year: null,
   leave_type: null,
+  id:null,
 };
 
 export { Leave, EmployeeLeaveTypesList };

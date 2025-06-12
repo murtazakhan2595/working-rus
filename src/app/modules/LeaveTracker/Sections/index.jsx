@@ -5,6 +5,7 @@ import {
   PublicHolidaydsColumn,
   LeaveTypesColumns,
   LeaveRecordColumns,
+  LeaveOffsetSettingColumn,
 } from "app/modules/LeaveTracker/Sections/LeaveTrackerTableColumns";
 
 export {
@@ -14,4 +15,5 @@ export {
   PublicHolidaydsColumn,
   LeaveTypesColumns,
   LeaveRecordColumns,
+  LeaveOffsetSettingColumn,
 };
