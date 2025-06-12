@@ -822,7 +822,7 @@ export const getBranchById = async (id) => {
   }
 };
 
-export const getShiftById = async (id) => {
+export const getShiftById = async (id) => { 
   try {
     const response = await axios.get(`${baseUrl}/shift/${id}`, {
       headers: headers(),
