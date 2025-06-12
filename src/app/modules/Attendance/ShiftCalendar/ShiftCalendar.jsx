@@ -288,15 +288,6 @@ const ShiftCalendar = () => {
     activeTab === "schedule-shift" ? filteredDraftSchedules : draftSchedules;
 
   const tabsData = [
-    ...(isViewShiftCalendarPermitted
-      ? [
-          {
-            value: "shift-calendar",
-            label: "Shift Calendar",
-            component: <Emplist teamMembers={displayData} />,
-          },
-        ]
-      : []),
     ...(isScheduleShiftPermitted
       ? [
           {
@@ -333,6 +324,16 @@ const ShiftCalendar = () => {
           },
         ]
       : []),
+    ...(isViewShiftCalendarPermitted
+      ? [
+          {
+            value: "shift-calendar",
+            label: "Shift Calendar",
+            component: <Emplist teamMembers={displayData} />,
+          },
+        ]
+      : []),
+
     {
       value: "shift-request",
       label: "Shift Request",
