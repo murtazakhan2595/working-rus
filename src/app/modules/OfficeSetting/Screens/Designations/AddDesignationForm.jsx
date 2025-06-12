@@ -1,6 +1,7 @@
 import { getDepartmentList } from "app/hooks/general";
 import { saveDesignation } from "app/hooks/general";
 import { getOrganizationList } from "app/hooks/general";
+import { getDesignationById } from "app/hooks/general";
 import { DesignationInfo } from "app/utils/Types/Designation";
 import { SelectInputComponent } from "components/FormControl";
 import { TextAreaInput } from "components/FormControl";
@@ -49,12 +50,36 @@ const AddDesignationForm = ({
   // Update form data when edit data changes
   useEffect(() => {
     if (editData) {
+      console.log("Setting form data from edit:", editData);
       setFormData({
         ...DesignationInfo,
         ...editData,
       });
     }
-  }, [editData, isEditMode]);
+    
+    // If we have an ID but no edit data, fetch the designation data
+    if (id && !editData) {
+      const fetchDesignationData = async () => {
+        try {
+          setIsLoading(true);
+          const data = await getDesignationById(id);
+          if (data) {
+            console.log("Fetched designation data:", data);
+            setFormData({
+              ...DesignationInfo,
+              ...data,
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching designation data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchDesignationData();
+    }
+  }, [editData, id]);
 
   const handleClose = () => {
     setIsOpen(false);

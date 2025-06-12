@@ -1,4 +1,5 @@
 import { saveDepartment } from "app/hooks/general";
+import { getDepartmentById } from "app/hooks/general";
 import { DepartmentsInformation } from "app/utils/Types/Departments";
 import { SelectInputComponent, TextAreaInput, TextInput, FilterInput } from "components/FormControl";
 import SheetUI from "components/SheetUI";
@@ -7,6 +8,9 @@ import { toast } from "react-toastify";
 import { Checkbox } from "src/@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "src/@/components/ui/collapsible";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { initialState } from "state/slices/UserSlice";
+
+const baseUrl = initialState.baseUrl;
 
 const AddDepartmentForm = ({ 
   id = false,
@@ -71,6 +75,7 @@ const AddDepartmentForm = ({
   // Update form data when edit data changes
   useEffect(() => {
     if (editData) {
+      console.log("Setting form data from edit:", editData);
       setFormData({
         ...DepartmentsInformation,
         ...editData,
@@ -80,7 +85,33 @@ const AddDepartmentForm = ({
     if (editData?.permissions) {
       setPermissions(editData.permissions);
     }
-  }, [editData]);
+    
+    // If we have an ID but no edit data, fetch the department data
+    if (id && !editData) {
+      const fetchDepartmentData = async () => {
+        try {
+          setIsLoading(true);
+          const data = await getDepartmentById(id);
+          if (data) {
+            console.log("Fetched department data:", data);
+            setFormData({
+              ...DepartmentsInformation,
+              ...data,
+            });
+            if (data.permissions) {
+              setPermissions(data.permissions);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching department data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchDepartmentData();
+    }
+  }, [editData, id]);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -220,73 +251,73 @@ const AddDepartmentForm = ({
               },
             ],
           },
-          {
-            sheetCardExtension: true,
-            sheetCardTitle: "Permissions",
-            customComponent: (
-              <div>
-                <div className="mb-4">
-                  <FilterInput
-                    filters={[
-                      {
-                        type: "search",
-                        placeholder: "Search modules...",
-                        name: "search",
-                        className: "w-full",
-                      },
-                    ]}
-                    onChange={(filterName, filterValue) => {
-                      if (filterName === "search") {
-                        setSearchTerm(filterValue);
-                      }
-                    }}
-                  />
-                </div>
+          // {
+          //   sheetCardExtension: true,
+          //   sheetCardTitle: "Permissions",
+          //   customComponent: (
+          //     <div>
+          //       <div className="mb-4">
+          //         <FilterInput
+          //           filters={[
+          //             {
+          //               type: "search",
+          //               placeholder: "Search modules...",
+          //               name: "search",
+          //               className: "w-full",
+          //             },
+          //           ]}
+          //           onChange={(filterName, filterValue) => {
+          //             if (filterName === "search") {
+          //               setSearchTerm(filterValue);
+          //             }
+          //           }}
+          //         />
+          //       </div>
 
-                <div className="max-h-[400px] overflow-y-auto space-y-2">
-                  {filteredModules.length > 0 ? (
-                    filteredModules.map((module, index) => (
-                      <Collapsible key={index} className="overflow-hidden border rounded-md">
-                        <div className="flex items-center justify-between p-4 cursor-pointer bg-gray-50">
-                          <div className="font-medium">{module.name}</div>
-                          <CollapsibleTrigger className="p-1 rounded-full hover:bg-gray-200">
-                            {open => (
-                              open ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />
-                            )}
-                          </CollapsibleTrigger>
-                        </div>
-                        <CollapsibleContent>
-                          <div className="grid grid-cols-2 gap-3 p-4 border-t">
-                            {module.permissions.map((permission, i) => (
-                              <div key={i} className="flex items-center space-x-2">
-                                <Checkbox 
-                                  id={`${module.name}-${permission}`}
-                                  checked={permissions[module.name]?.includes(permission) || false}
-                                  onCheckedChange={(checked) => 
-                                    handlePermissionChange(module.name, permission, checked)
-                                  }
-                                />
-                                <label 
-                                  htmlFor={`${module.name}-${permission}`}
-                                  className="text-sm cursor-pointer"
-                                >
-                                  {permission}
-                                </label>
-                              </div>
-                            ))}
-                          </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    ))
-                  ) : (
-                    <div className="py-8 text-center text-gray-500">
-                      No modules match your search
-                    </div>
-                  )}
-                </div>
-              </div>
-            ),
-          },
+          //       <div className="max-h-[400px] overflow-y-auto space-y-2">
+          //         {filteredModules.length > 0 ? (
+          //           filteredModules.map((module, index) => (
+          //             <Collapsible key={index} className="overflow-hidden border rounded-md">
+          //               <div className="flex items-center justify-between p-4 cursor-pointer bg-gray-50">
+          //                 <div className="font-medium">{module.name}</div>
+          //                 <CollapsibleTrigger className="p-1 rounded-full hover:bg-gray-200">
+          //                   {open => (
+          //                     open ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />
+          //                   )}
+          //                 </CollapsibleTrigger>
+          //               </div>
+          //               <CollapsibleContent>
+          //                 <div className="grid grid-cols-2 gap-3 p-4 border-t">
+          //                   {module.permissions.map((permission, i) => (
+          //                     <div key={i} className="flex items-center space-x-2">
+          //                       <Checkbox 
+          //                         id={`${module.name}-${permission}`}
+          //                         checked={permissions[module.name]?.includes(permission) || false}
+          //                         onCheckedChange={(checked) => 
+          //                           handlePermissionChange(module.name, permission, checked)
+          //                         }
+          //                       />
+          //                       <label 
+          //                         htmlFor={`${module.name}-${permission}`}
+          //                         className="text-sm cursor-pointer"
+          //                       >
+          //                         {permission}
+          //                       </label>
+          //                     </div>
+          //                   ))}
+          //                 </div>
+          //               </CollapsibleContent>
+          //             </Collapsible>
+          //           ))
+          //         ) : (
+          //           <div className="py-8 text-center text-gray-500">
+          //             No modules match your search
+          //           </div>
+          //         )}
+          //       </div>
+          //     </div>
+          //   ),
+          // },
         ],
       }}
     />

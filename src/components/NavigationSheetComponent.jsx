@@ -210,6 +210,9 @@ const NavigationSheetComponent = ({
             ReloadCurrentItemDetails(currentItemId, true);
           }}
           id={currentItemId}
+          edit={{
+            data: currentItem
+          }}
           {...additionalEditProps}
         />
       )}
