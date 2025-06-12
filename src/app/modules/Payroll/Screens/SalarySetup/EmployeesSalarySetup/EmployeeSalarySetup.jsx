@@ -207,7 +207,7 @@ const EmployeeSalarySetup = () => {
                     submitButtonText: "Save",
                     onFormChange: calculateCTC,
                     columns: 3,
-                    formFiels: [
+                    formFields: [
                       {
                         sheetCardExtension: false,
                         InputFields: [

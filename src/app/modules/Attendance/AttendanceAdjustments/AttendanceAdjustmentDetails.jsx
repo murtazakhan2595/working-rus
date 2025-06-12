@@ -217,7 +217,7 @@ const AttendanceAdjustmentDetails = ({
             submitButtonText: "Submit",
             cancelButtonText: "Cancel",
             columns: 1,
-            formFiels: [
+            formFields: [
               {
                 sheetCardExtension: false,
                 sheetCardTitle: "Attendance Details",

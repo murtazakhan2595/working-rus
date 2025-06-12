@@ -314,7 +314,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
           cancelButtonText: "Cancel",
           columns: 2,
           renderUpdatedFormValues: setFormValues,
-          formFiels: [
+          formFields: [
             {
               sheetCardExtension: true,
               sheetCardTitle: "Employee Selection",

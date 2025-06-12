@@ -63,7 +63,7 @@ const ChangePassword = ({ variant = "modal" }) => {
         columns: 2,
         //   renderUpdatedFormValues: setFormValues,
         disableSubmit: isLoading,
-        formFiels: [
+        formFields: [
           {
             sheetCardExtension: false,
             InputFields: [

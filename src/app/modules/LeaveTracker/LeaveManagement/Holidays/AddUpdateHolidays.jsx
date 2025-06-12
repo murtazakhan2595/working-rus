@@ -168,7 +168,7 @@ const AddUpdateHolidays = ({
           columns: 2,
           disableSubmit: isLoading || isSubmittingForm,
           loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
-          formFiels: [
+          formFields: [
             {
               sheetCardExtension: true,
               sheetCardTitle: `Holiday Details`,

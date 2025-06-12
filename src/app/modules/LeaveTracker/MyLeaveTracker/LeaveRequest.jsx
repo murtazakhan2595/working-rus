@@ -236,7 +236,7 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
             disableSubmit: isSubmittingForm,
             loadingMessage: "Submiting Form",
             columns: 2,
-            formFiels: [
+            formFields: [
               {
                 sheetCardExtension: true,
                 sheetCardTitle: "Employee Details",

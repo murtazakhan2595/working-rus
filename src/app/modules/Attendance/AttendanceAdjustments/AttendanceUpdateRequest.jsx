@@ -196,7 +196,7 @@ const AttendanceUpdateRequest = ({ id }) => {
             columns: 3,
             renderUpdatedFormValues: setFormValues,
             disableSubmit: isLoading,
-            formFiels: [
+            formFields: [
               {
                 sheetCardExtension: true,
                 sheetCardTitle: "Employee Details",

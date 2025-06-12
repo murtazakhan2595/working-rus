@@ -121,7 +121,7 @@ export default function AddUpdateLeaveDuration({
                   ? "Updating..."
                   : "Submitting Form..."
                 : "",
-              formFiels: [
+              formFields: [
                 {
                   sheetCardExtension: true,
                   sheetCardTitle: `Leave Duration Details`,

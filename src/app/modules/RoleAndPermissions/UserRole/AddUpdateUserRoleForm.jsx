@@ -200,7 +200,7 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
               columns: 3,
               disableSubmit: isLoading || isSubmittingForm,
               loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
-              formFiels: [
+              formFields: [
                 {
                   sheetCardExtension: true,
                   sheetCardTitle: `Role Details`,

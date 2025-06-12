@@ -172,7 +172,7 @@ const AddGraceTimeForm = ({
         columns: 1,
         disableSubmit: isLoading || isSubmittingForm,
         loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
-        formFiels: [
+        formFields: [
           {
             sheetCardExtension: true,
             sheetCardTitle: `Grace Time Details`,

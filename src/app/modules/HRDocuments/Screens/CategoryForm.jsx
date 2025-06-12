@@ -80,7 +80,7 @@ const CategoryForm = ({ id = null, isOpen = true, setIsOpen = () => {} }) => {
         submitButtonText: id ? "Update" : "Add",
         cancelButtonText: "Cancel",
         columns: 1,
-        formFiels: [
+        formFields: [
           {
             sheetCardExtension: false,
             InputFields: [

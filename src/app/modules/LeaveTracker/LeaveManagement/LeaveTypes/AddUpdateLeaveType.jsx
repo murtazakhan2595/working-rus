@@ -334,7 +334,7 @@ export default function AddUpdateLeaveType({
                   ? "Updating..."
                   : "Submitting Form..."
                 : "",
-              formFiels: getFormFields,
+              formFields: getFormFields,
               onFormChange: (values) => {
                 // Update formData when form values change to trigger re-render
                 setFormData(values);

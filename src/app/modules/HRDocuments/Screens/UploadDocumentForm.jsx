@@ -98,7 +98,7 @@ const UploadDocumentForm = ({
         cancelButtonText: "Cancel",
         columns: 2,
         renderUpdatedFormValues: setFormValues,
-        formFiels: [
+        formFields: [
           {
             sheetCardExtension: false,
             // sheetCardTitle: "Employee Details",

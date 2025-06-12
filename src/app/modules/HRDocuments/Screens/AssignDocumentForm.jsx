@@ -127,7 +127,7 @@ const AssignDocumentForm = ({
         disableSubmit: disableSubmit,
         columns: 2,
         renderUpdatedFormValues: setFormValues,
-        formFiels: [
+        formFields: [
           {
             sheetCardExtension: false,
             // sheetCardTitle: "Employee Details",

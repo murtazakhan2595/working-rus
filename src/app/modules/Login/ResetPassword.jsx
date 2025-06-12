@@ -81,7 +81,7 @@ const ResetPassword = () => {
                     columns: 1,
                     //   renderUpdatedFormValues: setFormValues,
                     disableSubmit: isLoading,
-                    formFiels: [
+                    formFields: [
                       {
                         sheetCardExtension: false,
                         InputFields: [
