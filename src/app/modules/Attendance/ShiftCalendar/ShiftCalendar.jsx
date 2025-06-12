@@ -42,23 +42,36 @@ const ShiftCalendar = () => {
   const isScheduleShiftPermitted = HasAccess("SCHEDULE_EMPLOYEE_SHIFT");
   const isViewPendingSchedulesPermitted = HasAccess("VIEW_PENDING_SCHEDULES");
   const isRequestChangeForTeam = HasAccess("REQUEST_SHIFT_CHANGE_FOR_TEAM");
-  const Employees = useSelector((state) => state.emp.employees);
-  const userData = Employees.find(
-    (employee) => employee.id === userProfile?.id
-  );
+  const isEditPendingSchedulesPermitted = HasAccess("EDIT_PENDING_SCHEDULES");
+
   // Handle tab change and reset filters
   const handleTabChange = (newTab) => {
     setActiveTab(newTab);
     // Reset filters when changing tabs
     setFilterData({});
+    
+    // Re-fetch data when switching to specific tabs
+    if (newTab === "schedule-shift") {
+      fetchDraftSchedules();
+    } else if (newTab === "pending-schedule") {
+      fetchPendingSchedules();
+    }
   };
 
   const fetchUsers = useCallback(
     async (filters = {}) => {
       try {
+        const filterDataToSend = {
+          ...filters,
+        };
+        if (isEditPendingSchedulesPermitted && userProfile?.id) {
+          filterDataToSend.direct_report = userProfile.id;
+        }
+        console.log("Fetching users with filters:", filterDataToSend);
+        console.log("isEditPendingSchedulesPermitted", isEditPendingSchedulesPermitted);
         const response = await getEmployeeCustomList({
           filterData: {
-            ...filters,
+            ...filterDataToSend,
           },
         });
         if (response) {
@@ -68,7 +81,7 @@ const ShiftCalendar = () => {
         console.error(err);
       }
     },
-    [isRequestChangeForTeam, userProfile?.branch_id]
+    [isEditPendingSchedulesPermitted, userProfile]
   );
 
   const fetchPendingSchedules = useCallback(async () => {
@@ -87,17 +100,25 @@ const ShiftCalendar = () => {
 
   const fetchDraftSchedules = useCallback(async () => {
     try {
+      const filterData = { draft: true }; // Get only draft schedules
+      
+      // Add assigned_by_id filter so users only see their own draft schedules
+      if (userProfile?.id) {
+        filterData.assigned_by_id = userProfile.id;
+      }
+      
       const response = await getShiftSchedule({
-        filterData: { draft: true }, // Get only draft schedules
+        filterData,
         ordering: "-id",
       });
+      
       if (response) {
         setDraftSchedules(response);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching draft schedules:", err);
     }
-  }, []);
+  }, [userProfile]);
 
   useEffect(() => {
     fetchUsers();

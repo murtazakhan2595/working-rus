@@ -295,15 +295,15 @@ const ListView = ({ pendingShift, handleSelect, active, getShiftName, isDraft = 
         transition-all duration-150 
         ${
           isActive
-            ? "bg-[#93C5FD] text-[#1E3A8A] border-[#60A5FA] shadow-md transform scale-[1.01]"
-            : "border-[#E5E7EB] hover:bg-[#93C5FD] hover:text-[#1E3A8A] hover:border-[#93C5FD]"
+            ? "bg-plum-300 text-plum-1100 border-plum-400 shadow-md transform scale-[1.01]"
+            : "border-gray-200 hover:bg-plum-500 hover:text-plum-900 hover:border-plum-300"
         }
       `}
       onClick={() => handleSelect(pendingShift)}
     >
       {/* Active indicator bar */}
       {isActive && (
-        <div className="absolute left-0 top-4 bottom-4 w-1 bg-blue-600 rounded-r-full" />
+        <div className="absolute left-0 top-4 bottom-4 w-1 bg-plum-600 rounded-r-full" />
       )}
 
       <div className="flex items-center justify-between gap-4">
@@ -331,7 +331,7 @@ const ListView = ({ pendingShift, handleSelect, active, getShiftName, isDraft = 
             }
           `}
           >
-            {pendingShift.status}
+            {pendingShift.draft ? "Pending Draft" : pendingShift.status}
           </span>
         </div>
       </div>
