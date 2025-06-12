@@ -90,6 +90,26 @@ const saveShiftSchedule = async (payload) => {
   }
 };
 
+const deleteShiftSchedule = async (scheduleId) => {
+  try {
+    const response = await axios.delete(
+      `${baseUrl}/shift-schedules/${scheduleId}/`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 204 || response.status === 200) {
+      return true;
+    }
+  } catch (error) {
+    console.error("Error deleting shift schedule:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
 const getShiftSchedule = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -447,6 +467,7 @@ export async function getActiveShiftsData(
 export {
   saveShift,
   saveShiftSchedule,
+  deleteShiftSchedule,
   getShiftSchedule,
   getShiftChangeRequests,
   getShiftChangeRequestById,

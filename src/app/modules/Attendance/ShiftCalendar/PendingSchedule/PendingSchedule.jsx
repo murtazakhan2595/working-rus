@@ -9,7 +9,7 @@ import {
 } from "components/ui/card";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { getShiftSchedule, saveShiftSchedule } from "app/hooks/shiftManagement";
+import { getShiftSchedule, saveShiftSchedule, deleteShiftSchedule } from "app/hooks/shiftManagement";
 import moment from "moment";
 import { EmployeeOverview, EmployeeID } from "components";
 import ScheduleCalendar from "./ScheduleCalendar";
@@ -74,28 +74,55 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
   const confirmApprove = async () => {
     setProcessing(true);
     try {
-      await generateShiftScheduleLog({
-        scheduleData: approveState.data,
-        logType: "Change Request",
-        userProfile,
+      // Create a new approved record
+      const originalSchedule = approveState.data;
+      
+      // Prepare payload for new approved schedule
+      const newApprovedPayload = {
+        employee: originalSchedule.employee,
+        shift: originalSchedule.shift,
+        schedule_name: originalSchedule.schedule_name,
+        start_date: originalSchedule.start_date,
+        end_date: originalSchedule.end_date,
+        is_org_based: originalSchedule.is_org_based,
+        custom_schedule: originalSchedule.custom_schedule,
+        total_weekly_hours: originalSchedule.total_weekly_hours,
+        assigned_by: originalSchedule.assigned_by,
         status: "Approved",
-      });
-      const response = await saveShiftSchedule({
-        id: approveState?.data?.id,
+        is_off_day: originalSchedule.is_off_day,
         approved_by: userProfile.id,
-        status: "Approved",
-      });
+        // Note: draft will be false by default (backend handles this)
+      };
 
-      if (response) {
-        
-        toast.success("Schedule approved successfully!");
-        setApproveState(null);
-        setActiveSchedule(null); // Clear selection after approval
+      // Create new approved schedule
+      const newResponse = await saveShiftSchedule(newApprovedPayload);
 
-        // Reload the data
-        if (typeof reload === "function") {
-          reload();
+      if (newResponse) {
+        // Generate log for the new approved entry
+        await generateShiftScheduleLog({
+          scheduleData: newResponse, // Use new created entry for logs
+          logType: "Change Request",
+          userProfile,
+          status: "Approved",
+        });
+
+        // Delete the old pending schedule
+        const deleteResponse = await deleteShiftSchedule(originalSchedule.id);
+
+        if (deleteResponse) {
+          toast.success("Schedule approved successfully!");
+          setApproveState(null);
+          setActiveSchedule(null);
+
+          // Reload the data
+          if (typeof reload === "function") {
+            reload();
+          }
+        } else {
+          toast.error("Failed to process pending schedule");
         }
+      } else {
+        toast.error("Failed to create approved schedule");
       }
     } catch (error) {
       console.error("Error approving schedule:", error);
@@ -113,21 +140,17 @@ const PendingSchedule = ({ pendingSchedules, reload, employees }) => {
 
     setProcessing(true);
     try {
-      await generateShiftScheduleLog({
-        scheduleData: rejectState.data,
-        logType: "Change Request",
-        userProfile,
-        status: "Rejected",
-      });
+      // No log generation when moving rejected schedules back to drafts
       const response = await saveShiftSchedule({
         id: rejectState?.data?.id,
         approved_by: userProfile.id,
         status: "Rejected",
         rejection_reason: rejectReason,
+        draft: true, // Move back to draft tab
       });
 
       if (response) {
-        toast.success("Schedule rejected successfully");
+        toast.success("Schedule rejected and moved back to drafts");
         setRejectState(null);
         setRejectReason("");
         setActiveSchedule(null); // Clear selection after rejection
