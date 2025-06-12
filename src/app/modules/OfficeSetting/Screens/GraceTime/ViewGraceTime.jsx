@@ -1,5 +1,6 @@
 import React from "react";
-import { NavigationSheetComponent, DetailContent } from "components";
+import { NavigationSheetComponent } from "components"; 
+import { DetailContent } from "components";
 import AddGraceTimeForm from "./AddGraceTimeForm";
 import { FormatID } from "utils/getValuesFromTables";
 import { BranchName } from "utils/getValuesFromTables";

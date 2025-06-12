@@ -1,10 +1,9 @@
 import React from "react";
-import { NavigationSheetComponent, DetailContent } from "components";
+import { NavigationSheetComponent } from "components";
+import { DetailContent } from "components";
 import AddDesignationForm from "./AddDesignationForm";
-import { initialState } from "state/slices/UserSlice";
-import { getDesignationById } from "app/hooks/general";
-
-const baseUrl = initialState.baseUrl;
+import useUserOrganization from "app/hooks/useUserOrganization";
+import { getDesignationById } from "app/hooks/general"; // Adjust path as needed
 
 const ViewDesignation = ({ 
   isOpen, 
@@ -13,20 +12,32 @@ const ViewDesignation = ({
   reload = () => {},
   DesignationList = []
 }) => {
+  const userOrganization = useUserOrganization();
+
   // Define the fields to display
   const fields = [
-    { key: "name", label: "Name" },
-    { key: "description", label: "Description" }
+    {
+      title: "Designation Details",
+      field: [
+        { key: "id", label: "ID" },
+        { key: "name", label: "Designation Name" },
+        { key: "description", label: "Description" },
+        // Add more fields as needed
+      ],
+    },
   ];
 
+  // Fetch department data by ID
   const fetchData = async (id, isMounted) => {
+    console.log("Fetching department with ID:", id); // Debug
     try {
       const response = await getDesignationById(id);
+      console.log("API response:", response); // Debug
       if (isMounted) {
         return response;
       }
     } catch (error) {
-      console.error("Error fetching designation:", error);
+      console.error("Error fetching department:", error);
     }
   };
 
@@ -35,15 +46,16 @@ const ViewDesignation = ({
       isOpen={isOpen}
       setIsOpen={setIsOpen}
       title="Designation Detail"
-      data={data}
+      currentItem_Id={data?.id}
       dataList={DesignationList}
-      reload={reload}
+      reloadData={reload}
       editComponent={AddDesignationForm}
       apiEndpoint={`/designation/${data?.id}/`}
       fetchCurrentItemDetails={fetchData}
       deleteItemName="name"
-      editTooltip="Edit Designation"
+      editTooltip="Edit Designation"   
       deleteTooltip="Delete Designation"
+      additionalEditProps={{ userOrganization }}
     >
       <DetailContent
         title="Designation Details"
@@ -53,4 +65,4 @@ const ViewDesignation = ({
   );
 };
 
-export default ViewDesignation;
+export default ViewDesignation;      
