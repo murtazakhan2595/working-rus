@@ -1,5 +1,5 @@
 import moment from "moment";
-import { getDateTimeDifference } from "utils/renderValues";
+import { GetDateDifference } from "utils/renderValues";
 import { validateStartAndEndDateField } from "app/utils/FormSchema/generalFormSchema";
 
 const validateLeaveRequestFormSchema = (values, validationObj) => {
@@ -34,7 +34,7 @@ const validateLeaveRequestFormSchema = (values, validationObj) => {
       } else if (allowedConsecutiveDays && total_days > allowedConsecutiveDays)
         errors.total_days = `Cannot apply for more than ${allowedConsecutiveDays} leaves at once`;
       if (noticeDays && start_date) {
-        const daysDifference = getDateTimeDifference(
+        const daysDifference = GetDateDifference(
           start_date,
           moment(),
           "days",

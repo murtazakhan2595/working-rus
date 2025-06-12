@@ -282,13 +282,13 @@ export const PublicHolidaydsColumn = (reload, data) => [
     dataField: "country",
     text: "Countries",
     formatter: (cell) => {
-      return <MultiStatusLabel statusList={cell} variant="info" />;
+      return <MultiStatusLabel statusList={cell} variant="info" fallBackText='All Countries'/>;
     },
   },
   {
     dataField: "branch_names",
     text: "Branches",
-    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />,
+    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" fallBackText='All Branches'/>,
   },
   {
     dataField: "",

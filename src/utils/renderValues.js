@@ -1,5 +1,7 @@
 import moment from "moment";
 import { renderTime } from "./DateTimeUtils";
+import { useSelector } from "react-redux";
+import { eachDayOfInterval } from "date-fns";
 
 export const formatNumber = (num) => {
   // const units = ["", "K", "M", "B", "T", "P", "E", "Z", "Y"];
@@ -351,21 +353,54 @@ export const getWorkingDays = (startDate, endDate) => {
   return count;
 };
 
-export const getDateTimeDifference = (
+export function GetDateDifference(
   startDate,
   endDate,
-  variant = "days", // days,hours,
   type = "work_days", //work_days, calendar_days
-) => {
-  let start = moment(startDate);
-  const end = moment(endDate);
-  let count = 0;
+  CalendarContent = {},
+  exclude = []
+) {
+  // Validate input
+  if (!startDate || !endDate) return 0;
 
-  if (type === "work_days") count = getWorkingDays(start, end);
-  else if (type === "calendar_days") count = end.diff(start, variant) + 1;
+  const start = moment(startDate).startOf('day');
+  const end = moment(endDate).startOf('day');
 
-  return count;
-};
+  // Validate moment objects
+  if (!start.isValid() || !end.isValid()) return 0;
+
+  // Ensure end is not before start
+  if (end.isBefore(start)) return 0;
+  if (exclude.includes("holidays")) {
+    try {
+      const datesOfMonth = eachDayOfInterval({
+        start: start.toDate(),
+        end: end.toDate(),
+      });
+      const count = datesOfMonth.filter((date) => {
+        const baseDate = moment(date).format("YYYY-MM-DD");
+        const content = CalendarContent[baseDate] || {};
+        const isHoliday = content.isHoliday;
+
+        if (isHoliday) return false;
+
+        if (type === "calendar_days") return true;
+
+        const day = moment(date).day();
+        return day !== 0 && day !== 6; // exclude Sunday (0) and Saturday (6)
+      });
+      console.log(count, "jbfbdjbvjhbfjvbdsj");
+      return count?.length || 0;
+    } catch (err) {
+      console.warn("Invalid date range:");
+      return 0;
+    }
+  } else if (type === "work_days") {
+    return getWorkingDays(start, end);
+  } else if (type === "calendar_days") {
+    return end.diff(start, "days") + 1; // +1 to include start day
+  }
+}
 
 export const ChildAnyNodeExist = (
   parent_node = {},
