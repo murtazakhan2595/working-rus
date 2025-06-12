@@ -1,5 +1,5 @@
 import { EmployeeID, UserRole } from "utils/getValuesFromTables";
-import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
+import { EmployeeOverview, StatusLabel, MultiStatusLabel } from "components";
 import {
   LeaveTrackerActions,
   LeaveDurationAction,
@@ -262,51 +262,34 @@ export const PublicHolidaydsColumn = (reload, data) => [
     dataField: "name",
     text: "Holiday Name",
     dataSort: true,
+    minWidth:'120px',
   },
   {
     dataField: "date",
     text: "Start date",
     dataSort: true,
     formatter: (cell) => renderDate(cell),
+    minWidth:'125px',
   },
   {
     dataField: "end_date",
     text: "End date",
     dataSort: true,
     formatter: (cell) => renderDate(cell),
+    minWidth:'125px',
   },
   {
     dataField: "country",
     text: "Countries",
     formatter: (cell) => {
-      if (!cell || cell?.length === 0) {
-        return <span className=""></span>;
-      }
-      return (
-        <div className="flex flex-wrap gap-1">
-          {cell.map((name) => (
-            <StatusLabel variant="info">{name}</StatusLabel>
-          ))}
-        </div>
-      );
+      return <MultiStatusLabel statusList={cell} variant="info" />;
     },
     dataSort: true,
   },
   {
     dataField: "branch_names",
     text: "Branches",
-    formatter: (cell) => {
-      if (!cell || cell?.length === 0) {
-        return <span className=""></span>;
-      }
-      return (
-        <div className="flex flex-wrap gap-1">
-          {cell.map((branch_name) => (
-            <StatusLabel variant="info">{branch_name}</StatusLabel>
-          ))}
-        </div>
-      );
-    },
+    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />,
     dataSort: true,
   },
   {

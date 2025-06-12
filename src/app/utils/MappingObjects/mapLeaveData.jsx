@@ -174,8 +174,12 @@ export function mapLeaveData(data) {
 
       LeaveDetails[key] = level_list;
     } else {
-      if (Object.prototype.hasOwnProperty.call(data, key))
-        LeaveDetails[key] = data[key];
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        if (key === "status") {
+          const status = data.is_cancelled ? "Cancelled" :  data[key];
+          LeaveDetails[key] = status;
+        } else LeaveDetails[key] = data[key];
+      }
     }
   }
 

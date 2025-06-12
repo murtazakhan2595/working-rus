@@ -864,7 +864,7 @@ export const getHolidayData = async (id) => {
 
 export const cancelEmployeeLeave = async (id) => {
   try {
-    const url = `/employee-leaves/${id}/cancel_leave/`;
+    const url = `${baseUrl}/employee-leaves/${id}/cancel_leave/`;
 
     const method = "PATCH"; // Determine method based on existence of id
 

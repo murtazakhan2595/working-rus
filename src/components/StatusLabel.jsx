@@ -1,6 +1,12 @@
 // Header.js
 import React from "react";
-import { FaCheck } from "react-icons/fa6";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "src/@/components/ui/popover";
+import { Card } from "components/ui/card";
+import { ScrollArea } from "src/@/components/ui/scroll-area";
 import { BsCircleFill } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import { FaRegCircle } from "react-icons/fa";
@@ -116,6 +122,108 @@ const StatusLabel = React.forwardRef(
 );
 
 StatusLabel.displayName = "StatusLabel";
+
+const MultiStatusLabel = React.forwardRef(
+  (
+    {
+      statusList,
+      key,
+      variant,
+      className,
+      size,
+      iconVariant,
+      displayAll,
+      ...props
+    },
+    ref
+  ) => {
+    //  const [searchQuery, setSearchQuery] = React.useState("");
+    if (!statusList || !Array.isArray(statusList) || statusList.length === 0)
+      return null;
+    const displayedStatus = displayAll ? statusList : statusList?.slice(0, 3);
+    const remainingCount = statusList.length - displayedStatus.length;
+    return (
+      <Popover>
+        <PopoverTrigger asChild>
+          <div className="flex flex-wrap gap-1">
+            {displayedStatus.map((status, index) => {
+              const StatusVariant = variant ?? getStatusVariant(status);
+              return (
+                <Badge
+                  className={cn(
+                    statusVariants({
+                      variant: StatusVariant,
+                    }),
+                    "flex items-center capitalize-text",
+                    className
+                  )}
+                  ref={ref}
+                  key={index}
+                  size={size}
+                  {...props}
+                >
+                  {iconVariant && (
+                    <StatusIcon status={status} iconVariant={iconVariant} />
+                  )}
+                  {status}
+                </Badge>
+              );
+            })}
+            {remainingCount > 0 && !displayAll && (
+              <Badge
+                className={cn(
+                  statusVariants({
+                    variant: "info",
+                  }),
+                  "flex items-center capitalize-text",
+                  className
+                )}
+                ref={ref}
+                size={size}
+                {...props}
+              >
+                +{remainingCount}
+              </Badge>
+            )}
+          </div>
+        </PopoverTrigger>
+        <PopoverContent className="w-80 p-0" align="start">
+          <Card className="border-0 shadow-none">
+            <div className="p-4 space-y-4">
+              {/* {remainingCount > 0 && (
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search Member"
+                    className="pl-9"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                  />
+                </div>
+              )} */}
+              <ScrollArea className="[&>div>div[style]]:!block">
+                <div className="pr-2 space-y-3 max-h-[200px]">
+                  {statusList.map((status, index) => {
+                    return (
+                      <div
+                        key={`${status}-${index}`}
+                        className="flex justify-between w-full items-center cursor-pointer"
+                      >
+                        {status}
+                      </div>
+                    );
+                  })}
+                </div>
+              </ScrollArea>
+            </div>
+          </Card>
+        </PopoverContent>
+      </Popover>
+    );
+  }
+);
+
+MultiStatusLabel.displayName = "MultiStatusLabel";
 
 export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
   if (!label) return "";
@@ -348,4 +456,4 @@ export const StatusList = ({ status_list, className }) => {
   );
 };
 
-export { StatusLabel, statusVariants };
+export { StatusLabel, statusVariants, MultiStatusLabel };

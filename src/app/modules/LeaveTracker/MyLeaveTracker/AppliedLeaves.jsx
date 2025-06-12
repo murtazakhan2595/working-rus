@@ -1,4 +1,3 @@
-import { Button } from "components/ui/button";
 import React, { useEffect, useState } from "react";
 import {
   Card,
@@ -7,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "components/ui/card";
-
+import { useSelector } from "react-redux";
 import { MyLeaveAplicationColumns } from "app/modules/LeaveTracker/Sections";
 import {
   getLeaveListData,
@@ -16,12 +15,14 @@ import {
 import { FilterInput } from "components/FormControl";
 import { PageLoader, TableCustom } from "components";
 import { GlobalStatusOptions } from "data/Data";
+import { getDropdownList } from "utils/Lists";
 
-export default function AppliedLeaves({reload}) {
+export default function AppliedLeaves({ reload }) {
+  const { id: user_id } = useSelector((state) => state.emp.user_details);
   const [isLoading, setIsLoading] = useState(false);
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({ employee: user_id });
   const [Leaves, setLeaves] = useState({});
   const [LeaveType, setLeaveType] = useState([]);
   const onPageChange = (name, value) => {
@@ -59,8 +60,8 @@ export default function AppliedLeaves({reload}) {
   useEffect(() => {
     let isMounted = true;
     onPageChange("page", 1);
-    setOrdering('-id');
-    fetchData(true)
+    setOrdering("-id");
+    fetchData(true);
     return () => {
       isMounted = false;
     };
@@ -70,7 +71,12 @@ export default function AppliedLeaves({reload}) {
     try {
       const response = await getEligibleLeaveTypeDurations({});
       if (isMounted && response) {
-        setLeaveType(response || []);
+        const dropdownOptions = await getDropdownList(
+          response || [],
+          "name",
+          "id"
+        );
+        setLeaveType(dropdownOptions || []);
       }
     } catch (error) {
       console.error(error);
@@ -92,7 +98,7 @@ export default function AppliedLeaves({reload}) {
       if (filterValue === "" || filterValue === null) {
         delete updatedFilters[filterName];
       } else {
-         if (filterName === "status")
+        if (filterName === "status")
           updatedFilters[filterName] = filterValue.toLowerCase();
         else updatedFilters[filterName] = filterValue;
       }
@@ -123,7 +129,10 @@ export default function AppliedLeaves({reload}) {
               },
               {
                 type: "select",
-                options: GlobalStatusOptions(),
+                options: [
+                  ...GlobalStatusOptions(),
+                  { label: "Cancelled", value: "cancelled_by_employee" },
+                ],
                 name: "status",
                 placeholder: "Status",
               },
