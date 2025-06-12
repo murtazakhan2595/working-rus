@@ -14,6 +14,7 @@ import Emplist from "./ShiftCalendarTab/Emplist";
 import ShiftRequest from "./ShiftRequest";
 import ShiftCalendarFilters from "./Section/ShiftCalendarFilters";
 import PendingSchedule from "./PendingSchedule/PendingSchedule";
+import DraftSchedule from "./PendingSchedule/DraftSchedule";
 import ScheduleShiftModal from "./Modals/ScheduleShiftModal";
 import { getShiftSchedule } from "app/hooks/shiftManagement";
 import { Button } from "components/ui/button";
@@ -28,6 +29,10 @@ const ShiftCalendar = () => {
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const userProfile = useSelector((state) => state.user.userProfile);
   const [pendingSchedules, setPendingSchedules] = useState({
+    results: [],
+    count: 0,
+  });
+  const [draftSchedules, setDraftSchedules] = useState({
     results: [],
     count: 0,
   });
@@ -69,7 +74,7 @@ const ShiftCalendar = () => {
   const fetchPendingSchedules = useCallback(async () => {
     try {
       const response = await getShiftSchedule({
-        filterData: { status: "Pending" },
+        filterData: { status: "Pending" }, // Backend will filter out drafts by default
         ordering: "-id",
       });
       if (response) {
@@ -80,10 +85,25 @@ const ShiftCalendar = () => {
     }
   }, []);
 
+  const fetchDraftSchedules = useCallback(async () => {
+    try {
+      const response = await getShiftSchedule({
+        filterData: { draft: true }, // Get only draft schedules
+        ordering: "-id",
+      });
+      if (response) {
+        setDraftSchedules(response);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
   useEffect(() => {
     fetchUsers();
     fetchPendingSchedules();
-  }, [fetchUsers, fetchPendingSchedules]);
+    fetchDraftSchedules();
+  }, [fetchUsers, fetchPendingSchedules, fetchDraftSchedules]);
 
   const handleFilterChange = useCallback(
     (newFilterData) => {
@@ -210,6 +230,53 @@ const ShiftCalendar = () => {
     };
   }, [pendingSchedules, filterData, teamMembers]);
 
+  // Apply filters to draft schedules
+  const filteredDraftSchedules = useMemo(() => {
+    if (!draftSchedules.results || !draftSchedules.results.length) {
+      return { results: [], count: 0 };
+    }
+
+    // If no filters are applied, return original data
+    if (!filterData || Object.keys(filterData).length === 0) {
+      return draftSchedules;
+    }
+
+    let filteredResults = draftSchedules.results;
+
+    // Apply search filter
+    if (filterData.search_term) {
+      filteredResults = filteredResults.filter((schedule) => {
+        // Find the employee in teamMembers to get their details
+        const employee = teamMembers.results?.find(
+          (emp) => emp.id === schedule.employee
+        );
+        if (employee) {
+          const searchString =
+            `${employee.id} ${employee.first_name} ${employee.last_name}`.toLowerCase();
+          return searchString.includes(filterData.search_term.toLowerCase());
+        }
+        // If employee not found in teamMembers, just search by employee ID
+        return schedule.employee?.toString().includes(filterData.search_term);
+      });
+    }
+
+    // Filter by department
+    if (filterData.department_name) {
+      filteredResults = filteredResults.filter((schedule) => {
+        // Find the employee in teamMembers to get their department
+        const employee = teamMembers.results?.find(
+          (emp) => emp.id === schedule.employee
+        );
+        return employee?.department_name === filterData.department_name;
+      });
+    }
+
+    return {
+      results: filteredResults,
+      count: filteredResults.length,
+    };
+  }, [draftSchedules, filterData, teamMembers]);
+
   // Decide which data to display based on active tab
   const displayData =
     activeTab === "shift-calendar" ? filteredTeamMembers : teamMembers;
@@ -217,14 +284,25 @@ const ShiftCalendar = () => {
     activeTab === "pending-schedule"
       ? filteredPendingSchedules
       : pendingSchedules;
+  const displayDraftSchedules =
+    activeTab === "schedule-shift" ? filteredDraftSchedules : draftSchedules;
 
   const tabsData = [
-    ...(isViewShiftCalendarPermitted
+    ...(isScheduleShiftPermitted
       ? [
           {
-            value: "shift-calendar",
-            label: "Shift Calendar",
-            component: <Emplist teamMembers={displayData} />,
+            value: "schedule-shift",
+            label: "Schedule Shift",
+            component: (
+              <DraftSchedule
+                draftSchedules={displayDraftSchedules}
+                reload={() => {
+                  fetchDraftSchedules();
+                  fetchPendingSchedules(); // Also reload pending schedules when draft is processed
+                }}
+                employees={teamMembers.results}
+              />
+            ),
           },
         ]
       : []),
@@ -236,13 +314,26 @@ const ShiftCalendar = () => {
             component: (
               <PendingSchedule
                 pendingSchedules={displayPendingSchedules}
-                reload={fetchPendingSchedules}
+                reload={() => {
+                  fetchPendingSchedules();
+                  fetchDraftSchedules(); // Also reload draft schedules when schedule is rejected
+                }}
                 employees={teamMembers.results}
               />
             ),
           },
         ]
       : []),
+    ...(isViewShiftCalendarPermitted
+      ? [
+          {
+            value: "shift-calendar",
+            label: "Shift Calendar",
+            component: <Emplist teamMembers={displayData} />,
+          },
+        ]
+      : []),
+
     {
       value: "shift-request",
       label: "Shift Request",
@@ -264,7 +355,7 @@ const ShiftCalendar = () => {
       {activeTab === "shift-calendar" && (
         <AssignShift employees={displayData.results} />
       )}
-      {activeTab === "pending-schedule" && isScheduleShiftPermitted && (
+      {activeTab === "schedule-shift" && isScheduleShiftPermitted && (
         <Button onClick={() => setIsScheduleModalOpen(true)}>
           Schedule Shift
         </Button>
@@ -295,8 +386,9 @@ const ShiftCalendar = () => {
           </TabsList>
         </div>
 
-        {/* Show filters for both shift calendar and pending schedule tabs */}
+        {/* Show filters for shift calendar, schedule shift, and pending schedule tabs */}
         {(activeTab === "shift-calendar" ||
+          activeTab === "schedule-shift" ||
           activeTab === "pending-schedule") && (
           <ShiftCalendarFilters
             key={activeTab} // Add key prop to force remount on tab change
@@ -321,8 +413,13 @@ const ShiftCalendar = () => {
           setIsOpen={setIsScheduleModalOpen}
           selectedDates={null}
           employees={displayData.results}
+          isDraft={activeTab === "schedule-shift"} // Pass isDraft based on current tab
           onScheduleSuccess={() => {
-            fetchPendingSchedules(); 
+            if (activeTab === "schedule-shift") {
+              fetchDraftSchedules(); // Reload draft schedules if on schedule shift tab
+            } else {
+              fetchPendingSchedules(); // Reload pending schedules for other tabs
+            }
           }}
         />
       )}

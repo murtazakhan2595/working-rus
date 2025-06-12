@@ -56,7 +56,6 @@ const EventWithTooltip = ({ eventInfo }) => {
           Time: {start} - {end}
         </p>
         <p className="text-xs">Type: {formatType(type)}</p>
-        {scheduleId && <p className="text-xs">Schedule ID: {scheduleId}</p>}
       </div>
     );
   };

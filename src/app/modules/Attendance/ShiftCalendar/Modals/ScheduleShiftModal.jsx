@@ -26,6 +26,7 @@ const ScheduleShiftModal = ({
   employees = [],
   onScheduleSuccess = () => {},
   editSchedule=null,
+  isDraft = false, // New prop to indicate if this is for draft schedules
 }) => {
 
   const isEditMode = Boolean(editSchedule);
@@ -475,8 +476,9 @@ const ScheduleShiftModal = ({
             is_org_based: true,
             total_weekly_hours: "40.0",
             assigned_by: userProfile?.employee_id || userProfile?.id,
-            status: "Pending", // Reset to pending after edit
+            status: "Pending",
             is_off_day: false,
+            ...(isDraft && { draft: true }), // Add draft flag when isDraft is true
           };
         } else {
           // Custom Shift Update
@@ -523,8 +525,9 @@ const ScheduleShiftModal = ({
             custom_schedule: customSchedule,
             total_weekly_hours: totalWeeklyHours.toString(),
             assigned_by: userProfile?.employee_id || userProfile?.id,
-            status: "Pending", // Reset to pending after edit
+            status: "Pending",
             is_off_day: values.dailySchedule.some((day) => day.isOff),
+            ...(isDraft && { draft: true }), // Add draft flag when isDraft is true
           };
         }
 
@@ -574,6 +577,7 @@ const ScheduleShiftModal = ({
               assigned_by: userProfile?.employee_id || userProfile?.id,
               status: "Pending",
               is_off_day: false,
+              ...(isDraft && { draft: true }), // Add draft flag when isDraft is true
             };
           } else {
             // Custom Shift Payload
@@ -621,6 +625,7 @@ const ScheduleShiftModal = ({
               assigned_by: userProfile?.employee_id || userProfile?.id,
               status: "Pending",
               is_off_day: values.dailySchedule.some((day) => day.isOff),
+              ...(isDraft && { draft: true }), // Add draft flag when isDraft is true
             };
           }
 
