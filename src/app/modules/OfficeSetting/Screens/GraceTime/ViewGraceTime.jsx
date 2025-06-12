@@ -75,7 +75,7 @@ const ViewGraceTime = ({
       fetchCurrentItemDetails={fetchData}
       deleteItemName="name"
       editTooltip="Edit Grace Time"
-      deleteTooltip="Delete Geace Time"
+      deleteTooltip="Delete Grace Time"
     >
       <DetailContent title="Grace Time Details" fields={fields} />
     </NavigationSheetComponent>

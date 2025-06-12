@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import SheetComponent from "components/ui/SheetComponent";
 import AddDesignationForm from "./AddDesignationForm";
 import ViewDesignation from "./ViewDesignation";
 import DropdownActionMenu from "components/DropdownActionMenu";
-import { ViewDetailSheetCardExtension } from "components";
 import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
 const DesignationAction = ({ data, reload, DesignationList = [] }) => {
@@ -13,13 +11,6 @@ const DesignationAction = ({ data, reload, DesignationList = [] }) => {
   const [edit, setEdit] = useState(null);
   const [deleteDesignation, setDeleteDesignation] = useState(null);
   const permissions = useOfficeSettingPermissions();
-
-  const formSheetData = {
-    triggerText: null,
-    title: "Update Designation",
-    description: null,
-    footer: null,
-  };
 
   const handleEdit = (data) => {
     console.log("Edit button clicked for designation:", data);
@@ -101,27 +92,15 @@ const DesignationAction = ({ data, reload, DesignationList = [] }) => {
       )}
 
       {edit?.open && (
-        <ViewDetailSheetCardExtension
-          isOpen={edit?.open}
+        <AddDesignationForm
+          isOpen={edit.open}
           setIsOpen={(isOpen) => {
             console.log("Setting edit sheet open state to:", isOpen);
             setEdit((prev) => ({ ...prev, open: isOpen }));
           }}
-          title="Update Designation"
-          handlePrevious={() => {}}
-          handleNext={() => {}}
-        >
-          <AddDesignationForm
-            isOpen={edit.open}
-            setIsOpen={(isOpen) => {
-              console.log("Setting form open state to:", isOpen);
-              setEdit((prev) => ({ ...prev, open: isOpen }));
-            }}
-            edit={edit}
-            setEdit={setEdit}
-            reload={reload}
-          />
-        </ViewDetailSheetCardExtension>
+          edit={edit}
+          reloadData={reload}
+        />
       )}
       
       {view?.visible && (

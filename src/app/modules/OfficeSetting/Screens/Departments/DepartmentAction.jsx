@@ -15,13 +15,6 @@ const DepartmentAction = ({ data, reload, DepartmentList = [] }) => {
   const userOrganization = useUserOrganization();
   const permissions = useOfficeSettingPermissions();
 
-  const formSheetData = {
-    triggerText: null,
-    title: "Update Department",
-    description: null,
-    footer: null,
-  };
-
   const handleView = () => {
     setView({
       visible: true,
@@ -87,24 +80,13 @@ const DepartmentAction = ({ data, reload, DepartmentList = [] }) => {
       )}
 
       {edit?.open && (
-        <ViewDetailSheetCardExtension
-          isOpen={edit?.open}
+        <AddDepartmentForm
+          isOpen={edit.open}
           setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
-          title="Update Department"
-          handlePrevious={() => {}}
-          handleNext={() => {}}
-        >
-          <AddDepartmentForm
-            isOpen={edit.open}
-            setIsOpen={(isOpen) =>
-              setEdit((prev) => ({ ...prev, open: isOpen }))
-            }
-            edit={edit}
-            setEdit={setEdit}
-            reload={reload}
-            userOrganization={userOrganization}
-          />
-        </ViewDetailSheetCardExtension>
+          edit={edit}
+          reloadData={reload}
+          userOrganization={userOrganization}
+        />
       )}
 
       {view?.visible && (
