@@ -89,6 +89,7 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
             allowedHalfPaid: leaveType.half_paid_days,
             allowedFullPaid: leaveType.full_paid_days,
             daysType: leaveType.day_count_type,
+            attachmentRequired: leaveType.requires_attachment,
           });
         }
       } else {
@@ -293,13 +294,15 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
                     name: "reason",
                     label: "Reason",
                     required: true,
+                    colsSpan: 2,
                     rows: 4,
                   },
                   {
                     InputField: CoverFileUpload,
                     name: "attachment",
                     label: "Attachment",
-                    required: true,
+                    required: LeaveValidationInfo.attachmentRequired,
+                    colsSpan: 2,
                   },
                   ...(LeaveValidationInfo.halfPaidAllowed
                     ? [

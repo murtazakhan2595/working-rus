@@ -116,11 +116,6 @@ export function mapPublicHolidayData(data) {
         acc["branches"] = branches.map(({ id }) => {
           return id;
         });
-      } else if (key === "country") {
-        const country = data[key] || [];
-        acc["country"] = country.map(({ name }) => {
-          return name;
-        });
       } else acc[key] = data[key];
     } else {
       acc[key] = PublicHoliday[key];
@@ -179,8 +174,12 @@ export function mapLeaveData(data) {
 
       LeaveDetails[key] = level_list;
     } else {
-      if (Object.prototype.hasOwnProperty.call(data, key))
-        LeaveDetails[key] = data[key];
+      if (Object.prototype.hasOwnProperty.call(data, key)) {
+        if (key === "status") {
+          const status = data.is_cancelled ? "Cancelled" :  data[key];
+          LeaveDetails[key] = status;
+        } else LeaveDetails[key] = data[key];
+      }
     }
   }
 

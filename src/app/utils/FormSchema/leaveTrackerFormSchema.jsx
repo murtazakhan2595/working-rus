@@ -11,6 +11,8 @@ const validateLeaveRequestFormSchema = (values, validationObj) => {
   if (!values.start_date) errors.start_date = "Start date is required";
   if (!values.end_date) errors.end_date = "End date is required";
   if (!values.reason) errors.reason = "Reason is required";
+  if (validationObj.attachmentRequired && !values.attachment)
+    errors.attachment = "Attachment is required";
   if (values.start_date && values.end_date) {
     const startDate = moment(values.start_date).endOf("day");
     const endDate = moment(values.end_date).endOf("day");

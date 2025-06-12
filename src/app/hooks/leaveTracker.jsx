@@ -864,7 +864,7 @@ export const getHolidayData = async (id) => {
 
 export const cancelEmployeeLeave = async (id) => {
   try {
-    const url = `/employee-leaves/${id}/cancel_leave/`;
+    const url = `${baseUrl}/employee-leaves/${id}/cancel_leave/`;
 
     const method = "PATCH"; // Determine method based on existence of id
 
@@ -872,6 +872,7 @@ export const cancelEmployeeLeave = async (id) => {
       method,
       url,
       headers: headers(),
+      data: { is_cancelled: true },
     });
     if (response.status === 200 || response.status === 201) {
       return response.data;
@@ -981,7 +982,6 @@ export const uploadHolidaysData = async (formData) => {
     return error?.response?.data;
   }
 };
-
 
 export const saveUpdateOffsetSettings = async (payload, id) => {
   const ID = id || payload?.id;
