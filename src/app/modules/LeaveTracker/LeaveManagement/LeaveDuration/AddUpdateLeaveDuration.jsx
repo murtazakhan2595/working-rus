@@ -80,8 +80,8 @@ export default function AddUpdateLeaveDuration({
         handleClose();
       }
     } catch (error) {
-      // Show error message
       const errorMessage =
+        error?.response?.data?.duration_name?.[0] ||
         error?.response?.data?.message ||
         error.message ||
         `Failed to ${isEditMode ? "update" : "add"} leave duration.`;
