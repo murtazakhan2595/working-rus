@@ -195,15 +195,32 @@ const DraftSchedule = ({ draftSchedules, reload, employees }) => {
 
       <div className="flex flex-col gap-2 w-full p-4 bg-gray-100 rounded-lg shadow-lg">
         {/* Rejection Reason Display */}
-        {activeSchedule && activeSchedule.status === "Rejected" && activeSchedule.rejection_reason && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <div className="flex items-start gap-2">
-              <div className="text-red-600 font-medium text-sm">Rejection Reason:</div>
+        {activeSchedule &&
+          activeSchedule.status === "Rejected" &&
+          activeSchedule.rejection_reason && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <div className="text-red-600 font-medium text-sm">
+                  Rejection Reason:
+                </div>
+              </div>
+              <div className="mt-1 text-red-700 text-sm">
+                {activeSchedule.rejection_reason}
+              </div>
+              {activeSchedule.approved_by && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-red-600 font-medium text-sm">
+                    Rejected by:
+                  </span>
+                  <EmployeeOverview
+                    id={activeSchedule.approved_by}
+                    showId={true}
+                  />
+                </div>
+              )}
             </div>
-            <div className="mt-1 text-red-700 text-sm">{activeSchedule.rejection_reason}</div>
-          </div>
-        )}
-        
+          )}
+
         <ScheduleCalendar pendingSchedule={activeSchedule} />
 
         {/* Action Buttons */}
@@ -228,8 +245,8 @@ const DraftSchedule = ({ draftSchedules, reload, employees }) => {
                 onClick={handleProceedForApproval}
                 disabled={!activeSchedule || processing}
               >
-                {processing && proceedState?.open 
-                  ? "Processing..." 
+                {processing && proceedState?.open
+                  ? "Processing..."
                   : "Proceed for Approval"}
               </Button>
             </div>
@@ -324,14 +341,15 @@ const ListView = ({ pendingShift, handleSelect, active, getShiftName, isDraft = 
             px-3 py-1.5 rounded-full text-xs font-medium
             ${
               pendingShift.status === "Pending"
-                ? "bg-yellow-100 text-yellow-800"
+                ? "bg-[#FEF3C7] text-[#92400E]"
                 : pendingShift.status === "Rejected"
-                ? "bg-red-100 text-red-800"
-                : "bg-gray-100 text-gray-800"
+                ? "bg-[#FEE2E2] text-[#991B1B]"
+                : "bg-[#F3F4F6] text-[#1F2937]"
             }
           `}
           >
-            {pendingShift.draft ? "Pending Draft" : pendingShift.status}
+            {console.log("Draft Schedule Status", pendingShift.status, pendingShift.draft)}
+            {pendingShift.draft && pendingShift.status === "Pending" ? "Pending Draft" : pendingShift.status}
           </span>
         </div>
       </div>
