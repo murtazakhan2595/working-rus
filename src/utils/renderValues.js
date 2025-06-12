@@ -389,7 +389,6 @@ export function GetDateDifference(
         const day = moment(date).day();
         return day !== 0 && day !== 6; // exclude Sunday (0) and Saturday (6)
       });
-      console.log(count, "jbfbdjbvjhbfjvbdsj");
       return count?.length || 0;
     } catch (err) {
       console.warn("Invalid date range:");
