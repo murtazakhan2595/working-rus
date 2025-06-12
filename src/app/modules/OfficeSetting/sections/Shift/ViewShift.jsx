@@ -6,6 +6,8 @@ import { FormatID } from "utils/getValuesFromTables";
 import { StatusLabel } from "components";
 import { getShiftById } from "app/hooks/general";
 import CircularActionButtons from "components/CircularActionButtons";
+import AlertDialogue from "components/ui/AlertDialogue";
+import { deleteRecord } from "app/hooks/general";
 
 const formatTime = (isoString) => {
   if (!isoString) return "";
@@ -27,6 +29,7 @@ const ViewShift = ({
   const [isLoading, setIsLoading] = useState(false);
   const [currentItem, setCurrentItem] = useState({});
   const [editMode, setEditMode] = useState(false);
+  const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
 
   // Define the fields to display
   const fields = [
@@ -91,6 +94,20 @@ const ViewShift = ({
     setEditMode(true);
   };
 
+  const handleDelete = () => {
+    setOpenDeleteAlert(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await deleteRecord(`/shift/${currentId}/`, currentItem?.name);
+      setIsOpen(false);
+      reloadData(true);
+    } catch (error) {
+      console.error("Failed to delete shift:", error);
+    }
+  };
+
   return (
     <>
       <ViewDetailSheetCardExtension
@@ -107,7 +124,7 @@ const ViewShift = ({
             <div className="flex justify-end mt-4 space-x-2">
               <CircularActionButtons
                 onEdit={handleEdit}
-                onDelete={null}
+                onDelete={handleDelete}
                 editTooltip="Edit Shift"
                 deleteTooltip="Delete Shift"
               />
@@ -121,6 +138,19 @@ const ViewShift = ({
           </div>
         )}
       </ViewDetailSheetCardExtension>
+
+      {openDeleteAlert && (
+        <AlertDialogue
+          title="Confirm Delete?"
+          description="This action can't be undone. All information associated with this will be lost."
+          isOpen={openDeleteAlert}
+          setIsOpen={(isOpen) => setOpenDeleteAlert(isOpen)}
+          handleContinue={() => {
+            confirmDelete();
+            setOpenDeleteAlert(false);
+          }}
+        />
+      )}
 
       {editMode && (
         <AddShiftForm
