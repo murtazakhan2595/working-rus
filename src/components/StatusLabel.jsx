@@ -133,13 +133,14 @@ const MultiStatusLabel = React.forwardRef(
       size,
       iconVariant,
       displayAll,
+      fallBackText = "",
       ...props
     },
     ref
   ) => {
     //  const [searchQuery, setSearchQuery] = React.useState("");
     if (!statusList || !Array.isArray(statusList) || statusList.length === 0)
-      return null;
+      return fallBackText ?? null;
     const displayedStatus = displayAll ? statusList : statusList?.slice(0, 3);
     const remainingCount = statusList.length - displayedStatus.length;
     return (

@@ -34,6 +34,7 @@ import { useSelector } from "react-redux";
 import { getAttendance } from "app/hooks/attendance";
 
 export default function MonthlyAttendanceCalendar() {
+  const CalendarContent = useSelector((state) => state.common.calendar_content);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [loading, setLoading] = useState(true);
   const [attendanceData, setAttendanceData] = useState({});
@@ -106,68 +107,27 @@ export default function MonthlyAttendanceCalendar() {
     <div key={`empty-${i}`} className="h-10 w-10" />
   ));
 
-  // Determine day status and color
-  const getDayStatus = (day) => {
-    const dateStr = format(day, "yyyy-MM-dd");
-    const today = new Date();
-
-    // Check if it's a holiday
-    if (holidays.includes(dateStr)) {
-      return { status: "Holiday", color: "bg-gray-200 text-gray-800" };
-    }
-
-    // For future dates (from any month)
-    if (isAfter(day, today)) {
-      return { status: "Upcoming", color: "bg-gray-200 text-gray-800" };
-    }
-
-    // Check if there's attendance data for this day
-    if (attendanceData[dateStr]) {
-      const record = attendanceData[dateStr];
-
-      // If it's a leave day
-      if (record.isLeave) {
-        return { status: "On Leave", color: "bg-blue-100 text-blue-800" };
-      }
-      // Based on attendance status
-      switch (record.status) {
-        case "Present":
-          return { status: "Present", color: "bg-green-100 text-green-800" };
-        case "Absent":
-          return { status: "Absent", color: "bg-[#fee2e2] text-red-800" };
-        case "Late":
-          return { status: "Late", color: "bg-yellow-100 text-yellow-800" };
-        default:
-          // For any other status
-          return { status: record.status, color: "bg-gray-100 text-gray-800" };
-      }
-    }
-
-    // For past dates with no record (default to absent)
-    // Only mark as absent if the date is from the past
-    if (isBefore(day, today)) {
-      return { status: "Absent", color: "bg-[#fee2e2] text-red-800" };
-    }
-
-    // Default for current dates with no data yet
-    return { status: "Pending", color: "bg-white" };
-  };
-
   // Get tooltip content for a specific day
   const getTooltipContent = (day) => {
     const dateStr = format(day, "yyyy-MM-dd");
     const formattedDate = format(day, "MMMM dd, yyyy");
     const today = new Date();
+    const content = CalendarContent[dateStr] || {};
+
+    if (content.isHoliday) {
+      return {
+        color: "bg-purple-100 text-purple-800",
+        content: `${content.title}`,
+      };
+    }
 
     // For future dates
     if (isAfter(day, today)) {
-      return `Upcoming - ${formattedDate}`;
+      return {
+        color: "bg-gray-200 text-gray-800",
+        content: `Upcoming - ${formattedDate}`,
+      };
     }
-
-    if (holidays.includes(dateStr)) {
-      return `Holiday - ${formattedDate}`;
-    }
-
     if (attendanceData[dateStr]) {
       const record = attendanceData[dateStr];
 
@@ -178,49 +138,62 @@ export default function MonthlyAttendanceCalendar() {
       const checkout = record.checkout
         ? format(new Date(record.checkout), "hh:mm a")
         : "N/A";
+      const color =
+        record.status === "Present"
+          ? "bg-green-100 text-green-800"
+          : record.status === "Absent"
+          ? "bg-red-200 text-red-800"
+          : record.status === "Late"
+          ? "bg-yellow-100 text-yellow-800"
+          : "bg-gray-100 text-gray-800";
 
-      return (
-        <div className="space-y-1">
-          <p>
-            <span className="font-medium">Date:</span> {formattedDate}
-          </p>
-          <p>
-            <span className="font-medium">Status:</span> {record.status}
-          </p>
-          <p>
-            <span className="font-medium">Check-in:</span> {checkin}
-          </p>
-          <p>
-            <span className="font-medium">Check-out:</span> {checkout}
-          </p>
-          {record.total_hours > 0 && (
+      return {
+        color: color,
+        content: (
+          <div className="space-y-1">
             <p>
-              <span className="font-medium">Hours:</span>{" "}
-              {record.total_hours}
+              <span className="font-medium">Date:</span> {formattedDate}
             </p>
-          )}
-        </div>
-      );
+            <p>
+              <span className="font-medium">Status:</span> {record.status}
+            </p>
+            <p>
+              <span className="font-medium">Check-in:</span> {checkin}
+            </p>
+            <p>
+              <span className="font-medium">Check-out:</span> {checkout}
+            </p>
+            {record.total_hours > 0 && (
+              <p>
+                <span className="font-medium">Hours:</span> {record.total_hours}
+              </p>
+            )}
+          </div>
+        ),
+      };
     }
 
     // For past dates with no data
     if (isBefore(day, today)) {
-      return (
-        <div className="space-y-1">
-          <p>
-            <span className="font-medium">Date:</span> {formattedDate}
-          </p>
-          <p>
-            <span className="font-medium">Status:</span> Absent (No data)
-          </p>
-          <p>
-            <span className="font-medium">Check-in:</span> N/A
-          </p>
-          <p>
-            <span className="font-medium">Check-out:</span> N/A
-          </p>
-        </div>
-      );
+      return {
+        color: "bg-red-50 text-red-400",
+        content: (
+          <div className="space-y-1">
+            <p>
+              <span className="font-medium">Date:</span> {formattedDate}
+            </p>
+            <p>
+              <span className="font-medium">Status:</span> Absent (No data)
+            </p>
+            <p>
+              <span className="font-medium">Check-in:</span> N/A
+            </p>
+            <p>
+              <span className="font-medium">Check-out:</span> N/A
+            </p>
+          </div>
+        ),
+      };
     }
 
     return formattedDate;
@@ -277,7 +250,7 @@ export default function MonthlyAttendanceCalendar() {
           <div className="grid grid-cols-7 gap-1">
             {emptyDays}
             {daysInMonth.map((day) => {
-              const { status, color } = getDayStatus(day);
+              const { content, color } = getTooltipContent(day);
               const isCurrentDay = isToday(day);
 
               return (
@@ -295,7 +268,7 @@ export default function MonthlyAttendanceCalendar() {
                         {day.getDate()}
                       </div>
                     </TooltipTrigger>
-                    <TooltipContent>{getTooltipContent(day)}</TooltipContent>
+                    <TooltipContent>{content}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               );
@@ -321,7 +294,7 @@ export default function MonthlyAttendanceCalendar() {
             <span className="text-xs text-muted-foreground">Late</span>
           </div>
           <div className="flex items-center">
-            <div className="w-3 h-3 rounded-full bg-gray-200 mr-2"></div>
+            <div className="w-3 h-3 rounded-full bg-purple-100 mr-2"></div>
             <span className="text-xs text-muted-foreground">Holiday</span>
           </div>
         </div>

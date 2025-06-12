@@ -241,16 +241,16 @@ const DateInput = React.memo(
                 components={{
                   DayContent: ({ date }) => {
                     const baseDate = moment(date).format("YYYY-MM-DD");
-                    const content = CalendarContent[baseDate];
+                    const { title, isHoliday } = CalendarContent[baseDate] || {};
                     const className = `w-full h-full flex items-center justify-center ${
-                      disableHolidays && content ? "text-slate-500" : ""
+                      disableHolidays && isHoliday ? "text-slate-500" : ""
                     }`;
                     return (
                       <div className={className}>
-                        {content ? (
+                        {isHoliday ? (
                           <TooltipText
                             tooltipTriggerText={date.getDate()}
-                            content={content}
+                            content={title}
                           />
                         ) : (
                           date.getDate()

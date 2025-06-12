@@ -10,9 +10,8 @@ export function mapCalendarContent({ holidays }) {
     if (!date || !moment(date).isValid()) return;
 
     const startDate = moment(date);
-    const endDate = end_date && moment(end_date).isValid()
-      ? moment(end_date)
-      : startDate;
+    const endDate =
+      end_date && moment(end_date).isValid() ? moment(end_date) : startDate;
 
     try {
       const datesOfMonth = eachDayOfInterval({
@@ -22,7 +21,10 @@ export function mapCalendarContent({ holidays }) {
 
       datesOfMonth.forEach((thisDate) => {
         const key = moment(thisDate).format("YYYY-MM-DD");
-        calendar_content[key] = `Holiday - ${name || "Unnamed"}`;
+        calendar_content[key] = {
+          title: `Holiday - ${name || "Unnamed"}`,
+          isHoliday: true,
+        };
       });
     } catch (err) {
       console.warn("Invalid date range:", date, end_date);
@@ -31,4 +33,3 @@ export function mapCalendarContent({ holidays }) {
 
   return calendar_content;
 }
-

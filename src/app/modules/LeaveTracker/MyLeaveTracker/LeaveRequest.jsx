@@ -16,11 +16,12 @@ import { SelectInputComponent } from "components/FormControl";
 import { DateInput } from "components/FormControl";
 import { CheckBoxInput } from "components/FormControl";
 import { NumberInput } from "components/FormControl";
-import { getWorkingDays } from "utils/renderValues";
+import { GetDateDifference } from "utils/renderValues";
 import { TextAreaInput } from "components/FormControl";
 import { CoverFileUpload } from "components/FormControl";
 
 const LeaveRequest = ({ id, reloadData = () => {} }) => {
+  const CalendarContent = useSelector((state) => state.common.calendar_content);
   const { id: user_id, branch_id: user_branch } = useSelector(
     (state) => state.emp.user_details
   );
@@ -124,9 +125,14 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
         } else {
           // const Shift = getActiveShiftList(user_id, start, end);
           // Calculate total leave days (inclusive of both start and end date)
-          if (daysType === "work_days")
-            FormValues.total_days = getWorkingDays(start, end);
-          else FormValues.total_days = end.diff(start, "days") + 1;
+          const total_days = GetDateDifference(
+            start,
+            end,
+            daysType,
+            CalendarContent,
+            ["holidays"]
+          );
+          FormValues.total_days = total_days;
         }
       }
     }
@@ -274,6 +280,7 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
                     name: "end_date",
                     label: "End Date",
                     required: true,
+                    disableHolidays: true,
                     minDate: FormValues.start_date || new Date(),
                   },
                   {
