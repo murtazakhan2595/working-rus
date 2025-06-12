@@ -1,6 +1,9 @@
 import React from "react";
-import { NavigationSheetComponent, DetailContent } from "components";
-import AddBranchForm from "./AddBranchForm";
+import { NavigationSheetComponent } from "components";
+import { DetailContent } from "components";
+import AddBranchForm from "./AddBranchForm";    
+import useUserOrganization from "app/hooks/useUserOrganization";
+import { getBranchById } from "app/hooks/general"; // Adjust path as needed
 
 const ViewBranch = ({ 
   isOpen, 
@@ -9,32 +12,54 @@ const ViewBranch = ({
   reload = () => {},
   BranchList = []
 }) => {
+  const userOrganization = useUserOrganization();
+
   // Define the fields to display
   const fields = [
-    { key: "id", label: "Id" },
-    { key: "branch_name", label: "Name" },
-    { key: "branch_number", label: "Branch Number" },
-    { key: "branch_address", label: "Address" }
+    {
+      title: "Branch Details",
+      field: [
+        { key: "id", label: "ID" },
+        { key: "branch_name", label: "Branch Name" },
+        { key: "branch_number", label: "Branch Number" },
+        { key: "branch_address", label: "Address" },
+        { key: "branch_status", label: "Status" },
+        
+      
+        // Add more fields as needed
+      ],
+    },
   ];
+
+  // Fetch department data by ID
+  const fetchData = async (id, isMounted) => {
+    console.log("Fetching department with ID:", id); // Debug
+    try {
+      const response = await getBranchById(id);
+      console.log("API response:", response); // Debug
+      if (isMounted) {
+        return response;
+      }
+    } catch (error) {
+      console.error("Error fetching department:", error);
+    }
+  };
 
   return (
     <NavigationSheetComponent
       isOpen={isOpen}
       setIsOpen={setIsOpen}
       title="Branch Detail"
-      data={data}
+      currentItem_Id={data?.id}
       dataList={BranchList}
-      reload={reload}
+      reloadData={reload}
       editComponent={AddBranchForm}
-      deleteEndpoint={`/branch/${data?.id}`}
-      refreshEndpoint="/branch"
-      deleteItemName="branch_name"
-      editTooltip="Edit Branch"
+      apiEndpoint={`/branch/${data?.id}/`}
+      fetchCurrentItemDetails={fetchData}
+      deleteItemName="name"
+      editTooltip="Edit Branch"   
       deleteTooltip="Delete Branch"
-      additionalEditProps={{ 
-        editMode: true, 
-        branchData: data 
-      }}
+      additionalEditProps={{ userOrganization }}
     >
       <DetailContent
         title="Branch Details"
@@ -44,4 +69,4 @@ const ViewBranch = ({
   );
 };
 
-export default ViewBranch;
+export default ViewBranch;      
