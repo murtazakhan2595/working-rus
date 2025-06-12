@@ -16,6 +16,7 @@ import {
   AddUpdateHolidays,
   LeaveTypes,
   AddUpdateLeaveType,
+  OffsetLeaves,
 } from "app/modules/LeaveTracker";
 import { getLeaveDurations } from "app/hooks/leaveTracker";
 import { getLeaveTypes } from "app/hooks/leaveTracker";
@@ -126,12 +127,7 @@ export default function LeaveManagement() {
       value: "offset_leave_settings",
       label: "Offset Leave Settings",
       component: (
-        <Holidays
-          options={options}
-          onPageChange={onPageChange}
-          setOrdering={setOrdering}
-          loading={loading}
-          data={data}
+        <OffsetLeaves
           reload={reloadHolidays}
         />
       ),

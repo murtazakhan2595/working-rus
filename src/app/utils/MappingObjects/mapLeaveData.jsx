@@ -176,7 +176,7 @@ export function mapLeaveData(data) {
     } else {
       if (Object.prototype.hasOwnProperty.call(data, key)) {
         if (key === "status") {
-          const status = data.is_cancelled ? "Cancelled" :  data[key];
+          const status = data.is_cancelled ? "Cancelled" : data[key];
           LeaveDetails[key] = status;
         } else LeaveDetails[key] = data[key];
       }
@@ -236,6 +236,47 @@ export function mapLeaveOffsetSettingPayloadeData(data) {
 
   // Return the constructed payload
   return payload;
+}
+
+export function mapOffsetLeaveSettingData(data) {
+  const responseData = Object.keys(LeaveOffsetSetting).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      // if (key === "branches") {
+      //   const branches = data[key] || [];
+      //   acc["branch_names"] = branches.map(({ branch_name }) => {
+      //     return branch_name;
+      //   });
+      //   acc["branches"] = branches.map(({ id }) => {
+      //     return id;
+      //   });
+      // } else
+      if (key === "grades") {
+        const grades = data[key] || [];
+        acc["grades"] = grades.map((grade) => {
+          return parseInt(grade);
+        });
+      } else acc[key] = data[key];
+    } else {
+      acc[key] = LeaveOffsetSetting[key];
+    }
+    return acc;
+  }, {});
+
+  return responseData;
+}
+
+export async function mapOffsetLeaveSettingListData(data) {
+  if (!data || data.length === 0) return [];
+  const ResponseList = await data?.map((dataObj) => {
+    const formattedData = mapOffsetLeaveSettingData(dataObj);
+    return {
+      label: formattedData.name,
+      value: formattedData.id,
+      ...formattedData,
+    };
+  });
+
+  return ResponseList;
 }
 
 export { getLavefromEmployeeInfo };

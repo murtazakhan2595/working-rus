@@ -12,6 +12,8 @@ import {
   mapLeaveOffsetSettingPayloadeData,
   mapLeaveData,
   mapLeavePayloadData,
+  mapOffsetLeaveSettingListData,
+  mapOffsetLeaveSettingData
 } from "app/utils/MappingObjects/mapLeaveData";
 import { renderErrorMessages } from "utils/renderErrors";
 
@@ -1010,6 +1012,51 @@ export const saveUpdateOffsetSettings = async (payload, id) => {
     }
     renderErrorMessages(error?.response?.data);
     return false;
+  }
+};
+export const getLeaveOffsetSettingListData = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/leave-offset-settings?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseList = await mapOffsetLeaveSettingListData(ResponseData.results);
+      return { results: ResponseList, count: ResponseData.count };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+export const getLeaveOffsetSettingData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/leave-offset-settings/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = await mapOffsetLeaveSettingData(response.data);
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
   }
 };
 

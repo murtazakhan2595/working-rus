@@ -35,6 +35,8 @@ import {
   OffsetLeaves,
   AddUpdateOffsetLeave,
   ImportHolidays,
+  ViewOffsetLeaveSetting,
+  OffsetLeaveSettingAction,
 } from "./LeaveManagement";
 
 export {
@@ -67,4 +69,6 @@ export {
   CancelLeaveRequest,
   LeaveCountAction,
   ViewEmployeeLeaveCount,
+  ViewOffsetLeaveSetting,
+  OffsetLeaveSettingAction,
 };

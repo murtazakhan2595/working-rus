@@ -31,7 +31,7 @@ const statusVariants = cva("", {
       warning: "bg-amber-50 text-amber-500",
       success: "bg-emerald-50 text-emerald-700",
       neutral: "bg-neutral-300 text-neutral-1100",
-      info: "bg-blue-100 text-blue-900",
+      info: "bg-blue-50 text-blue-800",
       "dot-plum":
         "bg-white border-neutral-300 flex items-center gap-2 text-neutral-1100",
       "dot-error": "bg-white border-neutral-300 flex items-center gap-2",
@@ -104,7 +104,7 @@ const StatusLabel = React.forwardRef(
           statusVariants({
             variant: StatusVariant,
           }),
-          "flex items-center capitalize-text",
+          "flex items-center h-fit capitalize-text font-normal",
           className
         )}
         ref={ref}
@@ -147,43 +147,21 @@ const MultiStatusLabel = React.forwardRef(
         <PopoverTrigger asChild>
           <div className="flex flex-wrap gap-1">
             {displayedStatus.map((status, index) => {
-              const StatusVariant = variant ?? getStatusVariant(status);
               return (
-                <Badge
-                  className={cn(
-                    statusVariants({
-                      variant: StatusVariant,
-                    }),
-                    "flex items-center capitalize-text",
-                    className
-                  )}
-                  ref={ref}
+                <StatusLabel
                   key={index}
-                  size={size}
                   {...props}
+                  variant={variant}
+                  status={status}
                 >
-                  {iconVariant && (
-                    <StatusIcon status={status} iconVariant={iconVariant} />
-                  )}
                   {status}
-                </Badge>
+                </StatusLabel>
               );
             })}
             {remainingCount > 0 && !displayAll && (
-              <Badge
-                className={cn(
-                  statusVariants({
-                    variant: "info",
-                  }),
-                  "flex items-center capitalize-text",
-                  className
-                )}
-                ref={ref}
-                size={size}
-                {...props}
-              >
+              <StatusLabel {...props} variant={variant}>
                 +{remainingCount}
-              </Badge>
+              </StatusLabel>
             )}
           </div>
         </PopoverTrigger>

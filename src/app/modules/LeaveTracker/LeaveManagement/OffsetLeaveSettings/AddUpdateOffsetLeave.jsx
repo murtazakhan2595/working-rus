@@ -1,7 +1,7 @@
 import {
   saveUpdateOffsetSettings,
   getHolidaysListData,
-  getHolidayData,
+  getLeaveOffsetSettingData,
   getLeaveTypeListData,
   getLeaveTypeData,
 } from "app/hooks/leaveTracker";
@@ -42,7 +42,7 @@ const AddUpdateOffsetLeave = ({
   const [formData, setFormData] = useState(LeaveOffsetSetting);
   const FormSheetData = {
     triggerText: "",
-    title: isEditMode ? "Edit Holidays" : "Add New Holidays",
+    title: isEditMode ? "Edit Offset Settings" : "Add New Settings",
     description: null,
     footer: null,
   };
@@ -84,7 +84,7 @@ const AddUpdateOffsetLeave = ({
   const fetchData = async (isMounted, id) => {
     try {
       setIsLoading(true);
-      const response = await getHolidayData(id);
+      const response = await getLeaveOffsetSettingData(id);
       if (isMounted) {
         setFormData(response);
       }
@@ -260,6 +260,7 @@ const AddUpdateOffsetLeave = ({
                   name: "grades",
                   label: "Job Grades / Designations",
                   options: Designations,
+                  SelectAllOption: true,
                 },
               ],
             },
