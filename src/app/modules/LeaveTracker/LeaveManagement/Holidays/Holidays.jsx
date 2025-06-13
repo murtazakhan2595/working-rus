@@ -35,14 +35,14 @@ export default function Holidays({ reload = false }) {
     },
   };
 
-  const fetchData = async () => {
+  const fetchData = async (isMounted) => {
     setIsLoading(true);
     const response = await getHolidaysListData({
       filterData,
       options,
       ordering,
     });
-    if (response) {
+    if (response && isMounted) {
       setPublicHodidays(response);
     }
     setIsLoading(false);
@@ -92,7 +92,7 @@ export default function Holidays({ reload = false }) {
             {`Here you can add, edit, delete and view public holidays`}
           </CardDescription>
         </div>
-        <ImportHolidays />
+        <ImportHolidays reloadData={fetchData} />
       </CardHeader>
       <CardContent>
         <FilterInput
