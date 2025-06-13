@@ -470,6 +470,89 @@ const getEmployeeCustomList = async (payload) => {
   return EmployeeListData;
 };
 
+// Helper to recursively flatten employees and subordinates
+function flattenEmployees(employees) {
+  const flat = [];
+  function recurse(emp, parent = null) {
+    // Map subordinate or employee to the expected structure
+    const mapped = {
+      value: emp.id,
+      id: emp.id,
+      label: emp.first_name && emp.last_name
+        ? `${emp.first_name} ${emp.last_name} - ${emp.serial_number || ''}`
+        : `${emp.name || ''} - ${emp.serial_number || ''}`,
+      username: emp.username || '',
+      name: emp.first_name && emp.last_name
+        ? `${emp.first_name} ${emp.last_name}`
+        : emp.name || '',
+      department_name: emp.department_name || '',
+      department_position: emp.department_position || '',
+      employee_location: emp.employee_location || '',
+      direct_report: emp.direct_report || parent?.id || '',
+      branch_id: emp.branch_id || '',
+      work_email: emp.work_email || '',
+      serial_number: emp.serial_number || '',
+      basic_salary: emp.ctc || '',
+      salary_type: emp.salary_type || '',
+      is_eos_applicable: emp.is_eos_applicable,
+      is_new: emp.is_new,
+      joining_date: emp.joining_date || '',
+      employee_status: emp.employee_status || '',
+      default_shift: emp.shift_assignment || '',
+      user_role: emp.user_role || [],
+      name_initials: emp.first_name && emp.last_name
+        ? `${emp.first_name.charAt(0).toUpperCase() || ''}${emp.last_name.charAt(0).toUpperCase() || ''}`
+        : (emp.name ? emp.name.split(' ').map(n => n[0]?.toUpperCase()).join('') : ''),
+      profile_picture: emp.profile_picture || '',
+      designation: emp.designation || emp.department_position || '',
+      subordinates: [], // We'll flatten them
+      is_manager: emp.is_manager,
+    };
+    flat.push(mapped);
+    if (emp.subordinates && Array.isArray(emp.subordinates)) {
+      emp.subordinates.forEach(sub => recurse(sub, emp));
+    }
+  }
+  employees.forEach(emp => recurse(emp));
+  return flat;
+}
+
+const getNewEmployeeCustomList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const ordering = payload?.ordering ?? "-id";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/newcustomemp/?ordering=${ordering}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const employeeDataResponse = response.data.results;
+      // Flatten all employees and subordinates
+      const flatEmployees = flattenEmployees(employeeDataResponse.employees);
+      const employeeData = {
+        count: flatEmployees.length,
+        results: flatEmployees,
+        ActiveEmployee: employeeDataResponse.active_employees,
+        TotalEmployee: employeeDataResponse.total_employees,
+        TotalManager: employeeDataResponse.total_managers
+      };
+      return employeeData;
+    } else return EmployeeListData;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return EmployeeListData;
+};
+
 const getList = async (URL) => {
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
@@ -862,6 +945,7 @@ export {
   getOrganizationList,
   getEmployeeList,
   getEmployeeCustomList,
+  getNewEmployeeCustomList,
   getProjectsList,
   getCurrenciesList,
   saveDepartment,
@@ -870,6 +954,4 @@ export {
   getEmployeeListWithDetail,
   HandleLogout,
   getRoleList,
-
- 
 };

@@ -116,7 +116,7 @@ const getShiftSchedule = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
   if (!filterData?.draft) {
-    filterData.draft = false; // Ensure draft is false by default
+    filterData.draft = false;
   }
   let URL = `/shift-schedules?ordering=${sortField}&${
     pageNo ? `page=${pageNo}&` : ""

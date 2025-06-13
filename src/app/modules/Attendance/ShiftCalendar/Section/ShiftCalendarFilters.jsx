@@ -8,8 +8,6 @@ const ShiftCalendarFilters = ({
   searchPlaceholder = "Search by ID and Name",
 }) => {
   const [filterData, setFilterData] = useState({});
-  const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [shiftStatus, setShiftStatus] = useState("");
   const Departments = useSelector((state) => state.common.departments);
 
   // Filter options for shift assignment status
@@ -19,10 +17,8 @@ const ShiftCalendarFilters = ({
     { value: "not_assigned", label: "Not Assigned" },
   ];
 
+  // Unified filter change handler
   const handleFilterChange = (filterName, filterValue) => {
-    if (filterName === "department_name") setSelectedDepartment(filterValue);
-    if (filterName === "shift_status") setShiftStatus(filterValue);
-
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -42,8 +38,7 @@ const ShiftCalendarFilters = ({
   // Reset internal state when filters are cleared externally
   useEffect(() => {
     if (Object.keys(filterData).length === 0) {
-      setSelectedDepartment("");
-      setShiftStatus("");
+      // No need to reset individual states, just rely on filterData
     }
   }, [filterData]);
 
@@ -53,12 +48,10 @@ const ShiftCalendarFilters = ({
         <div className="flex">
           <SelectInputComponent
             name="shift_status"
-            value={shiftStatus}
+            value={filterData.shift_status || ""}
             placeholder="Shift Status"
             options={shiftStatusOptions}
-            onChange={(name, value) =>
-              handleFilterChange("shift_status", value)
-            }
+            onChange={(name, value) => handleFilterChange("shift_status", value)}
             classes="flex-row"
           />
         </div>
@@ -70,14 +63,15 @@ const ShiftCalendarFilters = ({
           {
             type: "search",
             placeholder: searchPlaceholder,
-            name: "search_term",
+            name: "emp_search",
+            values: filterData.emp_search || "",
           },
           {
             type: "select-one",
             option: Departments,
             name: "department_name",
             placeholder: "Department",
-            values: selectedDepartment,
+            values: filterData.department_name || "",
           },
         ]}
         onChange={handleFilterChange}

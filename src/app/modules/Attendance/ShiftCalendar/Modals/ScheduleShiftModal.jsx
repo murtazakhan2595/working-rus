@@ -29,6 +29,8 @@ const ScheduleShiftModal = ({
   isDraft = false, // New prop to indicate if this is for draft schedules
 }) => {
 
+  console.log("employees IN SHIFT SCHEDULE", employees);
+
   const isEditMode = Boolean(editSchedule);
   const [closeSheet, setCloseSheet] = useState(false);
   const [shifts, setShifts] = useState([]);
@@ -727,7 +729,7 @@ const ScheduleShiftModal = ({
                       label="Employee (Cannot be changed)"
                       options={employees.map((emp) => ({
                         value: emp.id,
-                        label: `${emp.first_name} ${emp.last_name}`,
+                        label: emp?.label,
                       }))}
                       value={editSchedule.employee}
                       disabled={true}
@@ -741,7 +743,7 @@ const ScheduleShiftModal = ({
                       label="Select Employees"
                       options={employees.map((emp) => ({
                         value: emp.id,
-                        label: `${emp.first_name} ${emp.last_name}`,
+                        label: emp?.label,
                       }))}
                       value={props.values.employees}
                       error={props.errors.employees}
