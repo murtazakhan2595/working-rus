@@ -282,13 +282,25 @@ export const PublicHolidaydsColumn = (reload, data) => [
     dataField: "country",
     text: "Countries",
     formatter: (cell) => {
-      return <MultiStatusLabel statusList={cell} variant="info" fallBackText='All Countries'/>;
+      return (
+        <MultiStatusLabel
+          statusList={cell}
+          variant="info"
+          fallBackText="All Countries"
+        />
+      );
     },
   },
   {
     dataField: "branch_names",
     text: "Branches",
-    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" fallBackText='All Branches'/>,
+    formatter: (cell) => (
+      <MultiStatusLabel
+        statusList={cell}
+        variant="info"
+        fallBackText="All Branches"
+      />
+    ),
   },
   {
     dataField: "",
@@ -476,28 +488,47 @@ export const LeaveOffsetSettingColumn = (reload, data) => [
     dataField: "nationalities",
     text: "Nationalities",
     formatter: (cell) => {
-      return <MultiStatusLabel statusList={cell} variant="info" />;
+      return (
+        <MultiStatusLabel
+          statusList={cell}
+          variant="info"
+          fallBackText="All Nationalities"
+        />
+      );
     },
   },
   {
-    dataField: "branches",
+    dataField: "branches_name: null",
     text: "Branches",
-    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />,
+    formatter: (cell) => (
+      <MultiStatusLabel
+        statusList={cell}
+        variant="info"
+        fallBackText="All Branches"
+      />
+    ),
   },
   {
-    dataField: "departments",
+    dataField: "departments_name",
     text: "Departments",
-    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />,
+    formatter: (cell) => (
+      <MultiStatusLabel
+        statusList={cell}
+        variant="info"
+        fallBackText="All Departments"
+      />
+    ),
   },
   {
-    dataField: "grades",
+    dataField: "grades_name",
     text: "Grades",
-    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />,
-  },
-  {
-    dataField: "genders",
-    text: "Genders",
-    formatter: (cell) => <MultiStatusLabel statusList={cell} variant="info" />,
+    formatter: (cell) => (
+      <MultiStatusLabel
+        statusList={cell}
+        variant="info"
+        fallBackText="All Grades"
+      />
+    ),
   },
   {
     dataField: "validity_months",

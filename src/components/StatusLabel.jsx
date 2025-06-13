@@ -104,7 +104,7 @@ const StatusLabel = React.forwardRef(
           statusVariants({
             variant: StatusVariant,
           }),
-          "flex items-center h-fit capitalize-text font-normal",
+          "flex items-center h-fit capitalize-text",
           className
         )}
         ref={ref}
@@ -146,7 +146,7 @@ const MultiStatusLabel = React.forwardRef(
     return (
       <Popover>
         <PopoverTrigger asChild>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1 cursor-pointer">
             {displayedStatus.map((status, index) => {
               return (
                 <StatusLabel
@@ -154,13 +154,18 @@ const MultiStatusLabel = React.forwardRef(
                   {...props}
                   variant={variant}
                   status={status}
+                  className={cn("font-normal", className)}
                 >
-                  {status}
+                  {status.toLowerCase()}
                 </StatusLabel>
               );
             })}
             {remainingCount > 0 && !displayAll && (
-              <StatusLabel {...props} variant={variant}>
+              <StatusLabel
+                {...props}
+                variant={variant}
+                className={cn("font-normal", className)}
+              >
                 +{remainingCount}
               </StatusLabel>
             )}

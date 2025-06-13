@@ -118,12 +118,15 @@ export function mapAttendanceData(data, shiftDetails) {
           if (
             parseFloat(payload.payable_hours) > parseFloat(payload.total_hours)
           ) {
-            payload["overtime_hours"] = parseFloat(
+            const overtime = parseFloat(
               parseFloat(payload.payable_hours) -
                 parseFloat(payload.total_hours)
             ).toFixed(2);
+            payload["overtime_hours"] = overtime;
+            payload["remaining_offset_leave_hours"] = overtime;
           } else {
             payload["overtime_hours"] = parseFloat(0).toFixed(2);
+            payload["remaining_offset_leave_hours"] = parseFloat(0).toFixed(2);
           }
         }
       } else payload[key] = data[key];

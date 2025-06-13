@@ -36,8 +36,6 @@ const AddUpdateOffsetLeave = ({
   const [NameExist, setNameExist] = useState(false);
   const isEditMode = Boolean(id);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
-  const [leaveTypesOptions, setLeaveTypesOptions] = useState([]);
-  const [selectedLeaveType, setSelectedLeaveType] = useState({});
   // Initialize form data with role values if in edit mode
   const [formData, setFormData] = useState(LeaveOffsetSetting);
   const FormSheetData = {
@@ -50,10 +48,6 @@ const AddUpdateOffsetLeave = ({
   const fetchPublicHolidaysData = async (isMounted) => {
     try {
       setIsLoading(true);
-      const LeavesTypes = await getLeaveTypeListData();
-      if (LeavesTypes && isMounted) {
-        setLeaveTypesOptions(LeavesTypes.results || []);
-      }
       // Add organizationId to filter if available
       const response = await getHolidaysListData();
 
@@ -134,46 +128,6 @@ const AddUpdateOffsetLeave = ({
     }
   };
 
-  const validateHolidayName = useCallback(
-    (name) => {
-      if (!name) return false;
-
-      const holiday_name = PublicHolidays.filter(
-        (holiday) =>
-          holiday.label.toLowerCase() === name.trim().toLowerCase() &&
-          parseInt(holiday.id) !== parseInt(id)
-      );
-
-      setNameExist(holiday_name.length > 0);
-    },
-    [PublicHolidays, id] // dependencies
-  );
-
-  const getLeaveTypeDetails = async (leaveTypeId) => {
-    try {
-      if (leaveTypeId) {
-        const leaveType = await getLeaveTypeData(leaveTypeId);
-        if (leaveType) {
-          setSelectedLeaveType(leaveType);
-          setFormData((prev) => ({
-            ...prev,
-            nationalities: leaveType.nationalities,
-            branches: leaveType.branches,
-            departments: leaveType.departments,
-            grades: leaveType.grades,
-            marital_statuses: leaveType.marital_statuses,
-            genders: leaveType.genders,
-            leave_type: leaveTypeId,
-          }));
-        }
-      } else {
-        setSelectedLeaveType({});
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <>
       <SheetUI
@@ -186,9 +140,9 @@ const AddUpdateOffsetLeave = ({
           enableReinitialize: true,
           renderUpdatedFormValues: setFormValues,
           handleSubmit: handleSubmit,
-          onSubmitClick: (values) => {
-            validateHolidayName(values.name);
-          },
+          // onSubmitClick: (values) => {
+          //   validateHolidayName(values.name);
+          // },
           validateFormSchema: (values) => {
             const errors = validatePublicHolidayFormSchema(values);
             if (values.name && NameExist)
@@ -206,16 +160,6 @@ const AddUpdateOffsetLeave = ({
               sheetCardExtension: true,
               sheetCardTitle: `Eligibility Details`,
               InputFields: [
-                {
-                  InputField: SelectInputComponent,
-                  name: "leave_type",
-                  required: true,
-                  label: "Leave Type",
-                  options: leaveTypesOptions,
-                  onFieldUpdate: async (_, value) => {
-                    await getLeaveTypeDetails(value);
-                  },
-                },
                 {
                   InputField: SelectMultiInputComponent,
                   name: "nationalities",

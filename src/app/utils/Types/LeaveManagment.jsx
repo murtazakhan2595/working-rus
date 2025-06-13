@@ -78,7 +78,6 @@ export const PublicHoliday = {
 export const LeaveOffsetSetting = {
   nationalities: null,
   grades: null,
-  religions: null,
   branches: null,
   departments: null,
   offset_leave_days: null,
@@ -87,8 +86,12 @@ export const LeaveOffsetSetting = {
   leave_cap_enabled: false,
   max_leaves_per_month: null,
   max_leaves_per_year: null,
-  leave_type: null,
+  leave_type: 1,
   id: null,
+  branches_name: null,
+  departments_name: null,
+  grades_name: null,
+  genders: null,
 };
 
 export { Leave, EmployeeLeaveTypesList };
