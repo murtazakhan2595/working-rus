@@ -275,7 +275,7 @@ const getShiftSchedulesLogs = async (payload) => {
     return false;
   }
 };
-
+// get active shift
 export const getActiveShiftList = async (
   employee_id,
   start_date = new Date(),
@@ -336,6 +336,7 @@ export async function getActiveShiftsData(
   customSchedule
 ) {
   try {
+    console.log()
     if (!employeeId || !date) return null;
     const formattedDate = moment(date).format("YYYY-MM-DD");
     const isWeekend = moment(date).day() === 0 || moment(date).day() === 6;
@@ -463,6 +464,8 @@ export async function getActiveShiftsData(
     return null;
   }
 }
+
+
 
 export {
   saveShift,
