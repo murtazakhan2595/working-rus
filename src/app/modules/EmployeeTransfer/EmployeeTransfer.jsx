@@ -26,6 +26,7 @@ import {
 } from "app/modules/EmployeeTransfer";
 import Config from "constants/config";
 import { HasAccess } from "utils/PermissionUtils";
+import { FilterInput } from "components/FormControl";
 
 const ExternalTabs = [
   Config.TEAM_INTERNALTRANSFER ? "Internal" : null,
@@ -52,9 +53,11 @@ export default function EmployeeTransfer() {
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const Departments = useSelector((state) => state.common.departments);
+  const Designations = useSelector((state) => state.common.designations);
+  const Branches = useSelector((state) => state.common.branches);
   const [ordering, setOrdering] = useState("-id");
   const [filterData, setFilterData] = useState(
-    userRole === 2 ? { new_reporting_manager: userID } : {}
+    {}
   );
 
   const onPageChange = (name, value) => {
@@ -158,7 +161,43 @@ export default function EmployeeTransfer() {
         ? { status_transfer: "REJECTED,REJECTED BY MANAGER", transfer_type: "EXTERNAL" }
         : {}),
     }));
+    resetUserFilters();
   }, [activeExternalTab, activeInternalTab]);
+
+  const resetUserFilters = () => {
+    setOptions((prevOptions) => ({ ...prevOptions, page: 1 }));
+
+    setFilterData((prevFilters) => {
+      const resetFilters = { ...prevFilters };
+
+      // Remove only user-applied filters
+      delete resetFilters.id_and_first_name;
+      delete resetFilters.department_name;
+      delete resetFilters.designation_name;
+      delete resetFilters.branch_name;
+
+      return resetFilters;
+    });
+  };
+
+  // Update your handleResetFilters to use the same logic
+  const handleResetFilters = () => {
+    resetUserFilters();
+  };
+
+  const handleFilterChange = (filterName, filterValue) => {
+    setOptions((prevOptions) => ({ ...prevOptions, page: 1 }));
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "") {
+        delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
+
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
@@ -176,6 +215,46 @@ export default function EmployeeTransfer() {
         }
       />
       <Stats stats={statsData} />
+      <div className="flex justify-end items-center gap-2">
+        <FilterInput
+          filters={[
+            {
+              type: "search",
+              placeholder: "Search by ID and Name",
+              name: "id_and_first_name",
+            },
+            {
+              type: "select-one",
+              option: Departments,
+              name: "department_name",
+              placeholder: "Department",
+              values: filterData.department_name || "",
+            },
+            {
+              type: "select-two",
+              option: Designations,
+              name: "designation_name",
+              placeholder: "Designation",
+              values: filterData.designation_name || "",
+            },
+            {
+              type: "select-three",
+              option: Branches,
+              name: "branch_name",
+              placeholder: "Branch",
+              values: filterData.branch_name || "",
+            },
+          ]}
+          onChange={handleFilterChange}
+        />
+        <Button
+          variant="outline"
+          onClick={handleResetFilters}
+          className="shrink-0"
+        >
+          Reset Filters
+        </Button>
+      </div>
       <Tabs
         defaultValue="Internal"
         className="w-full"
@@ -186,64 +265,47 @@ export default function EmployeeTransfer() {
         value={activeExternalTab}
       >
         <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
-          {ExternalTabs.length>1 &&<TabsList className="flex items-center justify-center mb-4">
-            {ExternalTabs.map((tab) => (
-              <TabsTrigger
-                key={tab}
-                value={tab}
-                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-              >
-                {tab}
-              </TabsTrigger>
-            ))}
-          </TabsList>}
-          {/* <FilterInput
-            filters={[
-              // {
-              //   type: "search",
-              //   placeholder: "Search by ID and Name",
-              //   name: "id_and_first_name",
-              // },
-              // {
-              //   type: "select-one",
-              //   option: Departments,
-              //   name: "department_name",
-              //   placeholder: "Department",
-              //   values: selectedDepartment,
-              // },
-              {
-                type: "select-one",
-                option: EmployeeTransferStatus,
-                name: "status",
-                placeholder: "Status",
-                values: selectedStatus,
-              },
-            ]}
-            onChange={handleFilterChange}
-          /> */}
+          {ExternalTabs.length > 1 && (
+            <TabsList className="flex items-center justify-center mb-4">
+              {ExternalTabs.map((tab) => (
+                <TabsTrigger
+                  key={tab}
+                  value={tab}
+                  className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                >
+                  {tab}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          )}
         </div>
-        {viewEmployeeTransferPermitted && <Card>
-          <CardContent>
-            <TabsContent value="Internal">
-              <EmployeeInternalTranfer
-                TabList={ InternalTabs}
-                activeTab={activeInternalTab}
-                setActiveTab={setActiveInternalTab}
-                EmployeesTransferData={employeeTransferData}
-                reloadData={fetchData}
-              />
-            </TabsContent>
-            <TabsContent value="External">
-              {<EmployeeExternalTranfer
-                TabList={ InternalTabs}
-                activeTab={activeInternalTab}
-                setActiveTab={setActiveInternalTab}
-                EmployeesTransferData={employeeTransferData}
-                reloadData={fetchData}
-              />}
-            </TabsContent>
-          </CardContent>
-        </Card>}
+        {viewEmployeeTransferPermitted && (
+          <Card>
+            <CardContent>
+              <TabsContent value="Internal">
+                <EmployeeInternalTranfer
+                  TabList={InternalTabs}
+                  activeTab={activeInternalTab}
+                  setActiveTab={setActiveInternalTab}
+                  EmployeesTransferData={employeeTransferData}
+                  reloadData={fetchData}
+                  resetFilters={resetUserFilters}
+                />
+              </TabsContent>
+              <TabsContent value="External">
+                {
+                  <EmployeeExternalTranfer
+                    TabList={InternalTabs}
+                    activeTab={activeInternalTab}
+                    setActiveTab={setActiveInternalTab}
+                    EmployeesTransferData={employeeTransferData}
+                    reloadData={fetchData}
+                  />
+                }
+              </TabsContent>
+            </CardContent>
+          </Card>
+        )}
       </Tabs>
       {OpenTransferForm && (
         <TransferForm
