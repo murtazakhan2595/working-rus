@@ -168,23 +168,6 @@ export const getChangeRequestComparison = async (
           : true,
       });
       
-      // Debug logging for problematic entries
-      if ([185, 186].includes(changeRequest.id)) {
-        console.log(`DEBUG - Entry ${changeRequest.id} Day ${dateStr}:`, {
-          originalShift,
-          requestedShift,
-          hasChange,
-          originalShiftSource,
-          matched_schedule_ids: overlappingSchedules.results?.filter(schedule => 
-            current.isBetween(
-              moment(schedule.start_date),
-              moment(schedule.end_date),
-              "day",
-              "[]"
-            )
-          ).map(s => s.id) || []
-        });
-      }
     }
 
     current.add(1, "day");

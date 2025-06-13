@@ -1,4 +1,3 @@
-import { getEmployeeCustomList } from "app/hooks/general";
 import { RenderTeamMembers } from "app/modules/Dashboard/Screens/MyTeams";
 import { CardContent } from "components/ui/card";
 import { Card } from "components/ui/card";
@@ -134,7 +133,6 @@ const Emplist = ({ teamMembers }) => {
     fetchShiftChangeRequests();
   }, [ordering, options, filterData]);
 
-  console.log("IIIIINNNNNFFFFFFOOOO", shiftChangeRequests)
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
