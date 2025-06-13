@@ -176,10 +176,10 @@ const DateInput = React.memo(
           invalidField={!!(error && touch)}
           disabled={disabled}
           triggerContent={
-            <div className="flex justify-start w-full gap-2 items-center">
+            <div className="flex items-center justify-start w-full gap-2">
               <FormFieldIcon icon={<LucideCalendar size={16} />} />
               {date ? (
-                <div className="flex justify-between items-center w-full">
+                <div className="flex items-center justify-between w-full">
                   <span>{format(date, displayPattern)}</span>
                   {showReset && (
                     <span
@@ -214,6 +214,13 @@ const DateInput = React.memo(
                 className="w-[240px] text-center mx-auto text-sm font-normal text-neutral-1000"
               />
               <Calendar
+                mode="single"
+                selected={calendarDate}
+                onSelect={handleCalendarSelect}
+                month={calendarDate || new Date()}
+                onMonthChange={setCalendarDate}
+              />
+              {/* <Calendar
                 mode="single"
                 selected={calendarDate}
                 onSelect={handleCalendarSelect}
@@ -259,7 +266,7 @@ const DateInput = React.memo(
                     );
                   },
                 }}
-              />
+              /> */}
             </div>
           }
         />
