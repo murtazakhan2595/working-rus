@@ -63,7 +63,7 @@ export const CurrencyList = countries.all.map((country) => {
 
 export const ApprovalHierarchyRequestType = [
   ...(Config.MY_LEAVE_TRACKER
-    ? [{ label: "Leave", value: "MY_LEAVE_TRACKER" }]
+    ? [{ label: "Leave", value: "LEAVE_APPLICATION" }]
     : []),
   ...(Config.MY_CLAIMS ? [{ label: "Claims", value: "MY_CLAIMS" }] : []),
   ...(Config.MY_TRANSFERS

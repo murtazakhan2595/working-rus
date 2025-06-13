@@ -13,7 +13,7 @@ import {
   mapLeaveData,
   mapLeavePayloadData,
   mapOffsetLeaveSettingListData,
-  mapOffsetLeaveSettingData
+  mapOffsetLeaveSettingData,
 } from "app/utils/MappingObjects/mapLeaveData";
 import { renderErrorMessages } from "utils/renderErrors";
 
@@ -707,6 +707,40 @@ export const getEligibleLeaveTypeDurations = async (isType = true) => {
   }
 };
 
+export const getEligibleLeaveTypeByEmployeeId = async (
+  employee_id,
+  leave_type,
+  isType = true
+) => {
+  let URL = isType
+    ? `/employee-leaves/employee-eligible-leave-types/${employee_id}/`
+    : `/employee-leaves/eligible_leave_durations/`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseList = ResponseData.data;
+      if (leave_type) {
+        const eligibleLeaveType = ResponseList.find(
+          (leaveType) => parseInt(leaveType.id) === parseInt(leave_type)
+        );
+        if (eligibleLeaveType) return eligibleLeaveType;
+        else return {};
+      }
+      return ResponseList;
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
 export const getLeaveListData = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
@@ -746,7 +780,11 @@ export const getLeaveData = async (id) => {
       const currentapprover = await getCurrentRequestApprover(
         ResponseData.request_id
       );
-      return { ...ResponseData, ...currentapprover };
+      const employeeAllotedLeave = await getEligibleLeaveTypeByEmployeeId(
+        ResponseData.employee,
+        ResponseData.leave_type
+      );
+      return { ...ResponseData, ...currentapprover, ...employeeAllotedLeave };
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);
@@ -1030,7 +1068,9 @@ export const getLeaveOffsetSettingListData = async (payload) => {
     });
     if (response.status === 200) {
       const ResponseData = response.data;
-      const ResponseList = await mapOffsetLeaveSettingListData(ResponseData.results);
+      const ResponseList = await mapOffsetLeaveSettingListData(
+        ResponseData.results
+      );
       return { results: ResponseList, count: ResponseData.count };
     }
     return { results: [], count: 0 };
@@ -1044,9 +1084,12 @@ export const getLeaveOffsetSettingListData = async (payload) => {
 };
 export const getLeaveOffsetSettingData = async (id) => {
   try {
-    const response = await axios.get(`${baseUrl}/leave-offset-settings/${id}/`, {
-      headers: headers(),
-    });
+    const response = await axios.get(
+      `${baseUrl}/leave-offset-settings/${id}/`,
+      {
+        headers: headers(),
+      }
+    );
     if (response.status === 200) {
       const ResponseData = await mapOffsetLeaveSettingData(response.data);
       return ResponseData;
