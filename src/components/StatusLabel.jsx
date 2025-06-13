@@ -148,7 +148,6 @@ const MultiStatusLabel = React.forwardRef(
         <PopoverTrigger asChild>
           <div className="flex flex-wrap gap-1 cursor-pointer">
             {displayedStatus.map((status, index) => {
-              console.log('status',status)
               return (
                 <StatusLabel
                   key={index}
