@@ -19,6 +19,11 @@ const Leave = {
   approval_details: null,
   attachment: null,
   is_cancelled: false,
+  employee_department_name: null,
+  employee_designation: null,
+  employee_branch_name: null,
+  employee_name: null,
+  employee_serial_number: null,
 };
 
 const EmployeeLeaveTypesList = {
@@ -83,7 +88,7 @@ export const LeaveOffsetSetting = {
   max_leaves_per_month: null,
   max_leaves_per_year: null,
   leave_type: null,
-  id:null,
+  id: null,
 };
 
 export { Leave, EmployeeLeaveTypesList };

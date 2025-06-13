@@ -157,7 +157,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
         "Employee Department": row["employee_department_name"],
         "Employee Designation": row["employee_designation"],
         "Employee Branch": row["employee_branch_name"],
-        "Leave Type": row.leave_type_names,
+        "Leave Type": row.leave_type_name,
         "Leave Duration": row.leave_duration_name,
         "Start Date": row.start_date,
         "End Date": row.end_date,
