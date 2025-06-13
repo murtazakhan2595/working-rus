@@ -28,7 +28,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
   const isViewBLTPermitted = HasAccess("VIEW_BRN_ATT_UPDATES_LOGS");
   const isViewDLTermitted = HasAccess("VIEW_DPT_ATT_UPDATES_LOGS");
   const [activeTab, setActiveTab] = useState(activeView);
-  const [filterData, setFilterData] = useState({ leave_status: "pending" });
+  const [filterData, setFilterData] = useState({ status: "pending" });
   const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(true);
   const [leaveTypesData, setLeaveTypesData] = useState([]);
@@ -70,6 +70,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
       const Leaves = await getLeaveListData({
         filterData,
         options,
+        ordering
       });
       if (Leaves && isMounted) {
         setLeaves(Leaves);
@@ -115,7 +116,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
       const updatedFilters = { ...prevFilters };
       // Handle other filters normally
       if (filterValue === "" || filterValue === null) {
-        if (filterName === "leave_status") {
+        if (filterName === "status") {
           if (activeTab === "Requests") {
             updatedFilters[filterName] = "pending";
           } else if (activeTab === "Records") {
@@ -123,7 +124,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
           }
         } else delete updatedFilters[filterName];
       } else {
-        if (filterName === "leave_status")
+        if (filterName === "status")
           updatedFilters[filterName] = filterValue.toLowerCase();
         else updatedFilters[filterName] = filterValue;
       }
@@ -136,12 +137,12 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
     if (tab === "Requests") {
       setFilterData((prev) => ({
         ...prev,
-        leave_status: "pending",
+        status: "pending",
       }));
     } else if (tab === "Records") {
       setFilterData((prev) => ({
         ...prev,
-        leave_status: "approved,rejected,cancelled_by_employee",
+        status: "approved,rejected,cancelled_by_employee",
       }));
     }
   };
@@ -259,7 +260,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
                             value: "cancelled_by_employee",
                           },
                         ],
-                        name: "leave_status",
+                        name: "status",
                         placeholder: "Status",
                       },
                     ]

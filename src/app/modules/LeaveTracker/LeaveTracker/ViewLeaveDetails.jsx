@@ -92,19 +92,19 @@ const ViewLeaveDetails = ({
       footerField: "created_at",
       field: [
         {
-          key: "leave_type_names",
+          key: "leave_type_name",
           label: "Leave Type",
         },
-        // {
-        //   key: "attendance_date",
-        //   label: "Alloted Leaves",
-        //   formatter: (cell) => renderDate(cell),
-        // },
-        // {
-        //   key: "requested_checkin",
-        //   label: "Consumed Leave",
-        //   formatter: (cell) => renderDate(cell, "--", "time"),
-        // },
+        {
+          key: "allotted_count",
+          label: "Alloted Leaves",
+          formatter: (cell) => cell || "0",
+        },
+        {
+          key: "consumed_count",
+          label: "Consumed Leave",
+          formatter: (cell) => cell || "0",
+        },
         {
           key: "start_date",
           label: "Start Date",
@@ -122,14 +122,17 @@ const ViewLeaveDetails = ({
         {
           key: "total_days",
           label: "Total Days",
+          formatter: (cell) => cell || "0",
         },
         {
           key: "full_paid_days",
           label: "Full Paid Days",
+          formatter: (cell) => cell || "0",
         },
         {
           key: "half_paid_days",
           label: "Half Paid Days",
+          formatter: (cell) => cell || "0",
         },
         {
           key: "reason",
