@@ -1,40 +1,51 @@
 .textEditorText ol {
   list-style: disc;
-  margin: 0 12%;
+  margin: 0 7%;
 }
 
 .textEditorText ul {
   list-style: decimal;
-  margin: 0 12%;
+  margin: 0 7%;
 }
 
-.textEditorText img{
+.textEditorText img {
   margin: 1rem auto;
   width: auto;
 }
 
-.textEditorText a{
-  color:#953EA3;
+.textEditorText a {
+  color: #953ea3;
 }
-.textEditorText a:hover{
+.textEditorText a:hover {
   text-decoration: underline;
 }
-.image-none img{
-display: none;
+.image-none img {
+  display: none;
 }
 
+.textEditorText h3 {
+  font-size: 20px;
+}
+.textEditorText h3,
+.textEditorText h1,
+.textEditorText h2,
+.textEditorText h5,
+.textEditorText h6,
+.textEditorText h4 {
+  margin: 1rem auto;
+}
 
 .mention {
-  background-color:#FBEBFB ;
+  background-color: #fbebfb;
   /* bg-blue-100 equivalent */
   padding: 0 0.25rem;
   border-radius: 0.25rem;
   font-weight: 500;
-  color:#953EA3;
+  color: #953ea3;
 }
 
 /* Style for rendered comments */
 .comment-content .mention {
   pointer-events: none;
   /* Prevent interaction with rendered mentions */
-} 
+}
