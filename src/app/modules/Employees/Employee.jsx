@@ -31,6 +31,7 @@ export default function EmployeeManagement() {
   const [selectedRole, setSelectedRole] = useState("");
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
+  const Branches = useSelector((state) => state.common.branches);
   const UserRoles = useSelector((state) => state.roles_permissions.user_roles);
   const [ordering, setOrdering] = useState("-id");
 
@@ -153,28 +154,32 @@ export default function EmployeeManagement() {
               name: "emp_search",
             },
             {
-              type: "select-one",
-              option: Departments,
+              type: "select",
+              options: Departments,
               name: "department_name",
               placeholder: "Department",
-              values: selectedDepartment,
             },
             {
-              type: "select-two",
-              option: Designations,
+              type: "select",
+              options: Designations,
               name: "department_position",
               placeholder: "Designation",
-              values: selectedDesignation,
             },
             {
-              type: "select-three",
-              option: UserRoles,
+              type: "select",
+              options: Branches,
+              name: "branch_id",
+              placeholder: "Branch",
+            },
+            {
+              type: "select",
+              options: UserRoles,
               name: "user_role",
               placeholder: "Role",
-              values: selectedRole,
             },
           ]}
           onChange={handleFilterChange}
+          className='justify-end'
         />
       </div>
       {isLoading ? (

@@ -26,11 +26,12 @@ import { exportRecordToExcel } from "utils/downloadUtils";
 import { getBranchList } from "app/hooks/general";
 import { HasAccess } from "utils/PermissionUtils";
 
-const ImportEmployeesButton = () => {
+const ImportEmployeesButton = ({ reloadData = () => {} }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [validationErrors, setValidationErrors] = useState([]);
+  const [validationMessage, setValidationMessage] = useState(null);
   const [showFieldInfo, setShowFieldInfo] = useState(true);
   // Create a ref for the file input element
   const fileInputRef = useRef(null);
@@ -169,6 +170,7 @@ const ImportEmployeesButton = () => {
       setFile(e.target.files[0]);
       // Clear previous validation errors when a new file is selected
       setValidationErrors([]);
+      setValidationMessage(null);
     }
   };
 
@@ -187,7 +189,7 @@ const ImportEmployeesButton = () => {
           "Holiday Name": "Chritmas Eve",
           "Start Date": "2025-12-25",
           "End Date": "2026-01-03",
-          Branches: "",
+          Branches: "All",
           Country: "United States,Canada",
           Religion: "Islam",
         },
@@ -201,6 +203,11 @@ const ImportEmployeesButton = () => {
     }
   };
 
+  const handleClose = () => {
+    setIsOpen(false);
+    reloadData(true);
+  };
+
   const handleUpload = async () => {
     if (!file) {
       toast.error("Please select a file to upload", {
@@ -212,58 +219,37 @@ const ImportEmployeesButton = () => {
     try {
       setIsUploading(true);
       setValidationErrors([]); // Clear previous errors
-
+      setValidationMessage(null);
       // Create form data for file upload
       const formData = new FormData();
       formData.append("file", file);
-
       // Call the API to upload employees data
       const response = await uploadHolidaysData(formData);
-        debugger
-
       // Handle successful response
-      if (response && (response.status === 200 || response.status === 201)) {
-        toast.success("Employees imported successfully", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        setIsOpen(false);
-        resetFileInput();
-      }
-      // Handle error responses with validation errors
-      else if (response && response.errors) {
+
+      const { errors, message } = response;
+      if (errors && Array.isArray(errors) && errors.length > 0) {
         // Format validation errors for display
-        const errors = Array.isArray(response.errors)
-          ? response.errors
-          : [response.errors];
-        const formattedErrors = formatErrorMessages(errors);
-        setValidationErrors(formattedErrors);
+        // const formattedErrors = formatErrorMessages(errors);
+        setValidationErrors(errors);
+        setValidationMessage(message);
 
         // Reset file input when errors occur
-        resetFileInput();
-
         // Also show a toast notification
-        toast.error(
-          "Failed to import employees. Please check the validation errors.",
-          {
-            position: toast.POSITION.TOP_RIGHT,
-          }
-        );
-      }
-      // Handle other error responses without specific validation errors
-      else {
-        setValidationErrors([
-          "The file contains invalid data. Please check the format and try again.",
-        ]);
-
-        // Reset file input when errors occur
-        resetFileInput();
-
-        toast.error("Failed to import employees", {
+        // toast.error(
+        //   "Failed to import holidays. Please check the validation errors.",
+        //   {
+        //     position: toast.POSITION.TOP_RIGHT,
+        //   }
+        // );
+      } else {
+        toast.success("Holidays imported successfully", {
           position: toast.POSITION.TOP_RIGHT,
         });
+        handleClose(false);
       }
     } catch (error) {
-      console.error("Error uploading employees:", error);
+      console.error("Error uploading holidays:", error);
 
       // Handle different types of error responses
       if (error?.response?.data?.errors) {
@@ -282,14 +268,13 @@ const ImportEmployeesButton = () => {
           "An unexpected error occurred. Please try again or contact support.",
         ]);
       }
-
-      // Reset file input when errors occur
-      resetFileInput();
-
       toast.error("Import failed", {
         position: toast.POSITION.TOP_RIGHT,
       });
+      setValidationMessage(null);
     } finally {
+      // Reset file input
+      resetFileInput();
       setIsUploading(false);
     }
   };
@@ -313,7 +298,9 @@ const ImportEmployeesButton = () => {
           setIsOpen(open);
           if (!open) {
             setValidationErrors([]);
+            setValidationMessage(null);
             resetFileInput();
+            handleClose();
           }
         }}
       >
@@ -492,6 +479,22 @@ const ImportEmployeesButton = () => {
                   </div>
                 </div>
               )}
+              {validationMessage && (
+                <div className="border border-emerald-500 bg-emerald-50 rounded-md p-4">
+                  <div className="flex items-start">
+                    <AlertCircle className="h-5 w-5 text-emerald-500 mt-0.5 mr-2 flex-shrink-0" />
+                    <div className="w-full">
+                      <ul className="list-disc pl-4 text-sm text-emerald-700 space-y-1">
+                        <li className="break-words">{validationMessage}</li>
+                        <li className="break-words">
+                          Please re-upload the file, ensuring that only the rows
+                          with validation errors are included.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -499,9 +502,10 @@ const ImportEmployeesButton = () => {
             <Button
               variant="outline"
               onClick={() => {
-                setIsOpen(false);
+                handleClose(false);
                 resetFileInput();
                 setValidationErrors([]);
+                setValidationMessage(null);
               }}
               type="button"
             >

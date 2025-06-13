@@ -1013,7 +1013,8 @@ export const uploadHolidaysData = async (formData) => {
         },
       }
     );
-    return response.data;
+    const ResponseData=response.data;
+    return ResponseData
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();

@@ -4,28 +4,33 @@ import {
   UserRolePermissions,
   RoleAssignmentHistoryLogs,
 } from "app/utils/Types/RolesPermission";
+import Config from "constants/config";
 
 export function mapModuleData(data) {
-  const moduleData = Object.keys(Module).reduce((acc, key) => {
-    if (data.hasOwnProperty(key)) {
-      // Special handling for arrays
-      if (key === "submodules" && Array.isArray(data[key])) {
-        acc[key] = data[key].map((submodule) => mapSubmoduleData(submodule));
+  if (Config[data.code_name]) {
+    const moduleData = Object.keys(Module).reduce((acc, key) => {
+      if (data.hasOwnProperty(key)) {
+        // Special handling for arrays
+        if (key === "submodules" && Array.isArray(data[key])) {
+          const ResponseList = data[key].map((module) => mapSubmoduleData(module));
+          acc[key] = ResponseList.filter(Boolean);
+        } else {
+          acc[key] = data[key];
+        }
       } else {
-        acc[key] = data[key];
+        // Use default values from Module type
+        acc[key] = Module[key];
       }
-    } else {
-      // Use default values from Module type
-      acc[key] = Module[key];
-    }
-    return acc;
-  }, {});
-
-  return moduleData;
+      return acc;
+    }, {});
+    return moduleData;
+  }
+  return null;
 }
 
 // Helper function for mapping submodules
 export function mapSubmoduleData(data) {
+  if (!Config[data.code_name]) return null;
   return {
     id: data.id || null,
     name: data.name || null,
@@ -47,7 +52,9 @@ export function mapFeatureData(data) {
 
 export async function mapModuleListData(data) {
   if (!data || data.length === 0) return [];
-  return data.map((module) => mapModuleData(module));
+  const ResponseList = data.map((module) => mapModuleData(module));
+
+  return ResponseList.filter(Boolean);
 }
 
 export function mapUserRoleData(data) {
