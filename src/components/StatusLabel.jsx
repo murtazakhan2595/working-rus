@@ -156,7 +156,7 @@ const MultiStatusLabel = React.forwardRef(
                   status={status}
                   className={cn("font-normal", className)}
                 >
-                  {status.toLowerCase()}
+                  {status ? status?.toLowerCase() : ""}
                 </StatusLabel>
               );
             })}

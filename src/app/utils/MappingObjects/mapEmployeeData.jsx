@@ -83,9 +83,6 @@ async function mapEmployeeData(data) {
     ...BankDetails,
     ...WorkInformation,
   };
-
-  console.log(data, employee, "Employeegetbyiddata");
-
   return employee;
 }
 
@@ -126,8 +123,6 @@ function getVisaDetails(data) {
     }
     return acc;
   }, {});
-  console.log(data, visaDetails);
-
   return visaDetails;
 }
 
@@ -261,7 +256,6 @@ async function getEmployeeInformation(data) {
 
 
 function mapEmployeeDocsChecklist(data) {
-  console.log("mapEmployeeDocsChecklist", data);
   let arrayData;
    if (Array.isArray(data)) {
      // Data is already an array
