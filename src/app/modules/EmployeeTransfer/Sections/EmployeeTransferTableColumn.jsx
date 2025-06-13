@@ -19,10 +19,18 @@ export const InternalTransferColumns = [
         showId={true}
         showPosition={true}
         showDepartment={true}
+        showBranchName={true}
       />
     ),
     minWidth: "120px",
     // dataSort: true,
+  },
+  {
+    dataField: "transfer_type",
+    text: "Transfer Type",
+    formatter: (cell, row) => (cell === "INTERNAL" ? "Internal" : "External"),
+    minWidth: "120px",
+    dataSort: true,
   },
   {
     dataField: "new_department",
