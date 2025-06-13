@@ -80,7 +80,7 @@ export const LeaveOffsetSetting = {
   grades: null,
   branches: null,
   departments: null,
-  offset_leave_days: null,
+  offset_leave_days: 1,
   conversion_ratio_hours: null,
   validity_months: null,
   leave_cap_enabled: false,
