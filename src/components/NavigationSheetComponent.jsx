@@ -181,6 +181,7 @@ const NavigationSheetComponent = ({
             {/* Render children with current item data (removed positionIndicator) */}
             {React.cloneElement(children, {
               currentItem,
+              currentItemId
             })}
           </div>
         )}
