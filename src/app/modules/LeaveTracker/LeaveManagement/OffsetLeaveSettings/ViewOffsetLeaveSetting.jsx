@@ -13,7 +13,7 @@ import { renderDate } from "utils/renderValues";
 import { Button } from "components/ui/button";
 import { BranchName } from "utils/getValuesFromTables";
 import { toast } from "react-toastify";
-import { AddUpdateHolidays } from "app/modules/LeaveTracker";
+import { AddUpdateOffsetLeave } from "app/modules/LeaveTracker";
 import { handleRequest } from "app/hooks/general";
 
 const ViewOffsetLeaveSetting = ({
@@ -37,37 +37,41 @@ const ViewOffsetLeaveSetting = ({
             <MultiStatusLabel
               statusList={cell}
               variant="info"
+              fallBackText="All Nationalities"
               displayAll={true}
             />
           ),
         },
         {
-          key: "branches",
+          key: "branches_name",
           label: "Branches",
           formatter: (cell) => (
             <MultiStatusLabel
               statusList={cell}
               variant="info"
+              fallBackText="All Branches"
               displayAll={true}
             />
           ),
         },
         {
-          key: "departments",
+          key: "departments_name",
           label: "Departments",
           formatter: (cell) => (
             <MultiStatusLabel
               statusList={cell}
               variant="info"
+              fallBackText="All Departments"
               displayAll={true}
             />
           ),
         },
         {
-          key: "grades",
+          key: "grades_name",
           label: "Job Grades / Designations",
           formatter: (cell) => (
             <MultiStatusLabel
+              fallBackText="All Job Grades / Designations"
               statusList={cell}
               variant="info"
               displayAll={true}
@@ -80,6 +84,7 @@ const ViewOffsetLeaveSetting = ({
           formatter: (cell) => (
             <MultiStatusLabel
               statusList={cell}
+              fallBackText="All"
               variant="info"
               displayAll={true}
             />
@@ -91,6 +96,7 @@ const ViewOffsetLeaveSetting = ({
           formatter: (cell) => (
             <MultiStatusLabel
               statusList={cell}
+              fallBackText="All Genders"
               variant="info"
               displayAll={true}
             />
@@ -145,7 +151,7 @@ const ViewOffsetLeaveSetting = ({
       title="Offset Setting Details"
       currentItem_Id={currentId}
       dataList={DataList}
-      editComponent={AddUpdateHolidays}
+      editComponent={AddUpdateOffsetLeave}
       apiEndpoint={"/leave-offset-settings/${id}/"}
       reloadData={reloadData}
       fetchCurrentItemDetails={fetchData}

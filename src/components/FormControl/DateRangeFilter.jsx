@@ -27,6 +27,8 @@ const activeButtonClassName = "bg-fuchsia-50 text-fuchsia-700";
 
 const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange = "Week" }) => {
   const [selectedTimeFilter, setSelectedTimeFilter] = useState(null);
+  const [dateRange, setDateRangeState] = useState(null);
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   useEffect(() => {
     if (activeDateRange.toUpperCase() === "DAY") {
@@ -37,8 +39,30 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
       setSelectedTimeFilter(TIME_FILTERS.MONTH);
     } else {
       setSelectedTimeFilter(activeDateRange);
+      // Parse date range if it's a string
+      if (typeof activeDateRange === 'string' && activeDateRange.includes(',')) {
+        setDateRangeState(parseDateRange(activeDateRange));
+      }
     }
   }, [activeDateRange]);
+
+  const parseDateRange = (dateRangeValue) => {
+    const dateRange = dateRangeValue ? dateRangeValue?.split(",") : null;
+    return {
+      from:
+        dateRange &&
+        dateRange[0] &&
+        isValid(parse(dateRange[0], "yyyy-MM-dd", new Date()))
+          ? parse(dateRange[0], "yyyy-MM-dd", new Date())
+          : null,
+      to:
+        dateRange &&
+        dateRange[1] &&
+        isValid(parse(dateRange[1], "yyyy-MM-dd", new Date()))
+          ? parse(dateRange[1], "yyyy-MM-dd", new Date())
+          : null,
+    };
+  };
 
   const timeFilters = [
     {
@@ -77,25 +101,27 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
     );
   };
 
-  const renderDateRangePicker = (dateRangeValue) => {
-    const dateRange = dateRangeValue ? dateRangeValue?.split(",") : null;
-    const date = {
-      from:
-        dateRange &&
-        dateRange[0] &&
-        isValid(parse(dateRange[0], "yyyy-MM-dd", new Date()))
-          ? parse(dateRange[0], "yyyy-MM-dd", new Date())
-          : null,
-      to:
-        dateRange &&
-        dateRange[1] &&
-        isValid(parse(dateRange[1], "yyyy-MM-dd", new Date()))
-          ? parse(dateRange[1], "yyyy-MM-dd", new Date())
-          : null,
-    };
+  const handleCalendarSelect = (date) => {
+    if (date) {
+      const startOfWeek = date.from
+        ? moment(date.from).format("YYYY-MM-DD")
+        : null;
+      const endOfWeek = date.to
+        ? moment(date.to).format("YYYY-MM-DD")
+        : null;
+
+      setSelectedTimeFilter(`${startOfWeek},${endOfWeek}`);
+      setDateRangeState(date);
+      setDateRange(`${startOfWeek},${endOfWeek}`);
+    }
+  };
+
+  const renderDateRangePicker = () => {
+    const date = dateRange || { from: null, to: null };
+    
     return (
       <div style={{ width: "fit-content" }}>
-        <Popover>
+        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
           <PopoverTrigger asChild>
             <Button
               id="date"
@@ -105,7 +131,7 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
                 date && date?.from && activeButtonClassName
               )}
             >
-              {dateRange && date?.from ? (
+              {date && date?.from ? (
                 date.to ? (
                   <>
                     {format(date.from, "LLL dd, y")} -{" "}
@@ -116,7 +142,7 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
                 )
               ) : (
                 <span className="flex items-center">
-                  <CalendarDays className="h-5 mr-1" /> DD Mon YYYY - DD Mon
+                  <CalendarDays className="h-5 mr-1" /> DD MM YYYY - DD MM
                   YYYY
                 </span>
               )}
@@ -126,22 +152,11 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
             <Calendar
               initialFocus
               mode="range"
-              defaultMonth={date?.from}
+              defaultMonth={date?.from || new Date()}
               selected={date}
-              onSelect={(date) => {
-                if (date) {
-                  const startOfWeek = date.from
-                    ? moment(date.from).format("YYYY-MM-DD")
-                    : null;
-                  const endOfWeek = date.to
-                    ? moment(date.to).format("YYYY-MM-DD")
-                    : null;
-
-                  setSelectedTimeFilter(`${startOfWeek},${endOfWeek}`);
-                  setDateRange(`${startOfWeek},${endOfWeek}`);
-                }
-              }}
+              onSelect={handleCalendarSelect}
               numberOfMonths={2}
+              disabled={false}
             />
           </PopoverContent>
         </Popover>
@@ -150,9 +165,9 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
   };
 
   return (
-    <CardContent className="p-1 bg-white rounded w-auto" style={{ width: "fit-content" }}>
+    <CardContent className="w-auto p-1 bg-white rounded" style={{ width: "fit-content" }}>
       <div
-        className="flex flex-wrap items-center self-stretch my-auto justify-between text-neutral-900"
+        className="flex flex-wrap items-center self-stretch justify-between my-auto text-neutral-900"
         style={{ width: "fit-content" }}
       >
         {/* <ArrowLeft className="h-5" /> */}
@@ -164,7 +179,7 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
             onClick={filter.onClick}
           />
         ))}
-        {renderDateRangePicker(activeDateRange)}
+        {renderDateRangePicker()}
         {/* <ArrowRight className="h-5" /> */}
       </div>
     </CardContent>

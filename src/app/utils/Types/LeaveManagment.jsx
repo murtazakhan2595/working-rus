@@ -19,6 +19,11 @@ const Leave = {
   approval_details: null,
   attachment: null,
   is_cancelled: false,
+  employee_department_name: null,
+  employee_designation: null,
+  employee_branch_name: null,
+  employee_name: null,
+  employee_serial_number: null,
 };
 
 const EmployeeLeaveTypesList = {
@@ -73,17 +78,20 @@ export const PublicHoliday = {
 export const LeaveOffsetSetting = {
   nationalities: null,
   grades: null,
-  religions: null,
   branches: null,
   departments: null,
-  offset_leave_days: null,
+  offset_leave_days: 1,
   conversion_ratio_hours: null,
   validity_months: null,
   leave_cap_enabled: false,
   max_leaves_per_month: null,
   max_leaves_per_year: null,
-  leave_type: null,
-  id:null,
+  leave_type: 1,
+  id: null,
+  branches_name: null,
+  departments_name: null,
+  grades_name: null,
+  genders: null,
 };
 
 export { Leave, EmployeeLeaveTypesList };

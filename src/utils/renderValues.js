@@ -363,15 +363,17 @@ export function GetDateDifference(
   // Validate input
   if (!startDate || !endDate) return 0;
 
-  const start = moment(startDate).startOf('day');
-  const end = moment(endDate).startOf('day');
+  const start = moment(startDate).startOf("day");
+  const end = moment(endDate).startOf("day");
 
   // Validate moment objects
   if (!start.isValid() || !end.isValid()) return 0;
 
   // Ensure end is not before start
   if (end.isBefore(start)) return 0;
-  if (exclude.includes("holidays")) {
+  if (type === "calendar_days")
+    return end.diff(start, "days") + 1; // +1 to include start day
+  else if (exclude.includes("holidays")) {
     try {
       const datesOfMonth = eachDayOfInterval({
         start: start.toDate(),
@@ -384,8 +386,6 @@ export function GetDateDifference(
 
         if (isHoliday) return false;
 
-        if (type === "calendar_days") return true;
-
         const day = moment(date).day();
         return day !== 0 && day !== 6; // exclude Sunday (0) and Saturday (6)
       });
@@ -396,8 +396,6 @@ export function GetDateDifference(
     }
   } else if (type === "work_days") {
     return getWorkingDays(start, end);
-  } else if (type === "calendar_days") {
-    return end.diff(start, "days") + 1; // +1 to include start day
   }
 }
 
