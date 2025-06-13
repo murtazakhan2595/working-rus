@@ -172,9 +172,9 @@ export default function EmployeeTransfer() {
 
       // Remove only user-applied filters
       delete resetFilters.id_and_first_name;
-      delete resetFilters.department_name;
-      delete resetFilters.designation_name;
-      delete resetFilters.branch_name;
+      delete resetFilters.old_department;
+      delete resetFilters.designation;
+      delete resetFilters.old_branch;
 
       return resetFilters;
     });
@@ -192,7 +192,14 @@ export default function EmployeeTransfer() {
       if (filterValue === "") {
         delete updatedFilters[filterName];
       } else {
-        updatedFilters[filterName] = filterValue;
+        // Convert specific fields to arrays for backend
+        if (
+          ["old_department", "designation", "old_branch"].includes(filterName)
+        ) {
+          updatedFilters[filterName] = [filterValue];
+        } else {
+          updatedFilters[filterName] = filterValue;
+        }
       }
       return updatedFilters;
     });
@@ -221,28 +228,35 @@ export default function EmployeeTransfer() {
             {
               type: "search",
               placeholder: "Search by ID and Name",
-              name: "id_and_first_name",
+              name: "employee_name_or_id",
+              values: filterData.employee_name_or_id || "", // Add current value
             },
             {
               type: "select-one",
               option: Departments,
-              name: "department_name",
+              name: "old_department",
               placeholder: "Department",
-              values: filterData.department_name || "",
+              values: Array.isArray(filterData.old_department)
+                ? filterData.old_department[0] || ""
+                : filterData.old_department || "", // Convert array back to single value for display
             },
             {
               type: "select-two",
               option: Designations,
-              name: "designation_name",
+              name: "designation",
               placeholder: "Designation",
-              values: filterData.designation_name || "",
+              values: Array.isArray(filterData.designation)
+                ? filterData.designation[0] || ""
+                : filterData.designation || "",
             },
             {
               type: "select-three",
               option: Branches,
-              name: "branch_name",
+              name: "old_branch",
               placeholder: "Branch",
-              values: filterData.branch_name || "",
+              values: Array.isArray(filterData.old_branch)
+                ? filterData.old_branch[0] || ""
+                : filterData.old_branch || "",
             },
           ]}
           onChange={handleFilterChange}
