@@ -142,7 +142,7 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
                 )
               ) : (
                 <span className="flex items-center">
-                  <CalendarDays className="h-5 mr-1" /> DD Mon YYYY - DD Mon
+                  <CalendarDays className="h-5 mr-1" /> DD MM YYYY - DD MM
                   YYYY
                 </span>
               )}
@@ -165,9 +165,9 @@ const DateRangeFilter = React.memo(({ setDateRange = () => {}, activeDateRange =
   };
 
   return (
-    <CardContent className="p-1 bg-white rounded w-auto" style={{ width: "fit-content" }}>
+    <CardContent className="w-auto p-1 bg-white rounded" style={{ width: "fit-content" }}>
       <div
-        className="flex flex-wrap items-center self-stretch my-auto justify-between text-neutral-900"
+        className="flex flex-wrap items-center self-stretch justify-between my-auto text-neutral-900"
         style={{ width: "fit-content" }}
       >
         {/* <ArrowLeft className="h-5" /> */}

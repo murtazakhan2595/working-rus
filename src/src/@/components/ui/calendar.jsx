@@ -14,7 +14,7 @@ import {
 } from "./select"
 
 // Custom caption component with month and year dropdowns
-function CustomCaption({ date, locale, displayMonth, onMonthSelect, onYearSelect }) {
+function CustomCaption({ date, locale, displayMonth, onMonthSelect, onYearSelect, displayIndex = 0 }) {
   const { goToMonth, nextMonth, previousMonth } = useNavigation();
   
   // Ensure we have a valid date object
@@ -46,14 +46,14 @@ function CustomCaption({ date, locale, displayMonth, onMonthSelect, onYearSelect
     const newDate = new Date(safeDate);
     newDate.setMonth(parseInt(newMonth));
     goToMonth(newDate);
-    if (onMonthSelect) onMonthSelect(newDate);
+    if (onMonthSelect) onMonthSelect(newDate, displayIndex);
   };
 
   const handleYearChange = (newYear) => {
     const newDate = new Date(safeDate);
     newDate.setFullYear(parseInt(newYear));
     goToMonth(newDate);
-    if (onYearSelect) onYearSelect(newDate);
+    if (onYearSelect) onYearSelect(newDate, displayIndex);
   };
 
   return (
@@ -128,24 +128,44 @@ function Calendar({
   }, [month]);
 
   // Handle month change from the CustomCaption component
-  const handleMonthChange = (date) => {
-    setCurrentMonth(date);
+  const handleMonthChange = (date, displayIndex = 0) => {
+    let newDate;
+    if (mode === "range" && numberOfMonths > 1) {
+      // For range mode with multiple months, adjust the date based on display index
+      newDate = new Date(date);
+      if (displayIndex === 1) {
+        // For the second calendar, ensure it stays one month ahead
+        const firstMonth = new Date(currentMonth);
+        if (newDate <= firstMonth) {
+          newDate = new Date(firstMonth);
+          newDate.setMonth(newDate.getMonth() + 1);
+        }
+      } else {
+        // For the first calendar, ensure it stays one month behind
+        const secondMonth = new Date(date);
+        secondMonth.setMonth(secondMonth.getMonth() + 1);
+        if (displayIndex === 0 && date >= secondMonth) {
+          newDate = new Date(secondMonth);
+          newDate.setMonth(newDate.getMonth() - 1);
+        }
+      }
+    } else {
+      newDate = date;
+    }
+    
+    setCurrentMonth(newDate);
     if (props.onMonthChange) {
-      props.onMonthChange(date);
+      props.onMonthChange(newDate);
     }
   };
 
   // Customize the caption component based on the mode
   const renderCaption = ({ displayMonth, ...captionProps }) => {
-    // For range mode with multiple months, only show caption for the first month
-    if (mode === "range" && numberOfMonths > 1 && captionProps.displayIndex > 0) {
-      return <div className="relative flex items-center justify-center h-8 pt-1"></div>;
-    }
-    
     return (
       <CustomCaption 
         displayMonth={displayMonth || currentMonth}
         onMonthSelect={handleMonthChange}
+        displayIndex={captionProps.displayIndex}
         {...captionProps} 
       />
     );
