@@ -1,4 +1,4 @@
-import { EmployeeID, UserRole } from "utils/getValuesFromTables";
+import { EmployeeID, GetNameList } from "utils/getValuesFromTables";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions } from "data/Data";
 import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
@@ -16,6 +16,7 @@ import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { getAssetById } from "app/hooks/assets";
 import { toast } from "react-toastify";
+import { MultiStatusLabel } from "components";
 /**
  * EmployeeColumns
  *
@@ -35,18 +36,35 @@ export const EmployeeColumns = [
     dataField: "first_name",
     text: "Employees",
     formatter: (cell, row) => (
-      <EmployeeOverview id={row.id} showPosition={true} showDepartment={true} />
+      <EmployeeOverview
+        id={row.id}
+        showPosition={true}
+        showDepartment={true}
+        showBranchName={true}
+      />
     ),
     minWidth: "120px",
     dataSort: true,
   },
-
   {
     dataField: "user_role",
     text: "Role",
-    formatter: (cell, row) => <UserRole value={cell} />,
+    formatter: (cell, row) => {
+      const UserNameList = GetNameList(
+        cell,
+        "roles_permissions",
+        "user_roles",
+        "No Role Assigned"
+      );
+      return (
+        <MultiStatusLabel
+          statusList={UserNameList}
+          fallbackText="No Role Assigned"
+          variant="info"
+        />
+      );
+    },
     dataSort: true,
-    maxWidth: "120px",
   },
   {
     dataField: "username",
@@ -1022,38 +1040,36 @@ export const AssetRequestColumns = (handleView, handleEdit, handleReject) => [
         handleEdit && handleEdit(row);
       };
 
-
-
       const handleRejectClick = (e) => {
         e.preventDefault();
         e.stopPropagation();
         handleReject && handleReject(row);
       };
 
-              // Determine available actions based on status
-        const isPending = row.asset_status === "Pending";
-        const isRejected = row.asset_status === "Rejected";
-        const isAccepted = row.asset_status === "Accepted";
+      // Determine available actions based on status
+      const isPending = row.asset_status === "Pending";
+      const isRejected = row.asset_status === "Rejected";
+      const isAccepted = row.asset_status === "Accepted";
 
-        // Show Edit for Pending and Rejected requests
-        // Show Reject for Pending requests only
-        // Always show View
-        const canEdit = isPending || isRejected;
-        const canReject = isPending;
+      // Show Edit for Pending and Rejected requests
+      // Show Reject for Pending requests only
+      // Always show View
+      const canEdit = isPending || isRejected;
+      const canReject = isPending;
 
-        return (
-          <div onClick={(e) => e.stopPropagation()}>
-            <DropdownActionMenu
-              onView={handleViewClick}
-              onEdit={canEdit ? handleEditClick : null}
-              onDelete={canReject ? handleRejectClick : null}
-              viewText="View Details"
-              editText="Edit Request"
-              deleteText="Reject Request"
-              menuTooltip="Request Actions"
-            />
-          </div>
-        );
+      return (
+        <div onClick={(e) => e.stopPropagation()}>
+          <DropdownActionMenu
+            onView={handleViewClick}
+            onEdit={canEdit ? handleEditClick : null}
+            onDelete={canReject ? handleRejectClick : null}
+            viewText="View Details"
+            editText="Edit Request"
+            deleteText="Reject Request"
+            menuTooltip="Request Actions"
+          />
+        </div>
+      );
     },
   },
 ];

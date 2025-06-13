@@ -14,6 +14,7 @@ import {
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { ReasonForLeaving, SalaryTypeOptions } from "data/Data";
+import { GetDispatchStateList } from "./Lists";
 
 function getCountryFullName(countryCode) {
   const country = countriesList.find((option) => option.value === countryCode);
@@ -206,6 +207,11 @@ function GetUser(id) {
   const employee = employees.find((option) => option.value === parseInt(id));
   return employee ?? null;
 }
+export function GetNameList(list, label, key, fallBackText) {
+  const List = GetDispatchStateList(key, label);
+  const NameList = getLabelByValue(list, List, fallBackText, "value", "list");
+  return NameList;
+}
 function EmployeeProfilePicture(id) {
   const employees = useSelector((state) => state.emp.employees_detail);
   const employee = employees.find((option) => option.value === parseInt(id));
@@ -321,15 +327,21 @@ function getDepartmentName(value, departments, fallBackText) {
   return department ? department.label : fallBackText ?? "N/A";
 }
 
-export function getLabelByValue(value, options = [], fallBackText = "N/A") {
+export function getLabelByValue(
+  value,
+  options = [],
+  fallBackText = "N/A",
+  key = "value",
+  variant = "string"
+) {
   if (Array.isArray(value)) {
     const labels = value
       .map((val) => {
-        const option = options.find((option) => option.value === parseInt(val));
+        const option = options.find((option) => option[key] === parseInt(val));
         return option ? option.label : null;
       })
       .filter(Boolean);
-
+    if (variant === "list") return labels;
     return labels.length ? labels.join(", ") : fallBackText;
   }
 
