@@ -57,6 +57,8 @@ const validateLeaveDurationFormSchema = (values) => {
     errors.duration_hours = "Duration hours is required";
   } else if (isNaN(values.duration_hours)) {
     errors.duration_hours = "Duration hours must be a number";
+  } else if (!Number.isInteger(Number(values.duration_hours))) {
+    errors.duration_hours = "Duration hours must be a whole number";
   }
   return errors;
 };

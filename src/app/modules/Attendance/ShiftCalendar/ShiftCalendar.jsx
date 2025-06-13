@@ -8,7 +8,7 @@ import {
 } from "src/@/components/ui/tabs";
 import { Header } from "components";
 import { useSelector } from "react-redux";
-import { getEmployeeCustomList } from "app/hooks/general";
+import { getNewEmployeeCustomList } from "app/hooks/general";
 import AssignShift from "./Section/AssignShift";
 import Emplist from "./ShiftCalendarTab/Emplist";
 import ShiftRequest from "./ShiftRequest";
@@ -21,6 +21,7 @@ import { Button } from "components/ui/button";
 import EmployeeShiftCalendar from "./MyShiftCalendar/EmployeeShiftCalendar";
 import HistoryAndLogs from "./HistoryAndLogs";
 import { HasAccess } from "utils/PermissionUtils";
+import OrganizationalChart from "app/modules/OfficeSetting/Screens/OrganizationalChart";
 
 const ShiftCalendar = () => {
   const [activeTab, setActiveTab] = useState("shift-calendar");
@@ -67,16 +68,18 @@ const ShiftCalendar = () => {
         if (!isEditPendingSchedulesPermitted && userProfile?.id) {
           filterDataToSend.direct_report = userProfile.id;
         }
-        const response = await getEmployeeCustomList({
+        const response = await getNewEmployeeCustomList({
           filterData: {
             ...filterDataToSend,
+            direct_report: userProfile?.id,
           },
         });
+        console.log("INFO SHIFT CALENDAR", response);
         if (response) {
           setTeamMembers(response);
         }
       } catch (err) {
-        console.error(err);
+        // Remove console.error
       }
     },
     [isEditPendingSchedulesPermitted, userProfile]
@@ -92,7 +95,7 @@ const ShiftCalendar = () => {
         setPendingSchedules(response);
       }
     } catch (err) {
-      console.error(err);
+      // Remove console.error
     }
   }, []);
 
@@ -114,197 +117,37 @@ const ShiftCalendar = () => {
         setDraftSchedules(response);
       }
     } catch (err) {
-      console.error("Error fetching draft schedules:", err);
+      // Remove console.error
     }
   }, [userProfile]);
 
   useEffect(() => {
-    fetchUsers();
-    fetchPendingSchedules();
-    fetchDraftSchedules();
-  }, [fetchUsers, fetchPendingSchedules, fetchDraftSchedules]);
+    if (activeTab === "shift-calendar") {
+      fetchUsers(filterData);
+    }
+    if (activeTab === "pending-schedule") {
+      fetchPendingSchedules();
+    }
+    if (activeTab === "schedule-shift") {
+      fetchDraftSchedules();
+    }
+  }, [activeTab, filterData, fetchUsers, fetchPendingSchedules, fetchDraftSchedules]);
 
   const handleFilterChange = useCallback(
     (newFilterData) => {
       setFilterData(newFilterData);
-
-      // Check if we need to fetch new data (for server-side filters)
-      const serverSideFilters = {};
-      let hasServerSideFilters = false;
-
-      // Check for server-side filter keys that exist in newFilterData
-      const serverSideKeys = ["department_name", "branch_name"];
-
-      serverSideKeys.forEach((key) => {
-        if (key in newFilterData) {
-          // Include the filter even if it's empty (to clear server-side filter)
-          serverSideFilters[key] = newFilterData[key];
-          hasServerSideFilters = true;
-        }
-      });
-
-      // Always fetch when server-side filters are involved (including clearing them)
-      if (
-        hasServerSideFilters ||
-        Object.keys(filterData).some((key) => serverSideKeys.includes(key))
-      ) {
-        fetchUsers(serverSideFilters);
+      if (activeTab === "shift-calendar") {
+        fetchUsers(newFilterData);
       }
+      // Do NOT call fetchPendingSchedules or fetchDraftSchedules here
     },
-    [fetchUsers, filterData] // Add filterData to dependencies
+    [fetchUsers, activeTab]
   );
 
-  // Apply client-side filters for team members
-  const filteredTeamMembers = useMemo(() => {
-    if (!teamMembers.results || !teamMembers.results.length) {
-      return { results: [], count: 0 };
-    }
-
-    // If no filters are applied, return original data
-    if (!filterData || Object.keys(filterData).length === 0) {
-      return teamMembers;
-    }
-
-    let filteredResults = teamMembers.results;
-
-    // Apply client-side filters
-    if (filterData.search_term) {
-      filteredResults = filteredResults.filter((employee) => {
-        const searchString =
-          `${employee.id} ${employee.first_name} ${employee.last_name}`.toLowerCase();
-        return searchString.includes(filterData.search_term.toLowerCase());
-      });
-    }
-
-    // Filter by department (as a client-side filter fallback)
-    if (filterData.department_name) {
-      filteredResults = filteredResults.filter(
-        (employee) => employee.department_name === filterData.department_name
-      );
-    }
-
-    // Filter by shift assignment status
-    if (filterData.shift_status) {
-      filteredResults = filteredResults.filter((employee) => {
-        const hasShiftAssignment = !!employee.shift_assignment;
-        if (filterData.shift_status === "assigned") {
-          return hasShiftAssignment;
-        } else if (filterData.shift_status === "not_assigned") {
-          return !hasShiftAssignment;
-        }
-        return true;
-      });
-    }
-
-    return {
-      results: filteredResults,
-      count: filteredResults.length,
-    };
-  }, [teamMembers, filterData]);
-
-  // Apply filters to pending schedules
-  const filteredPendingSchedules = useMemo(() => {
-    if (!pendingSchedules.results || !pendingSchedules.results.length) {
-      return { results: [], count: 0 };
-    }
-
-    // If no filters are applied, return original data
-    if (!filterData || Object.keys(filterData).length === 0) {
-      return pendingSchedules;
-    }
-
-    let filteredResults = pendingSchedules.results;
-
-    // Apply search filter
-    if (filterData.search_term) {
-      filteredResults = filteredResults.filter((schedule) => {
-        // Find the employee in teamMembers to get their details
-        const employee = teamMembers.results?.find(
-          (emp) => emp.id === schedule.employee
-        );
-        if (employee) {
-          const searchString =
-            `${employee.id} ${employee.first_name} ${employee.last_name}`.toLowerCase();
-          return searchString.includes(filterData.search_term.toLowerCase());
-        }
-        // If employee not found in teamMembers, just search by employee ID
-        return schedule.employee?.toString().includes(filterData.search_term);
-      });
-    }
-
-    // Filter by department
-    if (filterData.department_name) {
-      filteredResults = filteredResults.filter((schedule) => {
-        // Find the employee in teamMembers to get their department
-        const employee = teamMembers.results?.find(
-          (emp) => emp.id === schedule.employee
-        );
-        return employee?.department_name === filterData.department_name;
-      });
-    }
-
-    return {
-      results: filteredResults,
-      count: filteredResults.length,
-    };
-  }, [pendingSchedules, filterData, teamMembers]);
-
-  // Apply filters to draft schedules
-  const filteredDraftSchedules = useMemo(() => {
-    if (!draftSchedules.results || !draftSchedules.results.length) {
-      return { results: [], count: 0 };
-    }
-
-    // If no filters are applied, return original data
-    if (!filterData || Object.keys(filterData).length === 0) {
-      return draftSchedules;
-    }
-
-    let filteredResults = draftSchedules.results;
-
-    // Apply search filter
-    if (filterData.search_term) {
-      filteredResults = filteredResults.filter((schedule) => {
-        // Find the employee in teamMembers to get their details
-        const employee = teamMembers.results?.find(
-          (emp) => emp.id === schedule.employee
-        );
-        if (employee) {
-          const searchString =
-            `${employee.id} ${employee.first_name} ${employee.last_name}`.toLowerCase();
-          return searchString.includes(filterData.search_term.toLowerCase());
-        }
-        // If employee not found in teamMembers, just search by employee ID
-        return schedule.employee?.toString().includes(filterData.search_term);
-      });
-    }
-
-    // Filter by department
-    if (filterData.department_name) {
-      filteredResults = filteredResults.filter((schedule) => {
-        // Find the employee in teamMembers to get their department
-        const employee = teamMembers.results?.find(
-          (emp) => emp.id === schedule.employee
-        );
-        return employee?.department_name === filterData.department_name;
-      });
-    }
-
-    return {
-      results: filteredResults,
-      count: filteredResults.length,
-    };
-  }, [draftSchedules, filterData, teamMembers]);
-
   // Decide which data to display based on active tab
-  const displayData =
-    activeTab === "shift-calendar" ? filteredTeamMembers : teamMembers;
-  const displayPendingSchedules =
-    activeTab === "pending-schedule"
-      ? filteredPendingSchedules
-      : pendingSchedules;
-  const displayDraftSchedules =
-    activeTab === "schedule-shift" ? filteredDraftSchedules : draftSchedules;
+  const displayData = teamMembers;
+  const displayPendingSchedules = pendingSchedules;
+  const displayDraftSchedules = draftSchedules;
 
   const tabsData = [
     ...(isScheduleShiftPermitted
@@ -356,7 +199,7 @@ const ShiftCalendar = () => {
     {
       value: "shift-request",
       label: "Shift Request",
-      component: <ShiftRequest employees={teamMembers.results} />,
+      component: <ShiftRequest/>,
     },
     ...(isViewLogsPermitted
       ? [
@@ -371,9 +214,9 @@ const ShiftCalendar = () => {
 
   const headerContent = (
     <div className="flex gap-2">
-      {activeTab === "shift-calendar" && (
+      {/* {activeTab === "shift-calendar" && (
         <AssignShift employees={displayData.results} />
-      )}
+      )} */}
       {activeTab === "schedule-shift" && isScheduleShiftPermitted && (
         <Button onClick={() => setIsScheduleModalOpen(true)}>
           Schedule Shift
