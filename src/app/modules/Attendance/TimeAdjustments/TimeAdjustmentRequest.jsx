@@ -137,7 +137,7 @@ const TimeAdjustmentRequest = ({ id, attendance }) => {
             submitButtonText: "Submit Request",
             cancelButtonText: "Cancel",
             columns: 3,
-            formFiels: [
+            formFields: [
               {
                 sheetCardExtension: true,
                 sheetCardTitle: "Employee Details",
