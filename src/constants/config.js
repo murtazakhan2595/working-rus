@@ -7,7 +7,7 @@ const Config = {
   //Sub modules
   MY_PROFILE: true,
   MY_ATTENDANCE: true,
-  DAILY_TASK_REPORT: true,
+  DAILY_TASK_REPORT: false,
   MY_LEAVE_TRACKER: true,
   MY_PAYROLL: true,
   MY_CLAIMS: true,
@@ -18,12 +18,12 @@ const Config = {
   EXIT: true,
 
   //----------------TEAM_MANAGEMENT------------
-  TEAM_MANAGEMENT: true,
+  TEAM_MANAGEMENT: false,
   //Sub Modules
-  TEAM_PROFILE: true,
+  TEAM_PROFILE: false,
   TEAM_ATTENDANCE: false,
   TEAM_DAILY_TASK_REPORT: false,
-  TEAM_LEAVE_REQUEST: true,
+  TEAM_LEAVE_REQUEST: false,
   TEAM_EXIT_CLEARANCE: false,
 
   //-------------PROFIL_MANAGMENT-----------
@@ -40,7 +40,7 @@ const Config = {
   //Sub Modules
   EMPLOYEES_ATTENDANCE:true,
   SHIFT_CALENDAR:true,
-  EMPLOYEE_DAILY_TASK_REPORT:true,
+  EMPLOYEE_DAILY_TASK_REPORT:false,
   TIME_ADJUSTMENTS:true,
   ATTENDANCE_UPDATES:true,
 
@@ -57,9 +57,9 @@ const Config = {
   EMPLOYEES_PAYROLL:true,
   SALARY_SETUP:true,
   CLAIM_REQUEST:true,
-  PAY_RUN:true,
-  ON_HOLD_SALARIES:true,
-  END_OF_SERVICE:true,
+  PAY_RUN:false,
+  ON_HOLD_SALARIES:false,
+  END_OF_SERVICE:false,
 
 
   //-------------TASK_MANAGEMENT-----------
@@ -68,10 +68,10 @@ const Config = {
   PROJECT_BOARD:true,
 
   //-------------TALENT_SPHERE-----------
-  TALENT_SPHERE: true,
+  TALENT_SPHERE: false,
   //Sub Modules
-  JOBS: true,
-  APPLICANTS: true,
+  JOBS: false,
+  APPLICANTS: false,
 
   //-------------ASSET_MANAGEMENT-----------
   ASSET_MANAGEMENT: true,
