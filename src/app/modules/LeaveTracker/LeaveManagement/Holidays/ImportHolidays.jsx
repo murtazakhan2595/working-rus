@@ -189,7 +189,7 @@ const ImportEmployeesButton = ({ reloadData = () => {} }) => {
           "Holiday Name": "Chritmas Eve",
           "Start Date": "2025-12-25",
           "End Date": "2026-01-03",
-          Branches: "All",
+          Branches: "",
           Country: "United States,Canada",
           Religion: "Islam",
         },
