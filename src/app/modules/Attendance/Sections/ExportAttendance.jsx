@@ -35,21 +35,10 @@ const ExportAttendance = ({ activeTab = "day", filterData = {} }) => {
           const dataToExport = await Promise.all(
             ResponseData?.map(async (row) => {
               return {
-                // ID: row.employee_serial_number,
                 Date: renderDate(row.date),
                 Name: row.employee_name,
                 Email: row["employee_email"],
                 Department: row["employee_department"],
-                // Designation: await getLabelByValue(
-                //   row.employee_designation,
-                //   Designations,
-                //   "-"
-                // ),
-                // Branch: await getLabelByValue(
-                //   row["employee_branch id"],
-                //   Branches,
-                //   "-"
-                // ),
                 "Total Shift Hours": formatDuration(row.total_hours),
                 "Check-In": renderDate(row.checkin, "Not Check-in", "time"),
                 "Check-Out": renderDate(
@@ -63,8 +52,18 @@ const ExportAttendance = ({ activeTab = "day", filterData = {} }) => {
                 "Overtime Hours": row.overtime_hours
                   ? formatDuration(row.overtime_hours)
                   : "--",
+
                 "Break Hours": formatDuration(row.break_duration),
-                "Status": row.status,
+                "Remaining Hours": row.checkout
+                  ? formatDuration(
+                      Math.max(
+                        0,
+                        (row.total_hours ?? 0) - (row.payable_hours ?? 0)
+                      )
+                    )
+                  : "--",
+
+                Status: row.status,
               };
             })
           );

@@ -31,7 +31,6 @@ const Attendance = ({ isTeamView = false }) => {
   const isViewEmpAttendancePermitted = HasAccess("VIEW_EMPLOYEE_ATTENDANCE");
   const isViewBrnEmpAttendancePermitted = HasAccess("VIEW_BRN_EMPS_ATTENDANCE");
   const isViewDptEmpAttendancePermitted = HasAccess("VIEW_DPT_EMPS_ATTENDANCE");
-  const isExportAttendancePermitted = HasAccess("EXPORT_ATTENDANCE");
   const isViewWeeklytatusPermitted = HasAccess("VIEW_WEEKLY_STATISTICS");
   const isUpdateEmpAttendancePermitted = HasAccess(
     "UPDATE_EMPLOYEE_ATTENDANCE"
@@ -49,7 +48,6 @@ const Attendance = ({ isTeamView = false }) => {
   } = useSelector((state) => state.emp.user_details);
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [disableExport, setDisableExport] = useState(false);
   const [openUpdateEmployeeAttendance, setOpenUpdateEmployeeAttendance] =
     useState(false);
   const [weeklySummary, setWeeklySummary] = useState([]);
@@ -145,96 +143,6 @@ const Attendance = ({ isTeamView = false }) => {
     };
     fetchData();
   }, []);
-
-  const exportAttendanceToExcel = async () => {
-    setDisableExport(true);
-    try {
-      const dateFilter =
-        activeTab.toLowerCase() === "day"
-          ? { date: moment().format("YYYY-MM-DD") }
-          : { date_range: GetDateRange(activeTab) };
-      const response = await getAttendance({
-        filterData: dateFilter,
-        ordering: "date",
-      });
-      if (response) {
-        const ResponseData = response.results;
-        if (
-          !ResponseData ||
-          !Array.isArray(ResponseData) ||
-          ResponseData.length === 0
-        ) {
-        } else {
-          const dataToExport = await Promise.all(
-            ResponseData?.map(async (row) => {
-              return {
-                // ID: row.employee_serial_number,
-                Date: renderDate(row.date),
-                Name: row.employee_name,
-                Email: row["employee_email"],
-                Department: row["employee_department"],
-                // Designation: await getLabelByValue(
-                //   row.employee_designation,
-                //   Designations,
-                //   "-"
-                // ),
-                // Branch: await getLabelByValue(
-                //   row["employee_branch id"],
-                //   Branches,
-                //   "-"
-                // ),
-                "Total Shift Hours": formatDuration(row.total_hours),
-                "Check-In": renderDate(row.checkin, "Not Check-in", "time"),
-                "Check-Out": renderDate(
-                  row.checkout,
-                  "Check-out missing",
-                  "time"
-                ),
-                "Payable Hours": row.payable_hours
-                  ? formatDuration(row.payable_hours)
-                  : "--",
-                "Overtime Hours": row.overtime_hours
-                  ? formatDuration(row.overtime_hours)
-                  : "--",
-                "Break Hours": formatDuration(row.break_duration),
-              };
-            })
-          );
-          exportRecordToExcel(
-            dataToExport,
-            "Attendance",
-            `Attendance_${dateFilter.date || dateFilter.date_range}`
-          );
-        }
-        // setAttendanceData(attendanceData.results);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setDisableExport(false);
-    }
-    // const dataToExport = await Promise.all(
-    //   attendanceData?.results?.map(async (row) => ({
-    //     ID: row.employee_serial_number,
-    //     Name: row.emp_name,
-    //     Department: row["employee_department name"],
-    //     Designation: await getLabelByValue(
-    //       row.employee_designation,
-    //       Designations,
-    //       "-"
-    //     ),
-    //     Branch: await getLabelByValue(row["employee_branch id"], Branches, "-"),
-    //     ...(activeTab.toUpperCase() === "DAY"
-    //       ? { Status: row.daily_status }
-    //       : {
-    //           Present: row.attendance_stats.Present,
-    //           Absent: row.attendance_stats.Absent,
-    //           Late: row.attendance_stats.Late,
-    //           Leaves: row.attendance_stats["On Leave"],
-    //         }),
-    //   }))
-    // );
-  };
 
   return (
     <>

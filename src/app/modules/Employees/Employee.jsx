@@ -26,9 +26,6 @@ export default function EmployeeManagement() {
   const [totalManagers, setTotalManagers] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [selectedDesignation, setSelectedDesignation] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
   const Branches = useSelector((state) => state.common.branches);
@@ -80,11 +77,6 @@ export default function EmployeeManagement() {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "department_name") setSelectedDepartment(filterValue);
-    if (filterName === "department_position")
-      setSelectedDesignation(filterValue);
-    if (filterName === "user_role") setSelectedRole(filterValue);
-
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
