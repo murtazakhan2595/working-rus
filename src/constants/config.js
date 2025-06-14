@@ -29,43 +29,41 @@ const Config = {
   //-------------PROFIL_MANAGMENT-----------
   PEOPLE_TEAM: true,
   //Sub Modules
-  PROFILE_MANAGEMENT:true,
-  EXIT_CLEARANCE:true,
-  EMPLOYEE_CREATION:true,
-  HR_DOCUMENTS:true,
-  EMPLOYEE_TRANSFER:true,
+  PROFILE_MANAGEMENT: true,
+  EXIT_CLEARANCE: true,
+  EMPLOYEE_CREATION: true,
+  HR_DOCUMENTS: true,
+  EMPLOYEE_TRANSFER: true,
 
   //-------------ATTENDANCE-----------
   ATTENDANCE: true,
   //Sub Modules
-  EMPLOYEES_ATTENDANCE:true,
-  SHIFT_CALENDAR:true,
-  EMPLOYEE_DAILY_TASK_REPORT:false,
-  TIME_ADJUSTMENTS:true,
-  ATTENDANCE_UPDATES:true,
+  EMPLOYEES_ATTENDANCE: true,
+  SHIFT_CALENDAR: true,
+  EMPLOYEE_DAILY_TASK_REPORT: false,
+  TIME_ADJUSTMENTS: true,
+  ATTENDANCE_UPDATES: true,
 
   //-------------LEAVE_MANAGEMENT-----------
   LEAVE_MANAGEMENT: true,
   //Sub Modules
-  LEAVE_RECORDS:true,
-  LEAVE_REQUEST:true,
-
+  LEAVE_RECORDS: true,
+  LEAVE_REQUEST: true,
 
   //-------------PAYROLL-----------
   PAYROLL: true,
   //Sub Modules
-  EMPLOYEES_PAYROLL:true,
-  SALARY_SETUP:true,
-  CLAIM_REQUEST:true,
-  PAY_RUN:false,
-  ON_HOLD_SALARIES:false,
-  END_OF_SERVICE:false,
-
+  EMPLOYEES_PAYROLL: true,
+  SALARY_SETUP: true,
+  CLAIM_REQUEST: true,
+  PAY_RUN: false,
+  ON_HOLD_SALARIES: false,
+  END_OF_SERVICE: false,
 
   //-------------TASK_MANAGEMENT-----------
   TASK_MANAGEMENT: true,
   //Sub Modules
-  PROJECT_BOARD:true,
+  PROJECT_BOARD: true,
 
   //-------------TALENT_SPHERE-----------
   TALENT_SPHERE: false,
@@ -76,8 +74,8 @@ const Config = {
   //-------------ASSET_MANAGEMENT-----------
   ASSET_MANAGEMENT: true,
   //Sub Modules
-  ASSETS:true,
-  REQUEST_AND_ASSIGN:true,
+  ASSETS: true,
+  REQUEST_AND_ASSIGN: true,
 
   //-------------ORGANIZATIONAL_CHART-----------
   ORGANIZATIONAL_CHART: true,
@@ -94,10 +92,9 @@ const Config = {
   BRANCHES: false,
   SHIFTS: false,
   ONBOARDING_CHECKLIST: false,
-  ROLE_PERMISSIONS:true,
-  APPROVAL_HIERARCHY:true,
-  LEAVE_SETUP:true,
-
+  ROLE_PERMISSIONS: true,
+  APPROVAL_HIERARCHY: true,
+  LEAVE_SETUP: true,
 };
 
 export const URLS = [
@@ -131,6 +128,8 @@ export const WEBSOCKET_PATHS = [
   "/ws/notifications/",
   "/ws/systemnotifications/",
   "/ws/payrollnotifications/",
+  "/ws/approvalnotifications/",
+  "/ws/leavenotification/",
   // Add more as needed
 ];
 

@@ -207,6 +207,33 @@ function GetUser(id) {
   const employee = employees.find((option) => option.value === parseInt(id));
   return employee ?? null;
 }
+export function GetUserInfo(id, infoKeys) {
+  const employee = GetUser(id);
+  const employeeInfo = {};
+  if (infoKeys.includes("department"))
+    employeeInfo["department"] = GetNameList(
+      employee.department_name,
+      "departments",
+      "common",
+      "--"
+    );
+  if (infoKeys.includes("designation"))
+    employeeInfo["designation"] = GetNameList(
+      employee.department_position,
+      "designations",
+      "common",
+      "--"
+    );
+  if (infoKeys.includes("branch"))
+    employeeInfo["branch"] = GetNameList(
+      employee.branch_id,
+      "branches",
+      "common",
+      "--"
+    );
+  if (infoKeys.includes("id")) employeeInfo["id"] = employee.serial_number;
+  return employeeInfo ?? null;
+}
 export function GetNameList(list, label, key, fallBackText) {
   const List = GetDispatchStateList(key, label);
   const NameList = getLabelByValue(list, List, fallBackText, "value", "list");
