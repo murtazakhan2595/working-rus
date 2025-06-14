@@ -280,16 +280,12 @@ export function mapAdjustmentFromAttendnaceData(data) {
       else if (key === "attendance_date") acc[key] = data.date;
       else if (key === "is_second_shift") acc[key] = false;
       else if (key === "reason") acc[key] = null;
-      else if (data.hasOwnProperty(key)) {
-        acc[key] = data[key];
-      }
       return acc;
     },
     {}
   );
   attendanceAdjustmentData.date = data.date;
   attendanceAdjustmentData.employee_id = data.employee_id;
-  attendanceAdjustmentData.status = data.status;
   return attendanceAdjustmentData;
 }
 

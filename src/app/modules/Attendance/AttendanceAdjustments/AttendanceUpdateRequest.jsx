@@ -217,7 +217,7 @@ const AttendanceUpdateRequest = ({ id }) => {
                 InputFields: [
                   {
                     InputField: DateInput,
-                    name: "date",
+                    name: "attendance_date",
                     required: true,
                     label: "Attendance Date",
                     maxDate: new Date(),
