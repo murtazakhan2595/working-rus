@@ -69,7 +69,8 @@ import { saveEmployeePayroll } from "app/hooks/payroll";
 import { PageLoader } from "components";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { getShift } from "app/hooks/attendance";
-import AddShiftForm from "app/modules/OfficeSetting/sections/Shift/AddShiftForm";
+import { saveShiftSchedule } from "app/hooks/shiftManagement";
+import EmployeeCustomShiftModal from "./EmployeeCustomShiftModal";
 import SheetComponent from "components/ui/CustomSheet";
 import moment from "moment";
 import { cn } from "src/@/lib/utils";
@@ -95,6 +96,7 @@ const EmployeeForm = ({
   const Designations = useSelector((state) => state.common.designations);
   const Departments = useSelector((state) => state.common.departments);
   const Employees = useSelector((state) => state.emp.employees);
+  const userProfile = useSelector((state) => state.user.userProfile);
 
   const default_user = GetDefaultUserRole()?.id;
   const [formData, setFormData] = useState({});
@@ -106,6 +108,7 @@ const EmployeeForm = ({
   const [addShift, setAddShift] = useState(false);
   const [closeSheet, setCloseSheet] = useState(false);
   const [shiftSelect, setShiftSelect] = useState(false);
+  const [customShiftData, setCustomShiftData] = useState(null);
 
   const getShiftList = async () => {
     const shiftData = await getShift();
@@ -201,6 +204,69 @@ const EmployeeForm = ({
       setUsernameAlreadyExist(false);
     }
   };
+
+  const formatTimeForBackend = (timeStr) => {
+    if (!timeStr) return null;
+    return moment(timeStr).format("HH:mm");
+  };
+
+  const formatDateForBackend = (dateStr) => {
+    return moment(dateStr).format("YYYY-MM-DD");
+  };
+
+  const saveCustomShiftSchedule = async (employeeId, shiftData) => {
+    try {
+      const [startDate, endDate] = shiftData.dateRange.split(",");
+      
+      // Build custom_schedule object
+      const customSchedule = {};
+      shiftData.dailySchedule.forEach((day) => {
+        if (day.isOff) {
+          customSchedule[day.date] = {
+            is_off: true,
+          };
+        } else if (day.isSplit) {
+          customSchedule[day.date] = {
+            is_off: false,
+            is_split: true,
+            start_time_1: formatTimeForBackend(day.splitStartTime1),
+            end_time_1: formatTimeForBackend(day.splitEndTime1),
+            start_time_2: formatTimeForBackend(day.splitStartTime2),
+            end_time_2: formatTimeForBackend(day.splitEndTime2),
+          };
+        } else {
+          customSchedule[day.date] = {
+            is_off: false,
+            is_split: false,
+            start_time: formatTimeForBackend(day.startTime),
+            end_time: formatTimeForBackend(day.endTime),
+          };
+        }
+      });
+
+      const payload = {
+        employee: employeeId,
+        shift: null,
+        schedule_name: shiftData.scheduleName,
+        start_date: formatDateForBackend(startDate),
+        end_date: formatDateForBackend(endDate),
+        is_org_based: false,
+        custom_schedule: customSchedule,
+        total_weekly_hours: shiftData.totalHours.weekly.toString(),
+        assigned_by: userProfile?.employee_id || userProfile?.id,
+        status: "Approved", // Direct approval for employee creation
+        is_off_day: shiftData.dailySchedule.some((day) => day.isOff),
+      };
+
+      const response = await saveShiftSchedule(payload);
+      if (response) {
+        console.log("Custom shift schedule saved successfully for employee:", employeeId);
+      }
+    } catch (error) {
+      console.error("Error saving custom shift schedule:", error);
+      toast.error("Failed to save custom shift schedule");
+    }
+  };
   const handleSubmit = async (data) => {
     setIsLoading(true);
     const employeePayload = mapEmployeePayloadData(data, formData);
@@ -219,6 +285,11 @@ const EmployeeForm = ({
           employeeId,
         });
         await saveEmpoyeeDocBulk(checklistData);
+
+        // Save custom shift schedule if configured
+        if (customShiftData && !id) {
+          await saveCustomShiftSchedule(employeeId, customShiftData);
+        }
         dispatch(fetchEmployees());
         dispatch(fetchReportingManagers());
         dispatch(fetchEmployeesDetail());
@@ -771,11 +842,36 @@ const EmployeeForm = ({
                       <CheckBoxInput
                         label="Custom Shift"
                         name="custom-shift"
-                        value={addShift}
+                        value={customShiftData ? true : addShift}
                         onChange={(name, value) => {
-                          setAddShift(value);
+                          if (!customShiftData) {
+                            setAddShift(value);
+                          } else if (!value) {
+                            // Allow unchecking to clear custom shift
+                            setCustomShiftData(null);
+                            setAddShift(false);
+                          } else {
+                            setAddShift(true);
+                          }
                         }}
                       />
+                      {customShiftData && (
+                        <div className="mt-2 p-3 bg-purple-50 border border-purple-200 rounded-md">
+                          <div className="text-sm font-medium text-purple-800">
+                            ✓ Custom Schedule Configured: {customShiftData.scheduleName}
+                          </div>
+                          <div className="text-xs text-purple-600 mt-1">
+                            Weekly Hours: {customShiftData.totalHours?.weekly?.toFixed(1) || 0} hours
+                          </div>
+                          <button
+                            type="button"
+                            className="text-xs text-purple-600 hover:text-purple-800 mt-1"
+                            onClick={() => setAddShift(true)}
+                          >
+                            Edit Schedule
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                   {SalarySetupAllowed && (
@@ -875,13 +971,14 @@ const EmployeeForm = ({
                     </div>
                   </div>
                   {addShift && (
-                    <ShiftAction
+                    <EmployeeCustomShiftModal
                       isOpen={addShift}
                       setIsOpen={setAddShift}
-                      reload={getShiftList}
-                      setEmployeeShift={(value) => {
-                        props.setFieldValue("shift_assignment", value);
+                      onShiftDataSave={(shiftData) => {
+                        setCustomShiftData(shiftData);
+                        setAddShift(false);
                       }}
+                      existingShiftData={customShiftData}
                     />
                   )}
                 </form>
@@ -894,36 +991,6 @@ const EmployeeForm = ({
   );
 };
 
-const ShiftAction = ({
-  isOpen,
-  setIsOpen,
-  reload = () => {},
-  setEmployeeShift = () => {},
-}) => {
-  const formSheetData = {
-    triggerText: null,
-    title: "Update Shift Details",
-    description: null,
-    footer: null,
-  };
-  return (
-    <SheetComponent
-      {...formSheetData}
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      width="568px"
-    >
-      <AddShiftForm
-        isOpen={isOpen}
-        setIsOpen={(value) => {
-          reload();
-          setIsOpen(value);
-        }}
-        reload={reload}
-        setEmployeeShift={setEmployeeShift}
-      />
-    </SheetComponent>
-  );
-};
+
 
 export default EmployeeForm;
