@@ -59,7 +59,7 @@ const validateLeaveDurationFormSchema = (values) => {
     errors.duration_hours = "Duration hours must be a number";
   } else if (!Number.isInteger(Number(values.duration_hours))) {
     errors.duration_hours = "Duration hours must be a whole number";
-  } else if (Number(values.duration_hours) <= 1) {
+  } else if (Number(values.duration_hours) < 1) {
     errors.duration_hours = "Duration hours must be greater than 1";
   }
   return errors;
