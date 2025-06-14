@@ -1,5 +1,4 @@
 // import LeaveTracker from "./Screens/LeaveTracker";
-import LeaveRequests from "./Screens/LeaveRequests";
 import {
   LeaveTracker,
   LeaveTrackerActions,
@@ -41,7 +40,6 @@ import {
 
 export {
   MyLeaveTracker,
-  LeaveRequests,
   LeaveTracker,
   MyLeavesAction,
   LeaveTrackerActions,

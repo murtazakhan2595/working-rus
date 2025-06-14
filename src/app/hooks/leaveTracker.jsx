@@ -14,6 +14,7 @@ import {
   mapLeavePayloadData,
   mapOffsetLeaveSettingListData,
   mapOffsetLeaveSettingData,
+  mapOffsetLeavesData,
 } from "app/utils/MappingObjects/mapLeaveData";
 import { renderErrorMessages } from "utils/renderErrors";
 
@@ -683,6 +684,28 @@ export const getLeaveTypeData = async (id) => {
     return {};
   }
 };
+export const getOffsetLeaveInfo = async (employee_id) => {
+  let URL = employee_id
+    ? `/employee-leaves/eligible_leave_types/`
+    : `/offset-leaves/my-offset-leaves/`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const offsetLeaveData = await mapOffsetLeavesData(ResponseData);
+      return offsetLeaveData;
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
 export const getEligibleLeaveTypeDurations = async (isType = true) => {
   let URL = isType
     ? `/employee-leaves/eligible_leave_types/`
@@ -695,7 +718,14 @@ export const getEligibleLeaveTypeDurations = async (isType = true) => {
       const ResponseData = response.data;
       // const ResponseList = await mapLeaveTypeListData(ResponseData);
       const ResponseList = ResponseData.data;
-      return ResponseList;
+      const offsetLeave = await getOffsetLeaveInfo();
+      const OffsetLeaveType = ResponseList.find((obj) => obj.id === 1);
+      const OtherLeaveType = ResponseList.filter((obj) => obj.id !== 1);
+      const FinalResponsList = [
+        ...OtherLeaveType,
+        { ...OffsetLeaveType, ...offsetLeave },
+      ];
+      return FinalResponsList;
     }
     return [];
   } catch (error) {
@@ -1013,8 +1043,8 @@ export const uploadHolidaysData = async (formData) => {
         },
       }
     );
-    const ResponseData=response.data;
-    return ResponseData
+    const ResponseData = response.data;
+    return ResponseData;
   } catch (error) {
     if (error?.response?.status === 401) {
       HandleLogout();

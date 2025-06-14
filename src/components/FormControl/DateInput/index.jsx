@@ -219,6 +219,39 @@ const DateInput = React.memo(
                 onSelect={handleCalendarSelect}
                 month={calendarDate || new Date()}
                 onMonthChange={setCalendarDate}
+                disabled={(date) => {
+                  const disableMinDate = Boolean(
+                    minDate ? moment(date).isBefore(MinDate) : false
+                  );
+                  if (disableMinDate) return true;
+                  const disableMaxDate = Boolean(
+                    maxDate ? moment(date).isAfter(MaxDate) : false
+                  );
+                  if (disableMaxDate) return true;
+
+                  return false;
+                }}
+                // components={{
+                //   DayContent: ({ date }) => {
+                //     const baseDate = moment(date).format("YYYY-MM-DD");
+                //     const { title, isHoliday } = CalendarContent[baseDate] || {};
+                //     const className = `w-full h-full flex items-center justify-center ${
+                //       disableHolidays && isHoliday ? "text-slate-500" : ""
+                //     }`;
+                //     return (
+                //       <div className={className}>
+                //         {isHoliday ? (
+                //           <TooltipText
+                //             tooltipTriggerText={date.getDate()}
+                //             content={title}
+                //           />
+                //         ) : (
+                //           date.getDate()
+                //         )}
+                //       </div>
+                //     );
+                //   },
+                // }}
               />
               {/* <Calendar
                 mode="single"
