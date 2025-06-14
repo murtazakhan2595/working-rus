@@ -13,7 +13,7 @@ import { HasAccess } from "utils/PermissionUtils";
 
 const MyAssetsPage = ({ userProfile }) => {
   // Permission checks for my assets features
-  const canViewMyAssets = HasAccess("VIEW_ASSIGN_ASSETS");
+  const canViewMyAssets = HasAccess("VIEW_ASSIGNED_MY_ASSETS");
   const canRequestAsset = HasAccess("ADD_ASSET_REQUEST");
 
   const [assets, setAssets] = useState([]);
