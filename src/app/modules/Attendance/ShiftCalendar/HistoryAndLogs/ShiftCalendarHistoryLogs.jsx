@@ -136,11 +136,22 @@ export default function ShiftCalendarHistoryLogs() {
               return; // Skip this iteration
             }
 
-            // Validate time formats for non-OFF entries
+            // Handle "Split" keyword and validate time formats for non-OFF entries
             if (timeOrStatus !== "OFF") {
-              if (timeOrStatus.includes("/")) {
+              // Check if it's a split shift with "Split" keyword
+              let actualTimeString = timeOrStatus;
+              let isSplitShift = false;
+              
+              if (timeOrStatus.toLowerCase().startsWith("split ")) {
+                actualTimeString = timeOrStatus.substring(6).trim(); // Remove "Split " prefix
+                isSplitShift = true;
+              } else if (timeOrStatus.includes("/")) {
+                isSplitShift = true;
+              }
+              
+              if (isSplitShift) {
                 // Split shift - validate both parts have proper time format
-                const splitParts = timeOrStatus.split("/").map((p) => p.trim());
+                const splitParts = actualTimeString.split("/").map((p) => p.trim());
                 const validTimes = splitParts.every(p => {
                   const timeParts = p.split("-");
                   return timeParts.length === 2 && 
@@ -148,17 +159,17 @@ export default function ShiftCalendarHistoryLogs() {
                 });
                 
                 if (!validTimes) {
-                  console.warn(`Invalid split time format: "${timeOrStatus}" in part: "${part}"`);
+                  console.warn(`Invalid split time format: "${actualTimeString}" in part: "${part}"`);
                   return;
                 }
-              } else if (timeOrStatus.includes("-")) {
+              } else if (actualTimeString.includes("-")) {
                 // Regular shift - validate time format
-                const timeParts = timeOrStatus.split("-");
+                const timeParts = actualTimeString.split("-");
                 const validTimes = timeParts.length === 2 && 
                                    timeParts.every(t => /^\d{1,2}:\d{2}$/.test(t.trim()));
                 
                 if (!validTimes) {
-                  console.warn(`Invalid time format: "${timeOrStatus}" in part: "${part}"`);
+                  console.warn(`Invalid time format: "${actualTimeString}" in part: "${part}"`);
                   return;
                 }
               }
@@ -174,32 +185,48 @@ export default function ShiftCalendarHistoryLogs() {
                 endTime: null,
                 isSplit: false,
               });
-            } else if (timeOrStatus.includes("/")) {
-              // Split shift format: "8:00-12:00 / 15:00-18:00"
-              const splitParts = timeOrStatus.split("/").map((p) => p.trim());
-              const times = splitParts.map((p) => {
-                const [start, end] = p.split("-").map((t) => t.trim());
-                return { start, end };
-              });
+            } else {
+              // Handle "Split" keyword and extract actual time string
+              let actualTimeString = timeOrStatus;
+              let isSplitShift = false;
+              
+              if (timeOrStatus.toLowerCase().startsWith("split ")) {
+                actualTimeString = timeOrStatus.substring(6).trim(); // Remove "Split " prefix
+                isSplitShift = true;
+                console.log(`Detected split shift: "${timeOrStatus}" -> "${actualTimeString}"`);
+              } else if (timeOrStatus.includes("/")) {
+                isSplitShift = true;
+              }
+              
+              if (isSplitShift) {
+                // Split shift format: "8:00-12:00/15:00-18:00" or "Split 8:00-12:00/15:00-18:00"
+                const splitParts = actualTimeString.split("/").map((p) => p.trim());
+                const times = splitParts.map((p) => {
+                  const [start, end] = p.split("-").map((t) => t.trim());
+                  return { start, end };
+                });
 
-              shifts.push({
-                date: formattedDate,
-                isOff: false,
-                isSplit: true,
-                splitTimes: times,
-              });
-            } else if (timeOrStatus.includes("-")) {
-              // Regular shift format: "09:00-17:00"
-              const [startTime, endTime] = timeOrStatus
-                .split("-")
-                .map((t) => t.trim());
-              shifts.push({
-                date: formattedDate,
-                isOff: false,
-                startTime,
-                endTime,
-                isSplit: false,
-              });
+                console.log(`Split shift parsed for ${formattedDate}:`, times);
+
+                shifts.push({
+                  date: formattedDate,
+                  isOff: false,
+                  isSplit: true,
+                  splitTimes: times,
+                });
+              } else if (actualTimeString.includes("-")) {
+                // Regular shift format: "09:00-17:00"
+                const [startTime, endTime] = actualTimeString
+                  .split("-")
+                  .map((t) => t.trim());
+                shifts.push({
+                  date: formattedDate,
+                  isOff: false,
+                  startTime,
+                  endTime,
+                  isSplit: false,
+                });
+              }
             }
           } else {
             console.warn(`Could not parse shift part: "${part}"`);
@@ -585,8 +612,7 @@ export default function ShiftCalendarHistoryLogs() {
     {
       dataField: "approved_on",
       text: "Approved On",
-      formatter: (cell) =>
-        cell ? moment(cell).format("DD-MMM-YYYY hh:mmA") : "-",
+      formatter: (cell) => <>{moment(cell).format("MMM D, YYYY")}</>,
       dataSort: true,
     },
     {
