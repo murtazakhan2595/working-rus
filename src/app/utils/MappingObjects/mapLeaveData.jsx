@@ -9,6 +9,7 @@ import {
 import moment from "moment";
 import { calculateTotalCount } from "utils/renderValues";
 import { calculateTotal } from "utils/renderValues";
+import { renderDate } from "utils/renderValues";
 
 async function getLavefromEmployeeInfo(data) {
   const Managers = await getManagersList();
@@ -282,21 +283,24 @@ export async function mapOffsetLeaveSettingListData(data) {
 }
 export async function mapOffsetLeavesData(data) {
   if (!data || data.length === 0) return {};
-  const allotted_count = calculateTotal(data, "total_offset_leaves");
+  const allotted_count = calculateTotal(data, "leaves");
   const consumed_count = calculateTotal(data, "total_offset_leaves");
   const balance_count = calculateTotal(data, "total_offset_leaves");
   const ResponseList = await data?.map((dataObj) => {
-    const formattedData = dataObj;
-    return {
-      ...formattedData,
+    const formattedData = {
+      alloted_at: dataObj.created_at,
+      expires_at: dataObj.expires_at,
     };
+    return `${dataObj.leaves} leave alloted on ${renderDate(
+      dataObj.created_at,'-'
+    )} expires at ${renderDate(dataObj.expires_at,'-')}`;
   });
 
   return {
     allotted_count,
     consumed_count,
     balance_count,
-    leaves_info: ResponseList,
+    tooltip_info: ResponseList.join("\n"),
   };
 }
 
