@@ -21,6 +21,73 @@ import {
 import { getEmployeeActiveShift } from "../Section/getEmployeeActiveShift";
 import { HasAccess } from "utils/PermissionUtils";
 import { FilterInput } from "components/FormControl";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "src/@/components/ui/tooltip";
+
+// Event Content Component with Tooltip
+const EventWithTooltip = ({ eventInfo }) => {
+  const fullTitle = eventInfo.event.title;
+  const shortTitle =
+    fullTitle.length > 18 ? fullTitle.substring(0, 15) + "..." : fullTitle;
+
+  // Extract additional details from extendedProps
+  const { type, shiftName, scheduleId } = eventInfo.event.extendedProps || {};
+
+  // Create detailed tooltip content
+  const getTooltipContent = () => {
+    const start = moment(eventInfo.event.start).format("HH:mm");
+    const end = moment(eventInfo.event.end).format("HH:mm");
+
+    // Format type for display
+    const formatType = (type) => {
+      switch (type) {
+        case "direct_assignment":
+          return "Direct Assignment";
+        case "org_schedule":
+          return "Organization Schedule";
+        case "custom_regular":
+          return "Custom Schedule";
+        case "custom_split":
+          return "Split Shift";
+        case "custom_off":
+          return "Day Off";
+        default:
+          return "Scheduled Shift";
+      }
+    };
+
+    return (
+      <div className="space-y-1 text-blue-950">
+        <p className="font-medium">{shiftName || eventInfo.event.title}</p>
+        <p className="text-xs">
+          Time: {start} - {end}
+        </p>
+        <p className="text-xs">Type: {formatType(type)}</p>
+      </div>
+    );
+  };
+
+  return (
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="p-0.5 sm:p-1 overflow-hidden w-full cursor-pointer">
+            <div className="font-medium text-[8px] sm:text-[10px] lg:text-xs leading-tight truncate w-full">
+              {shortTitle}
+            </div>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs">
+          {getTooltipContent()}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
 
 const EmployeeShiftCalendar = () => {
   const [events, setEvents] = useState([]);
@@ -133,28 +200,72 @@ const EmployeeShiftCalendar = () => {
 
   const generateCalendarEvents = (approvedSchedules, directShiftData) => {
     const events = [];
+    const coveredDates = new Set(); // Track dates covered by schedules
 
-    // Generate events from approved schedules
+    // 1. PRIORITY: Add approved schedule shifts first and track covered dates
     approvedSchedules.forEach((schedule) => {
       if (schedule.is_org_based && schedule.shift_details) {
         // Organization-based scheduled shift
-        events.push(...generateOrgScheduleEvents(schedule));
+        const scheduleEvents = generateOrgScheduleEvents(schedule);
+        events.push(...scheduleEvents);
+        
+        // Track dates covered by this schedule
+        scheduleEvents.forEach(event => {
+          const eventDate = moment(event.start).format('YYYY-MM-DD');
+          coveredDates.add(eventDate);
+        });
       } else if (schedule.custom_schedule) {
         // Custom scheduled shift
-        events.push(...generateCustomScheduleEvents(schedule));
+        const scheduleEvents = generateCustomScheduleEvents(schedule);
+        events.push(...scheduleEvents);
+        
+        // Track dates covered by this schedule
+        Object.keys(schedule.custom_schedule).forEach(date => {
+          coveredDates.add(date);
+        });
       }
     });
 
-    // Only add direct shift events if no schedules exist
-    if (events.length === 0 && directShiftData) {
-      events.push(...generateDirectShiftEvents(directShiftData));
+    // 2. FALLBACK: Add direct shift assignment for dates NOT covered by schedules
+    if (directShiftData) {
+      const directShiftEvents = generateDirectShiftEvents(directShiftData, coveredDates);
+      events.push(...directShiftEvents);
     }
 
     setEvents(events);
   };
 
-  const generateDirectShiftEvents = (shift) => {
+  const generateDirectShiftEvents = (shift, coveredDates = new Set()) => {
     const events = [];
+
+    // Parse start time (ISO format)
+    const shiftStart = moment(shift.starttime);
+
+    // Parse end time (handle multiple formats)
+    let shiftEnd;
+
+    if (shift.endtime.includes("T")) {
+      // ISO format like "2025-06-09T12:00:00Z"
+      shiftEnd = moment(shift.endtime);
+    } else if (shift.endtime.includes("M")) {
+      // 12-hour format like "05:00 PM" or "5:00 AM"
+      shiftEnd = moment(shift.endtime, ["hh:mm A", "h:mm A"]);
+    } else if (shift.endtime.includes(":")) {
+      // 24-hour format like "17:00"
+      shiftEnd = moment(shift.endtime, "HH:mm");
+    } else {
+      // Fallback - try to parse as-is
+      shiftEnd = moment(shift.endtime);
+    }
+
+    // Only proceed if both times are valid
+    if (!shiftStart.isValid() || !shiftEnd.isValid()) {
+      console.error("Invalid time formats:", {
+        starttime: shift.starttime,
+        endtime: shift.endtime,
+      });
+      return events;
+    }
 
     // Show for current month only
     const startOfMonth = moment().startOf("month");
@@ -162,21 +273,27 @@ const EmployeeShiftCalendar = () => {
 
     let currentDate = startOfMonth.clone();
     while (currentDate.isSameOrBefore(endOfMonth)) {
-      // Skip weekends for default org shifts (you can modify this logic)
-      if (currentDate.day() !== 0 && currentDate.day() !== 6) {
-        const startTime = moment(shift.starttime.replace("Z", "")).format(
-          "HH:mm"
-        );
-        const endTime = moment(shift.endtime.replace("Z", "")).format("HH:mm");
-
+      const dateKey = currentDate.format("YYYY-MM-DD");
+      
+      // Skip weekends for default org shifts AND skip dates covered by schedules
+      if (currentDate.day() !== 0 && currentDate.day() !== 6 && !coveredDates.has(dateKey)) {
+        const startTime = shiftStart.format("HH:mm");
+        const endTime = shiftEnd.format("HH:mm");
 
         events.push({
+          id: `direct-${shift.id}-${dateKey}`,
           title: `${shift.name} (${startTime} - ${endTime})`,
-          start: `${currentDate.format("YYYY-MM-DD")}T${startTime}:00`,
-          end: `${currentDate.format("YYYY-MM-DD")}T${endTime}:00`,
+          start: `${dateKey}T${startTime}:00`,
+          end: `${dateKey}T${endTime}:00`,
           backgroundColor: "#3B82F6", // Blue for direct assignments
           borderColor: "#2563EB",
           textColor: "#FFFFFF",
+          extendedProps: {
+            type: "direct_assignment",
+            shiftId: shift.id,
+            shiftName: shift.name,
+            fullTitle: `${shift.name} (${startTime} - ${endTime})`,
+          },
         });
       }
       currentDate.add(1, "day");
@@ -226,6 +343,12 @@ const EmployeeShiftCalendar = () => {
           backgroundColor: "#10B981",
           borderColor: "#059669",
           textColor: "#FFFFFF",
+          extendedProps: {
+            type: "org_schedule",
+            shiftName: shiftDetails.name,
+            scheduleId: schedule.id,
+            fullTitle: eventTitle,
+          },
         });
       }
 
@@ -248,6 +371,12 @@ const EmployeeShiftCalendar = () => {
           backgroundColor: "#6B7280",
           borderColor: "#4B5563",
           textColor: "#FFFFFF",
+          extendedProps: {
+            type: "custom_off",
+            scheduleId: schedule.id,
+            shiftName: "Day Off",
+            fullTitle: "Day Off",
+          },
         });
       } else if (daySchedule.is_split) {
         // Split shift events
@@ -259,6 +388,13 @@ const EmployeeShiftCalendar = () => {
             backgroundColor: "#F59E0B",
             borderColor: "#D97706",
             textColor: "#FFFFFF",
+            extendedProps: {
+              type: "custom_split",
+              part: 1,
+              scheduleId: schedule.id,
+              shiftName: `Split Shift Part 1`,
+              fullTitle: `Split 1 (${daySchedule.start_time_1} - ${daySchedule.end_time_1})`,
+            },
           });
         }
 
@@ -275,6 +411,13 @@ const EmployeeShiftCalendar = () => {
             backgroundColor: "#F59E0B",
             borderColor: "#D97706",
             textColor: "#FFFFFF",
+            extendedProps: {
+              type: "custom_split",
+              part: 2,
+              scheduleId: schedule.id,
+              shiftName: `Split Shift Part 2`,
+              fullTitle: `Split 2 (${daySchedule.start_time_2} - ${daySchedule.end_time_2})`,
+            },
           });
         }
       } else {
@@ -291,6 +434,12 @@ const EmployeeShiftCalendar = () => {
           backgroundColor: "#8B5CF6",
           borderColor: "#7C3AED",
           textColor: "#FFFFFF",
+          extendedProps: {
+            type: "custom_regular",
+            scheduleId: schedule.id,
+            shiftName: "Custom Shift",
+            fullTitle: `Shift (${daySchedule.start_time} - ${daySchedule.end_time})`,
+          },
         });
       }
     });
@@ -414,9 +563,11 @@ const EmployeeShiftCalendar = () => {
             </p>
           )}
         </div>
-        {isRequestChangeShiftPermitted &&<Button onClick={() => setIsRequestModalOpen(true)}>
-          Request Shift Change
-        </Button>}
+        {isRequestChangeShiftPermitted && (directShift || scheduleShifts?.count > 0) && (
+          <Button onClick={() => setIsRequestModalOpen(true)}>
+            Request Shift Change
+          </Button>
+        )}
       </div>
 
       {/* Calendar View */}
@@ -442,11 +593,16 @@ const EmployeeShiftCalendar = () => {
                 events={events}
                 height="100%"
                 eventDisplay="block"
-                dayMaxEvents={3}
+                dayMaxEvents={
+                  typeof window !== "undefined" && window.innerWidth < 768 ? 2 : 3
+                }
                 moreLinkClick="popover"
-                eventTextColor="#ffffff"
+                // eventTextColor="#ffffff"
                 nowIndicator={true}
                 weekends={true}
+                aspectRatio={
+                  typeof window !== "undefined" && window.innerWidth < 768 ? 0.8 : 1.35
+                }
                 slotLabelFormat={{
                   hour: "2-digit",
                   minute: "2-digit",
@@ -456,6 +612,13 @@ const EmployeeShiftCalendar = () => {
                   hour: "2-digit",
                   minute: "2-digit",
                   hour12: false,
+                }}
+                eventContent={(eventInfo) => <EventWithTooltip eventInfo={eventInfo} />}
+      
+                dayCellContent={(dayInfo) => {
+                  return {
+                    html: `<div class="text-sm sm:text-base">${dayInfo.dayNumberText}</div>`,
+                  };
                 }}
               />
             </div>
