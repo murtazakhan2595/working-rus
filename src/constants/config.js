@@ -18,13 +18,13 @@ const Config = {
   EXIT: true,
 
   //----------------TEAM_MANAGEMENT------------
-  TEAM_MANAGEMENT: false,
+  TEAM_MANAGEMENT: true,
   //Sub Modules
   TEAM_PROFILE: false,
   TEAM_ATTENDANCE: false,
   TEAM_DAILY_TASK_REPORT: false,
-  TEAM_LEAVE_REQUEST: false,
-  TEAM_EXIT_CLEARANCE: false,
+  TEAM_LEAVE_REQUEST: true,
+  TEAM_EXIT_CLEARANCE: true,
 
   //-------------PROFIL_MANAGMENT-----------
   PEOPLE_TEAM: true,

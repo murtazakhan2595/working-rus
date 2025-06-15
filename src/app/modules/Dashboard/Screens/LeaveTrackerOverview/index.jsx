@@ -22,12 +22,7 @@ const LeaveTrackerOverview = ({ userProfile }) => {
   const [isLeaveTransactionLoading, setIsLeaveTransactionLoading] =
     useState(true);
   const [leaveTransaction, setLeaveTransaction] = useState([]);
-// const [filterData, setFilterData] = useState({
-//   range_date: `${moment().startOf("month").format("YYYY-MM-DD")},${moment()
-//     .endOf("month")
-//     .format("YYYY-MM-DD")}`,
-// });
-const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({});
   const [leaveTypesData, setLeaveTypesData] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedLeaveType, setSelectedLeaveType] = useState("");
@@ -43,7 +38,7 @@ const [filterData, setFilterData] = useState({});
       filterData,
       options: { page: 1, sizePerPage: 5 },
     });
-    const leaveTransaction =  response?.results
+    const leaveTransaction = response?.results;
     const statusCounts = response?.status_counts || {};
     if (leaveTransaction && statusCounts) {
       setLeaveTransaction(leaveTransaction);
@@ -110,32 +105,6 @@ const [filterData, setFilterData] = useState({});
             Leave Tracker
           </div>
           <div className="flex items-center gap-3">
-            <FilterInput
-              filters={[
-                {
-                  type: "select-one",
-                  option: LeaveTrackerOptions,
-                  name: "status",
-                  width: "max-w-[130px]",
-                  placeholder: "Status",
-                  values: selectedStatus,
-                  value: selectedStatus,
-                },
-                {
-                  type: "select-two",
-                  width: "max-w-[130px]",
-                  option: leaveTypesData?.map((leave) => ({
-                    value: leave.id,
-                    label: leave.name,
-                  })),
-                  name: "leave_component_id",
-                  placeholder: "Leave Type",
-                  values: selectedLeaveType,
-                  value: selectedLeaveType,
-                },
-              ]}
-              onChange={handleFilterChange}
-            />
             <Button variant="outline">
               <Link to="/leave-request">View Detail</Link>
             </Button>
@@ -173,6 +142,27 @@ const [filterData, setFilterData] = useState({});
       </div>
 
       <CardContent>
+        <FilterInput
+          filters={[
+            {
+              type: "select",
+              options: LeaveTrackerOptions,
+              name: "status",
+              placeholder: "Status",
+            },
+            {
+              type: "select",
+              option: leaveTypesData?.map((leave) => ({
+                value: leave.id,
+                label: leave.name,
+              })),
+              name: "leave_component_id",
+              placeholder: "Leave Type",
+            },
+          ]}
+          onChange={handleFilterChange}
+          className='justify-end mb-3'
+        />
         {isLeaveTransactionLoading ? (
           <PageLoader />
         ) : (

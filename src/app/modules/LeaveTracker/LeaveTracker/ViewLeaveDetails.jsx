@@ -157,11 +157,10 @@ const ViewLeaveDetails = ({
       customContent: true,
       renderContent: (data) => {
         if (!managePermitted) return null;
-        if (
-          data &&
-          data.status?.toLowerCase() === "pending" &&
-          (data.current_approver === user_id || user_role.includes(1))
-        )
+        if (!data || !data.status || data.status?.toLowerCase() !== "pending")
+          return null;
+        if (!data.current_approvers) return null;
+        if (data.current_approvers.includes(user_id) || user_role.includes(1))
           return (
             <div className="flex flex-wrap justify-end gap-2 my-5">
               <Button
