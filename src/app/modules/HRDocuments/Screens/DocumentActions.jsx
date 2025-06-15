@@ -23,52 +23,43 @@ import { useSelector } from "react-redux";
 import SheetComponent from "components/ui/CustomSheet";
 import moment from "moment";
 import { AssignDocumentForm } from "app/modules/HRDocuments/Screens";
-import { Eye } from "lucide-react";
+import { Eye, UserPlus } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import DropdownActionMenu from "components/DropdownActionMenu";
 
 // ActionVariant = [assign_document,view_detail];
 
-const DocumentActions = ({ reloadData = () => {}, variant = "", document }) => {
+const DocumentActions = ({ reloadData = () => {}, variant = "", document, showAction = true }) => {
   const navigate = useNavigate();
   const [OpenUploadDocumentForm, setOpenUploadDocumentForm] = useState(false);
+  
   const handleAssignDocument = (event) => {
     event.preventDefault();
     setOpenUploadDocumentForm(true);
   };
+  
   const handleViewDetails = (event) => {
     event.preventDefault();
     navigate(`/documents/detail`, {
       state: {
         GOTO_URLS: `/documents/`,
-        document_id: document.id,
+        id: document.id,
       },
     });
   };
+  
   if (!document || !document.id) return null;
+  
   return (
     <>
-      {variant === "assign_document" && (
-        <Button
-          // variant="ghost"
-          size="sm"
-          onClick={handleAssignDocument}
-          aria-label={`Assign Document`}
-        >
-          <span>Assign Document</span>
-        </Button>
-      )}
-      {variant === "view_detail" && (
-        <Button
-          variant="successOutline"
-          size="sm"
-          onClick={handleViewDetails}
-          aria-label={`View Detail`}
-          // className="flex items-center space-x-1 text-green-600 hover:text-green-700"
-        >
-          <Eye className="w-4 h-4" />
-          <span>View Detail</span>
-        </Button>
-      )}
+      <DropdownActionMenu
+        onView={handleViewDetails}
+        onEdit={showAction ? handleAssignDocument : undefined}
+        viewText="View Details"
+        editText="Assign Document"
+        menuTooltip="Document Actions"
+      />
+      
       {OpenUploadDocumentForm && (
         <AssignDocumentForm
           isOpen={OpenUploadDocumentForm}

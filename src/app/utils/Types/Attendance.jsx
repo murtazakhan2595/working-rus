@@ -1,16 +1,19 @@
 export const Attendance = {
+  id: null,
   break_duration: null,
   total_hours: null,
   overtime_hours: null,
   payable_hours: null,
+  employee_id: null,
+  date: null,
   checkin: null,
   checkout: null,
-  date: null,
+  second_checkin: null,
+  second_checkout: null,
   is_weekend: false,
-  is_absent: false,
+  is_absent: true,
   is_late: false,
   status: "Present",
-  employee_id: null,
 };
 
 export const Shift = {
@@ -20,4 +23,55 @@ export const Shift = {
   starttime: null,
   type: null,
   weekdays: null,
+};
+
+export const TimeAdjustment = {
+  attendance_id: null,
+  reason: null,
+  status: "PENDING",
+  id: null,
+  approval_details: null,
+  checkin_time: null,
+  date: null,
+  created_at: null,
+  request: null,
+  employee_id: null,
+  is_second_shift: false,
+  shift_start_time: null,
+  shift_end_time: null,
+};
+export const TimeAdjustmentLogs = {
+  employee_id: null,
+  employee_name: null,
+  employee_email: null,
+  branch: null,
+  department: null,
+  checkin_time: null,
+  reason: null,
+  shift_start: null,
+  shift_end: null,
+  submission_time: null,
+  approval_status: null,
+  action_by_name: null,
+  action_time: null,
+};
+
+export const AttendanceAdjustment = {
+  employee: null,
+  attendance: null,
+  reason: null,
+  id: null,
+  approval_details: null,
+  attendance: null,
+  attendance_date: null,
+  department: null,
+  employee_name: null,
+  rejection_reason: null,
+  request_datetime: null,
+  request_id: null,
+  requested_checkin: null,
+  requested_checkout: null,
+  reviewed_at: null,
+  status: null,
+  is_second_shift: false,
 };

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import SheetComponent from "./SheetComponent";
-import EmployeeForm from "app/modules/Employees/Screens/Sections/EmployeeForm";
-
+import EmployeeForm from "app/modules/Employees/Screens/EmployeeForm";
+import { HasAccess } from "utils/PermissionUtils";
 const OnBoardingSheet = ({ reloadData = () => {} }) => {
   const formRef = useRef();
   const [isOpen, setIsOpen] = useState(false);
@@ -40,9 +40,8 @@ const OnBoardingSheet = ({ reloadData = () => {} }) => {
           validateUsername={validateUsername}
           isOpen={isOpen}
           setIsOpen={() => {
-            
             setIsOpen(false);
-            reloadData(true);
+            //reloadData(true);
           }}
         />
       </SheetComponent>

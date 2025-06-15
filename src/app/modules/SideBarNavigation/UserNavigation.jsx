@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { LayoutGrid, LogOut, User } from "lucide-react";
+import { LayoutGrid, LogOut, User ,KeyRound } from "lucide-react";
 
-import { Button } from "./button";
+import { Button } from "components/ui/button";
 import {
   Avatar,
   AvatarFallback,
@@ -103,6 +103,12 @@ export function UserNavigation() {
             <Link to="/my-profile" className="flex items-center">
               <User className="w-4 h-4 mr-3 text-muted-foreground" />
               Account
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="hover:cursor-pointer" asChild>
+            <Link to="/change-password" className="flex items-center">
+              <KeyRound className="w-4 h-4 mr-3 text-muted-foreground" />
+              Change Password
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>

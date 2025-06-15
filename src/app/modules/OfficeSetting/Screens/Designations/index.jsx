@@ -12,6 +12,9 @@ import { DesignationColumn } from "../../sections/OfficeSettingTableColumns";
 import { Input } from "components/ui/input";
 import { Search } from "lucide-react";
 import { FilterInput } from "components/FormControl";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
+import { OfficeSettingPermissionWrapper } from "../../components/PermissionWrapper";
+import { OFFICE_SETTING_PERMISSIONS } from "../../permissions/constants";
 
 const Designations = ({
   loading,
@@ -24,6 +27,7 @@ const Designations = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterData, setFilterData] = useState({});
+  const [reloadCounter, setReloadCounter] = useState(0);
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -70,6 +74,11 @@ const Designations = ({
     }));
   };
 
+  // Function to force a table reload
+  const forceReload = () => {
+    setReloadCounter(prev => prev + 1);
+  };
+
   const tableOptions = {
     page: options.page,
     sizePerPage: options.sizePerPage,
@@ -79,7 +88,7 @@ const Designations = ({
 
   useEffect(() => {
     getDesignations();
-  }, [options]);
+  }, [options, reloadCounter]);
 
   // Filters configuration
   const filters = [
@@ -91,15 +100,12 @@ const Designations = ({
   ];
 
   return (
-    <>
+    <OfficeSettingPermissionWrapper 
+      permissions={OFFICE_SETTING_PERMISSIONS.DESIGNATIONS.VIEW}
+      showError={true}
+    >
       <div className="flex flex-col justify-end gap-4">
-        <div className="flex justify-end">
-          <FilterInput 
-            filters={filters} 
-            onChange={handleFilterChange} 
-            className="justify-end"
-          />
-        </div>
+        
         {loading ? (
           <PageLoader />
         ) : (
@@ -109,10 +115,17 @@ const Designations = ({
               <CardDescription className="text-neutral-1100">
                 Here you can manage your designations. Add, edit, or delete designations as needed.
               </CardDescription>
+              <div className="flex justify-end">
+              <FilterInput 
+            filters={filters} 
+            onChange={handleFilterChange} 
+            className="justify-end"
+          />
+              </div>
             </CardHeader>
             <CardContent>
               <TableCustom
-                columns={DesignationColumn(reload)}
+                columns={DesignationColumn(forceReload, designation?.results || [])}
                 data={designation?.results || []}
                 dataTotalSize={designation?.count || 0}
                 pagination={true}
@@ -123,7 +136,7 @@ const Designations = ({
           </Card>
         )}
       </div>
-    </>
+    </OfficeSettingPermissionWrapper>
   );
 };
 

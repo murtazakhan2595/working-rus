@@ -1,0 +1,6015 @@
+{
+  "count": 14,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": 20,
+      "role": 27,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 55,
+          "name": "View Team Profile",
+          "code_name": "VIEW_TEAM_PROFILE",
+          "description": ""
+        },
+        {
+          "id": 56,
+          "name": "View Team Leave Request",
+          "code_name": "VIEW_TEAM_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 57,
+          "name": "Manage Team Leave Request",
+          "code_name": "MANAGE_TEAM_LEAVE_REQUEST",
+          "description": "Approve or reject leave requests from employees"
+        },
+        {
+          "id": 58,
+          "name": "View Team Leave Status Overview",
+          "code_name": "VIEW_TEAM_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 59,
+          "name": "View Team Weekly Attendance Statistics",
+          "code_name": "VIEW_TEAM_WEEKLY_STATISTICS",
+          "description": ""
+        },
+        {
+          "id": 60,
+          "name": "Update Team Attendance",
+          "code_name": "UPDATE_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 61,
+          "name": "View Team Attendance",
+          "code_name": "VIEW_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 62,
+          "name": "Export Team Attendance",
+          "code_name": "EXPORT_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 63,
+          "name": "View Team Daily Task Report",
+          "code_name": "VIEW_TEAM_DAILY_TASK_REPORT",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "role": 21,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 55,
+          "name": "View Team Profile",
+          "code_name": "VIEW_TEAM_PROFILE",
+          "description": ""
+        },
+        {
+          "id": 56,
+          "name": "View Team Leave Request",
+          "code_name": "VIEW_TEAM_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 57,
+          "name": "Manage Team Leave Request",
+          "code_name": "MANAGE_TEAM_LEAVE_REQUEST",
+          "description": "Approve or reject leave requests from employees"
+        },
+        {
+          "id": 58,
+          "name": "View Team Leave Status Overview",
+          "code_name": "VIEW_TEAM_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 59,
+          "name": "View Team Weekly Attendance Statistics",
+          "code_name": "VIEW_TEAM_WEEKLY_STATISTICS",
+          "description": ""
+        },
+        {
+          "id": 60,
+          "name": "Update Team Attendance",
+          "code_name": "UPDATE_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 61,
+          "name": "View Team Attendance",
+          "code_name": "VIEW_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 62,
+          "name": "Export Team Attendance",
+          "code_name": "EXPORT_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 63,
+          "name": "View Team Daily Task Report",
+          "code_name": "VIEW_TEAM_DAILY_TASK_REPORT",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "role": 24,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 1,
+          "name": "View Asset",
+          "code_name": "VIEW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 2,
+          "name": "Add Asset",
+          "code_name": "ADD_ASSET",
+          "description": ""
+        },
+        {
+          "id": 3,
+          "name": "Edit Asset",
+          "code_name": "EDIT_ASSET",
+          "description": ""
+        },
+        {
+          "id": 4,
+          "name": "Delete Asset",
+          "code_name": "DELETE_ASSET",
+          "description": ""
+        },
+        {
+          "id": 5,
+          "name": "View Asset Category",
+          "code_name": "VIEW_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 6,
+          "name": "Add Asset Category",
+          "code_name": "ADD_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 7,
+          "name": "Edit Asset Category",
+          "code_name": "EDIT_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 8,
+          "name": "Delete Asset Category",
+          "code_name": "DELETE_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 13,
+          "name": "Request New Asset",
+          "code_name": "ADD_ASSET_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 14,
+          "name": "Withdraw Asset",
+          "code_name": "WITHDRAW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 23,
+          "name": "View Personal Information",
+          "code_name": "VIEW_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 24,
+          "name": "Edit Personal Information",
+          "code_name": "EDIT_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 25,
+          "name": "View Job Information",
+          "code_name": "VIEW_JOB_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 26,
+          "name": "Edit Academic Information",
+          "code_name": "EDIT_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 27,
+          "name": "View Academic Information",
+          "code_name": "VIEW_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 28,
+          "name": "View Experience Information",
+          "code_name": "VIEW_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 29,
+          "name": "Edit Experience Information",
+          "code_name": "EDIT_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 30,
+          "name": "View Certification Information",
+          "code_name": "VIEW_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 31,
+          "name": "Edit Certification Information",
+          "code_name": "EDIT_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 32,
+          "name": "View Identification Information",
+          "code_name": "VIEW_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 33,
+          "name": "Edit Identification Information",
+          "code_name": "EDIT_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 34,
+          "name": "Mark My Attendance",
+          "code_name": "MARK_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 35,
+          "name": "Log Break Time",
+          "code_name": "MARK_BREAK",
+          "description": ""
+        },
+        {
+          "id": 36,
+          "name": "View Attendance Records",
+          "code_name": "VIEW_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 37,
+          "name": "Create Daily Task Report",
+          "code_name": "ADD_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 38,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 39,
+          "name": "Submit Daily Task Report",
+          "code_name": "SUBMIT_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 40,
+          "name": "Add Leave Request",
+          "code_name": "ADD_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 41,
+          "name": "View Applied Leaves",
+          "code_name": "VIEW_LEAVES_APPLIED",
+          "description": ""
+        },
+        {
+          "id": 42,
+          "name": "Delete Leave Request",
+          "code_name": "DELETE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 43,
+          "name": "View Consumed Leaves",
+          "code_name": "VIEW_CONSUMED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 44,
+          "name": "View Payroll",
+          "code_name": "VIEW_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 45,
+          "name": "Request Claim",
+          "code_name": "REQUEST_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 46,
+          "name": "View Claims",
+          "code_name": "VIEW_CLAIMS",
+          "description": ""
+        },
+        {
+          "id": 47,
+          "name": "Delete Claim",
+          "code_name": "DELETE_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 48,
+          "name": "Request Transfer",
+          "code_name": "REQUEST_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 49,
+          "name": "View Transfer",
+          "code_name": "VIEW_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 50,
+          "name": "View Assigned Documents",
+          "code_name": "VIEW_ASSIGNED_DOCUMENTS",
+          "description": ""
+        },
+        {
+          "id": 51,
+          "name": "Manage Assigned Documents",
+          "code_name": "MANAGE_ASSIGNED_DOCUMENTS",
+          "description": "View, acknowledge, and sign assigned documents"
+        },
+        {
+          "id": 174,
+          "name": "View Assigned Asset",
+          "code_name": "VIEW_ASSIGNED_MY_ASSETS",
+          "description": ""
+        },
+        {
+          "id": 52,
+          "name": "Submit Resignation",
+          "code_name": "SUBMIT_RESIGNATION",
+          "description": ""
+        },
+        {
+          "id": 53,
+          "name": "View Exit Request",
+          "code_name": "VIEW_EXIT_REQUEST",
+          "description": "View submitted exit requests, including resignations and terminations"
+        },
+        {
+          "id": 54,
+          "name": "Manage Termination Requests",
+          "code_name": "MANAGE_TERMINATION_REQUESTS",
+          "description": "Approve or reject termination requests"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "role": 25,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 1,
+          "name": "View Asset",
+          "code_name": "VIEW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 2,
+          "name": "Add Asset",
+          "code_name": "ADD_ASSET",
+          "description": ""
+        },
+        {
+          "id": 3,
+          "name": "Edit Asset",
+          "code_name": "EDIT_ASSET",
+          "description": ""
+        },
+        {
+          "id": 4,
+          "name": "Delete Asset",
+          "code_name": "DELETE_ASSET",
+          "description": ""
+        },
+        {
+          "id": 5,
+          "name": "View Asset Category",
+          "code_name": "VIEW_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 6,
+          "name": "Add Asset Category",
+          "code_name": "ADD_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 7,
+          "name": "Edit Asset Category",
+          "code_name": "EDIT_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 8,
+          "name": "Delete Asset Category",
+          "code_name": "DELETE_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 9,
+          "name": "View Assets Request",
+          "code_name": "VIEW_ASSETS_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 10,
+          "name": "View Assign Assets",
+          "code_name": "VIEW_ASSIGN_ASSETS",
+          "description": ""
+        },
+        {
+          "id": 11,
+          "name": "Assign Assets to Employee",
+          "code_name": "ASSIGN_ASSETS_TO_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 12,
+          "name": "Manage Asset Request",
+          "code_name": "MANAGE_ASSET_REQUEST",
+          "description": "Approve/Reject asset request from employees."
+        },
+        {
+          "id": 13,
+          "name": "Request New Asset",
+          "code_name": "ADD_ASSET_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 14,
+          "name": "Withdraw Asset",
+          "code_name": "WITHDRAW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 23,
+          "name": "View Personal Information",
+          "code_name": "VIEW_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 24,
+          "name": "Edit Personal Information",
+          "code_name": "EDIT_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 25,
+          "name": "View Job Information",
+          "code_name": "VIEW_JOB_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 26,
+          "name": "Edit Academic Information",
+          "code_name": "EDIT_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 27,
+          "name": "View Academic Information",
+          "code_name": "VIEW_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 28,
+          "name": "View Experience Information",
+          "code_name": "VIEW_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 29,
+          "name": "Edit Experience Information",
+          "code_name": "EDIT_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 30,
+          "name": "View Certification Information",
+          "code_name": "VIEW_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 31,
+          "name": "Edit Certification Information",
+          "code_name": "EDIT_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 32,
+          "name": "View Identification Information",
+          "code_name": "VIEW_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 33,
+          "name": "Edit Identification Information",
+          "code_name": "EDIT_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 34,
+          "name": "Mark My Attendance",
+          "code_name": "MARK_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 35,
+          "name": "Log Break Time",
+          "code_name": "MARK_BREAK",
+          "description": ""
+        },
+        {
+          "id": 36,
+          "name": "View Attendance Records",
+          "code_name": "VIEW_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 37,
+          "name": "Create Daily Task Report",
+          "code_name": "ADD_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 38,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 39,
+          "name": "Submit Daily Task Report",
+          "code_name": "SUBMIT_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 40,
+          "name": "Add Leave Request",
+          "code_name": "ADD_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 41,
+          "name": "View Applied Leaves",
+          "code_name": "VIEW_LEAVES_APPLIED",
+          "description": ""
+        },
+        {
+          "id": 42,
+          "name": "Delete Leave Request",
+          "code_name": "DELETE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 43,
+          "name": "View Consumed Leaves",
+          "code_name": "VIEW_CONSUMED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 44,
+          "name": "View Payroll",
+          "code_name": "VIEW_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 45,
+          "name": "Request Claim",
+          "code_name": "REQUEST_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 46,
+          "name": "View Claims",
+          "code_name": "VIEW_CLAIMS",
+          "description": ""
+        },
+        {
+          "id": 47,
+          "name": "Delete Claim",
+          "code_name": "DELETE_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 48,
+          "name": "Request Transfer",
+          "code_name": "REQUEST_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 49,
+          "name": "View Transfer",
+          "code_name": "VIEW_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 50,
+          "name": "View Assigned Documents",
+          "code_name": "VIEW_ASSIGNED_DOCUMENTS",
+          "description": ""
+        },
+        {
+          "id": 51,
+          "name": "Manage Assigned Documents",
+          "code_name": "MANAGE_ASSIGNED_DOCUMENTS",
+          "description": "View, acknowledge, and sign assigned documents"
+        },
+        {
+          "id": 174,
+          "name": "View Assigned Asset",
+          "code_name": "VIEW_ASSIGNED_MY_ASSETS",
+          "description": ""
+        },
+        {
+          "id": 52,
+          "name": "Submit Resignation",
+          "code_name": "SUBMIT_RESIGNATION",
+          "description": ""
+        },
+        {
+          "id": 53,
+          "name": "View Exit Request",
+          "code_name": "VIEW_EXIT_REQUEST",
+          "description": "View submitted exit requests, including resignations and terminations"
+        },
+        {
+          "id": 54,
+          "name": "Manage Termination Requests",
+          "code_name": "MANAGE_TERMINATION_REQUESTS",
+          "description": "Approve or reject termination requests"
+        },
+        {
+          "id": 111,
+          "name": "View Leave Status Overview",
+          "code_name": "VIEW_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 112,
+          "name": "View Weekly Attendance Statistics",
+          "code_name": "VIEW_WEEKLY_STATISTICS",
+          "description": ""
+        },
+        {
+          "id": 113,
+          "name": "View Department Attendance Overview",
+          "code_name": "VIEW_DEPARTMENT_ATTENDANCE_OVERVIEW",
+          "description": ""
+        },
+        {
+          "id": 114,
+          "name": "Update Employee Attendance",
+          "code_name": "UPDATE_EMPLOYEE_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 115,
+          "name": "View Employee Attendance",
+          "code_name": "VIEW_EMPLOYEE_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 116,
+          "name": "Export Attendance",
+          "code_name": "EXPORT_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 117,
+          "name": "View Shift Calendar",
+          "code_name": "VIEW_SHIFT_CALENDAR",
+          "description": "View approved shift schedule in calendar format with working days, off days, and shift timings"
+        },
+        {
+          "id": 118,
+          "name": "Assign Shift",
+          "code_name": "ASSIGN_SHIFT",
+          "description": ""
+        },
+        {
+          "id": 119,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_EMPLOYEE_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 64,
+          "name": "View Organization",
+          "code_name": "VIEW_ORGANIZATION",
+          "description": ""
+        },
+        {
+          "id": 65,
+          "name": "Edit Organization",
+          "code_name": "EDIT_ORGANIZATION",
+          "description": ""
+        },
+        {
+          "id": 66,
+          "name": "Add Departments",
+          "code_name": "ADD_DEPARTMENTS",
+          "description": ""
+        },
+        {
+          "id": 67,
+          "name": "View Departments",
+          "code_name": "VIEW_DEPARTMENTS",
+          "description": ""
+        },
+        {
+          "id": 68,
+          "name": "Edit Departments",
+          "code_name": "EDIT_DEPARTMENTS",
+          "description": ""
+        },
+        {
+          "id": 69,
+          "name": "Delete Departments",
+          "code_name": "DELETE_DEPARTMENTS",
+          "description": ""
+        },
+        {
+          "id": 70,
+          "name": "Add Designation",
+          "code_name": "ADD_DESIGNATIONS",
+          "description": ""
+        },
+        {
+          "id": 71,
+          "name": "View Designation",
+          "code_name": "VIEW_DESIGNATIONS",
+          "description": ""
+        },
+        {
+          "id": 72,
+          "name": "Edit Designation",
+          "code_name": "EDIT_DESIGNATIONS",
+          "description": ""
+        },
+        {
+          "id": 73,
+          "name": "Delete Designation",
+          "code_name": "DELETE_DESIGNATIONS",
+          "description": ""
+        },
+        {
+          "id": 74,
+          "name": "Add Branches",
+          "code_name": "ADD_BRANCHES",
+          "description": ""
+        },
+        {
+          "id": 75,
+          "name": "View Branches",
+          "code_name": "VIEW_BRANCHES",
+          "description": ""
+        },
+        {
+          "id": 76,
+          "name": "Edit Branches",
+          "code_name": "EDIT_BRANCHES",
+          "description": ""
+        },
+        {
+          "id": 77,
+          "name": "Delete Branches",
+          "code_name": "DELETE_BRANCHES",
+          "description": ""
+        },
+        {
+          "id": 78,
+          "name": "Add Working Hours",
+          "code_name": "ADD_SHIFTS",
+          "description": ""
+        },
+        {
+          "id": 79,
+          "name": "View Working Hours",
+          "code_name": "VIEW_SHIFTS",
+          "description": ""
+        },
+        {
+          "id": 80,
+          "name": "Edit Working Hours",
+          "code_name": "EDIT_SHIFTS",
+          "description": ""
+        },
+        {
+          "id": 81,
+          "name": "Delete Working Hours",
+          "code_name": "DELETE_SHIFTS",
+          "description": ""
+        },
+        {
+          "id": 82,
+          "name": "Add Onboarding Checklist",
+          "code_name": "ADD_ONBOARDING_CHECKLIST",
+          "description": ""
+        },
+        {
+          "id": 83,
+          "name": "View Onboarding Checklist",
+          "code_name": "VIEW_ONBOARDING_CHECKLIST",
+          "description": ""
+        },
+        {
+          "id": 84,
+          "name": "Edit Onboarding Checklist",
+          "code_name": "EDIT_ONBOARDING_CHECKLIST",
+          "description": ""
+        },
+        {
+          "id": 85,
+          "name": "Delete Onboarding Checklist",
+          "code_name": "DELETE_ONBOARDING_CHECKLIST",
+          "description": ""
+        },
+        {
+          "id": 86,
+          "name": "View Organization Tree",
+          "code_name": "VIEW_ORGANIZATION_TREE",
+          "description": ""
+        },
+        {
+          "id": 87,
+          "name": "View My Reporting Line",
+          "code_name": "VIEW_MY_REPORTING_LINE",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "role": 28,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 212,
+          "name": "View Department Time Adjustment Requests",
+          "code_name": "VIEW_DPT_TIME_ADJ_REQUESTS",
+          "description": "View time adjustments requests of department employees"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "role": 12,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 50,
+          "name": "View Assigned Documents",
+          "code_name": "VIEW_ASSIGNED_DOCUMENTS",
+          "description": ""
+        },
+        {
+          "id": 51,
+          "name": "Manage Assigned Documents",
+          "code_name": "MANAGE_ASSIGNED_DOCUMENTS",
+          "description": "View, acknowledge, and sign assigned documents"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "role": 19,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 117,
+          "name": "View Shift Calendar",
+          "code_name": "VIEW_SHIFT_CALENDAR",
+          "description": "View approved shift schedule in calendar format with working days, off days, and shift timings"
+        },
+        {
+          "id": 118,
+          "name": "Assign Shift",
+          "code_name": "ASSIGN_SHIFT",
+          "description": ""
+        },
+        {
+          "id": 119,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_EMPLOYEE_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 120,
+          "name": "View Employee Leave Details",
+          "code_name": "VIEW_EMPLOYEE_LEAVE",
+          "description": ""
+        },
+        {
+          "id": 121,
+          "name": "Assign Leaves to Employee",
+          "code_name": "ASSIGN_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 122,
+          "name": "Edit Assigned Leaves for Employee",
+          "code_name": "EDIT_ASSIGNED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 123,
+          "name": "Add Leave Types",
+          "code_name": "ADD_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 124,
+          "name": "View Leave Types",
+          "code_name": "VIEW_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 125,
+          "name": "Edit Leave Types",
+          "code_name": "EDIT_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 126,
+          "name": "Delete Leave Types",
+          "code_name": "DELETE_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 127,
+          "name": "View Leave Request",
+          "code_name": "VIEW_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 128,
+          "name": "Manage Leave Request",
+          "code_name": "MANAGE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 13,
+          "name": "Request New Asset",
+          "code_name": "ADD_ASSET_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 14,
+          "name": "Withdraw Asset",
+          "code_name": "WITHDRAW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 23,
+          "name": "View Personal Information",
+          "code_name": "VIEW_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 24,
+          "name": "Edit Personal Information",
+          "code_name": "EDIT_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 25,
+          "name": "View Job Information",
+          "code_name": "VIEW_JOB_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 26,
+          "name": "Edit Academic Information",
+          "code_name": "EDIT_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 27,
+          "name": "View Academic Information",
+          "code_name": "VIEW_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 28,
+          "name": "View Experience Information",
+          "code_name": "VIEW_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 29,
+          "name": "Edit Experience Information",
+          "code_name": "EDIT_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 30,
+          "name": "View Certification Information",
+          "code_name": "VIEW_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 31,
+          "name": "Edit Certification Information",
+          "code_name": "EDIT_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 32,
+          "name": "View Identification Information",
+          "code_name": "VIEW_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 33,
+          "name": "Edit Identification Information",
+          "code_name": "EDIT_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 34,
+          "name": "Mark My Attendance",
+          "code_name": "MARK_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 35,
+          "name": "Log Break Time",
+          "code_name": "MARK_BREAK",
+          "description": ""
+        },
+        {
+          "id": 36,
+          "name": "View Attendance Records",
+          "code_name": "VIEW_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 37,
+          "name": "Create Daily Task Report",
+          "code_name": "ADD_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 38,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 39,
+          "name": "Submit Daily Task Report",
+          "code_name": "SUBMIT_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 40,
+          "name": "Add Leave Request",
+          "code_name": "ADD_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 41,
+          "name": "View Applied Leaves",
+          "code_name": "VIEW_LEAVES_APPLIED",
+          "description": ""
+        },
+        {
+          "id": 42,
+          "name": "Delete Leave Request",
+          "code_name": "DELETE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 43,
+          "name": "View Consumed Leaves",
+          "code_name": "VIEW_CONSUMED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 44,
+          "name": "View Payroll",
+          "code_name": "VIEW_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 45,
+          "name": "Request Claim",
+          "code_name": "REQUEST_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 46,
+          "name": "View Claims",
+          "code_name": "VIEW_CLAIMS",
+          "description": ""
+        },
+        {
+          "id": 47,
+          "name": "Delete Claim",
+          "code_name": "DELETE_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 48,
+          "name": "Request Transfer",
+          "code_name": "REQUEST_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 49,
+          "name": "View Transfer",
+          "code_name": "VIEW_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 50,
+          "name": "View Assigned Documents",
+          "code_name": "VIEW_ASSIGNED_DOCUMENTS",
+          "description": ""
+        },
+        {
+          "id": 51,
+          "name": "Manage Assigned Documents",
+          "code_name": "MANAGE_ASSIGNED_DOCUMENTS",
+          "description": "View, acknowledge, and sign assigned documents"
+        },
+        {
+          "id": 52,
+          "name": "Submit Resignation",
+          "code_name": "SUBMIT_RESIGNATION",
+          "description": ""
+        },
+        {
+          "id": 53,
+          "name": "View Exit Request",
+          "code_name": "VIEW_EXIT_REQUEST",
+          "description": "View submitted exit requests, including resignations and terminations"
+        },
+        {
+          "id": 54,
+          "name": "Manage Termination Requests",
+          "code_name": "MANAGE_TERMINATION_REQUESTS",
+          "description": "Approve or reject termination requests"
+        },
+        {
+          "id": 55,
+          "name": "View Team Profile",
+          "code_name": "VIEW_TEAM_PROFILE",
+          "description": ""
+        },
+        {
+          "id": 56,
+          "name": "View Team Leave Request",
+          "code_name": "VIEW_TEAM_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 57,
+          "name": "Manage Team Leave Request",
+          "code_name": "MANAGE_TEAM_LEAVE_REQUEST",
+          "description": "Approve or reject leave requests from employees"
+        },
+        {
+          "id": 58,
+          "name": "View Team Leave Status Overview",
+          "code_name": "VIEW_TEAM_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 59,
+          "name": "View Team Weekly Attendance Statistics",
+          "code_name": "VIEW_TEAM_WEEKLY_STATISTICS",
+          "description": ""
+        },
+        {
+          "id": 60,
+          "name": "Update Team Attendance",
+          "code_name": "UPDATE_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 61,
+          "name": "View Team Attendance",
+          "code_name": "VIEW_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 62,
+          "name": "Export Team Attendance",
+          "code_name": "EXPORT_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 63,
+          "name": "View Team Daily Task Report",
+          "code_name": "VIEW_TEAM_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 88,
+          "name": "Add Employee",
+          "code_name": "ADD_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 89,
+          "name": "View Employees",
+          "code_name": "VIEW_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 90,
+          "name": "View Employee Details",
+          "code_name": "VIEW_EMPLOYEE_DETAILS",
+          "description": "View employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)"
+        },
+        {
+          "id": 91,
+          "name": "Edit Employee Profile",
+          "code_name": "EDIT_EMPLOYEE_PROFILE",
+          "description": "Edit employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)"
+        },
+        {
+          "id": 92,
+          "name": "Edit Employee",
+          "code_name": "EDIT_EMPLOYEE",
+          "description": "Edit employee work information"
+        },
+        {
+          "id": 93,
+          "name": "Export Employees",
+          "code_name": "EXPORT_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 94,
+          "name": "Import Employees",
+          "code_name": "IMPORT_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 95,
+          "name": "View Exit Requests",
+          "code_name": "VIEW_EXIT_REQUESTS",
+          "description": ""
+        },
+        {
+          "id": 96,
+          "name": "View Exit Records",
+          "code_name": "VIEW_EXIT_RECORDS",
+          "description": ""
+        },
+        {
+          "id": 97,
+          "name": "Manage Exit Requests",
+          "code_name": "MANAGE_EXIT_REQUESTS",
+          "description": "Approve, reject, or change status of exit requests (Termination or Resignation)"
+        },
+        {
+          "id": 98,
+          "name": "Add Termination Request",
+          "code_name": "ADD_TERMINATION",
+          "description": ""
+        },
+        {
+          "id": 99,
+          "name": "CREATE Employee",
+          "code_name": "CREATE_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 100,
+          "name": "Upload HR Document",
+          "code_name": "UPLOAD_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 101,
+          "name": "View HR Document",
+          "code_name": "VIEW_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 102,
+          "name": "View HR Document Details",
+          "code_name": "VIEW_HR_DOCUMENT_DETAILS",
+          "description": "View all assigned employees for a document"
+        },
+        {
+          "id": 103,
+          "name": "Assign HR Document",
+          "code_name": "ASSIGN_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 104,
+          "name": "Add Document Category",
+          "code_name": "ADD_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 105,
+          "name": "View Document Category",
+          "code_name": "VIEW_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 106,
+          "name": "Edit Document Category",
+          "code_name": "EDIT_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 107,
+          "name": "Delete Document Category",
+          "code_name": "DELETE_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 108,
+          "name": "View Employee Transfer",
+          "code_name": "VIEW_EMPLOYEE_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 109,
+          "name": "Edit Employee Transfer",
+          "code_name": "EDIT_EMPLOYEE_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 110,
+          "name": "Manage Employee Transfer",
+          "code_name": "MANAGE_EMPLOYEE_TRANSFER",
+          "description": "Approve or reject employee transfer requests"
+        },
+        {
+          "id": 111,
+          "name": "View Leave Status Overview",
+          "code_name": "VIEW_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 112,
+          "name": "View Weekly Attendance Statistics",
+          "code_name": "VIEW_WEEKLY_STATISTICS",
+          "description": ""
+        },
+        {
+          "id": 113,
+          "name": "View Department Attendance Overview",
+          "code_name": "VIEW_DEPARTMENT_ATTENDANCE_OVERVIEW",
+          "description": ""
+        },
+        {
+          "id": 114,
+          "name": "Update Employee Attendance",
+          "code_name": "UPDATE_EMPLOYEE_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 115,
+          "name": "View Employee Attendance",
+          "code_name": "VIEW_EMPLOYEE_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 116,
+          "name": "Export Attendance",
+          "code_name": "EXPORT_ATTENDANCE",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "role": 23,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 13,
+          "name": "Request New Asset",
+          "code_name": "ADD_ASSET_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 14,
+          "name": "Withdraw Asset",
+          "code_name": "WITHDRAW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 23,
+          "name": "View Personal Information",
+          "code_name": "VIEW_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 24,
+          "name": "Edit Personal Information",
+          "code_name": "EDIT_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 25,
+          "name": "View Job Information",
+          "code_name": "VIEW_JOB_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 26,
+          "name": "Edit Academic Information",
+          "code_name": "EDIT_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 27,
+          "name": "View Academic Information",
+          "code_name": "VIEW_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 28,
+          "name": "View Experience Information",
+          "code_name": "VIEW_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 29,
+          "name": "Edit Experience Information",
+          "code_name": "EDIT_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 30,
+          "name": "View Certification Information",
+          "code_name": "VIEW_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 31,
+          "name": "Edit Certification Information",
+          "code_name": "EDIT_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 32,
+          "name": "View Identification Information",
+          "code_name": "VIEW_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 33,
+          "name": "Edit Identification Information",
+          "code_name": "EDIT_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 34,
+          "name": "Mark My Attendance",
+          "code_name": "MARK_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 35,
+          "name": "Log Break Time",
+          "code_name": "MARK_BREAK",
+          "description": ""
+        },
+        {
+          "id": 36,
+          "name": "View Attendance Records",
+          "code_name": "VIEW_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 37,
+          "name": "Create Daily Task Report",
+          "code_name": "ADD_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 38,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 39,
+          "name": "Submit Daily Task Report",
+          "code_name": "SUBMIT_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 40,
+          "name": "Add Leave Request",
+          "code_name": "ADD_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 41,
+          "name": "View Applied Leaves",
+          "code_name": "VIEW_LEAVES_APPLIED",
+          "description": ""
+        },
+        {
+          "id": 42,
+          "name": "Delete Leave Request",
+          "code_name": "DELETE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 43,
+          "name": "View Consumed Leaves",
+          "code_name": "VIEW_CONSUMED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 44,
+          "name": "View Payroll",
+          "code_name": "VIEW_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 45,
+          "name": "Request Claim",
+          "code_name": "REQUEST_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 46,
+          "name": "View Claims",
+          "code_name": "VIEW_CLAIMS",
+          "description": ""
+        },
+        {
+          "id": 47,
+          "name": "Delete Claim",
+          "code_name": "DELETE_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 48,
+          "name": "Request Transfer",
+          "code_name": "REQUEST_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 49,
+          "name": "View Transfer",
+          "code_name": "VIEW_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 50,
+          "name": "View Assigned Documents",
+          "code_name": "VIEW_ASSIGNED_DOCUMENTS",
+          "description": ""
+        },
+        {
+          "id": 51,
+          "name": "Manage Assigned Documents",
+          "code_name": "MANAGE_ASSIGNED_DOCUMENTS",
+          "description": "View, acknowledge, and sign assigned documents"
+        },
+        {
+          "id": 52,
+          "name": "Submit Resignation",
+          "code_name": "SUBMIT_RESIGNATION",
+          "description": ""
+        },
+        {
+          "id": 53,
+          "name": "View Exit Request",
+          "code_name": "VIEW_EXIT_REQUEST",
+          "description": "View submitted exit requests, including resignations and terminations"
+        },
+        {
+          "id": 54,
+          "name": "Manage Termination Requests",
+          "code_name": "MANAGE_TERMINATION_REQUESTS",
+          "description": "Approve or reject termination requests"
+        },
+        {
+          "id": 55,
+          "name": "View Team Profile",
+          "code_name": "VIEW_TEAM_PROFILE",
+          "description": ""
+        },
+        {
+          "id": 56,
+          "name": "View Team Leave Request",
+          "code_name": "VIEW_TEAM_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 57,
+          "name": "Manage Team Leave Request",
+          "code_name": "MANAGE_TEAM_LEAVE_REQUEST",
+          "description": "Approve or reject leave requests from employees"
+        },
+        {
+          "id": 58,
+          "name": "View Team Leave Status Overview",
+          "code_name": "VIEW_TEAM_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 59,
+          "name": "View Team Weekly Attendance Statistics",
+          "code_name": "VIEW_TEAM_WEEKLY_STATISTICS",
+          "description": ""
+        },
+        {
+          "id": 60,
+          "name": "Update Team Attendance",
+          "code_name": "UPDATE_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 61,
+          "name": "View Team Attendance",
+          "code_name": "VIEW_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 62,
+          "name": "Export Team Attendance",
+          "code_name": "EXPORT_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 63,
+          "name": "View Team Daily Task Report",
+          "code_name": "VIEW_TEAM_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 88,
+          "name": "Add Employee",
+          "code_name": "ADD_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 89,
+          "name": "View Employees",
+          "code_name": "VIEW_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 90,
+          "name": "View Employee Details",
+          "code_name": "VIEW_EMPLOYEE_DETAILS",
+          "description": "View employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)"
+        },
+        {
+          "id": 91,
+          "name": "Edit Employee Profile",
+          "code_name": "EDIT_EMPLOYEE_PROFILE",
+          "description": "Edit employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)"
+        },
+        {
+          "id": 92,
+          "name": "Edit Employee",
+          "code_name": "EDIT_EMPLOYEE",
+          "description": "Edit employee work information"
+        },
+        {
+          "id": 93,
+          "name": "Export Employees",
+          "code_name": "EXPORT_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 94,
+          "name": "Import Employees",
+          "code_name": "IMPORT_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 95,
+          "name": "View Exit Requests",
+          "code_name": "VIEW_EXIT_REQUESTS",
+          "description": ""
+        },
+        {
+          "id": 96,
+          "name": "View Exit Records",
+          "code_name": "VIEW_EXIT_RECORDS",
+          "description": ""
+        },
+        {
+          "id": 97,
+          "name": "Manage Exit Requests",
+          "code_name": "MANAGE_EXIT_REQUESTS",
+          "description": "Approve, reject, or change status of exit requests (Termination or Resignation)"
+        },
+        {
+          "id": 98,
+          "name": "Add Termination Request",
+          "code_name": "ADD_TERMINATION",
+          "description": ""
+        },
+        {
+          "id": 99,
+          "name": "CREATE Employee",
+          "code_name": "CREATE_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 100,
+          "name": "Upload HR Document",
+          "code_name": "UPLOAD_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 101,
+          "name": "View HR Document",
+          "code_name": "VIEW_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 102,
+          "name": "View HR Document Details",
+          "code_name": "VIEW_HR_DOCUMENT_DETAILS",
+          "description": "View all assigned employees for a document"
+        },
+        {
+          "id": 103,
+          "name": "Assign HR Document",
+          "code_name": "ASSIGN_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 104,
+          "name": "Add Document Category",
+          "code_name": "ADD_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 105,
+          "name": "View Document Category",
+          "code_name": "VIEW_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 106,
+          "name": "Edit Document Category",
+          "code_name": "EDIT_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 107,
+          "name": "Delete Document Category",
+          "code_name": "DELETE_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 108,
+          "name": "View Employee Transfer",
+          "code_name": "VIEW_EMPLOYEE_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 109,
+          "name": "Edit Employee Transfer",
+          "code_name": "EDIT_EMPLOYEE_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 110,
+          "name": "Manage Employee Transfer",
+          "code_name": "MANAGE_EMPLOYEE_TRANSFER",
+          "description": "Approve or reject employee transfer requests"
+        },
+        {
+          "id": 111,
+          "name": "View Leave Status Overview",
+          "code_name": "VIEW_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 112,
+          "name": "View Weekly Attendance Statistics",
+          "code_name": "VIEW_WEEKLY_STATISTICS",
+          "description": ""
+        },
+        {
+          "id": 113,
+          "name": "View Department Attendance Overview",
+          "code_name": "VIEW_DEPARTMENT_ATTENDANCE_OVERVIEW",
+          "description": ""
+        },
+        {
+          "id": 114,
+          "name": "Update Employee Attendance",
+          "code_name": "UPDATE_EMPLOYEE_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 115,
+          "name": "View Employee Attendance",
+          "code_name": "VIEW_EMPLOYEE_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 116,
+          "name": "Export Attendance",
+          "code_name": "EXPORT_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 117,
+          "name": "View Shift Calendar",
+          "code_name": "VIEW_SHIFT_CALENDAR",
+          "description": "View approved shift schedule in calendar format with working days, off days, and shift timings"
+        },
+        {
+          "id": 118,
+          "name": "Assign Shift",
+          "code_name": "ASSIGN_SHIFT",
+          "description": ""
+        },
+        {
+          "id": 119,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_EMPLOYEE_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 120,
+          "name": "View Employee Leave Details",
+          "code_name": "VIEW_EMPLOYEE_LEAVE",
+          "description": ""
+        },
+        {
+          "id": 121,
+          "name": "Assign Leaves to Employee",
+          "code_name": "ASSIGN_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 122,
+          "name": "Edit Assigned Leaves for Employee",
+          "code_name": "EDIT_ASSIGNED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 123,
+          "name": "Add Leave Types",
+          "code_name": "ADD_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 124,
+          "name": "View Leave Types",
+          "code_name": "VIEW_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 125,
+          "name": "Edit Leave Types",
+          "code_name": "EDIT_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 126,
+          "name": "Delete Leave Types",
+          "code_name": "DELETE_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 127,
+          "name": "View Leave Request",
+          "code_name": "VIEW_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 128,
+          "name": "Manage Leave Request",
+          "code_name": "MANAGE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 129,
+          "name": "View Employee Payroll",
+          "code_name": "VIEW_EMPLOYEE_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 130,
+          "name": "View Salary Setup",
+          "code_name": "VIEW_EMPLOYEE_SALARY_SETUP",
+          "description": ""
+        },
+        {
+          "id": 131,
+          "name": "Edit Salary Setup",
+          "code_name": "EDIT_EMPLOYEE_SALARY_SETUP",
+          "description": ""
+        },
+        {
+          "id": 132,
+          "name": "Add Revised Salary",
+          "code_name": "ADD_EMPLOYEE_REVISED_SALARY",
+          "description": ""
+        },
+        {
+          "id": 133,
+          "name": "Manage Revised Salary",
+          "code_name": "MANAGE_REVISED_SALARY",
+          "description": ""
+        },
+        {
+          "id": 134,
+          "name": "Add Salary Components",
+          "code_name": "ADD_SALARY_COMPONENTS",
+          "description": ""
+        },
+        {
+          "id": 135,
+          "name": "View Salary Components",
+          "code_name": "VIEW_SALARY_COMPONENTS",
+          "description": ""
+        },
+        {
+          "id": 136,
+          "name": "Edit Salary Components",
+          "code_name": "EDIT_SALARY_COMPONENTS",
+          "description": ""
+        },
+        {
+          "id": 137,
+          "name": "Delete Salary Components",
+          "code_name": "DELETE_SALARY_COMPONENTS",
+          "description": ""
+        },
+        {
+          "id": 138,
+          "name": "Add Payroll Adjustments",
+          "code_name": "ADD_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 139,
+          "name": "View Payroll Adjustments",
+          "code_name": "VIEW_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 140,
+          "name": "Edit Payroll Adjustments",
+          "code_name": "EDIT_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 141,
+          "name": "Delete Payroll Adjustments",
+          "code_name": "DELETE_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 142,
+          "name": "Manage Payroll Adjustments",
+          "code_name": "MANAGE_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 143,
+          "name": "Import Payroll Adjustments",
+          "code_name": "IMPORT_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 144,
+          "name": "Add Claim Request",
+          "code_name": "ADD_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 145,
+          "name": "View Claim Request",
+          "code_name": "VIEW_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 146,
+          "name": "Delete Claim Request",
+          "code_name": "DELETE_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 147,
+          "name": "Export Claim Request",
+          "code_name": "EXPORT_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 148,
+          "name": "Manage Claim Request",
+          "code_name": "MANAGE_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 149,
+          "name": "Generate Run Payroll",
+          "code_name": "GENERATE_RUN_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 150,
+          "name": "View Run Payroll",
+          "code_name": "VIEW_RUN_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 151,
+          "name": "Delete Run Payroll",
+          "code_name": "DELETE_RUN_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 152,
+          "name": "Edit Employee Run Payroll",
+          "code_name": "EDIT_EMPLOYEE_RUN_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 153,
+          "name": "Proceed to Payrun",
+          "code_name": "PROCEED_TO_PAYRUN",
+          "description": ""
+        },
+        {
+          "id": 154,
+          "name": "View Payrun",
+          "code_name": "VIEW_PAYRUN",
+          "description": ""
+        },
+        {
+          "id": 155,
+          "name": "Export Payrun",
+          "code_name": "EXPORT_PAYRUN",
+          "description": ""
+        },
+        {
+          "id": 156,
+          "name": "View Payslips",
+          "code_name": "VIEW_PAYSLIPS",
+          "description": ""
+        },
+        {
+          "id": 157,
+          "name": "Download Payslips",
+          "code_name": "DOWNLOAD_PAYSLIPS",
+          "description": ""
+        },
+        {
+          "id": 158,
+          "name": "View On-Hold Salaries",
+          "code_name": "VIEW_ON_HOLD_SALARIES",
+          "description": ""
+        },
+        {
+          "id": 159,
+          "name": "View End of Service",
+          "code_name": "VIEW_END_OF_SERVICE",
+          "description": ""
+        },
+        {
+          "id": 160,
+          "name": "Setup End of Service",
+          "code_name": "SETUP_END_OF_SERVICE",
+          "description": ""
+        },
+        {
+          "id": 161,
+          "name": "Download End of Service",
+          "code_name": "DOWNLOAD_END_OF_SERVICE",
+          "description": ""
+        },
+        {
+          "id": 162,
+          "name": "Mark End of Service as Paid",
+          "code_name": "MARK_END_OF_SERVICE_AS_PAID",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "role": 26,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 192,
+          "name": "Update Branch Employees Attendance",
+          "code_name": "UPDATE_BRN_EMP_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 211,
+          "name": "View Branch Time Adjustment Requests",
+          "code_name": "VIEW_BRN_TIME_ADJ_REQUESTS",
+          "description": "View time adjustments requests of branch employees"
+        },
+        {
+          "id": 213,
+          "name": "View Time Adjustment Logs",
+          "code_name": "VIEW_TIME_ADJ_LOGS",
+          "description": ""
+        },
+        {
+          "id": 216,
+          "name": "View Branch Time Adjustment Requests",
+          "code_name": "VIEW_BRN_ATT_UPDATES_LOGS",
+          "description": "View time adjustments requests of branch employees"
+        },
+        {
+          "id": 186,
+          "name": "View Branch Leave Status",
+          "code_name": "VIEW_BRANCH_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 189,
+          "name": "View Branch Attendance",
+          "code_name": "VIEW_BRN_EMPS_ATTENDANCE",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "role": 6,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 88,
+          "name": "Add Employee",
+          "code_name": "ADD_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 89,
+          "name": "View Employees",
+          "code_name": "VIEW_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 90,
+          "name": "View Employee Details",
+          "code_name": "VIEW_EMPLOYEE_DETAILS",
+          "description": "View employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)"
+        },
+        {
+          "id": 91,
+          "name": "Edit Employee Profile",
+          "code_name": "EDIT_EMPLOYEE_PROFILE",
+          "description": "Edit employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)"
+        },
+        {
+          "id": 92,
+          "name": "Edit Employee",
+          "code_name": "EDIT_EMPLOYEE",
+          "description": "Edit employee work information"
+        },
+        {
+          "id": 93,
+          "name": "Export Employees",
+          "code_name": "EXPORT_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 94,
+          "name": "Import Employees",
+          "code_name": "IMPORT_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 95,
+          "name": "View Exit Requests",
+          "code_name": "VIEW_EXIT_REQUESTS",
+          "description": ""
+        },
+        {
+          "id": 96,
+          "name": "View Exit Records",
+          "code_name": "VIEW_EXIT_RECORDS",
+          "description": ""
+        },
+        {
+          "id": 97,
+          "name": "Manage Exit Requests",
+          "code_name": "MANAGE_EXIT_REQUESTS",
+          "description": "Approve, reject, or change status of exit requests (Termination or Resignation)"
+        },
+        {
+          "id": 98,
+          "name": "Add Termination Request",
+          "code_name": "ADD_TERMINATION",
+          "description": ""
+        },
+        {
+          "id": 99,
+          "name": "CREATE Employee",
+          "code_name": "CREATE_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 100,
+          "name": "Upload HR Document",
+          "code_name": "UPLOAD_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 101,
+          "name": "View HR Document",
+          "code_name": "VIEW_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 102,
+          "name": "View HR Document Details",
+          "code_name": "VIEW_HR_DOCUMENT_DETAILS",
+          "description": "View all assigned employees for a document"
+        },
+        {
+          "id": 103,
+          "name": "Assign HR Document",
+          "code_name": "ASSIGN_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 104,
+          "name": "Add Document Category",
+          "code_name": "ADD_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 105,
+          "name": "View Document Category",
+          "code_name": "VIEW_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 106,
+          "name": "Edit Document Category",
+          "code_name": "EDIT_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 107,
+          "name": "Delete Document Category",
+          "code_name": "DELETE_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 108,
+          "name": "View Employee Transfer",
+          "code_name": "VIEW_EMPLOYEE_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 109,
+          "name": "Edit Employee Transfer",
+          "code_name": "EDIT_EMPLOYEE_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 110,
+          "name": "Manage Employee Transfer",
+          "code_name": "MANAGE_EMPLOYEE_TRANSFER",
+          "description": "Approve or reject employee transfer requests"
+        },
+        {
+          "id": 13,
+          "name": "Request New Asset",
+          "code_name": "ADD_ASSET_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 14,
+          "name": "Withdraw Asset",
+          "code_name": "WITHDRAW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 23,
+          "name": "View Personal Information",
+          "code_name": "VIEW_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 24,
+          "name": "Edit Personal Information",
+          "code_name": "EDIT_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 25,
+          "name": "View Job Information",
+          "code_name": "VIEW_JOB_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 26,
+          "name": "Edit Academic Information",
+          "code_name": "EDIT_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 27,
+          "name": "View Academic Information",
+          "code_name": "VIEW_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 28,
+          "name": "View Experience Information",
+          "code_name": "VIEW_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 29,
+          "name": "Edit Experience Information",
+          "code_name": "EDIT_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 30,
+          "name": "View Certification Information",
+          "code_name": "VIEW_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 31,
+          "name": "Edit Certification Information",
+          "code_name": "EDIT_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 32,
+          "name": "View Identification Information",
+          "code_name": "VIEW_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 33,
+          "name": "Edit Identification Information",
+          "code_name": "EDIT_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 34,
+          "name": "Mark My Attendance",
+          "code_name": "MARK_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 35,
+          "name": "Log Break Time",
+          "code_name": "MARK_BREAK",
+          "description": ""
+        },
+        {
+          "id": 36,
+          "name": "View Attendance Records",
+          "code_name": "VIEW_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 37,
+          "name": "Create Daily Task Report",
+          "code_name": "ADD_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 38,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 39,
+          "name": "Submit Daily Task Report",
+          "code_name": "SUBMIT_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 40,
+          "name": "Add Leave Request",
+          "code_name": "ADD_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 41,
+          "name": "View Applied Leaves",
+          "code_name": "VIEW_LEAVES_APPLIED",
+          "description": ""
+        },
+        {
+          "id": 42,
+          "name": "Delete Leave Request",
+          "code_name": "DELETE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 43,
+          "name": "View Consumed Leaves",
+          "code_name": "VIEW_CONSUMED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 44,
+          "name": "View Payroll",
+          "code_name": "VIEW_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 45,
+          "name": "Request Claim",
+          "code_name": "REQUEST_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 46,
+          "name": "View Claims",
+          "code_name": "VIEW_CLAIMS",
+          "description": ""
+        },
+        {
+          "id": 47,
+          "name": "Delete Claim",
+          "code_name": "DELETE_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 48,
+          "name": "Request Transfer",
+          "code_name": "REQUEST_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 49,
+          "name": "View Transfer",
+          "code_name": "VIEW_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 50,
+          "name": "View Assigned Documents",
+          "code_name": "VIEW_ASSIGNED_DOCUMENTS",
+          "description": ""
+        },
+        {
+          "id": 51,
+          "name": "Manage Assigned Documents",
+          "code_name": "MANAGE_ASSIGNED_DOCUMENTS",
+          "description": "View, acknowledge, and sign assigned documents"
+        },
+        {
+          "id": 52,
+          "name": "Submit Resignation",
+          "code_name": "SUBMIT_RESIGNATION",
+          "description": ""
+        },
+        {
+          "id": 53,
+          "name": "View Exit Request",
+          "code_name": "VIEW_EXIT_REQUEST",
+          "description": "View submitted exit requests, including resignations and terminations"
+        },
+        {
+          "id": 54,
+          "name": "Manage Termination Requests",
+          "code_name": "MANAGE_TERMINATION_REQUESTS",
+          "description": "Approve or reject termination requests"
+        },
+        {
+          "id": 174,
+          "name": "View Assigned Asset",
+          "code_name": "VIEW_ASSIGNED_MY_ASSETS",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "role": 4,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 1,
+          "name": "View Asset",
+          "code_name": "VIEW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 2,
+          "name": "Add Asset",
+          "code_name": "ADD_ASSET",
+          "description": ""
+        },
+        {
+          "id": 3,
+          "name": "Edit Asset",
+          "code_name": "EDIT_ASSET",
+          "description": ""
+        },
+        {
+          "id": 4,
+          "name": "Delete Asset",
+          "code_name": "DELETE_ASSET",
+          "description": ""
+        },
+        {
+          "id": 5,
+          "name": "View Asset Category",
+          "code_name": "VIEW_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 6,
+          "name": "Add Asset Category",
+          "code_name": "ADD_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 7,
+          "name": "Edit Asset Category",
+          "code_name": "EDIT_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 8,
+          "name": "Delete Asset Category",
+          "code_name": "DELETE_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 9,
+          "name": "View Assets Request",
+          "code_name": "VIEW_ASSETS_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 10,
+          "name": "View Assign Assets",
+          "code_name": "VIEW_ASSIGN_ASSETS",
+          "description": ""
+        },
+        {
+          "id": 11,
+          "name": "Assign Assets to Employee",
+          "code_name": "ASSIGN_ASSETS_TO_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 12,
+          "name": "Manage Asset Request",
+          "code_name": "MANAGE_ASSET_REQUEST",
+          "description": "Approve/Reject asset request from employees."
+        },
+        {
+          "id": 13,
+          "name": "Request New Asset",
+          "code_name": "ADD_ASSET_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 14,
+          "name": "Withdraw Asset",
+          "code_name": "WITHDRAW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 15,
+          "name": "View User Roles",
+          "code_name": "VIEW_USER_ROLE",
+          "description": ""
+        },
+        {
+          "id": 16,
+          "name": "Add User Role",
+          "code_name": "ADD_USER_ROLE",
+          "description": ""
+        },
+        {
+          "id": 17,
+          "name": "Edit User Role",
+          "code_name": "EDIT_USER_ROLE",
+          "description": ""
+        },
+        {
+          "id": 18,
+          "name": "Assign Role",
+          "code_name": "ASSIGN_USER_ROLE",
+          "description": ""
+        },
+        {
+          "id": 19,
+          "name": "Edit Assigned Role",
+          "code_name": "EDIT_ASSIGNED_ROLE",
+          "description": ""
+        },
+        {
+          "id": 20,
+          "name": "View Assigned Roles",
+          "code_name": "VIEW_ASSIGNED_ROLES",
+          "description": ""
+        },
+        {
+          "id": 21,
+          "name": "Remove Assigned Role",
+          "code_name": "REMOVE_ASSIGNED_ROLE",
+          "description": ""
+        },
+        {
+          "id": 22,
+          "name": "View History & Logs",
+          "code_name": "VIEW_ROLE_HISTORY_LOGS",
+          "description": ""
+        },
+        {
+          "id": 23,
+          "name": "View Personal Information",
+          "code_name": "VIEW_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 24,
+          "name": "Edit Personal Information",
+          "code_name": "EDIT_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 25,
+          "name": "View Job Information",
+          "code_name": "VIEW_JOB_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 26,
+          "name": "Edit Academic Information",
+          "code_name": "EDIT_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 27,
+          "name": "View Academic Information",
+          "code_name": "VIEW_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 28,
+          "name": "View Experience Information",
+          "code_name": "VIEW_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 29,
+          "name": "Edit Experience Information",
+          "code_name": "EDIT_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 30,
+          "name": "View Certification Information",
+          "code_name": "VIEW_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 31,
+          "name": "Edit Certification Information",
+          "code_name": "EDIT_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 32,
+          "name": "View Identification Information",
+          "code_name": "VIEW_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 33,
+          "name": "Edit Identification Information",
+          "code_name": "EDIT_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 34,
+          "name": "Mark My Attendance",
+          "code_name": "MARK_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 35,
+          "name": "Log Break Time",
+          "code_name": "MARK_BREAK",
+          "description": ""
+        },
+        {
+          "id": 36,
+          "name": "View Attendance Records",
+          "code_name": "VIEW_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 37,
+          "name": "Create Daily Task Report",
+          "code_name": "ADD_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 38,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 39,
+          "name": "Submit Daily Task Report",
+          "code_name": "SUBMIT_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 40,
+          "name": "Add Leave Request",
+          "code_name": "ADD_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 41,
+          "name": "View Applied Leaves",
+          "code_name": "VIEW_LEAVES_APPLIED",
+          "description": ""
+        },
+        {
+          "id": 42,
+          "name": "Delete Leave Request",
+          "code_name": "DELETE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 43,
+          "name": "View Consumed Leaves",
+          "code_name": "VIEW_CONSUMED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 44,
+          "name": "View Payroll",
+          "code_name": "VIEW_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 45,
+          "name": "Request Claim",
+          "code_name": "REQUEST_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 46,
+          "name": "View Claims",
+          "code_name": "VIEW_CLAIMS",
+          "description": ""
+        },
+        {
+          "id": 47,
+          "name": "Delete Claim",
+          "code_name": "DELETE_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 48,
+          "name": "Request Transfer",
+          "code_name": "REQUEST_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 49,
+          "name": "View Transfer",
+          "code_name": "VIEW_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 50,
+          "name": "View Assigned Documents",
+          "code_name": "VIEW_ASSIGNED_DOCUMENTS",
+          "description": ""
+        },
+        {
+          "id": 51,
+          "name": "Manage Assigned Documents",
+          "code_name": "MANAGE_ASSIGNED_DOCUMENTS",
+          "description": "View, acknowledge, and sign assigned documents"
+        },
+        {
+          "id": 52,
+          "name": "Submit Resignation",
+          "code_name": "SUBMIT_RESIGNATION",
+          "description": ""
+        },
+        {
+          "id": 53,
+          "name": "View Exit Request",
+          "code_name": "VIEW_EXIT_REQUEST",
+          "description": "View submitted exit requests, including resignations and terminations"
+        },
+        {
+          "id": 54,
+          "name": "Manage Termination Requests",
+          "code_name": "MANAGE_TERMINATION_REQUESTS",
+          "description": "Approve or reject termination requests"
+        },
+        {
+          "id": 55,
+          "name": "View Team Profile",
+          "code_name": "VIEW_TEAM_PROFILE",
+          "description": ""
+        },
+        {
+          "id": 56,
+          "name": "View Team Leave Request",
+          "code_name": "VIEW_TEAM_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 57,
+          "name": "Manage Team Leave Request",
+          "code_name": "MANAGE_TEAM_LEAVE_REQUEST",
+          "description": "Approve or reject leave requests from employees"
+        },
+        {
+          "id": 58,
+          "name": "View Team Leave Status Overview",
+          "code_name": "VIEW_TEAM_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 59,
+          "name": "View Team Weekly Attendance Statistics",
+          "code_name": "VIEW_TEAM_WEEKLY_STATISTICS",
+          "description": ""
+        },
+        {
+          "id": 60,
+          "name": "Update Team Attendance",
+          "code_name": "UPDATE_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 61,
+          "name": "View Team Attendance",
+          "code_name": "VIEW_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 62,
+          "name": "Export Team Attendance",
+          "code_name": "EXPORT_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 63,
+          "name": "View Team Daily Task Report",
+          "code_name": "VIEW_TEAM_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 64,
+          "name": "View Organization",
+          "code_name": "VIEW_ORGANIZATION",
+          "description": ""
+        },
+        {
+          "id": 65,
+          "name": "Edit Organization",
+          "code_name": "EDIT_ORGANIZATION",
+          "description": ""
+        },
+        {
+          "id": 66,
+          "name": "Add Departments",
+          "code_name": "ADD_DEPARTMENTS",
+          "description": ""
+        },
+        {
+          "id": 67,
+          "name": "View Departments",
+          "code_name": "VIEW_DEPARTMENTS",
+          "description": ""
+        },
+        {
+          "id": 68,
+          "name": "Edit Departments",
+          "code_name": "EDIT_DEPARTMENTS",
+          "description": ""
+        },
+        {
+          "id": 69,
+          "name": "Delete Departments",
+          "code_name": "DELETE_DEPARTMENTS",
+          "description": ""
+        },
+        {
+          "id": 70,
+          "name": "Add Designation",
+          "code_name": "ADD_DESIGNATIONS",
+          "description": ""
+        },
+        {
+          "id": 71,
+          "name": "View Designation",
+          "code_name": "VIEW_DESIGNATIONS",
+          "description": ""
+        },
+        {
+          "id": 72,
+          "name": "Edit Designation",
+          "code_name": "EDIT_DESIGNATIONS",
+          "description": ""
+        },
+        {
+          "id": 73,
+          "name": "Delete Designation",
+          "code_name": "DELETE_DESIGNATIONS",
+          "description": ""
+        },
+        {
+          "id": 74,
+          "name": "Add Branches",
+          "code_name": "ADD_BRANCHES",
+          "description": ""
+        },
+        {
+          "id": 75,
+          "name": "View Branches",
+          "code_name": "VIEW_BRANCHES",
+          "description": ""
+        },
+        {
+          "id": 76,
+          "name": "Edit Branches",
+          "code_name": "EDIT_BRANCHES",
+          "description": ""
+        },
+        {
+          "id": 77,
+          "name": "Delete Branches",
+          "code_name": "DELETE_BRANCHES",
+          "description": ""
+        },
+        {
+          "id": 78,
+          "name": "Add Working Hours",
+          "code_name": "ADD_SHIFTS",
+          "description": ""
+        },
+        {
+          "id": 79,
+          "name": "View Working Hours",
+          "code_name": "VIEW_SHIFTS",
+          "description": ""
+        },
+        {
+          "id": 80,
+          "name": "Edit Working Hours",
+          "code_name": "EDIT_SHIFTS",
+          "description": ""
+        },
+        {
+          "id": 81,
+          "name": "Delete Working Hours",
+          "code_name": "DELETE_SHIFTS",
+          "description": ""
+        },
+        {
+          "id": 82,
+          "name": "Add Onboarding Checklist",
+          "code_name": "ADD_ONBOARDING_CHECKLIST",
+          "description": ""
+        },
+        {
+          "id": 83,
+          "name": "View Onboarding Checklist",
+          "code_name": "VIEW_ONBOARDING_CHECKLIST",
+          "description": ""
+        },
+        {
+          "id": 84,
+          "name": "Edit Onboarding Checklist",
+          "code_name": "EDIT_ONBOARDING_CHECKLIST",
+          "description": ""
+        },
+        {
+          "id": 85,
+          "name": "Delete Onboarding Checklist",
+          "code_name": "DELETE_ONBOARDING_CHECKLIST",
+          "description": ""
+        },
+        {
+          "id": 86,
+          "name": "View Organization Tree",
+          "code_name": "VIEW_ORGANIZATION_TREE",
+          "description": ""
+        },
+        {
+          "id": 87,
+          "name": "View My Reporting Line",
+          "code_name": "VIEW_MY_REPORTING_LINE",
+          "description": ""
+        },
+        {
+          "id": 88,
+          "name": "Add Employee",
+          "code_name": "ADD_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 89,
+          "name": "View Employees",
+          "code_name": "VIEW_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 90,
+          "name": "View Employee Details",
+          "code_name": "VIEW_EMPLOYEE_DETAILS",
+          "description": "View employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)"
+        },
+        {
+          "id": 91,
+          "name": "Edit Employee Profile",
+          "code_name": "EDIT_EMPLOYEE_PROFILE",
+          "description": "Edit employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)"
+        },
+        {
+          "id": 92,
+          "name": "Edit Employee",
+          "code_name": "EDIT_EMPLOYEE",
+          "description": "Edit employee work information"
+        },
+        {
+          "id": 93,
+          "name": "Export Employees",
+          "code_name": "EXPORT_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 94,
+          "name": "Import Employees",
+          "code_name": "IMPORT_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 95,
+          "name": "View Exit Requests",
+          "code_name": "VIEW_EXIT_REQUESTS",
+          "description": ""
+        },
+        {
+          "id": 96,
+          "name": "View Exit Records",
+          "code_name": "VIEW_EXIT_RECORDS",
+          "description": ""
+        },
+        {
+          "id": 97,
+          "name": "Manage Exit Requests",
+          "code_name": "MANAGE_EXIT_REQUESTS",
+          "description": "Approve, reject, or change status of exit requests (Termination or Resignation)"
+        },
+        {
+          "id": 98,
+          "name": "Add Termination Request",
+          "code_name": "ADD_TERMINATION",
+          "description": ""
+        },
+        {
+          "id": 99,
+          "name": "CREATE Employee",
+          "code_name": "CREATE_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 100,
+          "name": "Upload HR Document",
+          "code_name": "UPLOAD_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 101,
+          "name": "View HR Document",
+          "code_name": "VIEW_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 102,
+          "name": "View HR Document Details",
+          "code_name": "VIEW_HR_DOCUMENT_DETAILS",
+          "description": "View all assigned employees for a document"
+        },
+        {
+          "id": 103,
+          "name": "Assign HR Document",
+          "code_name": "ASSIGN_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 104,
+          "name": "Add Document Category",
+          "code_name": "ADD_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 105,
+          "name": "View Document Category",
+          "code_name": "VIEW_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 106,
+          "name": "Edit Document Category",
+          "code_name": "EDIT_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 107,
+          "name": "Delete Document Category",
+          "code_name": "DELETE_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 108,
+          "name": "View Employee Transfer",
+          "code_name": "VIEW_EMPLOYEE_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 109,
+          "name": "Edit Employee Transfer",
+          "code_name": "EDIT_EMPLOYEE_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 110,
+          "name": "Manage Employee Transfer",
+          "code_name": "MANAGE_EMPLOYEE_TRANSFER",
+          "description": "Approve or reject employee transfer requests"
+        },
+        {
+          "id": 111,
+          "name": "View Leave Status Overview",
+          "code_name": "VIEW_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 112,
+          "name": "View Weekly Attendance Statistics",
+          "code_name": "VIEW_WEEKLY_STATISTICS",
+          "description": ""
+        },
+        {
+          "id": 113,
+          "name": "View Department Attendance Overview",
+          "code_name": "VIEW_DEPARTMENT_ATTENDANCE_OVERVIEW",
+          "description": ""
+        },
+        {
+          "id": 114,
+          "name": "Update Employee Attendance",
+          "code_name": "UPDATE_EMPLOYEE_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 115,
+          "name": "View Employee Attendance",
+          "code_name": "VIEW_EMPLOYEE_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 116,
+          "name": "Export Attendance",
+          "code_name": "EXPORT_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 117,
+          "name": "View Shift Calendar",
+          "code_name": "VIEW_SHIFT_CALENDAR",
+          "description": "View approved shift schedule in calendar format with working days, off days, and shift timings"
+        },
+        {
+          "id": 118,
+          "name": "Assign Shift",
+          "code_name": "ASSIGN_SHIFT",
+          "description": ""
+        },
+        {
+          "id": 119,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_EMPLOYEE_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 120,
+          "name": "View Employee Leave Details",
+          "code_name": "VIEW_EMPLOYEE_LEAVE",
+          "description": ""
+        },
+        {
+          "id": 121,
+          "name": "Assign Leaves to Employee",
+          "code_name": "ASSIGN_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 122,
+          "name": "Edit Assigned Leaves for Employee",
+          "code_name": "EDIT_ASSIGNED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 123,
+          "name": "Add Leave Types",
+          "code_name": "ADD_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 124,
+          "name": "View Leave Types",
+          "code_name": "VIEW_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 125,
+          "name": "Edit Leave Types",
+          "code_name": "EDIT_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 126,
+          "name": "Delete Leave Types",
+          "code_name": "DELETE_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 127,
+          "name": "View Leave Request",
+          "code_name": "VIEW_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 128,
+          "name": "Manage Leave Request",
+          "code_name": "MANAGE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 129,
+          "name": "View Employee Payroll",
+          "code_name": "VIEW_EMPLOYEE_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 130,
+          "name": "View Salary Setup",
+          "code_name": "VIEW_EMPLOYEE_SALARY_SETUP",
+          "description": ""
+        },
+        {
+          "id": 131,
+          "name": "Edit Salary Setup",
+          "code_name": "EDIT_EMPLOYEE_SALARY_SETUP",
+          "description": ""
+        },
+        {
+          "id": 132,
+          "name": "Add Revised Salary",
+          "code_name": "ADD_EMPLOYEE_REVISED_SALARY",
+          "description": ""
+        },
+        {
+          "id": 133,
+          "name": "Manage Revised Salary",
+          "code_name": "MANAGE_REVISED_SALARY",
+          "description": ""
+        },
+        {
+          "id": 134,
+          "name": "Add Salary Components",
+          "code_name": "ADD_SALARY_COMPONENTS",
+          "description": ""
+        },
+        {
+          "id": 135,
+          "name": "View Salary Components",
+          "code_name": "VIEW_SALARY_COMPONENTS",
+          "description": ""
+        },
+        {
+          "id": 136,
+          "name": "Edit Salary Components",
+          "code_name": "EDIT_SALARY_COMPONENTS",
+          "description": ""
+        },
+        {
+          "id": 137,
+          "name": "Delete Salary Components",
+          "code_name": "DELETE_SALARY_COMPONENTS",
+          "description": ""
+        },
+        {
+          "id": 138,
+          "name": "Add Payroll Adjustments",
+          "code_name": "ADD_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 139,
+          "name": "View Payroll Adjustments",
+          "code_name": "VIEW_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 140,
+          "name": "Edit Payroll Adjustments",
+          "code_name": "EDIT_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 141,
+          "name": "Delete Payroll Adjustments",
+          "code_name": "DELETE_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 142,
+          "name": "Manage Payroll Adjustments",
+          "code_name": "MANAGE_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 143,
+          "name": "Import Payroll Adjustments",
+          "code_name": "IMPORT_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 144,
+          "name": "Add Claim Request",
+          "code_name": "ADD_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 145,
+          "name": "View Claim Request",
+          "code_name": "VIEW_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 146,
+          "name": "Delete Claim Request",
+          "code_name": "DELETE_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 147,
+          "name": "Export Claim Request",
+          "code_name": "EXPORT_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 148,
+          "name": "Manage Claim Request",
+          "code_name": "MANAGE_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 149,
+          "name": "Generate Run Payroll",
+          "code_name": "GENERATE_RUN_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 150,
+          "name": "View Run Payroll",
+          "code_name": "VIEW_RUN_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 151,
+          "name": "Delete Run Payroll",
+          "code_name": "DELETE_RUN_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 152,
+          "name": "Edit Employee Run Payroll",
+          "code_name": "EDIT_EMPLOYEE_RUN_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 153,
+          "name": "Proceed to Payrun",
+          "code_name": "PROCEED_TO_PAYRUN",
+          "description": ""
+        },
+        {
+          "id": 154,
+          "name": "View Payrun",
+          "code_name": "VIEW_PAYRUN",
+          "description": ""
+        },
+        {
+          "id": 155,
+          "name": "Export Payrun",
+          "code_name": "EXPORT_PAYRUN",
+          "description": ""
+        },
+        {
+          "id": 156,
+          "name": "View Payslips",
+          "code_name": "VIEW_PAYSLIPS",
+          "description": ""
+        },
+        {
+          "id": 157,
+          "name": "Download Payslips",
+          "code_name": "DOWNLOAD_PAYSLIPS",
+          "description": ""
+        },
+        {
+          "id": 158,
+          "name": "View On-Hold Salaries",
+          "code_name": "VIEW_ON_HOLD_SALARIES",
+          "description": ""
+        },
+        {
+          "id": 159,
+          "name": "View End of Service",
+          "code_name": "VIEW_END_OF_SERVICE",
+          "description": ""
+        },
+        {
+          "id": 160,
+          "name": "Setup End of Service",
+          "code_name": "SETUP_END_OF_SERVICE",
+          "description": ""
+        },
+        {
+          "id": 161,
+          "name": "Download End of Service",
+          "code_name": "DOWNLOAD_END_OF_SERVICE",
+          "description": ""
+        },
+        {
+          "id": 162,
+          "name": "Mark End of Service as Paid",
+          "code_name": "MARK_END_OF_SERVICE_AS_PAID",
+          "description": ""
+        },
+        {
+          "id": 163,
+          "name": "View Own Projects",
+          "code_name": "VIEW_OWN_PROJECTS",
+          "description": ""
+        },
+        {
+          "id": 164,
+          "name": "View All Projects",
+          "code_name": "VIEW_ALL_PROJECTS",
+          "description": ""
+        },
+        {
+          "id": 165,
+          "name": "Add Projects",
+          "code_name": "ADD_PROJECTS",
+          "description": ""
+        },
+        {
+          "id": 166,
+          "name": "Edit Projects",
+          "code_name": "EDIT_PROJECTS",
+          "description": ""
+        },
+        {
+          "id": 167,
+          "name": "View Jobs",
+          "code_name": "VIEW_JOBS",
+          "description": ""
+        },
+        {
+          "id": 168,
+          "name": "Edit Jobs",
+          "code_name": "EDIT_JOBS",
+          "description": ""
+        },
+        {
+          "id": 169,
+          "name": "Delete Jobs",
+          "code_name": "DELETE_JOBS",
+          "description": ""
+        },
+        {
+          "id": 170,
+          "name": "View Applicants",
+          "code_name": "VIEW_APPLICANTS",
+          "description": ""
+        },
+        {
+          "id": 171,
+          "name": "Manage Applicants",
+          "code_name": "MANAGE_APPLICANTS",
+          "description": "Update the applicants' application status"
+        },
+        {
+          "id": 224,
+          "name": "VIEW SHIFT REQUEST RECORDS",
+          "code_name": "VIEW_SHIFT_REQUEST_RECORDS",
+          "description": ""
+        },
+        {
+          "id": 225,
+          "name": "ASSIGN SHIFT DIRECTLY",
+          "code_name": "ASSIGN_SHIFT_DIRECTLY",
+          "description": ""
+        },
+        {
+          "id": 196,
+          "name": "SCHEDULE EMPLOYEE SHIFT",
+          "code_name": "SCHEDULE_EMPLOYEE_SHIFT",
+          "description": ""
+        },
+        {
+          "id": 197,
+          "name": "VIEW PENDING SCHEDULES",
+          "code_name": "VIEW_PENDING_SCHEDULES",
+          "description": ""
+        },
+        {
+          "id": 198,
+          "name": "APPROVE SHIFT SCHEDULES",
+          "code_name": "APPROVE_SHIFT_SCHEDULES",
+          "description": ""
+        },
+        {
+          "id": 199,
+          "name": "EDIT PENDING SCHEDULES",
+          "code_name": "EDIT_PENDING_SCHEDULES",
+          "description": ""
+        },
+        {
+          "id": 201,
+          "name": "REQUEST SHIFT CHANGE FOR TEAM",
+          "code_name": "REQUEST_SHIFT_CHANGE_FOR_TEAM",
+          "description": ""
+        },
+        {
+          "id": 202,
+          "name": "EDIT EMPLOYEE SHIFT",
+          "code_name": "EDIT_EMPLOYEE_SHIFT",
+          "description": ""
+        },
+        {
+          "id": 203,
+          "name": "VIEW SHIFT HISTORY LOGS",
+          "code_name": "VIEW_SHIFT_HISTORY_LOGS",
+          "description": ""
+        },
+        {
+          "id": 204,
+          "name": "VIEW MY SHIFT CALENDAR",
+          "code_name": "VIEW_MY_SHIFT_CALENDAR",
+          "description": ""
+        },
+        {
+          "id": 205,
+          "name": "REQUEST MY SHIFT CHANGE",
+          "code_name": "REQUEST_MY_SHIFT_CHANGE",
+          "description": ""
+        },
+        {
+          "id": 206,
+          "name": "VIEW MY SHIFT CHANGE REQUESTS",
+          "code_name": "VIEW_MY_SHIFT_CHANGE_REQUESTS",
+          "description": ""
+        },
+        {
+          "id": 218,
+          "name": "Request Shift Change",
+          "code_name": "REQUEST_SHIFT_CHANGE",
+          "description": ""
+        },
+        {
+          "id": 223,
+          "name": "View Shift Change Requests",
+          "code_name": "VIEW_SHIFT_CHANGE_REQUESTS",
+          "description": ""
+        },
+        {
+          "id": 228,
+          "name": "Add Approval Hierarchy",
+          "code_name": "CREATE_LEAVE_DURATION",
+          "description": ""
+        },
+        {
+          "id": 229,
+          "name": "View Approval Hierarchy",
+          "code_name": "VIEW_LEAVE_DURATION",
+          "description": ""
+        },
+        {
+          "id": 230,
+          "name": "Delete Approval Hierarchy",
+          "code_name": "DELETE_LEAVE_DURATION",
+          "description": ""
+        },
+        {
+          "id": 231,
+          "name": "Edit Approval Hierarchy",
+          "code_name": "EDIT_LEAVE_DURATION",
+          "description": ""
+        },
+        {
+          "id": 232,
+          "name": "View Public Holidays",
+          "code_name": "VIEW_PUBLIC_HOLIDAYS",
+          "description": ""
+        },
+        {
+          "id": 233,
+          "name": "Add Public Holidays",
+          "code_name": "ADD_PUBLIC_HOLIDAYS",
+          "description": ""
+        },
+        {
+          "id": 234,
+          "name": "Edit Public Holidays",
+          "code_name": "EDIT__PUBLIC_HOLIDAYS",
+          "description": ""
+        },
+        {
+          "id": 235,
+          "name": "Delete Public Holiday",
+          "code_name": "DELETE__PUBLIC_HOLIDAYS",
+          "description": ""
+        },
+        {
+          "id": 207,
+          "name": "Request Time Adjustment",
+          "code_name": "REQUEST_TIME_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 208,
+          "name": "Update Attendance Request",
+          "code_name": "UPDATE_ATTENDANCE_REQUEST",
+          "description": "User can submit update attendance request for a day"
+        },
+        {
+          "id": 209,
+          "name": "Time Adjustment Request",
+          "code_name": "TIME_ADJ_REQUEST",
+          "description": "User can submit time adjustment request if checked-in as late"
+        },
+        {
+          "id": 192,
+          "name": "Update Branch Employees Attendance",
+          "code_name": "UPDATE_BRN_EMP_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 193,
+          "name": "Update Reporting Line Employees Attendance",
+          "code_name": " UPDATE_RL_EMP_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 194,
+          "name": "Update Department Employees Attendance",
+          "code_name": "UPDATE_DPT_EMP_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 195,
+          "name": "Update Reporting Line Employees Attendance",
+          "code_name": "UPDATE_RL_EMP_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 185,
+          "name": "View Department Leave Status",
+          "code_name": "VIEW_DEPARTMENT_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 186,
+          "name": "View Branch Leave Status",
+          "code_name": "VIEW_BRANCH_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 187,
+          "name": "View Reporting Line Leave Status",
+          "code_name": "VIEW_REPORTING_LINE_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 188,
+          "name": "View attendance record of all the employees in the department",
+          "code_name": "VIEW_DPT_EMPS_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 189,
+          "name": "View Branch Attendance",
+          "code_name": "VIEW_BRN_EMPS_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 190,
+          "name": " View Reporting Line Attendance",
+          "code_name": "VIEW_RL_EMPS_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 191,
+          "name": "Update Department Employees Attendance",
+          "code_name": " UPDATE_DPT_EMP_ATTENDANCE",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "role": 3,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 23,
+          "name": "View Personal Information",
+          "code_name": "VIEW_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 24,
+          "name": "Edit Personal Information",
+          "code_name": "EDIT_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 25,
+          "name": "View Job Information",
+          "code_name": "VIEW_JOB_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 32,
+          "name": "View Identification Information",
+          "code_name": "VIEW_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 33,
+          "name": "Edit Identification Information",
+          "code_name": "EDIT_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 34,
+          "name": "Mark My Attendance",
+          "code_name": "MARK_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 26,
+          "name": "Edit Academic Information",
+          "code_name": "EDIT_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 27,
+          "name": "View Academic Information",
+          "code_name": "VIEW_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 28,
+          "name": "View Experience Information",
+          "code_name": "VIEW_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 29,
+          "name": "Edit Experience Information",
+          "code_name": "EDIT_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 30,
+          "name": "View Certification Information",
+          "code_name": "VIEW_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 31,
+          "name": "Edit Certification Information",
+          "code_name": "EDIT_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 35,
+          "name": "Log Break Time",
+          "code_name": "MARK_BREAK",
+          "description": ""
+        },
+        {
+          "id": 36,
+          "name": "View Attendance Records",
+          "code_name": "VIEW_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 40,
+          "name": "Add Leave Request",
+          "code_name": "ADD_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 41,
+          "name": "View Applied Leaves",
+          "code_name": "VIEW_LEAVES_APPLIED",
+          "description": ""
+        },
+        {
+          "id": 51,
+          "name": "Manage Assigned Documents",
+          "code_name": "MANAGE_ASSIGNED_DOCUMENTS",
+          "description": "View, acknowledge, and sign assigned documents"
+        },
+        {
+          "id": 42,
+          "name": "Delete Leave Request",
+          "code_name": "DELETE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 43,
+          "name": "View Consumed Leaves",
+          "code_name": "VIEW_CONSUMED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 50,
+          "name": "View Assigned Documents",
+          "code_name": "VIEW_ASSIGNED_DOCUMENTS",
+          "description": ""
+        },
+        {
+          "id": 13,
+          "name": "Request New Asset",
+          "code_name": "ADD_ASSET_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 14,
+          "name": "Withdraw Asset",
+          "code_name": "WITHDRAW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 174,
+          "name": "View Assigned Asset",
+          "code_name": "VIEW_ASSIGNED_MY_ASSETS",
+          "description": ""
+        },
+        {
+          "id": 204,
+          "name": "VIEW MY SHIFT CALENDAR",
+          "code_name": "VIEW_MY_SHIFT_CALENDAR",
+          "description": ""
+        },
+        {
+          "id": 205,
+          "name": "REQUEST MY SHIFT CHANGE",
+          "code_name": "REQUEST_MY_SHIFT_CHANGE",
+          "description": ""
+        },
+        {
+          "id": 206,
+          "name": "VIEW MY SHIFT CHANGE REQUESTS",
+          "code_name": "VIEW_MY_SHIFT_CHANGE_REQUESTS",
+          "description": ""
+        },
+        {
+          "id": 218,
+          "name": "Request Shift Change",
+          "code_name": "REQUEST_SHIFT_CHANGE",
+          "description": ""
+        },
+        {
+          "id": 223,
+          "name": "View Shift Change Requests",
+          "code_name": "VIEW_SHIFT_CHANGE_REQUESTS",
+          "description": ""
+        },
+        {
+          "id": 208,
+          "name": "Update Attendance Request",
+          "code_name": "UPDATE_ATTENDANCE_REQUEST",
+          "description": "User can submit update attendance request for a day"
+        },
+        {
+          "id": 209,
+          "name": "Time Adjustment Request",
+          "code_name": "TIME_ADJ_REQUEST",
+          "description": "User can submit time adjustment request if checked-in as late"
+        },
+        {
+          "id": 207,
+          "name": "Request Time Adjustment",
+          "code_name": "REQUEST_TIME_ADJUSTMENT",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "role": 9,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 1,
+          "name": "View Asset",
+          "code_name": "VIEW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 2,
+          "name": "Add Asset",
+          "code_name": "ADD_ASSET",
+          "description": ""
+        },
+        {
+          "id": 3,
+          "name": "Edit Asset",
+          "code_name": "EDIT_ASSET",
+          "description": ""
+        },
+        {
+          "id": 4,
+          "name": "Delete Asset",
+          "code_name": "DELETE_ASSET",
+          "description": ""
+        },
+        {
+          "id": 5,
+          "name": "View Asset Category",
+          "code_name": "VIEW_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 6,
+          "name": "Add Asset Category",
+          "code_name": "ADD_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 7,
+          "name": "Edit Asset Category",
+          "code_name": "EDIT_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 8,
+          "name": "Delete Asset Category",
+          "code_name": "DELETE_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 9,
+          "name": "View Assets Request",
+          "code_name": "VIEW_ASSETS_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 10,
+          "name": "View Assign Assets",
+          "code_name": "VIEW_ASSIGN_ASSETS",
+          "description": ""
+        },
+        {
+          "id": 11,
+          "name": "Assign Assets to Employee",
+          "code_name": "ASSIGN_ASSETS_TO_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 12,
+          "name": "Manage Asset Request",
+          "code_name": "MANAGE_ASSET_REQUEST",
+          "description": "Approve/Reject asset request from employees."
+        },
+        {
+          "id": 13,
+          "name": "Request New Asset",
+          "code_name": "ADD_ASSET_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 14,
+          "name": "Withdraw Asset",
+          "code_name": "WITHDRAW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 23,
+          "name": "View Personal Information",
+          "code_name": "VIEW_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 24,
+          "name": "Edit Personal Information",
+          "code_name": "EDIT_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 25,
+          "name": "View Job Information",
+          "code_name": "VIEW_JOB_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 26,
+          "name": "Edit Academic Information",
+          "code_name": "EDIT_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 27,
+          "name": "View Academic Information",
+          "code_name": "VIEW_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 28,
+          "name": "View Experience Information",
+          "code_name": "VIEW_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 29,
+          "name": "Edit Experience Information",
+          "code_name": "EDIT_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 30,
+          "name": "View Certification Information",
+          "code_name": "VIEW_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 31,
+          "name": "Edit Certification Information",
+          "code_name": "EDIT_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 32,
+          "name": "View Identification Information",
+          "code_name": "VIEW_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 33,
+          "name": "Edit Identification Information",
+          "code_name": "EDIT_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 34,
+          "name": "Mark My Attendance",
+          "code_name": "MARK_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 35,
+          "name": "Log Break Time",
+          "code_name": "MARK_BREAK",
+          "description": ""
+        },
+        {
+          "id": 36,
+          "name": "View Attendance Records",
+          "code_name": "VIEW_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 37,
+          "name": "Create Daily Task Report",
+          "code_name": "ADD_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 38,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 39,
+          "name": "Submit Daily Task Report",
+          "code_name": "SUBMIT_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 40,
+          "name": "Add Leave Request",
+          "code_name": "ADD_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 41,
+          "name": "View Applied Leaves",
+          "code_name": "VIEW_LEAVES_APPLIED",
+          "description": ""
+        },
+        {
+          "id": 42,
+          "name": "Delete Leave Request",
+          "code_name": "DELETE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 43,
+          "name": "View Consumed Leaves",
+          "code_name": "VIEW_CONSUMED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 44,
+          "name": "View Payroll",
+          "code_name": "VIEW_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 45,
+          "name": "Request Claim",
+          "code_name": "REQUEST_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 46,
+          "name": "View Claims",
+          "code_name": "VIEW_CLAIMS",
+          "description": ""
+        },
+        {
+          "id": 47,
+          "name": "Delete Claim",
+          "code_name": "DELETE_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 48,
+          "name": "Request Transfer",
+          "code_name": "REQUEST_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 49,
+          "name": "View Transfer",
+          "code_name": "VIEW_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 50,
+          "name": "View Assigned Documents",
+          "code_name": "VIEW_ASSIGNED_DOCUMENTS",
+          "description": ""
+        },
+        {
+          "id": 51,
+          "name": "Manage Assigned Documents",
+          "code_name": "MANAGE_ASSIGNED_DOCUMENTS",
+          "description": "View, acknowledge, and sign assigned documents"
+        },
+        {
+          "id": 52,
+          "name": "Submit Resignation",
+          "code_name": "SUBMIT_RESIGNATION",
+          "description": ""
+        },
+        {
+          "id": 53,
+          "name": "View Exit Request",
+          "code_name": "VIEW_EXIT_REQUEST",
+          "description": "View submitted exit requests, including resignations and terminations"
+        },
+        {
+          "id": 54,
+          "name": "Manage Termination Requests",
+          "code_name": "MANAGE_TERMINATION_REQUESTS",
+          "description": "Approve or reject termination requests"
+        },
+        {
+          "id": 55,
+          "name": "View Team Profile",
+          "code_name": "VIEW_TEAM_PROFILE",
+          "description": ""
+        },
+        {
+          "id": 56,
+          "name": "View Team Leave Request",
+          "code_name": "VIEW_TEAM_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 57,
+          "name": "Manage Team Leave Request",
+          "code_name": "MANAGE_TEAM_LEAVE_REQUEST",
+          "description": "Approve or reject leave requests from employees"
+        },
+        {
+          "id": 58,
+          "name": "View Team Leave Status Overview",
+          "code_name": "VIEW_TEAM_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 59,
+          "name": "View Team Weekly Attendance Statistics",
+          "code_name": "VIEW_TEAM_WEEKLY_STATISTICS",
+          "description": ""
+        },
+        {
+          "id": 60,
+          "name": "Update Team Attendance",
+          "code_name": "UPDATE_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 61,
+          "name": "View Team Attendance",
+          "code_name": "VIEW_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 62,
+          "name": "Export Team Attendance",
+          "code_name": "EXPORT_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 63,
+          "name": "View Team Daily Task Report",
+          "code_name": "VIEW_TEAM_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 86,
+          "name": "View Organization Tree",
+          "code_name": "VIEW_ORGANIZATION_TREE",
+          "description": ""
+        },
+        {
+          "id": 87,
+          "name": "View My Reporting Line",
+          "code_name": "VIEW_MY_REPORTING_LINE",
+          "description": ""
+        },
+        {
+          "id": 88,
+          "name": "Add Employee",
+          "code_name": "ADD_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 89,
+          "name": "View Employees",
+          "code_name": "VIEW_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 90,
+          "name": "View Employee Details",
+          "code_name": "VIEW_EMPLOYEE_DETAILS",
+          "description": "View employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)"
+        },
+        {
+          "id": 91,
+          "name": "Edit Employee Profile",
+          "code_name": "EDIT_EMPLOYEE_PROFILE",
+          "description": "Edit employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)"
+        },
+        {
+          "id": 92,
+          "name": "Edit Employee",
+          "code_name": "EDIT_EMPLOYEE",
+          "description": "Edit employee work information"
+        },
+        {
+          "id": 93,
+          "name": "Export Employees",
+          "code_name": "EXPORT_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 94,
+          "name": "Import Employees",
+          "code_name": "IMPORT_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 95,
+          "name": "View Exit Requests",
+          "code_name": "VIEW_EXIT_REQUESTS",
+          "description": ""
+        },
+        {
+          "id": 96,
+          "name": "View Exit Records",
+          "code_name": "VIEW_EXIT_RECORDS",
+          "description": ""
+        },
+        {
+          "id": 97,
+          "name": "Manage Exit Requests",
+          "code_name": "MANAGE_EXIT_REQUESTS",
+          "description": "Approve, reject, or change status of exit requests (Termination or Resignation)"
+        },
+        {
+          "id": 98,
+          "name": "Add Termination Request",
+          "code_name": "ADD_TERMINATION",
+          "description": ""
+        },
+        {
+          "id": 99,
+          "name": "CREATE Employee",
+          "code_name": "CREATE_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 100,
+          "name": "Upload HR Document",
+          "code_name": "UPLOAD_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 101,
+          "name": "View HR Document",
+          "code_name": "VIEW_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 102,
+          "name": "View HR Document Details",
+          "code_name": "VIEW_HR_DOCUMENT_DETAILS",
+          "description": "View all assigned employees for a document"
+        },
+        {
+          "id": 103,
+          "name": "Assign HR Document",
+          "code_name": "ASSIGN_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 104,
+          "name": "Add Document Category",
+          "code_name": "ADD_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 105,
+          "name": "View Document Category",
+          "code_name": "VIEW_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 106,
+          "name": "Edit Document Category",
+          "code_name": "EDIT_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 107,
+          "name": "Delete Document Category",
+          "code_name": "DELETE_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 108,
+          "name": "View Employee Transfer",
+          "code_name": "VIEW_EMPLOYEE_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 109,
+          "name": "Edit Employee Transfer",
+          "code_name": "EDIT_EMPLOYEE_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 110,
+          "name": "Manage Employee Transfer",
+          "code_name": "MANAGE_EMPLOYEE_TRANSFER",
+          "description": "Approve or reject employee transfer requests"
+        },
+        {
+          "id": 111,
+          "name": "View Leave Status Overview",
+          "code_name": "VIEW_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 112,
+          "name": "View Weekly Attendance Statistics",
+          "code_name": "VIEW_WEEKLY_STATISTICS",
+          "description": ""
+        },
+        {
+          "id": 113,
+          "name": "View Department Attendance Overview",
+          "code_name": "VIEW_DEPARTMENT_ATTENDANCE_OVERVIEW",
+          "description": ""
+        },
+        {
+          "id": 114,
+          "name": "Update Employee Attendance",
+          "code_name": "UPDATE_EMPLOYEE_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 115,
+          "name": "View Employee Attendance",
+          "code_name": "VIEW_EMPLOYEE_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 116,
+          "name": "Export Attendance",
+          "code_name": "EXPORT_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 117,
+          "name": "View Shift Calendar",
+          "code_name": "VIEW_SHIFT_CALENDAR",
+          "description": "View approved shift schedule in calendar format with working days, off days, and shift timings"
+        },
+        {
+          "id": 118,
+          "name": "Assign Shift",
+          "code_name": "ASSIGN_SHIFT",
+          "description": ""
+        },
+        {
+          "id": 119,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_EMPLOYEE_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 120,
+          "name": "View Employee Leave Details",
+          "code_name": "VIEW_EMPLOYEE_LEAVE",
+          "description": ""
+        },
+        {
+          "id": 121,
+          "name": "Assign Leaves to Employee",
+          "code_name": "ASSIGN_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 122,
+          "name": "Edit Assigned Leaves for Employee",
+          "code_name": "EDIT_ASSIGNED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 123,
+          "name": "Add Leave Types",
+          "code_name": "ADD_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 124,
+          "name": "View Leave Types",
+          "code_name": "VIEW_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 125,
+          "name": "Edit Leave Types",
+          "code_name": "EDIT_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 126,
+          "name": "Delete Leave Types",
+          "code_name": "DELETE_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 127,
+          "name": "View Leave Request",
+          "code_name": "VIEW_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 128,
+          "name": "Manage Leave Request",
+          "code_name": "MANAGE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 163,
+          "name": "View Own Projects",
+          "code_name": "VIEW_OWN_PROJECTS",
+          "description": ""
+        },
+        {
+          "id": 164,
+          "name": "View All Projects",
+          "code_name": "VIEW_ALL_PROJECTS",
+          "description": ""
+        },
+        {
+          "id": 165,
+          "name": "Add Projects",
+          "code_name": "ADD_PROJECTS",
+          "description": ""
+        },
+        {
+          "id": 166,
+          "name": "Edit Projects",
+          "code_name": "EDIT_PROJECTS",
+          "description": ""
+        },
+        {
+          "id": 201,
+          "name": "REQUEST SHIFT CHANGE FOR TEAM",
+          "code_name": "REQUEST_SHIFT_CHANGE_FOR_TEAM",
+          "description": ""
+        },
+        {
+          "id": 224,
+          "name": "VIEW SHIFT REQUEST RECORDS",
+          "code_name": "VIEW_SHIFT_REQUEST_RECORDS",
+          "description": ""
+        },
+        {
+          "id": 196,
+          "name": "SCHEDULE EMPLOYEE SHIFT",
+          "code_name": "SCHEDULE_EMPLOYEE_SHIFT",
+          "description": ""
+        },
+        {
+          "id": 197,
+          "name": "VIEW PENDING SCHEDULES",
+          "code_name": "VIEW_PENDING_SCHEDULES",
+          "description": ""
+        },
+        {
+          "id": 203,
+          "name": "VIEW SHIFT HISTORY LOGS",
+          "code_name": "VIEW_SHIFT_HISTORY_LOGS",
+          "description": ""
+        },
+        {
+          "id": 225,
+          "name": "ASSIGN SHIFT DIRECTLY",
+          "code_name": "ASSIGN_SHIFT_DIRECTLY",
+          "description": ""
+        },
+        {
+          "id": 202,
+          "name": "EDIT EMPLOYEE SHIFT",
+          "code_name": "EDIT_EMPLOYEE_SHIFT",
+          "description": ""
+        },
+        {
+          "id": 198,
+          "name": "APPROVE SHIFT SCHEDULES",
+          "code_name": "APPROVE_SHIFT_SCHEDULES",
+          "description": ""
+        },
+        {
+          "id": 199,
+          "name": "EDIT PENDING SCHEDULES",
+          "code_name": "EDIT_PENDING_SCHEDULES",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "role": 1,
+      "organization": "Tecbrix",
+      "feature": [
+        {
+          "id": 2,
+          "name": "Add Asset",
+          "code_name": "ADD_ASSET",
+          "description": ""
+        },
+        {
+          "id": 5,
+          "name": "View Asset Category",
+          "code_name": "VIEW_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 10,
+          "name": "View Assign Assets",
+          "code_name": "VIEW_ASSIGN_ASSETS",
+          "description": ""
+        },
+        {
+          "id": 11,
+          "name": "Assign Assets to Employee",
+          "code_name": "ASSIGN_ASSETS_TO_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 12,
+          "name": "Manage Asset Request",
+          "code_name": "MANAGE_ASSET_REQUEST",
+          "description": "Approve/Reject asset request from employees."
+        },
+        {
+          "id": 15,
+          "name": "View User Roles",
+          "code_name": "VIEW_USER_ROLE",
+          "description": ""
+        },
+        {
+          "id": 16,
+          "name": "Add User Role",
+          "code_name": "ADD_USER_ROLE",
+          "description": ""
+        },
+        {
+          "id": 17,
+          "name": "Edit User Role",
+          "code_name": "EDIT_USER_ROLE",
+          "description": ""
+        },
+        {
+          "id": 18,
+          "name": "Assign Role",
+          "code_name": "ASSIGN_USER_ROLE",
+          "description": ""
+        },
+        {
+          "id": 19,
+          "name": "Edit Assigned Role",
+          "code_name": "EDIT_ASSIGNED_ROLE",
+          "description": ""
+        },
+        {
+          "id": 20,
+          "name": "View Assigned Roles",
+          "code_name": "VIEW_ASSIGNED_ROLES",
+          "description": ""
+        },
+        {
+          "id": 21,
+          "name": "Remove Assigned Role",
+          "code_name": "REMOVE_ASSIGNED_ROLE",
+          "description": ""
+        },
+        {
+          "id": 22,
+          "name": "View History & Logs",
+          "code_name": "VIEW_ROLE_HISTORY_LOGS",
+          "description": ""
+        },
+        {
+          "id": 56,
+          "name": "View Team Leave Request",
+          "code_name": "VIEW_TEAM_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 57,
+          "name": "Manage Team Leave Request",
+          "code_name": "MANAGE_TEAM_LEAVE_REQUEST",
+          "description": "Approve or reject leave requests from employees"
+        },
+        {
+          "id": 58,
+          "name": "View Team Leave Status Overview",
+          "code_name": "VIEW_TEAM_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 59,
+          "name": "View Team Weekly Attendance Statistics",
+          "code_name": "VIEW_TEAM_WEEKLY_STATISTICS",
+          "description": ""
+        },
+        {
+          "id": 60,
+          "name": "Update Team Attendance",
+          "code_name": "UPDATE_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 61,
+          "name": "View Team Attendance",
+          "code_name": "VIEW_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 62,
+          "name": "Export Team Attendance",
+          "code_name": "EXPORT_TEAM_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 63,
+          "name": "View Team Daily Task Report",
+          "code_name": "VIEW_TEAM_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 64,
+          "name": "View Organization",
+          "code_name": "VIEW_ORGANIZATION",
+          "description": ""
+        },
+        {
+          "id": 78,
+          "name": "Add Working Hours",
+          "code_name": "ADD_SHIFTS",
+          "description": ""
+        },
+        {
+          "id": 81,
+          "name": "Delete Working Hours",
+          "code_name": "DELETE_SHIFTS",
+          "description": ""
+        },
+        {
+          "id": 82,
+          "name": "Add Onboarding Checklist",
+          "code_name": "ADD_ONBOARDING_CHECKLIST",
+          "description": ""
+        },
+        {
+          "id": 83,
+          "name": "View Onboarding Checklist",
+          "code_name": "VIEW_ONBOARDING_CHECKLIST",
+          "description": ""
+        },
+        {
+          "id": 88,
+          "name": "Add Employee",
+          "code_name": "ADD_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 89,
+          "name": "View Employees",
+          "code_name": "VIEW_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 90,
+          "name": "View Employee Details",
+          "code_name": "VIEW_EMPLOYEE_DETAILS",
+          "description": "View employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)"
+        },
+        {
+          "id": 91,
+          "name": "Edit Employee Profile",
+          "code_name": "EDIT_EMPLOYEE_PROFILE",
+          "description": "Edit employee profile details (Personal, Contact, Bank, Academic, Experience, Certification, Identification)"
+        },
+        {
+          "id": 92,
+          "name": "Edit Employee",
+          "code_name": "EDIT_EMPLOYEE",
+          "description": "Edit employee work information"
+        },
+        {
+          "id": 93,
+          "name": "Export Employees",
+          "code_name": "EXPORT_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 94,
+          "name": "Import Employees",
+          "code_name": "IMPORT_EMPLOYEES",
+          "description": ""
+        },
+        {
+          "id": 95,
+          "name": "View Exit Requests",
+          "code_name": "VIEW_EXIT_REQUESTS",
+          "description": ""
+        },
+        {
+          "id": 96,
+          "name": "View Exit Records",
+          "code_name": "VIEW_EXIT_RECORDS",
+          "description": ""
+        },
+        {
+          "id": 97,
+          "name": "Manage Exit Requests",
+          "code_name": "MANAGE_EXIT_REQUESTS",
+          "description": "Approve, reject, or change status of exit requests (Termination or Resignation)"
+        },
+        {
+          "id": 98,
+          "name": "Add Termination Request",
+          "code_name": "ADD_TERMINATION",
+          "description": ""
+        },
+        {
+          "id": 99,
+          "name": "CREATE Employee",
+          "code_name": "CREATE_EMPLOYEE",
+          "description": ""
+        },
+        {
+          "id": 100,
+          "name": "Upload HR Document",
+          "code_name": "UPLOAD_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 101,
+          "name": "View HR Document",
+          "code_name": "VIEW_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 102,
+          "name": "View HR Document Details",
+          "code_name": "VIEW_HR_DOCUMENT_DETAILS",
+          "description": "View all assigned employees for a document"
+        },
+        {
+          "id": 103,
+          "name": "Assign HR Document",
+          "code_name": "ASSIGN_HR_DOCUMENT",
+          "description": ""
+        },
+        {
+          "id": 104,
+          "name": "Add Document Category",
+          "code_name": "ADD_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 105,
+          "name": "View Document Category",
+          "code_name": "VIEW_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 106,
+          "name": "Edit Document Category",
+          "code_name": "EDIT_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 107,
+          "name": "Delete Document Category",
+          "code_name": "DELETE_DOCUMENT_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 108,
+          "name": "View Employee Transfer",
+          "code_name": "VIEW_EMPLOYEE_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 109,
+          "name": "Edit Employee Transfer",
+          "code_name": "EDIT_EMPLOYEE_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 110,
+          "name": "Manage Employee Transfer",
+          "code_name": "MANAGE_EMPLOYEE_TRANSFER",
+          "description": "Approve or reject employee transfer requests"
+        },
+        {
+          "id": 111,
+          "name": "View Leave Status Overview",
+          "code_name": "VIEW_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 112,
+          "name": "View Weekly Attendance Statistics",
+          "code_name": "VIEW_WEEKLY_STATISTICS",
+          "description": ""
+        },
+        {
+          "id": 113,
+          "name": "View Department Attendance Overview",
+          "code_name": "VIEW_DEPARTMENT_ATTENDANCE_OVERVIEW",
+          "description": ""
+        },
+        {
+          "id": 114,
+          "name": "Update Employee Attendance",
+          "code_name": "UPDATE_EMPLOYEE_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 115,
+          "name": "View Employee Attendance",
+          "code_name": "VIEW_EMPLOYEE_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 116,
+          "name": "Export Attendance",
+          "code_name": "EXPORT_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 119,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_EMPLOYEE_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 120,
+          "name": "View Employee Leave Details",
+          "code_name": "VIEW_EMPLOYEE_LEAVE",
+          "description": ""
+        },
+        {
+          "id": 121,
+          "name": "Assign Leaves to Employee",
+          "code_name": "ASSIGN_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 122,
+          "name": "Edit Assigned Leaves for Employee",
+          "code_name": "EDIT_ASSIGNED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 123,
+          "name": "Add Leave Types",
+          "code_name": "ADD_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 124,
+          "name": "View Leave Types",
+          "code_name": "VIEW_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 125,
+          "name": "Edit Leave Types",
+          "code_name": "EDIT_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 126,
+          "name": "Delete Leave Types",
+          "code_name": "DELETE_LEAVE_TYPES",
+          "description": ""
+        },
+        {
+          "id": 127,
+          "name": "View Leave Request",
+          "code_name": "VIEW_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 128,
+          "name": "Manage Leave Request",
+          "code_name": "MANAGE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 129,
+          "name": "View Employee Payroll",
+          "code_name": "VIEW_EMPLOYEE_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 130,
+          "name": "View Salary Setup",
+          "code_name": "VIEW_EMPLOYEE_SALARY_SETUP",
+          "description": ""
+        },
+        {
+          "id": 131,
+          "name": "Edit Salary Setup",
+          "code_name": "EDIT_EMPLOYEE_SALARY_SETUP",
+          "description": ""
+        },
+        {
+          "id": 132,
+          "name": "Add Revised Salary",
+          "code_name": "ADD_EMPLOYEE_REVISED_SALARY",
+          "description": ""
+        },
+        {
+          "id": 133,
+          "name": "Manage Revised Salary",
+          "code_name": "MANAGE_REVISED_SALARY",
+          "description": ""
+        },
+        {
+          "id": 134,
+          "name": "Add Salary Components",
+          "code_name": "ADD_SALARY_COMPONENTS",
+          "description": ""
+        },
+        {
+          "id": 135,
+          "name": "View Salary Components",
+          "code_name": "VIEW_SALARY_COMPONENTS",
+          "description": ""
+        },
+        {
+          "id": 136,
+          "name": "Edit Salary Components",
+          "code_name": "EDIT_SALARY_COMPONENTS",
+          "description": ""
+        },
+        {
+          "id": 137,
+          "name": "Delete Salary Components",
+          "code_name": "DELETE_SALARY_COMPONENTS",
+          "description": ""
+        },
+        {
+          "id": 138,
+          "name": "Add Payroll Adjustments",
+          "code_name": "ADD_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 139,
+          "name": "View Payroll Adjustments",
+          "code_name": "VIEW_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 140,
+          "name": "Edit Payroll Adjustments",
+          "code_name": "EDIT_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 141,
+          "name": "Delete Payroll Adjustments",
+          "code_name": "DELETE_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 142,
+          "name": "Manage Payroll Adjustments",
+          "code_name": "MANAGE_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 143,
+          "name": "Import Payroll Adjustments",
+          "code_name": "IMPORT_PAYROLL_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 144,
+          "name": "Add Claim Request",
+          "code_name": "ADD_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 145,
+          "name": "View Claim Request",
+          "code_name": "VIEW_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 146,
+          "name": "Delete Claim Request",
+          "code_name": "DELETE_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 147,
+          "name": "Export Claim Request",
+          "code_name": "EXPORT_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 148,
+          "name": "Manage Claim Request",
+          "code_name": "MANAGE_CLAIM_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 149,
+          "name": "Generate Run Payroll",
+          "code_name": "GENERATE_RUN_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 150,
+          "name": "View Run Payroll",
+          "code_name": "VIEW_RUN_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 151,
+          "name": "Delete Run Payroll",
+          "code_name": "DELETE_RUN_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 152,
+          "name": "Edit Employee Run Payroll",
+          "code_name": "EDIT_EMPLOYEE_RUN_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 153,
+          "name": "Proceed to Payrun",
+          "code_name": "PROCEED_TO_PAYRUN",
+          "description": ""
+        },
+        {
+          "id": 154,
+          "name": "View Payrun",
+          "code_name": "VIEW_PAYRUN",
+          "description": ""
+        },
+        {
+          "id": 155,
+          "name": "Export Payrun",
+          "code_name": "EXPORT_PAYRUN",
+          "description": ""
+        },
+        {
+          "id": 156,
+          "name": "View Payslips",
+          "code_name": "VIEW_PAYSLIPS",
+          "description": ""
+        },
+        {
+          "id": 157,
+          "name": "Download Payslips",
+          "code_name": "DOWNLOAD_PAYSLIPS",
+          "description": ""
+        },
+        {
+          "id": 158,
+          "name": "View On-Hold Salaries",
+          "code_name": "VIEW_ON_HOLD_SALARIES",
+          "description": ""
+        },
+        {
+          "id": 159,
+          "name": "View End of Service",
+          "code_name": "VIEW_END_OF_SERVICE",
+          "description": ""
+        },
+        {
+          "id": 160,
+          "name": "Setup End of Service",
+          "code_name": "SETUP_END_OF_SERVICE",
+          "description": ""
+        },
+        {
+          "id": 161,
+          "name": "Download End of Service",
+          "code_name": "DOWNLOAD_END_OF_SERVICE",
+          "description": ""
+        },
+        {
+          "id": 162,
+          "name": "Mark End of Service as Paid",
+          "code_name": "MARK_END_OF_SERVICE_AS_PAID",
+          "description": ""
+        },
+        {
+          "id": 163,
+          "name": "View Own Projects",
+          "code_name": "VIEW_OWN_PROJECTS",
+          "description": ""
+        },
+        {
+          "id": 164,
+          "name": "View All Projects",
+          "code_name": "VIEW_ALL_PROJECTS",
+          "description": ""
+        },
+        {
+          "id": 165,
+          "name": "Add Projects",
+          "code_name": "ADD_PROJECTS",
+          "description": ""
+        },
+        {
+          "id": 166,
+          "name": "Edit Projects",
+          "code_name": "EDIT_PROJECTS",
+          "description": ""
+        },
+        {
+          "id": 167,
+          "name": "View Jobs",
+          "code_name": "VIEW_JOBS",
+          "description": ""
+        },
+        {
+          "id": 168,
+          "name": "Edit Jobs",
+          "code_name": "EDIT_JOBS",
+          "description": ""
+        },
+        {
+          "id": 169,
+          "name": "Delete Jobs",
+          "code_name": "DELETE_JOBS",
+          "description": ""
+        },
+        {
+          "id": 170,
+          "name": "View Applicants",
+          "code_name": "VIEW_APPLICANTS",
+          "description": ""
+        },
+        {
+          "id": 171,
+          "name": "Manage Applicants",
+          "code_name": "MANAGE_APPLICANTS",
+          "description": "Update the applicants' application status"
+        },
+        {
+          "id": 172,
+          "name": "Add Approval Hierarchy",
+          "code_name": "ADD_APPROVAL_HIERARCHY",
+          "description": ""
+        },
+        {
+          "id": 173,
+          "name": "View Approval Hierarchy",
+          "code_name": "VIEW_APPROVAL_HIERARCHY",
+          "description": ""
+        },
+        {
+          "id": 55,
+          "name": "View Team Profile",
+          "code_name": "VIEW_TEAM_PROFILE",
+          "description": ""
+        },
+        {
+          "id": 86,
+          "name": "View Organization Tree",
+          "code_name": "VIEW_ORGANIZATION_TREE",
+          "description": ""
+        },
+        {
+          "id": 87,
+          "name": "View My Reporting Line",
+          "code_name": "VIEW_MY_REPORTING_LINE",
+          "description": ""
+        },
+        {
+          "id": 75,
+          "name": "View Branches",
+          "code_name": "VIEW_BRANCHES",
+          "description": ""
+        },
+        {
+          "id": 77,
+          "name": "Delete Branches",
+          "code_name": "DELETE_BRANCHES",
+          "description": ""
+        },
+        {
+          "id": 175,
+          "name": "Delete Approval Hierarchy",
+          "code_name": "Delete_APPROVAL_HIERARCHY",
+          "description": ""
+        },
+        {
+          "id": 176,
+          "name": "View Approval Hierarchy History & logs",
+          "code_name": "View_APPROVAL_HIERARCHY_HISTORY_LOGS",
+          "description": ""
+        },
+        {
+          "id": 177,
+          "name": "Edit Approval Hierarchy",
+          "code_name": "EDIT_APPROVAL_HIERARCHY",
+          "description": ""
+        },
+        {
+          "id": 178,
+          "name": "Add Level Delegate",
+          "code_name": "ADD_LEVEL_DELEGATE",
+          "description": ""
+        },
+        {
+          "id": 179,
+          "name": "View Level Delegate",
+          "code_name": "VIEW_LEVEL_DELEGATE",
+          "description": ""
+        },
+        {
+          "id": 180,
+          "name": "Delete Level Delegate",
+          "code_name": "DELETE_LEVEL_DELEGATE",
+          "description": ""
+        },
+        {
+          "id": 181,
+          "name": "Edit Level Delegate",
+          "code_name": "EDIT_LEVEL_DELEGATE",
+          "description": ""
+        },
+        {
+          "id": 8,
+          "name": "Delete Asset Category",
+          "code_name": "DELETE_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 1,
+          "name": "View Asset",
+          "code_name": "VIEW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 3,
+          "name": "Edit Asset",
+          "code_name": "EDIT_ASSET",
+          "description": ""
+        },
+        {
+          "id": 7,
+          "name": "Edit Asset Category",
+          "code_name": "EDIT_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 4,
+          "name": "Delete Asset",
+          "code_name": "DELETE_ASSET",
+          "description": ""
+        },
+        {
+          "id": 6,
+          "name": "Add Asset Category",
+          "code_name": "ADD_ASSET_CATEGORY",
+          "description": ""
+        },
+        {
+          "id": 70,
+          "name": "Add Designation",
+          "code_name": "ADD_DESIGNATIONS",
+          "description": ""
+        },
+        {
+          "id": 71,
+          "name": "View Designation",
+          "code_name": "VIEW_DESIGNATIONS",
+          "description": ""
+        },
+        {
+          "id": 9,
+          "name": "View Assets Request",
+          "code_name": "VIEW_ASSETS_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 72,
+          "name": "Edit Designation",
+          "code_name": "EDIT_DESIGNATIONS",
+          "description": ""
+        },
+        {
+          "id": 76,
+          "name": "Edit Branches",
+          "code_name": "EDIT_BRANCHES",
+          "description": ""
+        },
+        {
+          "id": 80,
+          "name": "Edit Working Hours",
+          "code_name": "EDIT_SHIFTS",
+          "description": ""
+        },
+        {
+          "id": 85,
+          "name": "Delete Onboarding Checklist",
+          "code_name": "DELETE_ONBOARDING_CHECKLIST",
+          "description": ""
+        },
+        {
+          "id": 117,
+          "name": "View Shift Calendar",
+          "code_name": "VIEW_SHIFT_CALENDAR",
+          "description": "View approved shift schedule in calendar format with working days, off days, and shift timings"
+        },
+        {
+          "id": 118,
+          "name": "Assign Shift",
+          "code_name": "ASSIGN_SHIFT",
+          "description": ""
+        },
+        {
+          "id": 66,
+          "name": "Add Departments",
+          "code_name": "ADD_DEPARTMENTS",
+          "description": ""
+        },
+        {
+          "id": 67,
+          "name": "View Departments",
+          "code_name": "VIEW_DEPARTMENTS",
+          "description": ""
+        },
+        {
+          "id": 68,
+          "name": "Edit Departments",
+          "code_name": "EDIT_DEPARTMENTS",
+          "description": ""
+        },
+        {
+          "id": 69,
+          "name": "Delete Departments",
+          "code_name": "DELETE_DEPARTMENTS",
+          "description": ""
+        },
+        {
+          "id": 73,
+          "name": "Delete Designation",
+          "code_name": "DELETE_DESIGNATIONS",
+          "description": ""
+        },
+        {
+          "id": 74,
+          "name": "Add Branches",
+          "code_name": "ADD_BRANCHES",
+          "description": ""
+        },
+        {
+          "id": 79,
+          "name": "View Working Hours",
+          "code_name": "VIEW_SHIFTS",
+          "description": ""
+        },
+        {
+          "id": 84,
+          "name": "Edit Onboarding Checklist",
+          "code_name": "EDIT_ONBOARDING_CHECKLIST",
+          "description": ""
+        },
+        {
+          "id": 14,
+          "name": "Withdraw Asset",
+          "code_name": "WITHDRAW_ASSET",
+          "description": ""
+        },
+        {
+          "id": 23,
+          "name": "View Personal Information",
+          "code_name": "VIEW_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 24,
+          "name": "Edit Personal Information",
+          "code_name": "EDIT_PERSONAL_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 25,
+          "name": "View Job Information",
+          "code_name": "VIEW_JOB_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 26,
+          "name": "Edit Academic Information",
+          "code_name": "EDIT_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 27,
+          "name": "View Academic Information",
+          "code_name": "VIEW_ACADEMIC_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 28,
+          "name": "View Experience Information",
+          "code_name": "VIEW_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 29,
+          "name": "Edit Experience Information",
+          "code_name": "EDIT_EXPERIENCE_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 30,
+          "name": "View Certification Information",
+          "code_name": "VIEW_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 31,
+          "name": "Edit Certification Information",
+          "code_name": "EDIT_CERTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 32,
+          "name": "View Identification Information",
+          "code_name": "VIEW_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 33,
+          "name": "Edit Identification Information",
+          "code_name": "EDIT_IDENTIFICATION_INFORMATION",
+          "description": ""
+        },
+        {
+          "id": 34,
+          "name": "Mark My Attendance",
+          "code_name": "MARK_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 35,
+          "name": "Log Break Time",
+          "code_name": "MARK_BREAK",
+          "description": ""
+        },
+        {
+          "id": 36,
+          "name": "View Attendance Records",
+          "code_name": "VIEW_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 37,
+          "name": "Create Daily Task Report",
+          "code_name": "ADD_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 38,
+          "name": "View Daily Task Report",
+          "code_name": "VIEW_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 39,
+          "name": "Submit Daily Task Report",
+          "code_name": "SUBMIT_DAILY_TASK_REPORT",
+          "description": ""
+        },
+        {
+          "id": 40,
+          "name": "Add Leave Request",
+          "code_name": "ADD_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 41,
+          "name": "View Applied Leaves",
+          "code_name": "VIEW_LEAVES_APPLIED",
+          "description": ""
+        },
+        {
+          "id": 42,
+          "name": "Delete Leave Request",
+          "code_name": "DELETE_LEAVE_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 43,
+          "name": "View Consumed Leaves",
+          "code_name": "VIEW_CONSUMED_LEAVES",
+          "description": ""
+        },
+        {
+          "id": 44,
+          "name": "View Payroll",
+          "code_name": "VIEW_PAYROLL",
+          "description": ""
+        },
+        {
+          "id": 45,
+          "name": "Request Claim",
+          "code_name": "REQUEST_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 46,
+          "name": "View Claims",
+          "code_name": "VIEW_CLAIMS",
+          "description": ""
+        },
+        {
+          "id": 47,
+          "name": "Delete Claim",
+          "code_name": "DELETE_CLAIM",
+          "description": ""
+        },
+        {
+          "id": 48,
+          "name": "Request Transfer",
+          "code_name": "REQUEST_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 49,
+          "name": "View Transfer",
+          "code_name": "VIEW_TRANSFER",
+          "description": ""
+        },
+        {
+          "id": 50,
+          "name": "View Assigned Documents",
+          "code_name": "VIEW_ASSIGNED_DOCUMENTS",
+          "description": ""
+        },
+        {
+          "id": 51,
+          "name": "Manage Assigned Documents",
+          "code_name": "MANAGE_ASSIGNED_DOCUMENTS",
+          "description": "View, acknowledge, and sign assigned documents"
+        },
+        {
+          "id": 174,
+          "name": "View Assigned Asset",
+          "code_name": "VIEW_ASSIGNED_MY_ASSETS",
+          "description": ""
+        },
+        {
+          "id": 52,
+          "name": "Submit Resignation",
+          "code_name": "SUBMIT_RESIGNATION",
+          "description": ""
+        },
+        {
+          "id": 53,
+          "name": "View Exit Request",
+          "code_name": "VIEW_EXIT_REQUEST",
+          "description": "View submitted exit requests, including resignations and terminations"
+        },
+        {
+          "id": 54,
+          "name": "Manage Termination Requests",
+          "code_name": "MANAGE_TERMINATION_REQUESTS",
+          "description": "Approve or reject termination requests"
+        },
+        {
+          "id": 13,
+          "name": "Request New Asset",
+          "code_name": "ADD_ASSET_REQUEST",
+          "description": ""
+        },
+        {
+          "id": 192,
+          "name": "Update Branch Employees Attendance",
+          "code_name": "UPDATE_BRN_EMP_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 193,
+          "name": "Update Reporting Line Employees Attendance",
+          "code_name": " UPDATE_RL_EMP_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 185,
+          "name": "View Department Leave Status",
+          "code_name": "VIEW_DEPARTMENT_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 186,
+          "name": "View Branch Leave Status",
+          "code_name": "VIEW_BRANCH_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 187,
+          "name": "View Reporting Line Leave Status",
+          "code_name": "VIEW_REPORTING_LINE_LEAVE_STATUS",
+          "description": ""
+        },
+        {
+          "id": 188,
+          "name": "View attendance record of all the employees in the department",
+          "code_name": "VIEW_DPT_EMPS_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 189,
+          "name": "View Branch Attendance",
+          "code_name": "VIEW_BRN_EMPS_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 190,
+          "name": " View Reporting Line Attendance",
+          "code_name": "VIEW_RL_EMPS_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 191,
+          "name": "Update Department Employees Attendance",
+          "code_name": " UPDATE_DPT_EMP_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 203,
+          "name": "VIEW SHIFT HISTORY LOGS",
+          "code_name": "VIEW_SHIFT_HISTORY_LOGS",
+          "description": ""
+        },
+        {
+          "id": 197,
+          "name": "VIEW PENDING SCHEDULES",
+          "code_name": "VIEW_PENDING_SCHEDULES",
+          "description": ""
+        },
+        {
+          "id": 204,
+          "name": "VIEW MY SHIFT CALENDAR",
+          "code_name": "VIEW_MY_SHIFT_CALENDAR",
+          "description": ""
+        },
+        {
+          "id": 205,
+          "name": "REQUEST MY SHIFT CHANGE",
+          "code_name": "REQUEST_MY_SHIFT_CHANGE",
+          "description": ""
+        },
+        {
+          "id": 206,
+          "name": "VIEW MY SHIFT CHANGE REQUESTS",
+          "code_name": "VIEW_MY_SHIFT_CHANGE_REQUESTS",
+          "description": ""
+        },
+        {
+          "id": 218,
+          "name": "Request Shift Change",
+          "code_name": "REQUEST_SHIFT_CHANGE",
+          "description": ""
+        },
+        {
+          "id": 223,
+          "name": "View Shift Change Requests",
+          "code_name": "VIEW_SHIFT_CHANGE_REQUESTS",
+          "description": ""
+        },
+        {
+          "id": 196,
+          "name": "SCHEDULE EMPLOYEE SHIFT",
+          "code_name": "SCHEDULE_EMPLOYEE_SHIFT",
+          "description": ""
+        },
+        {
+          "id": 198,
+          "name": "APPROVE SHIFT SCHEDULES",
+          "code_name": "APPROVE_SHIFT_SCHEDULES",
+          "description": ""
+        },
+        {
+          "id": 201,
+          "name": "REQUEST SHIFT CHANGE FOR TEAM",
+          "code_name": "REQUEST_SHIFT_CHANGE_FOR_TEAM",
+          "description": ""
+        },
+        {
+          "id": 194,
+          "name": "Update Department Employees Attendance",
+          "code_name": "UPDATE_DPT_EMP_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 195,
+          "name": "Update Reporting Line Employees Attendance",
+          "code_name": "UPDATE_RL_EMP_ATTENDANCE",
+          "description": ""
+        },
+        {
+          "id": 207,
+          "name": "Request Time Adjustment",
+          "code_name": "REQUEST_TIME_ADJUSTMENT",
+          "description": ""
+        },
+        {
+          "id": 208,
+          "name": "Update Attendance Request",
+          "code_name": "UPDATE_ATTENDANCE_REQUEST",
+          "description": "User can submit update attendance request for a day"
+        },
+        {
+          "id": 209,
+          "name": "Time Adjustment Request",
+          "code_name": "TIME_ADJ_REQUEST",
+          "description": "User can submit time adjustment request if checked-in as late"
+        },
+        {
+          "id": 210,
+          "name": "View Time Adjustment Requests",
+          "code_name": "VIEW_TIME_ADJ_REQUESTS",
+          "description": "View time adjustments requests of all employees"
+        },
+        {
+          "id": 211,
+          "name": "View Branch Time Adjustment Requests",
+          "code_name": "VIEW_BRN_TIME_ADJ_REQUESTS",
+          "description": "View time adjustments requests of branch employees"
+        },
+        {
+          "id": 212,
+          "name": "View Department Time Adjustment Requests",
+          "code_name": "VIEW_DPT_TIME_ADJ_REQUESTS",
+          "description": "View time adjustments requests of department employees"
+        },
+        {
+          "id": 213,
+          "name": "View Time Adjustment Logs",
+          "code_name": "VIEW_TIME_ADJ_LOGS",
+          "description": ""
+        },
+        {
+          "id": 214,
+          "name": "Manage Time Adjustment Requests",
+          "code_name": "MANAGE_TIME_ADJ_REQUESTS",
+          "description": "Can approve/reject the request of time adjustments by employees"
+        },
+        {
+          "id": 215,
+          "name": "View Time Adjustment Requests",
+          "code_name": "VIEW_ATT_UPDATE_LOGS",
+          "description": "View time adjustments requests of all employees"
+        },
+        {
+          "id": 216,
+          "name": "View Branch Time Adjustment Requests",
+          "code_name": "VIEW_BRN_ATT_UPDATES_LOGS",
+          "description": "View time adjustments requests of branch employees"
+        },
+        {
+          "id": 217,
+          "name": "View Department Time Adjustment Requests",
+          "code_name": "VIEW_DPT_ATT_UPDATES_LOGS",
+          "description": "View time adjustments requests of department employees"
+        },
+        {
+          "id": 224,
+          "name": "VIEW SHIFT REQUEST RECORDS",
+          "code_name": "VIEW_SHIFT_REQUEST_RECORDS",
+          "description": ""
+        },
+        {
+          "id": 225,
+          "name": "ASSIGN SHIFT DIRECTLY",
+          "code_name": "ASSIGN_SHIFT_DIRECTLY",
+          "description": ""
+        },
+        {
+          "id": 199,
+          "name": "EDIT PENDING SCHEDULES",
+          "code_name": "EDIT_PENDING_SCHEDULES",
+          "description": ""
+        },
+        {
+          "id": 226,
+          "name": "View Department Leave Request",
+          "code_name": "VIEW_DPT_LEAVE_REQUEST",
+          "description": "Can view the the leave request of the employees in the department"
+        },
+        {
+          "id": 227,
+          "name": "View Branch Leave Request",
+          "code_name": "VIEW_BRN_LEAVE_REQUEST",
+          "description": "Can view the the leave request of the employees in the branch"
+        },
+        {
+          "id": 228,
+          "name": "Add Approval Hierarchy",
+          "code_name": "CREATE_LEAVE_DURATION",
+          "description": ""
+        },
+        {
+          "id": 229,
+          "name": "View Approval Hierarchy",
+          "code_name": "VIEW_LEAVE_DURATION",
+          "description": ""
+        },
+        {
+          "id": 230,
+          "name": "Delete Approval Hierarchy",
+          "code_name": "DELETE_LEAVE_DURATION",
+          "description": ""
+        },
+        {
+          "id": 231,
+          "name": "Edit Approval Hierarchy",
+          "code_name": "EDIT_LEAVE_DURATION",
+          "description": ""
+        },
+        {
+          "id": 232,
+          "name": "View Public Holidays",
+          "code_name": "VIEW_PUBLIC_HOLIDAYS",
+          "description": ""
+        },
+        {
+          "id": 233,
+          "name": "Add Public Holidays",
+          "code_name": "ADD_PUBLIC_HOLIDAYS",
+          "description": ""
+        },
+        {
+          "id": 234,
+          "name": "Edit Public Holidays",
+          "code_name": "EDIT__PUBLIC_HOLIDAYS",
+          "description": ""
+        },
+        {
+          "id": 235,
+          "name": "Delete Public Holiday",
+          "code_name": "DELETE__PUBLIC_HOLIDAYS",
+          "description": ""
+        },
+        {
+          "id": 202,
+          "name": "EDIT EMPLOYEE SHIFT",
+          "code_name": "EDIT_EMPLOYEE_SHIFT",
+          "description": ""
+        }
+      ]
+    }
+  ]
+}

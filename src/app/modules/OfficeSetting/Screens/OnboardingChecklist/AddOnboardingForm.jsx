@@ -18,8 +18,18 @@ const validateOnboardingFormSchema = (values) => {
   return errors;
 };
 
-const AddOnboardingForm = ({ isOpen, setIsOpen, reload, onboardingItem=null }) => {
+const AddOnboardingForm = ({ 
+  isOpen, 
+  setIsOpen, 
+  reload, 
+  edit = null, 
+  onUpdateSuccess = null 
+}) => {
   const [closeSheet, setCloseSheet] = useState(false);
+  
+  // Extract onboarding item from edit prop to match other forms
+  const onboardingItem = edit?.data || edit;
+  
   const [initialValues, setInitialValues] = useState(
     onboardingItem || OnboardingDocumentTemplate
   );
@@ -35,7 +45,6 @@ const AddOnboardingForm = ({ isOpen, setIsOpen, reload, onboardingItem=null }) =
   const handleSubmit = async (values) => {
     try {
       setIsSubmitting(true);
-      console.log("VALUES in handle submit", values);
 
       const response = await saveOnboardingDocument(values?.id, values);
       if (response) {
@@ -46,9 +55,12 @@ const AddOnboardingForm = ({ isOpen, setIsOpen, reload, onboardingItem=null }) =
           }
         );
 
-        if (reload) reload();
-        setIsOpen(false);
+        // Call the update success callback if provided
+        if (onUpdateSuccess && typeof onUpdateSuccess === "function") {
+          await onUpdateSuccess(values);
+        }
 
+        setIsOpen(true); // Pass true to indicate successful update
       }
     } catch (error) {
       console.error("Error during submission:", error);
@@ -84,7 +96,6 @@ const AddOnboardingForm = ({ isOpen, setIsOpen, reload, onboardingItem=null }) =
         >
           {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
-              {console.log("FORMIK PROPS:", props.values)}
               <SheetCardExtension title="Document Details">
                 <TextInput
                   name="name"

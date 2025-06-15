@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
-const pathNames = (userProfile) => {
+import { Button } from "components/ui/button";
+import { ArrowLeft } from "lucide-react";
+
+const pathNames = () => {
   return {
     "people-team": "People Team",
     "team-profile-management": "Team Managment",
@@ -25,7 +28,7 @@ const pathNames = (userProfile) => {
     "exit-employee": "Employee Offboarding",
     "claim-request": "Claim Request",
     "my-claims": "My Claims",
-    projects: `${userProfile.role === 4 ? "My Projects" : "All Projects"}`,
+    projects: `Projects`,
     "leave-records": "Leave Records",
     applications: "Applications",
     applicants: "Applicants",
@@ -48,7 +51,10 @@ const pathNames = (userProfile) => {
     "create-task": "Create Task",
     "my-dtr": "Daily Tasks Report",
     "employee-dtrs": "Daily Tasks Report",
-    settings: "Settings",
+    "user-role/add": "Add User Role",
+    "user-role/edit": "Update User Role",
+    "role-permission/history-logs": "Role Assignment History & Logs",
+    "role-permission": "Role & Permission",
     "travel-details": "Travel Details",
     "customise-employees": "Customize Employees",
     relocation: "Relocation",
@@ -71,37 +77,68 @@ const pathNames = (userProfile) => {
     "job-application": "Job Application",
     "job-application-form": "Job Application Form",
     "job-description": "Job Description",
-    "office-settings": "Organization Setup",
     "my-attendance": "Attendance History",
     "employee-tranfer": "Employee Transfer",
     "my-tranfers": "My Tranfers",
     assets: "Assets",
     "my-assets": "My Assets",
+    "my-shift-calendar": "My Shift Calendar",
     "request-and-assign": "Request and Assign",
     documents: "HR Documents",
     "my-documents": "HR Documents",
     "on-hold-salaries": "On-Hold Salaries",
+    "hierarchy-detail": "Approval Hierarchy Detail",
+    "office-settings/approval-hierarchy": "Approval Hierarchy",
+    "leave-setup": "Leave Setup",
+    "office-settings": "Organization Setup",
+    settings: "Settings",
+    "time-adjustments": "Time Ajustments",
+    "employee-leave-count": "Employee Leave Count",
   };
 };
 
-const Header = ({ content, userProfile }) => {
+const Header = ({
+  content,
+  showBackButton = false,
+  navigationLink = "-1",
+  showTitle = true,
+}) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [pathName, setPathName] = useState("");
   const PATHNAMELIST = React.useMemo(() => {
-    return pathNames(userProfile);
-  }, [userProfile]);
+    return pathNames();
+  }, []);
 
   useEffect(() => {
     const path = location.pathname.replace(/^\//, "");
-    const matchedPathKey = Object.keys(PATHNAMELIST).find((key) => path.includes(key));
+    const matchedPathKey = Object.keys(PATHNAMELIST).find((key) =>
+      path.includes(key)
+    );
     setPathName(PATHNAMELIST[matchedPathKey] || "Dashboard");
   }, [location]);
 
   return (
     <div className="flex flex-row items-center justify-between px-4 py-4">
-      <h3 className="text-lg font-semibold capitalize sm:text-xl md:text-2xl lg:text-3xl">
-        {pathName}
-      </h3>
+      <div className="flex flex-row gap-2">
+        {showBackButton && (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              navigate(navigationLink);
+            }}
+            className="p-0 text-xl text-balance hover:bg-transparent"
+          >
+            <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
+            {!showTitle ? "Go Back" : ""}
+          </Button>
+        )}
+        {showTitle && (
+          <h3 className="text-lg font-semibold capitalize sm:text-xl md:text-2xl lg:text-3xl">
+            {pathName}
+          </h3>
+        )}
+      </div>
       <div className="flex flex-wrap justify-end gap-3">{content}</div>
     </div>
   );

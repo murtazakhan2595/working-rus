@@ -13,7 +13,7 @@ import { useDispatch } from "react-redux";
 
 const FormSheetData = {
   triggerText: "Submit",
-  title: "Add New Category",
+  title: "Add Category",
   description: null,
   footer: null,
   width: "560px",
@@ -80,10 +80,10 @@ const CategoryForm = ({ id = null, isOpen = true, setIsOpen = () => {} }) => {
         submitButtonText: id ? "Update" : "Add",
         cancelButtonText: "Cancel",
         columns: 1,
-        formFiels: [
+        formFields: [
           {
             sheetCardExtension: false,
-            InputFiels: [
+            InputFields: [
               {
                 InputField: TextInput,
                 name: "name",

@@ -207,10 +207,10 @@ const EmployeeSalarySetup = () => {
                     submitButtonText: "Save",
                     onFormChange: calculateCTC,
                     columns: 3,
-                    formFiels: [
+                    formFields: [
                       {
                         sheetCardExtension: false,
-                        InputFiels: [
+                        InputFields: [
                           {
                             InputField: RadioGroupInput,
                             name: "salary_breakdown_type",

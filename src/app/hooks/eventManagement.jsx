@@ -13,7 +13,7 @@ const formDataHeader = () => ({
 });
 
 
-const saveEvent = async (payload) => {
+export const saveEvent = async (payload) => {
   try {
     if (payload?.id) {
       // If there's an ID, use PATCH to update the existing asset request
@@ -50,7 +50,7 @@ const saveEvent = async (payload) => {
   }
 };
 
-const getEventList = async (payload) => {
+export const getEventList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -80,7 +80,7 @@ const getEventList = async (payload) => {
   }
 };
 
-const deleteEvent = async (id) => {
+export const deleteEvent = async (id) => {
   try {
     const response = await axios.delete(`${baseUrl}/dashboard-events/${id}/`, {
       headers: headers(),
@@ -96,5 +96,3 @@ const deleteEvent = async (id) => {
     return false;
   }
 }
-
-export { saveEvent, getEventList, deleteEvent };

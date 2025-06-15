@@ -1,22 +1,10 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment";
-import {
-  CalendarIcon,
-  FilterIcon,
-  PlayCircle,
-  StopCircle,
-  PauseCircle,
-} from "lucide-react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { formatDuration } from "utils/renderValues";
 import { renderDate } from "utils/renderValues";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "src/@/components/ui/tooltip";
+import { TimeAdjustmentRequest } from "app/modules/Attendance";
 import {
   endBreak,
   saveAttendance,
@@ -24,23 +12,30 @@ import {
   calculateBreak,
 } from "app/hooks/attendance";
 import { Button } from "components/ui/button";
+import AlertDialogue from "components/ui/AlertDialogue";
+import { StatusLabel } from "components";
+import { DetailBox } from "components/SheetCardExtension";
 
 export default function EmployeeSelfTimesheet({
-  employeeShift,
   attendance,
   OnBreak,
   disable,
   reloadData,
   isDashboard = false,
 }) {
+  const { today_shift } = useSelector(
+    (state) => state.attendance.attendance_details
+  );
   const [payableHours, setPayableHours] = useState(
     parseFloat(attendance?.payable_hours) || 0
   );
-
   const updateTimer = () => {
-    const checkInDate = moment(attendance.checkin); // Check-in time
-    const now = moment(); // Current time
-
+    const isSplitShit = today_shift?.is_split_shift;
+    const checkInDate =
+      isSplitShit && attendance?.second_checkin
+        ? moment(attendance?.second_checkin)
+        : moment(attendance?.checkin); // Check-in time
+    const now = moment().utc(); // Current time
     // Parse break duration (in hours) and convert to milliseconds
     const breakMs = parseFloat(attendance?.break_duration || 0) * 3600 * 1000;
 
@@ -55,18 +50,26 @@ export default function EmployeeSelfTimesheet({
   };
 
   useEffect(() => {
-    if (!OnBreak && attendance?.checkin && !attendance?.checkout) {
-      updateTimer(); // Initial update
-
-      const interval = setInterval(updateTimer, 1000); // Update every second
-
-      return () => clearInterval(interval); // Cleanup on unmount
+    if (!OnBreak && attendance) {
+      if (attendance?.checkin && !attendance.checkout) {
+        updateTimer(); // Initial update
+        const interval = setInterval(updateTimer, 1000); // Update every second
+        return () => clearInterval(interval); // Cleanup on unmount
+      } else if (attendance?.second_checkin && !attendance.second_checkout) {
+        updateTimer(); // Initial update
+        const interval = setInterval(updateTimer, 1000); // Update every second
+        return () => clearInterval(interval); // Cleanup on unmount
+      } else {
+        setPayableHours(parseFloat(attendance?.payable_hours) || 0);
+      }
+    } else if (OnBreak) {
+      updateTimer();
     }
-  }, [attendance, OnBreak]);
+  }, [attendance, OnBreak, today_shift]);
 
   return (
     // if isDashboard is false, then the div will  have border and shadow
-    <div className={isDashboard ? "" : " rounded-lg shadow-sm bg-white"}>
+    <div className={isDashboard ? "" : " rounded-lg shadow-sm bg-white h-full"}>
       {/* if isDashboard is true, then the div will not have border and shadow */}
       <div className={isDashboard ? "" : "p-4 "}>
         <div className="flex items-center justify-between text-lg font-semibold">
@@ -78,22 +81,63 @@ export default function EmployeeSelfTimesheet({
       </div>
       <div className={isDashboard ? "" : "p-4"}>
         <div className="space-y-2">
-          <div className="flex justify-between">
-            <span className="text-slate-1200">Checkin Time</span>
-            {attendance?.checkin
-              ? moment(attendance.checkin).format("h:mm A")
-              : "Start working!"}
-          </div>
-          <div className="flex justify-between">
-            <span className="text-slate-1200">Shift Time</span>
-            {employeeShift?.shiftStartTime && employeeShift?.shiftEndTime ? (
-              <span>
-                {employeeShift.shiftStartTime} -{employeeShift.shiftEndTime}
-              </span>
-            ) : (
-              "No shift assigned"
-            )}
-          </div>
+          <DetailBox
+            value={
+              attendance?.checkin
+                ? renderDate(attendance?.checkin, "--", "time")
+                : "Start working!"
+            }
+            valueClassName="text-end"
+            label="Check-in Time"
+          />
+          {attendance?.checkin && (
+            <DetailBox
+              value={
+                attendance?.checkout
+                  ? renderDate(attendance?.checkout, "--", "time")
+                  : "Still Working"
+              }
+              valueClassName="text-end"
+              label="Check-out Time"
+            />
+          )}
+          {today_shift?.shift_assigned ? (
+            !today_shift?.isOffToday && (
+              <DetailBox
+                value={today_shift?.shifts.map(({ start_time, end_time }) => (
+                  <span>
+                    {start_time} - {end_time}
+                  </span>
+                ))}
+                valueClassName="text-end flex flex-col w-fil min-w-[165px]"
+                label="Shift Time"
+              />
+            )
+          ) : (
+            <DetailBox
+              value={"No shift assigned"}
+              valueClassName="text-end"
+              label="Shift Time"
+            />
+          )}
+          {attendance?.status && (
+            <DetailBox
+              value={
+                today_shift?.isOffToday ? (
+                  <StatusLabel variant="info">
+                    {today_shift?.OffLabel}
+                  </StatusLabel>
+                ) : (
+                  <StatusLabel status={attendance?.status}>
+                    {attendance?.status}
+                  </StatusLabel>
+                )
+              }
+              label="Attendance Status"
+              labelClassName="w-50"
+              valueClassName="justify-end flex"
+            />
+          )}
           <div className="flex flex-row flex-wrap items-center justify-center mt-4">
             <div className="relative">
               <svg className="w-32 h-32">
@@ -113,7 +157,7 @@ export default function EmployeeSelfTimesheet({
                   strokeDashoffset={
                     payableHours > 0 && parseFloat(attendance?.total_hours) > 0
                       ? 365 *
-                        (1 - payableHours / parseFloat(attendance.total_hours))
+                        (1 - payableHours / parseFloat(attendance?.total_hours))
                       : 365 // Full offset for 0 hours or invalid state
                   }
                   strokeLinecap="round"
@@ -131,30 +175,28 @@ export default function EmployeeSelfTimesheet({
           </div>
           <div className="flex justify-between mt-4">
             <div>
-              {/* <div className="text-slate-1200">
-                Break ({formatDuration(attendance?.break_duration)})
-              </div> */}
               <div>
                 <RenderBreakButton
                   disable={disable}
                   attendance={attendance}
-                  employeeShift={employeeShift}
+                  Shift={today_shift}
                   OnBreak={OnBreak}
                   reloadData={reloadData}
                 />
               </div>
             </div>
             <div>
-              {/* <div className="text-slate-1200">Overtime</div>
-              <div>{formatDuration(attendance?.overtime_hours) ?? "0"}</div> */}
-              <div>
+              <div className="flex flex-col gap-2">
                 <RenderLogInButton
                   disable={disable}
                   attendance={attendance}
-                  employeeShift={employeeShift}
+                  Shift={today_shift}
                   OnBreak={OnBreak}
                   reloadData={reloadData}
                 />
+                {attendance?.status === "Late" && (
+                  <TimeAdjustmentRequest attendance={attendance} />
+                )}
               </div>
             </div>
           </div>
@@ -167,18 +209,21 @@ export default function EmployeeSelfTimesheet({
 const RenderBreakButton = ({
   disable,
   attendance,
-  employeeShift,
+  Shift,
   OnBreak,
   reloadData = () => {},
 }) => {
+  const isSplitShift = Shift?.is_split_shift;
   const userProfile = useSelector((state) => state.user.userProfile);
-  if (attendance && attendance.checkout) {
-    return null;
-  }
-  if (!employeeShift?.shiftStartTime || !employeeShift?.shiftEndTime)
-    return null;
+  if (isSplitShift && attendance && attendance?.second_checkout) return null;
+  if (!isSplitShift && attendance && attendance?.checkout) return null;
 
-  const disableBreakButton = disable || !attendance?.checkin;
+  if (!Shift?.shifts || Shift?.shifts?.length === 0) return null;
+
+  const disableBreakButton =
+    disable ||
+    !attendance?.checkin ||
+    (isSplitShift && !attendance?.second_checkin);
 
   const startBreak = async () => {
     const startTime = moment().utc().toISOString();
@@ -186,7 +231,7 @@ const RenderBreakButton = ({
       break_type: "Lunch",
       starttime: startTime,
       employee_id: userProfile.id,
-      attendance: attendance.id,
+      attendance: attendance?.id,
     };
     const response = await saveBreak(payload);
     if (response) {
@@ -202,7 +247,7 @@ const RenderBreakButton = ({
         {
           filterData: {
             employee_id: userProfile.id,
-            attendance: attendance.id,
+            attendance: attendance?.id,
           },
         },
         endTime
@@ -213,11 +258,11 @@ const RenderBreakButton = ({
         const breakDuration = await calculateBreak({
           filterData: {
             employee_id: userProfile.id,
-            attendance: attendance.id,
+            attendance: attendance?.id,
           },
         });
         const payload = {
-          id: attendance.id,
+          id: attendance?.id,
           break_duration: breakDuration,
         };
         const response = await saveAttendance(payload);
@@ -258,74 +303,81 @@ const RenderBreakButton = ({
 const RenderLogInButton = ({
   disable,
   attendance,
-  employeeShift,
+  Shift,
   OnBreak,
   reloadData = () => {},
 }) => {
+  const isSplitShift = Shift?.is_split_shift;
   const userProfile = useSelector((state) => state.user.userProfile);
-  const user_details = useSelector((state) => state.emp.user_details);
+  const [showCheckoutAlert, setShowCheckoutAlert] = useState(false);
+  const handleCheckoutClick = () => {
+    setShowCheckoutAlert(true);
+  };
+  if (isSplitShift && attendance && attendance?.second_checkout) return null;
+  if (!isSplitShift && attendance && attendance?.checkout) return null;
 
-  if (attendance && attendance.checkout) {
-    return null;
-  }
-  if (!employeeShift?.shiftStartTime || !employeeShift?.shiftEndTime)
-    return null;
+  if (!Shift?.shifts || Shift?.shifts?.length === 0) return null;
   const startShift = async () => {
-    if (attendance && attendance.checkout) {
+    debugger;
+    if (attendance && attendance?.checkout && !isSplitShift) {
       toast.success("Shift already ended");
       return;
     }
-    if (!attendance) {
-      const checkInTime = moment().utc().toISOString();
-      const checkInMoment = moment(checkInTime);
-      const shiftStartMoment = moment(employeeShift.starttime);
-      // Extract only hours and minutes for both times
-      const checkInTimeOnly = moment.utc(
-        `${checkInMoment.format("HH:mm")}`,
-        "HH:mm"
-      );
-      const shiftStartTimeOnly = moment.utc(
-        `${shiftStartMoment.format("HH:mm")}`,
-        "HH:mm"
-      );
-
-      // Compare time only
-      const is_late = checkInTimeOnly.isAfter(shiftStartTimeOnly);
-      const payload = {
-        checkin: checkInTime,
-        status: is_late ? "Late" : "Present",
-        is_late: is_late,
-        employee_id: userProfile.id,
-        date: moment().format("YYYY-MM-DD"),
-      };
-      const response = await saveAttendance(payload, user_details);
-      if (response) {
-        toast.success("Shift started");
-        reloadData(true);
-      }
+    if (attendance && attendance?.second_checkout && isSplitShift) {
+      toast.success("Shift already ended");
       return;
     }
+    const checkInTime = moment().utc().toISOString();
+    // Compare time only
+    const payload = {
+      employee_id: userProfile.id,
+      date: moment().format("YYYY-MM-DD"),
+    };
+    if (isSplitShift && attendance?.checkin && !attendance?.second_checkin)
+      payload.second_checkin = checkInTime;
+    else if (!attendance?.checkin) payload.checkin = checkInTime;
+    const response = await saveAttendance(payload, Shift, attendance?.id);
+    if (response) {
+      toast.success("Shift started");
+      reloadData(true);
+    }
+    return;
   };
 
   const endShift = async () => {
     const checkout = moment().utc().toISOString();
     const payload = {
-      ...attendance,
-      id: attendance.id,
-      checkout: checkout,
+      break_duration: attendance?.break_duration,
+      checkin: attendance?.checkin,
+      second_checkin: attendance?.second_checkin,
+      id: attendance?.id,
+      payable_hours: attendance?.payable_hours,
+      date: attendance.date,
     };
-    const response = await saveAttendance(payload, user_details);
+    if (
+      isSplitShift &&
+      attendance?.second_checkin &&
+      !attendance?.second_checkout
+    )
+      payload.second_checkout = checkout;
+    else if (!attendance?.checkout) payload.checkout = checkout;
+
+    const response = await saveAttendance(payload, Shift, attendance?.id);
     if (response) {
       toast.success("Shift ended");
       reloadData(true);
+      setShowCheckoutAlert(false);
     }
   };
   const disableCheckOutButton = OnBreak || disable;
   const disableCheckInButton = disable;
   // If attendance exists and not on break, show Pause and Stop
+
+  const showCheckInButton =
+    !attendance?.checkin || (isSplitShift && !attendance?.second_checkin);
   return (
-    <>
-      {!attendance?.checkin ? (
+    <div className="flex flex-col gap-3">
+      {showCheckInButton ? (
         <Button
           variant="default"
           size="sm"
@@ -335,15 +387,31 @@ const RenderLogInButton = ({
           Check In
         </Button>
       ) : (
-        <Button
-          variant="default"
-          size="sm"
-          disabled={disableCheckOutButton}
-          onClick={endShift}
-        >
-          Check Out
-        </Button>
+        <>
+          <Button
+            variant="default"
+            size="sm"
+            disabled={disableCheckOutButton}
+            onClick={handleCheckoutClick}
+          >
+            Check Out
+          </Button>
+
+          {showCheckoutAlert && (
+            <AlertDialogue
+              title="Confirm Checkout"
+              description="Are you sure you want to checkout?"
+              isOpen={showCheckoutAlert}
+              setIsOpen={setShowCheckoutAlert}
+              handleContinue={() => {
+                endShift();
+              }}
+              continueText="Yes, Checkout"
+              cancelText="Cancel"
+            />
+          )}
+        </>
       )}
-    </>
+    </div>
   );
 };

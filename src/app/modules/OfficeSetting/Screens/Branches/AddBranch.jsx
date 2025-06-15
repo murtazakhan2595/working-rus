@@ -2,9 +2,13 @@ import { SheetCardExtension } from "components/SheetCardExtension";
 import SheetComponent from "components/ui/SheetComponent";
 import React, { useState } from "react";
 import AddBranchForm from "app/modules/OfficeSetting/Screens/Branches/AddBranchForm";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
+import { OfficeSettingPermissionWrapper } from "../../components/PermissionWrapper";
+import { OFFICE_SETTING_PERMISSIONS } from "../../permissions/constants";
 
 const AddBranch = ({ reload = () => {} }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const permissions = useOfficeSettingPermissions();
 
   const formSheetData = {
     triggerText: "Add New Branch",
@@ -12,6 +16,10 @@ const AddBranch = ({ reload = () => {} }) => {
     description: null,
     footer: null,
   };
+
+  if (!permissions.branches.canCreate) {
+    return null;
+  }
 
   return (
     <SheetComponent

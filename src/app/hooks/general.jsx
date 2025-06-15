@@ -8,7 +8,7 @@ import {
   mapBranchList,
   mapBranchPayloadData,
 } from "app/utils/MappingObjects/mapOfficeSettingData";
-import { useDispatch } from "react-redux";
+import { renderErrorMessages } from "utils/renderErrors";
 import { fetchDepartments } from "state/slices/CommonSlice";
 
 const baseUrl = initialState.baseUrl;
@@ -17,46 +17,11 @@ const headers = () => ({
   "Content-Type": "application/json",
 });
 
-// const getDepartmentList = async (payload) => {
-//   const pageNo = payload?.options?.page ?? "";
-//   const pageSize = payload?.options?.sizePerPage ?? "";
-//   const filterData = payload?.filterData ?? {};
-//   try {
-//     const URL = `/department/?ordering=-created_at&${
-//       pageNo ? `page=${pageNo}&` : ""
-//     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-//       JSON.stringify(filterData)
-//     )}`;
-//     const response = await axios.get(`${baseUrl}${URL}`, {
-//       headers: headers(),
-//     });
-//     if (response.status === 200) {
-//       const departmentResponse = response.data;
-//       const departmentList = await departmentResponse?.results?.map(
-//         (department) => ({
-//           value: department.id,
-//           label: department.name,
-//           created_at: department.created_at,
-//           description: department.description,
-//           id: department.id,
-//           name: department.name,
-//           organization: department.organization,
-//           updated_at: department.updated_at,
-//           parent_department: department.parent_department,
-//         })
-//       );
-//       return { results: departmentList, count: departmentResponse.count };
-//     } else return [];
-//   } catch (error) {
-//     console.error("Error fetching Personal Info data :", error);
-//   }
-//   return [];
-// };
- const getDepartmentList = async (payload) => {
+const getDepartmentList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const ordering = payload?.ordering ?? "created_at";
+  const ordering = payload?.ordering ?? "name";
   try {
     const URL = `/department/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
@@ -70,20 +35,19 @@ const headers = () => ({
       const departmentResponse = response.data;
       // const departmentList = await mapDepartmentList(departmentResponse?.results);
       const departmentList = await departmentResponse?.results?.map(
-                (department) => ({
-                  value: department.id,
-                  label: department.name,
-                  created_at: department.created_at,
-                  description: department.description,
-                  id: department.id,
-                  name: department.name,
-                  organization: department.organization,
-                  updated_at: department.updated_at,
-                  parent_department: department.parent_department,
-                })
-              );
-              return { results: departmentList, count: departmentResponse.count };
-      
+        (department) => ({
+          value: department.id,
+          label: department.name,
+          created_at: department.created_at,
+          description: department.description,
+          id: department.id,
+          name: department.name,
+          organization: department.organization,
+          updated_at: department.updated_at,
+          parent_department: department.parent_department,
+        })
+      );
+      return { results: departmentList, count: departmentResponse.count };
     } else return [];
   } catch (error) {
     console.error("Error fetching Personal Info data :", error);
@@ -125,7 +89,7 @@ const saveDepartment = async (departmentId, payload) => {
           headers: headers(),
         }
       );
-      
+
       if (response.status === 200) {
         return response?.data;
       } else {
@@ -135,7 +99,7 @@ const saveDepartment = async (departmentId, payload) => {
       const response = await axios.post(`${baseUrl}/department/`, payload, {
         headers: headers(),
       });
-      
+
       if (response.status === 201) {
         return response?.data;
       } else {
@@ -180,7 +144,7 @@ export const addUpdateBranch = async (payload, id = null) => {
   }
 };
 
-const saveDesignation = async (designationId, payload) => {
+const saveDesignation = async (payload, designationId) => {
   try {
     if (designationId) {
       const response = await axios.patch(
@@ -190,6 +154,7 @@ const saveDesignation = async (designationId, payload) => {
           headers: headers(),
         }
       );
+
       if (response.status === 200) {
         return response?.data;
       }
@@ -197,6 +162,7 @@ const saveDesignation = async (designationId, payload) => {
       const response = await axios.post(`${baseUrl}/designation/`, payload, {
         headers: headers(),
       });
+
       if (response.status === 201) {
         return response?.data;
       }
@@ -207,20 +173,20 @@ const saveDesignation = async (designationId, payload) => {
   } catch (error) {
     console.error("API error in saveDesignation:", error);
     console.error("Error response:", error.response);
-    
+
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    
+
     // Return the error response for better error handling
     if (error.response) {
       return {
         success: false,
         error: error.response.data,
-        status: error.response.status
+        status: error.response.status,
       };
     }
-    
+
     return false;
   }
 };
@@ -269,36 +235,6 @@ const getDesignationList = async (payload) => {
   return [];
 };
 
-const saveShift = async (shiftId, payload) => {
-  try {
-    if (shiftId) {
-      const response = await axios.patch(
-        `${baseUrl}/shift/${shiftId}`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
-      if (response.status === 200) {
-        return response?.data;
-      }
-    } else {
-      const response = await axios.post(`${baseUrl}/shift/`, payload, {
-        headers: headers(),
-      });
-      if (response.status === 201) {
-        return response?.data;
-      }
-    }
-  } catch (error) {
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    console.error("Error fetching Personal Info data :", error);
-    return false;
-  }
-};
-
 const getManagersList = async () => {
   try {
     const response = await axios.get(`${baseUrl}/emplistofmanager/`, {
@@ -324,7 +260,7 @@ const getManagersList = async () => {
 const getEmployeeList = async (payload) => {
   try {
     const pageNo = payload?.options?.page ?? "";
-    const ordering = payload?.ordering ?? "-id";
+    const ordering = payload?.ordering ?? "first_name";
     const pageSize = payload?.options?.sizePerPage ?? "";
     const filterData = payload?.filterData
       ? {
@@ -342,10 +278,10 @@ const getEmployeeList = async (payload) => {
     });
     if (response.status === 200) {
       const employeeResponse = response.data?.results?.employees ?? [];
-      const employeeList = employeeResponse.map((employee) => ({
+      const employeeList = await employeeResponse.map((employee) => ({
         value: employee.id,
         id: employee.id,
-        label: `${employee.first_name} ${employee.last_name}`,
+        label: `${employee.first_name} ${employee.last_name} - ${employee.serial_number}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
         department_name: employee.department_name,
@@ -361,6 +297,7 @@ const getEmployeeList = async (payload) => {
         is_new: employee.is_new,
         joining_date: employee.joining_date,
         employee_status: employee.employee_status,
+        default_shift: employee.shift_assignment,
         user_role: employee.user_role,
         name_initials: `${
           employee?.first_name?.charAt(0)?.toUpperCase() || ""
@@ -533,6 +470,89 @@ const getEmployeeCustomList = async (payload) => {
   return EmployeeListData;
 };
 
+// Helper to recursively flatten employees and subordinates
+function flattenEmployees(employees) {
+  const flat = [];
+  function recurse(emp, parent = null) {
+    // Map subordinate or employee to the expected structure
+    const mapped = {
+      value: emp.id,
+      id: emp.id,
+      label: emp.first_name && emp.last_name
+        ? `${emp.first_name} ${emp.last_name} - ${emp.serial_number || ''}`
+        : `${emp.name || ''} - ${emp.serial_number || ''}`,
+      username: emp.username || '',
+      name: emp.first_name && emp.last_name
+        ? `${emp.first_name} ${emp.last_name}`
+        : emp.name || '',
+      department_name: emp.department_name || '',
+      department_position: emp.department_position || '',
+      employee_location: emp.employee_location || '',
+      direct_report: emp.direct_report || parent?.id || '',
+      branch_id: emp.branch_id || '',
+      work_email: emp.work_email || '',
+      serial_number: emp.serial_number || '',
+      basic_salary: emp.ctc || '',
+      salary_type: emp.salary_type || '',
+      is_eos_applicable: emp.is_eos_applicable,
+      is_new: emp.is_new,
+      joining_date: emp.joining_date || '',
+      employee_status: emp.employee_status || '',
+      default_shift: emp.shift_assignment || '',
+      user_role: emp.user_role || [],
+      name_initials: emp.first_name && emp.last_name
+        ? `${emp.first_name.charAt(0).toUpperCase() || ''}${emp.last_name.charAt(0).toUpperCase() || ''}`
+        : (emp.name ? emp.name.split(' ').map(n => n[0]?.toUpperCase()).join('') : ''),
+      profile_picture: emp.profile_picture || '',
+      designation: emp.designation || emp.department_position || '',
+      subordinates: [], // We'll flatten them
+      is_manager: emp.is_manager,
+    };
+    flat.push(mapped);
+    if (emp.subordinates && Array.isArray(emp.subordinates)) {
+      emp.subordinates.forEach(sub => recurse(sub, emp));
+    }
+  }
+  employees.forEach(emp => recurse(emp));
+  return flat;
+}
+
+const getNewEmployeeCustomList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const ordering = payload?.ordering ?? "-id";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const URL = `/newcustomemp/?ordering=${ordering}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const employeeDataResponse = response.data.results;
+      // Flatten all employees and subordinates
+      const flatEmployees = flattenEmployees(employeeDataResponse.employees);
+      const employeeData = {
+        count: flatEmployees.length,
+        results: flatEmployees,
+        ActiveEmployee: employeeDataResponse.active_employees,
+        TotalEmployee: employeeDataResponse.total_employees,
+        TotalManager: employeeDataResponse.total_managers
+      };
+      return employeeData;
+    } else return EmployeeListData;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return EmployeeListData;
+};
+
 const getList = async (URL) => {
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
@@ -652,10 +672,10 @@ const handleLogout = () => {
     setUserLogout();
   }
 };
-function HandleLogout() {
+function HandleLogout(message = "Session Time Out") {
   if (window.localStorage.getItem("token")) {
     window.location.href = "/login";
-    toast.error("Session Time Out", {
+    toast.error(message, {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 2000,
     });
@@ -663,6 +683,258 @@ function HandleLogout() {
     setUserLogout();
   }
 }
+
+// Delete role
+export const deleteRole = async (roleId, roleName) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/userrole/${roleId}`, {
+      headers: headers(),
+    });
+    if (response.status === 204 || response.status === 200) {
+      toast.success(`Role "${roleName}" deleted successfully`, {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1000,
+      });
+      return true;
+    } else {
+      toast.error(`Unexpected response status: ${response.status}`);
+      return false;
+    }
+  } catch (error) {
+    console.error("ERROR deleting role:", error);
+    toast.error(error?.response?.data?.message || error.message, {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 1000,
+    });
+    return false;
+  }
+};
+
+const getRoleList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "-created_at";
+  try {
+    const URL = `/userrole/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else return [];
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return [];
+};
+
+export const SubmitResetPassword = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/password/reset/confirm/`,
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching shifts:", error);
+    renderErrorMessages(error?.response?.data);
+  }
+
+  return false;
+};
+
+// export const getRequestApprovelList = async (request_id) => {
+//   try {
+//     const pageNo = payload?.options?.page ?? "";
+//     const ordering = payload?.ordering ?? "first_name";
+//     const pageSize = payload?.options?.sizePerPage ?? "";
+//     const filterData = payload?.filterData
+//       ? {
+//           ...payload?.filterData,
+//           employee_status: "Active,Probation,Notice Period",
+//         }
+//       : { employee_status: "Active,Probation,Notice Period" };
+//     const URL = `/requests/?ordering=${ordering}&${
+//       pageNo ? `page=${pageNo}&` : ""
+//     }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+//       JSON.stringify(filterData)
+//     )}`;
+//     const response = await axios.get(`${baseUrl}${URL}`, {
+//       headers: headers(),
+//     });
+//     if (response.status === 200) {
+//       const employeeResponse = response.data?.results?.employees ?? [];
+//       const employeeList = await employeeResponse.map((employee) => ({
+//         value: employee.id,
+//         id: employee.id,
+//         label: `${employee.first_name} ${employee.last_name} - ${employee.username}`,
+//         username: `${employee.username}`,
+//         name: `${employee.first_name} ${employee.last_name}`,
+//         department_name: employee.department_name,
+//         department_position: employee.department_position,
+//         employee_location: employee.employee_location,
+//         direct_report: employee.direct_report,
+//         branch_id: employee.branch_id,
+//         work_email: employee.work_email,
+//         serial_number: employee.serial_number,
+//         basic_salary: employee.salary,
+//         salary_type: employee.salary_type,
+//         is_eos_applicable: employee.is_eos_applicable,
+//         is_new: employee.is_new,
+//         joining_date: employee.joining_date,
+//         employee_status: employee.employee_status,
+//         user_role: employee.user_role,
+//         name_initials: `${
+//           employee?.first_name?.charAt(0)?.toUpperCase() || ""
+//         }${employee?.last_name?.charAt(0)?.toUpperCase() || ""}`,
+//       }));
+//       return { results: employeeList, count: response.data?.count };
+//     } else return { results: [], count: 0 };
+//   } catch (error) {
+//     console.error("Error fetching Personal Info data :", error);
+//   }
+//   return { results: [], count: 0 };
+// };
+
+export const getCurrentRequestApprover = async (request_id) => {
+  try {
+    const URL = `/requests/${request_id}/`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ReturnData = {
+        current_level: ResponseData.current_level,
+        level_status: ResponseData.status,
+        current_approver: ResponseData.current_approver,
+      };
+      return ReturnData;
+    } else return {};
+  } catch (error) {
+    console.error("Error fetching Personal Info data :", error);
+  }
+  return {};
+};
+
+export const handleRequest = async (request_id, approve) => {
+  try {
+    const url = `${baseUrl}/requests/${request_id}/${
+      approve ? "approve" : "reject"
+    }/`;
+
+    const method = "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const getDepartmentById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/department/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error('Failed to fetch department');
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    throw error;
+  }
+};
+
+export const getDesignationById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/designation/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error('Failed to fetch designation');
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    throw error;
+  }
+};
+
+export const getBranchById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/branch/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error('Failed to fetch branch');
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    throw error;
+  }
+};
+
+export const getShiftById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/shift/${id}`, {
+      headers: headers(),
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching shift by ID:", error);
+    throw error;
+  }
+};
+
+export const getOnboardingDocumentById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/onboarding-document/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      throw new Error('Failed to fetch onboarding document');
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    throw error;
+  }
+};
 
 export {
   getDepartmentList,
@@ -672,14 +944,14 @@ export {
   deleteRecord,
   getOrganizationList,
   getEmployeeList,
-  handleLogout,
   getEmployeeCustomList,
+  getNewEmployeeCustomList,
   getProjectsList,
   getCurrenciesList,
   saveDepartment,
   saveDesignation,
   getWorkingHours,
   getEmployeeListWithDetail,
-  saveShift,
   HandleLogout,
+  getRoleList,
 };

@@ -80,9 +80,9 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   if (values.po_box_number && !/^\d+$/.test(values.po_box_number)) {
     errors.po_box_number = "PO Box Number must contain only numbers";
   }
-  if (!values.nationality){
-    errors.nationality = "Nationality is required"
-  } 
+  if (!values.nationality) {
+    errors.nationality = "Nationality is required";
+  }
   return errors;
 };
 
@@ -94,7 +94,7 @@ const validationEmployeeContactInfoFormSchema = (values) => {
     errors.emergency_relation = "Contact Relation is required";
   if (!values.emergency_phone_no)
     errors.emergency_phone_no = "Phone number is required";
- 
+
   return errors;
 };
 
@@ -428,7 +428,7 @@ const validateOnboardingDocuments = (onboardingDocuments) => {
     // Only validate active documents
     if (doc.isActive) {
       // Check if active documents have attachments
-      if (!doc.attachment || doc.attachment.length === 0) {
+      if (!doc.attachment || doc.attachment?.length === 0) {
         // Initialize the object at this index if it doesn't exist
         if (!errors.onboardingDocuments[index]) {
           errors.onboardingDocuments[index] = {};
@@ -452,6 +452,7 @@ const validateOnboardingDocuments = (onboardingDocuments) => {
 
   return hasErrors ? errors : {};
 };
+
 export {
   validationPersonalInfoFormSchema,
   validationAcademicRecordSchema,

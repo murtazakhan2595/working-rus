@@ -11,7 +11,7 @@ const TooltipText = React.memo(({ tooltipTriggerText, content, className }) => {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>{tooltipTriggerText}</TooltipTrigger>
+        <TooltipTrigger>{tooltipTriggerText}</TooltipTrigger>
         <TooltipContent>
           <div className={cn(className, "text-neutral-1100 text-xs")}>
             {content}

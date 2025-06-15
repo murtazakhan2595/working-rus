@@ -37,7 +37,7 @@ const RecentActivities = ({ attendance }) => {
       </CardHeader>
       <CardContent className="pb-6 px-2">
         <ScrollArea className="[&>div>div[style]]:!block">
-          <div className="h-[280px] px-4">
+          <div className="h-[80px] px-4">
             {recentActivities?.length > 0 ? (
               <div className="space-y-4">
                 {recentActivities?.map((item, index) => (

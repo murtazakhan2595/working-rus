@@ -1,6 +1,7 @@
 import moment from "moment";
 import { Badge } from "components/ui/badge";
 import { lightenColor } from "utils/renderValues";
+import { useSelector } from "react-redux";
 
 /**
  * Generates a dropdown list from an array of items.
@@ -40,24 +41,25 @@ export function getDropdownList(
     : dropdownOptions;
 }
 
-
 export function getDropdownListWithExtraKeys(
   items,
   labelKey = "name",
   valueKey = "id",
-  additionalFields=[],
+  additionalFields = [],
   additionalOption = null,
   prefixKey = null,
-  separator = null,
+  separator = null
 ) {
-   // If the input array is empty or not an array, return only the additional option if provided
-   if (!Array.isArray(items) || items.length === 0) {
+  // If the input array is empty or not an array, return only the additional option if provided
+  if (!Array.isArray(items) || items.length === 0) {
     return additionalOption ? [additionalOption] : [];
   }
 
   // Map items to dropdown-friendly format
   const dropdownOptions = items.map((item) => {
-    let label = prefixKey ? `${item[prefixKey]} ${separator} ${item[labelKey]}` : item[labelKey];
+    let label = prefixKey
+      ? `${item[prefixKey]} ${separator} ${item[labelKey]}`
+      : item[labelKey];
 
     // Include additional keys if specified
     let additionalData = {};
@@ -70,12 +72,14 @@ export function getDropdownListWithExtraKeys(
     return {
       label,
       value: item[valueKey],
-      ...additionalData,  // Spread additional fields dynamically
+      ...additionalData, // Spread additional fields dynamically
     };
   });
 
   // Include the additional option at the start if provided
-  return additionalOption ? [additionalOption, ...dropdownOptions] : dropdownOptions;
+  return additionalOption
+    ? [additionalOption, ...dropdownOptions]
+    : dropdownOptions;
 }
 
 export function getFormattedDropdownItems(
@@ -248,37 +252,25 @@ export function getTaskFilteredData(tasksList, filterData) {
 }
 
 /**
- * Converts an array of objects into an array of strings in the format "label:value",
- * ensuring that each unique label appears only once in the result.
+ * Converts an array of objects with "field" and "value" keys
+ * into an array of strings in the format: "field: value".
  *
- * @param {Array<Object>} data - Array of objects to convert.
- * @param {string} labelKey - The key used to extract the label (default: "name").
- * @param {string} valueKey - The key used to extract the value (default: "value").
- * @returns {Array<string>} An array of formatted strings with unique labels.
+ * @param {Array} data - The array of objects to convert.
+ * @returns {Array} - An array of strings in "field: value" format.
  */
-export function convertJSONArrayToStringsArray(data, labelKey = "name", valueKey = "value") {
-  // Return an empty array if the input is not a valid array or is empty
+export function convertJSONArrayToStringsArray(
+  data,
+  label = "name",
+  value = "value"
+) {
+  // Check if the input is valid
   if (!Array.isArray(data) || data.length === 0) {
-    return [];
+    return []; // Return an empty array if data is not valid
   }
 
-  const uniqueLabels = new Set(); // Track seen labels to prevent duplicates
-  const formattedStrings = [];    // Store the result strings
-
-  for (const item of data) {
-    const label = item[labelKey];
-    const value = item[valueKey];
-
-    // Only add the string if the label hasn't been seen before
-    if (!uniqueLabels.has(label)) {
-      uniqueLabels.add(label);
-      formattedStrings.push(`${label}:${value}`);
-    }
-  }
-
-  return formattedStrings;
+  // Map each object to a string in the desired format
+  return data.map((item) => `${item[label]}:${item[value]}`);
 }
-
 
 /**
  * Converts an array of strings in the format "field: value"
@@ -305,3 +297,127 @@ export function convertStringsArrayToJsonArray(
     return { [label]: field, [valueKey]: value };
   });
 }
+
+/**
+ * Extracts a list of values for the given keys from an array of objects.
+ *
+ * @param {Array<Object>} dataList - The array of objects to process.
+ * @param {Array<String>} keys - The keys whose values you want to extract.
+ * @returns {Array<Object>} - An array of objects containing only the specified keys.
+ */
+export const ExtractFieldsFromList = (dataList = [], keys = []) => {
+  return dataList.map((item) => {
+    const extracted = {};
+    keys.forEach((key) => {
+      extracted[key] = item[key];
+    });
+    return extracted;
+  });
+};
+
+/**
+ * Extracts a list of values for the given key from an array of objects.
+ *
+ * @param {Array<Object>} dataList - The array of objects to process.
+ * @param {String} key - The key whose values you want to extract.
+ * @returns {Array<Object>} - An array of values containing only the specified key.
+ */
+export const ExtractFieldValueFromList = (dataList = [], key = []) => {
+  return dataList.map((item) => {
+    return item[key];
+  });
+};
+
+/**
+ * Recursively filters a tree, returning only the parts that contain nodes
+ * matching any value in selectedLeafs (based on the provided label).
+ *
+ * It includes matching nodes, their ancestors, and optionally their children.
+ *
+ * @param {Object} node - The current tree node to evaluate.
+ * @param {Array} selectedLeafs - Array of values to match against.
+ * @param {String} label - Key name to match values against (e.g., "id").
+ * @returns {Object|null} - Filtered node (with matched children), or null if no match.
+ */
+export const FilterTreeBySelectedLeafs = (
+  node = {},
+  selectedLeafs = [],
+  label = "id"
+) => {
+  const children = node.childrens || [];
+
+  // Recursively filter children
+  const filteredChildren = children
+    .map((child) => FilterTreeBySelectedLeafs(child, selectedLeafs, label))
+    .filter((child) => child !== null);
+
+  const isMatch = selectedLeafs.includes(node[label]);
+
+  // If current node is a match or has matching children, include it in the result
+  if (isMatch || filteredChildren.length > 0) {
+    return {
+      ...node,
+      childrens: filteredChildren, // preserve only matching sub-branches
+    };
+  }
+
+  // Otherwise, exclude this node
+  return null;
+};
+
+export const GetEmployeeFilteredList = (
+  isTeamView = false,
+  adminView = false,
+  isBranchView = false,
+  isDepartmentView = false
+) => {
+  const Employees = useSelector((state) => state.emp.employees);
+  const {
+    branch_id: user_branch,
+    department_name: user_department,
+    id: user_id,
+  } = useSelector((state) => state.emp.user_details);
+  if (!Array.isArray(Employees) || Employees.length === 0) return [];
+  if (adminView && !isTeamView) return Employees;
+  const labelFilter = isTeamView
+    ? "report_to"
+    : isBranchView
+    ? "branch_id"
+    : isDepartmentView
+    ? "department_name"
+    : null;
+
+  const valueFilter = isTeamView
+    ? user_id
+    : isBranchView
+    ? user_branch
+    : isDepartmentView
+    ? user_department
+    : null;
+
+  if (!labelFilter || valueFilter === null || valueFilter === undefined)
+    return [];
+
+  return Employees.filter((employee) => {
+    const employeeValue = employee[labelFilter];
+    if (employeeValue === undefined || employeeValue === null) return false;
+    return employeeValue;
+  });
+};
+
+export const GetCommonFilteredList = (label) => {
+  const List = useSelector((state) => state.common[label]);
+  return List;
+};
+
+export const GetDispatchStateList = (label, list) => {
+  const List = useSelector((state) => {
+    if (!state || typeof state !== "object") return null;
+    if (!list || !label) return null;
+    if (!state.hasOwnProperty(list)) return null;
+    if (!state[list] || typeof state[list] !== "object") return null;
+    return state[list][label] ?? null;
+  });
+
+  return List;
+};

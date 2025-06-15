@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
-import EmployeeForm from "./Sections/EmployeeForm.jsx";
+import EmployeeForm from "./EmployeeForm";
 import {
   Dialog,
   // DialogTrigger,
@@ -14,7 +14,7 @@ import {
   // DialogCancel,
   // DialogAction,
 } from "src/@/components/ui/dialog.jsx";
-import { Button } from "../../../../components/ui/button.jsx";
+import { Button } from "components/ui/button.jsx";
 import {
   Card,
   // CardHeader,
@@ -22,13 +22,15 @@ import {
   // CardDescription,
   CardContent,
   // CardFooter,
-} from "../../../../components/ui/card.jsx";
+} from "components/ui/card.jsx";
 import Header from "components/Header.jsx";
 
+import { HasAccess } from "utils/PermissionUtils";
+
 const CreateUpdateEmployee = () => {
-  const {id} = useParams()
+  const { id } = useParams();
   const navigate = useNavigate();
-  // const id = location?.state?.id;
+  const SalarySetupAllowed = HasAccess("EDIT_EMPLOYEE_SALARY_SETUP");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showFormSubmittedModal, setShowFormSubmittedModal] = useState(false);
   const [email, setEmail] = useState("");
@@ -41,7 +43,7 @@ const CreateUpdateEmployee = () => {
     if (showFormSubmittedModal) {
       const timer = setTimeout(() => {
         setShowFormSubmittedModal(false); // Hide the first dialog
-        setShowSuccessModal(true); // Show the success dialog
+        if (!id) setShowSuccessModal(true); // Show the success dialog
       }, 2000);
 
       return () => clearTimeout(timer); // Cleanup on unmount
@@ -49,46 +51,52 @@ const CreateUpdateEmployee = () => {
   }, [showFormSubmittedModal]);
   return (
     <>
-    <div className={`max-w-[840px] mx-auto ${window.location.pathname.substring(1)}`}>
-    <Header />
-      <Card>
-        <CardContent>
-          <EmployeeForm
-            setEmail={setEmail}
-            setShowFormSubmittedModal={setShowFormSubmittedModal}
-            id={id}
-            setIsOpen={()=>{}}
-            discard={true}
-          />
-        </CardContent>
-      </Card>
-      {showFormSubmittedModal && (
-        <Dialog open={showFormSubmittedModal}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Form submitted successfully!</DialogTitle>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-      )}
+      <div
+        className={`max-w-[840px] mx-auto ${window.location.pathname.substring(
+          1
+        )}`}
+      >
+        <Header />
+        <Card>
+          <CardContent>
+            <EmployeeForm
+              setEmail={setEmail}
+              setShowFormSubmittedModal={setShowFormSubmittedModal}
+              id={id}
+              setIsOpen={() => {}}
+              discard={true}
+              SalarySetupAllowed={!id && SalarySetupAllowed}
+            />
+          </CardContent>
+        </Card>
+        {showFormSubmittedModal && (
+          <Dialog open={showFormSubmittedModal}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Form submitted successfully!</DialogTitle>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        )}
 
-      {showSuccessModal && (
-        <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Success!</DialogTitle>
-            </DialogHeader>
-            <p>
-              User has been successfully registered and email has been sent to {email}
-            </p>
-          </DialogContent>
-          <DialogFooter>
-            <Button onClick={closeModal}>Close Modal</Button>
-          </DialogFooter>
-        </Dialog>
-      )}
-      <ToastContainer />
-    </div>
+        {showSuccessModal && (
+          <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Success!</DialogTitle>
+              </DialogHeader>
+              <p>
+                User has been successfully registered and email has been sent to{" "}
+                {email}
+              </p>
+            </DialogContent>
+            <DialogFooter>
+              <Button onClick={closeModal}>Close Modal</Button>
+            </DialogFooter>
+          </Dialog>
+        )}
+        <ToastContainer />
+      </div>
     </>
   );
 };

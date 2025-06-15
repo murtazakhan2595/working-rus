@@ -25,7 +25,7 @@ import {
 import { initialState } from "state/slices/UserSlice";
 import { toast } from "react-toastify";
 import { HandleLogout } from "./general";
-import {renderErrorMessages} from 'utils/renderErrors';
+import { renderErrorMessages } from "utils/renderErrors";
 
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
@@ -761,6 +761,8 @@ const getEmployeeWorkInformationData = async (employeeid) => {
 
 const saveEmployeeWorkInformationData = async (employeeid, payload) => {
   try {
+    console.log("payload", payload);
+    console.log("employeeid", employeeid);
     if (employeeid) {
       const response = await axios.patch(
         `${baseUrl}/emp/${employeeid}`,
@@ -844,7 +846,7 @@ const employeeExit = async (payload) => {
       HandleLogout();
     }
     console.error("Error fetching Personal Info data :", error);
-    renderErrorMessages(error?.response?.data)
+    renderErrorMessages(error?.response?.data);
     return false;
   }
 };
@@ -921,11 +923,11 @@ const saveEmployeeDocChecklist = async (payload) => {
         `${baseUrl}/employeedoclist/${payload.id}`,
         payload,
         {
-        headers: {
-          ...headers(),
-          "Content-Type": "multipart/form-data",
-        },
-      }
+          headers: {
+            ...headers(),
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       if (response.status === 200) {
         return response.data;
@@ -934,12 +936,12 @@ const saveEmployeeDocChecklist = async (payload) => {
       const response = await axios.post(
         `${baseUrl}/employeedoclist/`,
         payload,
-         {
-        headers: {
-          ...headers(),
-          "Content-Type": "multipart/form-data",
-        },
-      }
+        {
+          headers: {
+            ...headers(),
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       if (response.status === 201) {
         return response.data;
@@ -1036,7 +1038,7 @@ const uploadEmployeesData = async (formData) => {
       HandleLogout();
     }
     console.error("Error uploading employees data:", error);
-    return error?.response?.data
+    return error?.response?.data;
   }
 };
 
@@ -1068,7 +1070,7 @@ const getDepartmentNames = async () => {
     console.error("Error fetching department names:", error);
   }
   return [];
-}
+};
 
 const getDesignations = async () => {
   try {
@@ -1083,7 +1085,7 @@ const getDesignations = async () => {
     console.error("Error fetching designations:", error);
   }
   return [];
-}
+};
 
 const getManagerList = async () => {
   try {
@@ -1098,7 +1100,7 @@ const getManagerList = async () => {
     console.error("Error fetching manager list:", error);
   }
   return [];
-}
+};
 
 const getShifts = async () => {
   try {
@@ -1113,7 +1115,7 @@ const getShifts = async () => {
     console.error("Error fetching shifts:", error);
   }
   return [];
-}
+};
 
 const getEmployeeDocsChecklist = async (payload) => {
   const filterData = payload?.filterData ?? {};
@@ -1133,9 +1135,51 @@ const getEmployeeDocsChecklist = async (payload) => {
     }
     console.error("Error fetching Personal Info data :", error);
   }
-}
+};
+
+export const UpdatePassword = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/auth/change-password/ `,
+      payload,
+      {
+        headers: headers(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching shifts:", error);
+    renderErrorMessages(error?.response?.data);
+  }
+
+  return false;
+};
+
+const getEmployeeMonthlySummary = async (payload) => {
+  const filterData = payload?.filterData ?? {};
+  try {
+    let URL = `${baseUrl}/emp/monthly-summary/?search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(URL, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+  }
+};
 
 export {
+  getEmployeeMonthlySummary,
   getDownloadTemplate,
   uploadEmployeesData,
   getDocumentChecklist,

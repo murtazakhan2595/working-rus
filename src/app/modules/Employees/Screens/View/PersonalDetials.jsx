@@ -11,6 +11,8 @@ import moment from "moment";
 import { renderDate } from "utils/renderValues";
 import { PageLoader } from "components";
 import { getEmployeeData } from "app/hooks/employee";
+import { DetailBox } from "components/SheetCardExtension";
+
 const PersonalInformation = ({ userId, isEditable }) => {
   const [showPersonalDetailCard, setShowPersonalDetailCard] = useState(false);
   const [personalInfo, setPersonalInfo] = React.useState({});
@@ -44,10 +46,12 @@ const PersonalInformation = ({ userId, isEditable }) => {
         {
           title: "Permanent Address",
           data: userData?.residential_address,
+          className: "col-span-4",
         },
         {
           title: "Present Address",
           data: userData?.current_address,
+          className: "col-span-4",
         },
       ]);
     } catch (error) {
@@ -85,17 +89,17 @@ const PersonalInformation = ({ userId, isEditable }) => {
         {isLoading ? (
           <PageLoader />
         ) : (
-          <CardContent className="flex items-center pt-6 space-x-4">
-            <div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-3 md:grid-cols-2">
-              {personalInfo.map((info, index) => (
-                <div className="flex flex-row w-full gap-2" key={index}>
-                  <div className="flex-1 text-sm xl:text-base lg:text-base md:text-sm text-neutral-1000 ">
-                    {info.title}
-                  </div>
-                  <div className="flex-1 text-sm text-black break-all xl:break-normal lg:break-all md:break-all xl:text-base lg:text-base md:text-sm">
-                    {info.data || "N/A"}
-                  </div>
-                </div>
+          <CardContent className="flex flex-col gap-4 pt-6">
+            <div className="grid w-full lg:grid-cols-4 gap-4 md:grid-cols-3 grid-cols-2">
+              {personalInfo.map(({ className, title, data }, index) => (
+                <DetailBox
+                  orientation="horizontal"
+                  key={index}
+                  className={className || ""}
+                  label={title}
+                  value={data}
+                  fallbackText={"--"}
+                />
               ))}
             </div>
           </CardContent>

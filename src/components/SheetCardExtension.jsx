@@ -3,16 +3,21 @@ import moment from "moment";
 import React from "react";
 import { Button } from "./ui/button";
 import AlertDialogue from "./ui/AlertDialogue";
+import { cn } from "src/@/lib/utils";
+import { renderDate } from "utils/renderValues";
 
 export const SheetCardExtension = ({ title, children, className }) => {
   return (
     <div
-      className={`font-[inter] ${className} flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-medium leading-[1.2] tracking-[0px] text-zinc-900`}
+      className={cn(
+        `flex flex-grow flex-col gap-y-[16px] rounded-lg border border-solid border-zinc-200 px-[15px] pb-[15px] text-sm font-normal leading-[1.2] tracking-[0px]`,
+        className
+      )}
     >
       <div className="flex h-[7px] flex-shrink-0 items-end px-px">
-        <div className="text-plum-900 bg-white">{title}</div>
+        <div className="text-plum-900 bg-white font-semibold">{title}</div>
       </div>
-      {children}
+      <div>{children}</div>
     </div>
   );
 };
@@ -23,15 +28,24 @@ export const DetailBox = ({
   className = "mt-3",
   orientation = "vertical",
   key = "",
-  fallbackText="N/A",
+  fallbackText = "N/A",
+  labelClassName = "",
+  valueClassName = "",
 }) => {
   if (orientation === "horizontal") {
     return (
       <div className={`flex flex-col w-full ${className}`} key={key || value}>
-        <div className="text-sm font-medium mb-2 text-neutral-900">
+        <div
+          className={cn(
+            "text-sm font-medium mb-2 text-neutral-900",
+            labelClassName
+          )}
+        >
           {label}
         </div>
-        <div className="leading-5 text-neutral-1200">{value ?? fallbackText}</div>
+        <div className={cn("leading-5 text-neutral-1200", valueClassName)}>
+          {value ?? fallbackText}
+        </div>
       </div>
     );
   }
@@ -41,10 +55,22 @@ export const DetailBox = ({
       className={`flex gap-4 items-center max-w-full ${className}`}
       key={key || value}
     >
-      <div className="flex flex-col leading-none min-w-[88px] w-[132px] text-neutral-900">
+      <div
+        className={cn(
+          "flex flex-col leading-none min-w-[88px] w-[132px] text-neutral-900",
+          labelClassName
+        )}
+      >
         <div>{label}</div>
       </div>
-      <div className="flex-1 shrink leading-5 basis-0 text-neutral-1200 capitalize">{value ?? "N/A"}</div>
+      <div
+        className={cn(
+          "flex-1 shrink leading-5 basis-0 text-neutral-1200 capitalize",
+          valueClassName
+        )}
+      >
+        {value ?? "N/A"}
+      </div>
     </div>
   );
 };
@@ -69,10 +95,10 @@ export const DetailCard = ({
           <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
             <div>
               <span className="text-[#8b8d98] text-xs font-medium  leading-tight">
-                {dateTitle}:
+                {dateTitle}:{' '}
               </span>
               <span className="text-[#8b8d98] text-xs font-normal  leading-3">
-                {` ${moment(date).format("MMMM DD, YYYY")}`}
+                {renderDate(date, "--", "date-time")}
               </span>
             </div>
           </div>

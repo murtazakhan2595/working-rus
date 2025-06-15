@@ -127,11 +127,11 @@ const AssignDocumentForm = ({
         disableSubmit: disableSubmit,
         columns: 2,
         renderUpdatedFormValues: setFormValues,
-        formFiels: [
+        formFields: [
           {
             sheetCardExtension: false,
             // sheetCardTitle: "Employee Details",
-            InputFiels: [
+            InputFields: [
               {
                 InputField: RadioGroupInput,
                 name: "acknowledgment_type",

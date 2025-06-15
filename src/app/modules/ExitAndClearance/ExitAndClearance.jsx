@@ -28,6 +28,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchDepartments, setDepartments } from "state/slices/CommonSlice";
 import axios from "axios";
 import { initialState as userInitialState } from "state/slices/UserSlice";
+import { HasAccess } from "utils/PermissionUtils";
 
 // Get baseUrl from user initial state
 const baseUrl = userInitialState.baseUrl;
@@ -79,6 +80,7 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
       ? { reporting_to: userProfile.id }
       : {}),
   });
+  const manageExitRequestsPermitted = HasAccess("MANAGE_EXIT_REQUESTS");
   const [filterInnerData, setFilterInnerData] = useState({});
   const [reloadCounter, setReloadCounter] = useState(0);
   const dispatch = useDispatch();
@@ -100,7 +102,6 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
           );
           if (departmentsFromAPI && departmentsFromAPI.length > 0) {
             console.log(
-              "Departments fetched for Exit Management:",
               departmentsFromAPI.length
             );
             dispatch(setDepartments(departmentsFromAPI));
@@ -231,7 +232,7 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
     >
       <Header
         content={
-          userProfile.role === 1 || userProfile.role === 3 ? (
+          manageExitRequestsPermitted ? (
             <RequestTerminationCard closeModel={closeRequestTerminationCard} />
           ) : null
         }

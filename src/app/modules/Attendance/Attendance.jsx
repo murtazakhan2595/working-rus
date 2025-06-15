@@ -2,10 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
 import moment from "moment";
-import { getAttendanceSummary, getWeeklySummary } from "app/hooks/attendance";
+import {
+  getAttendanceSummary,
+  getWeeklySummary,
+  getAttendance,
+} from "app/hooks/attendance";
 import { PageLoader, TableCustom } from "components";
 import { EmployeesAttendanceColumns } from "app/modules/Attendance/Sections/AttendanceTableColumns";
-import { UpdateEmployeeAttendance } from "app/modules/Attendance/Sections";
+import {
+  UpdateEmployeeAttendance,
+  ExportAttendance,
+} from "app/modules/Attendance/Sections";
 import { LeaveStatusOverview } from "./Sections/LeaveStatusOverview";
 import { StatisticsChart } from "./Sections/StatisticsChart";
 import DepartmentOverview from "./Sections/DepartmentOverview";
@@ -14,23 +21,41 @@ import { FilterInput, DateRangeFilter } from "components/FormControl";
 import { useSelector } from "react-redux";
 import { GetDateRange, getWorkingDays } from "utils/renderValues";
 import { exportRecordToExcel } from "utils/downloadUtils";
-import { getLabelByValue } from "utils/getValuesFromTables";
+import { GetUserInfo } from "utils/getValuesFromTables";
+import { HasAccess } from "utils/PermissionUtils";
+import { renderDate, formatDuration } from "utils/renderValues";
 
-const Attendance = () => {
+const Attendance = ({ isTeamView = false }) => {
+  const isUpdateBrnAttendancePermitted = HasAccess("UPDATE_BRN_EMP_ATTENDANCE");
+  const isUpdateDptAttendancePermitted = HasAccess("UPDATE_DPT_EMP_ATTENDANCE");
+  const isViewEmpAttendancePermitted = HasAccess("VIEW_EMPLOYEE_ATTENDANCE");
+  const isViewBrnEmpAttendancePermitted = HasAccess("VIEW_BRN_EMPS_ATTENDANCE");
+  const isViewDptEmpAttendancePermitted = HasAccess("VIEW_DPT_EMPS_ATTENDANCE");
+  const isViewWeeklytatusPermitted = HasAccess("VIEW_WEEKLY_STATISTICS");
+  const isUpdateEmpAttendancePermitted = HasAccess(
+    "UPDATE_EMPLOYEE_ATTENDANCE"
+  );
+  const isViewDptAttendancePermitted = HasAccess(
+    "VIEW_DEPARTMENT_ATTENDANCE_OVERVIEW"
+  );
   const Departments = useSelector((state) => state.common.departments);
+  const Branches = useSelector((state) => state.common.branches);
   const Designations = useSelector((state) => state.common.designations);
-  const userProfile = useSelector((state) => state.user.userProfile);
+  const {
+    branch_id: user_branch,
+    department_name: user_department,
+    id: user_id,
+  } = useSelector((state) => state.emp.user_details);
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [openUpdateEmployeeAttendance, setOpenUpdateEmployeeAttendance] =
     useState(false);
   const [weeklySummary, setWeeklySummary] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedBranch, setSelectedBranch] = useState("");
   const [activeTab, setActiveTab] = useState("Day");
   const [TotalDays, setTotalDays] = useState(1);
-  const [filterData, setFilterData] = useState(
-    userProfile.role === 2 ? { direct_report: userProfile.id } : {}
-  );
+  const [filterData, setFilterData] = useState({});
   const [dateRange, setDateRange] = useState(
     `${moment().format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`
   );
@@ -43,10 +68,30 @@ const Attendance = () => {
       }
     }
   }, [dateRange]);
+
+  useEffect(() => {
+    let isMounted = true;
+    setFilterData(() => {
+      if (isViewEmpAttendancePermitted) return {};
+      else {
+        if (isViewBrnEmpAttendancePermitted) {
+          return { branch: user_branch };
+        } else if (isViewDptEmpAttendancePermitted) {
+          return { department: user_department };
+        }
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    isViewBrnEmpAttendancePermitted,
+    isViewDptEmpAttendancePermitted,
+    isViewEmpAttendancePermitted,
+  ]);
   const handleFilterChange = (filterName, filterValue) => {
-    if (filterName === "department_name") {
-      setSelectedDepartment(filterValue);
-    }
+    if (filterName === "department") setSelectedDepartment(filterValue);
+    if (filterName === "branch") setSelectedBranch(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -99,30 +144,6 @@ const Attendance = () => {
     fetchData();
   }, []);
 
-  const exportAttendanceToExcel = async () => {
-    const dataToExport = await Promise.all(
-      attendanceData?.results?.map(async (row) => ({
-        ID: row.employee_serial_number,
-        Name: row.emp_name,
-        Department: row["employee_department name"],
-        Designation: await getLabelByValue(
-          row.employee_designation,
-          Designations,
-          "-"
-        ),
-        ...(activeTab.toUpperCase() === "DAY"
-          ? { Status: row.daily_status }
-          : {
-              Present: row.attendance_stats.Present,
-              Absent: row.attendance_stats.Absent,
-              Late: row.attendance_stats.Late,
-              Leaves: row.attendance_stats["On Leave"],
-            }),
-      }))
-    );
-    exportRecordToExcel(dataToExport, "Attendance", `Attendance_${dateRange}`);
-  };
-
   return (
     <>
       <div
@@ -135,73 +156,88 @@ const Attendance = () => {
           <StatisticsChart weeklySummary={weeklySummary} />
           <DepartmentOverview />
         </div>
-        <StatsCards />
-        <div className="flex justify-end gap-3 flex-row flex-wrap">
-          <FilterInput
-            filters={[
-              {
-                type: "search",
-                placeholder: "Search by Name",
-                name: "emp_name",
-                width: "w-[175px]",
-              },
-              {
-                type: "select-one",
-                option: Departments,
-                name: "department_name",
-                placeholder: "Department",
-                values: selectedDepartment,
-                width: "w-[175px]",
-              },
-            ]}
-            onChange={handleFilterChange}
-          />
-          <DateRangeFilter
-            activeDateRange={activeTab}
-            setDateRange={(dateRange) => {
-              if (dateRange.toUpperCase() === "DAY") {
-                setDateRange(
-                  `${moment().format("YYYY-MM-DD")},${moment().format(
-                    "YYYY-MM-DD"
-                  )}`
-                );
-              } else {
-                setDateRange(GetDateRange(dateRange));
-              }
-              setActiveTab(dateRange);
-              return;
-            }}
-          />
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              setOpenUpdateEmployeeAttendance(true);
-            }}
-          >
-            Update Attendance
-          </Button>
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              exportAttendanceToExcel();
-            }}
-            variant="continue"
-          >
-            Export
-          </Button>
-        </div>
-
-        <Card className="mb-10">
-          <CardContent>
-            <TableCustom
-              data={attendanceData.results || []}
-              columns={EmployeesAttendanceColumns(TotalDays)}
-              pagination={false}
-              dataTotalSize={attendanceData.count || 0}
-              tableOptions={tableOptions}
+        {(isViewEmpAttendancePermitted || isViewBrnEmpAttendancePermitted) && (
+          <>
+            <StatsCards
+              isTeamView={isTeamView}
+              isEmpView={isViewEmpAttendancePermitted}
+              isBranchView={isViewBrnEmpAttendancePermitted}
             />
-          </CardContent>
-        </Card>
+            <div className="flex justify-end gap-3 flex-row flex-wrap">
+              <FilterInput
+                filters={[
+                  {
+                    type: "search",
+                    placeholder: "Search by Name",
+                    name: "emp_name",
+                    width: "w-[175px]",
+                  },
+                  {
+                    type: "select-one",
+                    option: Departments,
+                    name: "department",
+                    placeholder: "Department",
+                    values: selectedDepartment,
+                    width: "w-[175px]",
+                  },
+                  ...(isViewEmpAttendancePermitted
+                    ? [
+                        {
+                          type: "select-two",
+                          option: Branches,
+                          name: "branch",
+                          placeholder: "Branch",
+                          values: selectedBranch,
+                          width: "w-[175px]",
+                        },
+                      ]
+                    : []),
+                ]}
+                onChange={handleFilterChange}
+              />
+              <DateRangeFilter
+                activeDateRange={activeTab}
+                setDateRange={(dateRange) => {
+                  if (dateRange.toUpperCase() === "DAY") {
+                    setDateRange(
+                      `${moment().format("YYYY-MM-DD")},${moment().format(
+                        "YYYY-MM-DD"
+                      )}`
+                    );
+                  } else {
+                    setDateRange(GetDateRange(dateRange));
+                  }
+                  setActiveTab(dateRange);
+                  return;
+                }}
+              />
+              {(isUpdateEmpAttendancePermitted ||
+                isUpdateBrnAttendancePermitted ||
+                isUpdateDptAttendancePermitted) && (
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setOpenUpdateEmployeeAttendance(true);
+                  }}
+                >
+                  Update Attendance
+                </Button>
+              )}
+              <ExportAttendance activeTab={activeTab} filterData={filterData} />
+            </div>
+            <Card className="mb-10">
+              <CardContent>
+                <TableCustom
+                  data={attendanceData.results || []}
+                  columns={EmployeesAttendanceColumns(TotalDays)}
+                  pagination={false}
+                  dataTotalSize={attendanceData.count || 0}
+                  tableOptions={tableOptions}
+                />
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
       {openUpdateEmployeeAttendance && (
         <UpdateEmployeeAttendance

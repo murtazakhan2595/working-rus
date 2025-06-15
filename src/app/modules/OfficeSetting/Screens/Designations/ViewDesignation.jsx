@@ -1,153 +1,68 @@
-import { DetailBox } from "components/SheetCardExtension";
-import { DetailCard } from "components/SheetCardExtension";
-import SheetComponent from "components/ui/SheetComponent";
-import { useState, useEffect } from "react";
-import CircularActionButtons from "components/CircularActionButtons";
-import AlertDialogue from "components/ui/AlertDialogue";
-import { deleteRecord } from "app/hooks/general";
+import React from "react";
+import { NavigationSheetComponent } from "components";
+import { DetailContent } from "components";
 import AddDesignationForm from "./AddDesignationForm";
-import axios from "axios";
+import useUserOrganization from "app/hooks/useUserOrganization";
+import { getDesignationById } from "app/hooks/general"; // Adjust path as needed
 
-const ViewDesignation = ({ isOpen, setIsOpen, data, reload = () => {} }) => {
-  const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
-  const [editDesignation, setEditDesignation] = useState(false);
-  const [viewData, setViewData] = useState(data);
+const ViewDesignation = ({ 
+  isOpen, 
+  setIsOpen, 
+  data, 
+  reload = () => {},
+  DesignationList = []
+}) => {
+  const userOrganization = useUserOrganization();
 
-  useEffect(() => {
-    setViewData(data);
-  }, [data]);
+  // Define the fields to display
+  const fields = [
+    {
+      title: "Designation Details",
+      field: [
+        { key: "id", label: "ID" },
+        { key: "name", label: "Designation Name" },
+        { key: "description", label: "Description" },
+        // Add more fields as needed
+      ],
+    },
+  ];
 
-  const formSheetData = {
-    triggerText: null,
-    title: "View Designation",
-    description: null,
-    footer: null,
-  };
-
-  const updateSheetData = {
-    triggerText: null,
-    title: "Update Designation",
-    description: null,
-    footer: null,
-  };
-
-  const handleEdit = () => {
-    console.log("Edit button clicked, setting edit mode with data:", viewData);
-    setEditDesignation(true);
-  };
-
-  const handleDelete = () => {
-    setOpenDeleteAlert(true);
-  };
-
-  const confirmDelete = async () => {
+  // Fetch department data by ID
+  const fetchData = async (id, isMounted) => {
+    console.log("Fetching department with ID:", id); // Debug
     try {
-      await deleteRecord(`/designation/${viewData?.id}`, viewData?.name);
-      setIsOpen(false);
-      if (typeof reload === 'function') {
-        reload(true);
+      const response = await getDesignationById(id);
+      console.log("API response:", response); // Debug
+      if (isMounted) {
+        return response;
       }
     } catch (error) {
-      console.error("ERROR", error);
+      console.error("Error fetching department:", error);
     }
-  };
-
-  const refreshData = async () => {
-    try {
-      const response = await axios.get(`/designation/${viewData.id}`);
-      if (response.data) {
-        console.log("Fetched updated designation data:", response.data);
-        setViewData(response.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch updated designation data:", error);
-    }
-  };
-
-  const handleEditClose = async (updated = false) => {
-    setEditDesignation(false);
-    
-    if (updated) {
-      await refreshData();
-      // Also reload the table
-      if (typeof reload === 'function') {
-        reload(true);
-      }
-    }
-  };
-
-  const handleFormUpdate = async (formData) => {
-    // This function will be called after successful form submission
-    console.log("Designation updated with data:", formData);
-    // Ensure organization field is preserved
-    setViewData({
-      ...viewData,
-      ...formData,
-      organization: formData.organization || viewData.organization
-    });
-    return true;
   };
 
   return (
-    <>
-      <SheetComponent
-        {...formSheetData}
-        isOpen={isOpen}
-        setIsOpen={(open) => {
-          setIsOpen(open);
-          if (!open && typeof reload === 'function') {
-            reload(true); // Ensure table is reloaded when view is closed
-          }
-        }}
-        width="568px"
-      >
-        <div className="flex justify-end mb-4 space-x-2">
-          <CircularActionButtons 
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            editTooltip="Edit Designation"
-            deleteTooltip="Delete Designation"
-          />
-        </div>
-        <DetailCard detailCardTitle="Designation Details" date={viewData?.created_at} dateTitle="Created At">
-          <DetailBox label="Name" value={viewData?.name} />
-          <DetailBox label="Description" value={viewData?.description} />
-          <DetailBox label="Organization" value={viewData?.organization} />
-        </DetailCard>
-      </SheetComponent>
-
-      {openDeleteAlert && (
-        <AlertDialogue
-          title="Confirm Delete?"
-          description="This action can't be undone. All information associated with this will be lost."
-          isOpen={openDeleteAlert}
-          setIsOpen={(isOpen) => setOpenDeleteAlert(isOpen)}
-          handleContinue={() => {
-            confirmDelete();
-            setOpenDeleteAlert(false);
-          }}
-        />
-      )}
-
-      {editDesignation && (
-        <SheetComponent
-          {...updateSheetData}
-          isOpen={editDesignation}
-          setIsOpen={handleEditClose}
-          width="568px"
-        >
-          <AddDesignationForm
-            isOpen={editDesignation}
-            setIsOpen={handleEditClose}
-            edit={viewData}
-            setEdit={() => {}}
-            reload={reload}
-            onUpdateSuccess={handleFormUpdate}
-          />
-        </SheetComponent>
-      )}
-    </>
+    <NavigationSheetComponent
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      title="Designation Detail"
+      currentItem_Id={data?.id}
+      dataList={DesignationList}
+      reloadData={reload}
+      editComponent={AddDesignationForm}
+      apiEndpoint={`/designation/${data?.id}/`}
+      fetchCurrentItemDetails={fetchData}
+      deleteItemName="name"
+      editTooltip="Edit Designation"   
+      deleteTooltip="Delete Designation"
+      additionalEditProps={{ userOrganization }}
+    >
+      <DetailContent
+        title="Designation Details"
+        fields={fields}
+      />
+    </NavigationSheetComponent>
   );
 };
 
-export default ViewDesignation;
+export default ViewDesignation;      

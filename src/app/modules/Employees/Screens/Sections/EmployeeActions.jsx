@@ -1,38 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import React from "react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuItem,
-} from "../../../../../src/@/components/ui/dropdown-menu";
-import { Button } from "../../../../../components/ui/button";
+} from "src/@/components/ui/dropdown-menu";
+import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { saveEmployeeWorkInformationData } from "app/hooks/employee";
-import { Check, ChevronsUpDown, MoreHorizontal } from "lucide-react";
-import { useSelector } from "react-redux";
+import { MoreHorizontal } from "lucide-react";
+import { HasAccess } from "utils/PermissionUtils";
 
 const EmployeeAction = ({ row }) => {
+  const ViewEmployeesDetailsPermitted = HasAccess("VIEW_EMPLOYEE_DETAILS");
+  const EditEmployeesPermitted = HasAccess("EDIT_EMPLOYEE");
+  const EditEmployeesDetailsPermitted = HasAccess("EDIT_EMPLOYEE_PROFILE");
   const navigate = useNavigate();
-  const userRole = useSelector((state) => state.user.userProfile.role);
-  const [openDropdownRow, setOpenDropdownRow] = useState(null);
-  const toggleDropdown = (index) => {
-    setOpenDropdownRow(index === openDropdownRow ? null : index);
-  };
-
-  const handleDelete = async (employeeId) => {
-    try {
-      await saveEmployeeWorkInformationData(employeeId, {
-        employee_status: "Terminated",
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-    }
-  };
-
+  if (
+    !ViewEmployeesDetailsPermitted &&
+    !EditEmployeesDetailsPermitted &&
+    !EditEmployeesPermitted
+  )
+    return null;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -43,21 +31,23 @@ const EmployeeAction = ({ row }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {/* <DropdownMenuLabel>More Actions</DropdownMenuLabel> */}
-        {(userRole === 1 || userRole === 3) && (
+        {EditEmployeesDetailsPermitted && (
           <DropdownMenuItem onClick={() => navigate(`/profile/${row.id}`)}>
             Edit Profile
           </DropdownMenuItem>
         )}
-        {(userRole === 1 || userRole === 3) && (
+        {EditEmployeesPermitted && (
           <DropdownMenuItem
             onClick={() => navigate(`/edit-employee/${row.id}`)}
           >
             Edit Employee
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem onClick={() => navigate(`/user/${row.id}`)}>
-          View Profile
-        </DropdownMenuItem>
+        {ViewEmployeesDetailsPermitted && (
+          <DropdownMenuItem onClick={() => navigate(`/user/${row.id}`)}>
+            View Profile
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

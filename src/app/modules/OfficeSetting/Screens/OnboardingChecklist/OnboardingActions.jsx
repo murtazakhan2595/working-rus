@@ -1,20 +1,22 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import SheetComponent from "components/ui/SheetComponent";
 import ViewOnboarding from "./ViewOnboarding";
 import AddOnboardingForm from "./AddOnboardingForm";
 import { deleteOnboardingDocument } from "app/hooks/officeSetting";
 import DropdownActionMenu from "components/DropdownActionMenu";
+import { ViewDetailSheetCardExtension } from "components";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
-const OnboardingActions = ({ data, reload }) => {
+const OnboardingActions = ({ data, reload, OnboardingList = [] }) => {
   const [view, setView] = useState(null);
   const [deleteDept, setDeleteDept] = useState(null);
   const [edit, setEdit] = useState(null);
+  const permissions = useOfficeSettingPermissions();
 
   const formSheetData = {
     triggerText: null,
-    title: "Update Department",
+    title: "Update Document",
     description: null,
     footer: null,
   };
@@ -43,7 +45,7 @@ const OnboardingActions = ({ data, reload }) => {
   const confirmDelete = async () => {
     try {
       await deleteRecord(
-        `/department/${deleteDept?.data?.id}`,
+        `/onboarding-document/${deleteDept?.data?.id}`,
         deleteDept?.data?.name
       );
       reload();
@@ -52,12 +54,17 @@ const OnboardingActions = ({ data, reload }) => {
     }
   };
 
+  const handleFormUpdate = async (formData) => {
+    console.log("Document updated with data:", formData);
+    return true;
+  };
+
   return (
     <>
       <DropdownActionMenu 
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onView={permissions.onboarding.canView ? handleView : null}
+        onEdit={permissions.onboarding.canUpdate ? handleEdit : null}
+        onDelete={permissions.onboarding.canDelete ? handleDelete : null}
         viewText="View Document"
         editText="Edit Document"
         deleteText="Delete Document"
@@ -80,11 +87,12 @@ const OnboardingActions = ({ data, reload }) => {
       )}
 
       {edit?.open && (
-        <SheetComponent
-          {...formSheetData}
+        <ViewDetailSheetCardExtension
           isOpen={edit?.open}
           setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
-          width="568px"
+          title="Update Document"
+          handlePrevious={() => {}}
+          handleNext={() => {}}
         >
           <AddOnboardingForm
             isOpen={edit.open}
@@ -94,8 +102,9 @@ const OnboardingActions = ({ data, reload }) => {
             edit={edit}
             setEdit={setEdit}
             reload={reload}
+            onUpdateSuccess={handleFormUpdate}
           />
-        </SheetComponent>
+        </ViewDetailSheetCardExtension>
       )}
 
       {view?.visible && (
@@ -105,6 +114,8 @@ const OnboardingActions = ({ data, reload }) => {
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
           data={view.data}
+          reload={reload}
+          OnboardingList={OnboardingList}
         />
       )}
     </>

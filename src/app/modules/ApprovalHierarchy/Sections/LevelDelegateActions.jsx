@@ -1,0 +1,102 @@
+import React, { useState } from "react";
+import AlertDialogue from "components/ui/AlertDialogue";
+import {
+  DelegateDetails,
+  AddUpdateDelegateLevels,
+} from "app/modules/ApprovalHierarchy";
+import DropdownActionMenu from "components/DropdownActionMenu";
+import { deleteRecord } from "app/hooks/general";
+import { HasAccess } from "utils/PermissionUtils";
+
+const LevelDelegateActions = ({
+  data,
+  reloadData = () => {},
+  LevelDelegateList = [],
+}) => {
+  const isEditDelegatePermitted = HasAccess("EDIT_LEVEL_DELEGATE");
+  const isDeleteDelegatePermitted = HasAccess("DELETE_LEVEL_DELEGATE");
+
+  const [view, setView] = useState(null);
+  const [deleteRoleState, setDeleteRoleState] = useState(null);
+  const [openEditForm, setOpenEditForm] = useState(false);
+
+  const handleView = () => {
+    setView(true);
+  };
+
+  const handleEdit = () => {
+    setOpenEditForm(true);
+  };
+
+  const handleDelete = () => {
+    setDeleteRoleState({
+      open: true,
+      data: data,
+    });
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await deleteRecord(`/delegations/${data.id}`, "Delegate");
+      setDeleteRoleState(null);
+      // Ensure table is reloaded by calling reload function
+      reloadData(true);
+    } catch (error) {
+      console.error("ERROR", error);
+    }
+  };
+
+  return (
+    <>
+      <DropdownActionMenu
+        onView={handleView}
+        onEdit={isEditDelegatePermitted ? handleEdit : null}
+        onDelete={isDeleteDelegatePermitted ? handleDelete : null}
+        viewText="View Delegate"
+        editText="Edit Delegate"
+        deleteText="Delete Delegate"
+        menuTooltip="Delegates Actions"
+      />
+
+      {deleteRoleState?.open && (
+        <AlertDialogue
+          title="Confirm Delete?"
+          description={`This action can't be undone. All information associated with delegate will be lost.`}
+          isOpen={deleteRoleState.open}
+          setIsOpen={(isOpen) =>
+            setDeleteRoleState((prev) => ({ ...prev, open: isOpen }))
+          }
+          handleContinue={confirmDelete}
+        />
+      )}
+
+      {view && (
+        <DelegateDetails
+          isOpen={view}
+          setIsOpen={() => {
+            setView(false);
+            reloadData(true);
+          }}
+          current_id={data.id}
+          reloadData={reloadData}
+          LevelDelegateList={LevelDelegateList}
+        />
+      )}
+      {openEditForm && (
+        <AddUpdateDelegateLevels
+          isOpen={openEditForm}
+          reloadData={() => {
+            reloadData(true);
+            setOpenEditForm(false);
+          }}
+          setIsOpen={() => {
+            setOpenEditForm(false);
+          }}
+          id={data.id}
+        />
+      )}
+    </>
+  );
+};
+
+export default LevelDelegateActions;

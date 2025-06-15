@@ -1,4 +1,4 @@
-import { Branch } from "app/utils/Types/OfficeSetting";
+import { Branch, GraceTime } from "app/utils/Types/OfficeSetting";
 
 export async function mapBranchList(data) {
   const branchList = await data?.map((branch) => {
@@ -30,19 +30,66 @@ export function mapBranchData(data) {
   return branchDetails;
 }
 
-
 export function mapBranchPayloadData(data) {
-    // Initialize an empty payload object
-    const payload = {};
-    // Iterate over the keys in the Task object
-    for (const key in Branch) {
-      // Check if the key exists in the data object
-      if (data.hasOwnProperty(key) && data[key]) {
-        // Add the key and its value to the payload
-        payload[key] = data[key];
-      }
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in Branch) {
+    // Check if the key exists in the data object
+    if (data.hasOwnProperty(key) && data[key]) {
+      // Add the key and its value to the payload
+      payload[key] = data[key];
     }
-  
-    // Return the constructed payload
-    return payload;
   }
+
+  // Return the constructed payload
+  return payload;
+}
+
+//-------------GRACE TIME ---------------
+
+export function mapGraceTimeData(data) {
+  const graceTimeDetails = Object.keys(GraceTime).reduce((acc, key) => {
+    if (data.hasOwnProperty(key)) {
+      if (key === "grace_time_minutes") acc[key] = parseInt(data[key] || "0");
+      else acc[key] = data[key];
+    }
+    return acc;
+  }, {});
+
+  return graceTimeDetails;
+}
+export async function mapGraceTimeList(data) {
+  const graceTimeList = await data?.map((graceTime) => {
+    const graceTimeDetails = mapGraceTimeData(graceTime);
+    return {
+      value: graceTimeDetails.id,
+      label: graceTimeDetails.branch_name,
+      ...graceTimeDetails,
+    };
+  });
+
+  return graceTimeList;
+}
+
+export function mapGraceTimePayloadData(data, id) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in GraceTime) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      if (key === "name") payload[key] = data[key].trim();
+      if (key === "grace_time_minutes")
+        payload[key] = parseInt(data[key] || "0");
+      else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}

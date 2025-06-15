@@ -1,12 +1,20 @@
 import { countries } from "country-data";
+import Config from "constants/config";
 import {
   fetchDepartments,
   fetchDesignations,
   fetchProjects,
   fetchOrganizations,
   fetchBranches,
+  fetchCalendarHoliday,
 } from "state/slices/CommonSlice";
 import { fetchTaskLabels } from "state/slices/TaskManagmentSlice";
+import {
+  fetchModules,
+  fetchUserRoles,
+  fetchMyPermissions,
+  fetchUserPermittedModules,
+} from "state/slices/RolePermissionSlice";
 import { fetchTerminationReasons } from "state/slices/ExitEmployeeSlice";
 import { setUserProfile } from "state/slices/UserSlice.js";
 import {
@@ -17,11 +25,12 @@ import {
 } from "state/slices/EmpSlice";
 import { fetchLeaveComponents } from "state/slices/LeaveManagementSlice";
 import { fetchDocumentCategory } from "state/slices/HRDocumentsSlice";
-import { fetchShiftById } from "state/slices/AttendanceSlice";
+import {
+  fetchShiftById,
+  fetchUserAttendanceDetails,
+} from "state/slices/AttendanceSlice";
 import { ArrowDown, ArrowRight, ArrowUp, Timer } from "lucide-react";
 import { lightenColor } from "utils/renderValues";
-
-console.log(countries);
 
 export const countriesCallingCodes = countries.all
   .filter(
@@ -36,6 +45,7 @@ export const countriesCallingCodes = countries.all
     )})`,
     alpha2: country.alpha2,
   }));
+
 export const countriesList = countries.all.map((country) => {
   return {
     value: country.name,
@@ -50,16 +60,28 @@ export const CurrencyList = countries.all.map((country) => {
     currency: country.currencies[0] ?? "USD",
   };
 });
-export const tasksTitle = [
-  { label: "Task Name", width: "w-44" },
 
-  { label: "Assign By", width: "w-28" },
-
-  { label: "Due Date", width: "w-28" },
-
-  { label: "List", width: "w-28" },
-
-  { label: "Priority", width: "w-28" },
+export const ApprovalHierarchyRequestType = [
+  ...(Config.MY_LEAVE_TRACKER
+    ? [{ label: "Leave", value: "LEAVE_APPLICATION" }]
+    : []),
+  ...(Config.MY_CLAIMS ? [{ label: "Claims", value: "MY_CLAIMS" }] : []),
+  ...(Config.MY_TRANSFERS
+    ? [{ label: "Transfer", value: "MY_TRANSFERS" }]
+    : []),
+  ...(Config.MY_ASSETS ? [{ label: "Assets", value: "MY_ASSETS" }] : []),
+  ...(Config.EXIT_CLEARANCE
+    ? [{ label: "Temination", value: "EXIT_CLEARANCE_TERMINATION" }]
+    : []),
+  ...(Config.EXIT_CLEARANCE
+    ? [{ label: "Resignation", value: "EXIT_CLEARANCE_RESIGNATION" }]
+    : []),
+  ...(Config.TIME_ADJUSTMENTS
+    ? [{ label: "Time Adjustments", value: "TIME_ADJUSTMENT" }]
+    : []),
+  ...(Config.MY_ATTENDANCE
+    ? [{ label: "Attendance Adjustments", value: "ATTENDANCE_UPDATION" }]
+    : []),
 ];
 
 export const statusOptions = [
@@ -90,6 +112,12 @@ export const dateFormats = [
 export const probationPeriodOptions = [
   { value: "3 month", label: "3 Month" },
   { value: "6 month", label: "6 Month" },
+];
+
+export const assetStatus = [
+  { value: "Assigned", label: "Assigned" },
+  { value: "Unassigned", label: "Unassigned" },
+  { value: "Returned", label: "Returned" },
 ];
 
 export const days = Array?.from({ length: 31 }, (_, index) => {
@@ -268,7 +296,6 @@ export const HRDocumentCategory = [
 ];
 
 export const employeeStatus = [
-  { label: "All", value: "All" },
   { label: "Active", value: "Active" },
   { label: "Terminated", value: "Terminated" },
   { label: "Deceased", value: "Deceased" },
@@ -724,6 +751,11 @@ export const revisionStatusOptions = [
   { value: "APPROVED", label: "Approved" },
   { value: "REJECTED", label: "Rejected" },
 ];
+export const GlobalStatusOptions = (Records = true) => [
+  ...(Records ? [{ value: "PENDING", label: "Pending" }] : []),
+  { value: "APPROVED", label: "Approved" },
+  { value: "REJECTED", label: "Rejected" },
+];
 export const HRDocumentsStatus = [
   { value: "PENDING", label: "Pending" },
   { value: "VIEWED", label: "Viewed" },
@@ -822,19 +854,29 @@ export const handleUpdateProfile = async (dispatch, data) => {
     role: data.user_role,
     organization: data.organization,
   };
-  dispatch(setUserProfile(userprofile));
+  await dispatch(setUserProfile(userprofile));
+  const ModuleList = await dispatch(fetchModules());
+  const MyPermissions = await dispatch(fetchMyPermissions());
   const employee_details = await dispatch(fetchUser(userprofile.id));
-  dispatch(fetchEmployees());
+  await dispatch(
+    fetchUserPermittedModules({
+      modules: ModuleList.payload,
+      permissions: MyPermissions.payload,
+    })
+  );
+  await dispatch(fetchEmployees());
   dispatch(fetchEmployeesDetail());
   dispatch(fetchBranches());
   dispatch(fetchDepartments());
   dispatch(fetchDesignations());
-  dispatch(fetchDocumentCategory());
+  await dispatch(fetchCalendarHoliday(userprofile.id));
+  await dispatch(fetchDocumentCategory());
   dispatch(fetchOrganizations());
   dispatch(fetchTaskLabels());
+  await dispatch(fetchUserRoles());
   dispatch(fetchTerminationReasons());
   dispatch(fetchReportingManagers());
-  dispatch(fetchLeaveComponents());
-  dispatch(fetchProjects(userprofile));
+  await dispatch(fetchUserAttendanceDetails(userprofile.id));
+  await dispatch(fetchProjects(userprofile));
   dispatch(fetchShiftById(employee_details?.payload?.shift_assignment));
 };

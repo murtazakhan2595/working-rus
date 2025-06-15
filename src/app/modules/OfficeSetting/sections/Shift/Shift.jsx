@@ -1,10 +1,16 @@
 import SheetComponent from 'components/ui/SheetComponent';
 import React, { useState } from 'react'
 import AddShiftForm from './AddShiftForm';
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
 const Shift = ({ reload }) => {
 console.log("Reload in Shift Component:", reload);
   const [isOpen, setIsOpen] = useState(false);
+  const permissions = useOfficeSettingPermissions();
+
+  if (!permissions.shift.canCreate) {
+    return null;
+  }
 
   const formSheetData = {
     triggerText: "Add New Shift",

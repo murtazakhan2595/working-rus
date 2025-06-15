@@ -14,9 +14,10 @@ import { useSelector } from "react-redux";
 const EmployeeDetailUI = React.memo(
   ({
     id,
-    className = null,
+    className = '',
     variant = "ViewMode", // othere options are [ViewMode,FormView]
     InformationKeys = [],
+    ViewVariant='horizontal'
   }) => {
     const Departments = useSelector((state) => state.common.departments);
     const Designations = useSelector((state) => state.common.designations);
@@ -62,6 +63,18 @@ const EmployeeDetailUI = React.memo(
               value: getLabelByValue(
                 userProfile.department_position,
                 Designations
+              ),
+            },
+          ]
+        : []),
+      ...(InformationKeys.includes("manager")
+        ? [
+            {
+              name: "report_to",
+              label: "Reporting Manager",
+              value: getLabelByValue(
+                userProfile.report_to,
+                Managers
               ),
             },
           ]
@@ -121,14 +134,13 @@ const EmployeeDetailUI = React.memo(
           ]
         : []),
     ].filter(Boolean);
-    return variant === "ViewMode"
+    return <div className={className}> {variant === "ViewMode"
       ? employeeDataList &&
           employeeDataList.map((data) => {
             return (
               <DetailBox
-                orientation="horizontal"
+                orientation={ViewVariant}
                 key={data.label}
-                className=""
                 label={data.label}
                 value={data.value}
                 fallbackText={""}
@@ -147,7 +159,7 @@ const EmployeeDetailUI = React.memo(
                 />
               </div>
             );
-          });
+          })}</div>
   }
 );
 

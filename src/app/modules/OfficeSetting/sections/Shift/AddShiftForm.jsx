@@ -1,50 +1,69 @@
-import { Label } from "src/@/components/ui/label";
-import { ShiftInformation } from "app/utils/Types/Shift";
+import { saveShift } from "app/hooks/shiftManagement";
+import { ShiftInformation } from "app/utils/Types/ShiftManagement";
+import { validateShiftFormSchema } from 'app/utils/FormSchema/ShiftManagementFormSchema';
+import { getShiftById } from "app/hooks/general";
 import { TextInput, TimePicker } from "components/FormControl";
-import { SheetCardExtension } from "components/SheetCardExtension";
-import { Button } from "components/ui/button";
-import { Formik } from "formik";
-import React, { useState } from "react";
 import { SelectInputComponent } from "components/FormControl";
 import { shiftType } from "data/Data";
+import { SheetUI } from "components";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import moment from "moment";
 
-import { saveShift } from "app/hooks/general";
-import { validateShiftFormSchema } from "app/utils/FormSchema/ShiftFormSchema";
-import { handleCloseWithConfirmation } from "components/SheetCardExtension";
-
 const AddShiftForm = ({
-  isOpen,
-  setIsOpen,
-  shiftData,
-  setEdit,
-  reload = () => {},
-  setEmployeeShift = () => {},
+  id = false,
+  reloadData = () => {},
+  isOpen = false,
+  setIsOpen = () => {},
 }) => {
-  const formData = shiftData ?? ShiftInformation;
-  // setFormData] = useState(() => {
-  //   if (edit?.data) {
-  //     const localStartTime = moment(edit.data.starttime)
-  //     const localEndTime = moment(edit.data.endtime)
-  //     return {
-  //       ...edit.data,
-  //       starttime: localStartTime,
-  //       endtime: localEndTime,
-  //     };
-  //   }
-  //   return ShiftInformation;
-  // });
-  const [closeSheet, setCloseSheet] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState(ShiftInformation);
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+  const isEditMode = Boolean(id);
+
+  const FormSheetData = {
+    triggerText: `${isEditMode ? "Edit" : "Add"} Shift`,
+    title: `${isEditMode ? "Edit" : "Add"} Shift`,
+    description: null,
+    footer: null,
+  };
+
+  // Fetch shift data when editing
+  useEffect(() => {
+    const fetchShiftData = async () => {
+      if (id) {
+        setIsLoading(true);
+        try {
+          const data = await getShiftById(id);
+          if (data) {
+            setFormData(data);
+          }
+        } catch (error) {
+          console.error("Error fetching shift data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    
+    fetchShiftData();
+  }, [id]);
+
+  const handleClose = () => {
+    setIsOpen(false);
+    reloadData(true);
+  };
 
   const handleSubmit = async (values) => {
     try {
+      setIsSubmittingForm(true);
+      
       // Use default times if no value is selected
       const startTime = moment(values.starttime);
-      const endTime = moment(values.endtime)
+      const endTime = moment(values.endtime);
 
       const startTimeUTC = moment(startTime).utc().toISOString();
-      const endTimeUTC =moment(endTime).utc().toISOString();
+      const endTimeUTC = moment(endTime).utc().toISOString();
 
       const updatedValues = {
         ...values,
@@ -54,120 +73,76 @@ const AddShiftForm = ({
 
       console.log(updatedValues, "UPDATE VALUES");
 
-      const response = await saveShift(updatedValues?.id, updatedValues);
+      const response = await saveShift(updatedValues);
       if (response) {
-        toast.success(`Shift ${shiftData ? "Updated" : "Added"} Successfully!`, {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        console.log("response", response);
-        reload(true);
-        setIsOpen(false);
-        setEmployeeShift(response.id);
-        setEdit({
-          open: false,
-          data: null,
-        });
+        toast.success(
+          `Shift ${isEditMode ? "Updated" : "Added"} Successfully!`,
+          {
+            position: toast.POSITION.TOP_RIGHT,
+          }
+        );
+        handleClose();
       }
     } catch (error) {
       console.error("Error during submission:", error);
+    } finally {
+      setIsSubmittingForm(false);
     }
   };
 
-  const handleClose = () => {
-    setCloseSheet(true);
-  };
-
-  const handleTimeChange = (field, time, props) => {
-    props.setFieldValue(field, time);
-  };
-
   return (
-    <>
-      {handleCloseWithConfirmation({
-        isOpen: closeSheet,
-        setCloseSheet,
-        setIsOpen: setIsOpen,
-      })}
-      <Formik
-        initialValues={formData}
-        onSubmit={(values, { resetForm }) => {
-          handleSubmit(values, resetForm);
-        }}
-        validate={validateShiftFormSchema}
-      >
-        {(props) => (
-          <form onSubmit={props?.handleSubmit}>
-            <SheetCardExtension title="Shift Details">
-              <TextInput
-                name="name"
-                label="Shift Name"
-                required
-                error={props.errors.name}
-                touch={props.touched.name}
-                value={props.values.name}
-                onChange={(field, value) => {
-                  console.log(field, value, "FIELD VALUE");
-                  props.handleChange(field)(value);
-                }}
-              />
-
-              <SelectInputComponent
-                name={"type"}
-                options={shiftType}
-                error={props.errors.type}
-                touch={props.touched.type}
-                value={props.values.type}
-                label={"Type"}
-                required
-                onChange={(field, value) => {
-                  props.setFieldValue(field, value);
-                }}
-              />
-
-              <Label>Start Time</Label>
-              <TimePicker
-                value={props.values.starttime} // Bind Formik value for starttime
-                onChange={(field, time) => props.setFieldValue(field, time)} // Update Formik value on time change
-                date={props.values.starttime}
-                name={'starttime'}
-              />
-
-              <Label>End Time</Label>
-              <TimePicker
-                value={props.values.endtime} // Bind Formik value for endtime
-                onChange={(field, time) => props.setFieldValue(field, time)}
-                date={props.values.endtime}
-                name='endtime'
-
-              />
-            </SheetCardExtension>
-            <div className="p-6 border-t border-gray-200 bg-gray-50">
-              <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  type="button"
-                  onClick={handleClose}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  size="lg"
-                  variant="default"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    props.handleSubmit();
-                  }}
-                >
-                  {shiftData ? "Update" : "Add"}
-                </Button>
-              </div>
-            </div>
-          </form>
-        )}
-      </Formik>
-    </>
+    <SheetUI
+      isOpen={isOpen}
+      setIsOpen={handleClose}
+      variant="sheet"
+      sheetConfig={FormSheetData}
+      formConfig={{
+        initialValues: formData,
+        enableReinitialize: true,
+        handleSubmit: handleSubmit,
+        validateFormSchema: validateShiftFormSchema,
+        submitButtonText: "Submit",
+        cancelButtonText: "Cancel",
+        columns: 1,
+        disableSubmit: isLoading || isSubmittingForm,
+        loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
+        formFields: [
+          {
+            sheetCardExtension: true,
+            sheetCardTitle: "Shift Details",
+            InputFields: [
+              {
+                InputField: TextInput,
+                name: "name",
+                required: true,
+                label: "Shift Name",
+              },
+              {
+                InputField: SelectInputComponent,
+                name: "type",
+                required: true,
+                label: "Type",
+                options: shiftType,
+              },
+              {
+                InputField: TimePicker,
+                name: "starttime",
+                required: true,
+                label: "Start Time",
+                date: formData.starttime
+              },
+              {
+                InputField: TimePicker,
+                name: "endtime",
+                required: true,
+                label: "End Time",
+                date: formData.endtime
+              }
+            ],
+          },
+        ],
+      }}
+    />
   );
 };
 

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { moveTask, updateBoardPosition } from "app/hooks/taskManagment";
 import { RxPlus } from "react-icons/rx";
-import TaskEditAddViewDetails from "app/modules/TaskManagment/Boards/TaskEditAddViewDetails";
 import { ScrollArea, ScrollBar } from "src/@/components/ui/scroll-area";
 import TaskCard from "./Task";
 import { Button } from "components/ui/button";
@@ -156,7 +155,7 @@ const TaskColumn = ({
   const { projectId, viewStyle } = useParams();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
-  const [ordering, setOrdering] = useState("-id");
+  const [ordering, setOrdering] = useState("-start_date");
 
   const fetchData = async (isMounted) => {
     try {

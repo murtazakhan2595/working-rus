@@ -16,7 +16,7 @@ import {
 import { Card, CardContent } from "components/ui/card";
 import { Header } from "components";
 import { Button } from "components/ui/button";
-
+import { HasAccess } from "utils/PermissionUtils";
 const HRDocumentsTab = ["Documents", "Category"];
 
 function HRDocuments() {
@@ -24,24 +24,31 @@ function HRDocuments() {
   const [OpenCategoryForm, setOpenCategoryForm] = useState(false);
   const [activeHRDocumentsTab, setActiveHRDocumentsTab] = useState("Documents");
   const [reloadData, setReloadData] = useState(false);
+  const uploadHRDocumentPermitted = HasAccess("UPLOAD_HR_DOCUMENT");
+  const addDocumentCategoryPermitted = HasAccess("ADD_DOCUMENT_CATEGORY");
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
       <Header
         content={
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              if (activeHRDocumentsTab === "Documents")
-                setOpenUploadDocumentForm(true);
-              else setOpenCategoryForm(true);
-            }}
-          >
-            {activeHRDocumentsTab === "Documents"
-              ? "Upload New Document"
-              : "Add New Category"}
-          </Button>
+          ((activeHRDocumentsTab === "Documents" &&
+            uploadHRDocumentPermitted) ||
+            (activeHRDocumentsTab !== "Documents" &&
+              addDocumentCategoryPermitted)) && (
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                if (activeHRDocumentsTab === "Documents")
+                  setOpenUploadDocumentForm(true);
+                else setOpenCategoryForm(true);
+              }}
+            >
+              {activeHRDocumentsTab === "Documents"
+                ? "Add Document"
+                : "Add Category"}
+            </Button>
+          )
         }
       />
       <Tabs
@@ -52,18 +59,20 @@ function HRDocuments() {
         }}
         value={activeHRDocumentsTab}
       >
-        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
-          <TabsList className="flex items-center justify-center mb-4">
-            {HRDocumentsTab.map((tab) => (
-              <TabsTrigger
-                key={tab}
-                value={tab}
-                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-              >
-                {tab}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between w-full">
+          <div className="w-full sm:w-auto overflow-hidden mb-4">
+            <TabsList className="flex flex-nowrap w-full overflow-x-auto overflow-y-hidden sm:overflow-visible">
+              {HRDocumentsTab.map((tab) => (
+                <TabsTrigger
+                  key={tab}
+                  value={tab}
+                  className="data-[state=active]:bg-primary-200 flex-1 sm:flex-initial whitespace-nowrap sm:w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                >
+                  {tab}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
         </div>
         <Card>
           <CardContent>

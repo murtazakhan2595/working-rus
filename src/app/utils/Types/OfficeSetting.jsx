@@ -18,3 +18,11 @@ export const Branch = {
     lng: 0,
   },
 };
+
+export const GraceTime = {
+  id: null,
+  name: null,
+  grace_time_minutes: null,
+  created_at: null,
+  branches: null,
+};

@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Attendance } from "app/utils/Types/Attendance";
-import { validateUpdateAttendanceFormSchema } from "app/utils/FormSchema/AttendanceFormSchema";
+import { Attendance, AttendanceAdjustment } from "app/utils/Types/Attendance";
+import { mapAdjustmentFromAttendnaceData } from "app/utils/MappingObjects/mapAttendanceData";
+import {
+  validateUpdateAttendanceFormSchema,
+  validateAttendanceAdjustmentFormSchema,
+} from "app/utils/FormSchema/AttendanceFormSchema";
 import { SheetUI } from "components";
 import {
   saveAttendance,
   getAttendanceData,
   getAttendance,
+  saveUpdateAttendanceAdjustment,
 } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import {
@@ -15,7 +20,12 @@ import {
   TimePicker,
   DateInput,
 } from "components/FormControl";
-
+import { HasAccess } from "utils/PermissionUtils";
+import { TextAreaInput } from "components/FormControl";
+import { GetEmployeeFilteredList } from "utils/Lists";
+import { GetEmployeeActiveShift } from "app/modules/Attendance/ShiftCalendar/Section/getEmployeeActiveShift";
+import { renderDate } from "utils/renderValues";
+import { getShiftById } from "app/hooks/attendance";
 const FormSheetData = {
   triggerText: "Submit",
   title: "Update Employee Attendance",
@@ -28,16 +38,27 @@ const UpdateEmployeeAttendance = ({
   isOpen = true,
   id,
   setIsOpen = () => {},
-  isEmployee = false,
 }) => {
+  const defaultShift = useSelector(
+    (state) => state.attendance.assignedShiftData
+  );
+  const isDptAttendancePermitted = HasAccess("UPDATE_DPT_EMP_ATTENDANCE");
+  const isBrnAttendancePermitted = HasAccess("UPDATE_BRN_EMP_ATTENDANCE");
+  const isAttendancePermitted = HasAccess("UPDATE_EMPLOYEE_ATTENDANCE");
+  const Employees = GetEmployeeFilteredList(
+    false,
+    isAttendancePermitted,
+    isBrnAttendancePermitted,
+    isDptAttendancePermitted
+  );
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
   const UserDetails = useSelector((state) => state.emp.user_details);
   const Mangers = useSelector((state) => state.emp.reportingManagers);
-  const Employees = useSelector((state) => state.emp.employees_detail);
   const [formData, setFormData] = useState(Attendance);
   const [formValues, setFormValues] = useState(Attendance);
   const [selectedEmployee, setSelectedEmployee] = useState({});
+  const [ActiveShift, setActiveShift] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchData = async (isMounted) => {
@@ -55,34 +76,35 @@ const UpdateEmployeeAttendance = ({
     }
   };
 
-  const fetchAttendanceData = async (isMounted, date) => {
+  const fetchAttendanceData = async (isMounted, date, selectedEmployee) => {
     setIsLoading(true);
-    try {
-      const response = await getAttendance({
-        filterData: { date: date, employee_id: selectedEmployee.id },
-      });
-      if (isMounted && response) {
-        if (response.results && response.results.length > 0) {
-          setFormData(response.results[0]);
-          setFormValues(response.results[0]);
+    if (date && selectedEmployee.id) {
+      try {
+        const response = await getAttendance({
+          filterData: { date: date, employee_id: selectedEmployee.id },
+        });
+        const default_shift_id = selectedEmployee.default_shift;
+        const default_shift = await getShiftById(default_shift_id);
+        const active_shift = await GetEmployeeActiveShift(
+          selectedEmployee.id,
+          default_shift,
+          date
+        );
+        setActiveShift(active_shift);
+        if (isMounted && response) {
+          if (response.results && response.results.length > 0) {
+            const attendanceRecord = response.results[0];
+            setFormData(attendanceRecord);
+            setFormValues(attendanceRecord);
+          }
         }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    let isMounted = true;
-    if (formValues.date && selectedEmployee.id) {
-      fetchAttendanceData(isMounted, formValues.date);
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [formValues.date]);
 
   useEffect(() => {
     let isMounted = true;
@@ -94,30 +116,30 @@ const UpdateEmployeeAttendance = ({
     };
   }, [id]);
 
-  useEffect(() => {
-    if (isEmployee) {
-      setSelectedEmployee(UserDetails);
-      setFormData((prev) => {
-        return { ...prev, employee_id: UserDetails.id };
-      });
-    }
-  }, [isEmployee]);
-
   const handleSubmit = async (data) => {
     try {
-      const response = await saveAttendance(data, selectedEmployee, id);
+      const payload = {
+        date: data.date,
+        id: data.id || id,
+        checkin: data.checkin,
+        checkout: data.checkout,
+        employee_id: data.employee_id,
+      };
+      const response = await saveAttendance(
+        payload,
+        ActiveShift,
+        data.id || id
+      );
       // return
       if (response) {
-        if (id) {
-          toast.success("Attendance Updated Successfully!", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        } else {
-          toast.success("Attendance Submitted Successfully!", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-        }
-        setIsOpen(false);
+        return {
+          status: true,
+          messageType: "SUCCESS",
+          title: `Attendance Updated for ${selectedEmployee.name}`,
+          description: `Attendance updated for ${
+            selectedEmployee.name
+          } for ${renderDate(data.date)} `,
+        };
       }
     } catch (error) {
       // Handle errors and rollback form data
@@ -135,28 +157,44 @@ const UpdateEmployeeAttendance = ({
         initialValues: formData,
         enableReinitialize: true,
         handleSubmit: handleSubmit,
-        validateFormSchema: validateUpdateAttendanceFormSchema,
+        validateFormSchema: (values) => {
+          const error = validateUpdateAttendanceFormSchema(
+            values,
+            Boolean(ActiveShift.status && ActiveShift.is_split_shift)
+          );
+          if (values.date && !ActiveShift.status) {
+            if (!ActiveShift.shift_assigned) {
+              error.date = `No Shift was assigned to ${selectedEmployee.name} for this date. Kindly update the shift to record attendance`;
+            } else if (ActiveShift.isOffToday) {
+              error.date = `${selectedEmployee.name} is on ${
+                ActiveShift?.OffLabel?.toLowerCase() || ""
+              } for this date`;
+            }
+          }
+          return error;
+        },
         submitButtonText: id ? "Update" : "Add",
         cancelButtonText: "Cancel",
         columns: 3,
         renderUpdatedFormValues: setFormValues,
-        formFiels: [
+        disableSubmit: isLoading,
+        formFields: [
           {
             sheetCardExtension: true,
             sheetCardTitle: "Employee Details",
-            InputFiels: [
+            InputFields: [
               {
                 InputField: SelectInputComponent,
                 name: "employee_id",
                 required: true,
-                disabled: isEmployee,
                 label: "Employee",
-                onChange: (field, value) => {
-                  if (value)
-                    setSelectedEmployee(
-                      Employees.find((obj) => obj.value === value)
-                    );
-                  else setSelectedEmployee({});
+                onFieldUpdate: async (_, value) => {
+                  const employee = value
+                    ? Employees.find((obj) => obj.value === value)
+                    : {};
+
+                  setSelectedEmployee(employee);
+                  await fetchAttendanceData(true, formValues.date, employee);
                 },
                 options: Employees,
               },
@@ -193,32 +231,56 @@ const UpdateEmployeeAttendance = ({
           {
             sheetCardExtension: true,
             sheetCardTitle: "Attendance Details",
-            InputFiels: [
+            InputFields: [
               {
                 InputField: DateInput,
                 name: "date",
                 required: true,
                 label: "Attendance Date",
+                maxDate: new Date(),
+                onFieldUpdate: async (_, value) => {
+                  await fetchAttendanceData(true, value, selectedEmployee);
+                },
               },
-              ...(formValues?.status !== "Absent"
+              {
+                InputField: TimePicker,
+                name: "checkin",
+                required: true,
+                label: "Check-In Time",
+                date: formValues?.date,
+                ...(ActiveShift.status && ActiveShift.is_split_shift
+                  ? { description: "Check-in for first shift" }
+                  : {}),
+              },
+
+              {
+                InputField: TimePicker,
+                name: "checkout",
+                required: true,
+                label: "Check-Out Time",
+                date: formValues?.date,
+                ...(ActiveShift.status && ActiveShift.is_split_shift
+                  ? { description: "Check-out for first shift" }
+                  : {}),
+              },
+              ...(ActiveShift.status && ActiveShift.is_split_shift
                 ? [
                     {
                       InputField: TimePicker,
-                      name: "checkin",
+                      name: "second_checkin",
                       required: true,
                       label: "Check-In Time",
                       date: formValues?.date,
+                      description: "Check-in for second shift",
                     },
-                  ]
-                : []),
-              ...(formValues?.status !== "Absent"
-                ? [
+
                     {
                       InputField: TimePicker,
-                      name: "checkout",
+                      name: "second_checkout",
                       required: true,
                       label: "Check-Out Time",
                       date: formValues?.date,
+                      description: "Check-out for second shift",
                     },
                   ]
                 : []),

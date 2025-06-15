@@ -4,15 +4,19 @@ import { EmployeeColumns } from "app/utils/Types/TableColumns";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
 import Header from "../../../components/Header";
 import { FilterInput, SelectInputComponent } from "components/FormControl";
-import { UserRoles, employeeStatus } from "data/Data";
+import { employeeStatus } from "data/Data";
 import { getEmployeeCustomList } from "app/hooks/general";
 import { PageLoader } from "components";
-import SheetOnBoarding from "components/ui/OnBoardingSheet";
 import Stats from "../../../components/ui/Stats";
 import TableCustom from "components/CustomTable";
 import { useSelector } from "react-redux";
+import { HasAccess } from "utils/PermissionUtils";
+import { Button } from "components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function EmployeeManagement() {
+  const navigate = useNavigate();
+  const AddEmployeesPermitted = HasAccess("ADD_EMPLOYEE");
   const [isLoading, setIsLoading] = useState(true);
   const [employeeData, setEmployeeData] = useState({ results: [], count: 0 });
   const [filterData, setFilterData] = useState({});
@@ -22,11 +26,10 @@ export default function EmployeeManagement() {
   const [totalManagers, setTotalManagers] = useState(0);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [selectedDesignation, setSelectedDesignation] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
+  const Branches = useSelector((state) => state.common.branches);
+  const UserRoles = useSelector((state) => state.roles_permissions.user_roles);
   const [ordering, setOrdering] = useState("-id");
 
   const onPageChange = (name, value) => {
@@ -74,11 +77,6 @@ export default function EmployeeManagement() {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "department_name") setSelectedDepartment(filterValue);
-    if (filterName === "department_position")
-      setSelectedDesignation(filterValue);
-    if (filterName === "user_role") setSelectedRole(filterValue);
-
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -116,13 +114,16 @@ export default function EmployeeManagement() {
     >
       <Header
         content={
-          <SheetOnBoarding
-            reloadData={() => {
-              setOrdering("-id");
-              onPageChange("page", 1);
-              fetchData(true);
-            }}
-          />
+          AddEmployeesPermitted && (
+            <Button
+              onClick={(event) => {
+                event.preventDefault();
+                navigate("/create-employee");
+              }}
+            >
+              Add Employee
+            </Button>
+          )
         }
       />
       <Stats stats={statsData} />
@@ -145,28 +146,32 @@ export default function EmployeeManagement() {
               name: "emp_search",
             },
             {
-              type: "select-one",
-              option: Departments,
+              type: "select",
+              options: Departments,
               name: "department_name",
               placeholder: "Department",
-              values: selectedDepartment,
             },
             {
-              type: "select-two",
-              option: Designations,
+              type: "select",
+              options: Designations,
               name: "department_position",
               placeholder: "Designation",
-              values: selectedDesignation,
             },
             {
-              type: "select-three",
-              option: UserRoles,
+              type: "select",
+              options: Branches,
+              name: "branch_id",
+              placeholder: "Branch",
+            },
+            {
+              type: "select",
+              options: UserRoles,
               name: "user_role",
               placeholder: "Role",
-              values: selectedRole,
             },
           ]}
           onChange={handleFilterChange}
+          className='justify-end'
         />
       </div>
       {isLoading ? (

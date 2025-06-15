@@ -1,24 +1,19 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import SheetComponent from "components/ui/SheetComponent";
 import AddDepartmentForm from "./AddDepartmentForm";
 import ViewDepartment from "./ViewDepartment";
 import DropdownActionMenu from "components/DropdownActionMenu";
+import { ViewDetailSheetCardExtension } from "components";
 import useUserOrganization from "app/hooks/useUserOrganization";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
-const DepartmentAction = ({ data, reload }) => {
+const DepartmentAction = ({ data, reload, DepartmentList = [] }) => {
   const [view, setView] = useState(null);
   const [deleteDept, setDeleteDept] = useState(null);
   const [edit, setEdit] = useState(null);
   const userOrganization = useUserOrganization();
-
-  const formSheetData = {
-    triggerText: null,
-    title: "Update Department",
-    description: null,
-    footer: null,
-  };
+  const permissions = useOfficeSettingPermissions();
 
   const handleView = () => {
     setView({
@@ -60,9 +55,9 @@ const DepartmentAction = ({ data, reload }) => {
   return (
     <>
       <DropdownActionMenu 
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onView={permissions.departments.canView ? handleView : null}
+        onEdit={permissions.departments.canUpdate ? handleEdit : null}
+        onDelete={permissions.departments.canDelete ? handleDelete : null}
         viewText="View Department"
         editText="Edit Department"
         deleteText="Delete Department"
@@ -85,23 +80,13 @@ const DepartmentAction = ({ data, reload }) => {
       )}
 
       {edit?.open && (
-        <SheetComponent
-          {...formSheetData}
-          isOpen={edit?.open}
+        <AddDepartmentForm
+          isOpen={edit.open}
           setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
-          width="568px"
-        >
-          <AddDepartmentForm
-            isOpen={edit.open}
-            setIsOpen={(isOpen) =>
-              setEdit((prev) => ({ ...prev, open: isOpen }))
-            }
-            edit={edit}
-            setEdit={setEdit}
-            reload={reload}
-            userOrganization={userOrganization}
-          />
-        </SheetComponent>
+          edit={edit}
+          reloadData={reload}
+          userOrganization={userOrganization}
+        />
       )}
 
       {view?.visible && (
@@ -111,6 +96,8 @@ const DepartmentAction = ({ data, reload }) => {
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
           data={view.data}
+          reload={reload}
+          DepartmentList={DepartmentList}
         />
       )}
     </>

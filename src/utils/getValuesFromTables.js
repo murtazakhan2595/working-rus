@@ -1,5 +1,4 @@
 import { ResignationStatusOptions } from "data/Data";
-import { terminationReasonsOptions } from "data/Data";
 import { TerminationStatusOptions } from "data/Data";
 import {
   workTypeOptions,
@@ -7,14 +6,15 @@ import {
   jobTypeOptions,
   locationTypeOptions,
   countriesList,
-  UserRoles,
   workplaceTypes,
   GenderOptions,
   BloodGroupOptions,
+  ApprovalHierarchyRequestType,
 } from "data/Data";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { ReasonForLeaving, SalaryTypeOptions } from "data/Data";
+import { GetDispatchStateList } from "./Lists";
 
 function getCountryFullName(countryCode) {
   const country = countriesList.find((option) => option.value === countryCode);
@@ -27,9 +27,16 @@ function getEmployeeType(employeeType) {
   );
   return response ? response.label : employeeType;
 }
-function UserRole({ value }) {
-  const response = UserRoles.find((option) => option.value === parseInt(value));
-  return response ? response.label : "";
+function UserRole({ value, fallBackText = "N/A" }) {
+  const user_roles = useSelector((state) => state.roles_permissions.user_roles);
+  const user_role = user_roles.find((option) => option.id === parseInt(value));
+
+  return user_role ? user_role.name : value ?? fallBackText;
+}
+export function GetDefaultUserRole() {
+  const user_roles = useSelector((state) => state.roles_permissions.user_roles);
+  const user_role = user_roles.find((option) => option.is_default);
+  return user_role ?? null;
 }
 function getWorkType(workType) {
   const response = workTypeOptions.find((option) => option.value === workType);
@@ -68,45 +75,60 @@ function TerminationStatus(status) {
   );
   return response ? response.label : status ?? "N/A";
 }
+export function ApprovalHierarchyRequestTypeName({ value, fallBackText }) {
+  const response = ApprovalHierarchyRequestType.find(
+    (option) => option.value === value
+  );
+  return response ? response.label : value ?? fallBackText;
+}
 function DepartmentName({ value, fallBackText = "N/A", debug = false }) {
   const departments = useSelector((state) => state.common.departments);
-  
+
   // If value is falsy, return fallback
   if (!value) {
-    if (debug) console.log('DepartmentName: Returning fallback for empty value');
+    if (debug)
+      console.log("DepartmentName: Returning fallback for empty value");
     return fallBackText;
   }
-  
+
   // Handle case where value is already a string (like "CEO")
-  if (typeof value === 'string' && isNaN(parseInt(value))) {
-    if (debug) console.log(`DepartmentName: Returning string value directly: ${value}`);
+  if (typeof value === "string" && isNaN(parseInt(value))) {
+    if (debug)
+      console.log(`DepartmentName: Returning string value directly: ${value}`);
     return value;
   }
-  
+
   // Try to find department by ID
   const parsedValue = parseInt(value);
-  
+
   // Check if departments array exists and has items
   if (!departments || !Array.isArray(departments) || departments.length === 0) {
-    if (debug) console.warn(`DepartmentName: No departments available in redux store for ID: ${value}`);
+    if (debug)
+      console.warn(
+        `DepartmentName: No departments available in redux store for ID: ${value}`
+      );
     // If departments are not available, return the fallback with ID
     return `${fallBackText}`;
   }
-  
+
   // Try to find by both value and id properties
   const department = departments.find(
     (option) => option.value === parsedValue || option.id === parsedValue
   );
-  
+
   if (debug) {
-    console.log(`DepartmentName: value=${value}, parsed=${parsedValue}, found=${department?.label || department?.name || 'not found'}, departments count: ${departments.length}`);
+    console.log(
+      `DepartmentName: value=${value}, parsed=${parsedValue}, found=${
+        department?.label || department?.name || "not found"
+      }, departments count: ${departments.length}`
+    );
   }
-  
+
   // Return department label if found, otherwise original value or fallback
   if (department) {
     return department.label || department.name;
   }
-  
+
   // If not found and we want to show a meaningful fallback
   return fallBackText;
 }
@@ -145,6 +167,25 @@ function EmployeeName({ value, length }) {
 
   return <>{displayedName}</>;
 }
+export function EmployeeUsername({ value, fallBackText = "N/A" }) {
+  const employees = useSelector((state) => state.emp.employees);
+  const employee = employees.find((option) => option.id === parseInt(value));
+  const employeeName = employee ? employee.username : fallBackText;
+
+  return <>{employeeName}</>;
+}
+export function EmployeeInfo({ value, label, fallBackText = "N/A" }) {
+  const employees = useSelector((state) => state.emp.employees);
+  const employee = employees.find((option) => option.id === parseInt(value));
+  const employeeInfo = employee ? employee[label] ?? null : null;
+  if (employeeInfo) {
+    if (label === "department_position")
+      return (
+        <DesignationName value={employeeInfo} fallBackText={fallBackText} />
+      );
+  }
+  return null;
+}
 
 export function EmployeeNameList(employeeIdList) {
   const employees = useSelector((state) => state.emp.employees);
@@ -165,6 +206,38 @@ function GetUser(id) {
   const employees = useSelector((state) => state.emp.employees_detail);
   const employee = employees.find((option) => option.value === parseInt(id));
   return employee ?? null;
+}
+export function GetUserInfo(id, infoKeys) {
+  const employee = GetUser(id);
+  const employeeInfo = {};
+  if (infoKeys.includes("department"))
+    employeeInfo["department"] = GetNameList(
+      employee.department_name,
+      "departments",
+      "common",
+      "--"
+    );
+  if (infoKeys.includes("designation"))
+    employeeInfo["designation"] = GetNameList(
+      employee.department_position,
+      "designations",
+      "common",
+      "--"
+    );
+  if (infoKeys.includes("branch"))
+    employeeInfo["branch"] = GetNameList(
+      employee.branch_id,
+      "branches",
+      "common",
+      "--"
+    );
+  if (infoKeys.includes("id")) employeeInfo["id"] = employee.serial_number;
+  return employeeInfo ?? null;
+}
+export function GetNameList(list, label, key, fallBackText) {
+  const List = GetDispatchStateList(key, label);
+  const NameList = getLabelByValue(list, List, fallBackText, "value", "list");
+  return NameList;
 }
 function EmployeeProfilePicture(id) {
   const employees = useSelector((state) => state.emp.employees_detail);
@@ -281,15 +354,21 @@ function getDepartmentName(value, departments, fallBackText) {
   return department ? department.label : fallBackText ?? "N/A";
 }
 
-export function getLabelByValue(value, options = [], fallBackText = "N/A") {
+export function getLabelByValue(
+  value,
+  options = [],
+  fallBackText = "N/A",
+  key = "value",
+  variant = "string"
+) {
   if (Array.isArray(value)) {
     const labels = value
       .map((val) => {
-        const option = options.find((option) => option.value === parseInt(val));
+        const option = options.find((option) => option[key] === parseInt(val));
         return option ? option.label : null;
       })
       .filter(Boolean);
-
+    if (variant === "list") return labels;
     return labels.length ? labels.join(", ") : fallBackText;
   }
 

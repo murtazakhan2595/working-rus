@@ -1,7 +1,13 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
 import { HandleLogout } from "./general";
-import moment from "moment";
+import {
+  mapGraceTimeList,
+  mapGraceTimeData,
+  mapGraceTimePayloadData,
+} from "app/utils/MappingObjects/mapOfficeSettingData";
+import { renderErrorMessages } from "utils/renderErrors";
+
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -12,29 +18,24 @@ const formDataHeader = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
 });
 
-
 const saveOrganization = async (id, payload) => {
-  console.log(id, "ID")
+  console.log(id, "ID");
   try {
     if (id) {
       const response = await axios.patch(
         `${baseUrl}/organization/${id}`,
         payload,
         {
-          headers: formDataHeader()
+          headers: formDataHeader(),
         }
       );
       if (response.status === 200 || response.status === 201) {
         return response.data;
       }
     } else {
-      const response = await axios.post(
-        `${baseUrl}/organization/`,
-        payload,
-        {
-          headers: formDataHeader(),
-        }
-      );
+      const response = await axios.post(`${baseUrl}/organization/`, payload, {
+        headers: formDataHeader(),
+      });
       if (response.status === 201 || response.status === 200) {
         return response.data;
       }
@@ -63,7 +64,7 @@ const deleteOrganization = async (id) => {
     }
     return false;
   }
-}
+};
 
 const getOrganizationCountryList = async () => {
   try {
@@ -80,17 +81,15 @@ const getOrganizationCountryList = async () => {
     }
     return [];
   }
-}
+};
 
-const getRegionsList = async (payload)=>{
+const getRegionsList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/regions?ordering=-id&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  const URL = `/regions?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -105,16 +104,14 @@ const getRegionsList = async (payload)=>{
     }
     return [];
   }
-}
- const getCitiesList = async (payload) => {
+};
+const getCitiesList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const URL = `/cities?ordering=-id&${
-    pageNo ? `page=${pageNo}&` : ""
-  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
-    JSON.stringify(filterData)
-  )}`;
+  const URL = `/cities?ordering=-id&${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -129,7 +126,7 @@ const getRegionsList = async (payload)=>{
     }
     return [];
   }
-}
+};
 
 const getRegionById = async (id) => {
   try {
@@ -146,7 +143,7 @@ const getRegionById = async (id) => {
     }
     return [];
   }
-}
+};
 
 const getCityById = async (id) => {
   try {
@@ -163,7 +160,7 @@ const getCityById = async (id) => {
     }
     return [];
   }
-}
+};
 
 const getCountryById = async (id) => {
   try {
@@ -180,7 +177,7 @@ const getCountryById = async (id) => {
     }
     return [];
   }
-}
+};
 
 const getOrganizationTree = async () => {
   try {
@@ -197,7 +194,7 @@ const getOrganizationTree = async () => {
     }
     return [];
   }
-}
+};
 
 const getEmployeeReportingLine = async (id) => {
   try {
@@ -214,7 +211,7 @@ const getEmployeeReportingLine = async (id) => {
     }
     return [];
   }
-}
+};
 
 const saveOnboardingDocument = async (id, payload) => {
   try {
@@ -223,20 +220,16 @@ const saveOnboardingDocument = async (id, payload) => {
         `${baseUrl}/onboardingdoc/${id}`,
         payload,
         {
-          headers: formDataHeader()
+          headers: formDataHeader(),
         }
       );
       if (response.status === 200 || response.status === 201) {
         return response.data;
       }
     } else {
-      const response = await axios.post(
-        `${baseUrl}/onboardingdoc/`,
-        payload,
-        {
-          headers: formDataHeader(),
-        }
-      );
+      const response = await axios.post(`${baseUrl}/onboardingdoc/`, payload, {
+        headers: formDataHeader(),
+      });
       if (response.status === 201 || response.status === 200) {
         return response.data;
       }
@@ -265,8 +258,8 @@ const deleteOnboardingDocument = async (id) => {
     }
     return false;
   }
-}
-const getOnboardingDocument = async ()=>{
+};
+const getOnboardingDocument = async () => {
   try {
     const response = await axios.get(`${baseUrl}/onboardingdoc/`, {
       headers: headers(),
@@ -281,7 +274,7 @@ const getOnboardingDocument = async ()=>{
     }
     return [];
   }
-}
+};
 const getOnboardingDocumentById = async (id) => {
   try {
     const response = await axios.get(`${baseUrl}/onboardingdoc/${id}`, {
@@ -297,7 +290,89 @@ const getOnboardingDocumentById = async (id) => {
     }
     return [];
   }
-}
+};
+
+export const getGraceTimeList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "id";
+  const URL = `/grace-times/?${ordering ? `ordering=${ordering}&` : ""}${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseDataList = await mapGraceTimeList(ResponseData.results);
+      return { results: ResponseDataList, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error getting regions list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+export const getGraceTimeData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/grace-times/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = mapGraceTimeData(response.data);
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const saveUpdateGraceTime = async (payload, id) => {
+  try {
+    const url = id
+      ? `${baseUrl}/grace-times/${id}/`
+      : `${baseUrl}/grace-times/`;
+
+    const method = id ? "PATCH" : "POST"; // Determine method based on existence of id
+    const expectedStatus = id ? 200 : 201;
+    const finalPayload = mapGraceTimePayloadData(payload);
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+
+    if (response.status === expectedStatus) {
+      return response.data;
+    }
+    renderErrorMessages(response?.data);
+    console.warn(
+      "API call succeeded but with unexpected status code:",
+      response.status
+    );
+    return false;
+  } catch (error) {
+    console.error("API error in saveUpdateUserRole:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout(); // Assuming this logs out the user properly
+    }
+    renderErrorMessages(error?.response?.data);
+    return false; // To be caught and handled in UI/component
+  }
+};
+
 export {
   saveOrganization,
   deleteOrganization,

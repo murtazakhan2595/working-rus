@@ -14,14 +14,17 @@ import {
   TooltipTrigger,
 } from "src/@/components/ui/tooltip";
 
-const DropdownActionMenu = ({ 
-  onView, 
-  onEdit, 
-  onDelete, 
-  viewText = "View Profile", 
-  editText = "Edit Profile", 
+const DropdownActionMenu = ({
+  onView,
+  onEdit,
+  onDelete,
+  onCustom, // New 4th action
+  viewText = "View Profile",
+  editText = "Edit Profile",
   deleteText = "Delete",
-  menuTooltip = "Actions"
+  customText = "Custom Action", // New text prop
+  menuTooltip = "Actions",
+  additionalOptionsConfig = [],
 }) => {
   return (
     <DropdownMenu>
@@ -42,9 +45,10 @@ const DropdownActionMenu = ({
       </TooltipProvider>
       <DropdownMenuContent align="end">
         {onView && (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={(e) => {
               e.preventDefault();
+              e.stopPropagation();
               onView(e);
             }}
             tabIndex="0"
@@ -53,10 +57,24 @@ const DropdownActionMenu = ({
             {viewText}
           </DropdownMenuItem>
         )}
-        {onEdit && (
-          <DropdownMenuItem 
+        {onCustom && (
+          <DropdownMenuItem
             onClick={(e) => {
               e.preventDefault();
+              e.stopPropagation();
+              onCustom(e);
+            }}
+            tabIndex="0"
+            className="cursor-pointer"
+          >
+            {customText}
+          </DropdownMenuItem>
+        )}
+        {onEdit && (
+          <DropdownMenuItem
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               onEdit(e);
             }}
             tabIndex="0"
@@ -66,9 +84,10 @@ const DropdownActionMenu = ({
           </DropdownMenuItem>
         )}
         {onDelete && (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             onClick={(e) => {
               e.preventDefault();
+              e.stopPropagation();
               onDelete(e);
             }}
             tabIndex="0"
@@ -77,9 +96,24 @@ const DropdownActionMenu = ({
             {deleteText}
           </DropdownMenuItem>
         )}
+        {additionalOptionsConfig &&
+          additionalOptionsConfig.map(({action=()=>{},text}, index) => (
+            <DropdownMenuItem
+              key={index}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                action(e);
+              }}
+              tabIndex="0"
+              className="cursor-pointer"
+            >
+              {text}
+            </DropdownMenuItem>
+          ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
 
-export default DropdownActionMenu; 
+export default DropdownActionMenu;

@@ -60,8 +60,7 @@ export function mapCustomFieldPayloadData(data, projectID = null, id) {
     // Check if the key exists in the data object
     if (data.hasOwnProperty(key) && data[key]) {
       // Add the key and its value to the payload
-      if (key === "field_name") fieldData[key] = data[key].trim();
-      else fieldData[key] = data[key];
+      fieldData[key] = data[key];
     }
   }
   // Initialize an empty payload object

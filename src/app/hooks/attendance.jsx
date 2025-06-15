@@ -1,17 +1,28 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
-import { HandleLogout } from "./general";
+import { HandleLogout, getCurrentRequestApprover } from "./general";
 import {
   mapAttendanceData,
   mapShiftData,
+  mapTimeAdjustmentPayloadeData,
+  mapEmployeeAttendanceDetail,
+  mapAttendanceAdjustmentPayloadData,
+  mapAttendanceAdjustmentListData,
+  mapTimeAdjustmentData,
+  mapAttendanceAdjustmentData,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
+import { renderErrorMessages } from "utils/renderErrors";
+import {
+  getMontlyShiftData,
+  getThisWeekShiftData,
+} from "app/modules/Attendance/ShiftCalendar/Section/getEmployeeActiveShift";
+
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
 });
-const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const saveShiftAssignment = async (payload) => {
   try {
@@ -176,13 +187,10 @@ const getAttendanceSummary = async (payload) => {
   }
 };
 
-const saveAttendance = async (payload, userDetails, id) => {
-  const shift_id = userDetails?.shift_assignment;
+export const saveAttendance = async (payload, shift_details, id) => {
   const attendanceId = id || payload?.id;
   try {
-    const shift = await getShiftById(shift_id);
-    const finalPayload = mapAttendanceData(payload, shift);
-
+    const finalPayload = mapAttendanceData(payload, shift_details);
     const url = attendanceId
       ? `${baseUrl}/attendance/${attendanceId}/` // Use id if updating
       : `${baseUrl}/attendance/`; // No id means create new
@@ -203,6 +211,7 @@ const saveAttendance = async (payload, userDetails, id) => {
     if (error?.response?.status === 401) {
       HandleLogout();
     }
+    renderErrorMessages(error?.response?.data);
     return false;
   }
 };
@@ -302,10 +311,8 @@ const calculateBreak = async (payload) => {
 
 const getBreakStatus = async (payload) => {
   const lastBreak = await getBreak(payload);
-  if (lastBreak.results && lastBreak.results.length === 0) {
-    return false;
-  } else {
-    const lastBreakEnd = lastBreak.results[0]?.endtime;
+  if (lastBreak && lastBreak?.results && lastBreak?.results.length > 0) {
+    const lastBreakEnd = lastBreak?.results[0]?.endtime;
     if (!lastBreakEnd) {
       return true;
     }
@@ -369,27 +376,6 @@ function convertUTCToLocal(timeString) {
   const formattedDate = localDate.toISOString().slice(0, 19); // Format: YYYY-MM-DDTHH:mm:ss
 
   return formattedDate;
-}
-
-function formatTimeWithAMPM(timeString) {
-  const date = new Date(timeString);
-
-  // Get the hour and minute
-  let hour = date.getHours();
-  const minute = date.getMinutes();
-
-  // Determine AM or PM
-  const ampm = hour >= 12 ? "PM" : "AM";
-
-  // Convert hour from 24-hour format to 12-hour format
-  hour = hour % 12;
-  hour = hour ? hour : 12; // the hour '0' should be '12'
-
-  // Format the minute to always have two digits
-  const formattedMinute = minute < 10 ? "0" + minute : minute;
-
-  // Return the formatted time in the desired format
-  return `${hour}:${formattedMinute} ${ampm}`;
 }
 
 const getStats = async (id) => {
@@ -549,6 +535,252 @@ export const getRecentActivities = async (payload, attendance, userProfile) => {
   return recentActivities;
 };
 
+export const getTimeAdjustmentListData = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "";
+  let URL = `/time-adjustments?${ordering ? `ordering=${ordering}&` : ""}${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching attendance list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+export const getTimeAdjustmentData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/time-adjustments/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = await mapTimeAdjustmentData(response.data);
+      const currentapprover = await getCurrentRequestApprover(
+        ResponseData.request
+      );
+      return { ...ResponseData, ...currentapprover };
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const saveTimeAdjustment = async (payload, id) => {
+  const timeAdjustmentId = id || payload?.id;
+  try {
+    const finalPayload = mapTimeAdjustmentPayloadeData(payload);
+
+    const url = timeAdjustmentId
+      ? `${baseUrl}/time-adjustments/${timeAdjustmentId}/` // Use id if updating
+      : `${baseUrl}/time-adjustments/`; // No id means create new
+
+    const method = timeAdjustmentId ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const getEmployeeAttendanceDetails = async (employee_id) => {
+  if (employee_id) {
+    try {
+      const response = await axios.get(
+        `${baseUrl}/attendance/employee/${employee_id}/`,
+        {
+          headers: headers(),
+        }
+      );
+      const ResponseData = response.data;
+      const MonthlytShiftData = await getMontlyShiftData(
+        employee_id,
+        ResponseData.default_shift
+      );
+      const WeeklyShiftData = await getThisWeekShiftData(MonthlytShiftData);
+      if (response) {
+        const emp_attendance_data = await mapEmployeeAttendanceDetail({
+          ...ResponseData,
+          monthly_shifts: MonthlytShiftData,
+          weekly_shifts: WeeklyShiftData,
+        });
+        return emp_attendance_data;
+      }
+    } catch (error) {
+      console.error("Error fetching by id:", error);
+      if (error?.response?.status === 401) {
+        HandleLogout();
+      }
+      return {};
+    }
+  } else return {};
+};
+
+export const saveUpdateAttendanceAdjustment = async (payload, id) => {
+  const attendanceId = id;
+  try {
+    const finalPayload = mapAttendanceAdjustmentPayloadData(payload);
+
+    const url = attendanceId
+      ? `${baseUrl}/attendance-adjustment/${attendanceId}/` // Use id if updating
+      : `${baseUrl}/attendance-adjustment/`; // No id means create new
+
+    const method = attendanceId ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const getAttendanceAdjustmentListData = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "";
+  let URL = `/attendance-adjustment/?${
+    ordering ? `ordering=${ordering}&` : ""
+  }${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseDataList = await mapAttendanceAdjustmentListData(
+        ResponseData.results
+      );
+      return { results: ResponseDataList, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error fetching attendance list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+export const getAttendanceAdjustmentData = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/attendance-adjustment/${id}/`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      const ResponseData = await mapAttendanceAdjustmentData(response.data);
+      const currentapprover = await getCurrentRequestApprover(
+        ResponseData.request_id
+      );
+      return { ...ResponseData, ...currentapprover };
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+export const getAttendanceAdjustmentLogsData = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/attendance-update-logs/${id}/`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      const ResponseData = response.data;
+
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const getAttendanceAdjustmentLogsList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "";
+  let URL = `/attendance-update-logs/?${
+    ordering ? `ordering=${ordering}&` : ""
+  }${pageNo ? `page=${pageNo}&` : ""}${
+    pageSize ? `page_size=${pageSize}&` : ""
+  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      // const ResponseDataList = await mapAttendanceAdjustmentListData(
+      //   ResponseData.results
+      // );
+      return { results: ResponseData.results, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error fetching attendance list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
 export {
   getAttendanceStats,
   saveShiftAssignment,
@@ -556,7 +788,6 @@ export {
   getShift,
   getShiftAssignment,
   getAttendance,
-  saveAttendance,
   saveBreak,
   getBreak,
   calculateBreak,
@@ -564,7 +795,6 @@ export {
   endBreak,
   getLocalTime,
   convertUTCToLocal,
-  formatTimeWithAMPM,
   getStats,
   employeeData,
   getShiftById,

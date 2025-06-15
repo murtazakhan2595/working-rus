@@ -1,22 +1,16 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import SheetComponent from "components/ui/SheetComponent";
 import ViewShift from "./ViewShift";
 import AddShiftForm from "./AddShiftForm";
 import DropdownActionMenu from "components/DropdownActionMenu";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
-const ShiftActions = ({ data, reload }) => {
+const ShiftActions = ({ data, reload, ShiftList = [] }) => {
   const [view, setView] = useState(null);
   const [deleteShift, setDeleteShift] = useState(null);
   const [edit, setEdit] = useState(null);
-
-  const formSheetData = {
-    triggerText: null,
-    title: "Update Shift Details",
-    description: null,
-    footer: null,
-  };
+  const permissions = useOfficeSettingPermissions();
 
   const handleView = (event) => {
     event.preventDefault();
@@ -58,10 +52,10 @@ const ShiftActions = ({ data, reload }) => {
 
   return (
     <>
-      <DropdownActionMenu 
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+      <DropdownActionMenu
+        onView={permissions.shift.canView ? handleView : null}
+        onEdit={permissions.shift.canUpdate ? handleEdit : null}
+        onDelete={permissions.shift.canDelete ? handleDelete : null}
         viewText="View Shift"
         editText="Edit Shift"
         deleteText="Delete Shift"
@@ -84,22 +78,14 @@ const ShiftActions = ({ data, reload }) => {
       )}
 
       {edit?.open && (
-        <SheetComponent
-          {...formSheetData}
-          isOpen={edit?.open}
-          setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
-          width="568px"
-        >
-          <AddShiftForm
-            isOpen={edit.open}
-            setIsOpen={(isOpen) =>
-              setEdit((prev) => ({ ...prev, open: isOpen }))
-            }
-            shiftData={edit.data}
-            setEdit={setEdit}
-            reload={reload}
-          />
-        </SheetComponent>
+        <AddShiftForm
+          isOpen={edit.open}
+          setIsOpen={() => {
+            reload(true);
+            setEdit(null);
+          }}
+          id={data.id}
+        />
       )}
 
       {view?.visible && (
@@ -108,7 +94,9 @@ const ShiftActions = ({ data, reload }) => {
           setIsOpen={(isOpen) =>
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
-          data={view.data}
+          currentId={view?.data?.id}
+          reloadData={reload}
+          DataList={ShiftList}
         />
       )}
     </>

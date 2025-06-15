@@ -9,9 +9,9 @@ const OnboardComplete = ({ nextstep = () => {}, employeeId }) => {
   const handleCompleteOnBoarding = useCallback(async (event) => {
     event.preventDefault();
     try {
-      nextstep(); // Call the callback after successful save
       const personalInformation = { is_filled: true };
       await saveEmployeePersonalInfoData(employeeId, personalInformation);
+      nextstep(); // Call the callback after successful save
     } catch (error) {
       console.error("Onboarding completion failed:", error);
       // Optionally, show toast/alert or notify the user

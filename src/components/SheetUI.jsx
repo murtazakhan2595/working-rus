@@ -7,6 +7,9 @@ import {
 } from "components/SheetCardExtension";
 import SheetComponent from "components/ui/CustomSheet";
 import { Formik } from "formik";
+import ActionAlert from "components/ui/ActionAlert";
+import get from "lodash/get";
+import { errorClassName, InvalidInput } from "components/FormControl";
 
 const SheetUI = forwardRef(
   (
@@ -30,6 +33,9 @@ const SheetUI = forwardRef(
     const [isCloseConfirmationOpen, setIsCloseConfirmationOpen] =
       useState(false);
     const formRef = React.createRef();
+    const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+    const [openActionMessage, setOpenActionMessage] = useState(false);
+    const [messageConfig, setMessageConfig] = useState(false);
 
     // Extract form configurations
     const {
@@ -39,15 +45,32 @@ const SheetUI = forwardRef(
       validateFormSchema,
       submitButtonText = "Submit",
       cancelButtonText,
-      formFiels,
+      formFields,
       renderUpdatedFormValues = () => {},
       columns,
       onFormChange,
-      disableSubmit=false,
+      disableSubmit = false,
+      loadingMessage,
+      onSubmitClick = () => {},
     } = formConfig;
 
     const handleClose = () => {
       setIsCloseConfirmationOpen(true);
+    };
+
+    const HandleSubmit = async (values, resetForm) => {
+      try {
+        setIsSubmittingForm(true);
+        const response = await handleSubmit(values, resetForm);
+        if (response?.status) {
+          setMessageConfig(response);
+          setOpenActionMessage(true);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsSubmittingForm(false);
+      }
     };
 
     return (
@@ -65,11 +88,10 @@ const SheetUI = forwardRef(
           innerRef={formRef}
           enableReinitialize={enableReinitialize}
           onSubmit={(values, { resetForm }) => {
-            handleSubmit(values, resetForm);
+            HandleSubmit(values, resetForm);
           }}
           validate={(values) => {
             const errors = validateFormSchema(values);
-            // if (errors)
             console.error("Form Errors:", errors, "Values:", values);
             if (renderUpdatedFormValues) {
               renderUpdatedFormValues(values);
@@ -83,23 +105,46 @@ const SheetUI = forwardRef(
           {(props) => (
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6">
               {children}
-              {formFiels?.map(
-                ({ InputFiels, sheetCardExtension, sheetCardTitle }, index) => {
+              {formFields?.map(
+                (
+                  {
+                    InputFields,
+                    sheetCardExtension,
+                    sheetCardTitle,
+                    sheetCardName,
+                    customComponent,
+                  },
+                  index
+                ) => {
+                  const sheetCardError = get(props.errors, sheetCardName);
+                  
+                  // Handle custom component if provided
+                  if (customComponent) {
+                    return (
+                      <div key={index}>
+                        {typeof customComponent === 'function'
+                          ? customComponent({ form: props })
+                          : customComponent}
+                      </div>
+                    );
+                  }
+                  
                   return (
                     <div key={index}>
                       <FormBody
                         sheetCardExtension={sheetCardExtension}
                         sheetCardTitle={sheetCardTitle}
+                        sheetCardError={sheetCardError}
                         columns={columns}
                       >
-                        {InputFiels?.map(
-                          ({
+                        {InputFields?.map((fieldsConfig, index) => {
+                          const {
                             name,
                             required,
                             disabled,
                             label,
-                            onChange,
-                            options,
+                            onFieldUpdate = async () => {},
+                            options = [],
                             value,
                             colsSpan,
                             date,
@@ -108,49 +153,73 @@ const SheetUI = forwardRef(
                             InputField,
                             variant,
                             multiple,
-                            allowUpdate,
-                            min,
-                            max,
-                            minDate,
-                            maxDate,
-                          }) => {
+                            subColumns,
+                            shouldRender = true, // NEW: Default to true for backward compatibility
+                            renderCondition = true, // NEW: Alternative prop name for conditional rendering
+                            customComponent,
+                          } = fieldsConfig;
+
+                          // Handle custom component inside InputFields
+                          if (customComponent) {
                             return (
-                              <div
-                                className={`space-y-4 ${
-                                  colsSpan ? `col-span-${colsSpan || 1}` : ""
-                                }`}
-                                key={name}
+                              <div 
+                                className={`space-y-4 ${colsSpan ? `col-span-${colsSpan || 1}` : ""}`}
+                                key={name || `custom-${index}`}
                               >
-                                <InputField
-                                  name={name}
-                                  options={options}
-                                  error={props?.errors[name]}
-                                  touch={props?.touched[name]}
-                                  value={value ? value : props?.values[name]}
-                                  required={required}
-                                  disabled={disabled}
-                                  label={label}
-                                  placeholder={placeholder}
-                                  onChange={(field, value) => {
-                                    props?.setFieldValue(field, value);
-                                    if (onChange) {
-                                      onChange(field, value);
-                                    }
-                                  }}
-                                  maxRows={maxRows}
-                                  date={date}
-                                  variant={variant}
-                                  allowUpdate={allowUpdate}
-                                  multiple={multiple}
-                                  min={min}
-                                  max={max}
-                                  minDate={minDate}
-                                  maxDate={maxDate}
-                                />
+                                {typeof customComponent === 'function'
+                                  ? customComponent({ field: fieldsConfig, form: props })
+                                  : customComponent}
                               </div>
                             );
                           }
-                        )}
+
+                          // NEW: Check if field should be rendered
+                          // Support both shouldRender and renderCondition props for flexibility
+                          const isFieldVisible =
+                            shouldRender && renderCondition;
+
+                          // NEW: Skip rendering if field should not be visible
+                          if (!isFieldVisible) {
+                            return null;
+                          }
+
+                          const error = get(props.errors, name);
+                          return (
+                            <div
+                              className={`space-y-4 ${
+                                colsSpan ? `col-span-${colsSpan || 1}` : ""
+                              }`}
+                              key={name || index}
+                            >
+                              <InputField
+                                name={name}
+                                options={options}
+                                error={typeof error === "string" ? error : ""}
+                                touch={get(props?.touched, name)}
+                                value={value ? value : get(props?.values, name)}
+                                required={required}
+                                disabled={disabled}
+                                label={label}
+                                placeholder={placeholder}
+                                onChange={async (field, value) => {
+                                  await onFieldUpdate(
+                                    field,
+                                    value,
+                                    props.values,
+                                    props.setFieldValue,
+                                  );
+                                  await props?.setFieldValue(field, value);
+                                }}
+                                maxRows={maxRows}
+                                date={date}
+                                variant={variant}
+                                multiple={multiple}
+                                columns={subColumns}
+                                {...fieldsConfig}
+                              />
+                            </div>
+                          );
+                        })}
                       </FormBody>
                     </div>
                   );
@@ -172,37 +241,69 @@ const SheetUI = forwardRef(
                     type="submit"
                     size="lg"
                     variant="default"
-                    onClick={props.handleSubmit}
-                    disabled={disableSubmit}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      onSubmitClick(props.values);
+                      props.handleSubmit();
+                    }}
+                    disabled={disableSubmit || isSubmittingForm}
                   >
-                    {submitButtonText}
+                    {isSubmittingForm
+                      ? "Submitting Form..."
+                      : disableSubmit && loadingMessage
+                      ? loadingMessage
+                      : submitButtonText}
                   </Button>
                 </div>
               </div>
             </form>
           )}
         </Formik>
+        {openActionMessage && (
+          <ActionAlert
+            isOpen={openActionMessage}
+            onClose={() => {
+              setOpenActionMessage(false);
+              setIsOpen(false);
+            }}
+            title={messageConfig.title || "Request Submitted!"}
+            description={
+              messageConfig.description ||
+              "Your form has been submitted successfully!."
+            }
+            messageType={messageConfig.messageType || "SUCCESS"}
+          />
+        )}
       </SheetVariant>
     );
   }
 );
+
 const FormBody = ({
   children,
   sheetCardExtension = false,
   sheetCardTitle = null,
+  sheetCardError = null,
   columns,
 }) => {
   const className = `grid grid-cols-1 gap-4 lg:grid-cols-${
     columns || 1
   } md:grid-cols-${parseInt((columns || 1) / 2 + 1)}`;
   return sheetCardExtension ? (
-    <SheetCardExtension title={sheetCardTitle}>
+    <SheetCardExtension
+      title={sheetCardTitle}
+      className={sheetCardError ? InvalidInput : ""}
+    >
       <div className={className}>{children}</div>
+      {sheetCardError && (
+        <div className={`${errorClassName} mt-4`}>{sheetCardError}</div>
+      )}
     </SheetCardExtension>
   ) : (
     <div className={className}>{children}</div>
   );
 };
+
 const SheetVariant = ({
   children,
   isOpen = true,

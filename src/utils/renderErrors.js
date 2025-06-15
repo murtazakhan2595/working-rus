@@ -12,9 +12,9 @@
  
    const finalMessage = errorMessages.trim(); // removes the last new line
  
-   toast.error(`${finalMessage}`, {
-     autoClose: false,
-     closeOnClick: true, // Optional
-     closeButton: true, // Optional
-   });
+  toast.error(`${finalMessage}`, {
+  autoClose: 3000,      // Closes automatically after 3 seconds
+  closeOnClick: true,   // Optional
+  closeButton: true     // Optional
+});
  }

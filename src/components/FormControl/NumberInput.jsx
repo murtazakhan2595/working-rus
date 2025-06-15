@@ -18,6 +18,7 @@ const NumberInput = React.memo(
     placeholder,
     autoComplete = "new-password",
     className = "w-full", // Custom styling
+    description,
   }) => {
     return (
       <FormField
@@ -28,6 +29,7 @@ const NumberInput = React.memo(
         touched={touch}
         className={className}
         disabled={disabled}
+        field_description={description}
       >
         <Input
           type="text"

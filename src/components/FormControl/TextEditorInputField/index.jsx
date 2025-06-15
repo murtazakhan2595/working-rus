@@ -38,7 +38,7 @@ function TextEditorInputField({
   allowMentions = false, // New prop to control mention functionality
   editMode = false,
   replyToUser = null,
-  commentHeight = "h-[300px]",
+  commentHeight="h-[300px]"
 }) {
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
@@ -351,8 +351,10 @@ function TextEditorInputField({
 
   const handlePaste = async (e) => {
     e.preventDefault();
+
     const clipboardData = e.clipboardData || window.Clipboard;
     const items = clipboardData.items;
+    let TextAdded = "";
 
     for (let item of items) {
       const itemType = item.type;
@@ -366,29 +368,22 @@ function TextEditorInputField({
               handleFileChange(uploadedImage);
             }
           }
-        } else if (
-          itemType.startsWith("text/html") ||
-          itemType.startsWith("text/plain")
-        ) {
-          const html = clipboardData.getData("text/html");
-          const text = clipboardData.getData("text/plain");
-          if (text.startsWith("http")) {
-            execCommand(
-              "insertHTML",
-              `<a href="${text}" target="_blank" class="text-plum-900 hover:underline">${text}</a> `
-            );
-            return;
-          } else {
-            if (html) {
-              execCommand("insertHTML", html);
-            } else if (text) {
+        } else if (itemType.startsWith("text/html")) {
+            const html = clipboardData.getData("text/html");
+            execCommand("insertHTML", html);
+            return; // Avoid further processing
+          } else if (itemType.startsWith("text/plain")) {
+            const text = clipboardData.getData("text/plain");
+            if (text.startsWith("http")) {
+              execCommand(
+                "insertHTML",
+                `<a href="${text}" target="_blank" rel="noopener noreferrer">${text}</a>`
+              );
+            } else {
               execCommand("insertText", text);
             }
-
-            // Break after inserting one type to prevent duplication
-            break;
+            return; // Avoid fallback
           }
-        }
       }
     }
   };
@@ -470,7 +465,7 @@ function TextEditorInputField({
             />
           </label>
         </div>
-        {/* 
+{/* 
         {attachments.length > 0 && displayAttachments && (
           <div className="p-1">
             {attachments.map((file, index) => (

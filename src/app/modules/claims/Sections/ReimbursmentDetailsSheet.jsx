@@ -323,7 +323,7 @@ const ReimbursementDetailsSheet = ({
                             <div className="flex flex-col leading-none min-w-[88px] w-[132px]">
                               <div>{item.label}</div>
                             </div>
-                            <div className="flex-1 leading-5 text-neutral-900 shrink basis-0 flex items-center gap-2 capitalize">
+                            <div className="flex items-center flex-1 gap-2 leading-5 capitalize text-neutral-900 shrink basis-0">
                               {item.icon}
                               {item.value || "N/A"}
                             </div>
@@ -364,7 +364,7 @@ const ReimbursementDetailsSheet = ({
                             <div className="flex flex-col leading-none min-w-[88px] w-[132px]">
                               <div>{step.label}</div>
                             </div>
-                            <div className="flex-1 leading-5 text-neutral-900 shrink basis-0 flex items-center gap-2">
+                            <div className="flex items-center flex-1 gap-2 leading-5 text-neutral-900 shrink basis-0">
                               <img
                                 src={step.icon}
                                 alt=""
@@ -408,7 +408,7 @@ const ReimbursementDetailsSheet = ({
 
                 {/* Action Buttons */}
                 {!isMyClaims && hasPendingApprovalForUser() ? (
-                  <div className="flex justify-end mt-6 gap-3">
+                  <div className="flex justify-end gap-3 mt-6">
                     <Button
                       variant="outline"
                       size="lg"

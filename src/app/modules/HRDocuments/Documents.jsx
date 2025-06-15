@@ -30,7 +30,7 @@ const DocumentTabs = [
   "Expired",
 ].filter(Boolean);
 const innerTabClassName =
-  "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
+  "shadow-none border-transparent border-b data-[state=active]:border-plum-1100 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium whitespace-nowrap px-2 sm:w-28 flex-1 sm:flex-initial text-sm sm:text-base";
 
 export default function Documents({ reload }) {
   const Document_Category = useSelector((state) => state.doc_category.category);
@@ -150,34 +150,44 @@ export default function Documents({ reload }) {
         }}
         value={activeDocumentTab}
       >
-        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
-          <TabsList className="flex items-center justify-center mb-4">
-            {DocumentTabs.map((tab) => (
-              <TabsTrigger key={tab} value={tab} className={innerTabClassName}>
-                {tab}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        {/* Responsive layout for tabs and filters */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between w-full">
+          {/* Tabs with horizontal scroll but no vertical scroll */}
+          <div className="w-full sm:w-auto overflow-hidden mb-4">
+            <TabsList className="flex flex-nowrap w-full overflow-x-auto overflow-y-hidden sm:overflow-visible">
+              {DocumentTabs.map((tab) => (
+                <TabsTrigger key={tab} value={tab} className={innerTabClassName}>
+                  {tab}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+          
+          {/* Filters that take full width on mobile, original style on desktop */}
+          <div className="w-full sm:w-auto">
+            <FilterInput
+              filters={[
+                {
+                  type: "search",
+                  placeholder: "Search by name",
+                  name: "name",
+                  width: "w-full sm:w-56", // Full width on mobile, fixed width on larger screens
+                },
+                {
+                  type: "select-two",
+                  option: Document_Category,
+                  name: "category",
+                  placeholder: "Category",
+                  values: selectedCategory,
+                  width: "w-full sm:w-56", // Full width on mobile, fixed width on larger screens
+                },
+              ]}
+              onChange={handleFilterChange}
+              className="w-full flex flex-col sm:flex-row gap-2"
+            />
+          </div>
         </div>
-        <div className="flex flex-row flex-wrap justify-end mb-5">
-          <FilterInput
-            filters={[
-              {
-                type: "search",
-                placeholder: "Search by name",
-                name: "name",
-              },
-              {
-                type: "select-two",
-                option: Document_Category,
-                name: "category",
-                placeholder: "Category",
-                values: selectedCategory,
-              },
-            ]}
-            onChange={handleFilterChange}
-          />
-        </div>
+        
         <TableCustom
           data={employeeTransferData.results}
           columns={HRDocumentsColumns(
@@ -198,7 +208,6 @@ export default function Documents({ reload }) {
           }}
           DocumentList={employeeTransferData.results}
           reloadData={fetchData}
-          // readOnlyMode={true}
         />
       )}
     </div>

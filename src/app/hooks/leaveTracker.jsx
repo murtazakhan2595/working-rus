@@ -1,7 +1,23 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
-import { getEmployeeCustomList, HandleLogout } from "./general";
+import { getCurrentRequestApprover, HandleLogout } from "./general";
 import moment from "moment";
+import {
+  mapLeaveTypeListData,
+  mapLeaveTypeData,
+  mapPublicHolidayPayloadeData,
+  mapPublicHolidayListData,
+  mapPublicHolidayData,
+  mapLeaveListData,
+  mapLeaveOffsetSettingPayloadeData,
+  mapLeaveData,
+  mapLeavePayloadData,
+  mapOffsetLeaveSettingListData,
+  mapOffsetLeaveSettingData,
+  mapOffsetLeavesData,
+} from "app/utils/MappingObjects/mapLeaveData";
+import { renderErrorMessages } from "utils/renderErrors";
+
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -227,7 +243,6 @@ const getLeavestats = async (payload) => {
   }
 };
 const getLeaveTransaction = async (payload) => {
-  console.log("payload", payload);
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
@@ -502,22 +517,219 @@ const getLeavestatesCustomApi = async (payload) => {
   }
 };
 
-const getLeaveStatusDaily = async (payload) => {
-  const departments = payload?.filterData?.department ?? "";
+const getLeaveStatusDaily = async (payload = {}) => {
   try {
-    const response = await axios.get(
-      `${baseUrl}/leaves_statistics?${
-        departments ? `departments=${departments}` : ""
-      }`,
-      {
-        headers: headers(),
+    // Extract and sanitize filter data
+    const filterData = payload.filterData || {};
+    const departments = filterData.departments ?? "";
+    const branchIdsArray = Array.isArray(filterData.branch_ids)
+      ? filterData.branch_ids
+      : [];
+
+    // Convert branch_ids array [1,2,3] → {1,2,3}
+    const branch_ids = branchIdsArray.length
+      ? `{${branchIdsArray.join(",")}}`
+      : "";
+
+    // Construct query parameters
+    const queryParams = new URLSearchParams();
+    if (departments) queryParams.append("departments", departments);
+    if (branch_ids) queryParams.append("branch_ids", branch_ids);
+
+    const url = `${baseUrl}/leaves_statistics?${queryParams.toString()}`;
+
+    const response = await axios.get(url, {
+      headers: headers(),
+    });
+
+    if (response.status === 200 && response.data) {
+      return response.data;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("Error fetching daily leave status:", error);
+
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+
+    return [];
+  }
+};
+
+const saveLeaveDuration = async (payload) => {
+  try {
+    if (payload?.id) {
+      // If there's an ID, use PATCH to update the existing leave duration
+      const response = await axios.patch(
+        `${baseUrl}/leave-durations/${payload.id}/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200 || response.status === 201) {
+        return response.data;
       }
-    );
+    } else {
+      // If no ID, use POST to create a new leave duration
+      const response = await axios.post(
+        `${baseUrl}/leave-durations/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 201 || response.status === 200) {
+        return response.data;
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching daily leave status:", error);
+
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+
+    throw error;
+  }
+};
+const getLeaveDurations = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/leave-durations?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
     if (response.status === 200) {
       return response.data;
     }
   } catch (error) {
-    console.error("Error fetching daily leave status:", error);
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+const deleteLeaveDuration = async (id) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/leave-durations/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 204) {
+      return true;
+    }
+  } catch (error) {
+    console.error("Error deleting leave duration:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+export const getLeaveTypeListData = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/leave-types?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseList = await mapLeaveTypeListData(ResponseData.results);
+      return { results: ResponseList, count: ResponseData.count };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+export const getLeaveTypeData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/leave-types/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = await mapLeaveTypeData(response.data.data);
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+export const getOffsetLeaveInfo = async (employee_id) => {
+  let URL = employee_id
+    ? `/employee-leaves/eligible_leave_types/`
+    : `/offset-leaves/my-offset-leaves/`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const offsetLeaveData = await mapOffsetLeavesData(ResponseData);
+      return offsetLeaveData;
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+export const getEligibleLeaveTypeDurations = async (isType = true) => {
+  let URL = isType
+    ? `/employee-leaves/eligible_leave_types/`
+    : `/employee-leaves/eligible_leave_durations/`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      // const ResponseList = await mapLeaveTypeListData(ResponseData);
+      const ResponseList = ResponseData.data;
+      const offsetLeave = await getOffsetLeaveInfo();
+      const OffsetLeaveType = ResponseList.find((obj) => obj.id === 1);
+      const OtherLeaveType = ResponseList.filter((obj) => obj.id !== 1);
+      const FinalResponsList = [
+        ...OtherLeaveType,
+        { ...OffsetLeaveType, ...offsetLeave },
+      ];
+      return FinalResponsList;
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
@@ -525,7 +737,409 @@ const getLeaveStatusDaily = async (payload) => {
   }
 };
 
+export const getEligibleLeaveTypeByEmployeeId = async (
+  employee_id,
+  leave_type,
+  isType = true
+) => {
+  let URL = isType
+    ? `/employee-leaves/employee-eligible-leave-types/${employee_id}/`
+    : `/employee-leaves/eligible_leave_durations/`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseList = ResponseData.data;
+      if (leave_type) {
+        const eligibleLeaveType = ResponseList.find(
+          (leaveType) => parseInt(leaveType.id) === parseInt(leave_type)
+        );
+        if (eligibleLeaveType) return eligibleLeaveType;
+        else return {};
+      }
+      return ResponseList;
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const getLeaveListData = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/employee-leaves?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseList = await mapLeaveListData(ResponseData.results);
+      return { results: ResponseList, count: ResponseData.count };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+export const getLeaveData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/employee-leaves/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = await mapLeaveData(response.data);
+      const currentapprover = await getCurrentRequestApprover(
+        ResponseData.request_id
+      );
+      const employeeAllotedLeave = await getEligibleLeaveTypeByEmployeeId(
+        ResponseData.employee,
+        ResponseData.leave_type
+      );
+      return { ...ResponseData, ...currentapprover, ...employeeAllotedLeave };
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+export const getHolidaysListData = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/holidays?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseList = await mapPublicHolidayListData(ResponseData.results);
+      return { results: ResponseList, count: ResponseData.count };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+
+export const saveUpdateLeave = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+    const finalPayload = mapLeavePayloadData(payload);
+
+    const url = ID
+      ? `${baseUrl}/employee-leaves/${ID}/` // Use id if updating
+      : `${baseUrl}/employee-leaves/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: formDataHeader(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const saveUpdateHoliday = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+    const finalPayload = mapPublicHolidayPayloadeData(payload);
+
+    const url = ID
+      ? `${baseUrl}/holidays/${ID}/` // Use id if updating
+      : `${baseUrl}/holidays/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+
+export const getHolidayData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/holidays/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = await mapPublicHolidayData(response.data);
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
+export const cancelEmployeeLeave = async (id) => {
+  try {
+    const url = `${baseUrl}/employee-leaves/${id}/cancel_leave/`;
+
+    const method = "PATCH"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      headers: headers(),
+      data: { is_cancelled: true },
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+const saveLeaveType = async (payload) => {
+  try {
+    if (payload?.id) {
+      // If there's an ID, use PATCH to update the existing leave type
+      const response = await axios.patch(
+        `${baseUrl}/leave-types/${payload.id}/`,
+        payload,
+        {
+          headers: headers(),
+        }
+      );
+      if (response.status === 200 || response.status === 201) {
+        return response.data;
+      }
+    } else {
+      // If no ID, use POST to create a new leave type
+      const response = await axios.post(`${baseUrl}/leave-types/`, payload, {
+        headers: headers(),
+      });
+      if (response.status === 201 || response.status === 200) {
+        return response.data;
+      }
+    }
+  } catch (error) {
+    console.error("Error saving leave type:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    throw error;
+  }
+};
+
+const getLeaveTypes = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/leave-types?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error fetching leave types:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+const deleteLeaveType = async (id) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/leave-types/${id}`, {
+      headers: headers(),
+    });
+    if (response.status === 204) {
+      return true;
+    }
+  } catch (error) {
+    console.error("Error deleting leave type:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
+
+export const uploadHolidaysData = async (formData) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/holidays/bulk-import/`,
+      formData,
+      {
+        headers: {
+          ...headers(),
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    const ResponseData = response.data;
+    return ResponseData;
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error uploading employees data:", error);
+    return error?.response?.data;
+  }
+};
+
+export const saveUpdateOffsetSettings = async (payload, id) => {
+  const ID = id || payload?.id;
+  try {
+    const finalPayload = mapLeaveOffsetSettingPayloadeData(payload);
+
+    const url = ID
+      ? `${baseUrl}/leave-offset-settings/${ID}/` // Use id if updating
+      : `${baseUrl}/leave-offset-settings/`; // No id means create new
+
+    const method = ID ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+    return false;
+  }
+};
+export const getLeaveOffsetSettingListData = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const sortField = payload?.ordering || "id";
+  let URL = `/leave-offset-settings?ordering=${sortField}&${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      const ResponseList = await mapOffsetLeaveSettingListData(
+        ResponseData.results
+      );
+      return { results: ResponseList, count: ResponseData.count };
+    }
+    return { results: [], count: 0 };
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return { results: [], count: 0 };
+  }
+};
+export const getLeaveOffsetSettingData = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/leave-offset-settings/${id}/`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      const ResponseData = await mapOffsetLeaveSettingData(response.data);
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
 export {
+  deleteLeaveType,
+  getLeaveTypes,
+  saveLeaveType,
+  deleteLeaveDuration,
+  saveLeaveDuration,
   saveLeaveComponents,
   getLeaveComponents,
   deleteLeaveComponent,
@@ -541,4 +1155,5 @@ export {
   getRemainingLeaves,
   getLeavestatesCustomApi,
   getLeaveStatusDaily,
+  getLeaveDurations,
 };

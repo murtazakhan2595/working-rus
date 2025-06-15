@@ -1,13 +1,24 @@
 // Header.js
 import React from "react";
-import { FaCheck } from "react-icons/fa6";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "src/@/components/ui/popover";
+import { Card } from "components/ui/card";
+import { ScrollArea } from "src/@/components/ui/scroll-area";
 import { BsCircleFill } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import { FaRegCircle } from "react-icons/fa";
 import { Badge } from "components/ui/badge";
-import { CircleCheck, CircleDot, X } from "lucide-react";
+import { Check, CircleCheck, CircleDot, X } from "lucide-react";
 import { cn } from "src/@/lib/utils.js";
 import { cva } from "class-variance-authority";
+import { EmployeeName } from "utils/getValuesFromTables";
+import { renderDate } from "utils/renderValues";
+import { DesignationName } from "utils/getValuesFromTables";
+import { EmployeeInfo } from "utils/getValuesFromTables";
+import statusPendingIcon from "assets/images/status-pending.svg";
 
 const statusVariants = cva("", {
   variants: {
@@ -17,9 +28,10 @@ const statusVariants = cva("", {
       outline: "text-slate-900 dark:text-slate-50",
       plum: "bg-plum-300 text-plum-1100",
       error: "bg-red-50 text-red-400",
-      warning: "bg-amber-50 text-amber-700",
+      warning: "bg-amber-50 text-amber-500",
       success: "bg-emerald-50 text-emerald-700",
       neutral: "bg-neutral-300 text-neutral-1100",
+      info: "bg-blue-50 text-blue-800",
       "dot-plum":
         "bg-white border-neutral-300 flex items-center gap-2 text-neutral-1100",
       "dot-error": "bg-white border-neutral-300 flex items-center gap-2",
@@ -38,9 +50,14 @@ export const getStatusVariant = (Status) => {
   const status = Status.toLowerCase();
   if (status.includes("approved")) return "success";
   else if (status.includes("accepted")) return "success";
+  else if (status.includes("yes")) return "success";
+  else if (status.includes("present")) return "success";
   else if (status.includes("viewed")) return "warning";
+  else if (status.includes("late")) return "warning";
   else if (status.includes("success")) return "success";
   else if (status.includes("declined")) return "error";
+  else if (status.includes("no")) return "error";
+  else if (status.includes("cancelled")) return "error";
   else if (status.includes("expired")) return "error";
   else if (status.includes("rejected")) return "error";
   else if (status.includes("acknowledge")) return "success";
@@ -87,7 +104,7 @@ const StatusLabel = React.forwardRef(
           statusVariants({
             variant: StatusVariant,
           }),
-          "flex items-center",
+          "flex items-center h-fit capitalize-text",
           className
         )}
         ref={ref}
@@ -105,6 +122,92 @@ const StatusLabel = React.forwardRef(
 );
 
 StatusLabel.displayName = "StatusLabel";
+
+const MultiStatusLabel = React.forwardRef(
+  (
+    {
+      statusList,
+      key,
+      variant,
+      className,
+      size,
+      iconVariant,
+      displayAll,
+      fallBackText = "",
+      ...props
+    },
+    ref
+  ) => {
+    //  const [searchQuery, setSearchQuery] = React.useState("");
+    if (!statusList || !Array.isArray(statusList) || statusList.length === 0)
+      return fallBackText ?? null;
+    const displayedStatus = displayAll ? statusList : statusList?.slice(0, 3);
+    const remainingCount = statusList.length - displayedStatus.length;
+    return (
+      <Popover>
+        <PopoverTrigger asChild>
+          <div className="flex flex-wrap gap-1 cursor-pointer">
+            {displayedStatus.map((status, index) => {
+              return (
+                <StatusLabel
+                  key={index}
+                  {...props}
+                  variant={variant}
+                  status={status}
+                  className={cn("font-normal", className)}
+                >
+                  {status ? status?.toLowerCase() : ""}
+                </StatusLabel>
+              );
+            })}
+            {remainingCount > 0 && !displayAll && (
+              <StatusLabel
+                {...props}
+                variant={variant}
+                className={cn("font-normal", className)}
+              >
+                +{remainingCount}
+              </StatusLabel>
+            )}
+          </div>
+        </PopoverTrigger>
+        <PopoverContent className="w-80 p-0" align="start">
+          <Card className="border-0 shadow-none">
+            <div className="p-4 space-y-4">
+              {/* {remainingCount > 0 && (
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search Member"
+                    className="pl-9"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                  />
+                </div>
+              )} */}
+              <ScrollArea className="[&>div>div[style]]:!block">
+                <div className="pr-2 space-y-3 max-h-[200px]">
+                  {statusList.map((status, index) => {
+                    return (
+                      <div
+                        key={`${status}-${index}`}
+                        className="flex justify-between w-full items-center cursor-pointer"
+                      >
+                        {status}
+                      </div>
+                    );
+                  })}
+                </div>
+              </ScrollArea>
+            </div>
+          </Card>
+        </PopoverContent>
+      </Popover>
+    );
+  }
+);
+
+MultiStatusLabel.displayName = "MultiStatusLabel";
 
 export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
   if (!label) return "";
@@ -178,33 +281,48 @@ export const StatusCircleLabel = ({ label, status }) => {
   );
 };
 
-export const StatusViewIcon = ({ status }) => {
+export const StatusViewIcon = ({ status, className }) => {
   if (!status) return <></>;
-  const className = "text-[20px] d-inline rounded-full mr-5";
+  const Status = status.toLowerCase();
+  const custonClassName = cn(
+    "flex justify-center items-center px-1 bg-white h-[33px] w-[33px] ",
+    className
+  );
+  const iconSize = "22";
+  const iconClassName =
+    "object-contain self-stretch my-auto aspect-square rounded-full";
   const style = { padding: "3px" };
-  if (status === "Approved")
+  if (Status === "approved")
     return (
-      <FaCheck
-        className={`${className} bg-[#00C483] text-white`}
-        style={style}
-      />
+      <div className={`${custonClassName}`}>
+        <Check
+          className={`${iconClassName} bg-[#00C483] text-white`}
+          style={style}
+          size={iconSize}
+          strokeWidth={1.5}
+        />
+      </div>
     );
-  else if (status === "Rejected")
+  else if (Status === "rejected")
     return (
-      <RxCross2
-        className={`${className} bg-[#EA4335] text-white`}
-        style={style}
-      />
+      <div className={`${custonClassName}`}>
+        <RxCross2
+          className={`${iconClassName} bg-[#EA4335] text-white`}
+          style={style}
+          size={iconSize}
+        />
+      </div>
     );
-  else if (status === "Pending")
+  else if (Status === "pending")
     return (
-      <BsCircleFill
-        className={`${className} bg-[#E8E8E8]`}
-        style={{
-          ...{ style },
-          ...{ color: "#D9D9D9", border: "3px solid #E8E8E8" },
-        }}
-      />
+      <div className={`${custonClassName}`}>
+        <img
+          loading="lazy"
+          src={statusPendingIcon}
+          alt=""
+          className={iconClassName}
+        />
+      </div>
     );
   else return <></>;
 };
@@ -286,4 +404,40 @@ export const JobStatusLabel = ({ label, type }) => {
   );
 };
 
-export { StatusLabel, statusVariants };
+export const StatusList = ({ status_list, className }) => {
+  if (!status_list || !Array.isArray(status_list) || status_list.length === 0)
+    return <></>;
+
+  return (
+    <div className={cn("flex flex-col gap-2", className)}>
+      {status_list.map(({ status, approver, time, designation }, index) => {
+        return (
+          <div key={`status-list-${index}`} className="flex items-center">
+            <StatusViewIcon status={status} className="mr-1 mt-1" />
+            <div className="flex flex-col">
+              <span className="text-capitalize">
+                {status.toLowerCase()} By{" "}
+                {approver ? (
+                  <>
+                    <EmployeeName value={approver} />-{" "}
+                    <EmployeeInfo
+                      value={approver}
+                      label={"department_position"}
+                    />
+                  </>
+                ) : (
+                  <DesignationName value={designation} />
+                )}
+              </span>
+              <span className="text-xs text-neutral-900">
+                {renderDate(time, "", "date-time")}
+              </span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+export { StatusLabel, statusVariants, MultiStatusLabel };

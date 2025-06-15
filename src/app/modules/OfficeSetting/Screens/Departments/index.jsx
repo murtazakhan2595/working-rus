@@ -9,6 +9,9 @@ import { CardDescription } from "components/ui/card";
 import { DepartmentColumn } from "../../sections/OfficeSettingTableColumns";
 import { FilterInput } from "components/FormControl";
 import { getDepartmentList } from "app/hooks/general";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
+import { OfficeSettingPermissionWrapper } from "../../components/PermissionWrapper";
+import { OFFICE_SETTING_PERMISSIONS } from "../../permissions/constants";
 
 const Departments = ({
   loading,
@@ -71,42 +74,51 @@ const Departments = ({
   };
 
   return (
-    <div className="flex flex-col justify-end gap-4">
-      <FilterInput
-        filters={[
-          {
-            type: "search",
-            placeholder: "Search Department Name",
-            name: "name",
-          },
-          
-        ]}
-        className='justify-end'
-        onChange={handleFilterChange}
-      />
-      {loading ? (
-        <PageLoader />
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-primary">Department List</CardTitle>
-            <CardDescription className="text-neutral-1100">
-              Here you can manage your departments. Add, edit, or delete departments as needed.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <TableCustom
-              columns={DepartmentColumn(forceReload)}
-              data={Departments?.results || []}
-              tableOptions={tableOptions}
-              dataTotalSize={Departments?.count || 0}
-              pagination={true}
-              className="organization-table"
-            />
-          </CardContent>
-        </Card>
-      )}
-    </div>
+    <OfficeSettingPermissionWrapper 
+      permissions={OFFICE_SETTING_PERMISSIONS.DEPARTMENTS.VIEW}
+      showError={true}
+    >
+      <div className="flex flex-col justify-end gap-4">
+       
+        {loading ? (
+          <PageLoader />
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-primary">Department List</CardTitle>
+              <CardDescription className="text-neutral-1100">
+                Here you can manage your departments. Add, edit, or delete departments as needed.
+              </CardDescription>
+              <div className="flex justify-end">
+              <FilterInput
+          filters={[
+            {
+              type: "search",
+              placeholder: "Search Department Name",
+              name: "name",
+            },
+            
+          ]}
+          className='justify-end'
+          onChange={handleFilterChange}
+        />
+              </div>
+         
+            </CardHeader>
+            <CardContent>
+              <TableCustom
+                columns={DepartmentColumn(forceReload, Departments?.results || [])}
+                data={Departments?.results || []}
+                tableOptions={tableOptions}
+                dataTotalSize={Departments?.count || 0}
+                pagination={true}
+                className="organization-table"
+              />
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </OfficeSettingPermissionWrapper>
   );
 };
 

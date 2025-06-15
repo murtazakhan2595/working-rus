@@ -50,25 +50,16 @@ export const HRDocumentsColumns = (
         },
       ]
     : []),
-  ...(showAction
-    ? [
-        {
-          dataField: "",
-          text: "",
-          formatter: (cell, row) => (
-            <DocumentActions variant="assign_document" document={row} />
-          ),
-          width: "175px",
-        },
-      ]
-    : []),
+  // Action column with dropdown menu
   {
     dataField: "",
-    text: "",
+    text: "Actions",
     formatter: (cell, row) => (
-      <DocumentActions variant="view_detail" document={row} />
+      <DocumentActions document={row} showAction={showAction} reloadData={reloadData} />
     ),
-    width: "175px",
+    width: "100px",
+    headerAlign: "right",
+    align: "right",
   },
 ];
 

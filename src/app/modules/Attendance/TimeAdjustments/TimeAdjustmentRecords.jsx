@@ -1,0 +1,208 @@
+import React, { useState, useEffect } from "react";
+
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "src/@/components/ui/tabs";
+import { GlobalStatusOptions } from "data/Data";
+import { FilterInput } from "components/FormControl";
+import { getTimeAdjustmentListData } from "app/hooks/attendance";
+import { TimeAdjustmentsColumns } from "app/modules/Attendance/Sections/AttendanceTableColumns";
+import { CardDescription, CardTitle, CardContent } from "components/ui/card";
+import { PageLoader, TableCustom } from "components";
+import { GetEmployeeFilteredList, GetCommonFilteredList } from "utils/Lists";
+const innerTabClassName =
+  "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
+const TimeAdjustmentRecords = ({
+  isTeamView = false,
+  isDepartmentView = false,
+  isBranchView = false,
+  adminView = false,
+}) => {
+  const Employees = GetEmployeeFilteredList(
+    isTeamView,
+    adminView,
+    isBranchView,
+    isDepartmentView
+  );
+  const Department = GetCommonFilteredList("departments");
+  const Branches = GetCommonFilteredList("branches");
+  const [activeInnerTab, setActiveInnerTab] = useState("Requests");
+  const [TimeAdjustmentList, setTimeAdjustmentList] = useState({
+    results: [],
+    count: 0,
+  });
+  const [isloading, setIsLoading] = useState(false);
+  const [filterData, setFilterData] = useState({
+    adjustment_status: "PENDING",
+  });
+  const [ordering, setOrdering] = useState("-id");
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
+  const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
+    onSortChange: (sortName) => {
+      setOrdering(sortName);
+    },
+  };
+
+  const fetchData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+
+      const response = await getTimeAdjustmentListData({
+        filterData,
+        options,
+        ordering,
+      });
+
+      if (isMounted && response) {
+        setTimeAdjustmentList(response);
+      }
+    } catch (error) {
+      console.error("Error fetching Approval Hierarchy:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [filterData, ordering, options]);
+
+  const handleFilterChange = (filterName, filterValue) => {
+    onPageChange("page", 1);
+    setFilterData((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (filterValue === "" || filterValue === null) {
+        if (filterName === "adjustment_status") {
+          if (activeInnerTab === "Requests") {
+            updatedFilters[filterName] = "PENDING";
+          } else if (activeInnerTab === "Records") {
+            updatedFilters[filterName] = "APPROVED,REJECTED";
+          }
+        } else delete updatedFilters[filterName];
+      } else {
+        updatedFilters[filterName] = filterValue;
+      }
+      return updatedFilters;
+    });
+  };
+
+  const handleTabChange = (tab) => {
+    if (tab === "Requests") {
+      setFilterData(() => ({
+        adjustment_status: "PENDING",
+      }));
+    } else if (tab === "Records") {
+      setFilterData(() => ({
+        adjustment_status: "APPROVED,REJECTED",
+      }));
+    }
+  };
+
+  return (
+    <Tabs
+      className="w-full"
+      onValueChange={(tab) => {
+        handleTabChange(tab);
+        setActiveInnerTab(tab);
+      }}
+      value={activeInnerTab}
+    >
+      <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
+        <TabsList className="flex items-center justify-center mb-4">
+          {["Requests", "Records"].map((tab) => (
+            <TabsTrigger key={tab} value={tab} className={innerTabClassName}>
+              {tab}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </div>
+      <div>
+        <div className="flex flex-col gap-4 px-6">
+          <CardTitle className="text-primary pt-6">
+            Time Adjustments {activeInnerTab}
+          </CardTitle>
+          <CardDescription className="text-neutral-1100">
+            Here you can manage time adjustments. View, reject, or approve as
+            needed.
+          </CardDescription>
+          <FilterInput
+            filters={[
+              {
+                type: "select",
+                placeholder: "Employee",
+                name: "time_employee",
+                options: Employees,
+              },
+              ...(adminView || isBranchView
+                ? [
+                    {
+                      type: "select",
+                      placeholder: "Department",
+                      name: "time_department",
+                      options: Department,
+                    },
+                  ]
+                : []),
+              ...(adminView || isDepartmentView
+                ? [
+                    {
+                      type: "select",
+                      placeholder: "Branch",
+                      name: "time_branch",
+                      options: Branches,
+                    },
+                  ]
+                : []),
+              ...(activeInnerTab === "Records"
+                ? [
+                    {
+                      type: "select",
+                      placeholder: "Status",
+                      name: "adjustment_status",
+                      options: GlobalStatusOptions(false),
+                    },
+                  ]
+                : []),
+            ]}
+            onChange={handleFilterChange}
+            className="justify-end"
+          />
+          <CardContent className="px-0">
+            {isloading ? (
+              <PageLoader />
+            ) : (
+              <TableCustom
+                columns={TimeAdjustmentsColumns(
+                  activeInnerTab === "Records",
+                  fetchData
+                )}
+                data={TimeAdjustmentList.results || []}
+                pagination={true}
+                dataTotalSize={TimeAdjustmentList?.count || 0}
+                className="TimeAdjustmentList-table"
+                tableOptions={tableOptions}
+              />
+            )}
+          </CardContent>
+        </div>
+      </div>
+    </Tabs>
+  );
+};
+
+export default TimeAdjustmentRecords;

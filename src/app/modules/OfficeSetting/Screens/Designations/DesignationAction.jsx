@@ -1,22 +1,16 @@
 import React, { useState } from "react";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { deleteRecord } from "app/hooks/general";
-import SheetComponent from "components/ui/SheetComponent";
 import AddDesignationForm from "./AddDesignationForm";
 import ViewDesignation from "./ViewDesignation";
 import DropdownActionMenu from "components/DropdownActionMenu";
+import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
-const DesignationAction = ({ data, reload }) => {
+const DesignationAction = ({ data, reload, DesignationList = [] }) => {
   const [view, setView] = useState(null);
   const [edit, setEdit] = useState(null);
   const [deleteDesignation, setDeleteDesignation] = useState(null);
-
-  const formSheetData = {
-    triggerText: null,
-    title: "Update Designation",
-    description: null,
-    footer: null,
-  };
+  const permissions = useOfficeSettingPermissions();
 
   const handleEdit = (data) => {
     console.log("Edit button clicked for designation:", data);
@@ -73,9 +67,9 @@ const DesignationAction = ({ data, reload }) => {
   return (
     <>
       <DropdownActionMenu 
-        onView={() => handleView(data)}
-        onEdit={() => handleEdit(data)}
-        onDelete={() => handleDelete(data)}
+        onView={permissions.designations.canView ? () => handleView(data) : null}
+        onEdit={permissions.designations.canUpdate ? () => handleEdit(data) : null}
+        onDelete={permissions.designations.canDelete ? () => handleDelete(data) : null}
         viewText="View Designation"
         editText="Edit Designation"
         deleteText="Delete Designation"
@@ -98,26 +92,15 @@ const DesignationAction = ({ data, reload }) => {
       )}
 
       {edit?.open && (
-        <SheetComponent
-          {...formSheetData}
-          isOpen={edit?.open}
+        <AddDesignationForm
+          isOpen={edit.open}
           setIsOpen={(isOpen) => {
             console.log("Setting edit sheet open state to:", isOpen);
             setEdit((prev) => ({ ...prev, open: isOpen }));
           }}
-          width="568px"
-        >
-          <AddDesignationForm
-            isOpen={edit.open}
-            setIsOpen={(isOpen) => {
-              console.log("Setting form open state to:", isOpen);
-              setEdit((prev) => ({ ...prev, open: isOpen }));
-            }}
-            edit={edit}
-            setEdit={setEdit}
-            reload={reload}
-          />
-        </SheetComponent>
+          edit={edit}
+          reloadData={reload}
+        />
       )}
       
       {view?.visible && (
@@ -127,6 +110,8 @@ const DesignationAction = ({ data, reload }) => {
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
           data={view.data}
+          reload={reload}
+          DesignationList={DesignationList}
         />
       )}
     </>

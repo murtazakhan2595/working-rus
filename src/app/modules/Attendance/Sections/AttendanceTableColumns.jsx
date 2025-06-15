@@ -1,5 +1,8 @@
 import { EmployeeAttendenceActions } from "app/modules/Attendance/Sections";
-import { MyAttendenceActions } from "app/modules/Attendance/MyAttendance/Section";
+import {
+  TimeAdjustmentsActions,
+  AttendanceAdjustmentActions,
+} from "app/modules/Attendance";
 import { calculatePercentage } from "utils/renderValues";
 import { EmployeeOverview } from "components";
 import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn provides this
@@ -7,6 +10,8 @@ import { formatDuration } from "utils/renderValues";
 import moment from "moment";
 import { StatusLabelAttendance } from "components/StatusLabel";
 import { renderDate, formatNumber } from "utils/renderValues";
+import { StatusLabel } from "components";
+import { EmployeeUsername } from "utils/getValuesFromTables";
 
 /**
  * AttendanceColumns
@@ -46,7 +51,12 @@ export const EmployeesAttendanceColumns = (
     dataField: "emp_name",
     text: "Employees",
     formatter: (cell, row) => (
-      <EmployeeOverview id={row.employee_id} showId showPosition />
+      <EmployeeOverview
+        id={row.employee_id}
+        showId
+        showPosition
+        showBranchName
+      />
     ),
     dataSort: true,
   },
@@ -60,13 +70,23 @@ export const EmployeesAttendanceColumns = (
     dataField: "attendance_stats",
     text: "Absent Days",
     formatter: (cell) => (
-      <span>{Math.max(0, parseInt(TotalDays) - parseInt(cell?.Present))}</span>
+      <span>{parseInt(TotalDays) - parseInt(cell?.Present)}</span>
     ),
   },
   {
     dataField: "attendance_stats",
     text: "Late Days",
     formatter: (cell) => <span>{cell?.Late}</span>,
+  },
+  {
+    dataField: "productivity_hours",
+    text: "Total Productivity Hours",
+    formatter: (cell) => <span>{formatDuration(cell)}</span>,
+  },
+  {
+    dataField: "overtime_hours",
+    text: "Total Overtime Hours",
+    formatter: (cell) => <span>{formatDuration(cell)}</span>,
   },
   {
     dataField: "attendance_stats",
@@ -98,16 +118,38 @@ export const MyAttendanceColumn = (reload) => [
   {
     text: "Check In",
     dataField: "checkin",
-    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+    formatter: (cell, row) => (
+      <div className="flex-col flex gap-1">
+        <span>{moment(cell).format("h:mm A")}</span>
+        <span>
+          {row.second_checkin
+            ? moment(row.second_checkin).format("h:mm A")
+            : ""}
+        </span>
+      </div>
+    ),
   },
   {
     text: "Check Out",
     dataField: "checkout",
     formatter: (cell, row) => {
-      return cell ? (
-        <span>{moment(cell).format("h:mm A")}</span>
-      ) : (
-        getCheckoutTime(row.checkin, cell)
+      return (
+        <div className="flex-col flex gap-2">
+          {cell ? (
+            <span>{moment(cell).format("h:mm A")}</span>
+          ) : (
+            getCheckoutTime(row.checkin, cell)
+          )}
+          {row.second_checkin ? (
+            row.second_checkout ? (
+              <span>{moment(row.second_checkout).format("h:mm A")}</span>
+            ) : (
+              getCheckoutTime(row.second_checkin, row.second_checkout)
+            )
+          ) : (
+            ""
+          )}
+        </div>
       );
     },
   },
@@ -130,6 +172,18 @@ export const MyAttendanceColumn = (reload) => [
     text: "Productivity",
     dataField: "payable_hours",
     formatter: (cell, row) => <>{row.checkout ? formatDuration(cell) : "--"}</>,
+  },
+  {
+    text: "Remaining Hours",
+    dataField: "total_hours",
+    formatter: (cell, row) => {
+      if (!row.checkout) return "--";
+      const remaining_hours = Math.max(
+        0,
+        (cell ?? 0) - (row.payable_hours ?? 0)
+      );
+      return formatDuration(remaining_hours);
+    },
   },
 
   {
@@ -189,4 +243,175 @@ export const AttendanceReportColumns = [
     formatter: (cell) => <>{formatDuration(cell)}</>,
   },
   { text: "Status", dataField: "status" },
+];
+
+export const TimeAdjustmentsColumns = (viewMode = false, reloadData) => [
+  {
+    text: "Employee",
+    dataField: "employee_id",
+    formatter: (cell) => (
+      <EmployeeOverview
+        id={cell}
+        showId={true}
+        showDepartment={true}
+        showBranchName={true}
+      />
+    ),
+  },
+  {
+    text: "Date",
+    dataField: "date",
+    formatter: (cell) => <>{`${renderDate(cell)}`}</>,
+  },
+  {
+    text: "Check In",
+    dataField: "checkin_time",
+    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+  },
+  {
+    text: "Submission Time",
+    dataField: "created_at",
+    formatter: (cell) => `${renderDate(cell, "--", "date-time")}`,
+  },
+  {
+    text: "Status",
+    dataField: "status",
+    formatter: (cell) => (
+      <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    ),
+  },
+  {
+    text: "",
+    dataField: "",
+    formatter: (cell, row, dataList) => (
+      <TimeAdjustmentsActions
+        data={row}
+        reloadData={reloadData}
+        TimeAdjustmentList={dataList}
+      />
+    ),
+  },
+];
+export const AttendanceAdjustmentsColumns = (viewMode = false, reloadData) => [
+  {
+    text: "Employee",
+    dataField: "employee",
+    formatter: (cell) => (
+      <EmployeeOverview
+        id={cell}
+        showId={true}
+        showDepartment={true}
+        showBranchName={true}
+      />
+    ),
+  },
+  {
+    text: "Attendance Date",
+    dataField: "attendance_date",
+    formatter: (cell) => <>{`${renderDate(cell)}`}</>,
+  },
+  {
+    text: "Requested Check-In",
+    dataField: "requested_checkin",
+    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+  },
+  {
+    text: "Requested Check-Out",
+    dataField: "requested_checkout",
+    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+  },
+  {
+    text: "Status",
+    dataField: "status",
+    formatter: (cell) => (
+      <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    ),
+  },
+  {
+    text: "",
+    dataField: "",
+    formatter: (cell, row, dataList) => (
+      <AttendanceAdjustmentActions
+        data={row}
+        reloadData={reloadData}
+        DataList={dataList}
+      />
+    ),
+  },
+];
+
+export const TimeAdjustmentLogsColumns = [
+  {
+    text: "Date",
+    dataField: "date",
+    formatter: (cell) => <>{`${renderDate(cell)}`}</>,
+  },
+  {
+    text: "Check In",
+    dataField: "checkin",
+    formatter: (cell) => <span>{moment(cell).format("h:mm A")}</span>,
+  },
+  {
+    text: "Submission Time",
+    dataField: "created_at",
+    formatter: (cell) => `${renderDate(cell, "--", "date-time")}`,
+  },
+  {
+    text: "Status",
+    dataField: "status",
+    formatter: (cell) => (
+      <StatusLabel status={cell}>{cell?.toLowerCase()}</StatusLabel>
+    ),
+  },
+  {
+    text: "",
+    dataField: "",
+    formatter: (_, row) => (
+      <TimeAdjustmentsActions data={row} isHistoryView={true} />
+    ),
+  },
+];
+
+export const AttendanceAdjustmentLogsColumns = [
+  {
+    text: "Employee",
+    dataField: "employee",
+    formatter: (cell) => (
+      <EmployeeOverview id={cell} showId={true} showDepartment={true} />
+    ),
+  },
+  {
+    text: "Attendance Date",
+    dataField: "attendance_date",
+    formatter: (cell) => renderDate(cell),
+  },
+  {
+    text: "Updated By",
+    dataField: "approver",
+    formatter: (cell) => <EmployeeUsername value={cell} />,
+  },
+  {
+    text: "Updated On",
+    dataField: "modified_at",
+    formatter: (cell) => renderDate(cell),
+  },
+  {
+    text: "Status",
+    dataField: "attendance_status",
+    formatter: (cell) => {
+      const status = cell ? cell : "pending";
+      return <StatusLabel status={status}>{status?.toLowerCase()}</StatusLabel>;
+    },
+  },
+  {
+    text: "",
+    dataField: "",
+    formatter: (_, row, dataList) => (
+      <AttendanceAdjustmentActions
+        data={row}
+        isHistoryView={true}
+        DataList={dataList}
+      />
+    ),
+  },
 ];

@@ -1,39 +1,30 @@
-import moment from "moment";
 import React, { useState, useEffect } from "react";
-import { SignatureForm } from "app/modules/HRDocuments/Sections";
 import { DocCategoryName } from "utils/getValuesFromTables";
-import { Button } from "components/ui/button";
 import { TableCustom } from "components";
 import {
-  addUpdateDocumentAssignment,
   getHRDocumentData,
   getDocumentAssignmentList,
 } from "app/hooks/hrDocuments";
-import { saveEmployeePersonalInfoData } from "app/hooks/employee";
-import { mapEmployeeTransferInfo } from "app/utils/MappingObjects/mapEmployeeTransferData";
 import AttachmentUI from "components/ui/AttachmentUI";
-import { DetailBox, SheetCardExtension } from "components/SheetCardExtension";
+import { DetailBox } from "components/SheetCardExtension";
 import { HRDocumentAssigneesColumns } from "app/modules/HRDocuments/Sections";
 import { MyDocumentDetails } from "app/modules/HRDocuments/Screens";
 
 import {
-  ViewDetailSheetCardExtension,
   StatusLabel,
-  EmployeeOverview,
 } from "components";
 import { renderDate } from "utils/renderValues";
 import { TextInput } from "components/FormControl";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardTitle } from "components/ui/card";
 import { SelectInputComponent } from "components/FormControl";
 import { HRDocumentsStatus } from "data/Data";
 import { calculateTotalCount } from "utils/renderValues";
+import { Header } from "components";
 
 const DocumentDetails = () => {
-  const navigate = useNavigate();
   const location = useLocation();
-  const { GOTO_URLS, document_id } = location.state || {};
+  const { GOTO_URLS, id } = location.state || {};
   const [currentDocument, setCurrentDocument] = useState({});
   const [DocumentAssignees, setDocumentAssignees] = useState([]);
   const [acknowledgedDocument, setAcknowledgedDocument] = useState(0);
@@ -60,7 +51,7 @@ const DocumentDetails = () => {
       // navigate(`/documents/detail`, {
       //   state: {
       //     GOTO_URLS: `/documents/`,
-      //     document_id: row.id,
+      //     id: row.id,
       //   },
       // });
     },
@@ -69,7 +60,7 @@ const DocumentDetails = () => {
   const fetchDocumentAssigneeData = async (isMounted) => {
     try {
       const assigneeResponse = await getDocumentAssignmentList({
-        filterData: { document: document_id },
+        filterData: { document: id },
         ordering,
       });
       if (isMounted && assigneeResponse) {
@@ -94,7 +85,7 @@ const DocumentDetails = () => {
 
   useEffect(() => {
     let isMounted = true;
-    if (document_id) {
+    if (id) {
       fetchDocumentAssigneeData(isMounted);
     }
     return () => {
@@ -115,13 +106,13 @@ const DocumentDetails = () => {
 
   useEffect(() => {
     let isMounted = true;
-    if (document_id) {
-      fetchData(isMounted, document_id);
+    if (id) {
+      fetchData(isMounted, id);
     }
     return () => {
       isMounted = false;
     };
-  }, [document_id]);
+  }, [id]);
 
   const labelList = [
     {
@@ -162,22 +153,12 @@ const DocumentDetails = () => {
   return (
     <>
       <div className="container p-4 mx-auto">
-        {/* if the pathname starts with /user/ then show the go back button */}
-        <div className="mb-4">
-          <Button
-            variant="ghost"
-            onClick={() => {
-              navigate(GOTO_URLS);
-            }}
-            className="p-4 text-xl text-balance"
-          >
-            <ArrowLeft className="w-6 h-6 mr-2 bg-white rounded-lg shadow-sm" />
-            Go Back
-          </Button>
-        </div>
-        {/* if the pathname is /my-profile then show the header */}
-        {/* <Header /> */}
-        <div className="my-5">
+        <Header
+          showBackButton={true}
+          navigationLink={GOTO_URLS||"/documents"}
+          showTitle={false}
+        />
+        <div className="mb-5">
           <Card>
             <CardContent className="flex flex-col items-start justify-start w-full gap-2 mt-10 max-md:max-w-full ">
               <div className="flex flex-wrap items-center justify-between w-full">
@@ -196,10 +177,10 @@ const DocumentDetails = () => {
                           ?.slice(1)
                           .toLowerCase()}
                     </StatusLabel>
-                    <StatusLabel status={'acknowledged'}>
+                    <StatusLabel status={"acknowledged"}>
                       {acknowledgedDocument} Acknowledged
                     </StatusLabel>
-                    <StatusLabel status={'rejected'}>
+                    <StatusLabel status={"rejected"}>
                       {pendingDocument} Pending
                     </StatusLabel>
                   </div>

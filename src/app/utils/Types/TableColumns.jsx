@@ -1,4 +1,4 @@
-import { EmployeeID, UserRole } from "utils/getValuesFromTables";
+import { EmployeeID, GetNameList } from "utils/getValuesFromTables";
 import { RenderJobApplicationActions } from "app/modules/RecruitmentData/Applications/Sections";
 import { dropdownOptions } from "data/Data";
 import { EmployeeOverview, StatusLabel, OverviewCard } from "components";
@@ -13,6 +13,10 @@ import { Switch } from "src/@/components/ui/switch";
 import { getExpenseType } from "utils/getValuesFromTables";
 import { Clock, MapPin, Tag } from "lucide-react";
 import ClaimRequestStatus from "app/modules/claims/Sections/ClaimRequestStatus";
+import DropdownActionMenu from "components/DropdownActionMenu";
+import { getAssetById } from "app/hooks/assets";
+import { toast } from "react-toastify";
+import { MultiStatusLabel } from "components";
 /**
  * EmployeeColumns
  *
@@ -32,24 +36,41 @@ export const EmployeeColumns = [
     dataField: "first_name",
     text: "Employees",
     formatter: (cell, row) => (
-      <EmployeeOverview id={row.id} showPosition={true} showDepartment={true} />
+      <EmployeeOverview
+        id={row.id}
+        showPosition={true}
+        showDepartment={true}
+        showBranchName={true}
+      />
     ),
     minWidth: "120px",
     dataSort: true,
   },
-
   {
     dataField: "user_role",
     text: "Role",
-    formatter: (cell, row) => <UserRole value={cell} />,
+    formatter: (cell, row) => {
+      const UserNameList = GetNameList(
+        cell,
+        "roles_permissions",
+        "user_roles",
+        "No Role Assigned"
+      );
+      return (
+        <MultiStatusLabel
+          statusList={UserNameList}
+          fallbackText="No Role Assigned"
+          variant="info"
+        />
+      );
+    },
     dataSort: true,
-    maxWidth:'120px'
   },
   {
     dataField: "username",
     text: "Username",
     minWidth: "105px",
-    maxWidth:'120px',
+    maxWidth: "120px",
     dataSort: true,
     formatter: (cell) => (
       <div className="overflow-hidden text-ellipsis">{cell}</div>
@@ -642,38 +663,116 @@ export const AssetsColumns = [
     text: "Asset ID",
     minWidth: "105px",
     formatter: (cell) => <span>AST-{String(cell).padStart(4, "0")}</span>,
+    dataSort: true,
   },
   {
     dataField: "asset_name",
     text: "Asset Name",
-    formatter: (cell, row) => (
-      <div className="flex flex-col">
-        <div className="text-base font-medium">{cell}</div>
-        <div className="text-sm text-muted-foreground">
-          {row.asset_description || row.asset_model}
-        </div>
-      </div>
-    ),
+    dataSort: true,
   },
   {
     dataField: "asset_type",
     text: "Category",
-    formatter: (cell) => (
-      <div className="flex items-center gap-2">
-        <Tag size={16} className="text-muted-foreground" />
-        <span>{cell}</span>
-      </div>
-    ),
+    formatter: (cell) => <span>{cell?.name}</span>,
+    dataSort: true,
   },
   {
     dataField: "asset_location_name",
     text: "Location",
-    formatter: (cell, row) => (
-      <div className="flex items-center gap-2">
-        <MapPin size={16} className="text-muted-foreground" />
-        <span>{cell}</span>
-      </div>
-    ),
+    formatter: (cell, row) => <span>{cell}</span>,
+    dataSort: true,
+  },
+  {
+    dataField: "",
+    text: "Actions",
+    formatter: (cell, row, rowIndex, formatExtraData) => {
+      // Function to open the view sheet for an asset
+      const openAssetView = async () => {
+        try {
+          // Find the parent component's set functions from the current dom path
+          const viewModule = window.AssetsModule;
+
+          if (viewModule) {
+            const assetDetails = await getAssetById(row.id);
+            if (assetDetails) {
+              viewModule.setViewAsset(assetDetails);
+            }
+          } else {
+            // Direct API call fallback if we can't access the module
+            window.location.href = `#/assets/view/${row.id}`;
+          }
+        } catch (error) {
+          console.error("Error fetching asset details:", error);
+          toast.error("Failed to load asset details");
+        }
+      };
+
+      // Function to open the edit sheet
+      const openAssetEdit = async () => {
+        try {
+          const viewModule = window.AssetsModule;
+
+          if (viewModule) {
+            const assetDetails = await getAssetById(row.id);
+            if (assetDetails) {
+              viewModule.setViewAsset(assetDetails);
+              viewModule.setCreateAsset(true);
+            }
+          } else {
+            // Fallback
+            window.location.href = `#/assets/edit/${row.id}`;
+          }
+        } catch (error) {
+          console.error("Error fetching asset details:", error);
+          toast.error("Failed to load asset details");
+        }
+      };
+
+      // Function to open delete confirmation
+      const openDeleteConfirm = () => {
+        const viewModule = window.AssetsModule;
+
+        if (viewModule) {
+          viewModule.setAssetToDelete(row);
+          viewModule.setOpenDeleteAlert(true);
+        }
+      };
+
+      const handleView = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("View clicked from dropdown");
+        openAssetView();
+      };
+
+      const handleEdit = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Edit clicked from dropdown");
+        openAssetEdit();
+      };
+
+      const handleDelete = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Delete clicked from dropdown");
+        openDeleteConfirm();
+      };
+
+      return (
+        <div onClick={(e) => e.stopPropagation()}>
+          <DropdownActionMenu
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            viewText="View Asset"
+            editText="Edit Asset"
+            deleteText="Delete Asset"
+            menuTooltip="Asset Actions"
+          />
+        </div>
+      );
+    },
   },
 ];
 
@@ -682,27 +781,21 @@ export const MyAssetRequestColumns = [
     dataField: "id",
     text: "Request ID",
     formatter: (cell) => <span>ASR-{String(cell).padStart(4, "0")}</span>,
+    dataSort: true,
   },
   {
     dataField: "asset",
-    text: "Asset",
-    formatter: (cell) => {
-      return (
-        <div className="flex flex-col">
-          <span className="font-medium">{cell?.asset_name}</span>
-          <span className="text-sm text-muted-foreground">
-            {cell?.asset_type}
-          </span>
-        </div>
-      );
-    },
+    text: "Asset Type",
+    formatter: (cell, row) => (
+      <>{cell?.asset_type?.name || row?.category?.name}</>
+    ),
+    dataSort: true,
   },
   {
     dataField: "asset",
-    text: "Serial Number",
-    formatter: (cell) => {
-      return cell?.asset_serial_number || "N/A";
-    },
+    text: "Asset Name",
+    formatter: (cell) => <>{cell?.asset_name || "Not assigned"}</>,
+    dataSort: true,
   },
   {
     dataField: "asset_assigned_date",
@@ -710,6 +803,7 @@ export const MyAssetRequestColumns = [
     formatter: (cell) => {
       return cell ? new Date(cell).toLocaleDateString() : "N/A";
     },
+    dataSort: true,
   },
   {
     dataField: "asset_returned_date",
@@ -717,6 +811,7 @@ export const MyAssetRequestColumns = [
     formatter: (cell) => {
       return cell ? new Date(cell).toLocaleDateString() : "N/A";
     },
+    dataSort: true,
   },
   {
     dataField: "reason",
@@ -725,6 +820,7 @@ export const MyAssetRequestColumns = [
       return cell || "N/A";
     },
     maxWidth: "200px",
+    dataSort: true,
   },
   {
     dataField: "asset_status",
@@ -741,12 +837,56 @@ export const MyAssetRequestColumns = [
               ? "bg-blue-50 text-blue-700"
               : cell === "Withdrawal"
               ? "bg-yellow-50 text-yellow-700"
-
-              : "bg-[#f0f0f3] text-[#7f838d]" 
+              : "bg-[#f0f0f3] text-[#7f838d]"
           }`}
         >
           {cell || "N/A"}
         </span>
+      );
+    },
+    dataSort: true,
+  },
+  {
+    dataField: "action",
+    text: "Action",
+    formatter: (cell, row) => {
+      const handleView = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("View asset request:", row);
+        // Add your view logic here - could open a modal or navigate to details page
+      };
+
+      const handleEdit = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Edit asset request:", row);
+        // Add your edit logic here - could open edit modal
+      };
+
+      const handleWithdraw = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Withdraw asset request:", row);
+        // Add your withdraw logic here
+      };
+
+      // Only show edit/withdraw for pending requests
+      const canEdit = row.asset_status === "Pending";
+      const canWithdraw = row.asset_status === "Pending";
+
+      return (
+        <div onClick={(e) => e.stopPropagation()}>
+          <DropdownActionMenu
+            onView={handleView}
+            onEdit={canEdit ? handleEdit : null}
+            onCustom={canWithdraw ? handleWithdraw : null}
+            viewText="View Request"
+            editText="Edit Request"
+            customText="Withdraw Request"
+            menuTooltip="Asset Request Actions"
+          />
+        </div>
       );
     },
   },
@@ -756,9 +896,7 @@ export const AssignedAssetsColumns = [
   {
     dataField: "id",
     text: "Assignment ID",
-    headerStyle: () => {
-      return { width: "120px" };
-    },
+    formatter: (cell) => <span>ASD-{String(cell).padStart(4, "0")}</span>,
   },
   {
     dataField: "employee_name",
@@ -767,9 +905,6 @@ export const AssignedAssetsColumns = [
   {
     dataField: "employee_id",
     text: "Employee ID",
-    headerStyle: () => {
-      return { width: "100px" };
-    },
   },
   {
     dataField: "department",
@@ -814,7 +949,7 @@ export const AssignedAssetsColumns = [
   },
 ];
 
-export const AssetRequestColumns = [
+export const AssetRequestColumns = (handleView, handleEdit, handleReject) => [
   {
     dataField: "asset_employee_id",
     text: "ID",
@@ -823,10 +958,10 @@ export const AssetRequestColumns = [
   {
     dataField: "employee",
     text: "Employees",
-    formatter: (cell, row) => (
+    formatter: (cell) => (
       <>
         <EmployeeOverview
-          id={row.asset_employee_id}
+          id={cell.id}
           showEmail={true}
           showDepartment={true}
           showPosition={true}
@@ -837,12 +972,14 @@ export const AssetRequestColumns = [
   {
     dataField: "asset",
     text: "Asset Name",
-    formatter: (cell) => <>{cell?.asset_name}</>,
+    formatter: (cell) => <>{cell?.asset_name || "N/A"}</>,
   },
   {
     dataField: "asset",
     text: "Asset Type",
-    formatter: (cell) => <>{cell?.asset_type}</>,
+    formatter: (cell, row) => (
+      <>{cell?.asset_type?.name || row?.category?.name}</>
+    ),
   },
   {
     dataField: "reason",
@@ -884,6 +1021,54 @@ export const AssetRequestColumns = [
         >
           {cell || "N/A"}
         </span>
+      );
+    },
+  },
+  {
+    dataField: "action",
+    text: "Action",
+    formatter: (cell, row) => {
+      const handleViewClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleView && handleView(row);
+      };
+
+      const handleEditClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleEdit && handleEdit(row);
+      };
+
+      const handleRejectClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleReject && handleReject(row);
+      };
+
+      // Determine available actions based on status
+      const isPending = row.asset_status === "Pending";
+      const isRejected = row.asset_status === "Rejected";
+      const isAccepted = row.asset_status === "Accepted";
+
+      // Show Edit for Pending and Rejected requests
+      // Show Reject for Pending requests only
+      // Always show View
+      const canEdit = isPending || isRejected;
+      const canReject = isPending;
+
+      return (
+        <div onClick={(e) => e.stopPropagation()}>
+          <DropdownActionMenu
+            onView={handleViewClick}
+            onEdit={canEdit ? handleEditClick : null}
+            onDelete={canReject ? handleRejectClick : null}
+            viewText="View Details"
+            editText="Edit Request"
+            deleteText="Reject Request"
+            menuTooltip="Request Actions"
+          />
+        </div>
       );
     },
   },

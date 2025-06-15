@@ -1,4 +1,7 @@
 import moment from "moment";
+import { renderTime } from "./DateTimeUtils";
+import { useSelector } from "react-redux";
+import { eachDayOfInterval } from "date-fns";
 
 export const formatNumber = (num) => {
   // const units = ["", "K", "M", "B", "T", "P", "E", "Z", "Y"];
@@ -159,14 +162,24 @@ export function numberToWords(number) {
 
 export function renderDate(date, fallbackValue = "N/A", variant = "date") {
   if (!date || !moment(date).isValid()) return fallbackValue;
-  const format = variant === "month" ? "MMMM YYYY" : "MMM DD, YYYY";
+  const format =
+    variant === "month-day"
+      ? "MMM D"
+      : variant === "month"
+      ? "MMMM YYYY"
+      : variant === "date-time"
+      ? "MMM DD, YYYY hh:mm A"
+      : variant === "time"
+      ? "hh:mm A"
+      : "MMM DD, YYYY";
   return moment(date).format(format);
 }
 
 export const formatDuration = (duration, calculateSeconds = false) => {
-  if (!duration || duration <= 0) return "0min";
+  if (!duration) return "0min";
 
-  const totalSeconds = Math.floor(duration * 3600); // Convert hours to seconds
+  const Duration = parseFloat(duration < 0 ? Math.abs(duration) : duration);
+  const totalSeconds = Math.floor(Duration * 3600); // Convert hours to seconds
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
@@ -175,7 +188,7 @@ export const formatDuration = (duration, calculateSeconds = false) => {
   if (hours > 0) parts.push(`${hours}h`);
   parts.push(`${minutes}min`);
   if (seconds > 0 && calculateSeconds) parts.push(`${seconds}s`);
-  return parts.join(" ");
+  return `${duration < 0 ? "-" : ""}${parts.join(" ")}`;
 };
 
 export const GetDateRange = (period) => {
@@ -194,13 +207,15 @@ export const GetDateRange = (period) => {
   else return period;
 };
 export const CalculateTotalWorkingHours = (start_time, end_time) => {
-  const startTime = moment.utc(start_time).format("HH:mm:ss");
-  const endTime = moment.utc(end_time).format("HH:mm:ss");
+  const today = moment().format("YYYY-MM-DD");
+  const startTime = renderTime(start_time, today);
+  const endTime = renderTime(end_time, today);
+  // const startTime = moment.utc(start_time).format("HH:mm:ss");
+  // const endTime = moment.utc(end_time).format("HH:mm:ss");
 
   // Parse both times on the same reference date (e.g., today)
-  const today = moment().format("YYYY-MM-DD");
-  let start = moment.utc(`${today}T${startTime}`);
-  let end = moment.utc(`${today}T${endTime}`);
+  let start = moment(startTime);
+  let end = moment(endTime);
 
   // Handle shift going past midnight
   if (end.isBefore(start)) {
@@ -336,4 +351,108 @@ export const getWorkingDays = (startDate, endDate) => {
   }
 
   return count;
+};
+
+export function GetDateDifference(
+  startDate,
+  endDate,
+  type = "work_days", //work_days, calendar_days
+  CalendarContent = {},
+  exclude = []
+) {
+  // Validate input
+  if (!startDate || !endDate) return 0;
+
+  const start = moment(startDate).startOf("day");
+  const end = moment(endDate).startOf("day");
+
+  // Validate moment objects
+  if (!start.isValid() || !end.isValid()) return 0;
+
+  // Ensure end is not before start
+  if (end.isBefore(start)) return 0;
+  if (type === "calendar_days")
+    return end.diff(start, "days") + 1; // +1 to include start day
+  else if (exclude.includes("holidays")) {
+    try {
+      const datesOfMonth = eachDayOfInterval({
+        start: start.toDate(),
+        end: end.toDate(),
+      });
+      const count = datesOfMonth.filter((date) => {
+        const baseDate = moment(date).format("YYYY-MM-DD");
+        const content = CalendarContent[baseDate] || {};
+        const isHoliday = content.isHoliday;
+
+        if (isHoliday) return false;
+
+        const day = moment(date).day();
+        return day !== 0 && day !== 6; // exclude Sunday (0) and Saturday (6)
+      });
+      return count?.length || 0;
+    } catch (err) {
+      console.warn("Invalid date range:");
+      return 0;
+    }
+  } else if (type === "work_days") {
+    return getWorkingDays(start, end);
+  }
+}
+
+export const ChildAnyNodeExist = (
+  parent_node = {},
+  selectedLeafs = [],
+  label = "id"
+) => {
+  const children = parent_node.childrens;
+  if (!children || children.length === 0) {
+    return selectedLeafs.includes(parent_node[label]);
+  }
+  // If children exist, check recursively
+  if (Array.isArray(children)) {
+    return children.some((child) =>
+      ChildAnyNodeExist(child, selectedLeafs, label)
+    );
+  }
+
+  return false;
+};
+
+export const ChildALLNodesExist = (
+  parent_node = {},
+  selectedLeafs = [],
+  label = "id"
+) => {
+  const children = parent_node.childrens;
+  if (!children || children.length === 0) {
+    return selectedLeafs.includes(parent_node[label]);
+  }
+  return children.every((child_node) =>
+    ChildALLNodesExist(child_node, selectedLeafs, label)
+  );
+};
+
+/**
+ * Recursively checks if any node in a tree (at any depth) matches one of the values in selectedValues.
+ *
+ * @param {Object} node - The current node to check.
+ * @param {String} selectedValues - A value to match against the given label key.
+ * @param {String} label - The key to compare in each node (default is "id").
+ * @returns {Boolean} - True if any matching node is found, false otherwise.
+ */
+export const getNodeExistInTree = (node = {}, selectedValue, label = "id") => {
+  if (node[label] === selectedValue) {
+    return node; // Found the node, return it
+  }
+
+  const children = node.childrens || [];
+
+  for (const child of children) {
+    const result = getNodeExistInTree(child, selectedValue, label);
+    if (result) {
+      return result; // Found in a child subtree
+    }
+  }
+
+  return null; // Not found anywhere in this subtree
 };

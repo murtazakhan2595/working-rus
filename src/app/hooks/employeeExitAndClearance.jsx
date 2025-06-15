@@ -216,6 +216,7 @@ export const getTerminationReason = async (payload) => {
   }
 };
 
+
 export {
   getEmployeesResignations,
   saveEmployeeExitDetail,

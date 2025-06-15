@@ -1,17 +1,17 @@
-import { Navbar } from "components/ui/navbar";
+import  {SideBarNavigation}  from "app/modules/SideBarNavigation";
 import { useStore } from "app/hooks/use-store";
 import { useSidebarToggle } from "app/hooks/use-sidebar-toggle";
 import { Outlet } from "react-router-dom";
 import { ScrollArea, ScrollBar } from "src/@/components/ui/scroll-area";
 
 // import { className } from 'react-C-dom';
-export function ContentLayout({ title, children, isSidebarOpen, userRole }) {
+export function ContentLayout({ title, children, isSidebarOpen, ModuleList }) {
   const sidebar = useStore(useSidebarToggle, (state) => state);
   if (!sidebar) return null;
   return (
     <>
       <div className="nav">
-        <Navbar title={title} userRole={userRole} />
+        <SideBarNavigation title={title} ModuleList={ModuleList}/>
       </div>
       <div className="main-content rounded-[24px] h-[calc(100vh_-_70px)]">
         <ScrollArea className="[&>div>div[style]]:!block">

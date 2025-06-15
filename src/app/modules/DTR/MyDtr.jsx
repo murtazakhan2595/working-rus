@@ -5,6 +5,9 @@ import Stats from 'components/ui/Stats';
 import { CalendarClock, CalendarDays, ClipboardCheck, ClipboardList, Contact, Download, Hourglass, LayoutGrid, ListTodo, UserRoundCheck, UsersRound } from 'lucide-react';
 import React, { useState } from 'react'
 import DailyReportList from "./Sections/DailyReportList";
+import { HasAccess } from "utils/PermissionUtils";
+import { UnauthorizedAccess } from "components";
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 
  const TIME_FILTERS = {
   DAY: "Day",
@@ -18,6 +21,10 @@ import DailyReportList from "./Sections/DailyReportList";
 };
 
 const TimeLog = () => {
+  // Permission checks for DTR features
+  const canViewDTR = HasAccess("VIEW_DAILY_TASK_REPORT");
+  const canDownloadDTR = HasAccess("VIEW_DAILY_TASK_REPORT"); // Using same permission for download
+
   const [selectedFilter, setSelectedFilter] = useState(TIME_FILTERS.WEEK);
   const [selectedView, setSelectedView] = useState(VIEW_TYPES.LIST);
 
@@ -64,7 +71,7 @@ const TimeLog = () => {
           !isActive && "bg-white"
         )}
       >
-        <Icon className="h-4 w-4 text-plum-1100" aria-hidden="true" />
+        <Icon className="w-4 h-4 text-plum-1100" aria-hidden="true" />
       </Button>
     );
   };
@@ -85,6 +92,24 @@ const TimeLog = () => {
       </Button>
     );
   };
+
+  // Show unauthorized message if user can't view DTR
+  if (!canViewDTR) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>My Time Log</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <UnauthorizedAccess
+            title="Time Log Access Denied"
+            featureName="time log filters"
+            size="sm"
+          />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="flex flex-wrap items-center">
@@ -123,45 +148,104 @@ const TimeLog = () => {
             />
           ))}
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-10 gap-1 rounded-3xl border-gray-100"
-        >
-          <Download size={16}/>
-          <span>Download</span>
-        </Button>
+        {canDownloadDTR && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-10 gap-1 border-gray-100 rounded-3xl"
+          >
+            <Download size={16}/>
+            <span>Download</span>
+          </Button>
+        )}
       </div>
     </div>
   );
 };
 
-
-
 const MyDtr = () => {
-    const statsData = [
-      { label: "Hours Logged", value: 10, icon: Hourglass },
-      { label: "Tasks Completed", value: 2, icon: ClipboardCheck },
-      {
-        label: "Pending Tasks",
-        value: 5,
-        icon: ClipboardList,
-      },
-      {
-        label: "Pending DTR",
-        value: 5,
-        icon: CalendarClock,
-      },
-    ];
+  // Permission checks for DTR features
+  const canAddDTR = HasAccess("ADD_DAILY_TASK_REPORT");
+  const canViewDTR = HasAccess("VIEW_DAILY_TASK_REPORT");
+  const canSubmitDTR = HasAccess("SUBMIT_DAILY_TASK_REPORT");
+
+  const statsData = [
+    { label: "Hours Logged", value: 10, icon: Hourglass },
+    { label: "Tasks Completed", value: 2, icon: ClipboardCheck },
+    {
+      label: "Pending Tasks",
+      value: 5,
+      icon: ClipboardList,
+    },
+    {
+      label: "Pending DTR",
+      value: 5,
+      icon: CalendarClock,
+    },
+  ];
+
+  // If user doesn't have permission to view DTR
+  if (!canViewDTR) {
+    return (
+      <UnauthorizedAccess
+        title="Daily Task Report Access Denied"
+        featureName="daily task reports"
+        message="You don't have permission to view daily task reports. Please contact your administrator to request access."
+        showButtons={true}
+        size="lg"
+      />
+    );
+  }
 
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
-      <Header />
-      <Stats stats={statsData} />
-      <TimeLog/>
-      <DailyReportList/>
+      {/* Header with add DTR functionality */}
+      <Header 
+        showAddButton={canAddDTR}
+        onAddClick={() => {/* Handle add DTR */}}
+      />
+      
+      {/* Stats */}
+      {canViewDTR ? (
+        <Stats stats={statsData} />
+      ) : (
+        <Card>
+          <CardContent>
+            <UnauthorizedAccess
+              title="Statistics Access Denied"
+              featureName="DTR statistics"
+              size="sm"
+            />
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* Time log filters */}
+      <TimeLog />
+      
+      {/* Daily report list with permissions */}
+      {canViewDTR ? (
+        <DailyReportList 
+          canSubmit={canSubmitDTR}
+          canAdd={canAddDTR}
+        />
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>Daily Task Reports</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <UnauthorizedAccess
+              title="Daily Reports Access Denied"
+              featureName="daily task reports list"
+              message="You don't have permission to view daily task reports. Please contact your administrator to request access."
+              size="md"
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
