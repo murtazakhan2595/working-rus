@@ -19,6 +19,7 @@ import { connect } from "react-redux";
 import PersonalDetials from "./PersonalDetials";
 import ContactInformation from "./ContactInformation";
 import WorkInformation from "./WorkInformation";
+import BankInformation from "./BankInformation";
 import Experience from "./Experience";
 import AcademicInfo from "./AcademicDetials";
 import Certifications from "./Certifications";
@@ -88,6 +89,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
   const tabsData = [
     { value: "personal", label: "Personal", hasAccess: canViewPersonalInfo },
     { value: "job", label: "Job", hasAccess: canViewJobInfo },
+    { value: "bankDetails", label: "Bank Details", hasAccess: canViewJobInfo },
     { value: "security", label: "Security", hasAccess: canViewIdentificationInfo },
     { 
       value: "qualification", 
@@ -235,7 +237,21 @@ const ViewEmployee = ({ userProfile, profileView }) => {
                 )}
               </TabsContent>
               
-              {/* Job Tab */}
+              {/* Bank Tab */}
+              <TabsContent value="bankDetails">
+                {canViewPersonalInfo ? (
+                  <BankInformation
+                      isEditable={profileView && canEditPersonalInfo}
+                    userData={employeeData}
+                    userId={userId}
+                    getDataByHooks={getDataByHooks}
+                  />
+                ) : (
+                  <UnauthorizedTabContent tabName="Job" />
+                )}
+              </TabsContent>
+
+              {/* Bank Tab */}
               <TabsContent value="job">
                 {canViewJobInfo ? (
                   <WorkInformation
