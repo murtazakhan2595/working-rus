@@ -205,7 +205,8 @@ const SheetUI = forwardRef(
                                   await onFieldUpdate(
                                     field,
                                     value,
-                                    props.values
+                                    props.values,
+                                    props.setFieldValue,
                                   );
                                   await props?.setFieldValue(field, value);
                                 }}
