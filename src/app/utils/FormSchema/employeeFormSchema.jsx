@@ -1,6 +1,5 @@
 import Joi from "joi";
-import { EMAIL_REGEX } from "app/utils/Types/ValidationPattern";
-
+import {validateEmailField} from 'app/utils/FormSchema/generalFormSchema';
 const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   const errors = {};
   if (!isEditMode) {
@@ -11,7 +10,8 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     if (!values.mobile_no) errors.mobile_no = "Phone number is required";
     if (!values.username) errors.username = "Username is required";
     if (!values.branch_id) errors.branch_id = "Branch is required";
-    if (!values.work_email) errors.work_email = "Email is required";
+    const work_email_error = validateEmailField(values.work_email, "Email");
+    if (work_email_error) errors.work_email = work_email_error;
     // if (values.work_email && EMAIL_REGEX.test(values.work_email))
     //   errors.work_email = "Invalid email address";
     if (!values.password) errors.password = "Password is required";

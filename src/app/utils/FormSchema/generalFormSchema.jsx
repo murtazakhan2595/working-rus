@@ -1,6 +1,6 @@
 import moment from "moment";
 import { renderTime } from "utils/DateTimeUtils";
-
+import {EMAIL_REGEX} from 'app/utils/Types/ValidationPattern';
 export const validateChangePasswordForm = (values) => {
   const errors = {};
   if (!values?.confirm_password)
@@ -69,6 +69,11 @@ export const validateStartAndEndDateField = (start_date, end_date) => {
     }
   }
   return errors;
+};
+export const validateEmailField = (email, label) => {
+  if (!email) return `${label} is required`;
+  else if (email && !EMAIL_REGEX.test(email)) return `${label} is invalid`;
+  return null;
 };
 
 export const validateStartAndEndTimeField = (

@@ -3,7 +3,7 @@ import { Input } from "components/ui/input";
 import { FormField, InvalidInput } from "components/FormControl";
 
 
-const RegExEmail = /^[A-Za-z0-9.@]+$/;
+const RegExEmail = /^[A-Za-z0-9.@._%+-]+$/;
 const EmailInput = React.memo(
   ({
     name,

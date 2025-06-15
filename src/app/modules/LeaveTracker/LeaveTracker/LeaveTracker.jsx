@@ -74,7 +74,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
     return () => {
       isMounted = false;
     };
-  }, [isTeamView]);
+  }, [isTeamView, isAdminView, isBranchView, isDepartmentView]);
 
   const fetchData = async (isMounted) => {
     try {
@@ -249,7 +249,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
                       },
                     ]
                   : []),
-                ...(isAdminView || isDepartmentView
+                ...(isAdminView || !isBranchView
                   ? [
                       {
                         type: "select",
