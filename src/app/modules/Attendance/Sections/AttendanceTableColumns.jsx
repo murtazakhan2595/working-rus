@@ -79,6 +79,16 @@ export const EmployeesAttendanceColumns = (
     formatter: (cell) => <span>{cell?.Late}</span>,
   },
   {
+    dataField: "productivity_hours",
+    text: "Total Productivity Hours",
+    formatter: (cell) => <span>{formatDuration(cell)}</span>,
+  },
+  {
+    dataField: "overtime_hours",
+    text: "Total Overtime Hours",
+    formatter: (cell) => <span>{formatDuration(cell)}</span>,
+  },
+  {
     dataField: "attendance_stats",
     text: "Attendance %",
     formatter: (cell, row) => {

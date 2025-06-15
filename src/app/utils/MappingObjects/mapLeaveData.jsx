@@ -283,25 +283,21 @@ export async function mapOffsetLeaveSettingListData(data) {
 }
 export async function mapOffsetLeavesData(data) {
   if (!data || data.length === 0) return {};
+  const offsetLeaveData = {};
   const allotted_count = calculateTotal(data, "leaves");
-  const consumed_count = calculateTotal(data, "total_offset_leaves");
-  const balance_count = calculateTotal(data, "total_offset_leaves");
+  offsetLeaveData.allotted_count = allotted_count;
   const ResponseList = await data?.map((dataObj) => {
-    const formattedData = {
-      alloted_at: dataObj.created_at,
-      expires_at: dataObj.expires_at,
-    };
+    offsetLeaveData.consumed_count = dataObj.offset_leaves_consumed;
+    offsetLeaveData.balance_count =
+      allotted_count - parseInt(dataObj.offset_leaves_consumed);
     return `${dataObj.leaves} leave alloted on ${renderDate(
-      dataObj.created_at,'-'
-    )} expires at ${renderDate(dataObj.expires_at,'-')}`;
+      dataObj.created_at,
+      "-"
+    )} expires at ${renderDate(dataObj.expires_at, "-")}`;
   });
+  offsetLeaveData.tooltip_info = ResponseList.join("\n");
 
-  return {
-    allotted_count,
-    consumed_count,
-    balance_count,
-    tooltip_info: ResponseList.join("\n"),
-  };
+  return offsetLeaveData;
 }
 
 export { getLavefromEmployeeInfo };

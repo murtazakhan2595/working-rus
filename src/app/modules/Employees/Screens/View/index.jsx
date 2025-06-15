@@ -202,7 +202,7 @@ const ViewEmployee = ({ userProfile, profileView }) => {
                     <TabsTrigger
                       key={tab.value}
                       value={tab.value}
-                      className={`data-[state=active]:bg-primary-200 w-40 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium ${
+                      className={`data-[state=active]:bg-primary-200 w-fit data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium ${
                         !tab.hasAccess ? 'opacity-50 text-red-600' : ''
                       }`}
                       title={!tab.hasAccess ? "You don't have permission to access this section" : ""}

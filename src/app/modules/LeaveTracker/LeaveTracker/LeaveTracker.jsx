@@ -12,7 +12,7 @@ import { getLeavestats, getLeaveListData } from "app/hooks/leaveTracker";
 import { LeaveAplicationColumns } from "app/modules/LeaveTracker/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { HasAccess } from "utils/PermissionUtils";
-import { GetDispatchStateList } from "utils/Lists";
+import { GetDispatchStateList, GetEmployeeFilteredList } from "utils/Lists";
 import { exportRecordToExcel } from "utils/downloadUtils";
 import { GlobalStatusOptions } from "data/Data";
 import { getLeaveTypeListData } from "app/hooks/leaveTracker";
@@ -20,13 +20,23 @@ import { Button } from "components/ui/button";
 import { getLabelByValue } from "utils/getValuesFromTables";
 
 const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
+  const isAdminView = HasAccess("VIEW_LEAVE_REQUEST");
+  const isBranchView = HasAccess("VIEW_BRN_LEAVE_REQUEST");
+  const isDepartmentView = HasAccess("VIEW_DPT_LEAVE_REQUEST");
+  const Employees = GetEmployeeFilteredList(
+    isTeamView,
+    isAdminView,
+    isBranchView,
+    isDepartmentView
+  );
   const Departments = GetDispatchStateList("departments", "common") || [];
-  const Employees = GetDispatchStateList("employees", "emp") || [];
   const Branches = GetDispatchStateList("branches", "common") || [];
-  const { id: user_id } = GetDispatchStateList("user_details", "emp") || {};
-  const isViewLTPermitted = HasAccess("VIEW_ATT_UPDATE_LOGS");
-  const isViewBLTPermitted = HasAccess("VIEW_BRN_ATT_UPDATES_LOGS");
-  const isViewDLTermitted = HasAccess("VIEW_DPT_ATT_UPDATES_LOGS");
+  const {
+    id: user_id,
+    branch_id: user_branch,
+    department_name: user_department,
+  } = GetDispatchStateList("user_details", "emp") || {};
+
   const [activeTab, setActiveTab] = useState(activeView);
   const [filterData, setFilterData] = useState({ status: "pending" });
   const [isLoading, setIsLoading] = useState(true);
@@ -57,7 +67,9 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
     if (isMounted)
       setFilterData(() => {
         if (isTeamView) return { managers: user_id };
-        else return {};
+        else if (isAdminView) return {};
+        else if (isBranchView) return { branch: user_branch };
+        else if (isDepartmentView) return { department: user_department };
       });
     return () => {
       isMounted = false;
@@ -70,7 +82,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
       const Leaves = await getLeaveListData({
         filterData,
         options,
-        ordering
+        ordering,
       });
       if (Leaves && isMounted) {
         setLeaves(Leaves);
@@ -89,6 +101,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
       isMounted = false;
     };
   }, [filterData, options, ordering]);
+
   const fetchLeaveTypeData = async (isMounted) => {
     try {
       setIsLoading(true);
@@ -226,18 +239,26 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
                   name: "employee",
                   placeholder: "Employee",
                 },
-                {
-                  type: "select",
-                  options: Departments,
-                  name: "department",
-                  placeholder: "Department",
-                },
-                {
-                  type: "select",
-                  options: Branches,
-                  name: "branch",
-                  placeholder: "Branch",
-                },
+                ...(isAdminView || isBranchView
+                  ? [
+                      {
+                        type: "select",
+                        options: Departments,
+                        name: "department",
+                        placeholder: "Department",
+                      },
+                    ]
+                  : []),
+                ...(isAdminView || isDepartmentView
+                  ? [
+                      {
+                        type: "select",
+                        options: Branches,
+                        name: "branch",
+                        placeholder: "Branch",
+                      },
+                    ]
+                  : []),
                 {
                   type: "select",
                   options: leaveTypesData || [],

@@ -13,6 +13,7 @@ import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { handleRequest } from "app/hooks/general";
+import { HasAccess } from "utils/PermissionUtils";
 
 const ViewLeaveDetails = ({
   isOpen,
@@ -21,6 +22,7 @@ const ViewLeaveDetails = ({
   reloadData = () => {},
   DataList = [],
 }) => {
+  const managePermitted = HasAccess("MANAGE_LEAVE_REQUEST");
   const { id: user_id, role: user_role } = useSelector(
     (state) => state.user.userProfile
   );
@@ -154,6 +156,7 @@ const ViewLeaveDetails = ({
     {
       customContent: true,
       renderContent: (data) => {
+        if (!managePermitted) return null;
         if (
           data &&
           data.status?.toLowerCase() === "pending" &&
