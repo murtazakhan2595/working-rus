@@ -815,7 +815,7 @@ export const getCurrentRequestApprover = async (request_id) => {
       const ReturnData = {
         current_level: ResponseData.current_level,
         level_status: ResponseData.status,
-        current_approver: ResponseData.current_approver,
+        current_approver: ResponseData.current_approvers,
       };
       return ReturnData;
     } else return {};

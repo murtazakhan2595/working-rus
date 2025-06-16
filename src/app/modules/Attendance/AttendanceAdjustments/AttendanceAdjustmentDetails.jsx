@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { saveUpdateAttendanceAdjustment } from "app/hooks/attendance";
 import { TextAreaInput } from "components/FormControl";
+import { HasAccess } from "utils/PermissionUtils";
 
 const FormSheetData = {
   triggerText: "Submit",
@@ -31,6 +32,7 @@ const AttendanceAdjustmentDetails = ({
   reloadData = () => {},
   DataList = [],
 }) => {
+  // const managePermitted = HasAccess("MANAGE_LEAVE_REQUEST");
   const { id: user_id, role: user_role } = useSelector(
     (state) => state.user.userProfile
   );
@@ -38,7 +40,7 @@ const AttendanceAdjustmentDetails = ({
   const [RejectedData, setRejectData] = useState(false);
   const handleSubmit = async (
     status,
-    { attendance, employee, id, rejection_reason,request_id }
+    { attendance, employee, id, rejection_reason, request_id }
   ) => {
     try {
       const payload = {
@@ -47,9 +49,9 @@ const AttendanceAdjustmentDetails = ({
         employee: employee,
         rejection_reason: rejection_reason,
       };
-      
-     // const response = await saveUpdateAttendanceAdjustment(payload, id);
-      const response = await handleRequest(request_id, status==='Approved');
+
+      // const response = await saveUpdateAttendanceAdjustment(payload, id);
+      const response = await handleRequest(request_id, status === "Approved");
       // return
       if (response) {
         toast.success(`Request ${status} Successfully!`);
@@ -140,12 +142,11 @@ const AttendanceAdjustmentDetails = ({
     {
       customContent: true,
       renderContent: (data) => {
-        if (
-          data &&
-          data.status?.toLowerCase() === "pending" &&
-          (data.current_approver === user_id || user_role.includes(1))
-        )
-
+        // if (!managePermitted) return null;
+        if (!data || !data.status || data.status?.toLowerCase() !== "pending")
+          return null;
+        if (!data.current_approvers) return null;
+        if (data.current_approvers.includes(user_id) || user_role.includes(1))
           return (
             <div className="flex flex-wrap justify-end gap-2 my-5">
               <Button
