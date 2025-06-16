@@ -278,6 +278,7 @@ const getShiftSchedulesLogs = async (payload) => {
     return false;
   }
 };
+
 // get active shift
 export const getActiveShiftList = async (
   employee_id,
@@ -286,7 +287,6 @@ export const getActiveShiftList = async (
 ) => {
   if (!employee_id || !start_date) return [];
   try {
-        debugger;
     const ShiftStartDate = moment(start_date);
     const ShiftEndDate =
       end_date && moment(end_date).isValid ? moment(end_date) : ShiftStartDate;
@@ -339,7 +339,7 @@ export async function getActiveShiftsData(
   customSchedule
 ) {
   try {
-    console.log()
+    console.log();
     if (!employeeId || !date) return null;
     const formattedDate = moment(date).format("YYYY-MM-DD");
     const isWeekend = moment(date).day() === 0 || moment(date).day() === 6;
@@ -468,7 +468,37 @@ export async function getActiveShiftsData(
   }
 }
 
+export const saveCustomShift = async (
+  employee_id,
+  date,
+  start_time,
+  end_time,
+  isSecondShift
+) => {
+  try {
+    if (!employee_id || !date || !start_time || !end_time) return false;
+    const baseDate = moment(date);
+    if (!date.isValid()) return false;
+    const formattedDate = moment(date).format("YYYY-MM-DD");
 
+    // Step 1: Find all overlapping approved schedules
+    const overlappingSchedules = await getShiftSchedule({
+      filterData: {
+        employee: employee_id,
+        end_date_gte: formattedDate,
+        start_date_lte: formattedDate,
+        status: "Approved",
+        is_change_request: "true,false",
+      },
+      ordering: "start_date",
+    });
+   
+    return false;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
 
 export {
   saveShift,

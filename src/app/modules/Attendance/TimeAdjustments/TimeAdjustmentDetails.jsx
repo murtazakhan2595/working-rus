@@ -13,7 +13,7 @@ import { renderDate } from "utils/renderValues";
 import { Button } from "components/ui/button";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { saveTimeAdjustment } from "app/hooks/attendance";
+import { HasAccess } from "utils/PermissionUtils";
 import { handleRequest } from "app/hooks/general";
 
 const TimeAdjustmentDetails = ({
@@ -23,6 +23,7 @@ const TimeAdjustmentDetails = ({
   reloadData = () => {},
   DataList = [],
 }) => {
+  const managePermitted = HasAccess("MANAGE_TIME_ADJ_REQUESTS");
   const { id: user_id, role: user_role } = useSelector(
     (state) => state.user.userProfile
   );
@@ -33,7 +34,6 @@ const TimeAdjustmentDetails = ({
     event.stopPropagation();
     try {
       const response = await handleRequest(request, status === "Approved");
-      // return
       if (response) {
         toast.success(`Request ${status} Successfully!`);
         setForceLoad(!forceLoad);
@@ -131,11 +131,11 @@ const TimeAdjustmentDetails = ({
     {
       customContent: true,
       renderContent: (data) => {
-        if (
-          data &&
-          data.status?.toLowerCase() === "pending" &&
-          (data.current_approver === user_id || user_role.includes(1))
-        )
+        if (!managePermitted) return null;
+        if (!data || !data.status || data.status?.toLowerCase() !== "pending")
+          return null;
+        if (!data.current_approver) return null;
+        if (data.current_approver.includes(user_id) || user_role.includes(1))
           return (
             <div className="flex flex-wrap justify-end gap-2 my-5">
               <Button
