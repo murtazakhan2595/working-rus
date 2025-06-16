@@ -99,28 +99,8 @@ const Config = {
 
 export const URLS = [
   {
-    Frontend: "https://app.cohrus.com",
-    Backend: "https://hrms-be.tecbrix.cloud/api",
-  },
-  {
-    Frontend: "https://staging-hrms.tecbrix.cloud",
-    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
-  },
-  {
-    Frontend: "http://localhost:3000",
-    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
-  },
-  {
-    Frontend: "https://production-hdfnfucnc9gpcaaw.z02.azurefd.net",
-    Backend: "https://hrms-be.tecbrix.cloud/api",
-  },
-  {
-    Frontend: "https://hrmsblob-fsc9g0a0b5axcufm.z02.azurefd.net",
-    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
-  },
-  {
-    Frontend: "https://staging.cohrus.com",
-    Backend: "https://staging-be.cohrus.com/api",
+    Frontend: "https://be-alghurair.cohrus.com",
+    Backend: "https://al-ghurair-backend-app.mangomoss-a52772ee.uaenorth.azurecontainerapps.io/api",
   },
 ];
 
