@@ -189,6 +189,21 @@ export function mapLeaveData(data) {
   return LeaveDetails;
 }
 
+export async function mapLeaveStatsData(data) {
+  if (!data || data.length === 0)
+    return { Pending: 0, Approved: 0, Rejected: 0, Cancelled: 0, Total: 0 };
+  const Pending = calculateTotalCount(data, "status", "pending");
+  const Total = data.length || 0;
+  const Approved = calculateTotalCount(data, "status", "approved");
+  const Rejected = calculateTotalCount(data, "status", "rejected");
+  const Cancelled = calculateTotalCount(
+    data,
+    "status",
+    "cancelled_by_employee"
+  );
+  return { Pending, Approved, Rejected, Cancelled, Total };
+}
+
 export async function mapLeaveListData(data) {
   if (!data || data.length === 0) return [];
   const ResponseList = await data?.map((dataObj) => {
