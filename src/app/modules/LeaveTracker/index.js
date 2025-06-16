@@ -1,4 +1,3 @@
-// import LeaveTracker from "./Screens/LeaveTracker";
 import {
   LeaveTracker,
   LeaveTrackerActions,
