@@ -206,6 +206,7 @@ const AddEditApprovalHierarchyLevels = ({
                 onFieldUpdate: (_, value) => {
                   // validateRequestType(value);
                 },
+                colsSpan:2,
               },
             ],
           },
