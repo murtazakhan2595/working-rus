@@ -243,6 +243,12 @@ const generateShiftScheduleLog = async ({
   userProfile,
   status,
 }) => {
+  console.log("Generating shift schedule log for:", {
+    scheduleData,
+    logType,
+    userProfile,
+    status,
+  });
   // Helper to format daily schedule into readable string
   const formatScheduleDetails = (schedule, dateRange = null) => {
     if (!schedule) return "No Previous Shift";
@@ -413,11 +419,15 @@ const generateShiftScheduleLog = async ({
     end: scheduleData.end_date,
   };
 
+  // Extract employee ID (handle both number and object formats)
+  const employeeId = scheduleData.employee?.id || scheduleData.employee;
+
   try {
+    
     // Fetch existing approved schedules
     const existingSchedules = await getShiftSchedule({
       filterData: {
-        employee: scheduleData.employee,
+        employee: employeeId,
         end_date_gte: scheduleData.start_date,
         start_date_lte: scheduleData.end_date,
         status: "Approved",
@@ -430,7 +440,7 @@ const generateShiftScheduleLog = async ({
       assignedShift = formatScheduleDetails(existingSchedules.results[0]);
     } else {
       // Check for direct shift assignment
-      const empData = await employeeData(scheduleData.employee);
+      const empData = await employeeData(employeeId);
       if (empData?.shift_assignment) {
         const directShift = await getShiftById(empData.shift_assignment);
         if (directShift) {
@@ -452,9 +462,9 @@ const generateShiftScheduleLog = async ({
     requested_shift: requestedShift,
     approved_on: moment().format("YYYY-MM-DD HH:mm:ss"),
     status: status,
-    employee: scheduleData.employee?.id || scheduleData.employee,
-    action_by:scheduleData?.assigned_by,
-    approved_by: userProfile?.employee_id || userProfile?.id,
+    employee: employeeId,
+    action_by: scheduleData?.assigned_by,
+    approved_by: userProfile?.employee_id || userProfile?.id,  
   };
 
   await saveShiftSchedulesLogs(payload);
