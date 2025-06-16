@@ -41,7 +41,7 @@ const MyLeaves = () => {
         {/* Leave Balance Section with Toggle */}
         <div className="p-4 my-4 bg-white border rounded-lg border-zinc-200">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-sm font-semibold text-neutral-800">
+            <h3 className="text-sm font-semibold text-neutral-1000">
               Leave Balance
             </h3>
             <Button

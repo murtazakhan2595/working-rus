@@ -18,7 +18,7 @@ import { getLeavestats } from "app/hooks/leaveTracker";
 import { getLeaveTransaction } from "app/hooks/leaveTracker";
 import { AppliedLeaves, AllocatedLeavesInfo } from "app/modules/LeaveTracker";
 import { getLeaveComponentsWithUsed } from "app/hooks/leaveTracker";
-import { Header } from "components";
+import { Header, UnauthorizedAccess } from "components";
 import { LeaveTrackerOptions } from "data/Data";
 import { HasAccess } from "utils/PermissionUtils";
 
@@ -90,19 +90,29 @@ const MyLeaveTracker = ({ userProfile }) => {
           </Card>
         )}
         {/* Applied Leaves Section - Only show if user can view applied leaves */}
-        {canViewLeavesApplied && (
-          <Card className="w-full">
-            <CardHeader className="">
-              <CardTitle className="text-primary">Applied Leaves</CardTitle>
-              <CardDescription>
-                Here you view all teh leave applied.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="scrollable table-container">
+
+        <Card className="w-full">
+          <CardHeader className="">
+            <CardTitle className="text-primary">Applied Leaves</CardTitle>
+            <CardDescription>
+              Here you view all teh leave applied.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="scrollable table-container">
+            {canViewLeavesApplied ? (
               <AppliedLeaves reload={reloadData} />
-            </CardContent>
-          </Card>
-        )}
+            ) : (
+              <UnauthorizedAccess
+                title="Leave Access Denied"
+                featureName="leave features"
+                message="You don't have permission to view leaves applied. Please contact your administrator to request access."
+                showButtons={true}
+                size="sm"
+              />
+            )}
+          </CardContent>
+        </Card>
+
         {selectedLeaveApplication && (
           <ViewLeaveSheet
             leaveApplication={selectedLeaveApplication}

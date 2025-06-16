@@ -230,6 +230,12 @@ export const getEligibleLeaveTypeDurations = async (isType = true) => {
       const ResponseData = response.data;
       // const ResponseList = await mapLeaveTypeListData(ResponseData);
       const ResponseList = ResponseData.data;
+      if (
+        !ResponseList ||
+        !Array.isArray(ResponseList) ||
+        ResponseList.length === 0
+      )
+        return [];
       const offsetLeave = await getOffsetLeaveInfo();
       const OffsetLeaveType = ResponseList.find((obj) => obj.id === 1);
       const OtherLeaveType = ResponseList.filter((obj) => obj.id !== 1);

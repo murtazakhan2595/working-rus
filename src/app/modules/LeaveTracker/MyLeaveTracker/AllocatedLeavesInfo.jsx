@@ -10,13 +10,13 @@ import { Progress } from "src/@/components/ui/progress"; // Assuming Shadcn prov
 import { getEligibleLeaveTypeDurations } from "app/hooks/leaveTracker";
 import { TooltipText } from "components";
 const AllocatedLeavesInfo = () => {
-  const [allocatedLeaves, setAllocatedLeave] = useState([]);
+  const [allottedLeaves, setAllottedLeaves] = useState([]);
 
   const fetchLeaveAllocated = async (isMounted) => {
     try {
       const response = await getEligibleLeaveTypeDurations({});
       if (isMounted && response) {
-        setAllocatedLeave(response || []);
+        setAllottedLeaves(response || []);
       }
     } catch (error) {
       console.error(error);
@@ -30,10 +30,16 @@ const AllocatedLeavesInfo = () => {
       isMounted = false;
     };
   }, []);
-
+  if (allottedLeaves.length === 0)
+    return (
+      <div className="text-neutral-800 text-sm text-center">
+        No leaves allotted to you. Please connect with your manager to get
+        leaves allotted.
+      </div>
+    );
   return (
     <div className="flex flex-col gap-4">
-      {allocatedLeaves.map(
+      {allottedLeaves.map(
         ({
           tooltip_info,
           allotted_count,
