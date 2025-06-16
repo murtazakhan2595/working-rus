@@ -1,20 +1,13 @@
 import { Button } from "components/ui/button";
 import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../../components/ui/card";
 
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../../../src/@/components/ui/table";
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "components/ui/card";
 import { LeaveRequest } from "app/modules/LeaveTracker";
 import { getLeaves } from "app/hooks/leaveTracker";
 import { connect } from "react-redux";
@@ -85,9 +78,31 @@ const MyLeaveTracker = ({ userProfile }) => {
         )} */}
 
         {/* Consumed Leaves Section - Only show if user can view consumed leaves */}
-        {canViewConsumedLeaves && <AllocatedLeavesInfo />}
+        {canViewConsumedLeaves && (
+          <Card className="w-full overflow-hidden">
+            <CardHeader>
+              <CardTitle className="text-primary">Consumed Leaves</CardTitle>
+              <CardDescription></CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AllocatedLeavesInfo />
+            </CardContent>
+          </Card>
+        )}
         {/* Applied Leaves Section - Only show if user can view applied leaves */}
-        {canViewLeavesApplied && <AppliedLeaves reload={reloadData}/>}
+        {canViewLeavesApplied && (
+          <Card className="w-full">
+            <CardHeader className="">
+              <CardTitle className="text-primary">Applied Leaves</CardTitle>
+              <CardDescription>
+                Here you view all teh leave applied.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="scrollable table-container">
+              <AppliedLeaves reload={reloadData} />
+            </CardContent>
+          </Card>
+        )}
         {selectedLeaveApplication && (
           <ViewLeaveSheet
             leaveApplication={selectedLeaveApplication}

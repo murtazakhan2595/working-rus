@@ -6,6 +6,8 @@ import {
   LeaveTypesColumns,
   LeaveRecordColumns,
   LeaveOffsetSettingColumn,
+  LeaveAplicationDashboardColumns,
+  MyLeaveApplicationDashboard,
 } from "app/modules/LeaveTracker/Sections/LeaveTrackerTableColumns";
 
 export {
@@ -16,4 +18,6 @@ export {
   LeaveTypesColumns,
   LeaveRecordColumns,
   LeaveOffsetSettingColumn,
+  LeaveAplicationDashboardColumns,
+  MyLeaveApplicationDashboard,
 };

@@ -118,6 +118,69 @@ export const LeaveAplicationColumns = (
   },
 ];
 
+export const LeaveAplicationDashboardColumns = [
+  {
+    dataField: "employee",
+    text: "Employee",
+    formatter: (cell) => (
+      <EmployeeOverview
+        id={cell}
+        showDepartment={true}
+        showBranchName={true}
+        showId={true}
+      />
+    ),
+  },
+ 
+  {
+    dataField: "start_date",
+    text: "Leave Period",
+    formatter: (cell, row) => (
+      <div className="flex flex-col gap-2">
+        <span>{row?.leave_type_name}</span>
+        <span>
+          {renderDate(cell, "--")} - {renderDate(row.end_date, "--")}
+        </span>
+        <span>{row?.total_days} Days</span>
+      </div>
+    ),
+    minWidth: "120px",
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell, row) => {
+      const status = row.is_cancelled ? "Cancelled" : cell;
+      return <StatusLabel status={status}>{status}</StatusLabel>;
+    },
+  },
+];
+export const MyLeaveApplicationDashboard = [ 
+ {
+    dataField: "leave_type_name",
+    text: "Leave Type",
+  }, {
+    dataField: "start_date",
+    text: "Leave Period",
+    formatter: (cell, row) => (
+      <div className="flex flex-col gap-2">
+        <span>
+          {renderDate(cell, "--")} - {renderDate(row.end_date, "--")}
+        </span>
+        <span>{row?.total_days} Days</span>
+      </div>
+    ),
+    minWidth: "120px",
+  },
+  {
+    dataField: "status",
+    text: "Status",
+    formatter: (cell, row) => {
+      const status = row.is_cancelled ? "Cancelled" : cell;
+      return <StatusLabel status={status}>{status}</StatusLabel>;
+    },
+  },
+];
 export const MyLeaveAplicationColumns = (realoadData = () => {}) => [
   {
     dataField: "leave_type_name",

@@ -36,12 +36,7 @@ const DashboardHR = [
     content: <DepartmentAttendanceWidget />,
     value: "DepartmentAttendanceWidget",
   },
-  {
-    type: "div",
-    className: `col-span-2`,
-    content: <LeaveTrackerOverview />,
-    value: "LeaveTracker",
-  },
+
   {
     type: "div",
     className: `w-full`,
@@ -117,6 +112,12 @@ const DashboardHR = [
   //   content: <MyTeams />,
   //   value: "MyTeam",
   // },
+  {
+    type: "div",
+    className: `col-span-2`,
+    content: <LeaveTrackerOverview />,
+    value: "LeaveTracker",
+  },
   {
     type: "div",
     className: `w-full`,
@@ -219,7 +220,7 @@ const DashboardEmployee = [
     className: "w-full",
     content: <ExpiredDocuments />,
     value: "ExpiredDocuments",
-  }
+  },
 ];
 export const getDashboard = (userRole) => {
   if (userRole.includes(1)) {

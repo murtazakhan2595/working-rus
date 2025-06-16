@@ -7,7 +7,10 @@ import {
   CardTitle,
 } from "components/ui/card";
 import { useSelector } from "react-redux";
-import { MyLeaveAplicationColumns } from "app/modules/LeaveTracker/Sections";
+import {
+  MyLeaveAplicationColumns,
+  MyLeaveApplicationDashboard,
+} from "app/modules/LeaveTracker/Sections";
 import {
   getLeaveListData,
   getEligibleLeaveTypeDurations,
@@ -17,11 +20,14 @@ import { PageLoader, TableCustom } from "components";
 import { GlobalStatusOptions } from "data/Data";
 import { getDropdownList } from "utils/Lists";
 
-export default function AppliedLeaves({ reload }) {
+export default function AppliedLeaves({ reload, isDashboard = false }) {
   const { id: user_id } = useSelector((state) => state.emp.user_details);
   const [isLoading, setIsLoading] = useState(false);
   const [ordering, setOrdering] = useState("-id");
-  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const [options, setOptions] = useState({
+    page: 1,
+    sizePerPage: isDashboard ? 5 : 10,
+  });
   const [filterData, setFilterData] = useState({ employee: user_id });
   const [Leaves, setLeaves] = useState({});
   const [LeaveType, setLeaveType] = useState([]);
@@ -107,52 +113,58 @@ export default function AppliedLeaves({ reload }) {
     });
   };
   return (
-    <Card className="w-full">
-      <CardHeader className="">
-        <CardTitle className="text-primary">Applied Leaves</CardTitle>
-        <CardDescription>Here you view all teh leave applied.</CardDescription>
-      </CardHeader>
-      <CardContent className="scrollable table-container">
-        <div>
-          <FilterInput
-            filters={[
-              {
-                type: "select",
-                options: LeaveType,
-                name: "leave_type",
-                placeholder: "Leave Type",
-              },
-              {
-                type: "date-range",
-                name: "date_range",
-                placeholder: "Start Date",
-              },
-              {
-                type: "select",
-                options: [
-                  ...GlobalStatusOptions(),
-                  { label: "Cancelled", value: "cancelled_by_employee" },
-                ],
-                name: "status",
-                placeholder: "Status",
-              },
-            ]}
-            onChange={handleFilterChange}
-            className="justify-end mb-4"
-          />
-        </div>
-        {isLoading ? (
-          <PageLoader />
-        ) : (
-          <TableCustom
-            data={Leaves?.results || []}
-            columns={MyLeaveAplicationColumns(fetchData)}
-            pagination={true}
-            dataTotalSize={Leaves?.count || 0}
-            tableOptions={tableOptions}
-          />
-        )}
-      </CardContent>
-    </Card>
+    <>
+      <div>
+        <FilterInput
+          filters={[
+            ...(!isDashboard
+              ? [
+                  {
+                    type: "select",
+                    options: LeaveType,
+                    name: "leave_type",
+                    placeholder: "Leave Type",
+                  },
+                ]
+              : []),
+            ...(!isDashboard
+              ? [
+                  {
+                    type: "date-range",
+                    name: "date_range",
+                    placeholder: "Start Date",
+                  },
+                ]
+              : []),
+            {
+              type: "select",
+              options: [
+                ...GlobalStatusOptions(),
+                { label: "Cancelled", value: "cancelled_by_employee" },
+              ],
+              name: "status",
+              placeholder: "Status",
+            },
+          ]}
+          onChange={handleFilterChange}
+          className="justify-end mb-4"
+        />
+      </div>
+      {isLoading ? (
+        <PageLoader />
+      ) : (
+        <TableCustom
+          data={Leaves?.results || []}
+          columns={
+            isDashboard
+              ? MyLeaveApplicationDashboard
+              : MyLeaveAplicationColumns(fetchData)
+          }
+          pagination={!isDashboard}
+          dataTotalSize={Leaves?.count || 0}
+          tableOptions={tableOptions}
+        />
+      )}
+    </>
   );
 }

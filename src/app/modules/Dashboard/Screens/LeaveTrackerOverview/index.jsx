@@ -1,27 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../../../components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { Button } from "components/ui/button";
-import { getLeaveTransaction } from "app/hooks/leaveTracker";
+import { getLeaveListData, getLeaveTypeListData } from "app/hooks/leaveTracker";
 import { PageLoader } from "components";
 import { connect } from "react-redux";
-import { LeaveAplicationColumns } from "app/utils/Types/TableColumns";
+import { LeaveAplicationDashboardColumns } from "app/modules/LeaveTracker/Sections";
 import CustomTable from "components/CustomTable";
 import { FilterInput } from "components/FormControl";
-import { LeaveTrackerOptions } from "data/Data";
+import { GlobalStatusOptions } from "data/Data";
 import { getLeaveComponents } from "app/hooks/leaveTracker";
 import moment from "moment";
 
 const LeaveTrackerOverview = ({ userProfile }) => {
-  const [isLeaveTransactionLoading, setIsLeaveTransactionLoading] =
-    useState(true);
-  const [leaveTransaction, setLeaveTransaction] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [Leaves, setLeaves] = useState([]);
   const [filterData, setFilterData] = useState({});
   const [leaveTypesData, setLeaveTypesData] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -32,65 +26,61 @@ const LeaveTrackerOverview = ({ userProfile }) => {
     declined: 0,
   });
 
-  const fetchLeaveTransaction = async () => {
-    setIsLeaveTransactionLoading(true);
-    const response = await getLeaveTransaction({
-      filterData,
-      options: { page: 1, sizePerPage: 5 },
-    });
-    const leaveTransaction = response?.results;
-    const statusCounts = response?.status_counts || {};
-    if (leaveTransaction && statusCounts) {
-      setLeaveTransaction(leaveTransaction);
-
-      setLeaveSummary({
-        pending: statusCounts.pending_count || 0,
-        approved: statusCounts.approved_count || 0,
-        declined: statusCounts.declined_count || 0,
+  const fetchData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      const Leaves = await getLeaveListData({
+        filterData,
+        options: { page: 1, sizePerPage: 5 }, // ordering,
       });
+      if (Leaves && isMounted) {
+        setLeaves(Leaves);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLeaveTransactionLoading(false);
   };
 
-  const fetchData = async () => {
-    const leaveTypesData = await getLeaveComponents({});
-    if (leaveTypesData) {
-      setLeaveTypesData(leaveTypesData?.results);
+  const fetchLeaveTypeData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      const LeavesTypes = await getLeaveTypeListData();
+      if (LeavesTypes && isMounted) {
+        setLeaveTypesData(LeavesTypes.results || []);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
-
   useEffect(() => {
-    fetchLeaveTransaction();
+    let isMounted = true;
+    fetchLeaveTypeData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+  useEffect(() => {
+    let isMounted = true;
+    fetchData(isMounted);
+    return () => {
+      isMounted = false;
+    };
   }, [filterData]);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const handleFilterChange = (filterName, filterValue) => {
-    if (filterName === "status") setSelectedStatus(filterValue);
-    if (filterName === "leave_component_id") setSelectedLeaveType(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-
-      if (filterName === "status") {
-        // Add both action_hr and action_manager
-        if (filterValue === "") {
-          // If filterValue is empty, remove both keys
-          delete updatedFilters["action_hr"];
-          delete updatedFilters["action_manager"];
-        } else {
-          // Set both action_hr and action_manager to the filterValue
-          updatedFilters["action_hr"] = filterValue;
-          updatedFilters["action_manager"] = filterValue;
-        }
+      // Handle other filters normally
+      if (filterValue === "" || filterValue === null) {
+        delete updatedFilters[filterName];
       } else {
-        // Handle other filters normally
-        if (filterValue === "") {
-          delete updatedFilters[filterName];
-        } else {
-          updatedFilters[filterName] = filterValue;
-        }
+        if (filterName === "status")
+          updatedFilters[filterName] = filterValue.toLowerCase();
+        else updatedFilters[filterName] = filterValue;
       }
 
       return updatedFilters;
@@ -106,7 +96,7 @@ const LeaveTrackerOverview = ({ userProfile }) => {
           </div>
           <div className="flex items-center gap-3">
             <Button variant="outline">
-              <Link to="/leave-request">View Detail</Link>
+              <Link to="/leave-tracker">View Detail</Link>
             </Button>
           </div>
         </CardTitle>
@@ -119,7 +109,7 @@ const LeaveTrackerOverview = ({ userProfile }) => {
           <div className="bg-[#f0f0f3] rounded-lg p-4 flex flex-col">
             <span className="text-[#7f838d] text-sm font-medium">Pending</span>
             <span className="text-2xl font-semibold text-[#7f838d] mt-1">
-              {isLeaveTransactionLoading ? "-" : leaveSummary.pending}
+              {isLoading ? "-" : leaveSummary.pending}
             </span>
           </div>
 
@@ -127,7 +117,7 @@ const LeaveTrackerOverview = ({ userProfile }) => {
           <div className="bg-emerald-50 rounded-lg p-4 flex flex-col">
             <span className="text-teal-700 text-sm font-medium">Approved</span>
             <span className="text-2xl font-semibold text-teal-700 mt-1">
-              {isLeaveTransactionLoading ? "-" : leaveSummary.approved}
+              {isLoading ? "-" : leaveSummary.approved}
             </span>
           </div>
 
@@ -135,7 +125,7 @@ const LeaveTrackerOverview = ({ userProfile }) => {
           <div className="bg-red-50 rounded-lg p-4 flex flex-col">
             <span className="text-red-700 text-sm font-medium">Declined</span>
             <span className="text-2xl font-semibold text-red-700 mt-1">
-              {isLeaveTransactionLoading ? "-" : leaveSummary.declined}
+              {isLoading ? "-" : leaveSummary.declined}
             </span>
           </div>
         </div>
@@ -146,29 +136,32 @@ const LeaveTrackerOverview = ({ userProfile }) => {
           filters={[
             {
               type: "select",
-              options: LeaveTrackerOptions,
+              options: [
+                ...GlobalStatusOptions(false),
+                {
+                  label: "Cancelled",
+                  value: "cancelled_by_employee",
+                },
+              ],
               name: "status",
               placeholder: "Status",
             },
             {
               type: "select",
-              option: leaveTypesData?.map((leave) => ({
-                value: leave.id,
-                label: leave.name,
-              })),
-              name: "leave_component_id",
+              options: leaveTypesData || [],
+              name: "leave_type",
               placeholder: "Leave Type",
             },
           ]}
           onChange={handleFilterChange}
-          className='justify-end mb-3'
+          className="justify-end mb-3"
         />
-        {isLeaveTransactionLoading ? (
+        {isLoading ? (
           <PageLoader />
         ) : (
           <CustomTable
-            data={leaveTransaction?.results || []}
-            columns={LeaveAplicationColumns}
+            data={Leaves?.results || []}
+            columns={LeaveAplicationDashboardColumns}
             pagination={false}
           />
         )}
