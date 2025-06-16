@@ -156,7 +156,6 @@ const ViewLeaveDetails = ({
     {
       customContent: true,
       renderContent: (data) => {
-        debugger
         if (!managePermitted) return null;
         if (!data || !data.status || data.status?.toLowerCase() !== "pending")
           return null;
