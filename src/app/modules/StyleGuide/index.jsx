@@ -46,6 +46,8 @@ import { DateTimePicker } from "components/ui/datetime-picker"
 
 // Add new imports
 
+import { DateInput } from 'components/FormControl';
+
 // Add this button data structure before the StyleGuide component
 const buttonData = {
   text: [
@@ -1089,6 +1091,10 @@ const typographyData = [
             <CardDescription>Various datetime picker configurations</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6">
+          <div className="space-y-2">
+            <Label>Date Input</Label>
+            <DateInput />
+          </div>
             {/* 24-Hour Format */}
             <div className="space-y-2">
               <Label>24-Hour Format</Label>
