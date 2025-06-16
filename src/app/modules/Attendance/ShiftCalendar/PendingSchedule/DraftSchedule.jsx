@@ -72,6 +72,7 @@ const DraftSchedule = ({ draftSchedules, reload, employees }) => {
     try {
       // Create a new record for pending schedule (without draft flag)
       const originalSchedule = proceedState.data;
+      console.log("Proceeding schedule for approval:", originalSchedule);
       
       // Prepare payload for new pending schedule
       const newSchedulePayload = {
@@ -86,6 +87,7 @@ const DraftSchedule = ({ draftSchedules, reload, employees }) => {
         assigned_by: originalSchedule.assigned_by,
         status: "Pending", // Set status to Pending for approval
         is_off_day: originalSchedule.is_off_day,
+        shift_requested: originalSchedule.shift_requested,
         // Note: draft will be false by default (backend handles this)
         // Clear rejection reason if this was a rejected schedule
         rejection_reason: null,
