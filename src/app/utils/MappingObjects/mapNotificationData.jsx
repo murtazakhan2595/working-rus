@@ -18,19 +18,14 @@ export function mapNotificationData(data) {
     if (data.hasOwnProperty(key)) {
       if (key === "notification_type") {
         const action_url =
-          getNotificationActionURL(data.module, data[key]) ||
-          data.action_url ||
-          "#";
+          getNotificationActionURL(data.module, data[key]) || "#";
         acc["action_url"] = action_url.replace(
           "{related_id}",
           data.related_id || ""
         );
-        if (data[key] === 'Mention') {
+        if (data[key] === "Mention") {
           const taskId = data.action_url.split("/")[2]; // "34"
-          acc["action_url"] = action_url.replace(
-            "{related_id}",
-            taskId || ""
-          );
+          acc["action_url"] = action_url.replace("{related_id}", taskId || "");
         }
       }
       acc[key] = data[key];

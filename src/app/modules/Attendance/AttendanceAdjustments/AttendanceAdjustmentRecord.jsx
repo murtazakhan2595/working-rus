@@ -116,7 +116,7 @@ const AttendanceAdjustmentRecord = ({
       <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
         <TabsList className="flex items-center justify-center mb-4">
           {["Requests", "Records"].map((tab) => (
-            <TabsTrigger key={tab} value={tab} className={innerTabClassName}>
+            <TabsTrigger key={tab} value={tab} variant='inner-tab'>
               {tab}
             </TabsTrigger>
           ))}

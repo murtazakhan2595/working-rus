@@ -15,6 +15,7 @@ import { Button } from "components/ui/button";
 import AlertDialogue from "components/ui/AlertDialogue";
 import { StatusLabel } from "components";
 import { DetailBox } from "components/SheetCardExtension";
+import { TriangleAlert } from "lucide-react";
 
 export default function EmployeeSelfTimesheet({
   attendance,
@@ -81,62 +82,69 @@ export default function EmployeeSelfTimesheet({
       </div>
       <div className={isDashboard ? "" : "p-4"}>
         <div className="space-y-2">
-          <DetailBox
-            value={
-              attendance?.checkin
-                ? renderDate(attendance?.checkin, "--", "time")
-                : "Start working!"
-            }
-            valueClassName="text-end"
-            label="Check-in Time"
-          />
-          {attendance?.checkin && (
-            <DetailBox
-              value={
-                attendance?.checkout
-                  ? renderDate(attendance?.checkout, "--", "time")
-                  : "Still Working"
-              }
-              valueClassName="text-end"
-              label="Check-out Time"
-            />
-          )}
-          {today_shift?.shift_assigned ? (
-            !today_shift?.isOffToday && (
+          {!today_shift?.isOffToday && (
+            <>
+              {" "}
               <DetailBox
-                value={today_shift?.shifts.map(({ start_time, end_time }) => (
-                  <span>
-                    {start_time} - {end_time}
-                  </span>
-                ))}
-                valueClassName="text-end flex flex-col w-fil min-w-[165px]"
-                label="Shift Time"
+                value={
+                  attendance?.checkin
+                    ? renderDate(attendance?.checkin, "--", "time")
+                    : "Start working!"
+                }
+                valueClassName="text-end"
+                label="Check-in Time"
               />
-            )
-          ) : (
-            <DetailBox
-              value={"No shift assigned"}
-              valueClassName="text-end"
-              label="Shift Time"
-            />
-          )}
-          {attendance?.status && (
-            <DetailBox
-              value={
-                today_shift?.isOffToday ? (
-                  <StatusLabel variant="info">
-                    {today_shift?.OffLabel}
-                  </StatusLabel>
-                ) : (
-                  <StatusLabel status={attendance?.status}>
-                    {attendance?.status}
-                  </StatusLabel>
+              {attendance?.checkin && (
+                <DetailBox
+                  value={
+                    attendance?.checkout
+                      ? renderDate(attendance?.checkout, "--", "time")
+                      : "Still Working"
+                  }
+                  valueClassName="text-end"
+                  label="Check-out Time"
+                />
+              )}
+              {today_shift?.shift_assigned ? (
+                !today_shift?.isOffToday && (
+                  <DetailBox
+                    value={today_shift?.shifts.map(
+                      ({ start_time, end_time }) => (
+                        <span>
+                          {start_time} - {end_time}
+                        </span>
+                      )
+                    )}
+                    valueClassName="text-end flex flex-col w-fil min-w-[165px]"
+                    label="Shift Time"
+                  />
                 )
-              }
-              label="Attendance Status"
-              labelClassName="w-50"
-              valueClassName="justify-end flex"
-            />
+              ) : (
+                <DetailBox
+                  value={"No shift assigned"}
+                  valueClassName="text-end"
+                  label="Shift Time"
+                />
+              )}
+              {attendance?.status && (
+                <DetailBox
+                  value={
+                    today_shift?.isOffToday ? (
+                      <StatusLabel variant="info">
+                        {today_shift?.OffLabel}
+                      </StatusLabel>
+                    ) : (
+                      <StatusLabel status={attendance?.status}>
+                        {attendance?.status}
+                      </StatusLabel>
+                    )
+                  }
+                  label="Attendance Status"
+                  labelClassName="w-50"
+                  valueClassName="justify-end flex"
+                />
+              )}
+            </>
           )}
           <div className="flex flex-row flex-wrap items-center justify-center mt-4">
             <div className="relative">
@@ -173,6 +181,11 @@ export default function EmployeeSelfTimesheet({
               </div>
             </div>
           </div>
+          {today_shift?.isOffToday && (
+            <div className="text-red-800 flex flex-wrap justify-center items-center">
+              <TriangleAlert size={14} /> You are on {today_shift?.OffLabel?.toLowerCase()} today
+            </div>
+          )}
           <div className="flex justify-between mt-4">
             <div>
               <div>

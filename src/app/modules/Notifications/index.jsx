@@ -246,15 +246,15 @@ const Notifications = () => {
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <p
-                                className={`text-sm leading-none text-neutral-1100${
+                                className={`text-sm text-neutral-1100${
                                   !n.is_read ? "font-bold" : ""
                                 }`}
                               >
-                                {truncateText(plainText, 50)}
+                                {truncateText(plainText, 150)}
                               </p>
                             </TooltipTrigger>
                             {n.message?.length > 50 && (
-                              <TooltipContent className="max-w-[250px] max-h-[150px] overflow-y-auto p-2 bg-white shadow-lg rounded-md border border-gray-200">
+                              <TooltipContent className="max-w-[250px] max-h-[250px] overflow-y-auto p-2 bg-white shadow-lg rounded-md border border-gray-200">
                                 {plainText}
                               </TooltipContent>
                             )}

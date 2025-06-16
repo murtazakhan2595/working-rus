@@ -23,7 +23,6 @@ import {
   fetchEmployeesDetail,
   fetchUser,
 } from "state/slices/EmpSlice";
-import { fetchLeaveComponents } from "state/slices/LeaveManagementSlice";
 import { fetchDocumentCategory } from "state/slices/HRDocumentsSlice";
 import {
   fetchShiftById,
