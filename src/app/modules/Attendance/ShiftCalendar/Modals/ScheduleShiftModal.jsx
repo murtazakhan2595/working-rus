@@ -479,6 +479,7 @@ const ScheduleShiftModal = ({
             total_weekly_hours: "40.0",
             assigned_by: userProfile?.employee_id || userProfile?.id,
             status: "Pending",
+            shift_requested: "Manager",
             is_off_day: false,
             ...(isDraft && { draft: true }), // Add draft flag when isDraft is true
           };
@@ -528,6 +529,7 @@ const ScheduleShiftModal = ({
             total_weekly_hours: totalWeeklyHours.toString(),
             assigned_by: userProfile?.employee_id || userProfile?.id,
             status: "Pending",
+            shift_requested: "Manager",
             is_off_day: values.dailySchedule.some((day) => day.isOff),
             ...(isDraft && { draft: true }), // Add draft flag when isDraft is true
           };
@@ -578,6 +580,7 @@ const ScheduleShiftModal = ({
               total_weekly_hours: "40.0",
               assigned_by: userProfile?.employee_id || userProfile?.id,
               status: "Pending",
+              shift_requested: "Manager",
               is_off_day: false,
               ...(isDraft && { draft: true }), // Add draft flag when isDraft is true
             };
@@ -625,6 +628,7 @@ const ScheduleShiftModal = ({
               custom_schedule: customSchedule,
               total_weekly_hours: totalWeeklyHours.toString(),
               assigned_by: userProfile?.employee_id || userProfile?.id,
+              shift_requested:"Manager",
               status: "Pending",
               is_off_day: values.dailySchedule.some((day) => day.isOff),
               ...(isDraft && { draft: true }), // Add draft flag when isDraft is true
