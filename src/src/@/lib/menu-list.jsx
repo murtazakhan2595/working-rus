@@ -53,6 +53,13 @@ const generateMenuItems = (moduleName, icon, moduleTree) => {
   if (!currentNodeTree) return null;
 
   const route = findRouteByCodeName(moduleName);
+  if (moduleName === "ORGANIZATIONAL_CHART")
+    return {
+      groupLabel: "",
+      menus: [
+        createMenu("/organizational-tree", "Organizational Chart", Network),
+      ],
+    };
   return {
     groupLabel: "",
     menus: [
