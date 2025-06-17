@@ -32,10 +32,11 @@ const AttendanceAdjustmentDetails = ({
   reloadData = () => {},
   DataList = [],
 }) => {
-  // const managePermitted = HasAccess("MANAGE_LEAVE_REQUEST");
+  const managePermitted = HasAccess("MANAGE_ATTENDANCE_ADJ_REQUESTS");
   const { id: user_id, role: user_role } = useSelector(
     (state) => state.user.userProfile
   );
+  const [forceLoad, setForceLoad] = useState(false);
   const [openRejectModal, setOpenRejectModal] = useState(false);
   const [RejectedData, setRejectData] = useState(false);
   const handleSubmit = async (
@@ -45,17 +46,15 @@ const AttendanceAdjustmentDetails = ({
     try {
       const payload = {
         status: status.toUpperCase(),
-        // attendance: attendance,
         employee: employee,
         rejection_reason: rejection_reason,
       };
-
-      // const response = await saveUpdateAttendanceAdjustment(payload, id);
       const response = await handleRequest(request_id, status === "Approved");
+      debugger
       // return
       if (response) {
         toast.success(`Request ${status} Successfully!`);
-        fetchData(id, true);
+        setForceLoad(!forceLoad);
         setOpenRejectModal(false);
         setRejectData(null);
       }
@@ -142,7 +141,7 @@ const AttendanceAdjustmentDetails = ({
     {
       customContent: true,
       renderContent: (data) => {
-        // if (!managePermitted) return null;
+        if (!managePermitted) return null;
         if (!data || !data.status || data.status?.toLowerCase() !== "pending")
           return null;
         if (!data.current_approver) return null;
@@ -186,6 +185,7 @@ const AttendanceAdjustmentDetails = ({
         setIsOpen={setIsOpen}
         title="Attendandance Adjustment Details"
         currentItem_Id={currentId}
+        ForceItemLoad={forceLoad}
         dataList={DataList}
         reloadData={reloadData}
         allowEdit={false}
