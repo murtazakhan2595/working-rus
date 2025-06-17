@@ -9,7 +9,7 @@ const Config = {
   MY_ATTENDANCE: true,
   DAILY_TASK_REPORT: false,
   MY_LEAVE_TRACKER: true,
-  MY_PAYROLL: true,
+  MY_PAYROLL: false,
   MY_CLAIMS: true,
   MY_TRANSFERS: true,
   DOCUMENTS: true, // My HR Documents
@@ -51,19 +51,19 @@ const Config = {
   LEAVE_REQUEST: true,
 
   //-------------PAYROLL-----------
-  PAYROLL: true,
+  PAYROLL: false,
   //Sub Modules
-  EMPLOYEES_PAYROLL: true,
-  SALARY_SETUP: true,
-  CLAIM_REQUEST: true,
+  EMPLOYEES_PAYROLL: false,
+  SALARY_SETUP: false,
+  CLAIM_REQUEST: false,
   PAY_RUN: false,
   ON_HOLD_SALARIES: false,
   END_OF_SERVICE: false,
 
   //-------------TASK_MANAGEMENT-----------
-  TASK_MANAGEMENT: true,
+  TASK_MANAGEMENT: false,
   //Sub Modules
-  PROJECT_BOARD: true,
+  PROJECT_BOARD: false,
 
   //-------------TALENT_SPHERE-----------
   TALENT_SPHERE: false,
@@ -80,7 +80,7 @@ const Config = {
   //-------------ORGANIZATIONAL_CHART-----------
   ORGANIZATIONAL_CHART: true,
   //Sub Modules
-  ORGANIZATION_TREE: false,
+  ORGANIZATION_TREE: true,
   MY_REPORTING_LINE: false,
 
   //-------------OFFICE_SETTING-----------
@@ -99,8 +99,8 @@ const Config = {
 
 export const URLS = [
   {
-    Frontend: "https://be-alghurair.cohrus.com",
-    Backend: "https://al-ghurair-backend-app.mangomoss-a52772ee.uaenorth.azurecontainerapps.io/api",
+    Frontend: "https://alghurair.cohrus.com/",
+    Backend: "https://be-alghurair.cohrus.com/api",
   },
 ];
 

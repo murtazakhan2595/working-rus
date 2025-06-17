@@ -278,6 +278,7 @@ const getShiftSchedulesLogs = async (payload) => {
     return false;
   }
 };
+
 // get active shift
 export const getActiveShiftList = async (
   employee_id,
@@ -286,7 +287,6 @@ export const getActiveShiftList = async (
 ) => {
   if (!employee_id || !start_date) return [];
   try {
-        debugger;
     const ShiftStartDate = moment(start_date);
     const ShiftEndDate =
       end_date && moment(end_date).isValid ? moment(end_date) : ShiftStartDate;
@@ -339,7 +339,7 @@ export async function getActiveShiftsData(
   customSchedule
 ) {
   try {
-    console.log()
+    console.log();
     if (!employeeId || !date) return null;
     const formattedDate = moment(date).format("YYYY-MM-DD");
     const isWeekend = moment(date).day() === 0 || moment(date).day() === 6;
@@ -468,7 +468,186 @@ export async function getActiveShiftsData(
   }
 }
 
+export const saveCustomShift = async (
+  employee_id,
+  date,
+  start_time,
+  end_time,
+  isSecondShift,
+  user_id= null
+) => {
+  try {
+    if (!employee_id || !date || !start_time || !end_time || !user_id) return false;
+    
+    const baseDate = moment(date);
+    if (!baseDate.isValid()) return false;
+    
+    const formattedDate = moment(date).format("YYYY-MM-DD");
 
+    // Step 1: Find existing approved custom schedule for this specific date
+    const overlappingSchedules = await getShiftSchedule({
+      filterData: {
+        employee: employee_id,
+        end_date_gte: formattedDate,
+        start_date_lte: formattedDate,
+        status: "Approved",
+        is_change_request: "true,false",
+      },
+      ordering: "-created_at",
+    });
+
+    // Step 2: Format times to HH:mm
+    const formatTimeForBackend = (timeStr) => {
+      if (!timeStr) return null;
+      return moment(timeStr).format("HH:mm");
+    };
+
+    const formattedStartTime = formatTimeForBackend(start_time);
+    const formattedEndTime = formatTimeForBackend(end_time);
+
+    if (!formattedStartTime || !formattedEndTime) {
+      console.error("Invalid time format provided");
+      return false;
+    }
+
+    // Step 3: Get user information for assigned_by
+    let assignedBy = user_id 
+
+    // Step 4: Check if there's an existing custom schedule covering this date
+    let existingCustomSchedule = null;
+    if (overlappingSchedules?.results && overlappingSchedules.results.length > 0) {
+      existingCustomSchedule = overlappingSchedules.results.find(schedule => {
+        const scheduleStart = moment(schedule.start_date);
+        const scheduleEnd = moment(schedule.end_date);
+        return baseDate.isBetween(scheduleStart, scheduleEnd, 'day', '[]');
+      });
+    }
+
+    let payload;
+
+    if (existingCustomSchedule && !existingCustomSchedule.is_org_based) {
+      // Case: Update existing custom schedule - only modify the specific day
+      console.log("Updating existing custom schedule for date:", formattedDate);
+
+      const existingCustomScheduleData = {
+        ...existingCustomSchedule.custom_schedule,
+      };
+
+      // Get current day's schedule or create new one
+      let daySchedule = existingCustomScheduleData[formattedDate] || {
+        is_off: false,
+        is_split: false,
+      };
+
+      // Update based on isSecondShift parameter
+      if (isSecondShift) {
+        // Update second shift in split shift
+        daySchedule.is_split = true;
+        daySchedule.start_time_2 = formattedStartTime;
+        daySchedule.end_time_2 = formattedEndTime;
+      } else {
+        // Check if this should be first shift of split or regular shift
+        if (daySchedule.start_time_2 && daySchedule.end_time_2) {
+          // There's already a second shift, so this is first shift of split
+          daySchedule.is_split = true;
+          daySchedule.start_time_1 = formattedStartTime;
+          daySchedule.end_time_1 = formattedEndTime;
+        } else {
+          // Regular shift
+          daySchedule.is_split = false;
+          daySchedule.start_time = formattedStartTime;
+          daySchedule.end_time = formattedEndTime;
+        }
+      }
+
+      daySchedule.is_off = false;
+
+      // Update only this specific day in the custom schedule
+      existingCustomScheduleData[formattedDate] = daySchedule;
+
+      payload = {
+        id: existingCustomSchedule.id,
+        employee: employee_id,
+        shift: null,
+        schedule_name: existingCustomSchedule.schedule_name,
+        start_date: existingCustomSchedule.start_date,
+        end_date: existingCustomSchedule.end_date,
+        is_org_based: false,
+        custom_schedule: existingCustomScheduleData,
+        total_weekly_hours: existingCustomSchedule.total_weekly_hours, // Keep existing
+        assigned_by: assignedBy,
+        approved_by: assignedBy,
+        status: "Approved",
+        shift_requested: "Employee",
+        is_off_day: Object.values(existingCustomScheduleData).some(
+          (day) => day.is_off
+        ),
+        is_change_request: "false",
+      };
+    } else {
+      // Case: Create new single-day custom schedule
+      console.log(
+        "Creating new single-day custom schedule for date:",
+        formattedDate
+      );
+
+      const daySchedule = {
+        is_off: false,
+        is_split: false,
+      };
+
+      if (isSecondShift) {
+        // Create split shift with second shift
+        daySchedule.is_split = true;
+        daySchedule.start_time_2 = formattedStartTime;
+        daySchedule.end_time_2 = formattedEndTime;
+      } else {
+        // Create regular shift
+        daySchedule.start_time = formattedStartTime;
+        daySchedule.end_time = formattedEndTime;
+      }
+
+      const customSchedule = {
+        [formattedDate]: daySchedule,
+      };
+
+      payload = {
+        employee: employee_id,
+        shift: null,
+        schedule_name: `Custom Schedule - ${moment(formattedDate).format(
+          "MMM DD, YYYY"
+        )}`,
+        start_date: formattedDate,
+        end_date: formattedDate,
+        is_org_based: false,
+        custom_schedule: customSchedule,
+        assigned_by: assignedBy,
+        approved_by: assignedBy,
+        status: "Approved",
+        shift_requested: "Employee",
+        is_off_day: false,
+        is_change_request: "false",
+      };
+    }
+
+    console.log("saveCustomShift payload:", payload);
+
+    // Step 5: Save the schedule
+    const response = await saveShiftSchedule(payload);
+    
+    if (response) {
+      console.log("Custom shift saved successfully");
+      return response;
+    } else {
+      console.error("Failed to save custom shift");
+      return false;
+    }
+
+  } catch (error) {
+    console.error("Error in saveCustomShift:", error);
+    return false;
+  }
+};
 
 export {
   saveShift,
