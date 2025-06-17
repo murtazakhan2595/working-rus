@@ -99,8 +99,8 @@ const Config = {
 
 export const URLS = [
   {
-    Frontend: "https://be-alghurair.cohrus.com",
-    Backend: "https://al-ghurair-backend-app.mangomoss-a52772ee.uaenorth.azurecontainerapps.io/api",
+    Frontend: "https://alghurair.cohrus.com/",
+    Backend: "https://be-alghurair.cohrus.com/api",
   },
 ];
 
