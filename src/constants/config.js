@@ -80,7 +80,7 @@ const Config = {
   //-------------ORGANIZATIONAL_CHART-----------
   ORGANIZATIONAL_CHART: true,
   //Sub Modules
-  ORGANIZATION_TREE: false,
+  ORGANIZATION_TREE: true,
   MY_REPORTING_LINE: false,
 
   //-------------OFFICE_SETTING-----------
@@ -99,8 +99,8 @@ const Config = {
 
 export const URLS = [
   {
-    Frontend: "https://be-alghurair.cohrus.com",
-    Backend: "https://al-ghurair-backend-app.mangomoss-a52772ee.uaenorth.azurecontainerapps.io/api",
+    Frontend: "https://alghurair.cohrus.com/",
+    Backend: "https://be-alghurair.cohrus.com/api",
   },
 ];
 
