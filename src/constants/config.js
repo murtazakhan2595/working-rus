@@ -10,7 +10,7 @@ const Config = {
   DAILY_TASK_REPORT: false,
   MY_LEAVE_TRACKER: true,
   MY_PAYROLL: false,
-  MY_CLAIMS: true,
+  MY_CLAIMS: false,
   MY_TRANSFERS: true,
   DOCUMENTS: true, // My HR Documents
   MY_ASSETS: true,
