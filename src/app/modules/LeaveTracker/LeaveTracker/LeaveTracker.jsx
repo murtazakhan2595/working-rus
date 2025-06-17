@@ -8,7 +8,7 @@ import {
 } from "components/ui/card";
 import { FilterInput } from "components/FormControl";
 import { Header, PageLoader, TableCustom } from "components";
-import { getLeavestats, getLeaveListData } from "app/hooks/leaveTracker";
+import { getLeaveStatsData, getLeaveListData } from "app/hooks/leaveTracker";
 import { LeaveAplicationColumns } from "app/modules/LeaveTracker/Sections";
 import { Tabs, TabsList, TabsTrigger } from "src/@/components/ui/tabs";
 import { HasAccess } from "utils/PermissionUtils";
@@ -17,7 +17,14 @@ import { exportRecordToExcel } from "utils/downloadUtils";
 import { GlobalStatusOptions } from "data/Data";
 import { getLeaveTypeListData } from "app/hooks/leaveTracker";
 import { Button } from "components/ui/button";
-import { getLabelByValue } from "utils/getValuesFromTables";
+import Stats from "components/ui/Stats";
+import {
+  CircleCheckBig,
+  CircleX,
+  FolderInput,
+  FolderX,
+  Loader,
+} from "lucide-react";
 
 const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
   const isAdminView = HasAccess("VIEW_LEAVE_REQUEST");
@@ -39,8 +46,9 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
 
   const [activeTab, setActiveTab] = useState(activeView);
   const [filterData, setFilterData] = useState({ status: "pending" });
+  const [permittedViewFilterData, setPermittedViewFilterData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [isOpen, setIsOpen] = useState(true);
+  const [LeaveStats, setLeaveStats] = useState({});
   const [leaveTypesData, setLeaveTypesData] = useState([]);
   const [Leaves, setLeaves] = useState();
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -65,7 +73,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
   useEffect(() => {
     let isMounted = true;
     if (isMounted)
-      setFilterData(() => {
+      setPermittedViewFilterData(() => {
         if (isTeamView) return { managers: user_id };
         else if (isAdminView) return {};
         else if (isBranchView) return { branch: user_branch };
@@ -80,7 +88,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
     try {
       setIsLoading(true);
       const Leaves = await getLeaveListData({
-        filterData,
+        filterData: { ...filterData, ...permittedViewFilterData },
         options,
         ordering,
       });
@@ -100,7 +108,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
     return () => {
       isMounted = false;
     };
-  }, [filterData, options, ordering]);
+  }, [filterData, options, ordering, permittedViewFilterData]);
 
   const fetchLeaveTypeData = async (isMounted) => {
     try {
@@ -123,6 +131,28 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
     };
   }, []);
 
+  const fetchLeaveStatData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      const Stats = await getLeaveStatsData({
+        filterData: permittedViewFilterData ,
+      });
+      if (Stats && isMounted) {
+        setLeaveStats(Stats || {});
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    let isMounted = true;
+    fetchLeaveStatData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, [permittedViewFilterData]);
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
     setFilterData((prevFilters) => {
@@ -192,6 +222,32 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
       <Header />
+      <Stats
+        stats={[
+          { label: "Total", value: LeaveStats.Total, icon: FolderInput },
+          {
+            label: "Pending",
+            value: LeaveStats.Pending,
+            icon: Loader,
+          },
+          {
+            label: "Accepted",
+            value: LeaveStats.Approved,
+            icon: CircleCheckBig,
+          },
+          {
+            label: "Rejected",
+            value: LeaveStats.Rejected,
+            icon: CircleX,
+          },
+          {
+            label: "Cancelled",
+            value: LeaveStats.Cancelled,
+            icon: FolderX,
+          },
+        ]}
+      />
+
       <Tabs
         defaultValue="Requests"
         className="w-full"

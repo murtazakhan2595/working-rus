@@ -3,7 +3,11 @@ import { Link } from "react-router-dom";
 
 import { Card, CardContent, CardHeader, CardTitle } from "components/ui/card";
 import { Button } from "components/ui/button";
-import { getLeaveListData, getLeaveTypeListData } from "app/hooks/leaveTracker";
+import {
+  getLeaveListData,
+  getLeaveTypeListData,
+  getLeaveStatsData,
+} from "app/hooks/leaveTracker";
 import { PageLoader } from "components";
 import { connect } from "react-redux";
 import { LeaveAplicationDashboardColumns } from "app/modules/LeaveTracker/Sections";
@@ -18,12 +22,10 @@ const LeaveTrackerOverview = ({ userProfile }) => {
   const [Leaves, setLeaves] = useState([]);
   const [filterData, setFilterData] = useState({});
   const [leaveTypesData, setLeaveTypesData] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedLeaveType, setSelectedLeaveType] = useState("");
   const [leaveSummary, setLeaveSummary] = useState({
-    pending: 0,
-    approved: 0,
-    declined: 0,
+    Pending: 0,
+    Approved: 0,
+    Rejected: 0,
   });
 
   const fetchData = async (isMounted) => {
@@ -47,8 +49,10 @@ const LeaveTrackerOverview = ({ userProfile }) => {
     try {
       setIsLoading(true);
       const LeavesTypes = await getLeaveTypeListData();
+      const LeaveState = await getLeaveStatsData();
       if (LeavesTypes && isMounted) {
         setLeaveTypesData(LeavesTypes.results || []);
+        setLeaveSummary(LeaveState);
       }
     } catch (error) {
       console.log(error);
@@ -109,7 +113,7 @@ const LeaveTrackerOverview = ({ userProfile }) => {
           <div className="bg-[#f0f0f3] rounded-lg p-4 flex flex-col">
             <span className="text-[#7f838d] text-sm font-medium">Pending</span>
             <span className="text-2xl font-semibold text-[#7f838d] mt-1">
-              {isLoading ? "-" : leaveSummary.pending}
+              {isLoading ? "-" : leaveSummary.Pending}
             </span>
           </div>
 
@@ -117,15 +121,15 @@ const LeaveTrackerOverview = ({ userProfile }) => {
           <div className="bg-emerald-50 rounded-lg p-4 flex flex-col">
             <span className="text-teal-700 text-sm font-medium">Approved</span>
             <span className="text-2xl font-semibold text-teal-700 mt-1">
-              {isLoading ? "-" : leaveSummary.approved}
+              {isLoading ? "-" : leaveSummary.Approved}
             </span>
           </div>
 
           {/* Rejected Leaves */}
           <div className="bg-red-50 rounded-lg p-4 flex flex-col">
-            <span className="text-red-700 text-sm font-medium">Declined</span>
+            <span className="text-red-700 text-sm font-medium">Rejected</span>
             <span className="text-2xl font-semibold text-red-700 mt-1">
-              {isLoading ? "-" : leaveSummary.declined}
+              {isLoading ? "-" : leaveSummary.Rejected}
             </span>
           </div>
         </div>

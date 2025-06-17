@@ -80,7 +80,7 @@ const Config = {
   //-------------ORGANIZATIONAL_CHART-----------
   ORGANIZATIONAL_CHART: true,
   //Sub Modules
-  ORGANIZATION_TREE: false,
+  ORGANIZATION_TREE: true,
   MY_REPORTING_LINE: false,
 
   //-------------OFFICE_SETTING-----------

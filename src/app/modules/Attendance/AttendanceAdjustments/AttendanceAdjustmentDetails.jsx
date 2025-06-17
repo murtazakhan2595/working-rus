@@ -17,6 +17,8 @@ import { toast } from "react-toastify";
 import { saveUpdateAttendanceAdjustment } from "app/hooks/attendance";
 import { TextAreaInput } from "components/FormControl";
 import { HasAccess } from "utils/PermissionUtils";
+import { getAttendanceData } from "app/hooks/attendance";
+import { saveAttendance } from "app/hooks/attendance";
 
 const FormSheetData = {
   triggerText: "Submit",
@@ -32,30 +34,57 @@ const AttendanceAdjustmentDetails = ({
   reloadData = () => {},
   DataList = [],
 }) => {
-  // const managePermitted = HasAccess("MANAGE_LEAVE_REQUEST");
+  const managePermitted = HasAccess("MANAGE_ATTENDANCE_ADJ_REQUESTS");
   const { id: user_id, role: user_role } = useSelector(
     (state) => state.user.userProfile
   );
+  const [forceLoad, setForceLoad] = useState(false);
   const [openRejectModal, setOpenRejectModal] = useState(false);
   const [RejectedData, setRejectData] = useState(false);
   const handleSubmit = async (
     status,
-    { attendance, employee, id, rejection_reason, request_id }
+    {
+      employee,
+      id,
+      rejection_reason,
+      request_id,
+      requested_checkout,
+      requested_checkin,
+      is_second_shift,
+      attendance_date,
+    }
   ) => {
     try {
-      const payload = {
-        status: status.toUpperCase(),
-        // attendance: attendance,
-        employee: employee,
-        rejection_reason: rejection_reason,
-      };
-
-      // const response = await saveUpdateAttendanceAdjustment(payload, id);
       const response = await handleRequest(request_id, status === "Approved");
       // return
       if (response) {
         toast.success(`Request ${status} Successfully!`);
-        fetchData(id, true);
+        if (status === "Rejected") {
+          await saveUpdateAttendanceAdjustment(
+            { rejection_reason: rejection_reason },
+            id
+          );
+        }
+        const { status: updatedStatus, attendance } = await fetchData(id, true);
+        if (updatedStatus && updatedStatus.toLowerCase() === "approved") {
+          if (attendance) {
+            const attendanceData = await getAttendanceData(attendance);
+            const payload = {
+              date: attendance_date,
+              id: attendance,
+              ...(is_second_shift
+                ? { second_checkin: requested_checkin }
+                : { checkin: requested_checkin }),
+              ...(is_second_shift
+                ? { second_checkout: requested_checkout }
+                : { checkout: requested_checkout }),
+              employee_id: employee,
+              total_hours: attendanceData.total_hours,
+            };
+            await saveAttendance(payload, attendance);
+          }
+        }
+        setForceLoad(!forceLoad);
         setOpenRejectModal(false);
         setRejectData(null);
       }
@@ -142,11 +171,11 @@ const AttendanceAdjustmentDetails = ({
     {
       customContent: true,
       renderContent: (data) => {
-        // if (!managePermitted) return null;
+        if (!managePermitted) return null;
         if (!data || !data.status || data.status?.toLowerCase() !== "pending")
           return null;
-        if (!data.current_approvers) return null;
-        if (data.current_approvers.includes(user_id) || user_role.includes(1))
+        if (!data.current_approver) return null;
+        if (data.current_approver.includes(user_id) || user_role.includes(1))
           return (
             <div className="flex flex-wrap justify-end gap-2 my-5">
               <Button
@@ -186,6 +215,7 @@ const AttendanceAdjustmentDetails = ({
         setIsOpen={setIsOpen}
         title="Attendandance Adjustment Details"
         currentItem_Id={currentId}
+        ForceItemLoad={forceLoad}
         dataList={DataList}
         reloadData={reloadData}
         allowEdit={false}
