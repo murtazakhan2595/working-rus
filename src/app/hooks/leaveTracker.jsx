@@ -9,6 +9,7 @@ import {
   mapPublicHolidayListData,
   mapPublicHolidayData,
   mapLeaveListData,
+  mapLeaveStatsData,
   mapLeaveOffsetSettingPayloadeData,
   mapLeaveData,
   mapLeavePayloadData,
@@ -289,6 +290,23 @@ export const getEligibleLeaveTypeByEmployeeId = async (
   }
 };
 
+export const getLeaveStatsData = async (payload) => {
+  try {
+    const response = await getLeaveListData(payload);
+    if (response.results) {
+      const ResponseData = response.results || [];
+      const ResponseStats = await mapLeaveStatsData(ResponseData);
+      return ResponseStats;
+    }
+    return {};
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
 export const getLeaveListData = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";

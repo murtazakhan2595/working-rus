@@ -67,7 +67,7 @@ import StyleGuide from "app/modules/StyleGuide";
 import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
-import OrganizationalChart from "app/modules/OfficeSetting/Screens/OrganizationalChart";
+import {OrganizationalTree} from "app/modules/OrganizationalChart";
 import { TeamProfileMangement } from "app/modules/TeamManagment";
 import { Assets, MyAssets } from "app/modules/AssetsManagement";
 import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
@@ -331,7 +331,7 @@ export const SidebarRoutes = [
         },
         Config.TIME_ADJUSTMENTS && {
           path: "time-adjustments/history",
-          component: <TimeAdjustments activeView='History & Logs'/>,
+          component: <TimeAdjustments activeView="History & Logs" />,
           name: "TIME_ADJUSTMENTS",
         },
         Config.TIME_ADJUSTMENTS && {
@@ -471,7 +471,16 @@ export const SidebarRoutes = [
           path: "/office-settings/leave-setup",
           component: <LeaveManagement />,
           name: "LEAVE_SETUP",
-        }
+        },
+      ].filter(Boolean) // Filter out undefined route
+    : []),
+  ...(Config.ORGANIZATIONAL_CHART
+    ? [
+        Config.ORGANIZATION_TREE && {
+          path: "/organizational-tree",
+          component: <OrganizationalTree />,
+          name: "ORGANIZATION_TREE",
+        },
       ].filter(Boolean) // Filter out undefined route
     : []),
 
@@ -524,12 +533,6 @@ const RemainingSidebarRoutes = [
     path: "/payroll/pay-run/details/:id",
     component: <PayrollPayrunDetail />,
     name: "Payroll Details",
-  },
-
-  {
-    path: "/organizational-chart",
-    component: <OrganizationalChart />,
-    name: "Organizational Chart",
   },
 
   Config.SELF_SERVICE_HUB &&

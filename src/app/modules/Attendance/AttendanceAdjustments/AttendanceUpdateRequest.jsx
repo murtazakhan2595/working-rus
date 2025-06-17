@@ -176,14 +176,14 @@ const AttendanceUpdateRequest = ({ id }) => {
             validateFormSchema: (values) => {
               const error = validateAttendanceAdjustmentFormSchema(values);
               if (RecordExit)
-                error.date =
+                error.attendance_date =
                   "Update request is already submitted for this date";
 
-              if (values.date && !ActiveShift.status) {
+              if (values.attendance_date && !ActiveShift.status) {
                 if (!ActiveShift.shift_assigned) {
-                  error.date = `No Shift was assigned to you for this date. Kindly update the shift to record attendance`;
+                  error.attendance_date = `No Shift was assigned to you for this date. Kindly update the shift to record attendance`;
                 } else if (ActiveShift.isOffToday) {
-                  error.date = `Its ${
+                  error.attendance_date = `Its ${
                     ActiveShift?.OffLabel?.toLowerCase() || ""
                   } on this date.Kindly update the shift to request attendance update`;
                 }

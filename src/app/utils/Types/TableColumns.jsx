@@ -47,18 +47,12 @@ export const EmployeeColumns = [
     dataSort: true,
   },
   {
-    dataField: "user_role",
+    dataField: "user_role_name",
     text: "Role",
-    formatter: (cell, row) => {
-      const UserNameList = GetNameList(
-        cell,
-        "roles_permissions",
-        "user_roles",
-        "No Role Assigned"
-      );
+    formatter: (cell, _) => {
       return (
         <MultiStatusLabel
-          statusList={UserNameList}
+          statusList={cell}
           fallbackText="No Role Assigned"
           variant="info"
         />
