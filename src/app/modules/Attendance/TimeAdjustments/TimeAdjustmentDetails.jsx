@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { HasAccess } from "utils/PermissionUtils";
 import { handleRequest } from "app/hooks/general";
+import { saveCustomShift } from "app/hooks/shiftManagement";
 
 const TimeAdjustmentDetails = ({
   isOpen,
@@ -29,7 +30,19 @@ const TimeAdjustmentDetails = ({
   );
   const [forceLoad, setForceLoad] = useState(false);
 
-  const handleClick = async (event, status, { request, id }) => {
+  const handleClick = async (
+    event,
+    status,
+    {
+      request,
+      id,
+      employee_id,
+      date,
+      shift_start_time,
+      shift_end_time,
+      is_second_shift,
+    }
+  ) => {
     event.preventDefault();
     event.stopPropagation();
     try {
@@ -37,9 +50,16 @@ const TimeAdjustmentDetails = ({
       if (response) {
         toast.success(`Request ${status} Successfully!`);
         if (status === "Approved") {
-          debugger;
           const { status } = await fetchData(id, true);
           if (status && status.toLowerCase() === "approved") {
+            await saveCustomShift(
+              employee_id,
+              date,
+              shift_start_time,
+              shift_end_time,
+              is_second_shift,
+              user_id
+            );
           }
         }
         setForceLoad(!forceLoad);

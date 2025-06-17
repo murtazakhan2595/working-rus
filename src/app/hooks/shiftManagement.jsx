@@ -474,10 +474,10 @@ export const saveCustomShift = async (
   start_time,
   end_time,
   isSecondShift,
-  userProfile= null
+  user_id= null
 ) => {
   try {
-    if (!employee_id || !date || !start_time || !end_time || !userProfile?.id) return false;
+    if (!employee_id || !date || !start_time || !end_time || !user_id) return false;
     
     const baseDate = moment(date);
     if (!baseDate.isValid()) return false;
@@ -511,7 +511,7 @@ export const saveCustomShift = async (
     }
 
     // Step 3: Get user information for assigned_by
-    let assignedBy = userProfile?.id 
+    let assignedBy = user_id 
 
     // Step 4: Check if there's an existing custom schedule covering this date
     let existingCustomSchedule = null;
