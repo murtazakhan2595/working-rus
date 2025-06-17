@@ -479,42 +479,52 @@ function flattenEmployees(employees) {
     const mapped = {
       value: emp.id,
       id: emp.id,
-      label: emp.first_name && emp.last_name
-        ? `${emp.first_name} ${emp.last_name} - ${emp.serial_number || ''}`
-        : `${emp.name || ''} - ${emp.serial_number || ''}`,
-      username: emp.username || '',
-      name: emp.first_name && emp.last_name
-        ? `${emp.first_name} ${emp.last_name}`
-        : emp.name || '',
-      department_name: emp.department_name || '',
-      department_position: emp.department_position || '',
-      employee_location: emp.employee_location || '',
-      direct_report: emp.direct_report || parent?.id || '',
-      branch_id: emp.branch_id || '',
-      work_email: emp.work_email || '',
-      serial_number: emp.serial_number || '',
-      basic_salary: emp.ctc || '',
-      salary_type: emp.salary_type || '',
+      label:
+        emp.first_name && emp.last_name
+          ? `${emp.first_name} ${emp.last_name} - ${emp.serial_number || ""}`
+          : `${emp.name || ""} - ${emp.serial_number || ""}`,
+      username: emp.username || "",
+      name:
+        emp.first_name && emp.last_name
+          ? `${emp.first_name} ${emp.last_name}`
+          : emp.name || "",
+      department_name: emp.department_name || "",
+      department_position: emp.department_position || "",
+      employee_location: emp.employee_location || "",
+      direct_report: emp.direct_report || parent?.id || "",
+      branch_id: emp.branch_id || "",
+      work_email: emp.work_email || "",
+      serial_number: emp.serial_number || "",
+      basic_salary: emp.ctc || "",
+      salary_type: emp.salary_type || "",
       is_eos_applicable: emp.is_eos_applicable,
       is_new: emp.is_new,
-      joining_date: emp.joining_date || '',
-      employee_status: emp.employee_status || '',
-      default_shift: emp.shift_assignment || '',
+      joining_date: emp.joining_date || "",
+      employee_status: emp.employee_status || "",
+      default_shift: emp.shift_assignment || "",
       user_role: emp.user_role || [],
-      name_initials: emp.first_name && emp.last_name
-        ? `${emp.first_name.charAt(0).toUpperCase() || ''}${emp.last_name.charAt(0).toUpperCase() || ''}`
-        : (emp.name ? emp.name.split(' ').map(n => n[0]?.toUpperCase()).join('') : ''),
-      profile_picture: emp.profile_picture || '',
-      designation: emp.designation || emp.department_position || '',
+      name_initials:
+        emp.first_name && emp.last_name
+          ? `${emp.first_name.charAt(0).toUpperCase() || ""}${
+              emp.last_name.charAt(0).toUpperCase() || ""
+            }`
+          : emp.name
+          ? emp.name
+              .split(" ")
+              .map((n) => n[0]?.toUpperCase())
+              .join("")
+          : "",
+      profile_picture: emp.profile_picture || "",
+      designation: emp.designation || emp.department_position || "",
       subordinates: [], // We'll flatten them
       is_manager: emp.is_manager,
     };
     flat.push(mapped);
     if (emp.subordinates && Array.isArray(emp.subordinates)) {
-      emp.subordinates.forEach(sub => recurse(sub, emp));
+      emp.subordinates.forEach((sub) => recurse(sub, emp));
     }
   }
-  employees.forEach(emp => recurse(emp));
+  employees.forEach((emp) => recurse(emp));
   return flat;
 }
 
@@ -541,7 +551,7 @@ const getNewEmployeeCustomList = async (payload) => {
         results: flatEmployees,
         ActiveEmployee: employeeDataResponse.active_employees,
         TotalEmployee: employeeDataResponse.total_employees,
-        TotalManager: employeeDataResponse.total_managers
+        TotalManager: employeeDataResponse.total_managers,
       };
       return employeeData;
     } else return EmployeeListData;
@@ -816,7 +826,11 @@ export const getCurrentRequestApprover = async (request_id) => {
       const ReturnData = {
         current_level: ResponseData.current_level,
         level_status: ResponseData.status,
-        current_approver: ResponseData.current_approvers,
+        current_approver:
+          ResponseData.current_approvers &&
+          Array.isArray(ResponseData.current_approvers)
+            ? ResponseData.current_approvers
+            : [],
       };
       return ReturnData;
     } else return {};
@@ -860,7 +874,7 @@ export const getDepartmentById = async (id) => {
     if (response.status === 200) {
       return response.data;
     } else {
-      throw new Error('Failed to fetch department');
+      throw new Error("Failed to fetch department");
     }
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -878,7 +892,7 @@ export const getDesignationById = async (id) => {
     if (response.status === 200) {
       return response.data;
     } else {
-      throw new Error('Failed to fetch designation');
+      throw new Error("Failed to fetch designation");
     }
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -896,7 +910,7 @@ export const getBranchById = async (id) => {
     if (response.status === 200) {
       return response.data;
     } else {
-      throw new Error('Failed to fetch branch');
+      throw new Error("Failed to fetch branch");
     }
   } catch (error) {
     if (error?.response?.status === 401) {
@@ -911,7 +925,7 @@ export const getShiftById = async (id) => {
     const response = await axios.get(`${baseUrl}/shift/${id}`, {
       headers: headers(),
     });
-    
+
     return response.data;
   } catch (error) {
     console.error("Error fetching shift by ID:", error);
@@ -927,7 +941,7 @@ export const getOnboardingDocumentById = async (id) => {
     if (response.status === 200) {
       return response.data;
     } else {
-      throw new Error('Failed to fetch onboarding document');
+      throw new Error("Failed to fetch onboarding document");
     }
   } catch (error) {
     if (error?.response?.status === 401) {

@@ -17,6 +17,8 @@ import { toast } from "react-toastify";
 import { saveUpdateAttendanceAdjustment } from "app/hooks/attendance";
 import { TextAreaInput } from "components/FormControl";
 import { HasAccess } from "utils/PermissionUtils";
+import { getAttendanceData } from "app/hooks/attendance";
+import { saveAttendance } from "app/hooks/attendance";
 
 const FormSheetData = {
   triggerText: "Submit",
@@ -41,19 +43,47 @@ const AttendanceAdjustmentDetails = ({
   const [RejectedData, setRejectData] = useState(false);
   const handleSubmit = async (
     status,
-    { attendance, employee, id, rejection_reason, request_id }
+    {
+      employee,
+      id,
+      rejection_reason,
+      request_id,
+      requested_checkout,
+      requested_checkin,
+      is_second_shift,
+      attendance_date,
+    }
   ) => {
     try {
-      const payload = {
-        status: status.toUpperCase(),
-        employee: employee,
-        rejection_reason: rejection_reason,
-      };
       const response = await handleRequest(request_id, status === "Approved");
-      debugger
       // return
       if (response) {
         toast.success(`Request ${status} Successfully!`);
+        if (status === "Rejected") {
+          await saveUpdateAttendanceAdjustment(
+            { rejection_reason: rejection_reason },
+            id
+          );
+        }
+        const { status: updatedStatus, attendance } = await fetchData(id, true);
+        if (updatedStatus && updatedStatus.toLowerCase() === "approved") {
+          if (attendance) {
+            const attendanceData = await getAttendanceData(attendance);
+            const payload = {
+              date: attendance_date,
+              id: attendance,
+              ...(is_second_shift
+                ? { second_checkin: requested_checkin }
+                : { checkin: requested_checkin }),
+              ...(is_second_shift
+                ? { second_checkout: requested_checkout }
+                : { checkout: requested_checkout }),
+              employee_id: employee,
+              total_hours: attendanceData.total_hours,
+            };
+            await saveAttendance(payload, attendance);
+          }
+        }
         setForceLoad(!forceLoad);
         setOpenRejectModal(false);
         setRejectData(null);

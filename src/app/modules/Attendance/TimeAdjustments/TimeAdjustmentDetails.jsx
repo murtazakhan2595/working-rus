@@ -29,13 +29,19 @@ const TimeAdjustmentDetails = ({
   );
   const [forceLoad, setForceLoad] = useState(false);
 
-  const handleClick = async (event, status, { request }) => {
+  const handleClick = async (event, status, { request, id }) => {
     event.preventDefault();
     event.stopPropagation();
     try {
       const response = await handleRequest(request, status === "Approved");
       if (response) {
         toast.success(`Request ${status} Successfully!`);
+        if (status === "Approved") {
+          debugger;
+          const { status } = await fetchData(id, true);
+          if (status && status.toLowerCase() === "approved") {
+          }
+        }
         setForceLoad(!forceLoad);
       }
     } catch (error) {
