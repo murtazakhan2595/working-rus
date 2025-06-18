@@ -21,6 +21,8 @@ export const ApprovalHierarchy = {
   has_delegation: null,
   status: true,
   has_auto_forward: null,
+  request_initiative_names: [],
+  level_groups: [],
 };
 
 export const ApprovalHierarchyHistoryLogs = {
@@ -50,6 +52,6 @@ export const DelegateLevel = {
   end_date: null,
   reason: null,
   id: null,
-  initiative_designation:null,
-  level_number:null,
+  initiative_designation: null,
+  level_number: null,
 };

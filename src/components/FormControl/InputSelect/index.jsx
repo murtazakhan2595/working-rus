@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "src/@/lib/utils.js";
 import { Check, X, ChevronsUpDown } from "lucide-react";
 import { SelectMultiInputComponent } from "./SelectMultiInputComponent";
@@ -71,27 +71,53 @@ const SelectableOptionsList = ({
   optionsActions = [],
   allowNewOption = false, // Whether users can add new options
   newOptionConfig = {}, // Configuration for new options
+  showAllOption = false, // retrict to show all option in dropdown even in case of search
 }) => {
+  const [inputSearchValue, setInputSearchValue] = useState(false);
   const OptionSelect = (value, selectedValues) => {
     if (selectedValues.length === 0 && value === null) return true;
     else if (selectedValues.includes(value)) return true;
     else return false;
   };
 
+  const AllOption = showAllOption
+    ? options.find((obj) => obj.label === "All")
+    : null;
+console.log(showAllOption , AllOption , inputSearchValue,'cbjhsbdcjhbsjb')
   return (
     <div className="w-[300px] p-0">
       <Command>
         <CommandInput
           placeholder="Search options..."
           className="text-sm font-normal text-neutral-900"
+          onValueChange={(value) => setInputSearchValue(value)}
         />
         <CommandList>
           <CommandEmpty>No options found.</CommandEmpty>
           <CommandGroup>
+            {showAllOption && AllOption && inputSearchValue && (
+              <CommandItem
+                key={AllOption.value}
+                onSelect={() => handleSelectionToggle(AllOption.value, inputSearchValue)}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center">
+                    <Check
+                      className={`mr-2 h-4 w-4 min-w-4 ${
+                        OptionSelect(AllOption.value, selectedValues)
+                          ? "opacity-100"
+                          : "opacity-0"
+                      }`}
+                    />
+                    {AllOption.label}
+                  </div>
+                </div>
+              </CommandItem>
+            )}
             {options.map(({ value, label }) => (
               <CommandItem
                 key={value}
-                onSelect={() => handleSelectionToggle(value)}
+                onSelect={() => handleSelectionToggle(value, inputSearchValue)}
               >
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center">

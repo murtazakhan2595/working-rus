@@ -199,6 +199,15 @@ const AddEditApprovalHierarchyLevels = ({
             sheetCardTitle: `Approval Hierarchy Detail`,
             InputFields: [
               {
+                InputField: TextInput,
+                name: "group_name",
+                options: Designations,
+                label: "Name",
+                onFieldUpdate: (_, value) => {
+                  // validateRequestType(value);
+                },
+              },
+              {
                 InputField: SelectMultiInputComponent,
                 name: "request_initiative",
                 options: Designations,
@@ -206,7 +215,9 @@ const AddEditApprovalHierarchyLevels = ({
                 onFieldUpdate: (_, value) => {
                   // validateRequestType(value);
                 },
-                colsSpan:2,
+                SelectAllOption: true,
+                AllOptionVariant: "all-searched",
+                colsSpan: 2,
               },
             ],
           },

@@ -11,6 +11,7 @@ import {
   FormFieldIcon,
   FormPlaceholder,
 } from "components/FormControl";
+import _ from "lodash";
 
 const SelectMultiInputComponent = React.memo(
   ({
@@ -35,16 +36,25 @@ const SelectMultiInputComponent = React.memo(
     showSelectedValuesBelow = false, // Show selected values below the dropdown (Generalized name)
     disabled = false,
     SelectAllOption = false,
+    AllOptionVariant = "empty", // empty || all || all-searched
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectedValues = value && Array.isArray(value) ? value : [];
-    const DropdownList = React.useMemo(
-      () =>
-        SelectAllOption
-          ? [{ label: "All", value: null }, ...(options || [])]
-          : options || [],
-      [SelectAllOption, options]
-    );
+    const DropdownList = React.useMemo(() => {
+      if (!options || !Array.isArray(options) || options.length === 0)
+        return [];
+      if (!SelectAllOption) return options || [];
+
+      const AllValue =
+        AllOptionVariant === "all-searched"
+          ? "all-values-in-search-options"
+          : AllOptionVariant === "empty"
+          ? "all-values-in-options"
+          : null;
+      return SelectAllOption
+        ? [{ label: "All", value: AllValue }, ...(options || [])]
+        : options || [];
+    }, [SelectAllOption, options]);
 
     const SelectedValueLabel = React.useMemo(() =>
       SelectAllOption && (!selectedValues || selectedValues?.length === 0)
@@ -53,16 +63,26 @@ const SelectMultiInputComponent = React.memo(
     );
     // Toggle selection for a given option
     const handleSelectionToggle = useCallback(
-      (optionValue) => {
+      (optionValue, inputSearchValue) => {
+        debugger;
         if (optionValue === null) {
           onChange(name, null);
           return;
         }
-        const updatedSelection = selectedValues.includes(optionValue)
-          ? selectedValues.filter((item) => item !== optionValue)
-          : [...selectedValues, optionValue];
-
-        onChange(name, updatedSelection);
+        let updatedSelection = [];
+        if (optionValue === "all-values-in-search-options") {
+          const selected_list = inputSearchValue
+            ? options.filter((obj) => obj.label.includes(inputSearchValue))
+            : options;
+          const values_list = selected_list.map((obj) => obj.value);
+          updatedSelection = [...selectedValues, ...values_list];
+        } else {
+          updatedSelection = selectedValues.includes(optionValue)
+            ? selectedValues.filter((item) => item !== optionValue)
+            : [...selectedValues, optionValue];
+        }
+        const uniqueList = _.uniq(updatedSelection);
+        onChange(name, uniqueList);
         return;
       },
       [selectedValues, onChange, name]
@@ -123,6 +143,7 @@ const SelectMultiInputComponent = React.memo(
               optionsActions={optionsActions}
               allowNewOption={allowNewOption}
               newOptionConfig={newOptionConfig}
+              showAllOption={Boolean(AllOptionVariant === "all-searched")}
             />
           }
         />
