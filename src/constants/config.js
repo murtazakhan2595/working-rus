@@ -51,19 +51,19 @@ const Config = {
   LEAVE_REQUEST: true,
 
   //-------------PAYROLL-----------
-  PAYROLL: false,
+  PAYROLL: true,
   //Sub Modules
-  EMPLOYEES_PAYROLL: false,
-  SALARY_SETUP: false,
-  CLAIM_REQUEST: false,
+  EMPLOYEES_PAYROLL: true,
+  SALARY_SETUP: true,
+  CLAIM_REQUEST: true,
   PAY_RUN: false,
   ON_HOLD_SALARIES: false,
   END_OF_SERVICE: false,
 
   //-------------TASK_MANAGEMENT-----------
-  TASK_MANAGEMENT: false,
+  TASK_MANAGEMENT: true,
   //Sub Modules
-  PROJECT_BOARD: false,
+  PROJECT_BOARD: true,
 
   //-------------TALENT_SPHERE-----------
   TALENT_SPHERE: true,
