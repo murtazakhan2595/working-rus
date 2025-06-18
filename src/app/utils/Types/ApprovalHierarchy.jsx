@@ -8,6 +8,9 @@ export const ApprovalLevel = {
   auto_forward_enabled: false,
   id: null,
   initiative_designation: null,
+  group_name:null,
+  initiative_designation_names:null,
+
 };
 
 export const ApprovalHierarchy = {
