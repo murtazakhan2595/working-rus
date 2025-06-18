@@ -21,12 +21,6 @@ import { StatusLabel } from "components";
 import { DepartmentName } from "utils/getValuesFromTables";
 
 export const ApprovalHierarchyColumn = (reload = () => {}) => [
-  // {
-  //   dataField: "id",
-  //   text: "ID",
-  //   dataSort: true,
-  //   formatter: (cell, row) => <FormatID value={cell} prefix={"APH-"} />,
-  // },
   {
     dataField: "name",
     text: "Hierarchy Name",
@@ -45,7 +39,16 @@ export const ApprovalHierarchyColumn = (reload = () => {}) => [
     dataField: "created_by",
     text: "Created By",
     dataSort: true,
-    formatter: (cell) => <EmployeeUsername value={cell} fallBackText={"--"} />,
+    formatter: (cell) => (
+      <div className="flex flex-col gap-1">
+        <span>
+          <EmployeeName value={cell} />
+        </span>
+        <span className="text-neutral-800 text-xs">
+          (<EmployeeUsername value={cell} fallBackText={"--"} />)
+        </span>
+      </div>
+    ),
   },
   {
     dataField: "no_of_levels",
@@ -174,7 +177,16 @@ export const HierarchyHistoryColumn = [
     dataField: "created_by",
     text: "Created By",
     dataSort: true,
-    formatter: (cell) => <EmployeeUsername value={cell} fallBackText={"--"} />,
+    formatter: (cell) => (
+      <div className="flex flex-col gap-1">
+        <span>
+          <EmployeeName value={cell} />
+        </span>
+        <span className="text-neutral-800 text-xs">
+          (<EmployeeUsername value={cell} fallBackText={"--"} />)
+        </span>
+      </div>
+    ),
   },
   {
     dataField: "no_of_levels",
@@ -248,7 +260,16 @@ export const HierarchyHistoryDetailsColumn = [
     dataField: "changed_by",
     text: "Changes By",
     dataSort: true,
-    formatter: (cell) => <EmployeeUsername value={cell} fallBackText="--" />,
+    formatter: (cell) => (
+      <div className="flex flex-col gap-1">
+        <span>
+          <EmployeeName value={cell} />
+        </span>
+        <span className="text-neutral-800 text-xs">
+          (<EmployeeUsername value={cell} fallBackText={"--"} />)
+        </span>
+      </div>
+    ),
   },
   {
     dataField: "branch",

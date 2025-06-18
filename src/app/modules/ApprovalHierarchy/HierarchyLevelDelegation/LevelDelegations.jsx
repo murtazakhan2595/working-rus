@@ -1,37 +1,18 @@
-import {
-  getApprovalHierarchyList,
-  getDelegationList,
-  getApprovalHierarchyData,
-} from "app/hooks/approvalHierarchy";
-import {
-  ApprovalHierarchy,
-  ApprovalLevel,
-} from "app/utils/Types/ApprovalHierarchy";
-import { TextInput, SelectInputComponent } from "components/FormControl";
-import { validateApprovalHierarchyFormSchema } from "app/utils/FormSchema/ApprovalHierarchyFormSchema";
-import {
-  HierarchyLevelsColumn,
-  DelegateLevelsColumn,
-} from "app/modules/ApprovalHierarchy/Sections";
-import { AddEditApprovalHierarchyLevels } from "app/modules/ApprovalHierarchy";
+import { getDelegationList } from "app/hooks/approvalHierarchy";
+import { DelegateLevelsColumn } from "app/modules/ApprovalHierarchy/Sections";
 import React, { useEffect, useState, useCallback } from "react";
-import { toast } from "react-toastify";
-import { Header, SheetUI, TableCustom } from "components";
-import { Card } from "components/ui/card";
-import { CardContent } from "components/ui/card";
-import { useNavigate, useLocation } from "react-router-dom";
+import { PageLoader, TableCustom } from "components";
+import {
+  Card,
+  CardTitle,
+  CardDescription,
+  CardHeader,
+  CardContent,
+} from "components/ui/card";
 import { useSelector } from "react-redux";
-import { ApprovalHierarchyRequestType } from "data/Data";
-import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
-import { DetailBox } from "components/SheetCardExtension";
-import { DesignationName } from "utils/getValuesFromTables";
-import { SwitchInput } from "components/FormControl";
-import { CardDescription, CardTitle } from "components/ui/card";
-import { ApprovalHierarchyRequestTypeName } from "utils/getValuesFromTables";
-import { StatusLabel } from "components";
 
-const LevelDelegations = ({ heirarchy_id , viewMode=false , reloadData}) => {
+const LevelDelegations = ({ heirarchy_id, viewMode = false, reloadData }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [Delegations, setDelegations] = useState({});
   const Departments = useSelector((state) => state.common.departments);
@@ -41,8 +22,6 @@ const LevelDelegations = ({ heirarchy_id , viewMode=false , reloadData}) => {
   });
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [selectedBranch, setSelectedBranch] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState("");
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -85,8 +64,6 @@ const LevelDelegations = ({ heirarchy_id , viewMode=false , reloadData}) => {
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "branch") setSelectedBranch(filterValue);
-    if (filterName === "department") setSelectedDepartment(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
       if (filterValue === "") {
@@ -99,47 +76,55 @@ const LevelDelegations = ({ heirarchy_id , viewMode=false , reloadData}) => {
   };
 
   useEffect(() => {
-      let isMounted = true;
-      onPageChange("page", 1);
-      setOrdering("-id");
-      fetchData(true);
-      return () => {
-        isMounted = false;
-      };
-    }, [reloadData]);
+    let isMounted = true;
+    onPageChange("page", 1);
+    setOrdering("-id");
+    fetchData(true);
+    return () => {
+      isMounted = false;
+    };
+  }, [reloadData]);
 
   return (
     <Card>
-      <CardTitle className="text-primary px-6 pt-6 pb-2">Delegations</CardTitle>
-      <CardContent className="flex flex-col gap-4 mt-6">
+      <CardHeader>
+        <CardTitle>Delegations</CardTitle>
+        <CardDescription>
+          Here you can view, edit, and delete the delegation added again level for all
+          request initiators in the hierarchy
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
         <FilterInput
           filters={[
             {
-              type: "select-one",
+              type: "select",
               placeholder: "Branch",
               name: "branch",
-              option: Branches,
-              values: selectedBranch,
+              options: Branches,
             },
             {
-              type: "select-two",
+              type: "select",
               placeholder: "Department",
               name: "department",
-              option: Departments,
-              values: selectedDepartment,
+              options: Departments,
             },
           ]}
           className="justify-end"
           onChange={handleFilterChange}
         />
-        <TableCustom
-          columns={DelegateLevelsColumn(fetchData, viewMode)}
-          data={Delegations.results || []}
-          dataTotalSize={Delegations?.count || 0}
-          pagination={true}
-          tableOptions={tableOptions}
-          className="ApprovalHierarchiesLevels-table"
-        />
+        {isLoading ? (
+          <PageLoader />
+        ) : (
+          <TableCustom
+            columns={DelegateLevelsColumn(fetchData, viewMode)}
+            data={Delegations.results || []}
+            dataTotalSize={Delegations?.count || 0}
+            pagination={true}
+            tableOptions={tableOptions}
+            className="ApprovalHierarchiesLevels-table"
+          />
+        )}
       </CardContent>
     </Card>
   );
