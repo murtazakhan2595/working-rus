@@ -133,9 +133,12 @@ const getAttendance = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  let URL = `/attendance?ordering=-date&${pageNo ? `page=${pageNo}&` : ""}${
-    pageSize ? `page_size=${pageSize}&` : ""
-  }search=${encodeURIComponent(JSON.stringify(filterData))}`;
+  const ordering = payload?.ordering ?? "-date";
+  let URL = `/attendance?${ordering ? `ordering=${ordering}&` : ""}${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
@@ -236,6 +239,30 @@ export const getAttendanceData = async (id) => {
       HandleLogout();
     }
     return false;
+  }
+};
+export const getAttendancebyEmployee = async (employee_id, date) => {
+  try {
+    if (!employee_id) return null;
+    const formattedDate = moment(date);
+    const filterData = {
+      employee_id: employee_id,
+      ...(date && formattedDate && formattedDate.isValid()
+        ? { date: formattedDate.format("YYYY-MM-DD") }
+        : {}),
+    };
+
+    const response = await getAttendance({ filterData, ordering: "-id" });
+    if (response.results && response.results.length > 0) {
+      const attendanceRecord = response.results[0];
+      return attendanceRecord;
+    } else return null;
+  } catch (error) {
+    console.error("Error saving attendance:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return null;
   }
 };
 const saveBreak = async (payload) => {
