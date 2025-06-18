@@ -9,9 +9,11 @@ import {
   FormField,
   FormPopoverButton,
   FormFieldIcon,
+  FormFieldResetButton,
   FormPlaceholder,
 } from "components/FormControl";
 import _ from "lodash";
+import { Button } from "components/ui/button";
 
 const SelectMultiInputComponent = React.memo(
   ({
@@ -37,6 +39,8 @@ const SelectMultiInputComponent = React.memo(
     disabled = false,
     SelectAllOption = false,
     AllOptionVariant = "empty", // empty || all || all-searched
+    allowReset = false, // this will display the reset button to reset the field to null.
+    resetButtonConfig = { title: "Reset", className: "", variant: "ghost" },
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectedValues = value && Array.isArray(value) ? value : [];
@@ -51,20 +55,23 @@ const SelectMultiInputComponent = React.memo(
           : AllOptionVariant === "empty"
           ? "all-values-in-options"
           : null;
+      const AllLabel =
+        AllOptionVariant === "all-searched" ? "Select All" : "All";
       return SelectAllOption
-        ? [{ label: "All", value: AllValue }, ...(options || [])]
+        ? [{ label: AllLabel, value: AllValue }, ...(options || [])]
         : options || [];
     }, [SelectAllOption, options]);
 
     const SelectedValueLabel = React.useMemo(() =>
-      SelectAllOption && (!selectedValues || selectedValues?.length === 0)
+      SelectAllOption &&
+      AllOptionVariant === "empty" &&
+      (!selectedValues || selectedValues?.length === 0)
         ? "All"
         : selectedValues[(SelectAllOption, selectedValues)]
     );
     // Toggle selection for a given option
     const handleSelectionToggle = useCallback(
       (optionValue, inputSearchValue) => {
-        debugger;
         if (optionValue === null) {
           onChange(name, null);
           return;
@@ -72,7 +79,9 @@ const SelectMultiInputComponent = React.memo(
         let updatedSelection = [];
         if (optionValue === "all-values-in-search-options") {
           const selected_list = inputSearchValue
-            ? options.filter((obj) => obj.label.includes(inputSearchValue))
+            ? options.filter((obj) =>
+                obj.label.toLowerCase().includes(inputSearchValue.toLowerCase())
+              )
             : options;
           const values_list = selected_list.map((obj) => obj.value);
           updatedSelection = [...selectedValues, ...values_list];
@@ -96,6 +105,11 @@ const SelectMultiInputComponent = React.memo(
       },
       [value, onChange, name]
     );
+
+    //Reset the selected value to null
+    const handleReset = useCallback(() => {
+      onChange(name, null);
+    }, [onChange, name]);
 
     return (
       <FormField
@@ -124,14 +138,33 @@ const SelectMultiInputComponent = React.memo(
                   selectedOptionClassName={selectedOptionClassName}
                   selectedOptionListClassName={selectedOptionListClassName}
                 />
-              ) : SelectAllOption ? (
+              ) : SelectAllOption && SelectedValueLabel ? (
                 SelectedValueLabel
               ) : (
                 <FormPlaceholder
                   placeholder={placeholder ? placeholder : `Select ${label}`}
                 />
               )}
-              <DropdownIcon />
+              <div className="ml-auto flex items-center gap-1">
+                <FormFieldResetButton
+                  allowReset={allowReset}
+                  handleReset={handleReset}
+                  {...(resetButtonConfig
+                    ? {
+                        ...(resetButtonConfig.title
+                          ? { title: resetButtonConfig.title }
+                          : {}),
+                        ...(resetButtonConfig.className
+                          ? { className: resetButtonConfig.className }
+                          : {}),
+                        ...(resetButtonConfig.variant
+                          ? { variant: resetButtonConfig.variant }
+                          : {}),
+                      }
+                    : {})}
+                />
+                <DropdownIcon />
+              </div>
             </div>
           }
           popoverContent={

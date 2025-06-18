@@ -217,6 +217,7 @@ const AddEditApprovalHierarchyLevels = ({
                 },
                 SelectAllOption: true,
                 AllOptionVariant: "all-searched",
+                allowReset:true,
                 colsSpan: 2,
               },
             ],
