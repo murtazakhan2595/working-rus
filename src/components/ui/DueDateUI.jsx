@@ -63,7 +63,9 @@ const DueDateUI = ({
   const getTooltipMessage = () => {
     let message = "";
     if (statusCompleted) {
-      message = `is ${completionState.charAt(0) + completionState.slice(1).toLowerCase()}`;
+      message = `is ${
+        completionState.charAt(0) + completionState.slice(1).toLowerCase()
+      }`;
     } else if (dueDateStatus === "Overdue") {
       message = "has past due date.";
     } else if (dueDateStatus === "Due Today") {
@@ -75,18 +77,15 @@ const DueDateUI = ({
   };
 
   return (
-    <TooltipText
-      tooltipTriggerText={
-        <Badge
-          className={`flex-row gap-1 rounded border-none ${className} `}
-          variant={getDateVariant(dueDateStatus, statusCompleted)}
-        >
-          {showIcon && <Clock className={getIconColor()} size={14} />}
-          <div className="select-none">{renderDate(dueDate)}</div>
-        </Badge>
-      }
-      content={getTooltipMessage()}
-    />
+    <TooltipText content={getTooltipMessage()}>
+      <Badge
+        className={`flex-row gap-1 rounded border-none ${className} `}
+        variant={getDateVariant(dueDateStatus, statusCompleted)}
+      >
+        {showIcon && <Clock className={getIconColor()} size={14} />}
+        <div className="select-none">{renderDate(dueDate)}</div>
+      </Badge>
+    </TooltipText>
   );
 };
 
