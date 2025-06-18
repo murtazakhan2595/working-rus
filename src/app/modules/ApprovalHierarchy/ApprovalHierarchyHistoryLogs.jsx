@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { TableCustom, Header, StatusLabel, PageLoader } from "components";
-import { Card } from "components/ui/card";
-import { CardContent } from "components/ui/card";
-import { CardHeader } from "components/ui/card";
-import { CardTitle } from "components/ui/card";
-import { CardDescription } from "components/ui/card";
-import { Button } from "components/ui/button";
-import { FilterInput } from "components/FormControl";
+import {
+  CardDescription,
+  CardTitle,
+  CardHeader,
+  CardContent,
+  Card,
+} from "components/ui/card";
 import {
   getApprovalHierarchyHistoryLogsList,
   getApprovalHierarchyData,
 } from "app/hooks/approvalHierarchy";
-import {
-  HierarchyLevelsColumn,
-  HierarchyHistoryDetailsColumn,
-} from "app/modules/ApprovalHierarchy/Sections";
+import { HierarchyHistoryDetailsColumn } from "app/modules/ApprovalHierarchy/Sections";
 import { Levels, LevelDelegations } from "app/modules/ApprovalHierarchy";
-import { useNavigate, useLocation } from "react-router-dom";
-import { EmployeeDetailUI } from "components";
+import { useLocation } from "react-router-dom";
 import { DetailBox } from "components/SheetCardExtension";
 import {
   ApprovalHierarchyRequestTypeName,
@@ -97,13 +93,13 @@ const ApprovalHierarchyHistoryLogs = () => {
           GOTO_URLS || "/office-settings/approval-hierarchy/history"
         }
       />
-      <Card className="">
-        <CardTitle className="text-primary px-6 pt-6">
-          Hierarchy Details
-        </CardTitle>
-        <CardDescription className="text-neutral-1100 px-6 pb-6">
-          Here is the hierarchy informations
-        </CardDescription>
+      <Card>
+        <CardHeader>
+          <CardTitle>Hierarchy Details</CardTitle>
+          <CardDescription>
+            Here you can view the details of hierarchy.
+          </CardDescription>
+        </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-5">
             <DetailBox
@@ -159,8 +155,13 @@ const ApprovalHierarchyHistoryLogs = () => {
         </CardContent>
       </Card>
       <Card>
-        <CardTitle className="text-primary p-6">Hierarchy Levels</CardTitle>
-        <CardDescription></CardDescription>
+        <CardHeader>
+          <CardTitle>Hierarchy Levels</CardTitle>
+          <CardDescription>
+            Here you can view, edit the levels against all request initiators in
+            the hierarchy.
+          </CardDescription>
+        </CardHeader>
         <CardContent>
           <Levels
             HierarchyDetails={HierarchyDetails}
