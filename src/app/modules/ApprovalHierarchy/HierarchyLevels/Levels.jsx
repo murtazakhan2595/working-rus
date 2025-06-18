@@ -106,11 +106,10 @@ const Levels = React.memo(
         <FilterInput
           filters={[
             {
-              type: "select-one",
+              type: "select",
               placeholder: "Designation",
               name: "designation",
-              option: Designations,
-              values: selectedDesignation,
+              options: Designations,
             },
           ]}
           className="justify-start"
