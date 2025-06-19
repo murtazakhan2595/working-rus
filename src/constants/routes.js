@@ -104,6 +104,11 @@ export const SidebarRoutes = [
           component: <MyAttendance />,
           name: "MY_ATTENDANCE",
         },
+        Config.MY_ATTENDANCE && {
+          path: "/my-attendance-report/:id",
+          component: <EmployeeAttendanceReport />,
+          name: "VIEW_ATTENDANCE",
+        },
         Config.DAILY_TASK_REPORT && {
           path: "/my-dtr",
           component: <MyDtr />,
@@ -355,7 +360,7 @@ export const SidebarRoutes = [
           name: "SHIFT_CALENDAR",
         },
         Config.EMPLOYEES_ATTENDANCE && {
-          path: "attendance-reports/:id",
+          path: "/attendance-reports/:id",
           component: <EmployeeAttendanceReport />,
           name: "VIEW_EMPLOYEE_ATTENDANCE",
         },
