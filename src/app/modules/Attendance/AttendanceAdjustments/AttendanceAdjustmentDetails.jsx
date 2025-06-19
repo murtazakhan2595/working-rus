@@ -213,7 +213,7 @@ const AttendanceAdjustmentDetails = ({
       <NavigationSheetComponent
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        title="Attendandance Adjustment Details"
+        title="Attendance Adjustment Details"
         currentItem_Id={currentId}
         ForceItemLoad={forceLoad}
         dataList={DataList}
