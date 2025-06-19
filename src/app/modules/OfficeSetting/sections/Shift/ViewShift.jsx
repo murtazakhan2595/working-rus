@@ -160,6 +160,7 @@ const ViewShift = ({
             fetchData(); // Refresh data after edit
           }}
           id={currentId}
+          existingShifts={DataList}
         />
       )}
     </>

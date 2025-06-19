@@ -61,7 +61,7 @@ const ShiftActions = ({ data, reload, ShiftList = [] }) => {
         deleteText="Delete Shift"
         menuTooltip="Shift Actions"
       />
-      
+
       {deleteShift?.open && (
         <AlertDialogue
           title="Confirm Delete?"
@@ -85,6 +85,7 @@ const ShiftActions = ({ data, reload, ShiftList = [] }) => {
             setEdit(null);
           }}
           id={data.id}
+          existingShifts={ShiftList}
         />
       )}
 
