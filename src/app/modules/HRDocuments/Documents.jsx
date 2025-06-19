@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent } from "components/ui/card";
+import { CardHeader, CardContent } from "components/ui/card";
 import { DocumentDetails } from "app/modules/HRDocuments/Screens";
 import { UsersRound, Contact, UserRoundCheck } from "lucide-react";
 import { Header } from "components";
@@ -21,16 +21,9 @@ import { Button } from "components/ui/button";
 import { FilterInput } from "components/FormControl";
 import Config from "constants/config";
 import { useNavigate, useParams } from "react-router-dom";
-
-const DocumentTabs = [
-  "All Documents",
-  "Assigned",
-  // "Signed",
-  // "Pending",
-  "Expired",
-].filter(Boolean);
-const innerTabClassName =
-  "shadow-none border-transparent border-b data-[state=active]:border-plum-1100 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium whitespace-nowrap px-2 sm:w-28 flex-1 sm:flex-initial text-sm sm:text-base";
+import { CardTitle } from "components/ui/card";
+import { CardDescription } from "components/ui/card";
+import { PageLoader } from "components";
 
 export default function Documents({ reload }) {
   const Document_Category = useSelector((state) => state.doc_category.category);
@@ -39,13 +32,38 @@ export default function Documents({ reload }) {
     results: [],
     count: 0,
   });
-  const [activeDocumentTab, setActiveDocumentTab] = useState("All Documents");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedTargetAudience, setSelectedTargetAudience] = useState("");
+  const [activeTab, setActiveTab] = useState("all-documents");
+  const [activeTabDetails, setActiveTabDetails] = useState({
+    title: "All Documents",
+    label: "All Documents",
+    value: "all-documents",
+    description: "",
+  });
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
   const [OpenDocumentID, setOpenDocumentID] = useState(false);
   const [filterData, setFilterData] = useState({ exclude_expired: true });
+
+  const DocumentTabs = [
+    {
+      title: "All Documents",
+      label: "All Documents",
+      value: "all-documents",
+      description: "Here you can view all the non-expired documents.",
+    },
+    {
+      title: "Assigned Documents",
+      label: "Assigned",
+      value: "assigned",
+      description: "Here you view all the non-expired documents that are assigned any employee",
+    },
+    {
+      title: "Expired Documents",
+      label: "Expired",
+      value: "expired",
+      description: "Here you view all the expired documents.",
+    },
+  ];
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -99,32 +117,21 @@ export default function Documents({ reload }) {
   useEffect(() => {
     setFilterData((prevFilter) => {
       const updatedFilter = { ...prevFilter };
-      if (activeDocumentTab === "All Documents") {
+      if (activeTab === "all-documents") {
         delete updatedFilter.doc_status; // Remove the status key
         updatedFilter.exclude_expired = true;
-      } else if (activeDocumentTab === "Assigned") {
+      } else if (activeTab === "assigned") {
         delete updatedFilter.doc_status; // Remove the status key
         updatedFilter.exclude_expired = true;
       } else {
         delete updatedFilter.exclude_expired; // Remove the status key
-        updatedFilter.doc_status =
-          activeDocumentTab === "Signed"
-            ? "Signed"
-            : activeDocumentTab === "Expired"
-            ? "Expired"
-            : activeDocumentTab === "Pending"
-            ? "Pending"
-            : updatedFilter.doc_status; // Keep existing value if no match
       }
       return updatedFilter;
     });
-  }, [activeDocumentTab]);
+  }, [activeTab]);
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "category") setSelectedCategory(filterValue);
-    if (filterName === "target_audience")
-      setSelectedTargetAudience(filterValue);
 
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -138,67 +145,70 @@ export default function Documents({ reload }) {
   };
 
   return (
-    <div
-      className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
-    >
+    <>
       {/* <Stats stats={statsData} /> */}
       <Tabs
         defaultValue="All Documents"
         className="w-full"
         onValueChange={(tab) => {
-          setActiveDocumentTab(tab);
+          setActiveTab(tab);
+          setActiveTabDetails(DocumentTabs.find((obj) => obj.value === tab));
         }}
-        value={activeDocumentTab}
+        value={activeTab}
       >
         {/* Responsive layout for tabs and filters */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between w-full">
           {/* Tabs with horizontal scroll but no vertical scroll */}
           <div className="w-full sm:w-auto overflow-hidden mb-4">
             <TabsList className="flex flex-nowrap w-full overflow-x-auto overflow-y-hidden sm:overflow-visible">
-              {DocumentTabs.map((tab) => (
-                <TabsTrigger key={tab} value={tab} className={innerTabClassName}>
-                  {tab}
+              {DocumentTabs.map(({ value, label }) => (
+                <TabsTrigger key={value} value={value} variant="inner-tab">
+                  {label}
                 </TabsTrigger>
               ))}
             </TabsList>
           </div>
-          
-          {/* Filters that take full width on mobile, original style on desktop */}
-          <div className="w-full sm:w-auto">
-            <FilterInput
-              filters={[
-                {
-                  type: "search",
-                  placeholder: "Search by name",
-                  name: "name",
-                  width: "w-full sm:w-56", // Full width on mobile, fixed width on larger screens
-                },
-                {
-                  type: "select-two",
-                  option: Document_Category,
-                  name: "category",
-                  placeholder: "Category",
-                  values: selectedCategory,
-                  width: "w-full sm:w-56", // Full width on mobile, fixed width on larger screens
-                },
-              ]}
-              onChange={handleFilterChange}
-              className="w-full flex flex-col sm:flex-row gap-2"
-            />
-          </div>
         </div>
-        
-        <TableCustom
-          data={employeeTransferData.results}
-          columns={HRDocumentsColumns(
-            activeDocumentTab === "All Documents",
-            fetchData
-          )}
-          pagination={true}
-          dataTotalSize={employeeTransferData.count || 0}
-          tableOptions={tableOptions}
-        />
       </Tabs>
+
+      <CardHeader>
+        <CardTitle>{activeTabDetails.title}</CardTitle>
+        <CardDescription>{activeTabDetails.description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {/* Filters that take full width on mobile, original style on desktop */}
+        <FilterInput
+          filters={[
+            {
+              type: "search",
+              placeholder: "Search by name",
+              name: "name",
+            },
+            {
+              type: "select",
+              options: Document_Category,
+              name: "category",
+              placeholder: "Category",
+            },
+          ]}
+          onChange={handleFilterChange}
+          className="justify-end mb-4"
+        />
+        {isLoading ? (
+          <PageLoader />
+        ) : (
+          <TableCustom
+            data={employeeTransferData.results}
+            columns={HRDocumentsColumns(
+              activeTab === "all-documents",
+              fetchData
+            )}
+            pagination={true}
+            dataTotalSize={employeeTransferData.count || 0}
+            tableOptions={tableOptions}
+          />
+        )}
+      </CardContent>
       {OpenDocumentID && (
         <DocumentDetails
           documentID={OpenDocumentID}
@@ -210,6 +220,6 @@ export default function Documents({ reload }) {
           reloadData={fetchData}
         />
       )}
-    </div>
+    </>
   );
 }
