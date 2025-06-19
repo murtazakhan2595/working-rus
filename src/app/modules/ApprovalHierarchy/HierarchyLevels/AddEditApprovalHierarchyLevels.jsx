@@ -18,7 +18,7 @@ import { Card } from "components/ui/card";
 import { CardContent } from "components/ui/card";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { ApprovalHierarchyRequestType } from "data/Data";
+import _ from "lodash";
 import { Button } from "components/ui/button";
 import { NumberInput } from "components/FormControl";
 import { DetailBox } from "components/SheetCardExtension";
@@ -36,7 +36,7 @@ const AddEditApprovalHierarchyLevels = ({
   isOpen = true,
   setReloadData = () => {},
   id = null,
-  request_initiative, // if edit, contains list request initiators to edit
+  level_group, // if edit, contains level group to edit
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,7 +49,7 @@ const AddEditApprovalHierarchyLevels = ({
   const [HierarchyNameExist, setHierarchyNameExist] = useState(false);
   const [HierarchyRequestTypeExist, setHierarchyRequestTypeExist] =
     useState(false);
-  const isEditMode = Boolean(request_initiative?.length);
+  const isEditMode = Boolean(level_group);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const Designations = useSelector((state) => state.common.designations);
   const FormSheetData = {
@@ -68,27 +68,28 @@ const AddEditApprovalHierarchyLevels = ({
       if (isMounted) {
         if (isEditMode) {
           const hierarchy = response;
-          const requestInitiatorToEdit = request_initiative || [];
+          const levelGroupToEdit = level_group || "";
 
           // Filter levels matching the current request initiator
           const levelsToEdit =
-            hierarchy.levels?.filter((level) =>
-              isEqual(
-                [...(level.initiative_designation || [])].sort(),
-                [...requestInitiatorToEdit].sort()
-              )
+            hierarchy.levels?.filter(
+              (level) => level.group_name === levelGroupToEdit
             ) || [];
 
+          const requestInitiatorToEdit =
+            levelsToEdit.length > 0
+              ? levelsToEdit[0].initiative_designation
+              : null;
           // Set form data with filtered levels and request initiator
           const updatedForm = {
             ...ApprovalHierarchy,
             request_initiative: requestInitiatorToEdit,
             levels: levelsToEdit,
+            level_groups: levelGroupToEdit,
           };
 
           setFormData(updatedForm);
           setFormValues(updatedForm);
-
           // Identify initiators that are not editable (not in current edit context)
           const requestInitiatorsNonEditable = (
             response.request_initiative || []
@@ -101,12 +102,16 @@ const AddEditApprovalHierarchyLevels = ({
           const levelsNonEdit = (hierarchy.levels || []).filter(
             (level) => !levelsToEditIds.has(level.id)
           );
+          const levelGroupNonEdit = hierarchy.level_groups.filter(
+            (group_name) => group_name !== levelGroupToEdit
+          );
 
           // Set hierarchy data (if needed elsewhere)
           setHierarchyData({
             ...hierarchy,
             request_initiative: requestInitiatorsNonEditable,
             levels: levelsNonEdit,
+            level_groups: levelGroupNonEdit,
           });
         } else {
           setHierarchyData(response);
@@ -134,11 +139,17 @@ const AddEditApprovalHierarchyLevels = ({
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
       const payload = HierarchyData;
+      const level_group_name = values.level_groups.trim();
       const newLevels = await values?.levels?.map((level) => ({
         ...level,
         initiative_designation: values.request_initiative,
+        group_name: level_group_name,
       }));
       payload.levels = [...HierarchyData.levels, ...newLevels];
+      payload.level_groups = _.uniq([
+        ...HierarchyData.level_groups,
+        level_group_name,
+      ]);
       payload.request_initiative = [
         ...HierarchyData.request_initiative,
         ...values.request_initiative,
@@ -182,10 +193,10 @@ const AddEditApprovalHierarchyLevels = ({
         handleSubmit: handleSubmit,
         renderUpdatedFormValues: setFormValues,
         validateFormSchema: (values) => {
-          const errors = validateAddHierarchyLevelsForm(
-            values,
-            HierarchyData.request_initiative
-          );
+          const errors = validateAddHierarchyLevelsForm(values, {
+            request_initiative: HierarchyData.request_initiative,
+            level_groups: HierarchyData.level_groups,
+          });
           return errors;
         },
         submitButtonText: "Submit",
@@ -199,14 +210,21 @@ const AddEditApprovalHierarchyLevels = ({
             sheetCardTitle: `Approval Hierarchy Detail`,
             InputFields: [
               {
+                InputField: TextInput,
+                name: "level_groups",
+                label: "Name",
+                required: true,
+              },
+              {
                 InputField: SelectMultiInputComponent,
                 name: "request_initiative",
                 options: Designations,
                 label: "Request Initiator",
-                onFieldUpdate: (_, value) => {
-                  // validateRequestType(value);
-                },
-                colsSpan:2,
+                required: true,
+                SelectAllOption: true,
+                AllOptionVariant: "all-searched",
+                allowReset: true,
+                colsSpan: 2,
               },
             ],
           },

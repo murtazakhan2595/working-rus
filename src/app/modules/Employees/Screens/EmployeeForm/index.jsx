@@ -9,6 +9,8 @@ import { useDispatch } from "react-redux";
 import { Formik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import { EmployeeInformation } from "app/utils/Types/Employee";
+import { getOnboardingDocument } from "app/hooks/officeSetting";
+
 import {
   getEmployeeInformation,
   mapEmployeePayloadData,
@@ -156,14 +158,42 @@ const EmployeeForm = ({
   const initializeFormData = async (isMounted) => {
     try {
       if (isMounted) {
+
         if (!empId) {
           const response = await getNewEmployeeCode();
           setEmpId(response);
         }
+
+        // 🔧 Initialize onboarding documents here to prevent race condition
+        let onboardingDocs = [];
+        try {
+          const documentResponse = await getOnboardingDocument();
+          if (documentResponse?.results) {
+            onboardingDocs = documentResponse.results.map((template) => ({
+              templateId: template.id,
+              name: template.name,
+              isActive: false,
+              hasExpiryDate: false,
+              expiryDate: null,
+              attachment: [],
+            }));
+          }
+        } catch (error) {
+          console.error(
+            "❌ Parent: Error initializing onboarding docs:",
+            error
+          );
+        }
+
         if (default_user) {
-          const updated = { ...EmployeeInformation, user_role: [default_user] };
+          const updated = {
+            ...EmployeeInformation,
+            user_role: [default_user],
+            onboardingDocuments: onboardingDocs, // Set from parent
+          };
           setFormData(updated);
         }
+
         getShiftList();
       }
     } catch (error) {

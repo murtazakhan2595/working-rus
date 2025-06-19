@@ -19,17 +19,17 @@ import { useNavigation } from "react-day-picker";
 // Custom caption component without Month: and Year: labels
 const CustomCaption = ({ date, locale, displayMonth }) => {
   const { goToMonth } = useNavigation();
-  
+
   // Ensure we have a valid date object
   const safeDate = date || displayMonth || new Date();
-  
+
   // Generate arrays for months and years
   const months = Array.from({ length: 12 }, (_, i) => {
     const month = new Date();
     month.setMonth(i);
     return {
       value: i,
-      label: month.toLocaleString(locale || 'default', { month: 'long' })
+      label: month.toLocaleString(locale || "default", { month: "long" }),
     };
   });
 
@@ -41,7 +41,7 @@ const CustomCaption = ({ date, locale, displayMonth }) => {
     const year = startYear + i;
     return {
       value: year,
-      label: year.toString()
+      label: year.toString(),
     };
   });
 
@@ -60,8 +60,8 @@ const CustomCaption = ({ date, locale, displayMonth }) => {
   return (
     <div className="flex items-center justify-center gap-2 py-1">
       <div className="relative">
-        <select 
-          value={safeDate.getMonth()} 
+        <select
+          value={safeDate.getMonth()}
           onChange={handleMonthChange}
           className="h-8 w-[130px] text-sm font-medium border border-neutral-300 rounded-md px-2 pr-8 focus:outline-none focus:ring-1 focus:ring-plum-500 hover:bg-neutral-50 transition-colors appearance-none"
           aria-label="Select month"
@@ -73,15 +73,26 @@ const CustomCaption = ({ date, locale, displayMonth }) => {
           ))}
         </select>
         <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-500">
-            <path d="m6 9 6 6 6-6"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-neutral-500"
+          >
+            <path d="m6 9 6 6 6-6" />
           </svg>
         </div>
       </div>
-      
+
       <div className="relative">
-        <select 
-          value={safeDate.getFullYear()} 
+        <select
+          value={safeDate.getFullYear()}
           onChange={handleYearChange}
           className="h-8 w-[80px] text-sm font-medium border border-neutral-300 rounded-md px-2 pr-8 focus:outline-none focus:ring-1 focus:ring-plum-500 hover:bg-neutral-50 transition-colors appearance-none"
           aria-label="Select year"
@@ -93,8 +104,19 @@ const CustomCaption = ({ date, locale, displayMonth }) => {
           ))}
         </select>
         <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-500">
-            <path d="m6 9 6 6 6-6"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-neutral-500"
+          >
+            <path d="m6 9 6 6 6-6" />
           </svg>
         </div>
       </div>
@@ -318,7 +340,8 @@ const DateInput = React.memo(
                 // Style to match the first image
                 classNames={{
                   caption: "flex justify-center items-center space-x-2",
-                  dropdown: "border border-neutral-300 rounded-md px-2 py-1 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-plum-500 hover:bg-neutral-50",
+                  dropdown:
+                    "border border-neutral-300 rounded-md px-2 py-1 text-sm font-medium focus:outline-none focus:ring-1 focus:ring-plum-500 hover:bg-neutral-50",
                   dropdown_icon: "ml-1 opacity-70",
                   dropdown_month: "w-[100px]",
                   dropdown_year: "w-[80px]",
@@ -328,20 +351,22 @@ const DateInput = React.memo(
                   Caption: CustomCaption,
                   DayContent: ({ date }) => {
                     const baseDate = moment(date).format("YYYY-MM-DD");
-                    const { title, isHoliday } = CalendarContent[baseDate] || {};
+                    const { title, isHoliday } =
+                      CalendarContent[baseDate] || {};
                     const isCurrentDay = isToday(date);
                     const className = `w-full h-full flex items-center justify-center ${
                       disableHolidays && isHoliday ? "text-green-500" : ""
                     } ${isHoliday ? "bg-green-100 rounded-full" : ""} ${
-                      isCurrentDay ? "border-2 border-plum-1000 rounded-full" : ""
+                      isCurrentDay
+                        ? "border-2 border-plum-1000 rounded-full"
+                        : ""
                     }`;
                     return (
                       <div className={className}>
                         {isHoliday ? (
-                          <TooltipText
-                            tooltipTriggerText={date.getDate()}
-                            content={title}
-                          />
+                          <TooltipText content={title}>
+                            {date.getDate()}
+                          </TooltipText>
                         ) : (
                           date.getDate()
                         )}

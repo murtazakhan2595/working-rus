@@ -39,11 +39,11 @@ const RecentActivities = ({ attendance }) => {
         <ScrollArea className="[&>div>div[style]]:!block">
           <div className="h-[80px] px-4">
             {recentActivities?.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {recentActivities?.map((item, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-start gap-3"
+                    className="flex items-center justify-start gap-3 text-sm"
                   >
                     <div className="text-slate-1200">{item.activity}: </div>
                     <div>

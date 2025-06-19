@@ -1,13 +1,12 @@
 import { HierarchyLevelsColumn } from "app/modules/ApprovalHierarchy/Sections";
 import { AddEditApprovalHierarchyLevels } from "app/modules/ApprovalHierarchy";
 import React, { useState } from "react";
-import { StatusLabel, SplitViewDetail, TableCustom } from "components";
+import { SplitViewDetail, TableCustom, MultiStatusLabel } from "components";
 import { useSelector } from "react-redux";
 import { Button } from "components/ui/button";
-import { DesignationName } from "utils/getValuesFromTables";
 import { FilterInput } from "components/FormControl";
-import { getLabelByValue } from "utils/getValuesFromTables";
 import { HasAccess } from "utils/PermissionUtils";
+import _ from "lodash";
 
 const Levels = React.memo(
   ({
@@ -18,67 +17,65 @@ const Levels = React.memo(
     setReloadData = () => {},
   }) => {
     const isEditHierarchyPermitted = HasAccess("EDIT_APPROVAL_HIERARCHY");
-    const [RequestInitiatorListToEdit, setRequestInitiatorListToEdit] =
-      useState(null);
+    const [LevelGroupToEdit, setLevelGroupToEdit] = useState(null);
     const Designations = useSelector((state) => state.common.designations);
     const [addLevelsForm, setAddLevelsForm] = useState(false);
     const [selectedDesignation, setSelectedDesignation] = useState("");
-    const RequestInitiatorDesignations = React.useMemo(() => {
+    const LevelsGroups = React.useMemo(() => {
       if (
         !HierarchyDetails ||
-        !Array.isArray(HierarchyDetails.request_initiative)
+        !Array.isArray(HierarchyDetails.request_initiative) ||
+        !Array.isArray(HierarchyDetails.level_groups)
       )
         return [];
-
-      const allInitiators = HierarchyDetails.request_initiative;
-      const filteredInitiators = selectedDesignation
-        ? allInitiators.filter((item) => item === selectedDesignation)
-        : allInitiators;
-
-      if (!Array.isArray(filteredInitiators) || filteredInitiators.length === 0)
-        return [];
-
       const HierarchyLevels = Array.isArray(HierarchyDetails.levels)
         ? HierarchyDetails.levels
         : [];
 
-      const initiatorsWithData = filteredInitiators.map((initiator) => {
-        const levels = HierarchyLevels.filter(
-          (level) =>
-            Array.isArray(level.initiative_designation) &&
-            level.initiative_designation.includes(initiator)
+      const FilteredHierarchyLevels = selectedDesignation
+        ? HierarchyLevels.filter((item) =>
+            item.initiative_designation.includes(selectedDesignation)
+          )
+        : HierarchyLevels;
+
+      const filteredLevelGroups = _.uniq(
+        FilteredHierarchyLevels.map((level) => level.group_name) || []
+      );
+
+      if (
+        !Array.isArray(filteredLevelGroups) ||
+        filteredLevelGroups.length === 0
+      )
+        return [];
+
+      const initiatorsWithData = filteredLevelGroups.map((level_group) => {
+        const levels = FilteredHierarchyLevels.filter(
+          (level) => level.group_name === level_group
         );
         const request_initiator_designation =
           levels && Array.isArray(levels) && levels.length > 0
-            ? levels[0].initiative_designation
+            ? levels[0].initiative_designation_names || []
             : [];
         return {
-          id: initiator,
+          id: level_group,
           title:
-            getLabelByValue(initiator, Designations) ||
-            `Designation ${initiator}`,
+            level_group || `Group ${request_initiator_designation.join(",")}`,
           content: (
-            <div key={`level-${initiator}`}>
+            <div key={`level-${level_group}`}>
               <div className="flex-row flex justify-between mb-2">
                 <div className="font-[inter] text-neutral-1200 flex-inline flex items-center gap-2">
-                  {request_initiator_designation.map((designation) => (
-                    <StatusLabel key={designation} variant={"info"}>
-                      <DesignationName value={designation} />
-                    </StatusLabel>
-                  ))}
+                  <MultiStatusLabel
+                    statusList={request_initiator_designation}
+                    variant="info"
+                    displayAll={true}
+                  />
                 </div>
                 {!viewMode && isEditHierarchyPermitted && (
                   <Button
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
-                      setRequestInitiatorListToEdit(
-                        request_initiator_designation &&
-                          Array.isArray(request_initiator_designation) &&
-                          request_initiator_designation.length > 0
-                          ? request_initiator_designation
-                          : [initiator]
-                      );
+                      setLevelGroupToEdit(level_group);
                       setAddLevelsForm(true);
                     }}
                     variant="continue"
@@ -129,19 +126,19 @@ const Levels = React.memo(
             description:
               "Here you can manage and view the list of hierarchy levels against the selected request initiator",
           }}
-          data={RequestInitiatorDesignations || []}
+          data={LevelsGroups || []}
         />
         {addLevelsForm && (
           <AddEditApprovalHierarchyLevels
             isOpen={addLevelsForm}
             setReloadData={() => {
-              setRequestInitiatorListToEdit(null);
+              setLevelGroupToEdit(null);
               setAddLevelsForm(false);
               fetchData(true);
               setReloadData();
             }}
             id={hierarchy_id}
-            request_initiative={RequestInitiatorListToEdit}
+            level_group={LevelGroupToEdit}
           />
         )}
       </div>

@@ -1,7 +1,8 @@
-// src/app/utils/FormSchema/ShiftManagementFormSchema.jsx
-
-// Validation for individual shift creation/editing
-const validateShiftFormSchema = (values) => {
+const validateShiftFormSchema = (
+  values,
+  existingShifts = [],
+  currentShiftId = null
+) => {
   const errors = {};
 
   // Basic field validation
@@ -23,6 +24,71 @@ const validateShiftFormSchema = (values) => {
     // For regular shifts, validate start and end times
     if (!values.starttime) errors.starttime = "Start time is required";
     if (!values.endtime) errors.endtime = "End time is required";
+  }
+
+  // Check for duplicate shifts (only if we have the required fields)
+  if (
+    values.name &&
+    values.type &&
+    values.starttime &&
+    values.endtime &&
+    existingShifts.length > 0
+  ) {
+    const isDuplicate = existingShifts.some((shift) => {
+      // Skip current shift when editing
+      if (currentShiftId && shift.id === currentShiftId) {
+        return false;
+      }
+
+      // Check if all attributes match
+      const nameMatch = shift.name.toLowerCase() === values.name.toLowerCase();
+      const typeMatch = shift.type === values.type;
+
+      // Compare only TIME portion, not the full date
+      const existingStartTime = new Date(shift.starttime);
+      const existingEndTime = new Date(shift.endtime);
+      const newStartTime = new Date(values.starttime);
+      const newEndTime = new Date(values.endtime);
+
+      // Extract time parts (hours and minutes) for comparison
+      const existingStartTimeStr = `${existingStartTime
+        .getUTCHours()
+        .toString()
+        .padStart(2, "0")}:${existingStartTime
+        .getUTCMinutes()
+        .toString()
+        .padStart(2, "0")}`;
+      const existingEndTimeStr = `${existingEndTime
+        .getUTCHours()
+        .toString()
+        .padStart(2, "0")}:${existingEndTime
+        .getUTCMinutes()
+        .toString()
+        .padStart(2, "0")}`;
+      const newStartTimeStr = `${newStartTime
+        .getUTCHours()
+        .toString()
+        .padStart(2, "0")}:${newStartTime
+        .getUTCMinutes()
+        .toString()
+        .padStart(2, "0")}`;
+      const newEndTimeStr = `${newEndTime
+        .getUTCHours()
+        .toString()
+        .padStart(2, "0")}:${newEndTime
+        .getUTCMinutes()
+        .toString()
+        .padStart(2, "0")}`;
+
+      const startTimeMatch = existingStartTimeStr === newStartTimeStr;
+      const endTimeMatch = existingEndTimeStr === newEndTimeStr;
+
+      return nameMatch && typeMatch && startTimeMatch && endTimeMatch;
+    });
+
+    if (isDuplicate) {
+      errors.name = "A shift with these exact attributes already exists";
+    }
   }
 
   return errors;

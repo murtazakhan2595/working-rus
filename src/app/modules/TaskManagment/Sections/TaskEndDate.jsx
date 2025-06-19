@@ -74,22 +74,19 @@ const TaskEndDate = ({
   };
 
   return (
-    <TooltipText
-      tooltipTriggerText={
-        <Badge
-          className={`${getBackgroundClass(
-            taskDateStatus,
-            taskCompleted
-          )} flex-row gap-1 rounded`}
-        >
-          <TimeIcon color={getIconColor()} />
-          <div style={textStyle} className="select-none">
-            {renderDate(dueDate)}
-          </div>
-        </Badge>
-      }
-      content={getTooltipMessage()}
-    />
+    <TooltipText content={getTooltipMessage()}>
+      <Badge
+        className={`${getBackgroundClass(
+          taskDateStatus,
+          taskCompleted
+        )} flex-row gap-1 rounded`}
+      >
+        <TimeIcon color={getIconColor()} />
+        <div style={textStyle} className="select-none">
+          {renderDate(dueDate)}
+        </div>
+      </Badge>
+    </TooltipText>
   );
 };
 

@@ -18,9 +18,27 @@ export const validateHierarchyLevelFormSchema = (values) => {
 
 export const validateAddHierarchyLevelsForm = (
   values,
-  existingRequestInitiator
+  {
+    request_initiative: existingRequestInitiator,
+    level_groups: existingLevelGroups,
+  }
 ) => {
   const errors = {};
+
+  if (!values.level_groups) errors.level_groups = "Name is required";
+  else if (typeof values.level_groups !== "string")
+    errors.level_groups = "Name is required";
+  else if (!values.level_groups.trim())
+    errors.level_groups = "Name is required";
+  else {
+    const level_groups = values.level_groups.trim();
+    const is_group_name_exist = existingLevelGroups.find(
+      (name) => name === level_groups
+    );
+    if (is_group_name_exist)
+      errors.level_groups =
+        "Levels with this name already exist. Please choose a different name.";
+  }
 
   // Validate request_initiative
   if (!values.request_initiative) {
@@ -43,7 +61,11 @@ export const validateAddHierarchyLevelsForm = (
     }
   }
   // Validate levels
-  if (!values.levels || !Array.isArray(values.levels) || values.levels.length===0) {
+  if (
+    !values.levels ||
+    !Array.isArray(values.levels) ||
+    values.levels.length === 0
+  ) {
     errors.levels = "At least one level is required";
   } else {
     const seenDesignations = new Set();

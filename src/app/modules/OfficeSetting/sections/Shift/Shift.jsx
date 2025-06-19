@@ -3,8 +3,8 @@ import React, { useState } from 'react'
 import AddShiftForm from './AddShiftForm';
 import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
-const Shift = ({ reload }) => {
-console.log("Reload in Shift Component:", reload);
+const Shift = ({ reload, dataShift }) => {
+  console.log("Reload in Shift Component:", reload, dataShift);
   const [isOpen, setIsOpen] = useState(false);
   const permissions = useOfficeSettingPermissions();
 
@@ -26,7 +26,12 @@ console.log("Reload in Shift Component:", reload);
       setIsOpen={setIsOpen}
       width="568px"
     >
-      <AddShiftForm isOpen={isOpen} setIsOpen={setIsOpen} reload={reload} />
+      <AddShiftForm
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        reload={reload}
+        existingShifts={dataShift || []}
+      />
     </SheetComponent>
   );
 };

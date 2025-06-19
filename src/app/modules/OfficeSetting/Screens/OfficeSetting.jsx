@@ -401,27 +401,39 @@ const OfficeSetting = () => {
           <Header
             content={
               activeTab === "offices" ? (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.ORGANIZATION.CREATE}>
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.ORGANIZATION.CREATE}
+                >
                   <AddOrganization reload={getOrganization} />
                 </OfficeSettingPermissionWrapper>
               ) : activeTab === "department" ? (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.DEPARTMENTS.CREATE}>
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.DEPARTMENTS.CREATE}
+                >
                   <AddDepartment reload={getDepartments} />
                 </OfficeSettingPermissionWrapper>
               ) : activeTab === "designation" ? (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.DESIGNATIONS.CREATE}>
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.DESIGNATIONS.CREATE}
+                >
                   <AddDesignation reload={getDesignations} />
                 </OfficeSettingPermissionWrapper>
               ) : activeTab === "working-hours" ? (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.SHIFT.CREATE}>
-                  <Shift reload={fetchShifts} />
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.SHIFT.CREATE}
+                >
+                  <Shift reload={fetchShifts} dataShift={dataShift} />
                 </OfficeSettingPermissionWrapper>
               ) : activeTab === "branches" ? (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.BRANCHES.CREATE}>
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.BRANCHES.CREATE}
+                >
                   <AddBranch reload={setReloadBranchesData} />
                 </OfficeSettingPermissionWrapper>
               ) : activeTab === "grace-time" ? (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.GRACE_TIME.CREATE}>
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.GRACE_TIME.CREATE}
+                >
                   <AddGraceTime
                     reloadData={() =>
                       setReloadGraceTimeData(!reloadGraceTimeData)
@@ -429,7 +441,9 @@ const OfficeSetting = () => {
                   />
                 </OfficeSettingPermissionWrapper>
               ) : (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.ONBOARDING.CREATE}>
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.ONBOARDING.CREATE}
+                >
                   <OnboardingTab reload={getOnboardingDocuments} />
                 </OfficeSettingPermissionWrapper>
               )
@@ -441,20 +455,20 @@ const OfficeSetting = () => {
             defaultValue="offices"
             className="w-full"
           >
-                          {/* Horizontal tabs */}
-              <div className="w-full mb-6">
-                <TabsList className="flex flex-row w-full gap-4 overflow-x-auto">
-                  {availableTabs?.map((tab) => (
-                    <TabsTrigger
-                      key={tab.value}
-                      value={tab.value}
-                      className="data-[state=active]:bg-primary-200 data-[state=active]:text-primary-1100"
-                    >
-                      {tab.label}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </div>
+            {/* Horizontal tabs */}
+            <div className="w-full mb-6">
+              <TabsList className="flex flex-row w-full gap-4 overflow-x-auto">
+                {availableTabs?.map((tab) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="data-[state=active]:bg-primary-200 data-[state=active]:text-primary-1100"
+                  >
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
 
             {/* Tab content */}
             <div className="w-full">
@@ -474,7 +488,11 @@ const OfficeSetting = () => {
                                 {organization.name}
                               </CardTitle>
                             </div>
-                            <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.ORGANIZATION.UPDATE}>
+                            <OfficeSettingPermissionWrapper
+                              permissions={
+                                OFFICE_SETTING_PERMISSIONS.ORGANIZATION.UPDATE
+                              }
+                            >
                               <Button
                                 variant="outline"
                                 size="sm"
