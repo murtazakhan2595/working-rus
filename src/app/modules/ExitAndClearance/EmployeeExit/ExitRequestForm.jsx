@@ -30,7 +30,12 @@ export default function ExitRequestForm({ reload }) {
   const departments = useSelector((state) => state.common.departments);
   const managers = useSelector((state) => state.emp.reportingManagers);
   const [loading, setLoading] = useState(false);
-  const initialValues = {};
+  const initialValues = {
+    exit_date: null,
+    notice_period: null,
+    reason_for_leaving: null,
+    resignation_Letter: null,
+  };
   const formRef = React.createRef();
   const handleSubmit = async (data, resetForm) => {
     const formData = new FormData();
@@ -176,7 +181,12 @@ export default function ExitRequestForm({ reload }) {
                   }}
                 />
                 <div className="flex flex-row gap-4">
-                  <Button variant="outline" type="submit" size="lg">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    size="lg"
+                    onClick={() => props.resetForm()}
+                  >
                     Reset
                   </Button>
 
