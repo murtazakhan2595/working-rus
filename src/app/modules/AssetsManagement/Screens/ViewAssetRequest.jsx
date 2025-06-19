@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { NavigationSheetComponent, DetailContent, ViewDetailSheetCardExtension, CircularActionButtons } from "components";
+import {
+  NavigationSheetComponent,
+  DetailContent,
+  ViewDetailSheetCardExtension,
+  CircularActionButtons,
+} from "components";
 import AssetRequestSheet from "./AssetRequestSheet";
 import moment from "moment";
 import { EmployeeOverview } from "components";
@@ -11,128 +16,139 @@ import { initialState } from "state/slices/UserSlice";
 
 const baseUrl = initialState.baseUrl;
 
-const ViewAssetRequest = ({ 
-  isOpen, 
-  setIsOpen, 
-  data, 
+const ViewAssetRequest = ({
+  isOpen,
+  setIsOpen,
+  data,
   reload = () => {},
   AssetRequestList = [],
   isMyRequest = false,
-  onEdit = null
+  onEdit = null,
 }) => {
   const userProfile = useSelector((state) => state.user.userProfile);
+  console.log("data", data);
 
-    // Define the fields to display - using a function to get current item
-  const getFields = (currentItem) => [
-    {
-      key: "category",
-      label: "Category",
-      formatter: () => 
-        currentItem?.asset?.asset_type?.name || 
-        currentItem?.category?.name || 
-        "Not specified"
-    },
-    {
-      key: "asset",
-      label: "Assigned Asset",
-      formatter: () => currentItem?.asset?.asset_name || "Not assigned"
-    },
-    {
-      key: "asset",
-      label: "Asset ID", 
-      formatter: () => currentItem?.asset?.id || "N/A"
-    },
-    {
-      key: "asset",
-      label: "Location",
-      formatter: () => 
-        currentItem?.asset?.asset_location_name || "Not assigned"
-    },
-    {
-      key: "asset_purchase_date",
-      label: "Purchase Date",
-      formatter: () => 
-        currentItem?.asset?.asset_purchase_date 
-          ? moment(currentItem.asset.asset_purchase_date).format("MMM D, YYYY")
-          : "Not specified"
-    },
-    {
-      key: "asset_warranty_expiry", 
-      label: "Warranty Expiry",
-      formatter: () =>
-        currentItem?.asset?.asset_warranty_expiry
-          ? moment(currentItem.asset.asset_warranty_expiry).format("MMM D, YYYY") 
-          : "Not specified"
-    },
-    {
-      key: "asset",
-      label: "Initial Condition",
-      formatter: () => currentItem?.asset?.asset_initial_condition || "Not specified"
-    },
-    {
-      key: "asset",
-      label: "Purchase Cost", 
-      formatter: () =>
-        currentItem?.asset?.asset_purchase_price
-          ? `$${currentItem.asset.asset_purchase_price.toFixed(2)}`
-          : "Not specified"
-    },
-    {
-      key: "asset_assigned_date",
-      label: "Assigned Date",
-      formatter: (value) =>
-        value ? moment(value).format("MMM D, YYYY") : "Not assigned yet"
-    },
-    {
-      key: "asset_return_date",
-      label: "Return Date", 
-      formatter: (value) =>
-        value ? moment(value).format("MMM D, YYYY") : "N/A"
-    },
-    {
-      key: "reason",
-      label: "Reason"
-    },
-    {
-      key: "additional_notes",
-      label: "Additional Notes"
-    },
-    {
-      key: "rejection_reason",
-      label: "Rejection Reason"
-    },
-    {
-      key: "asset_status",
-      label: "Request Status",
-      formatter: (value) => (
-        <span
-          className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
-            value === "Accepted"
-              ? "bg-emerald-50 text-teal-700"
-              : value === "Rejected"
-              ? "bg-red-50 text-red-700"
-              : value === "Withdrawal"
-              ? "bg-yellow-50 text-yellow-700"
-              : "bg-[#f0f0f3] text-[#7f838d]"
-          }`}
-        >
-          {value || "N/A"}
-        </span>
-      )
-    }
-  ].filter(field => {
-    // Filter out fields that don't have values
-    if (field.key === "rejection_reason" && !currentItem?.rejection_reason) return false;
-    if (field.key === "additional_notes" && !currentItem?.additional_notes) return false;
-    return true;
-  });
+  // Define the fields to display - using a function to get current item
+  const getFields = (currentItem) =>
+    [
+      {
+        key: "category",
+        label: "Category",
+        formatter: () =>
+          currentItem?.asset?.asset_type?.name ||
+          currentItem?.category?.name ||
+          "Not specified",
+      },
+      {
+        key: "asset",
+        label: "Assigned Asset",
+        formatter: () => currentItem?.asset?.asset_name || "Not assigned",
+      },
+      {
+        key: "asset",
+        label: "Asset ID",
+        formatter: () => currentItem?.asset?.id || "N/A",
+      },
+      {
+        key: "asset",
+        label: "Location",
+        formatter: () =>
+          currentItem?.asset?.asset_location_name || "Not assigned",
+      },
+      {
+        key: "asset_purchase_date",
+        label: "Purchase Date",
+        formatter: () =>
+          currentItem?.asset?.asset_purchase_date
+            ? moment(currentItem.asset.asset_purchase_date).format(
+                "MMM D, YYYY"
+              )
+            : "Not specified",
+      },
+      {
+        key: "asset_warranty_expiry",
+        label: "Warranty Expiry",
+        formatter: () =>
+          currentItem?.asset?.asset_warranty_expiry
+            ? moment(currentItem.asset.asset_warranty_expiry).format(
+                "MMM D, YYYY"
+              )
+            : "Not specified",
+      },
+      {
+        key: "asset",
+        label: "Initial Condition",
+        formatter: () =>
+          currentItem?.asset?.asset_initial_condition || "Not specified",
+      },
+      {
+        key: "asset",
+        label: "Purchase Cost",
+        formatter: () =>
+          currentItem?.asset?.asset_purchase_price
+            ? `$${currentItem.asset.asset_purchase_price.toFixed(2)}`
+            : "Not specified",
+      },
+      {
+        key: "asset_assigned_date",
+        label: "Assigned Date",
+        formatter: (value) =>
+          value ? moment(value).format("MMM D, YYYY") : "Not assigned yet",
+      },
+      {
+        key: "asset_return_date",
+        label: "Return Date",
+        formatter: (value) =>
+          value ? moment(value).format("MMM D, YYYY") : "N/A",
+      },
+      {
+        key: "reason",
+        label: "Reason",
+      },
+      {
+        key: "additional_notes",
+        label: "Additional Notes",
+      },
+      {
+        key: "rejection_reason",
+        label: "Rejection Reason",
+      },
+      {
+        key: "asset_status",
+        label: "Request Status",
+        formatter: (value) => (
+          <span
+            className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
+              value === "Accepted"
+                ? "bg-emerald-50 text-teal-700"
+                : value === "Rejected"
+                ? "bg-red-50 text-red-700"
+                : value === "Withdrawal"
+                ? "bg-yellow-50 text-yellow-700"
+                : "bg-[#f0f0f3] text-[#7f838d]"
+            }`}
+          >
+            {value || "N/A"}
+          </span>
+        ),
+      },
+    ].filter((field) => {
+      // Filter out fields that don't have values
+      if (field.key === "rejection_reason" && !currentItem?.rejection_reason)
+        return false;
+      if (field.key === "additional_notes" && !currentItem?.additional_notes)
+        return false;
+      return true;
+    });
 
   // Custom content with employee overview and status
   const CustomContent = ({ currentItem }) => {
     const showButtons =
       !isMyRequest &&
       currentItem?.asset_status === "Pending" &&
-      (userProfile.role === 2 || userProfile.role === 3 || userProfile.role === 1);
+      (userProfile.role === 2 ||
+        userProfile.role === 3 ||
+        userProfile.role === 1);
 
     const handleStatusChange = async (status) => {
       try {
@@ -166,6 +182,16 @@ const ViewAssetRequest = ({
       }
     };
 
+    // Prepare fields for DetailContent component
+    const detailContentFields = [
+      {
+        field: getFields(currentItem),
+        title: "Request Details",
+        footerField: "created_at",
+        footerTitle: "Request Date",
+      },
+    ];
+
     return (
       <div className="space-y-6">
         {/* Employee Overview */}
@@ -189,13 +215,7 @@ const ViewAssetRequest = ({
         </div>
 
         {/* Request Details */}
-        <DetailContent
-          title="Request Details"
-          currentItem={currentItem}
-          fields={getFields(currentItem)}
-          dateField="created_at"
-          dateTitle="Request Date"
-        />
+        <DetailContent currentItem={currentItem} fields={detailContentFields} />
 
         {/* Action Buttons for HR/Admin */}
         {showButtons && (
@@ -243,11 +263,11 @@ const ViewAssetRequest = ({
   const handleNext = () => {
     const validList = Array.isArray(AssetRequestList) ? AssetRequestList : [];
     if (validList.length === 0) return;
-    
+
     const currentIndex = validList.findIndex(
       (item) => item.id === currentItemId
     );
-    
+
     if (currentIndex < validList.length - 1) {
       const nextItem = validList[currentIndex + 1];
       setCurrentItemId(nextItem?.id);
@@ -263,11 +283,11 @@ const ViewAssetRequest = ({
   const handlePrevious = () => {
     const validList = Array.isArray(AssetRequestList) ? AssetRequestList : [];
     if (validList.length === 0) return;
-    
+
     const currentIndex = validList.findIndex(
       (item) => item.id === currentItemId
     );
-    
+
     if (currentIndex > 0) {
       const prevItem = validList[currentIndex - 1];
       setCurrentItemId(prevItem?.id);
@@ -282,9 +302,12 @@ const ViewAssetRequest = ({
 
   // Generate position indicator
   const getPositionIndicator = () => {
-    if (!Array.isArray(AssetRequestList) || AssetRequestList.length === 0) return null;
-    
-    const currentIndex = AssetRequestList.findIndex(item => item.id === currentItemId);
+    if (!Array.isArray(AssetRequestList) || AssetRequestList.length === 0)
+      return null;
+
+    const currentIndex = AssetRequestList.findIndex(
+      (item) => item.id === currentItemId
+    );
     return `${currentIndex + 1} of ${AssetRequestList.length}`;
   };
 
@@ -305,12 +328,10 @@ const ViewAssetRequest = ({
       positionIndicator={getPositionIndicator()}
     >
       <div className="flex flex-col gap-4">
-
-
         <CustomContent currentItem={currentItem} />
       </div>
     </ViewDetailSheetCardExtension>
   );
 };
 
-export default ViewAssetRequest; 
+export default ViewAssetRequest;
