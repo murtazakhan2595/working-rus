@@ -1,6 +1,6 @@
 import { saveShift } from "app/hooks/shiftManagement";
 import { ShiftInformation } from "app/utils/Types/ShiftManagement";
-import { validateShiftFormSchema } from 'app/utils/FormSchema/ShiftManagementFormSchema';
+import { validateShiftFormSchema } from "app/utils/FormSchema/ShiftManagementFormSchema";
 import { getShiftById } from "app/hooks/general";
 import { TextInput, TimePicker } from "components/FormControl";
 import { SelectInputComponent } from "components/FormControl";
@@ -15,6 +15,7 @@ const AddShiftForm = ({
   reloadData = () => {},
   isOpen = false,
   setIsOpen = () => {},
+  existingShifts = [], // NEW: Add existing shifts prop
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState(ShiftInformation);
@@ -45,7 +46,7 @@ const AddShiftForm = ({
         }
       }
     };
-    
+
     fetchShiftData();
   }, [id]);
 
@@ -57,7 +58,7 @@ const AddShiftForm = ({
   const handleSubmit = async (values) => {
     try {
       setIsSubmittingForm(true);
-      
+
       // Use default times if no value is selected
       const startTime = moment(values.starttime);
       const endTime = moment(values.endtime);
@@ -90,6 +91,11 @@ const AddShiftForm = ({
     }
   };
 
+  // Create validation function that includes existing shifts
+  const validateWithDuplicateCheck = (values) => {
+    return validateShiftFormSchema(values, existingShifts, id);
+  };
+
   return (
     <SheetUI
       isOpen={isOpen}
@@ -100,7 +106,7 @@ const AddShiftForm = ({
         initialValues: formData,
         enableReinitialize: true,
         handleSubmit: handleSubmit,
-        validateFormSchema: validateShiftFormSchema,
+        validateFormSchema: validateWithDuplicateCheck, // UPDATED: Use new validation function
         submitButtonText: "Submit",
         cancelButtonText: "Cancel",
         columns: 1,
@@ -129,15 +135,15 @@ const AddShiftForm = ({
                 name: "starttime",
                 required: true,
                 label: "Start Time",
-                date: formData.starttime
+                date: formData.starttime,
               },
               {
                 InputField: TimePicker,
                 name: "endtime",
                 required: true,
                 label: "End Time",
-                date: formData.endtime
-              }
+                date: formData.endtime,
+              },
             ],
           },
         ],
