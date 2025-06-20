@@ -137,6 +137,35 @@ export function mapAttendanceData(data, shiftDetails) {
   return payload;
 }
 
+export function mapAttendanceBreakDurationData(breakData = []) {
+  // Return 0 if input is not an array or is empty
+  if (!Array.isArray(breakData) || breakData.length === 0) return 0;
+
+  let totalBreakDuration = 0;
+
+  // Use breakData.results if exists, else fallback to breakData itself
+  const breaks = Array.isArray(breakData.results) ? breakData.results : breakData;
+
+  breaks.forEach((entry) => {
+    const startRaw = entry?.starttime;
+    const endRaw = entry?.endtime;
+
+    // Skip if either start or end is missing
+    if (!startRaw || !endRaw) return;
+
+    const start = moment(renderTime(startRaw));
+    const end = moment(renderTime(endRaw));
+
+    // Ensure both times are valid and end is after start
+    if (start.isValid() && end.isValid() && end.isAfter(start)) {
+      const duration = CalculateTotalWorkingHours(start, end);
+      totalBreakDuration += duration;
+    }
+  });
+
+  return parseFloat(parseFloat(totalBreakDuration).toFixed(2));
+}
+
 export function mapTimeAdjustmentPayloadeData(data) {
   const payload = {};
   // Iterate over the keys in the TimeAdjustment object

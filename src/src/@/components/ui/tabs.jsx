@@ -23,7 +23,7 @@ const TabsTrigger = React.forwardRef(({variant, className, ...props }, ref) => (
     ref={ref}
     className={cn(
       "inline-flex items-center  whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-white text-neutral-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:.text-slate-900 data-[state=active]:shadow-sm dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300 dark:data-[state=active]:bg-slate-950 dark:data-[state=active]:text-slate-50",
-      variant==='inner-tab'?  "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-fit data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium":"",
+      variant==='inner-tab'?  "shadow-none border-transparent border-b data-[state=active]:border-plum-1100 w-fit data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium":"",
       className
     )}
     {...props} />

@@ -10,6 +10,7 @@ import {
   mapAttendanceAdjustmentListData,
   mapTimeAdjustmentData,
   mapAttendanceAdjustmentData,
+  mapAttendanceBreakDurationData,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
@@ -320,20 +321,9 @@ const getBreak = async (payload) => {
 
 const calculateBreak = async (payload) => {
   const breaks = await getBreak(payload);
-  let breakDuration = 0; // total duration in minutes
-  if (breaks && breaks.results) {
-    breaks.results.forEach((element) => {
-      const start = moment(element.starttime).utc(); // parse start time as UTC
-      const end = element.endtime
-        ? moment(element.endtime).local() // parse and convert end time to local time
-        : moment().local(); // if no endtime, use the current time in local time
-
-      if (start.isValid() && end.isValid()) {
-        breakDuration += parseFloat(end.diff(start, "hours", true)); // calculate difference in hours
-      }
-    });
-  }
-  return parseFloat(breakDuration).toFixed(2); // return the break duration as a fixed decimal value
+  const breaksResults = breaks.results;
+  const breakDuration = mapAttendanceBreakDurationData(breaksResults);
+  return breakDuration;
 };
 
 const getBreakStatus = async (payload) => {
