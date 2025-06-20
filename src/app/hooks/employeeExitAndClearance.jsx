@@ -178,7 +178,7 @@ const saveEmployeeExitDetail = async (payload, id) => {
   }
 };
 
-export const getTerminationReason = async (payload) => {
+ const getTerminationReason = async (payload) => {
   const filterData = payload?.filterData ?? {};
   const ordering = payload?.ordering ?? "-id";
   const pageNo = payload?.options?.page ?? "";
@@ -215,10 +215,80 @@ export const getTerminationReason = async (payload) => {
     };
   }
 };
+const saveTerminationReason = async (payload, id) => {
+  try {
+    const paylodid = payload?.id || id;
+    if (paylodid) {
+      const URL = `${baseUrl}/terminationreason/${paylodid}`;
+      const response = await axios.patch(URL, payload, {
+        headers: formDataHeader(),
+      });
+      if (response) {
+        return response;
+      }
+    } else {
+      const URL = `${baseUrl}/terminationreason/`;
+      const response = await axios.post(URL, payload, {
+        headers: formDataHeader(),
+      });
+      if (response) {
+        return response;
+      }
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return false;
+  }
+};
+
+const deleteTerminationReason = async (id) => {
+  try {
+    const URL = `${baseUrl}/terminationreason/${id}`;
+    const response = await axios.delete(URL, {
+      headers: formDataHeader(),
+    });
+    if (response) {
+      return response;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return false;
+  }
+};
+
+const getTerminationReasonById = async (id) => {
+  try {
+    const URL = `${baseUrl}/terminationreason/${id}`;
+    const response = await axios.get(URL, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    console.error("Error fetching Personal Info data :", error);
+    return null;
+  }
+};
 
 
 export {
   getEmployeesResignations,
   saveEmployeeExitDetail,
   getEmployeesExitCount,
+  getTerminationReason,
+  saveTerminationReason,
+  deleteTerminationReason,
+  getTerminationReasonById,
 };

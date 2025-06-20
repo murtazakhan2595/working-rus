@@ -30,6 +30,8 @@ import { fetchDepartments, setDepartments } from "state/slices/CommonSlice";
 import axios from "axios";
 import { initialState as userInitialState } from "state/slices/UserSlice";
 import { HasAccess } from "utils/PermissionUtils";
+import { Button } from "components/ui/button";
+import {AddUpdateTerminationReasons} from "./TerminationReasons"
 
 // Get baseUrl from user initial state
 const baseUrl = userInitialState.baseUrl;
@@ -72,6 +74,8 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
   const [totalExit, setTotalExit] = useState(0);
   const [approvedResignation, setApprovedResignation] = useState(0);
   const [rejectedResignation, setRejectedResignation] = useState(0);
+  const [terminationReasonsReload, setTerminationReasonsReload] = useState(0);
+  const [terminationReasons, setTerminationReasons] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [reloadData, setReloadData] = useState(false);
   const [filterData, setFilterData] = useState({
@@ -86,6 +90,8 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
   const [reloadCounter, setReloadCounter] = useState(0);
   const dispatch = useDispatch();
   const organizationId = userProfile?.organization;
+
+  console.log("activeTabactiveTabactiveTabactiveTabactiveTabactiveTab", activeTab);
 
   const { showEOSSettlement } = useEOSSettlement(
     { id: userProfile?.employeeId, status: userProfile?.status },
@@ -233,9 +239,24 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
     >
       <Header
         content={
-          manageExitRequestsPermitted ? (
-            <RequestTerminationCard closeModel={closeRequestTerminationCard} />
-          ) : null
+          <>
+            {manageExitRequestsPermitted &&
+              (activeTab === "Exit Requests" ||
+                activeTab === "Exit Records") && (
+                <RequestTerminationCard
+                  closeModel={closeRequestTerminationCard}
+                />
+              )}
+            {activeTab === "Resons of Termination" && (
+              <Button
+                onClick={() => {
+                  setTerminationReasons(true);
+                }}
+              >
+                Add Termination Reason
+              </Button>
+            )}
+          </>
         }
       />
       {!isTeamView && <Stats stats={statsData} />}
@@ -253,15 +274,17 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
       >
         <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
           <TabsList className="flex items-center justify-center mb-4">
-            {["Exit Requests", "Exit Records","Resons of Termination"].map((tab) => (
-              <TabsTrigger
-                key={tab}
-                value={tab}
-                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-              >
-                {tab}
-              </TabsTrigger>
-            ))}
+            {["Exit Requests", "Exit Records", "Resons of Termination"].map(
+              (tab) => (
+                <TabsTrigger
+                  key={tab}
+                  value={tab}
+                  className="data-[state=active]:bg-primary-200 w-42 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
+                >
+                  {tab}
+                </TabsTrigger>
+              )
+            )}
           </TabsList>
           <FilterInput
             filters={[
@@ -326,13 +349,21 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
               />
             </TabsContent>
             <TabsContent value="Resons of Termination">
-              <TerminationReasons
-                
-              />
+              <TerminationReasons reload={terminationReasonsReload} />
             </TabsContent>
           </CardContent>
         </Card>
       </Tabs>
+      {terminationReasons && (
+        <AddUpdateTerminationReasons
+          isOpen={terminationReasons}
+          setIsOpen={setTerminationReasons}
+          reload={() => {
+            fetchData();
+            setTerminationReasonsReload((prev) => prev + 1); // Trigger reload
+          }}
+        />
+      )}
       {showEOSSettlement && (
         <div className="mt-4">
           <EOSSettlementList employeeId={userProfile?.employeeId} />
