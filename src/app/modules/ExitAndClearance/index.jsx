@@ -1,3 +1,4 @@
 import ExitAndClearance from "./ExitAndClearance";
 import EmployeeExit from "./EmployeeExit";
-export { ExitAndClearance, EmployeeExit };
+import { TerminationReasons } from "./TerminationReasons";
+export { ExitAndClearance, EmployeeExit, TerminationReasons };

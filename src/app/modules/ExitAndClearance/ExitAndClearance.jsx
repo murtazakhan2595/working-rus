@@ -22,6 +22,7 @@ import Stats from "components/ui/Stats";
 import { TerminationStatusOptions } from "data/Data";
 import { ExitRequests } from "app/modules/ExitAndClearance/ExitRequests";
 import { ExitRecords } from "app/modules/ExitAndClearance/ExitRecords";
+import { TerminationReasons } from "app/modules/ExitAndClearance";
 import EOSSettlementList from "../SelfService/Exit/EOSSettlementList";
 import useEOSSettlement from "../../hooks/useEOSSettlement";
 import { useDispatch, useSelector } from "react-redux";
@@ -252,7 +253,7 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
       >
         <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
           <TabsList className="flex items-center justify-center mb-4">
-            {["Exit Requests", "Exit Records"].map((tab) => (
+            {["Exit Requests", "Exit Records","Resons of Termination"].map((tab) => (
               <TabsTrigger
                 key={tab}
                 value={tab}
@@ -322,6 +323,11 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
                 handleTabChange={handleTabChange}
                 activeTab={activeInnerTab}
                 setActiveTab={setActiveInnerTab}
+              />
+            </TabsContent>
+            <TabsContent value="Resons of Termination">
+              <TerminationReasons
+                
               />
             </TabsContent>
           </CardContent>
