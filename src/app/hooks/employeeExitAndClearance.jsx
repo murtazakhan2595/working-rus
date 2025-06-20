@@ -149,6 +149,30 @@ const getEmployeesResignations = async (payload) => {
   }
 };
 
+export const getEmployeeExitData = async (id) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/employeeExit/${id}/`,
+      {
+        headers: headers(),
+      }
+    );
+    if (response.status === 200) {
+      const ResponseData = await mapAttendanceAdjustmentData(response.data);
+      const currentapprover = await getCurrentRequestApprover(
+        ResponseData.request_id
+      );
+      return { ...ResponseData, ...currentapprover };
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
+};
+
 const saveEmployeeExitDetail = async (payload, id) => {
   try {
     if (id) {

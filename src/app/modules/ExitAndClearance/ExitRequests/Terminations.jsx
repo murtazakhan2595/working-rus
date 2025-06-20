@@ -64,23 +64,23 @@ const Terminations = ({ userProfile, filterData, reload }) => {
     let isMounted = true;
     onPageChange("page", 1);
     setOrdering("-exit_date");
-    fetchData(true)
+    fetchData(true);
     return () => {
       isMounted = false;
     };
   }, [reload]);
 
-  useEffect(() => {
-    // When termination changes, ensure the selected resignation is still valid
-    const termination = Terminations?.results;
-    const selectedResignation =
-      termination &&
-      termination.find((item) => item.id === selectedResignationId);
-    if (selectedResignationId && !selectedResignation) {
-      setSelectedResignationId(null);
-      setIsOpen(false);
-    }
-  }, [Terminations]);
+  // useEffect(() => {
+  //   // When termination changes, ensure the selected resignation is still valid
+  //   const termination = Terminations?.results;
+  //   const selectedResignation =
+  //     termination &&
+  //     termination.find((item) => item.id === selectedResignationId);
+  //   if (selectedResignationId && !selectedResignation) {
+  //     setSelectedResignationId(null);
+  //     setIsOpen(false);
+  //   }
+  // }, [Terminations]);
   const closeModal = () => {
     setSelectedResignationId(null);
     setIsOpen(false);
@@ -98,13 +98,7 @@ const Terminations = ({ userProfile, filterData, reload }) => {
       ) : (
         <TableCustom
           data={Terminations?.results || []}
-          columns={ExitRequestColumns(
-            handleRowClicked,
-            () => {
-              fetchData();
-            },
-            userProfile.role === 2
-          )}
+          columns={ExitRequestColumns(fetchData)}
           pagination={true}
           dataTotalSize={Terminations?.count || 0}
           tableOptions={tableOptions}

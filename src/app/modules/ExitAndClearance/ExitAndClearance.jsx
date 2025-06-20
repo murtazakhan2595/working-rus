@@ -102,9 +102,7 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
             organizationId
           );
           if (departmentsFromAPI && departmentsFromAPI.length > 0) {
-            console.log(
-              departmentsFromAPI.length
-            );
+            console.log(departmentsFromAPI.length);
             dispatch(setDepartments(departmentsFromAPI));
           } else {
             // Fallback to redux action
@@ -251,86 +249,78 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
         }}
         value={activeTab}
       >
-        <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
-          <TabsList className="flex items-center justify-center mb-4">
-            {["Exit Requests", "Exit Records","Resons of Termination"].map((tab) => (
-              <TabsTrigger
-                key={tab}
-                value={tab}
-                className="data-[state=active]:bg-primary-200 w-28 data-[state=active]:text-primary-1100 rounded-sm data-[state-active]:font-medium"
-              >
+        <TabsList>
+          {["Exit Requests", "Exit Records", "Resons of Termination"].map(
+            (tab) => (
+              <TabsTrigger key={tab} value={tab}>
                 {tab}
               </TabsTrigger>
-            ))}
-          </TabsList>
-          <FilterInput
-            filters={[
-              {
-                type: "search",
-                placeholder: "Search by ID",
-                name: "emp_serial_no",
-              },
-              ...(activeInnerTab === "Resignations"
-                ? [
-                    {
-                      type: "select-one",
-                      option: ResignationStatusOptions,
-                      name: "status_resignation",
-                      placeholder: "Status",
-                      values: selectedStatus,
-                      value: selectedStatus,
-                    },
-                  ]
-                : activeInnerTab === "Terminations"
-                ? [
-                    {
-                      type: "select-one",
-                      option: TerminationStatusOptions,
-                      name: "status_termination",
-                      placeholder: "Status",
-                      values: selectedStatus,
-                      value: selectedStatus,
-                    },
-                  ]
-                : [
-                    {
-                      type: "select-one",
-                      option: departments,
-                      name: "departments_name",
-                      placeholder: "Department",
-                      values: selectedStatus,
-                      value: selectedStatus,
-                    },
-                  ]),
-            ]}
-            onChange={handleFilterChange}
-          />
-        </div>
+            )
+          )}
+        </TabsList>
         <Card>
-          <CardContent>
-            <TabsContent value="Exit Requests">
-              <ExitRequests
-                filterData={filterData}
-                handleTabChange={handleTabChange}
-                activeTab={activeInnerTab}
-                setActiveTab={setActiveInnerTab}
-                reload={reloadData}
-              />
-            </TabsContent>
-            <TabsContent value="Exit Records">
-              <ExitRecords
-                filterData={filterData}
-                handleTabChange={handleTabChange}
-                activeTab={activeInnerTab}
-                setActiveTab={setActiveInnerTab}
-              />
-            </TabsContent>
-            <TabsContent value="Resons of Termination">
-              <TerminationReasons
-                
-              />
-            </TabsContent>
-          </CardContent>
+          {/* <FilterInput
+              filters={[
+                {
+                  type: "search",
+                  placeholder: "Search by ID",
+                  name: "emp_serial_no",
+                },
+                ...(activeInnerTab === "Resignations"
+                  ? [
+                      {
+                        type: "select-one",
+                        option: ResignationStatusOptions,
+                        name: "status_resignation",
+                        placeholder: "Status",
+                        values: selectedStatus,
+                        value: selectedStatus,
+                      },
+                    ]
+                  : activeInnerTab === "Terminations"
+                  ? [
+                      {
+                        type: "select-one",
+                        option: TerminationStatusOptions,
+                        name: "status_termination",
+                        placeholder: "Status",
+                        values: selectedStatus,
+                        value: selectedStatus,
+                      },
+                    ]
+                  : [
+                      {
+                        type: "select-one",
+                        option: departments,
+                        name: "departments_name",
+                        placeholder: "Department",
+                        values: selectedStatus,
+                        value: selectedStatus,
+                      },
+                    ]),
+              ]}
+              onChange={handleFilterChange}
+            /> */}
+          <TabsContent value="Exit Requests">
+            <ExitRequests
+              filterData={filterData}
+              handleTabChange={handleTabChange}
+              activeTab={activeInnerTab}
+              setActiveTab={setActiveInnerTab}
+              reload={reloadData}
+            />
+          </TabsContent>
+          <TabsContent value="Exit Records">
+            <ExitRecords
+              filterData={filterData}
+              handleTabChange={handleTabChange}
+              activeTab={activeInnerTab}
+              setActiveTab={setActiveInnerTab}
+            />
+          </TabsContent>
+          <TabsContent value="Resons of Termination">
+            <TerminationReasons />
+          </TabsContent>
         </Card>
       </Tabs>
       {showEOSSettlement && (
