@@ -1,2 +1,3 @@
 import TerminationReasons from './TerminationReasons';
-export {TerminationReasons}
+import AddUpdateTerminationReasons from './AddUpdateTerminationReasons';
+export {TerminationReasons, AddUpdateTerminationReasons}
