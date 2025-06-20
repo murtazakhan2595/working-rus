@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {FilterInput} from 'components'
+import { FilterInput } from "components/FormControl";
 import {
   Resignations,
   Terminations,
@@ -70,7 +70,8 @@ const ExitRequests = ({ reload }) => {
       <CardHeader>
         <CardTitle>{activeTab} Requests</CardTitle>
         <CardDescription>
-          Here you can manage and {activeTab.toLowerCase()} requests of employees.
+          Here you can manage and {activeTab.toLowerCase()} requests of
+          employees.
         </CardDescription>
       </CardHeader>
       <CardContent>

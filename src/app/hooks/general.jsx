@@ -11,10 +11,14 @@ import {
 import { renderErrorMessages } from "utils/renderErrors";
 import { fetchDepartments } from "state/slices/CommonSlice";
 
-const baseUrl = initialState.baseUrl;
-const headers = () => ({
+export const baseUrl = initialState.baseUrl;
+export const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
+});
+export const formDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  // Don't explicitly set 'Content-Type' for FormData
 });
 
 const getDepartmentList = async (payload) => {

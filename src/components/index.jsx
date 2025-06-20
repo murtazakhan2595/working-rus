@@ -28,7 +28,7 @@ import SplitViewDetail from "./SplitViewDetail";
 import NavigationSheetComponent from "./NavigationSheetComponent";
 import DetailContent from "./DetailContent";
 import UnauthorizedAccess from "./UnauthorizedAccess";
-import { FilterInput } from "components/FormControl";
+// import { FilterInput } from "components/FormControl";
 import CircularActionButtons from "components/CircularActionButtons";
 
 export {
@@ -42,7 +42,7 @@ export {
   StatusLabel,
   ViewOptions,
   TableCustom,
-  FilterInput,
+  // FilterInput,
   DateUI,
   TextUI,
   TooltipText,
