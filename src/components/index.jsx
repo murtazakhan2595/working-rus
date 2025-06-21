@@ -10,6 +10,7 @@ import {
   getStatusVariant,
   StatusList,
   MultiStatusLabel,
+  StatusButtons,
 } from "./StatusLabel";
 import ViewOptions from "components/ViewOtions";
 import TableCustom from "./CustomTable";
@@ -62,4 +63,5 @@ export {
   CircularActionButtons,
   StatusList,
   MultiStatusLabel,
+  StatusButtons,
 };

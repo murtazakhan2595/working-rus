@@ -329,6 +329,7 @@ const getEmployeeListWithDetail = async () => {
         label: `${employee.first_name} ${employee.last_name}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
+        contact_no: `+${employee.country_code}${employee.mobile_no}`,
         first_name: employee.first_name,
         date_of_birth: employee.date_of_birth,
         direct_report: employee.direct_report,

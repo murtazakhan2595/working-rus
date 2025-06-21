@@ -1,4 +1,4 @@
-import moment from "moment";
+import { toast } from "react-toastify";
 import React, { useState, useRef } from "react";
 import {
   RenderResignationAction,
@@ -22,11 +22,7 @@ import { useSelector } from "react-redux";
 import { TerminationReason } from "utils/getValuesFromTables";
 import { Labels } from "components/StatusLabel";
 import { Sheet, SheetContent, SheetHeader } from "src/@/components/ui/sheet";
-import {
-  ViewDetailHeader,
-  ViewDetailBox,
-  ViewAttachmentDetail,
-} from "app/modules/ExitAndClearance/Sections/DetailViewPanel";
+import { ClearanceSheet } from "app/modules/ExitAndClearance/ExitRequests";
 import { Button } from "components/ui/button";
 // import { CoverFileUpload } from "components/FormControl";
 import {
@@ -36,8 +32,9 @@ import {
   NavigationSheetComponent,
   DetailContent,
   StatusList,
+  StatusButtons,
 } from "components";
-
+import { handleRequest } from "app/hooks/general";
 import { renderDate } from "utils/renderValues";
 import { HasAccess } from "utils/PermissionUtils";
 import AttachmentUI from "components/ui/AttachmentUI";
@@ -54,46 +51,83 @@ const ExitDetailsCard = ({
   const { id: user_id, role: user_role } = useSelector(
     (state) => state.user.userProfile
   );
+  const [forceLoad, setForceLoad] = useState(false);
+  const [openClearanceForm, setOpenClearanceForm] = useState(false);
+  const [currentItemId, setCurrentItemId] = useState(null);
 
-  const handleSubmit = async (data) => {
+  // const handleSubmit = async (data) => {
+  //   try {
+  //     if (data) {
+  //       // Create a new FormData object
+  //       const formData = new FormData();
+
+  //       // Append the values to the FormData object
+  //       formData.append("id", data.id);
+  //       formData.append("clearance_report", data.clearance_report);
+  //       if (DataList) {
+  //         formData.append("status_resignation", "exit interview");
+  //       } else {
+  //         formData.append("status_termination", "exit interview");
+  //       }
+  //       const response = await saveEmployeeExitDetail(formData);
+  //       if (response && reloadData) {
+  //         reloadData();
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating application status:", error);
+  //   }
+  // };
+
+  const handleSubmit = async (
+    status,
+    {
+      employee,
+      id,
+      rejection_reason,
+      request,
+      requested_checkout,
+      requested_checkin,
+      is_second_shift,
+      attendance_date,
+    }
+  ) => {
     try {
-      if (data) {
-        // Create a new FormData object
-        const formData = new FormData();
+      const response = await handleRequest(request, status === "Approved");
+      // return
+      if (response) {
+        toast.success(`Request ${status} Successfully!`);
 
-        // Append the values to the FormData object
-        formData.append("id", data.id);
-        formData.append("clearance_report", data.clearance_report);
-        if (DataList) {
-          formData.append("status_resignation", "exit interview");
-        } else {
-          formData.append("status_termination", "exit interview");
-        }
-        const response = await saveEmployeeExitDetail(formData);
-        if (response && reloadData) {
-          reloadData();
-        }
+        setForceLoad(!forceLoad);
       }
     } catch (error) {
-      console.error("Error updating application status:", error);
+      // Handle errors and rollback form data
+      console.error(error);
     }
   };
 
-  const handleClick = (event, status, data) => {
-    event.preventDefault();
-    event.stopPropagation();
-    handleSubmit(status, data);
-  };
+  const handleClick = React.useCallback(
+    (event, status, data) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setCurrentItemId(data.id);
+      if (status === "Initiate Clearance") {
+        setOpenClearanceForm(data.employee_id);
+      } else {
+        handleSubmit(status, data);
+      }
+    },
+    [setOpenClearanceForm, handleSubmit, setCurrentItemId]
+  );
 
   const fetchData = async (id, isMounted) => {
     try {
       const response = await getEmployeeExitData(id);
-      if (isMounted) {
-        return response;
-      }
+      if (isMounted) return response;
     } catch (error) {
-      console.error("Error fetching roles:", error);
+      console.error("Error fetching exit data:", error);
     }
+    return null; // Always return something
   };
 
   const fields = React.useMemo(
@@ -109,9 +143,16 @@ const ExitDetailsCard = ({
                 showEmail={true}
                 avatarSize={14}
               />
-              <StatusLabel className="ml-10" status={data.status}>
-                {data?.status?.toLowerCase()}
-              </StatusLabel>
+              <div className="flex justify-end gap-2 flex-wrap">
+                <StatusLabel status={data.status}>
+                  {data?.status?.toLowerCase()}
+                </StatusLabel>
+                {data?.status?.toLowerCase() === "approved" && (
+                  <StatusLabel status={data.clearance_status}>
+                    Clearance {data?.clearance_status?.toLowerCase()}
+                  </StatusLabel>
+                )}
+              </div>
             </div>
           );
         },
@@ -132,6 +173,7 @@ const ExitDetailsCard = ({
                   "branch",
                   "manager",
                   "contact_no",
+                  "employment_type",
                   "joining_date",
                 ]}
                 ViewVariant={"vertical"}
@@ -169,6 +211,50 @@ const ExitDetailsCard = ({
         ],
       },
       {
+        title: `${isResignation ? "Resignation" : "Termination"} Letter`,
+        field: [
+          {
+            key: isResignation ? "resignation_letter" : "termination_letter",
+            formatter: (cell, data) =>
+              cell ? (
+                <AttachmentUI
+                  attachment={cell}
+                  name={`${data.emp_name || data.serial_number} ${
+                    isResignation ? "Resignation" : "Termination"
+                  } Letter`}
+                  viewOnly={true}
+                />
+              ) : (
+                <div className="text-neutral-1000 text-sm">
+                  No letter attached
+                </div>
+              ),
+          },
+        ],
+      },
+      {
+        title: `Clearance Report`,
+        field: [
+          {
+            key: "clearance_report",
+            formatter: (cell, data) =>
+              cell ? (
+                <AttachmentUI
+                  attachment={cell}
+                  name={`${
+                    data.emp_name || data.serial_number
+                  } Clearance Report`}
+                  viewOnly={true}
+                />
+              ) : (
+                <div className="text-neutral-1000 text-sm">
+                  No report attached
+                </div>
+              ),
+          },
+        ],
+      },
+      {
         title: `Exit Interview Details`,
         field: [
           {
@@ -187,22 +273,6 @@ const ExitDetailsCard = ({
         ],
       },
       {
-        title: `${isResignation ? "Resignation" : "Termination"} Letter`,
-        field: [
-          {
-            key: isResignation ? "resignation_letter" : "termination_letter",
-            formatter: (cell) =>
-              cell ? (
-                <AttachmentUI />
-              ) : (
-                <div className="text-neutral-1000 text-sm mt-2">
-                  No letter attached
-                </div>
-              ),
-          },
-        ],
-      },
-      {
         title: "Approval Details",
         field: [
           {
@@ -215,14 +285,46 @@ const ExitDetailsCard = ({
       },
       {
         customContent: true,
+        className: "flex flex-wrap justify-end gap-2 my-5",
         renderContent: (data) => {
+          if (!data) return null;
+          if (data.status && data.status?.toLowerCase() === "approved") {
+            if (
+              data.clearance_status &&
+              data.clearance_status.toLowerCase() === "pending"
+            )
+              return (
+                <Button
+                  variant="outline"
+                  onClick={(event) =>
+                    handleClick(event, "Initiate Clearance", data)
+                  }
+                >
+                  Initiate Clearance
+                </Button>
+              );
+          }
+          return (
+            <StatusButtons
+              permissionKey={"MANAGE_EXIT_REQUESTS"}
+              status={data?.status || null}
+              current_approver={data?.current_approver || null}
+              request_id={data.request}
+              setResponse={(reponse, status) => {
+                if (reponse) {
+                  toast.success(`Request ${status} Successfully!`);
+                  setForceLoad(!forceLoad);
+                }
+              }}
+            ></StatusButtons>
+          );
           if (!managePermitted) return null;
           if (!data || !data.status || data.status?.toLowerCase() !== "pending")
             return null;
           if (!data.current_approver) return null;
           if (data.current_approver.includes(user_id) || user_role.includes(1))
             return (
-              <div className="flex flex-wrap justify-end gap-2 my-5">
+              <div className="">
                 <Button
                   variant="success"
                   onClick={(event) => handleClick(event, "Approved", data)}
@@ -241,8 +343,34 @@ const ExitDetailsCard = ({
         },
       },
     ],
-    [managePermitted, user_id, user_role, handleClick]
+    [
+      managePermitted,
+      user_id,
+      user_role,
+      handleClick,
+      isResignation,
+      forceLoad,
+      setForceLoad,
+    ]
   );
+
+  const handleClearanceInitiated = async (status) => {
+    try {
+      if (currentItemId) {
+        // Create a new FormData object
+        const formData = new FormData();
+
+        // Append values to the FormData object
+        formData.append("id", currentItemId);
+        formData.append("clearance_status", "INITIATED");
+
+        const response = await saveEmployeeExitDetail(formData, currentItemId);
+        if (response) return true;
+      }
+    } catch (error) {
+      console.error("Error updating application status:", error);
+    }
+  };
 
   return (
     <>
@@ -251,6 +379,7 @@ const ExitDetailsCard = ({
         setIsOpen={setIsOpen}
         title={`${isResignation ? "Resignation" : "Termination"} Details`}
         currentItem_Id={currentId}
+        ForceItemLoad={forceLoad}
         dataList={DataList}
         reloadData={reloadData}
         allowEdit={false}
@@ -262,6 +391,17 @@ const ExitDetailsCard = ({
       >
         <DetailContent title="Adjustment Details" fields={fields} />
       </NavigationSheetComponent>
+      {openClearanceForm && (
+        <ClearanceSheet
+          isOpen={Boolean(openClearanceForm)}
+          setIsOpen={() => {
+            setOpenClearanceForm(null);
+            setForceLoad(!forceLoad);
+          }}
+          handleClearanceInitiated={handleClearanceInitiated}
+          employee_id={openClearanceForm}
+        />
+      )}
     </>
     // <Sheet open={isOpen} onOpenChange={setIsOpen}>
     //   <SheetContent side="right" className="w-full p-6 sm:max-w-4xl ">

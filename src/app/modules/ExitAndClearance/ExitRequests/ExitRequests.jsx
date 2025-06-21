@@ -22,7 +22,7 @@ const innerTabClassName =
   "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
 const ExitRequests = ({ reload }) => {
   const [activeTab, setActiveTab] = useState("Terminations");
-  const [filterData, setFilterData] = useState({ request_status: "PENDING" });
+  const [filterData, setFilterData] = useState({ request_status: "PENDING,APPROVED" });
 
   const handleTabChange = (tab) => {
     setFilterData((prevFilters) => {

@@ -38,3 +38,5 @@ export async function mapEmployeeExitData(data) {
 
   return ResponseData;
 }
+
+

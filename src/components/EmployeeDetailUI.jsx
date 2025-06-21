@@ -14,10 +14,10 @@ import { useSelector } from "react-redux";
 const EmployeeDetailUI = React.memo(
   ({
     id,
-    className = '',
+    className = "",
     variant = "ViewMode", // othere options are [ViewMode,FormView]
     InformationKeys = [],
-    ViewVariant='horizontal'
+    ViewVariant = "horizontal",
   }) => {
     const Departments = useSelector((state) => state.common.departments);
     const Designations = useSelector((state) => state.common.designations);
@@ -72,10 +72,7 @@ const EmployeeDetailUI = React.memo(
             {
               name: "report_to",
               label: "Reporting Manager",
-              value: getLabelByValue(
-                userProfile.report_to,
-                Managers
-              ),
+              value: getLabelByValue(userProfile.report_to, Managers),
             },
           ]
         : []),
@@ -133,33 +130,47 @@ const EmployeeDetailUI = React.memo(
             },
           ]
         : []),
+      ...(InformationKeys.includes("contact_no")
+        ? [
+            {
+              name: "contact_no",
+              label: "Contracted Salary",
+              value: userProfile.contact_no,
+            },
+          ]
+        : []),
     ].filter(Boolean);
-    return <div className={className}> {variant === "ViewMode"
-      ? employeeDataList &&
-          employeeDataList.map((data) => {
-            return (
-              <DetailBox
-                orientation={ViewVariant}
-                key={data.label}
-                label={data.label}
-                value={data.value}
-                fallbackText={""}
-              />
-            );
-          })
-      : employeeDataList &&
-          employeeDataList.map((data) => {
-            return (
-              <div className="space-y-2" key={data.label}>
-                <TextInput
-                  value={data.value}
-                  name={data.name}
+    return (
+      <div className={className}>
+        {" "}
+        {variant === "ViewMode"
+          ? employeeDataList &&
+            employeeDataList.map((data) => {
+              return (
+                <DetailBox
+                  orientation={ViewVariant}
+                  key={data.label}
                   label={data.label}
-                  disabled={true}
+                  value={data.value}
+                  fallbackText={""}
                 />
-              </div>
-            );
-          })}</div>
+              );
+            })
+          : employeeDataList &&
+            employeeDataList.map((data) => {
+              return (
+                <div className="space-y-2" key={data.label}>
+                  <TextInput
+                    value={data.value}
+                    name={data.name}
+                    label={data.label}
+                    disabled={true}
+                  />
+                </div>
+              );
+            })}
+      </div>
+    );
   }
 );
 
