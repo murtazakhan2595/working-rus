@@ -30,7 +30,7 @@ import axios from "axios";
 import { initialState as userInitialState } from "state/slices/UserSlice";
 import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
-import {AddUpdateTerminationReasons} from "./TerminationReasons"
+import { AddUpdateTerminationReasons } from "./TerminationReasons";
 
 // Get baseUrl from user initial state
 const baseUrl = userInitialState.baseUrl;
@@ -79,10 +79,7 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
   const [reloadData, setReloadData] = useState(false);
   const [filterData, setFilterData] = useState({
     exit_category: "termination",
-    status_termination: StatusList(false),
-    ...(userProfile.role === 2 || isTeamView
-      ? { reporting_to: userProfile.id }
-      : {}),
+    status_request: "PENDING",
   });
   const manageExitRequestsPermitted = HasAccess("MANAGE_EXIT_REQUESTS");
   const [filterInnerData, setFilterInnerData] = useState({});
@@ -90,7 +87,10 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
   const dispatch = useDispatch();
   const organizationId = userProfile?.organization;
 
-  console.log("activeTabactiveTabactiveTabactiveTabactiveTabactiveTab", activeTab);
+  console.log(
+    "activeTabactiveTabactiveTabactiveTabactiveTabactiveTab",
+    activeTab
+  );
 
   const { showEOSSettlement } = useEOSSettlement(
     { id: userProfile?.employeeId, status: userProfile?.status },
