@@ -2,9 +2,7 @@ import { connect } from "react-redux";
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { PageLoader } from "components";
-
-import { ExitTerminatedColumns } from "app/utils/Types/TableColumns";
-
+import { ExitRequestColumns } from "app/modules/ExitAndClearance/Sections";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 import TableCustom from "components/CustomTable";
 import { Card, CardContent } from "components/ui/card.jsx";
@@ -51,12 +49,10 @@ const Terminated = ({ userProfile, departments, filterData }) => {
           <CardContent>
             <TableCustom
               data={Terminated?.results || []}
-              columns={ExitTerminatedColumns}
-              hideTableHeader={true}
+              columns={ExitRequestColumns(fetchData)}
               pagination={true}
               dataTotalSize={Terminated?.count || 0}
               tableOptions={tableOptions}
-              dataStyle={{ backgroundColor: "white" }}
             />
           </CardContent>
         </Card>

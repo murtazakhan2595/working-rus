@@ -69,60 +69,18 @@ const fetchDepartmentsDirectly = async (organizationId) => {
 
 const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
   const [activeTab, setActiveTab] = useState("Exit Requests");
-  const [activeInnerTab, setActiveInnerTab] = useState("Terminations");
   const [totalExit, setTotalExit] = useState(0);
   const [approvedResignation, setApprovedResignation] = useState(0);
   const [rejectedResignation, setRejectedResignation] = useState(0);
   const [terminationReasonsReload, setTerminationReasonsReload] = useState(0);
   const [terminationReasons, setTerminationReasons] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState("");
   const [reloadData, setReloadData] = useState(false);
-  const [filterData, setFilterData] = useState({
-    exit_category: "termination",
-    status_request: "PENDING",
-  });
   const manageExitRequestsPermitted = HasAccess("MANAGE_EXIT_REQUESTS");
-  const [filterInnerData, setFilterInnerData] = useState({});
-  const [reloadCounter, setReloadCounter] = useState(0);
-  const dispatch = useDispatch();
-  const organizationId = userProfile?.organization;
-
-  console.log(
-    "activeTabactiveTabactiveTabactiveTabactiveTabactiveTab",
-    activeTab
-  );
 
   const { showEOSSettlement } = useEOSSettlement(
     { id: userProfile?.employeeId, status: userProfile?.status },
     userProfile
   );
-
-  // Fetch departments on component mount
-  useEffect(() => {
-    if (organizationId) {
-      const loadDepartments = async () => {
-        try {
-          // First try direct API call
-          const departmentsFromAPI = await fetchDepartmentsDirectly(
-            organizationId
-          );
-          if (departmentsFromAPI && departmentsFromAPI.length > 0) {
-            console.log(departmentsFromAPI.length);
-            dispatch(setDepartments(departmentsFromAPI));
-          } else {
-            // Fallback to redux action
-            dispatch(fetchDepartments());
-          }
-        } catch (error) {
-          console.error("Error loading departments:", error);
-          // Fallback to redux action
-          dispatch(fetchDepartments());
-        }
-      };
-
-      loadDepartments();
-    }
-  }, [organizationId, dispatch]);
 
   const fetchData = async () => {
     try {
@@ -131,7 +89,6 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
           ? { filterData: { reporting_to: userProfile.id } }
           : {},
         activeTab,
-        activeInnerTab
       );
 
       if (response) {
@@ -145,69 +102,11 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
   };
   useEffect(() => {
     fetchData();
-  }, [activeTab, activeInnerTab, isTeamView]);
+  }, [activeTab, isTeamView]);
 
   const closeRequestTerminationCard = () => {
     fetchData();
     setReloadData(!reloadData);
-  };
-
-  const handleFilterChange = (filterName, filterValue) => {
-    if (filterName === "status_resignation") setSelectedStatus(filterValue);
-    if (filterName === "status_termination") setSelectedStatus(filterValue);
-    if (filterName === "departments_name") {
-      setSelectedStatus(filterValue);
-      filterValue = [filterValue];
-    } else if (
-      filterName === "status_resignation" ||
-      (filterName === "status_termination" && filterValue)
-    ) {
-      filterValue = filterValue;
-    }
-    setFilterData((prevFilters) => {
-      const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
-        delete updatedFilters[filterName];
-      } else {
-        updatedFilters[filterName] = filterValue;
-      }
-      return updatedFilters;
-    });
-  };
-  const handleTabChange = (tab) => {
-    if (tab === "Resignations" || tab === "Exit Requests") {
-      setFilterData({
-        status_resignation: StatusList(),
-        ...(userProfile.role === 2 || isTeamView
-          ? { reporting_to: userProfile.id }
-          : {}),
-        exit_category: "resignation",
-      });
-    } else if (tab === "Terminations") {
-      setFilterData({
-        status_termination: StatusList(false),
-        ...(userProfile.role === 2 || isTeamView
-          ? { reporting_to: userProfile.id }
-          : {}),
-        exit_category: "termination",
-      });
-    } else if (tab === "Resigned" || tab === "Exit Records") {
-      setFilterData({
-        ...(userProfile.role === 2 || isTeamView
-          ? { reporting_to: userProfile.id }
-          : {}),
-        exit_category: "resignation",
-        status_resignation: "exit interview",
-      });
-    } else if (tab === "Terminated") {
-      setFilterData({
-        ...(userProfile.role === 2 || isTeamView
-          ? { reporting_to: userProfile.id }
-          : {}),
-        exit_category: "termination",
-        status_termination: "exit interview",
-      });
-    }
   };
 
   const statsData = [
@@ -219,16 +118,6 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
       icon: RxCrossCircled,
     },
   ];
-
-  const getFilterInputOptions = () => {
-    if (activeTab === "Resignations") {
-      return ResignationStatusOptions;
-    } else if (activeTab === "Terminations") {
-      return TerminationStatusOptions;
-    } else {
-      return departments;
-    }
-  };
 
   return (
     <div
@@ -261,11 +150,7 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
         defaultValue="Exit Requests"
         className="w-full"
         onValueChange={(tab) => {
-          handleTabChange(tab);
           setActiveTab(tab);
-          setActiveInnerTab(
-            tab === "Exit Requests" ? "Resignations" : "Resigned"
-          );
         }}
         value={activeTab}
       >
@@ -279,67 +164,14 @@ const ExitAndClearance = ({ userProfile, departments, isTeamView = false }) => {
           )}
         </TabsList>
         <Card>
-          {/* <FilterInput
-              filters={[
-                {
-                  type: "search",
-                  placeholder: "Search by ID",
-                  name: "emp_serial_no",
-                },
-                ...(activeInnerTab === "Resignations"
-                  ? [
-                      {
-                        type: "select-one",
-                        option: ResignationStatusOptions,
-                        name: "status_resignation",
-                        placeholder: "Status",
-                        values: selectedStatus,
-                        value: selectedStatus,
-                      },
-                    ]
-                  : activeInnerTab === "Terminations"
-                  ? [
-                      {
-                        type: "select-one",
-                        option: TerminationStatusOptions,
-                        name: "status_termination",
-                        placeholder: "Status",
-                        values: selectedStatus,
-                        value: selectedStatus,
-                      },
-                    ]
-                  : [
-                      {
-                        type: "select-one",
-                        option: departments,
-                        name: "departments_name",
-                        placeholder: "Department",
-                        values: selectedStatus,
-                        value: selectedStatus,
-                      },
-                    ]),
-              ]}
-              onChange={handleFilterChange}
-            /> */}
           <TabsContent value="Exit Requests">
-            <ExitRequests
-              filterData={filterData}
-              handleTabChange={handleTabChange}
-              activeTab={activeInnerTab}
-              setActiveTab={setActiveInnerTab}
-              reload={reloadData}
-            />
+            <ExitRequests reload={reloadData} />
           </TabsContent>
           <TabsContent value="Exit Records">
-            <ExitRecords
-              filterData={filterData}
-              handleTabChange={handleTabChange}
-              activeTab={activeInnerTab}
-              setActiveTab={setActiveInnerTab}
-            />
+            <ExitRecords />
           </TabsContent>
           <TabsContent value="Resons of Termination">
-            <TerminationReasons reload={terminationReasonsReload}/>
+            <TerminationReasons reload={terminationReasonsReload} />
           </TabsContent>
         </Card>
       </Tabs>

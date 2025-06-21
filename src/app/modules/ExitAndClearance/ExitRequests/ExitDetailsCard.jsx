@@ -357,14 +357,10 @@ const ExitDetailsCard = ({
   const handleClearanceInitiated = async (status) => {
     try {
       if (currentItemId) {
-        // Create a new FormData object
-        const formData = new FormData();
-
-        // Append values to the FormData object
-        formData.append("id", currentItemId);
-        formData.append("clearance_status", "INITIATED");
-
-        const response = await saveEmployeeExitDetail(formData, currentItemId);
+        const response = await saveEmployeeExitDetail(
+          { clearance_status: "INITIATED" },
+          currentItemId
+        );
         if (response) return true;
       }
     } catch (error) {

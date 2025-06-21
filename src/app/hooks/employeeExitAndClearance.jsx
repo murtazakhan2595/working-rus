@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getFormattedDropdownItems } from "utils/Lists";
-import { mapEmployeeExitData } from "app/utils/MappingObjects/mapEmployeeExitData";
+import { mapEmployeeExitData,mapEmployeeExitPayloadData } from "app/utils/MappingObjects/mapEmployeeExitData";
 import {
   HandleLogout,
   getCurrentRequestApprover,
@@ -8,6 +8,7 @@ import {
   headers,
   formDataHeader,
 } from "./general";
+import { renderErrorMessages } from "utils/renderErrors";
 
 
 const getEmployeesExitCount = async (payload, activeTab, activeInnerTab) => {
@@ -150,34 +151,65 @@ export const getEmployeeExitData = async (id) => {
   }
 };
 
-const saveEmployeeExitDetail = async (payload, id) => {
+export const saveEmployeeExitDetail = async (payload, id) => {
+  const finalId = id;
   try {
-    if (id) {
-      const URL = `${baseUrl}/employeeExit/${id}`;
-      const response = await axios.patch(URL, payload, {
-        headers: formDataHeader(),
-      });
-      if (response) {
-        return response;
-      }
-    } else {
-      const URL = `${baseUrl}/employeeExit`;
-      const response = await axios.post(URL, payload, {
-        headers: formDataHeader(),
-      });
-      if (response) {
-        return response;
-      }
+    const finalPayload = mapEmployeeExitPayloadData(payload);
+
+    const url = finalId
+      ? `${baseUrl}/employeeExit/${finalId}` // Use id if updating
+      : `${baseUrl}/employeeExit`; // No id means create new
+
+    const method = finalId ? "PATCH" : "POST"; // Determine method based on existence of id
+
+    const response = await axios({
+      method,
+      url,
+      data: finalPayload,
+      headers: headers(),
+    });
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
     }
   } catch (error) {
+    console.error("Error saving attendance:", error);
     if (error?.response?.status === 401) {
-      // HandleLogout();
+      HandleLogout();
     }
-
-    console.error("Error fetching Personal Info data :", error);
+    renderErrorMessages(error?.response?.data);
     return false;
   }
 };
+
+
+// const saveEmployeeExitDetail = async (payload, id) => {
+//   try {
+//     if (id) {
+//       const URL = `${baseUrl}/employeeExit/${id}`;
+//       const response = await axios.patch(URL, payload, {
+//         headers: formDataHeader(),
+//       });
+//       if (response) {
+//         return response;
+//       }
+//     } else {
+//       const URL = `${baseUrl}/employeeExit`;
+//       const response = await axios.post(URL, payload, {
+//         headers: formDataHeader(),
+//       });
+//       if (response) {
+//         return response;
+//       }
+//     }
+//   } catch (error) {
+//     if (error?.response?.status === 401) {
+//       // HandleLogout();
+//     }
+
+//     console.error("Error fetching Personal Info data :", error);
+//     return false;
+//   }
+// };
 
 const getTerminationReason = async (payload) => {
   const filterData = payload?.filterData ?? {};
@@ -285,7 +317,6 @@ const getTerminationReasonById = async (id) => {
 
 export {
   getEmployeesResignations,
-  saveEmployeeExitDetail,
   getEmployeesExitCount,
   getTerminationReason,
   saveTerminationReason,

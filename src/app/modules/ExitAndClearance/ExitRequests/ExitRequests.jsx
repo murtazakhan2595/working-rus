@@ -18,11 +18,12 @@ import {
   CardDescription,
 } from "components/ui/card";
 
-const innerTabClassName =
-  "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
 const ExitRequests = ({ reload }) => {
   const [activeTab, setActiveTab] = useState("Terminations");
-  const [filterData, setFilterData] = useState({ request_status: "PENDING,APPROVED" });
+  const [filterData, setFilterData] = useState({
+    request_status: "PENDING",
+    exit_category: "TERMINATION",
+  });
 
   const handleTabChange = (tab) => {
     setFilterData((prevFilters) => {
@@ -30,9 +31,9 @@ const ExitRequests = ({ reload }) => {
         ...prevFilters,
         exit_category:
           tab === "Resignations"
-            ? "resignation"
+            ? "RESIGNATION"
             : tab === "Terminations"
-            ? "termination"
+            ? "TERMINATION"
             : null,
       };
     });
@@ -59,7 +60,7 @@ const ExitRequests = ({ reload }) => {
       value={activeTab}
     >
       <div className="flex flex-col items-start justify-between lg:flex-row md:flex-row xl:flex-row">
-        <TabsList className="flex items-center justify-center mb-4">
+        <TabsList className="flex items-center justify-center">
           {["Terminations", "Resignations"].map((tab) => (
             <TabsTrigger key={tab} value={tab} variant={"inner-tab"}>
               {tab}

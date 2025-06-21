@@ -39,4 +39,26 @@ export async function mapEmployeeExitData(data) {
   return ResponseData;
 }
 
+export function mapEmployeeExitPayloadData(data) {
+  // Initialize an empty payload object
+  const formData = new FormData();
+  // Iterate over the keys in the Task object
+  for (const key in EmployeeExit) {
+    // Check if the key exists in the data object
+    if (data.hasOwnProperty(key) && data[key]) {
+      // Add the key and its value to the payload
+      if (
+        [
+          "resignation_letter",
+          "termination_letter",
+          "clearance_report",
+        ].includes(key)
+      ) {
+        if (data[key] instanceof File) formData.append(key, data[key]);
+      } else formData.append(key, data[key]);
+    }
+  }
 
+  // Return the constructed payload
+  return formData;
+}
