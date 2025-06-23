@@ -1,6 +1,6 @@
 import axios from "axios";
 import { initialState } from "state/slices/UserSlice";
-import { HandleLogout } from "./general";
+import { HandleLogout, baseUrl, headers } from "./general";
 import moment from "moment";
 import { CalculateTotalWorkingHours } from "utils/renderValues";
 import {
@@ -14,16 +14,11 @@ import {
   format,
 } from "date-fns";
 import { getEmployeeAttendanceDetails } from "app/hooks/attendance";
-
-const baseUrl = initialState.baseUrl;
-const headers = () => ({
-  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-  "Content-Type": "application/json",
-});
-const formDataHeader = () => ({
-  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-  // Don't explicitly set 'Content-Type' for FormData
-});
+import { getEmployeeInfoData } from "app/hooks/use-store";
+import {
+  mapCustomShiftData,
+  mapActiveShiftData,
+} from "app/utils/MappingObjects/mapShiftManagementData";
 
 const saveShift = async (payload) => {
   try {
@@ -138,6 +133,38 @@ const getShiftSchedule = async (payload) => {
     return false;
   }
 };
+export const getCustomShiftByEmployeeID = async (
+  employee_id,
+  date = new Date()
+) => {
+  if (!employee_id) return false;
+  try {
+    const formattedDate = moment(date).format("YYYY-MM-DD");
+    const response = await getShiftSchedule({
+      filterData: {
+        employee: employee_id,
+        status: "Approved",
+        end_date_gte: formattedDate,
+        start_date_lte: formattedDate,
+        is_change_request: "true,false",
+      },
+      ordering: "-created_at",
+    });
+    if (response && response?.results?.[0]) {
+      const schedule = response?.results?.[0];
+      const customSchedule = schedule?.custom_schedule?.[formattedDate];
+      const ResponseData = mapCustomShiftData(customSchedule, formattedDate);
+      return ResponseData;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
 
 const getShiftChangeRequests = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
@@ -205,26 +232,6 @@ const getEmployeeShiftCalendar = async (payload) => {
     }
   } catch (error) {
     console.error("Error fetching employee shift calendar:", error);
-    if (error?.response?.status === 401) {
-      HandleLogout();
-    }
-    return false;
-  }
-};
-
-const getEmployeeEffectiveShift = async (employeeId, date) => {
-  try {
-    const response = await axios.get(
-      `${baseUrl}/employees/${employeeId}/effective-shift?date=${date}`,
-      {
-        headers: headers(),
-      }
-    );
-    if (response.status === 200) {
-      return response.data;
-    }
-  } catch (error) {
-    console.error("Error fetching effective shift:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
@@ -314,7 +321,7 @@ export const getActiveShiftList = async (
       try {
         const schedule = scheduleResponse?.results?.[0];
         const customSchedule = schedule?.custom_schedule?.[formattedDate];
-        const res = await getActiveShiftsData(employee_id, default_shift, date);
+        const res = await getActiveShiftData(employee_id, default_shift, date);
         if (!res) return null;
         return res;
       } catch (err) {
@@ -332,136 +339,26 @@ export const getActiveShiftList = async (
   }
 };
 
-export async function getActiveShiftsData(
-  employeeId,
-  date = new Date(),
-  defaultShift,
-  customSchedule
-) {
+export async function getActiveShiftData(employeeId, date = new Date()) {
   try {
-    console.log();
     if (!employeeId || !date) return null;
-    const formattedDate = moment(date).format("YYYY-MM-DD");
-    const isWeekend = moment(date).day() === 0 || moment(date).day() === 6;
-    const isDefaultShiftValid =
-      defaultShift &&
-      typeof defaultShift === "object" &&
-      defaultShift.start_time &&
-      defaultShift.end_time;
-
-    const active_shift = {
-      date: formattedDate,
-      is_split_shift: false,
-      total_hours: 0,
-      shifts: [],
-      shift_assigned: true,
-      status: false,
-      is_weekly_off: false,
-      isOffToday: false,
-    };
-
-    if (customSchedule) {
-      if (customSchedule.is_off) {
-        return {
-          ...active_shift,
-          isOffToday: true,
-          is_weekly_off: true,
-          OffLabel: "Weekly Off",
-        };
-      }
-
-      active_shift.status = true;
-      active_shift.isOffToday = false;
-
-      if (customSchedule.is_split) {
-        if (
-          customSchedule.start_time_1 &&
-          customSchedule.end_time_1 &&
-          customSchedule.start_time_2 &&
-          customSchedule.end_time_2
-        ) {
-          const first_start_time = `${formattedDate}T${customSchedule.start_time_1}`;
-          const first_end_time = `${formattedDate}T${customSchedule.end_time_1}`;
-          const second_start_time = `${formattedDate}T${customSchedule.start_time_2}`;
-          const second_end_time = `${formattedDate}T${customSchedule.end_time_2}`;
-
-          active_shift.is_split_shift = true;
-          active_shift.shifts = [
-            {
-              start_time: format(new Date(first_start_time), "hh:mm a"),
-              end_time: format(new Date(first_end_time), "hh:mm a"),
-            },
-            {
-              start_time: format(new Date(second_start_time), "hh:mm a"),
-              end_time: format(new Date(second_end_time), "hh:mm a"),
-            },
-          ];
-          active_shift.total_hours =
-            CalculateTotalWorkingHours(first_start_time, first_end_time) +
-            CalculateTotalWorkingHours(second_start_time, second_end_time);
-        }
-        return active_shift;
-      }
-
-      // Regular shift fallback
-      const start_time = customSchedule.start_time;
-      const end_time = customSchedule.end_time;
-
-      if (start_time && end_time) {
-        const start_time = `${formattedDate}T${customSchedule.start_time}`;
-        const end_time = `${formattedDate}T${customSchedule.end_time}`;
-        active_shift.shifts = [
-          {
-            start_time: format(new Date(start_time), "hh:mm a"),
-            end_time: format(new Date(end_time), "hh:mm a"),
-          },
-        ];
-        active_shift.total_hours = CalculateTotalWorkingHours(
-          start_time,
-          end_time
-        );
-      }
-      return active_shift;
-    }
-
-    // 2. Fallback to default shift
-    if (!isDefaultShiftValid) {
-      return {
-        ...active_shift,
-        status: false,
-        shift_assigned: false,
-        isOffToday: true,
-        OffLabel: "No Shift Assigned",
-      };
-    }
-
-    const weekend_shift = defaultShift?.type === "Weekend";
-    const default_start = defaultShift.start_time;
-    const default_end = defaultShift.end_time;
-
-    if ((weekend_shift && isWeekend) || (!weekend_shift && !isWeekend)) {
-      if (default_start && default_end) {
-        active_shift.status = true;
-        active_shift.shifts = [
-          {
-            start_time: format(new Date(default_start), "hh:mm a"),
-            end_time: format(new Date(default_end), "hh:mm a"),
-          },
-        ];
-        active_shift.total_hours = CalculateTotalWorkingHours(
-          default_start,
-          default_end
-        );
-        active_shift.isOffToday = false;
-      }
-    } else {
-      active_shift.status = false;
-      active_shift.isOffToday = true;
-      active_shift.OffLabel = "Weekly Off";
-      active_shift.is_weekly_off = true;
-    }
-
-    return active_shift;
+    const default_shift = await getEmployeeInfoData(
+      employeeId,
+      "default_shift"
+    );
+    const custom_shift = await getCustomShiftByEmployeeID(employeeId, date);
+    // get if employee is on leave
+    const leave_details = {};
+    // get if it holiday
+    const holiday_details = {};
+    const active_shift_details = await mapActiveShiftData(
+      date,
+      default_shift,
+      custom_shift,
+      leave_details,
+      holiday_details
+    );
+    return active_shift_details;
   } catch (error) {
     console.error("Error in getEmployeeActiveShift:", error);
     return null;
@@ -474,14 +371,15 @@ export const saveCustomShift = async (
   start_time,
   end_time,
   isSecondShift,
-  user_id= null
+  user_id = null
 ) => {
   try {
-    if (!employee_id || !date || !start_time || !end_time || !user_id) return false;
-    
+    if (!employee_id || !date || !start_time || !end_time || !user_id)
+      return false;
+
     const baseDate = moment(date);
     if (!baseDate.isValid()) return false;
-    
+
     const formattedDate = moment(date).format("YYYY-MM-DD");
 
     // Step 1: Find existing approved custom schedule for this specific date
@@ -511,15 +409,18 @@ export const saveCustomShift = async (
     }
 
     // Step 3: Get user information for assigned_by
-    let assignedBy = user_id 
+    let assignedBy = user_id;
 
     // Step 4: Check if there's an existing custom schedule covering this date
     let existingCustomSchedule = null;
-    if (overlappingSchedules?.results && overlappingSchedules.results.length > 0) {
-      existingCustomSchedule = overlappingSchedules.results.find(schedule => {
+    if (
+      overlappingSchedules?.results &&
+      overlappingSchedules.results.length > 0
+    ) {
+      existingCustomSchedule = overlappingSchedules.results.find((schedule) => {
         const scheduleStart = moment(schedule.start_date);
         const scheduleEnd = moment(schedule.end_date);
-        return baseDate.isBetween(scheduleStart, scheduleEnd, 'day', '[]');
+        return baseDate.isBetween(scheduleStart, scheduleEnd, "day", "[]");
       });
     }
 
@@ -634,7 +535,7 @@ export const saveCustomShift = async (
 
     // Step 5: Save the schedule
     const response = await saveShiftSchedule(payload);
-    
+
     if (response) {
       console.log("Custom shift saved successfully");
       return response;
@@ -642,7 +543,6 @@ export const saveCustomShift = async (
       console.error("Failed to save custom shift");
       return false;
     }
-
   } catch (error) {
     console.error("Error in saveCustomShift:", error);
     return false;
@@ -657,7 +557,6 @@ export {
   getShiftChangeRequests,
   getShiftChangeRequestById,
   getEmployeeShiftCalendar,
-  getEmployeeEffectiveShift,
   saveShiftSchedulesLogs,
   getShiftSchedulesLogs,
 };
