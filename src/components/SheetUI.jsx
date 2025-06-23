@@ -60,7 +60,6 @@ const SheetUI = forwardRef(
 
     const HandleSubmit = async (values, resetForm) => {
       try {
-        debugger
         setIsSubmittingForm(true);
         const response = await handleSubmit(values, resetForm);
         if (response?.status) {

@@ -16,14 +16,14 @@ import {
 } from "app/hooks/payroll";
 import { toast } from "react-toastify";
 import { validateClearanceForm } from "app/utils/FormSchema/exitAndClearanceFormSchema";
-import useEOSSettlement from "app/hooks/useEOSSettlement";
+import { saveEmployeeExitDetail } from "app/hooks/employeeExitAndClearance";
 import { SheetUI, EmployeeDetailUI } from "components";
 
 const ClearanceSheet = ({
   isOpen,
   setIsOpen,
-  handleClearanceInitiated = async () => {},
   employee_id,
+  exit_id,
 }) => {
   const [employee_payroll, setEmployeePayroll] = useState(null);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
@@ -116,7 +116,11 @@ const ClearanceSheet = ({
           employee_payroll.id
         );
         // Update status and close the form
-        await handleClearanceInitiated("initiated clearance");
+        if (exit_id)
+          await saveEmployeeExitDetail(
+            { clearance_status: "INITIATED" },
+            exit_id
+          );
         return {
           status: true,
           title: "Clearance Initiated Succesfully",

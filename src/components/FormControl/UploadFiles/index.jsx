@@ -19,7 +19,8 @@ const CoverFileUpload = ({
   deleteAttachment = () => {},
   allowUpdate = true,
   className = "w-full", // Custom styling
-  disabled=false
+  disabled = false,
+  description,
 }) => {
   const [files, setFiles] = useState([]); // Store multiple files
   // Initialize files from value
@@ -112,6 +113,7 @@ const CoverFileUpload = ({
       error={error}
       touched={touch}
       className={className}
+      field_description={description}
     >
       {variant === "CoverFileUpload" && (
         <CoverFileInput

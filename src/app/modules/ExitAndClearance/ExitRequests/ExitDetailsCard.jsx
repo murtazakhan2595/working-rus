@@ -19,10 +19,7 @@ import {
   getEmployeeExitData,
 } from "app/hooks/employeeExitAndClearance";
 import { useSelector } from "react-redux";
-import { TerminationReason } from "utils/getValuesFromTables";
-import { Labels } from "components/StatusLabel";
-import { Sheet, SheetContent, SheetHeader } from "src/@/components/ui/sheet";
-import { ClearanceSheet } from "app/modules/ExitAndClearance/ExitRequests";
+import { UploadClearanceReport,ClearanceSheet } from "app/modules/ExitAndClearance";
 import { Button } from "components/ui/button";
 // import { CoverFileUpload } from "components/FormControl";
 import {
@@ -53,31 +50,9 @@ const ExitDetailsCard = ({
   );
   const [forceLoad, setForceLoad] = useState(false);
   const [openClearanceForm, setOpenClearanceForm] = useState(false);
+  const [openUploadClearanceRportForm, setOpenUploadClearanceReportForm] =
+    useState(false);
   const [currentItemId, setCurrentItemId] = useState(null);
-
-  // const handleSubmit = async (data) => {
-  //   try {
-  //     if (data) {
-  //       // Create a new FormData object
-  //       const formData = new FormData();
-
-  //       // Append the values to the FormData object
-  //       formData.append("id", data.id);
-  //       formData.append("clearance_report", data.clearance_report);
-  //       if (DataList) {
-  //         formData.append("status_resignation", "exit interview");
-  //       } else {
-  //         formData.append("status_termination", "exit interview");
-  //       }
-  //       const response = await saveEmployeeExitDetail(formData);
-  //       if (response && reloadData) {
-  //         reloadData();
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error updating application status:", error);
-  //   }
-  // };
 
   const handleSubmit = async (
     status,
@@ -111,10 +86,10 @@ const ExitDetailsCard = ({
       event.preventDefault();
       event.stopPropagation();
       setCurrentItemId(data.id);
-      if (status === "Initiate Clearance") {
+      if (status === "INITIATED") {
         setOpenClearanceForm(data.employee_id);
-      } else {
-        handleSubmit(status, data);
+      } else if (status === "COMPLETED") {
+        setOpenUploadClearanceReportForm(true);
       }
     },
     [setOpenClearanceForm, handleSubmit, setCurrentItemId]
@@ -296,11 +271,21 @@ const ExitDetailsCard = ({
               return (
                 <Button
                   variant="outline"
-                  onClick={(event) =>
-                    handleClick(event, "Initiate Clearance", data)
-                  }
+                  onClick={(event) => handleClick(event, "INITIATED", data)}
                 >
                   Initiate Clearance
+                </Button>
+              );
+            if (
+              data.clearance_status &&
+              data.clearance_status.toLowerCase() === "initiated"
+            )
+              return (
+                <Button
+                  variant="outline"
+                  onClick={(event) => handleClick(event, "COMPLETED", data)}
+                >
+                  Complete Clearance
                 </Button>
               );
           }
@@ -354,20 +339,6 @@ const ExitDetailsCard = ({
     ]
   );
 
-  const handleClearanceInitiated = async (status) => {
-    try {
-      if (currentItemId) {
-        const response = await saveEmployeeExitDetail(
-          { clearance_status: "INITIATED" },
-          currentItemId
-        );
-        if (response) return true;
-      }
-    } catch (error) {
-      console.error("Error updating application status:", error);
-    }
-  };
-
   return (
     <>
       <NavigationSheetComponent
@@ -394,163 +365,21 @@ const ExitDetailsCard = ({
             setOpenClearanceForm(null);
             setForceLoad(!forceLoad);
           }}
-          handleClearanceInitiated={handleClearanceInitiated}
           employee_id={openClearanceForm}
+          exit_id={currentItemId}
+        />
+      )}
+      {openUploadClearanceRportForm && (
+        <UploadClearanceReport
+          isOpen={openUploadClearanceRportForm}
+          setIsOpen={() => {
+            setOpenUploadClearanceReportForm(false);
+            setForceLoad(!forceLoad);
+          }}
+          exit_id={currentItemId}
         />
       )}
     </>
-    // <Sheet open={isOpen} onOpenChange={setIsOpen}>
-    //   <SheetContent side="right" className="w-full p-6 sm:max-w-4xl ">
-    //     <div className="flex flex-col h-full">
-    //       <SheetHeader>
-    //         <ViewDetailHeader
-    //           onNextClick={handleNext}
-    //           onPreviousClick={handlePrevious}
-    //         />
-    //       </SheetHeader>
-    //       <div className="mt-4">
-    //         <section className="flex flex-col items-start justify-start w-full gap-4 mt-10 max-md:max-w-full">
-    //           <StatusLabel>
-    //             {DataList ? "Resignation" : "Termination"}
-    //           </StatusLabel>
-    //           <div className="flex flex-wrap items-center justify-between w-full">
-    //             <div className="flex flex-col gap-2 justify-start max-w-[70%]">
-    //               <EmployeeOverview
-    //                 id={resignation?.employee_id}
-    //                 showId={true}
-    //                 showDepartment={true}
-    //                 showPosition={true}
-    //                 avatarSize={16}
-    //               />
-    //               {/* <h1 className="mb-0 text-2xl font-bold text-zinc-800">
-    //                 {resignation?.emp_name}
-    //               </h1>
-    //               <p className="text-base text-zinc-600">
-    //                 ID: <EmployeeID value={resignation?.employee_id} /> |{" "}
-    //                 <DesignationName value={resignation?.position} /> |
-    //                 <DepartmentName value={resignation?.department || resignation?.department_id || resignation?.department_name} />
-    //               </p> */}
-    //             </div>
-    //             {DataList ? (
-    //               <RenderResignationAction row={resignation} viewMode={true} />
-    //             ) : (
-    //               <RenderTerminationAction row={resignation} viewMode={true} />
-    //             )}
-    //           </div>
-    //         </section>
-    //         <section>
-    //           <ViewDetailBox
-    //             labelList={[
-    //               {
-    //                 label: "Joining date",
-    //                 value: renderDate(resignation?.joining_date),
-    //               },
-    //               {
-    //                 label: "Status",
-    //                 value: DataList
-    //                   ? ResignationStatus(resignation?.status_resignation)
-    //                   : TerminationStatus(resignation?.status_termination),
-    //               },
-    //               {
-    //                 label: "Report to",
-    //                 value: <ManagerName value={resignation?.report_to} />,
-    //               },
-    //               {
-    //                 label: "Reason for leaving",
-    //                 value: DataList ? (
-    //                   ResignationReason(resignation?.exit_type)
-    //                 ) : (
-    //                   <TerminationReason
-    //                     value={resignation?.reason_of_termination}
-    //                   />
-    //                 ),
-    //               },
-
-    //               {
-    //                 label: "Exit date",
-    //                 value: renderDate(resignation?.exit_date)
-    //               },
-
-    //               {
-    //                 label: "Notice Period",
-    //                 value: resignation?.notice_period || "N/A",
-    //               },
-    //               {
-    //                 label: "Phone no.",
-    //                 value: `+${resignation?.country_code || ""}${
-    //                   resignation?.mobile_no || ""
-    //                 }`,
-    //               },
-    //             ]}
-    //           />
-    //           <ViewAttachmentDetail
-    //             title={"Attachments"}
-    //             attachments={[
-    //               {
-    //                 name: `${resignation?.emp_name} - ${
-    //                   DataList ? "Resignation" : "Termination"
-    //                 } letter`,
-    //                 file: DataList
-    //                   ? resignation?.resignation_letter
-    //                   : resignation?.termination_letter,
-    //               },
-    //               {
-    //                 name: `${resignation?.emp_name} - Clearance report`,
-    //                 file: resignation?.clearance_report,
-    //               },
-    //             ]}
-    //           />
-    //         </section>
-    //         {ExitStatusCurrentStep(
-    //           DataList
-    //             ? resignation?.status_resignation
-    //             : resignation?.status_termination
-    //         ) >= 3 &&
-    //           !resignation?.clearance_report && (
-    //             <section className="my-6">
-    //               <Formik
-    //                 initialValues={resignation}
-    //                 innerRef={formRef}
-    //                 enableReinitialize={true}
-    //                 onSubmit={(values, { resetForm }) => {
-    //                   handleSubmit(values, resetForm);
-    //                 }}
-    //                 validate={(values) => {
-    //                   const errors = {};
-    //                   if (!values.clearance_report) {
-    //                     errors.clearance_report =
-    //                       "Please upload clearance report to proceed";
-    //                   }
-    //                   return errors;
-    //                 }}
-    //               >
-    //                 {(props) => (
-    //                   <form onSubmit={props.handleSubmit}>
-    //                     <CoverFileUpload
-    //                       name="clearance_report"
-    //                       label=" Clearance Report or drag it here"
-    //                       acceptType=".pdf"
-    //                       error={props.errors?.clearance_report}
-    //                       touch={props.touched?.clearance_report}
-    //                       value={props.values?.clearance_report}
-    //                       required={true}
-    //                       onChange={(field, value) => {
-    //                         props.setFieldValue(field, value);
-    //                       }}
-    //                     />
-
-    //                     <Button type="submit" variant="default">
-    //                       Save
-    //                     </Button>
-    //                   </form>
-    //                 )}
-    //               </Formik>
-    //             </section>
-    //           )}
-    //       </div>
-    //     </div>
-    //   </SheetContent>
-    // </Sheet>
   );
 };
 

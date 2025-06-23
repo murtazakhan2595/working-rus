@@ -166,7 +166,7 @@ export const saveEmployeeExitDetail = async (payload, id) => {
       method,
       url,
       data: finalPayload,
-      headers: headers(),
+      headers: formDataHeader(),
     });
     if (response.status === 200 || response.status === 201) {
       return response.data;

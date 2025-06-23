@@ -1,5 +1,12 @@
 import ExitAndClearance from "./ExitAndClearance";
 import EmployeeExit from "./EmployeeExit";
-import { ClearanceSheet } from "./ExitRequests";
 import { TerminationReasons } from "./TerminationReasons";
-export { ExitAndClearance, EmployeeExit, TerminationReasons, ClearanceSheet };
+import UploadClearanceReport from "./UploadClearanceReport";
+import ClearanceSheet from "./ClearanceSheet";
+export {
+  ExitAndClearance,
+  EmployeeExit,
+  TerminationReasons,
+  UploadClearanceReport,
+  ClearanceSheet,
+};
