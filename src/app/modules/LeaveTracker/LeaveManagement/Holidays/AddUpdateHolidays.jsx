@@ -17,6 +17,7 @@ import { SheetUI } from "components";
 import { countriesList } from "data/Data";
 import { GetDispatchStateList } from "utils/Lists";
 import { getDropdownList } from "utils/Lists";
+import { ReligionList } from "data/Data";
 
 const AddUpdateHolidays = ({
   isOpen = false,
@@ -151,7 +152,7 @@ const AddUpdateHolidays = ({
         formConfig={{
           initialValues: formData,
           enableReinitialize: true,
-          renderUpdatedFormValues:setFormValues,
+          renderUpdatedFormValues: setFormValues,
           handleSubmit: handleSubmit,
           onSubmitClick: (values) => {
             validateHolidayName(values.name);
@@ -209,9 +210,11 @@ const AddUpdateHolidays = ({
                   SelectAllOption: true,
                 },
                 {
-                  InputField: TextInput,
+                  InputField: SelectInputComponent,
                   name: "religion",
                   label: "Religion",
+                  options: ReligionList,
+                  
                 },
               ],
             },
