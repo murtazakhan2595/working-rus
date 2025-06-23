@@ -845,6 +845,27 @@ export const AssetCategories = [
   { label: "Other", value: "Other" },
 ];
 
+export const ReligionList = [
+  { label: "Christianity", value: "christianity" },
+  { label: "Islam", value: "islam" },
+  { label: "Hinduism", value: "hinduism" },
+  { label: "Buddhism", value: "buddhism" },
+  { label: "Judaism", value: "judaism" },
+  { label: "Sikhism", value: "sikhism" },
+  { label: "Jainism", value: "jainism" },
+  { label: "Shinto", value: "shinto" },
+  { label: "Taoism", value: "taoism" },
+  { label: "Confucianism", value: "confucianism" },
+  { label: "Bahá'í Faith", value: "bahai" },
+  { label: "Zoroastrianism", value: "zoroastrianism" },
+  { label: "Traditional African Religions", value: "african_traditional" },
+  { label: "Indigenous Religions", value: "indigenous" },
+  { label: "Atheism", value: "atheism" },
+  { label: "Agnosticism", value: "agnosticism" },
+  { label: "Non-religious/Secular", value: "non_religious" },
+  { label: "Other", value: "other" },
+];
+
 export const handleUpdateProfile = async (dispatch, data) => {
   const userprofile = {
     id: data.id,
