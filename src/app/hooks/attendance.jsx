@@ -639,7 +639,7 @@ export const getEmployeeAttendanceDetails = async (employee_id) => {
         }
       );
       const ResponseData = response.data;
-      const MonthlytShiftData = await getActiveShiftList(
+      const MonthlytShiftData = await getMontlyShiftData(
         employee_id,
         moment().startOf("month"),
         moment().endOf("month")
