@@ -70,7 +70,6 @@ export const ScheduleFormValues = {
   },
 };
 
-
 // src/app/utils/Types/Shift.js
 export const ShiftInformation = {
   id: null,
@@ -87,4 +86,18 @@ export const ShiftInformation = {
   split_end_time2: null,
   created_at: null,
   updated_at: null,
+};
+
+export const ActiveShift = {
+  date: null,
+  is_split_shift: false,
+  total_hours: 0,
+  shifts: null,
+  shift_assigned: true,
+  status: false,
+  is_weekly_off: false,
+  isOffToday: false,
+  OffLabel: null,
+  is_holiday:false,
+  is_on_leave:false,
 };

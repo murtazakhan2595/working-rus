@@ -91,7 +91,7 @@ const TimeAdjustmentRequest = ({ id, attendance }) => {
       const response = await saveTimeAdjustment(payload);
       // return
       if (response) {
-        fetchTimeAdjustmentData(true,attendance.id)
+        fetchTimeAdjustmentData(true, attendance.id);
         return {
           status: true,
           title: "Form Submitted Succesfully",

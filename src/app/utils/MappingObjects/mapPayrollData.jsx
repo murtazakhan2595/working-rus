@@ -3,7 +3,8 @@ import {
   EmployeePayRoll,
   EmployeeSalary,
   EmployeePayRunPaySlip,
-  PayrollAdjustment
+  PayrollAdjustment,
+  FinalSettlement,
 } from "app/utils/Types/Payroll";
 import moment from "moment";
 import { calculatePercentage } from "utils/renderValues";
@@ -159,7 +160,6 @@ export function mapEmployeePayrunPayslipData(data) {
   return payrunData;
 }
 
-
 export function mapPayrollAdjustmentData(data) {
   const PayrollAdjustmentData = Object.keys(PayrollAdjustment).reduce(
     (acc, key) => {
@@ -185,3 +185,32 @@ export async function mapPayrollAdjustmentList(data) {
   return PayrollAdjustmentList;
 }
 
+export function mapFinalSettlementPayloadData(data) {
+  // Initialize an empty payload object
+  const payload = {};
+  // Iterate over the keys in the Task object
+  for (const key in FinalSettlement) {
+    // Check if the key exists in the data object
+    if (
+      data.hasOwnProperty(key) &&
+      data[key] !== null &&
+      data[key] !== undefined
+    ) {
+      if (key === "notes") payload[key] = data[key].trim();
+      else if (
+        [
+          "remaining_salary",
+          "earned_leave_encashment",
+          "total_deductions",
+          "gratuity_amount",
+          "final_amount",
+        ].includes(key)
+      ) {
+        payload[key] = Number(data[key]);
+      } else payload[key] = data[key];
+    }
+  }
+
+  // Return the constructed payload
+  return payload;
+}

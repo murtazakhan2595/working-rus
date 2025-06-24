@@ -15,7 +15,7 @@ import {
   ViewAttachmentDetail,
 } from "./DetailViewPanel";
 import moment from "moment";
-import { Labels } from "components/StatusLabel";
+// import { Labels } from "components/StatusLabel";
 import {
   Sheet,
   SheetContent,
@@ -124,7 +124,7 @@ const ResignedDetails = ({
           </SheetHeader>
           <div className="mt-4">
             <section className="flex flex-col mt-10 w-full max-md:max-w-full justify-start items-start gap-2">
-              <Labels label={"Resigned"} backgroungColor={`bg-[#f4e4eb]`} />
+              {/* <Labels label={"Resigned"} backgroungColor={`bg-[#f4e4eb]`} /> */}
               <h1 className="text-2xl font-bold text-zinc-800 mb-0">
                 {ResignedData.emp_name}
               </h1>

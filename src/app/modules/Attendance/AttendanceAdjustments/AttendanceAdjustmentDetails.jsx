@@ -8,6 +8,7 @@ import {
 import { FormatID } from "utils/getValuesFromTables";
 import { StatusLabel, SheetUI } from "components";
 import { getAttendanceAdjustmentData } from "app/hooks/attendance";
+import { getActiveShiftData } from "app/hooks/shiftManagement";
 import { handleRequest } from "app/hooks/general";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
@@ -65,10 +66,15 @@ const AttendanceAdjustmentDetails = ({
             id
           );
         }
+        debugger
         const { status: updatedStatus, attendance } = await fetchData(id, true);
         if (updatedStatus && updatedStatus.toLowerCase() === "approved") {
           if (attendance) {
             const attendanceData = await getAttendanceData(attendance);
+            const shiftData = await getActiveShiftData(
+              employee,
+              attendance_date
+            );
             const payload = {
               date: attendance_date,
               id: attendance,
@@ -81,7 +87,7 @@ const AttendanceAdjustmentDetails = ({
               employee_id: employee,
               total_hours: attendanceData.total_hours,
             };
-            await saveAttendance(payload, attendance);
+            await saveAttendance(payload, shiftData, attendance);
           }
         }
         setForceLoad(!forceLoad);

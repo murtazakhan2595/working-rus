@@ -144,7 +144,9 @@ export function mapAttendanceBreakDurationData(breakData = []) {
   let totalBreakDuration = 0;
 
   // Use breakData.results if exists, else fallback to breakData itself
-  const breaks = Array.isArray(breakData.results) ? breakData.results : breakData;
+  const breaks = Array.isArray(breakData.results)
+    ? breakData.results
+    : breakData;
 
   breaks.forEach((entry) => {
     const startRaw = entry?.starttime;
@@ -288,13 +290,11 @@ export async function mapAttendanceAdjustmentData(data) {
 export async function mapAttendanceAdjustmentListData(data) {
   if (!Array.isArray(data) || data.length === 0) return [];
 
-  const AttendanceAdjustmentList = await Promise.all(
-    data.map((attendanceAdjustment) =>
-      mapAttendanceAdjustmentData(attendanceAdjustment)
-    )
+  const ResponseList = await Promise.all(
+    data.map((item) => mapAttendanceAdjustmentData(item))
   );
 
-  return AttendanceAdjustmentList;
+  return ResponseList;
 }
 
 export function mapAdjustmentFromAttendnaceData(data) {

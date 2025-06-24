@@ -7,7 +7,7 @@ import {
 } from "src/@/components/ui/popover";
 import { Card } from "components/ui/card";
 import { ScrollArea } from "src/@/components/ui/scroll-area";
-import { BsCircleFill } from "react-icons/bs";
+import { useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import { FaRegCircle } from "react-icons/fa";
 import { Badge } from "components/ui/badge";
@@ -19,6 +19,9 @@ import { renderDate } from "utils/renderValues";
 import { DesignationName } from "utils/getValuesFromTables";
 import { EmployeeInfo } from "utils/getValuesFromTables";
 import statusPendingIcon from "assets/images/status-pending.svg";
+import { HasAccess } from "utils/PermissionUtils";
+import { Button } from "components/ui/button";
+import { handleRequest } from "app/hooks/general";
 
 const statusVariants = cva("", {
   variants: {
@@ -209,26 +212,54 @@ const MultiStatusLabel = React.forwardRef(
 
 MultiStatusLabel.displayName = "MultiStatusLabel";
 
-export const Labels = ({ label, iconDot, iconColor, backgroungColor, src }) => {
-  if (!label) return "";
-  return (
-    <>
-      <div
-        className={`flex text-capitalize items-center text-baseGray  text-base font-normal rounded-2xl px-3 py-1 ${
-          backgroungColor ?? "bg-plum-500"
-        }`}
-      >
-        {src && <img src={src} alt="" className="mr-1" />}
-        {iconDot && (
-          <span className={`w-3 h-3 rounded-full mr-2 ${iconColor}`}></span>
-        )}
-      </div>
-      {/* <Badge variant="secondary" className="relative pl-5 bg-blue-100 text-blue-800 before:bg-blue-800 before:content-[''] before:absolute before:left-2 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:rounded-full">
-
-      {label}
-         </Badge> */}
-    </>
+export const StatusButtons = ({
+  permissionKey,
+  status,
+  current_approver,
+  request_id,
+  setResponse = () => {},
+}) => {
+  const { id: user_id, role: user_role } = useSelector(
+    (state) => state.user.userProfile
   );
+  const managePermitted = HasAccess(permissionKey);
+  if (!managePermitted) return null;
+  if (!status || status?.toLowerCase() !== "pending") return null;
+  if (!current_approver && !user_role.includes(1)) return null;
+  if (current_approver.includes(user_id) || user_role.includes(1)) {
+    const handleSubmit = async (status) => {
+      try {
+        const response = await handleRequest(request_id, status === "Approved");
+        if (response) {
+          setResponse(true,status);
+        }
+      } catch (error) {
+        console.error("Approving Request Error", error);
+        setResponse(false,status);
+      }
+    };
+    const handleClick = (event, status) => {
+      event.preventDefault();
+      event.stopPropagation();
+      handleSubmit(status);
+    };
+    return (
+      <div className="flex flex-wrap justify-end gap-2 my-5">
+        <Button
+          variant="success"
+          onClick={(event) => handleClick(event, "Approved")}
+        >
+          Approve
+        </Button>
+        <Button
+          variant="destructive"
+          onClick={(event) => handleClick(event, "Rejected")}
+        >
+          Reject
+        </Button>
+      </div>
+    );
+  }
 };
 
 export const StatusLabelAttendance = ({ status, value }) => {

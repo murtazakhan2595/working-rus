@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { FilterInput } from "components/FormControl";
 import { getAttendanceAdjustmentListData } from "app/hooks/attendance";
-import { CardDescription, CardTitle, CardContent } from "components/ui/card";
+import {
+  CardDescription,
+  CardTitle,
+  CardContent,
+  CardHeader,
+} from "components/ui/card";
 import { PageLoader, TableCustom } from "components";
 import { getTerminationReason } from "app/hooks/employeeExitAndClearance";
 import TerminationReasonsAction from "./TerminationReasonsAction";
@@ -95,12 +100,13 @@ const TerminationReasons = ({ reload }) => {
 
   return (
     <>
-      <CardTitle className="text-primary pt-6">Termination Reasons</CardTitle>
-      <CardDescription className="text-neutral-1100">
-        Here you can manage termination reasons. View, update as needed.
-      </CardDescription>
-
-      <CardContent className="px-0 mt-4">
+      <CardHeader>
+        <CardTitle>Termination Reasons</CardTitle>
+        <CardDescription>
+          Here you can manage termination reasons. View, update as needed.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
         {isloading ? (
           <PageLoader />
         ) : (

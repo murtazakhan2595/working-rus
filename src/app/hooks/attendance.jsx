@@ -18,7 +18,7 @@ import {
   getMontlyShiftData,
   getThisWeekShiftData,
 } from "app/modules/Attendance/ShiftCalendar/Section/getEmployeeActiveShift";
-
+import {getActiveShiftList} from 'app/hooks/shiftManagement';
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -641,7 +641,8 @@ export const getEmployeeAttendanceDetails = async (employee_id) => {
       const ResponseData = response.data;
       const MonthlytShiftData = await getMontlyShiftData(
         employee_id,
-        ResponseData.default_shift
+        moment().startOf("month"),
+        moment().endOf("month")
       );
       const WeeklyShiftData = await getThisWeekShiftData(MonthlytShiftData);
       if (response) {

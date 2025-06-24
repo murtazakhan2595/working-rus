@@ -11,10 +11,14 @@ import {
 import { renderErrorMessages } from "utils/renderErrors";
 import { fetchDepartments } from "state/slices/CommonSlice";
 
-const baseUrl = initialState.baseUrl;
-const headers = () => ({
+export const baseUrl = initialState.baseUrl;
+export const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
+});
+export const formDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  // Don't explicitly set 'Content-Type' for FormData
 });
 
 const getDepartmentList = async (payload) => {
@@ -325,6 +329,7 @@ const getEmployeeListWithDetail = async () => {
         label: `${employee.first_name} ${employee.last_name}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
+        contact_no: `+${employee.country_code}${employee.mobile_no}`,
         first_name: employee.first_name,
         date_of_birth: employee.date_of_birth,
         direct_report: employee.direct_report,

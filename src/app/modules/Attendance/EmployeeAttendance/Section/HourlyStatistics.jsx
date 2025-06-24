@@ -3,7 +3,7 @@ import { Progress } from "src/@/components/ui/progress";
 import { useSelector } from "react-redux";
 import { formatDuration } from "utils/renderValues";
 
-const HourlyStatistics = ({ userId }) => {
+const HourlyStatistics = ({ employee_id }) => {
   const emp_attendance_detail = useSelector(
     (state) => state.attendance.attendance_details
   );
