@@ -172,38 +172,66 @@ export const getCustomShiftListEmployeeID = async (
   end_date = new Date()
 ) => {
   if (!employee_id) return false;
-  try {
-    const formattedStartDate =
-      start_date && moment(start_date).isValid()
-        ? moment(start_date).format("YYYY-MM-DD")
-        : null;
-    const formattedEndDate =
-      end_date && moment(end_date).isValid()
-        ? moment(end_date).format("YYYY-MM-DD")
-        : null;
-    if (!formattedStartDate || !formattedEndDate) return false;
 
-    const response = await getShiftSchedule({
+  try {
+    // Format dates consistently
+    const formattedStartDate = moment(start_date).format("YYYY-MM-DD");
+    const formattedEndDate = moment(end_date).format("YYYY-MM-DD");
+
+    // Fetch all approved schedules that overlap with the date range
+    const scheduleResponse = await getShiftSchedule({
       filterData: {
         employee: employee_id,
         status: "Approved",
-        end_date_gte: formattedStartDate,
-        start_date_lte: formattedEndDate,
-        is_change_request: "true,false",
-        status: "Approved",
-        draft: "false",
+        end_date_gte: formattedStartDate, // Schedule ends on or after start date
+        start_date_lte: formattedEndDate, // Schedule starts on or before end date
+        is_change_request: "true,false", // Include both regular schedules and change requests
       },
-      ordering: "-created_at",
+      ordering: "-created_at", // Latest first for overlapping resolution
     });
-    debugger;
-    if (response && response?.results) {
-      const scheduleList = response?.results;
-      const ResponseList = await mapCustomShiftListData(scheduleList);
-      return ResponseList;
+
+    // Filter schedules that have custom_schedule
+    const customSchedules =
+      scheduleResponse?.results?.filter(
+        (schedule) =>
+          schedule.custom_schedule &&
+          Object.keys(schedule.custom_schedule).length > 0
+      ) || [];
+
+    // Generate date range
+    const result = {};
+    const current = moment(start_date);
+    const end = moment(end_date);
+
+    while (current.isSameOrBefore(end)) {
+      const dateKey = current.format("YYYY-MM-DD");
+
+      // Find the latest custom schedule for this date (due to ordering by -created_at)
+      let customShiftForDate = null;
+
+      for (const schedule of customSchedules) {
+        // Check if this date falls within the schedule's date range
+        const scheduleStart = moment(schedule.start_date);
+        const scheduleEnd = moment(schedule.end_date);
+
+        if (current.isBetween(scheduleStart, scheduleEnd, "day", "[]")) {
+          // Check if this specific date has a custom schedule entry
+          if (schedule.custom_schedule[dateKey]) {
+            customShiftForDate = schedule.custom_schedule[dateKey];
+            break; // Take the first one (latest due to ordering)
+          }
+        }
+      }
+
+      // Add to result - null if no custom shift found
+      result[dateKey] = customShiftForDate;
+
+      current.add(1, "day");
     }
-    return false;
+
+    return result;
   } catch (error) {
-    console.error("Error fetching asset list:", error);
+    console.error("Error fetching custom shift list:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
