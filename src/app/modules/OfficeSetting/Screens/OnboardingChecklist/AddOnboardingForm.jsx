@@ -59,8 +59,10 @@ const AddOnboardingForm = ({
         if (onUpdateSuccess && typeof onUpdateSuccess === "function") {
           await onUpdateSuccess(values);
         }
-
-        setIsOpen(true); // Pass true to indicate successful update
+        if( reload && typeof reload === "function"){
+          reload(true); // Reload data after submission
+        }
+        setIsOpen(false); 
       }
     } catch (error) {
       console.error("Error during submission:", error);
