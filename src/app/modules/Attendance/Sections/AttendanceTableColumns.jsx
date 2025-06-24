@@ -388,7 +388,16 @@ export const AttendanceAdjustmentLogsColumns = [
   {
     text: "Updated By",
     dataField: "approver",
-    formatter: (cell) => <EmployeeUsername value={cell} />,
+    formatter: (cell) => (
+      <div className="flex flex-col gap-1">
+        <span>
+          <EmployeeName value={cell} />
+        </span>
+        <span className="text-neutral-800 text-xs">
+          (<EmployeeUsername value={cell} fallBackText={"--"} />)
+        </span>
+      </div>
+    ),
   },
   {
     text: "Updated On",
@@ -396,8 +405,8 @@ export const AttendanceAdjustmentLogsColumns = [
     formatter: (cell) => renderDate(cell),
   },
   {
-    text: "Status",
-    dataField: "attendance_status",
+    text: "Action",
+    dataField: "approver_action",
     formatter: (cell) => {
       const status = cell ? cell : "pending";
       return <StatusLabel status={status}>{status?.toLowerCase()}</StatusLabel>;
