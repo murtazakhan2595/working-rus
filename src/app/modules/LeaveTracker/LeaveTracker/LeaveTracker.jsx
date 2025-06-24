@@ -74,7 +74,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
     let isMounted = true;
     if (isMounted)
       setPermittedViewFilterData(() => {
-        if (isTeamView) return { managers: user_id };
+        if (isTeamView) return { direct_report: user_id, indirect_report:[user_id] };
         else if (isAdminView) return {};
         else if (isBranchView) return { branch: user_branch };
         else if (isDepartmentView) return { department: user_department };
