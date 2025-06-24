@@ -11,7 +11,7 @@ import moment from "moment";
 import { StatusLabelAttendance } from "components/StatusLabel";
 import { renderDate, formatNumber } from "utils/renderValues";
 import { StatusLabel } from "components";
-import { EmployeeUsername,EmployeeName } from "utils/getValuesFromTables";
+import { EmployeeUsername ,EmployeeName} from "utils/getValuesFromTables";
 
 /**
  * AttendanceColumns
