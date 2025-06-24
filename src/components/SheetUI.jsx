@@ -60,6 +60,7 @@ const SheetUI = forwardRef(
 
     const HandleSubmit = async (values, resetForm) => {
       try {
+        debugger
         setIsSubmittingForm(true);
         const response = await handleSubmit(values, resetForm);
         if (response?.status) {
@@ -113,22 +114,23 @@ const SheetUI = forwardRef(
                     sheetCardTitle,
                     sheetCardName,
                     customComponent,
+                    description,
                   },
                   index
                 ) => {
                   const sheetCardError = get(props.errors, sheetCardName);
-                  
+
                   // Handle custom component if provided
                   if (customComponent) {
                     return (
                       <div key={index}>
-                        {typeof customComponent === 'function'
+                        {typeof customComponent === "function"
                           ? customComponent({ form: props })
                           : customComponent}
                       </div>
                     );
                   }
-                  
+
                   return (
                     <div key={index}>
                       <FormBody
@@ -136,6 +138,7 @@ const SheetUI = forwardRef(
                         sheetCardTitle={sheetCardTitle}
                         sheetCardError={sheetCardError}
                         columns={columns}
+                        description={description}
                       >
                         {InputFields?.map((fieldsConfig, index) => {
                           const {
@@ -162,12 +165,17 @@ const SheetUI = forwardRef(
                           // Handle custom component inside InputFields
                           if (customComponent) {
                             return (
-                              <div 
-                                className={`space-y-4 ${colsSpan ? `col-span-${colsSpan || 1}` : ""}`}
+                              <div
+                                className={`space-y-4 ${
+                                  colsSpan ? `col-span-${colsSpan || 1}` : ""
+                                }`}
                                 key={name || `custom-${index}`}
                               >
-                                {typeof customComponent === 'function'
-                                  ? customComponent({ field: fieldsConfig, form: props })
+                                {typeof customComponent === "function"
+                                  ? customComponent({
+                                      field: fieldsConfig,
+                                      form: props,
+                                    })
                                   : customComponent}
                               </div>
                             );
@@ -206,7 +214,7 @@ const SheetUI = forwardRef(
                                     field,
                                     value,
                                     props.values,
-                                    props.setFieldValue,
+                                    props.setFieldValue
                                   );
                                   await props?.setFieldValue(field, value);
                                 }}
@@ -285,15 +293,20 @@ const FormBody = ({
   sheetCardTitle = null,
   sheetCardError = null,
   columns,
+  description,
 }) => {
   const className = `grid grid-cols-1 gap-4 lg:grid-cols-${
     columns || 1
   } md:grid-cols-${parseInt((columns || 1) / 2 + 1)}`;
+
   return sheetCardExtension ? (
     <SheetCardExtension
       title={sheetCardTitle}
       className={sheetCardError ? InvalidInput : ""}
     >
+      {description && (
+        <div className="text-neutral-1000 text-xs mb-4">{description}</div>
+      )}
       <div className={className}>{children}</div>
       {sheetCardError && (
         <div className={`${errorClassName} mt-4`}>{sheetCardError}</div>
