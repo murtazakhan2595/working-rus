@@ -18,6 +18,7 @@ import { getEmployeeInfoData } from "app/hooks/use-store";
 import {
   mapCustomShiftData,
   mapActiveShiftData,
+  mapCustomShiftListData,
 } from "app/utils/MappingObjects/mapShiftManagementData";
 
 const saveShift = async (payload) => {
@@ -165,6 +166,50 @@ export const getCustomShiftByEmployeeID = async (
     return false;
   }
 };
+export const getCustomShiftListEmployeeID = async (
+  employee_id,
+  start_date = new Date(),
+  end_date = new Date()
+) => {
+  if (!employee_id) return false;
+  try {
+    const formattedStartDate =
+      start_date && moment(start_date).isValid()
+        ? moment(start_date).format("YYYY-MM-DD")
+        : null;
+    const formattedEndDate =
+      end_date && moment(end_date).isValid()
+        ? moment(end_date).format("YYYY-MM-DD")
+        : null;
+    if (!formattedStartDate || !formattedEndDate) return false;
+
+    const response = await getShiftSchedule({
+      filterData: {
+        employee: employee_id,
+        status: "Approved",
+        end_date_gte: formattedStartDate,
+        start_date_lte: formattedEndDate,
+        is_change_request: "true,false",
+        status: "Approved",
+        draft: "false",
+      },
+      ordering: "-created_at",
+    });
+    debugger;
+    if (response && response?.results) {
+      const scheduleList = response?.results;
+      const ResponseList = await mapCustomShiftListData(scheduleList);
+      return ResponseList;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error fetching asset list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
+  }
+};
 
 const getShiftChangeRequests = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
@@ -290,52 +335,36 @@ const getShiftSchedulesLogs = async (payload) => {
 export const getActiveShiftList = async (
   employee_id,
   start_date = new Date(),
-  end_date
+  end_date = new Date()
 ) => {
-  if (!employee_id || !start_date) return [];
   try {
-    const ShiftStartDate = moment(start_date);
-    const ShiftEndDate =
-      end_date && moment(end_date).isValid ? moment(end_date) : ShiftStartDate;
-    if (!moment(ShiftStartDate).isValid || !moment(ShiftEndDate).isValid)
-      return [];
-    const { default_shift } = await getEmployeeAttendanceDetails(employee_id);
-    const datesOfMonth = eachDayOfInterval({
-      start: moment(start_date),
-      end: moment(end_date),
-    });
-    // 1. Fetch approved custom schedule
-    const scheduleResponse = await getShiftSchedule({
-      filterData: {
-        employee: employee_id,
-        status: "Approved",
-        end_date_gte: ShiftStartDate,
-        start_date_lte: ShiftEndDate,
-        is_change_request: "true,false",
-      },
-      ordering: "-created_at",
-    });
+    debugger;
+    if (!employee_id || !start_date || !end_date) return null;
 
-    const shiftPromises = datesOfMonth.map(async (date) => {
-      const formattedDate = moment(date).format("YYYY-MM-DD");
-      try {
-        const schedule = scheduleResponse?.results?.[0];
-        const customSchedule = schedule?.custom_schedule?.[formattedDate];
-        const res = await getActiveShiftData(employee_id, default_shift, date);
-        if (!res) return null;
-        return res;
-      } catch (err) {
-        console.error(`Error fetching shift for ${formattedDate}:`, err);
-        return null;
-      }
-    });
-
-    const shifts = await Promise.all(shiftPromises);
-    const ShiftList = shifts.filter(Boolean);
-    return ShiftList;
+    const default_shift = await getEmployeeInfoData(
+      employee_id,
+      "default_shift"
+    );
+    const custom_shift = await getCustomShiftListEmployeeID(
+      employee_id,
+      start_date,
+      end_date
+    );
+    // get if employee is on leave
+    const leave_details = {};
+    // get if it holiday
+    const holiday_details = {};
+    const active_shift_details = await mapActiveShiftData(
+      start_date,
+      default_shift,
+      custom_shift,
+      leave_details,
+      holiday_details
+    );
+    return active_shift_details;
   } catch (error) {
-    console.error("Error fetching monthly shift data:", error);
-    return [];
+    console.error("Error in getEmployeeActiveShift:", error);
+    return null;
   }
 };
 

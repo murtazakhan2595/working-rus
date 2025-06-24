@@ -146,3 +146,14 @@ export function mapActiveShiftData(
     return null;
   }
 }
+export async function mapCustomShiftListData(data) {
+  if (!Array.isArray(data) || data.length === 0) return [];
+
+  const ResponseList = await Promise.all(
+    data.map((item) => {
+      const customShift = item?.custom_schedule?.[customShift]
+      const ResponseData = mapCustomShiftData(item)})
+  );
+
+  return ResponseList;
+}
