@@ -196,25 +196,23 @@ export function mapEmployeeAttendanceDetail(data) {
     MonthlyShiftDataList,
     "total_hours"
   );
+  emp_attendance_data.monthly_total_hours = monthly_total_hours;
   const weekly_total_hours = calculateTotal(WeeklyShiftDataList, "total_hours");
+  emp_attendance_data.weekly_total_hours = weekly_total_hours;
   const today_shift = MonthlyShiftDataList.find(
     (shift) => shift.date === moment().format("YYYY-MM-DD")
   );
+  emp_attendance_data.today_shift = today_shift || {};
   const yesterday_shift = MonthlyShiftDataList.find(
     (shift) => shift.date === moment().subtract(1, "day").format("YYYY-MM-DD")
   );
+  emp_attendance_data.yesterday_shift = yesterday_shift || {};
   const tomorrow_shift = MonthlyShiftDataList.find(
     (shift) => shift.date === moment().add(1, "day").format("YYYY-MM-DD")
   );
-
-  emp_attendance_data.default_shift = data.default_shift;
-  emp_attendance_data.monthly_total_hours = monthly_total_hours;
-  emp_attendance_data.weekly_total_hours = weekly_total_hours;
-  emp_attendance_data.employee_id = data.employee_id;
-  emp_attendance_data.today_shift = today_shift || {};
-  emp_attendance_data.yesterday_shift = yesterday_shift || {};
   emp_attendance_data.tomorrow_shift = tomorrow_shift || {};
-  emp_attendance_data.checkin = data.check_in_time;
+  emp_attendance_data.default_shift = data.default_shift;
+  emp_attendance_data.employee_id = data.employee_id;
   emp_attendance_data.monthly_overtime = parseFloat(data.monthly_overtime || 0);
   emp_attendance_data.weekly_overtime = parseFloat(data.weekly_overtime || 0);
   emp_attendance_data.monthly_payable_hours = parseFloat(
@@ -225,26 +223,13 @@ export function mapEmployeeAttendanceDetail(data) {
   );
   emp_attendance_data.employee_name = data.employee_name;
   emp_attendance_data.employee_serial_number = data.employee_serial_number;
-
   emp_attendance_data.monthly_leaves = data.monthly_leaves;
   emp_attendance_data.weekly_leaves = data.weekly_leaves;
-  emp_attendance_data.is_leave_today = data.is_leave_today;
-  emp_attendance_data.leave_details = data.leave_details;
-  emp_attendance_data.break_hours = data.break_hours;
   emp_attendance_data.this_month_offs = data.this_month_offs;
   emp_attendance_data.this_week_offs = data.this_week_offs;
-  emp_attendance_data.checkout = data.check_out_time;
-  emp_attendance_data.total_hours = data.total_hours;
-  emp_attendance_data.break_time = data.break_time;
-  emp_attendance_data.break_object = data.break_object;
-  emp_attendance_data.overtime = data.overtime;
-  emp_attendance_data.is_off_today = data.is_off_today;
-  emp_attendance_data.is_off_yesterday = data.is_off_yesterday;
-  emp_attendance_data.off_today = data.off_today;
-  emp_attendance_data.off_yesterday = data.off_yesterday;
-  emp_attendance_data.off_tomorrow = data.off_tomorrow;
-  emp_attendance_data.is_off_tomorrow = data.is_off_tomorrow;
-  emp_attendance_data.overtime = data.overtime;
+  emp_attendance_data.is_off_today = today_shift.isOffToday;
+  emp_attendance_data.off_today = today_shift.OffLabel;
+
   return emp_attendance_data;
 }
 

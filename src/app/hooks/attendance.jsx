@@ -14,11 +14,9 @@ import {
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
-import {
-  getMontlyShiftData,
-  getThisWeekShiftData,
-} from "app/modules/Attendance/ShiftCalendar/Section/getEmployeeActiveShift";
-import {getActiveShiftList} from 'app/hooks/shiftManagement';
+import { getEmployeeInfoData } from "app/hooks/use-store";
+
+import { getActiveShiftList } from "app/hooks/shiftManagement";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -638,16 +636,28 @@ export const getEmployeeAttendanceDetails = async (employee_id) => {
           headers: headers(),
         }
       );
-      const ResponseData = response.data;
-      const MonthlytShiftData = await getMontlyShiftData(
-        employee_id,
-        moment().startOf("month"),
-        moment().endOf("month")
-      );
-      const WeeklyShiftData = await getThisWeekShiftData(MonthlytShiftData);
+
       if (response) {
+        const ResponseData = response.data;
+        const default_shift = await getEmployeeInfoData(
+          employee_id,
+          "default_shift"
+        );
+        const MonthlytShiftData = await getActiveShiftList(
+          employee_id,
+          moment().startOf("month"),
+          moment().endOf("month"),
+          default_shift
+        );
+        const WeeklyShiftData = await getActiveShiftList(
+          employee_id,
+          moment().startOf("week"),
+          moment().endOf("week"),
+          default_shift
+        );
         const emp_attendance_data = await mapEmployeeAttendanceDetail({
           ...ResponseData,
+          default_shift: default_shift,
           monthly_shifts: MonthlytShiftData,
           weekly_shifts: WeeklyShiftData,
         });

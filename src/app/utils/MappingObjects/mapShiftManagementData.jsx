@@ -2,6 +2,7 @@ import moment from "moment";
 import { renderTime } from "utils/DateTimeUtils";
 import { CalculateTotalWorkingHours } from "utils/renderValues";
 import { ActiveShift } from "app/utils/Types/ShiftManagement";
+import { eachDayOfInterval } from "date-fns";
 
 export function mapCustomShiftData(data, date) {
   const {
@@ -146,14 +147,76 @@ export function mapActiveShiftData(
     return null;
   }
 }
-export async function mapCustomShiftListData(data) {
-  if (!Array.isArray(data) || data.length === 0) return [];
-
+export async function mapActiveShiftListData(
+  start_date,
+  end_date,
+  default_shift,
+  custom_shift_list = {},
+  leave_details,
+  holiday_details
+) {
+  const StartDate = moment(start_date);
+  const EndDate = moment(end_date);
+  if (!StartDate.isValid() || !EndDate.isValid()) return [];
+  const IntervalList = eachDayOfInterval({
+    start: new Date(StartDate),
+    end: new Date(EndDate),
+  });
   const ResponseList = await Promise.all(
-    data.map((item) => {
-      const customShift = item?.custom_schedule?.[customShift]
-      const ResponseData = mapCustomShiftData(item)})
+    IntervalList.map((date) => {
+      const dateKey = moment(date).format("YYYY-MM-DD");
+      const custom_shift = custom_shift_list[dateKey];
+      const shift = mapActiveShiftData(dateKey, default_shift, custom_shift);
+      return shift;
+    })
   );
 
   return ResponseList;
+}
+
+export async function mapCustomShiftListData(data, start_date, end_date) {
+  if (!Array.isArray(data) || data.length === 0) return [];
+  const formattedStartDate = moment(start_date).format("YYYY-MM-DD");
+  const formattedEndDate = moment(end_date).format("YYYY-MM-DD");
+  const dateRange = eachDayOfInterval({
+    start: new Date(formattedStartDate),
+    end: new Date(formattedEndDate),
+  });
+  const customSchedules =
+    data?.filter(
+      (schedule) =>
+        schedule.custom_schedule &&
+        Object.keys(schedule.custom_schedule).length > 0
+    ) || [];
+
+  const ResponseObject = {};
+  await Promise.all(
+    dateRange.map((date) => {
+      const dateKey = moment(date).format("YYYY-MM-DD");
+      // Find the latest custom schedule for this date (due to ordering by -created_at)
+      let customShiftForDate = null;
+      for (const schedule of customSchedules) {
+        // Check if this date falls within the schedule's date range
+        const scheduleStart = moment(schedule.start_date);
+        const scheduleEnd = moment(schedule.end_date);
+
+        if (moment(date).isBetween(scheduleStart, scheduleEnd, "day", "[]")) {
+          // Check if this specific date has a custom schedule entry
+          if (schedule.custom_schedule[dateKey]) {
+            customShiftForDate = schedule.custom_schedule[dateKey];
+            break; // Take the first one (latest due to ordering)
+          }
+        }
+      }
+      // Add to result - null if no custom shift found
+      if (customShiftForDate) {
+        const ResponseData = mapCustomShiftData(customShiftForDate, dateKey);
+        ResponseObject[dateKey] = ResponseData;
+        return ResponseData;
+      }
+      ResponseObject[dateKey] = customShiftForDate;
+      return customShiftForDate;
+    })
+  );
+  return ResponseObject;
 }

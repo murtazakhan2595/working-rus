@@ -1,24 +1,12 @@
 import axios from "axios";
-import { initialState } from "state/slices/UserSlice";
 import { HandleLogout, baseUrl, headers } from "./general";
 import moment from "moment";
-import { CalculateTotalWorkingHours } from "utils/renderValues";
-import {
-  eachDayOfInterval,
-  startOfMonth,
-  endOfMonth,
-  endOfWeek,
-  startOfWeek,
-  parseISO,
-  isWithinInterval,
-  format,
-} from "date-fns";
-import { getEmployeeAttendanceDetails } from "app/hooks/attendance";
 import { getEmployeeInfoData } from "app/hooks/use-store";
 import {
   mapCustomShiftData,
   mapActiveShiftData,
   mapCustomShiftListData,
+  mapActiveShiftListData,
 } from "app/utils/MappingObjects/mapShiftManagementData";
 
 const saveShift = async (payload) => {
@@ -190,46 +178,12 @@ export const getCustomShiftListEmployeeID = async (
       ordering: "-created_at", // Latest first for overlapping resolution
     });
 
-    // Filter schedules that have custom_schedule
-    const customSchedules =
-      scheduleResponse?.results?.filter(
-        (schedule) =>
-          schedule.custom_schedule &&
-          Object.keys(schedule.custom_schedule).length > 0
-      ) || [];
-
-    // Generate date range
-    const result = {};
-    const current = moment(start_date);
-    const end = moment(end_date);
-
-    while (current.isSameOrBefore(end)) {
-      const dateKey = current.format("YYYY-MM-DD");
-
-      // Find the latest custom schedule for this date (due to ordering by -created_at)
-      let customShiftForDate = null;
-
-      for (const schedule of customSchedules) {
-        // Check if this date falls within the schedule's date range
-        const scheduleStart = moment(schedule.start_date);
-        const scheduleEnd = moment(schedule.end_date);
-
-        if (current.isBetween(scheduleStart, scheduleEnd, "day", "[]")) {
-          // Check if this specific date has a custom schedule entry
-          if (schedule.custom_schedule[dateKey]) {
-            customShiftForDate = schedule.custom_schedule[dateKey];
-            break; // Take the first one (latest due to ordering)
-          }
-        }
-      }
-
-      // Add to result - null if no custom shift found
-      result[dateKey] = customShiftForDate;
-
-      current.add(1, "day");
-    }
-
-    return result;
+    const ResponseList = await mapCustomShiftListData(
+      scheduleResponse?.results || [],
+      formattedStartDate,
+      formattedEndDate
+    );
+    return ResponseList;
   } catch (error) {
     console.error("Error fetching custom shift list:", error);
     if (error?.response?.status === 401) {
@@ -363,17 +317,17 @@ const getShiftSchedulesLogs = async (payload) => {
 export const getActiveShiftList = async (
   employee_id,
   start_date = new Date(),
-  end_date = new Date()
+  end_date = new Date(),
+  defaultShift
 ) => {
   try {
-    debugger;
     if (!employee_id || !start_date || !end_date) return null;
 
-    const default_shift = await getEmployeeInfoData(
-      employee_id,
-      "default_shift"
-    );
-    const custom_shift = await getCustomShiftListEmployeeID(
+    const default_shift =
+      defaultShift && typeof defaultShift === "object"
+        ? defaultShift
+        : await getEmployeeInfoData(employee_id, "default_shift");
+    const custom_shift_list = await getCustomShiftListEmployeeID(
       employee_id,
       start_date,
       end_date
@@ -382,10 +336,11 @@ export const getActiveShiftList = async (
     const leave_details = {};
     // get if it holiday
     const holiday_details = {};
-    const active_shift_details = await mapActiveShiftData(
+    const active_shift_details = await mapActiveShiftListData(
       start_date,
+      end_date,
       default_shift,
-      custom_shift,
+      custom_shift_list,
       leave_details,
       holiday_details
     );
@@ -396,13 +351,17 @@ export const getActiveShiftList = async (
   }
 };
 
-export async function getActiveShiftData(employeeId, date = new Date()) {
+export async function getActiveShiftData(
+  employeeId,
+  date = new Date(),
+  defaultShift
+) {
   try {
     if (!employeeId || !date) return null;
-    const default_shift = await getEmployeeInfoData(
-      employeeId,
-      "default_shift"
-    );
+    const default_shift =
+      defaultShift && typeof defaultShift === "object"
+        ? defaultShift
+        : await getEmployeeInfoData(employeeId, "default_shift");
     const custom_shift = await getCustomShiftByEmployeeID(employeeId, date);
     // get if employee is on leave
     const leave_details = {};
