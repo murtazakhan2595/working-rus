@@ -140,14 +140,6 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
     setIsOpen(false);
   };
 
-  // Transform employees for SelectInputComponent
-  const employeeOptions = employees.map((emp) => ({
-    value: emp.value,
-    label: `${emp.label} - ${emp.username}`,
-    department: emp.department || "N/A",
-    branch: emp.branch || "N/A",
-    email: emp.email || "",
-  }));
 
   const roleOptions = React.useMemo(() => {
     if (!Array.isArray(availableRoles) || availableRoles.length === 0)
@@ -215,7 +207,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
         name: "employee",
         required: true,
         label: "Select Employee",
-        options: employeeOptions,
+        options: employees,
         placeholder: "Select an employee",
         colsSpan: 2,
         onFieldUpdate: (field, value) => {

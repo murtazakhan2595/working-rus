@@ -41,6 +41,8 @@ const ViewOnboarding = ({
     }
   };
 
+  console.log("this m data reload ", reload);
+
   return (
     <NavigationSheetComponent
       isOpen={isOpen}
@@ -50,17 +52,14 @@ const ViewOnboarding = ({
       dataList={OnboardingList}
       reloadData={reload}
       editComponent={AddOnboardingForm}
-      apiEndpoint={`/onboarding-document/${data?.id}/`}
+      apiEndpoint={`/onboardingdoc/${data?.id}/`}
       fetchCurrentItemDetails={fetchData}
       deleteItemName="name"
-      editTooltip="Edit Onboarding"   
+      editTooltip="Edit Onboarding"
       deleteTooltip="Delete Onboarding"
       additionalEditProps={{ userOrganization }}
     >
-      <DetailContent
-        title="Onboarding Details"
-        fields={fields}
-      />
+      <DetailContent title="Onboarding Details" fields={fields} />
     </NavigationSheetComponent>
   );
 };
