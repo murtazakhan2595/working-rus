@@ -60,7 +60,6 @@ const OfficeSetting = () => {
 
   // Get user details from Redux store
   const userDetails = useSelector((state) => state.emp?.user_details);
-  console.log("User details Or:", userDetails);
   const userOrganizationId =
     userDetails?.organization_id || userDetails?.organization;
 
@@ -71,8 +70,6 @@ const OfficeSetting = () => {
   // The permissions are already strings (permission codes), not objects
   const userPermissions = userPermissionsRaw.filter(Boolean); // Remove any undefined/null values
 
-  console.log("User organization ID:", userOrganizationId);
-  console.log("Full organization field from user:", userDetails?.organization);
 
   const [filteredOrganizations, setFilteredOrganizations] = useState([]);
 
@@ -87,20 +84,11 @@ const OfficeSetting = () => {
 
   const getOrganization = async () => {
     try {
-      console.log("Fetching organization data...");
-      console.log(
-        "Current user organization ID from Redux:",
-        userOrganizationId
-      );
       setLoading(true);
       const response = await getOrganizationList(true);
-      console.log("Organization API response in component:", response);
       if (response) {
         if (response.results && response.results.length > 0) {
-          console.log(
-            "All organizations:",
-            response.results.map((org) => ({ id: org.id, name: org.name }))
-          );
+ 
 
           let orgToShow = [];
 
@@ -111,19 +99,15 @@ const OfficeSetting = () => {
             );
 
             if (userOrg) {
-              console.log("Found user's organization:", userOrg);
               orgToShow = [userOrg];
               fetchLocationDetails(userOrg);
             } else {
-              console.log(
-                "User organization not found. Showing first organization."
-              );
+          
               orgToShow = [response.results[0]];
               fetchLocationDetails(response.results[0]);
             }
           } else {
             // No user organization ID, just show the first organization
-            console.log("No user organization ID. Showing first organization.");
             orgToShow = [response.results[0]];
             fetchLocationDetails(response.results[0]);
           }
@@ -163,10 +147,7 @@ const OfficeSetting = () => {
 
       // When showing all organizations, use the user's organization ID if available
       if (userOrganizationId) {
-        console.log(
-          "Filtering departments by user's organization ID:",
-          userOrganizationId
-        );
+ 
         filterData.organization = userOrganizationId;
       }
 
@@ -175,7 +156,6 @@ const OfficeSetting = () => {
         filterData: filterData,
       });
 
-      console.log("Department data retrieved:", departmentResponse);
       setDepartments(departmentResponse);
     } catch (error) {
       console.error("Error fetching lists:", error);
@@ -192,10 +172,7 @@ const OfficeSetting = () => {
 
       // When showing all organizations, use the user's organization ID if available
       if (userOrganizationId) {
-        console.log(
-          "Filtering designations by user's organization ID:",
-          userOrganizationId
-        );
+  
         filterData.organization = userOrganizationId;
       }
 
@@ -279,18 +256,8 @@ const OfficeSetting = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log("Initial component load - User details:", userDetails);
-      console.log("User organization ID before fetching:", userOrganizationId);
-      console.log("Organization property:", userDetails?.organization);
-
       // First get organization data
       await getOrganization();
-
-      // Log after fetching
-      console.log(
-        "After fetching - filtered organizations:",
-        filteredOrganizations
-      );
 
       // Then fetch the rest of the data that depends on organization
       await fetchShifts();
@@ -305,7 +272,6 @@ const OfficeSetting = () => {
   // Add another useEffect to update departments when filteredOrganizations changes
   useEffect(() => {
     if (filteredOrganizations.length > 0) {
-      console.log("Organization changed, updating departments...");
       getDepartments();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -385,12 +351,9 @@ const OfficeSetting = () => {
   // Filter tabs based on permissions
   const availableTabs = tabsData.filter(tab => {
     const hasPermission = userPermissions.includes(tab.permission);
-    console.log(`Tab "${tab.label}" requires permission "${tab.permission}": ${hasPermission}`);
     return hasPermission;
   });
 
-  console.log('Available tabs:', availableTabs.map(t => t.label));
-  console.log('User permissions:', userPermissions);
 
   return (
     <div>

@@ -15,6 +15,7 @@ import { days, CurrencyList } from "data/Data";
 import { getOrganizationCountryList } from "app/hooks/officeSetting";
 import { getRegionsList } from "app/hooks/officeSetting";
 import { getCitiesList } from "app/hooks/officeSetting";
+import { getCountryById } from "app/hooks/officeSetting";
 
 const AddOrganizationForm = ({
   handleSubmit,
@@ -61,9 +62,10 @@ const AddOrganizationForm = ({
 
         // If editing, try to find the country by its ID
         if (edit && formData.country) {
-          const matchingCountry = countryList.find(
-            (c) => c.value === formData.country
-          );
+          const matchingCountry = await getCountryById(formData.country)
+          console.log("Matching Country:", matchingCountry);
+          console.log("Form Data Country:", formData.country);
+          console.log("Countries List:", countryList);
           if (matchingCountry) {
             setSelectedCountry(matchingCountry);
             setCountry(formData.country);
@@ -84,15 +86,17 @@ const AddOrganizationForm = ({
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [editData]);
 
   useEffect(() => {
+    console.log("Country or state changed:", country, state);
     country && getStateList(country);
     state && getCityList(state, country);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [country, state]);
 
   const getStateList = async (country) => {
+    console.log("Fetching states for country:", country);
     let statesResponse = await getRegionsList({
       filterData: { country: country },
     });
