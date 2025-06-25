@@ -4,9 +4,15 @@ import {
   TimeAdjustment,
   AttendanceAdjustment,
 } from "app/utils/Types/Attendance";
-import { CalculateTotalWorkingHours, calculateTotal } from "utils/renderValues";
+import {
+  CalculateTotalWorkingHours,
+  calculateTotal,
+  calculateAverage,
+  calculatePercentage,
+} from "utils/renderValues";
 import moment from "moment";
 import { renderTime } from "utils/DateTimeUtils";
+import { calculateTotalCount } from "utils/renderValues";
 
 export function mapShiftData(data) {
   const shiftDetails = Object.keys(Shift).reduce((acc, key) => {
@@ -414,4 +420,49 @@ export function mapTimeAdjustmentFromAttendance(
   }
 
   return TimeAdjustmentObj;
+}
+
+export function mapEmpAttendanceOverview({
+  attendanceDetails = [],
+  shiftResponse = [],
+}) {
+  const attendanceOverview = {};
+  attendanceOverview.late_count = calculateTotalCount(
+    attendanceDetails,
+    "is_late",
+    true
+  );
+  attendanceOverview.overtime_hours = calculateTotal(
+    attendanceDetails,
+    "overtime_hours"
+  );
+  attendanceOverview.payable_hours = calculateTotal(
+    attendanceDetails,
+    "payable_hours"
+  );
+  attendanceOverview.total_hours = calculateTotal(
+    attendanceDetails,
+    "total_hours"
+  );
+  attendanceOverview.average_hours = calculateAverage(
+    attendanceDetails,
+    "payable_hours",
+    "total_hours"
+  );
+
+  attendanceOverview.present_count = attendanceDetails?.length || 0;
+  attendanceOverview.working_days = calculateTotalCount(
+    shiftResponse,
+    "isOffToday",
+    false
+  );
+  attendanceOverview.absent_count = parseInt(
+    parseInt(attendanceOverview.working_days) - attendanceOverview.present_count
+  );
+  attendanceOverview.on_time_percentage = calculatePercentage(
+    attendanceOverview.late_count,
+    attendanceOverview.working_days
+  );
+
+  return attendanceOverview;
 }

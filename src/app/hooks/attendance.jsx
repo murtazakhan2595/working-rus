@@ -11,6 +11,7 @@ import {
   mapTimeAdjustmentData,
   mapAttendanceAdjustmentData,
   mapAttendanceBreakDurationData,
+  mapEmpAttendanceOverview,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
@@ -671,6 +672,44 @@ export const getEmployeeAttendanceDetails = async (employee_id) => {
       return {};
     }
   } else return {};
+};
+
+export const getEmpAttendanceOverview = async (
+  employee_id,
+  start_date = new Date(),
+  end_date = new Date()
+) => {
+  if (!employee_id || !start_date || !end_date) return null;
+  try {
+    const attendanceResponse = await getAttendance({
+      filterData: {
+        date_range: `${moment()
+          .startOf("month")
+          .format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`,
+        employee_id: employee_id,
+      },
+    });
+    const shiftResponse = await getActiveShiftList(
+      employee_id,
+      start_date,
+      end_date
+    );
+
+    if (attendanceResponse || shiftResponse) {
+      const ResponseData = await mapEmpAttendanceOverview({
+        attendanceDetails: attendanceResponse.results || [],
+        shiftResponse: shiftResponse || [],
+      });
+
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error fetching by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
+  }
 };
 
 export const saveUpdateAttendanceAdjustment = async (payload, id) => {
