@@ -1,4 +1,5 @@
 import { EmployeeExit } from "app/utils/Types/EmployeeExit";
+import { calculateTotalCount } from "utils/renderValues";
 
 export async function mapEmployeeExitData(data) {
   const ResponseData = {};
@@ -61,4 +62,16 @@ export function mapEmployeeExitPayloadData(data) {
 
   // Return the constructed payload
   return formData;
+}
+
+export async function mapExitStatsData(data) {
+  if (!data || data.length === 0)
+    return { Pending: 0, Approved: 0, Rejected: 0, Cancelled: 0, Total: 0 };
+  const Pending = calculateTotalCount(data, "status", "PENDING");
+  const Total = data.length || 0;
+  const Approved = calculateTotalCount(data, "status", "APPROVED");
+  const Rejected = calculateTotalCount(data, "status", "REJECTED");
+  const Clearance = calculateTotalCount(data, "clearance_status", "COMPLETED");
+  const Exit = calculateTotalCount(data, "clearance_status", "EXIT_INTERVIEW");
+  return { Pending, Approved, Rejected, Clearance, Total, Exit };
 }
