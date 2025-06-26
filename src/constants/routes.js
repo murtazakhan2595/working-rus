@@ -51,6 +51,7 @@ import {
   PayRun,
   CreatePayRun,
   PayRunDetails,
+  EmployeeSalaryDetails,
   PayrollPayrunDetail,
 } from "app/modules/Payroll";
 import { ClaimRequest, MyClaims } from "app/modules/claims";
@@ -67,7 +68,7 @@ import StyleGuide from "app/modules/StyleGuide";
 import { OfficeSetting } from "app/modules/OfficeSetting";
 import ShiftCalendar from "app/modules/Attendance/ShiftCalendar/ShiftCalendar";
 import EmployeeDTRs from "app/modules/DTR/EmployeeDTRs";
-import {OrganizationalTree} from "app/modules/OrganizationalChart";
+import { OrganizationalTree } from "app/modules/OrganizationalChart";
 import { TeamProfileMangement } from "app/modules/TeamManagment";
 import { Assets, MyAssets } from "app/modules/AssetsManagement";
 import { TeamAdjustments } from "app/modules/Payroll/Screens/TeamPayroll";
@@ -383,6 +384,11 @@ export const SidebarRoutes = [
           component: <EmployeesPayroll />,
           name: "EMPLOYEES_PAYROLL",
         },
+        Config.EMPLOYEES_PAYROLL && {
+          path: "/payroll/:id",
+          component: <EmployeeSalaryDetails />,
+          name: "Payroll Details",
+        },
         Config.SALARY_SETUP && {
           path: "/payroll/salary-setup",
           component: <SalarySetup />,
@@ -497,12 +503,6 @@ export const SidebarRoutes = [
 ];
 
 const RemainingSidebarRoutes = [
-  // Config.PAYROLL && {
-  //   path: "/payroll/:id",
-  //   component: <EmployeeSalaryDetails />,
-  //   name: "Payroll Details",
-  // },
-
   Config.PAYROLL && {
     path: "/payslip-eos/:id",
     component: <Payslip />,
