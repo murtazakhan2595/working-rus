@@ -9,8 +9,8 @@ const Config = {
   MY_ATTENDANCE: true,
   DAILY_TASK_REPORT: false,
   MY_LEAVE_TRACKER: true,
-  MY_PAYROLL: false,
-  MY_CLAIMS: false,
+  MY_PAYROLL: true,
+  MY_CLAIMS: true,
   MY_TRANSFERS: true,
   DOCUMENTS: true, // My HR Documents
   MY_ASSETS: true,
@@ -20,7 +20,7 @@ const Config = {
   //----------------TEAM_MANAGEMENT------------
   TEAM_MANAGEMENT: true,
   //Sub Modules
-  TEAM_PROFILE: false,
+  TEAM_PROFILE: true,
   TEAM_ATTENDANCE: true,
   TEAM_DAILY_TASK_REPORT: false,
   TEAM_LEAVE_REQUEST: true,
@@ -108,7 +108,7 @@ export const URLS = [
   },
   {
     Frontend: "http://localhost:3000",
-    Backend: "https://staging-hrms-be.tecbrix.cloud/api",
+    Backend: "https://hrms-be.tecbrix.cloud/api",
   },
   {
     Frontend: "https://production-hdfnfucnc9gpcaaw.z02.azurefd.net",
