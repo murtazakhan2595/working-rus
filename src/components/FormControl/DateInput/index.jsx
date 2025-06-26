@@ -355,8 +355,10 @@ const DateInput = React.memo(
                       CalendarContent[baseDate] || {};
                     const isCurrentDay = isToday(date);
                     const className = `w-full h-full flex items-center justify-center ${
-                      disableHolidays && isHoliday ? "text-green-500" : ""
-                    } ${isHoliday ? "bg-green-100 rounded-full" : ""} ${
+                      isHoliday
+                        ? "text-purple-500 bg-purple-100 rounded-full"
+                        : ""
+                    } ${
                       isCurrentDay
                         ? "border-2 border-plum-1000 rounded-full"
                         : ""
@@ -375,14 +377,14 @@ const DateInput = React.memo(
                   },
                 }}
               />
-              <div className="flex items-center justify-center gap-4 pt-2 border-t border-gray-200">
+              <div className="flex items-center justify-center gap-4 py-2 border-t border-gray-200">
                 <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 bg-green-100 rounded-full"></div>
-                  <span className="text-xs text-neutral-700">Holiday</span>
+                  <div className="w-3 h-3 bg-purple-100 rounded-full"></div>
+                  <span className="text-xs text-neutral-900">Holiday</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <div className="w-3 h-3 border-2 border-plum-1000 rounded-full"></div>
-                  <span className="text-xs text-neutral-700">Today</span>
+                  <span className="text-xs text-neutral-900">Today</span>
                 </div>
               </div>
             </>

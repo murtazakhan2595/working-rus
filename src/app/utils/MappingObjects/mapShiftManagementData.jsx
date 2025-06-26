@@ -17,17 +17,12 @@ export function mapCustomShiftData(data, date) {
   } = data;
   const formattedDate = date ? moment(date).format("YYYY-MM-DD") : null;
   const active_shift = {
-    date: formattedDate,
     is_split_shift: Boolean(is_split),
     total_hours: 0,
     shifts: [],
-    status: !Boolean(is_off),
     is_weekly_off: is_off,
-    is_holiday_off: false,
-    is_on_leave: false,
-    isOffToday: is_off,
-    OffLabel: "Weekly Off",
     name: "Custom Shift",
+    is_custom_shift: true,
   };
   if (is_split) {
     if (start_time_1 && end_time_1 && start_time_2 && end_time_2) {
@@ -76,19 +71,14 @@ export function mapDefaultShiftData(data) {
   const { type, starttime, endtime, name, id } = data;
   const formattedDate = moment().format("YYYY-MM-DD");
   const active_shift = {
-    date: formattedDate,
     is_split_shift: false,
     total_hours: 0,
     shifts: [],
-    status: true,
     is_weekly_off: false,
-    is_holiday_off: false,
-    is_on_leave: false,
-    isOffToday: false,
-    OffLabel: null,
     name: name,
     id: id,
     type: type,
+    is_custom_shift: false,
   };
 
   if (starttime && endtime) {
@@ -115,14 +105,19 @@ export function mapActiveShiftData(
   holiday_details
 ) {
   try {
+    const formattedDate = moment(date).format("YYYY-MM-DD");
     const isWeekend = moment(date).day() === 0 || moment(date).day() === 6;
     const isDefaultShiftValid =
       default_shift && typeof default_shift === "object";
     const isCustomShiftValid = custom_shift && typeof custom_shift === "object";
 
-    const active_shift = ActiveShift;
+    const active_shift = { ...ActiveShift, date: formattedDate };
 
-    if (isCustomShiftValid) return { ...active_shift, ...custom_shift };
+    if (isCustomShiftValid) {
+      if (custom_shift.is_weekly_off)
+        return { ...active_shift, isOffToday: true, OffLabel: "Weekly Off" };
+      return { ...active_shift, ...custom_shift };
+    }
 
     // 2. Fallback to default shift
     if (isDefaultShiftValid) {
@@ -130,7 +125,6 @@ export function mapActiveShiftData(
       if ((weekend_shift && isWeekend) || (!weekend_shift && !isWeekend)) {
         return { ...active_shift, ...default_shift };
       } else {
-        active_shift.status = false;
         active_shift.isOffToday = true;
         active_shift.OffLabel = "Weekly Off";
         active_shift.is_weekly_off = true;

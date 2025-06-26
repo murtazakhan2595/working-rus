@@ -66,29 +66,25 @@ const AttendanceAdjustmentDetails = ({
             id
           );
         }
-        debugger
         const { status: updatedStatus, attendance } = await fetchData(id, true);
         if (updatedStatus && updatedStatus.toLowerCase() === "approved") {
-          if (attendance) {
-            const attendanceData = await getAttendanceData(attendance);
-            const shiftData = await getActiveShiftData(
-              employee,
-              attendance_date
-            );
-            const payload = {
-              date: attendance_date,
-              id: attendance,
-              ...(is_second_shift
-                ? { second_checkin: requested_checkin }
-                : { checkin: requested_checkin }),
-              ...(is_second_shift
-                ? { second_checkout: requested_checkout }
-                : { checkout: requested_checkout }),
-              employee_id: employee,
-              total_hours: attendanceData.total_hours,
-            };
-            await saveAttendance(payload, shiftData, attendance);
-          }
+          const attendanceData = attendance
+            ? await getAttendanceData(attendance)
+            : {};
+          const shiftData = await getActiveShiftData(employee, attendance_date);
+          const payload = {
+            ...attendanceData,
+            date: attendance_date,
+            id: attendance,
+            ...(is_second_shift
+              ? { second_checkin: requested_checkin }
+              : { checkin: requested_checkin }),
+            ...(is_second_shift
+              ? { second_checkout: requested_checkout }
+              : { checkout: requested_checkout }),
+            employee_id: employee,
+          };
+          await saveAttendance(payload, shiftData, attendance);
         }
         setForceLoad(!forceLoad);
         setOpenRejectModal(false);
