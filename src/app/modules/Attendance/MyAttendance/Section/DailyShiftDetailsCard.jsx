@@ -96,7 +96,7 @@ const DailyShiftDetailsCard = ({ isDashboard = false }) => {
               day={day}
               Icon={Clock}
               shifts={details.shifts}
-              status={details.status}
+              status={details.shift_assigned}
               OffLabel={details.OffLabel}
             />
           ))}

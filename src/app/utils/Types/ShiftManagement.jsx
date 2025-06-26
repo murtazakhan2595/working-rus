@@ -94,7 +94,6 @@ export const ActiveShift = {
   total_hours: 0,
   shifts: null,
   shift_assigned: true,
-  status: false,
   is_weekly_off: false,
   isOffToday: false,
   OffLabel: null,

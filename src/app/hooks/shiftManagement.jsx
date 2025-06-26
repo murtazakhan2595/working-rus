@@ -322,7 +322,6 @@ export const getActiveShiftList = async (
 ) => {
   try {
     if (!employee_id || !start_date || !end_date) return null;
-
     const default_shift =
       defaultShift && typeof defaultShift === "object"
         ? defaultShift

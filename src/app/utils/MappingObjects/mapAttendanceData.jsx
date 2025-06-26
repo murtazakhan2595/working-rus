@@ -32,7 +32,7 @@ export function mapShiftData(data) {
 }
 export function mapAttendanceData(data, shiftDetails) {
   const [firstShift, secondShift] = shiftDetails?.shifts || [];
-  const Hours = shiftDetails?.total_hours || data.total_hours || 0;
+  const Hours = shiftDetails?.total_hours ?? data.total_hours ?? 0;
   const attendanceDate = data.date || moment();
   // Initialize an empty payload object
   const payload = {};
