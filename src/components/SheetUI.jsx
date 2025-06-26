@@ -145,7 +145,7 @@ const SheetUI = forwardRef(
                             required,
                             disabled,
                             label,
-                            onFieldUpdate = async () => {},
+                            onFieldUpdate,
                             options = [],
                             value,
                             colsSpan,
@@ -209,13 +209,17 @@ const SheetUI = forwardRef(
                                 label={label}
                                 placeholder={placeholder}
                                 onChange={async (field, value) => {
-                                  await onFieldUpdate(
-                                    field,
-                                    value,
-                                    props.values,
-                                    props.setFieldValue
-                                  );
-                                  await props?.setFieldValue(field, value);
+                                  if (
+                                    onFieldUpdate &&
+                                    typeof onFieldUpdate === "function"
+                                  )
+                                    await onFieldUpdate(
+                                      field,
+                                      value,
+                                      props.values,
+                                      props.setFieldValue
+                                    );
+                                  props?.setFieldValue(field, value);
                                 }}
                                 maxRows={maxRows}
                                 date={date}
