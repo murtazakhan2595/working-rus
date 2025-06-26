@@ -4,9 +4,15 @@ import {
   TimeAdjustment,
   AttendanceAdjustment,
 } from "app/utils/Types/Attendance";
-import { CalculateTotalWorkingHours, calculateTotal } from "utils/renderValues";
+import {
+  CalculateTotalWorkingHours,
+  calculateTotal,
+  calculateAverage,
+  calculatePercentage,
+} from "utils/renderValues";
 import moment from "moment";
 import { renderTime } from "utils/DateTimeUtils";
+import { calculateTotalCount } from "utils/renderValues";
 
 export function mapShiftData(data) {
   const shiftDetails = Object.keys(Shift).reduce((acc, key) => {
@@ -26,7 +32,7 @@ export function mapShiftData(data) {
 }
 export function mapAttendanceData(data, shiftDetails) {
   const [firstShift, secondShift] = shiftDetails?.shifts || [];
-  const Hours = shiftDetails?.total_hours || data.total_hours || 0;
+  const Hours = shiftDetails?.total_hours ?? data.total_hours ?? 0;
   const attendanceDate = data.date || moment();
   // Initialize an empty payload object
   const payload = {};
@@ -144,7 +150,9 @@ export function mapAttendanceBreakDurationData(breakData = []) {
   let totalBreakDuration = 0;
 
   // Use breakData.results if exists, else fallback to breakData itself
-  const breaks = Array.isArray(breakData.results) ? breakData.results : breakData;
+  const breaks = Array.isArray(breakData.results)
+    ? breakData.results
+    : breakData;
 
   breaks.forEach((entry) => {
     const startRaw = entry?.starttime;
@@ -194,25 +202,23 @@ export function mapEmployeeAttendanceDetail(data) {
     MonthlyShiftDataList,
     "total_hours"
   );
+  emp_attendance_data.monthly_total_hours = monthly_total_hours;
   const weekly_total_hours = calculateTotal(WeeklyShiftDataList, "total_hours");
+  emp_attendance_data.weekly_total_hours = weekly_total_hours;
   const today_shift = MonthlyShiftDataList.find(
     (shift) => shift.date === moment().format("YYYY-MM-DD")
   );
+  emp_attendance_data.today_shift = today_shift || {};
   const yesterday_shift = MonthlyShiftDataList.find(
     (shift) => shift.date === moment().subtract(1, "day").format("YYYY-MM-DD")
   );
+  emp_attendance_data.yesterday_shift = yesterday_shift || {};
   const tomorrow_shift = MonthlyShiftDataList.find(
     (shift) => shift.date === moment().add(1, "day").format("YYYY-MM-DD")
   );
-
-  emp_attendance_data.default_shift = data.default_shift;
-  emp_attendance_data.monthly_total_hours = monthly_total_hours;
-  emp_attendance_data.weekly_total_hours = weekly_total_hours;
-  emp_attendance_data.employee_id = data.employee_id;
-  emp_attendance_data.today_shift = today_shift || {};
-  emp_attendance_data.yesterday_shift = yesterday_shift || {};
   emp_attendance_data.tomorrow_shift = tomorrow_shift || {};
-  emp_attendance_data.checkin = data.check_in_time;
+  emp_attendance_data.default_shift = data.default_shift;
+  emp_attendance_data.employee_id = data.employee_id;
   emp_attendance_data.monthly_overtime = parseFloat(data.monthly_overtime || 0);
   emp_attendance_data.weekly_overtime = parseFloat(data.weekly_overtime || 0);
   emp_attendance_data.monthly_payable_hours = parseFloat(
@@ -223,26 +229,13 @@ export function mapEmployeeAttendanceDetail(data) {
   );
   emp_attendance_data.employee_name = data.employee_name;
   emp_attendance_data.employee_serial_number = data.employee_serial_number;
-
   emp_attendance_data.monthly_leaves = data.monthly_leaves;
   emp_attendance_data.weekly_leaves = data.weekly_leaves;
-  emp_attendance_data.is_leave_today = data.is_leave_today;
-  emp_attendance_data.leave_details = data.leave_details;
-  emp_attendance_data.break_hours = data.break_hours;
   emp_attendance_data.this_month_offs = data.this_month_offs;
   emp_attendance_data.this_week_offs = data.this_week_offs;
-  emp_attendance_data.checkout = data.check_out_time;
-  emp_attendance_data.total_hours = data.total_hours;
-  emp_attendance_data.break_time = data.break_time;
-  emp_attendance_data.break_object = data.break_object;
-  emp_attendance_data.overtime = data.overtime;
-  emp_attendance_data.is_off_today = data.is_off_today;
-  emp_attendance_data.is_off_yesterday = data.is_off_yesterday;
-  emp_attendance_data.off_today = data.off_today;
-  emp_attendance_data.off_yesterday = data.off_yesterday;
-  emp_attendance_data.off_tomorrow = data.off_tomorrow;
-  emp_attendance_data.is_off_tomorrow = data.is_off_tomorrow;
-  emp_attendance_data.overtime = data.overtime;
+  emp_attendance_data.is_off_today = today_shift.isOffToday;
+  emp_attendance_data.off_today = today_shift.OffLabel;
+
   return emp_attendance_data;
 }
 
@@ -288,13 +281,11 @@ export async function mapAttendanceAdjustmentData(data) {
 export async function mapAttendanceAdjustmentListData(data) {
   if (!Array.isArray(data) || data.length === 0) return [];
 
-  const AttendanceAdjustmentList = await Promise.all(
-    data.map((attendanceAdjustment) =>
-      mapAttendanceAdjustmentData(attendanceAdjustment)
-    )
+  const ResponseList = await Promise.all(
+    data.map((item) => mapAttendanceAdjustmentData(item))
   );
 
-  return AttendanceAdjustmentList;
+  return ResponseList;
 }
 
 export function mapAdjustmentFromAttendnaceData(data) {
@@ -429,4 +420,49 @@ export function mapTimeAdjustmentFromAttendance(
   }
 
   return TimeAdjustmentObj;
+}
+
+export function mapEmpAttendanceOverview({
+  attendanceDetails = [],
+  shiftResponse = [],
+}) {
+  const attendanceOverview = {};
+  attendanceOverview.late_count = calculateTotalCount(
+    attendanceDetails,
+    "is_late",
+    true
+  );
+  attendanceOverview.overtime_hours = calculateTotal(
+    attendanceDetails,
+    "overtime_hours"
+  );
+  attendanceOverview.payable_hours = calculateTotal(
+    attendanceDetails,
+    "payable_hours"
+  );
+  attendanceOverview.total_hours = calculateTotal(
+    attendanceDetails,
+    "total_hours"
+  );
+  attendanceOverview.average_hours = calculateAverage(
+    attendanceDetails,
+    "payable_hours",
+    "total_hours"
+  );
+
+  attendanceOverview.present_count = attendanceDetails?.length || 0;
+  attendanceOverview.working_days = calculateTotalCount(
+    shiftResponse,
+    "isOffToday",
+    false
+  );
+  attendanceOverview.absent_count = parseInt(
+    parseInt(attendanceOverview.working_days) - attendanceOverview.present_count
+  );
+  attendanceOverview.on_time_percentage = calculatePercentage(
+    attendanceOverview.late_count,
+    attendanceOverview.working_days
+  );
+
+  return attendanceOverview;
 }

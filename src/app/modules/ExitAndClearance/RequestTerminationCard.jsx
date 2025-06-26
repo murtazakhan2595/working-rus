@@ -33,12 +33,11 @@ const RequestTerminationCard = ({
     formData.append("exit_date", values.last_working_day);
     formData.append("exit_interview_date", values.exit_interview_date);
     formData.append("final_working_day", values.last_working_day);
-    formData.append("exit_category", "termination");
+    formData.append("exit_category", "TERMINATION");
     formData.append("termination_letter", values.termination_letter);
     formData.append("notice_period", values.notice_period);
     formData.append("employee_id", values.terminate_employee);
     formData.append("reason_of_termination", values.reason_for_terminating);
-    formData.append("status_termination", "viewed by manager");
   
     try {
       // Send the FormData object via the employeeExit function

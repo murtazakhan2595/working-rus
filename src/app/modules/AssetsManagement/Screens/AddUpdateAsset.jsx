@@ -369,49 +369,50 @@ const AddUpdateAsset = ({
             <form onSubmit={props.handleSubmit} className="mt-6 space-y-6 ">
               {console.log("props", props)}
               <SheetCardExtension title="Asset Details">
-                <TextInput
-                  name={"asset_name"}
-                  error={props.errors?.asset_name}
-                  touch={props.touched?.asset_name}
-                  value={props.values?.asset_name}
-                  label={"Asset Name"}
-                  required={true}
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                  placeholder="Enter asset name"
-                />
-
-                <div className="flex items-center gap-4">
-                  <div className="flex-1 space-y-2 mb-6">
-                    <SelectInputComponent
-                      name={"category"}
-                      error={props.errors?.category}
-                      touch={props.touched?.category}
-                      value={props.values?.category}
-                      label={"Asset Category"}
-                      required={true}
-                      options={categories}
-                      onChange={(field, value) => {
-                        props.setFieldValue(field, value);
-                        handleCategoryChange(value, props.setFieldValue);
-                      }}
-                      placeholder="Select category"
-                    />
-                  </div>
-                  <div className="flex-1 space-y-2 mb-6">
-                    <SelectInputComponent
-                      name={"asset_location"}
-                      error={props.errors?.asset_location}
-                      touch={props.touched?.asset_location}
-                      value={props.values?.asset_location}
-                      label={"Asset Location"}
-                      required={true}
-                      options={branches}
-                      onChange={(field, value) => {
-                        props.setFieldValue(field, value);
-                      }}
-                    />
+                <div className="flex flex-col gap-4">
+                  <TextInput
+                    name={"asset_name"}
+                    error={props.errors?.asset_name}
+                    touch={props.touched?.asset_name}
+                    value={props.values?.asset_name}
+                    label={"Asset Name"}
+                    required={true}
+                    onChange={(field, value) => {
+                      props.handleChange(field)(value);
+                    }}
+                    placeholder="Enter asset name"
+                  />
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1 space-y-2 mb-6">
+                      <SelectInputComponent
+                        name={"category"}
+                        error={props.errors?.category}
+                        touch={props.touched?.category}
+                        value={props.values?.category}
+                        label={"Asset Category"}
+                        required={true}
+                        options={categories}
+                        onChange={(field, value) => {
+                          props.setFieldValue(field, value);
+                          handleCategoryChange(value, props.setFieldValue);
+                        }}
+                        placeholder="Select category"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-2 mb-6">
+                      <SelectInputComponent
+                        name={"asset_location"}
+                        error={props.errors?.asset_location}
+                        touch={props.touched?.asset_location}
+                        value={props.values?.asset_location}
+                        label={"Asset Location"}
+                        required={true}
+                        options={branches}
+                        onChange={(field, value) => {
+                          props.setFieldValue(field, value);
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -483,19 +484,19 @@ const AddUpdateAsset = ({
                   </div>
                 </div>
                 <div className="flex-1 space-y-2 mb-6">
-                <TextAreaInput
-                  name={"notes"}
-                  error={props.errors?.notes}
-                  touch={props.touched?.notes}
-                  value={props.values?.notes}
-                  label={"Remarks/Notes"}
-                  required={false}
-                  onChange={(field, value) => {
-                    props.handleChange(field)(value);
-                  }}
-                  maxRows={3}
-                  placeholder="Add any additional notes about the asset"
-                />
+                  <TextAreaInput
+                    name={"notes"}
+                    error={props.errors?.notes}
+                    touch={props.touched?.notes}
+                    value={props.values?.notes}
+                    label={"Remarks/Notes"}
+                    required={false}
+                    onChange={(field, value) => {
+                      props.handleChange(field)(value);
+                    }}
+                    maxRows={3}
+                    placeholder="Add any additional notes about the asset"
+                  />
                 </div>
 
                 {/* Using Attachments component like DTR */}

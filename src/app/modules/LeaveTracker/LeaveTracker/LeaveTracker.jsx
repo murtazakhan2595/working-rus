@@ -46,7 +46,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
 
   const [activeTab, setActiveTab] = useState(activeView);
   const [filterData, setFilterData] = useState({ status: "pending" });
-  const [permittedViewFilterData, setPermittedViewFilterData] = useState({});
+  const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [LeaveStats, setLeaveStats] = useState({});
   const [leaveTypesData, setLeaveTypesData] = useState([]);
@@ -74,7 +74,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
     let isMounted = true;
     if (isMounted)
       setPermittedViewFilterData(() => {
-        if (isTeamView) return { managers: user_id };
+        if (isTeamView) return { reporting_employees: [user_id] };
         else if (isAdminView) return {};
         else if (isBranchView) return { branch: user_branch };
         else if (isDepartmentView) return { department: user_department };
@@ -104,7 +104,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
 
   useEffect(() => {
     let isMounted = true;
-    fetchData(isMounted);
+    if (permittedViewFilterData) fetchData(isMounted);
     return () => {
       isMounted = false;
     };
@@ -135,7 +135,7 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
     try {
       setIsLoading(true);
       const Stats = await getLeaveStatsData({
-        filterData: permittedViewFilterData ,
+        filterData: permittedViewFilterData,
       });
       if (Stats && isMounted) {
         setLeaveStats(Stats || {});

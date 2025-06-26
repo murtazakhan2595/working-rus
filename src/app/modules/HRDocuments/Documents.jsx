@@ -33,12 +33,7 @@ export default function Documents({ reload }) {
     count: 0,
   });
   const [activeTab, setActiveTab] = useState("all-documents");
-  const [activeTabDetails, setActiveTabDetails] = useState({
-    title: "All Documents",
-    label: "All Documents",
-    value: "all-documents",
-    description: "",
-  });
+  
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [ordering, setOrdering] = useState("-id");
   const [OpenDocumentID, setOpenDocumentID] = useState(false);
@@ -64,6 +59,8 @@ export default function Documents({ reload }) {
       description: "Here you view all the expired documents.",
     },
   ];
+
+const [activeTabDetails, setActiveTabDetails] = useState(DocumentTabs[0]);
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));

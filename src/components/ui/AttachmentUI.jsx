@@ -18,7 +18,7 @@ export default function AttachmentUI({
   const FileName = React.useMemo(() => {
     return name ? name : attachment ? getFileNameFromURL(attachment) : null;
   }, [name, attachment]);
-  console.log(FileName, name,attachment, "FileNameFileNameFileName");
+
   if (!attachment) return null;
 
   const getFileType = (file) => {

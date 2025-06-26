@@ -31,7 +31,7 @@ export const downloadFile = (attachment, fileName) => {
     link.click();
     URL.revokeObjectURL(blobURL);
   } else {
-    filebase64Download(attachment, fileName);
+    downloadAttachmentDirectLink(attachment, fileName);
   }
 };
 
@@ -116,7 +116,6 @@ export function convert_Text_To_File(text, fileName = "signature.png") {
 }
 
 export const downloadAttachmentDirectLink = async (file, name) => {
-  console.log("in download attachment", file, name);
 
   // Instead of trying to fetch the file content through axios (which is subject to CORS),
   // create a direct link to download the file

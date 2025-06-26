@@ -12,6 +12,8 @@ import {
   EmployeeContactInformation,
 } from "app/utils/Types/Employee";
 
+import {mapDefaultShiftData} from 'app/utils/MappingObjects/mapShiftManagementData';
+
 export function mapEmployeePayloadData(data, id) {
   // Initialize an empty payload object
   const payload = {};
@@ -82,6 +84,19 @@ async function mapEmployeeData(data) {
     ...EmployeeContactInformation,
     ...BankDetails,
     ...WorkInformation,
+  };
+  return employee;
+}
+
+export async function mapEmployeeInfoData(data) {
+  const employee = {
+    id: data.id,
+    name: `${data.first_name} ${data.last_name}`,
+    name_initials: `${data?.first_name?.charAt(0)?.toUpperCase() || ""}${
+      data?.last_name?.charAt(0)?.toUpperCase() || ""
+    }`,
+    default_shift_id: data.shift_assignment,
+    default_shift: mapDefaultShiftData(data.default_shift),
   };
   return employee;
 }
@@ -254,24 +269,23 @@ async function getEmployeeInformation(data) {
   return employeeInformation;
 }
 
-
 function mapEmployeeDocsChecklist(data) {
   let arrayData;
-   if (Array.isArray(data)) {
-     // Data is already an array
-     arrayData = data;
-   } else if (
-     data &&
-     typeof data === "object" &&
-     Array.isArray(data.onboardingDocuments)
-   ) {
-     // Data is an object that has onboardingDocuments array
-     arrayData = data.onboardingDocuments;
-   } else {
-     // Handle the case where neither condition is met
-     console.error("Invalid data format for mapEmployeeDocsChecklist");
-     arrayData = [];
-   }
+  if (Array.isArray(data)) {
+    // Data is already an array
+    arrayData = data;
+  } else if (
+    data &&
+    typeof data === "object" &&
+    Array.isArray(data.onboardingDocuments)
+  ) {
+    // Data is an object that has onboardingDocuments array
+    arrayData = data.onboardingDocuments;
+  } else {
+    // Handle the case where neither condition is met
+    console.error("Invalid data format for mapEmployeeDocsChecklist");
+    arrayData = [];
+  }
   const employeeDocsChecklist = arrayData.map((template) => {
     const doc = {
       id: template.id,
@@ -299,5 +313,5 @@ export {
   getBankDetails,
   getCertifications,
   getEmployeeInformation,
-  mapEmployeeDocsChecklist
+  mapEmployeeDocsChecklist,
 };

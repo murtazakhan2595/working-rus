@@ -80,7 +80,7 @@ export const fetchCalendarHoliday = createAsyncThunk(
   async (user_id) => {
     try {
       const response = await getHolidaysListData({
-        filterData: { employee: user_id },
+        filterData: { employee_id: user_id },
       });
       const HolidayData = response?.results || [];
       const CalendarContent = mapCalendarContent({ holidays: HolidayData });

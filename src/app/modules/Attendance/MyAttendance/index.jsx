@@ -180,7 +180,7 @@ const Attendance = () => {
                   <CardTitle className="text-plum-900">Statistics</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <HourlyStatistics userId={userProfile?.id} />
+                  <HourlyStatistics employee_id={userProfile?.id} />
                 </CardContent>
               </Card>
             ) : (

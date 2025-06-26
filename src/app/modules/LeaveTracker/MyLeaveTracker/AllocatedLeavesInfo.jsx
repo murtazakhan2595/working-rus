@@ -63,7 +63,7 @@ const AllocatedLeavesInfo = () => {
               <div className="mt-4 first:mt-0 text-neutral-1000">
                 <TooltipText
                   content={tooltip_info}
-                  className={"whitespace-pre-line "}
+                  className={"whitespace-pre-line"}
                 >
                   {name}
                 </TooltipText>
