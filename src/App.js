@@ -56,9 +56,11 @@ function App() {
         return;
       }
     } catch (error) {
+      const pathname = location.pathname;
+      const errorResponse = error.response;
       if (
-        error.response &&
-        (error.response.status === 401 || error.response.status === 403)
+        errorResponse &&
+        (errorResponse.status === 401 || errorResponse.status === 403)
       ) {
         // // Token expired or invalid
         const protectedRoutes = [
@@ -68,20 +70,22 @@ function App() {
           "/confirm-password",
         ];
         const isProtectedRoute = protectedRoutes.some((route) =>
-          location.pathname.startsWith(route)
+          pathname.startsWith(route)
         );
 
         if (!isProtectedRoute) {
           dispatch(setUserLogout());
           navigate("/login");
         }
+      } else if (pathname === "/" && errorResponse.status === 404) {
+        dispatch(setUserLogout());
+        navigate("/login");
       } else {
         console.error("Error fetching data:", error);
       }
       setLoading(false);
     }
   };
-
   useEffect(() => {
     if (isLogin || isLogin === null) {
       setLoading(true);
