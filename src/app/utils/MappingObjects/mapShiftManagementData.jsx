@@ -92,7 +92,7 @@ export function mapDefaultShiftData(data) {
         endTime: endTime,
       },
     ];
-    active_shift.total_hours = CalculateTotalWorkingHours(endTime, endtime);
+    active_shift.total_hours = CalculateTotalWorkingHours(startTime, endTime);
   }
   return active_shift;
 }
