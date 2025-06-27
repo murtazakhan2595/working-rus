@@ -61,7 +61,7 @@ const DailyShiftDetailsCard = ({ isDashboard = false }) => {
       emp_attendance_detail.monthly_overtime /
         emp_attendance_detail.monthly_total_hours
     );
-    setOffsetCount(offSetCount||0);
+    setOffsetCount(offSetCount || 0);
   }, [emp_attendance_detail]);
 
   if (loading) {
@@ -125,7 +125,7 @@ const ShiftCard = ({ day, Icon, shifts, status, OffLabel }) => {
       </div>
       {status ? (
         <div className="">
-          {shifts &&
+          {shifts && shifts.length > 0 ? (
             shifts.map((shift, index) => (
               <div
                 key={index}
@@ -135,7 +135,14 @@ const ShiftCard = ({ day, Icon, shifts, status, OffLabel }) => {
                 <ArrowRight className={`h-3 w-3 ${dayStyles[day].icon}`} />
                 <span className="font-medium">{shift.end_time}</span>
               </div>
-            ))}
+            ))
+          ) : (
+            <div
+              className={`text-center py-1 px-2 text-sm font-medium ${dayStyles[day].text}`}
+            >
+              {OffLabel}
+            </div>
+          )}
         </div>
       ) : (
         <div
