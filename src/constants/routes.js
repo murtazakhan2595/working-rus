@@ -174,6 +174,11 @@ export const SidebarRoutes = [
           component: <ExitAndClearance isTeamView={true} />,
           name: "TEAM_EXIT_CLEARANCE",
         },
+        Config.TEAM_ATTENDANCE && {
+          path: "/team-attendance",
+          component: <Attendance isTeamView={true} />,
+          name: "TEAM_ATTENDANCE",
+        },
       ].filter(Boolean) // Filter out undefined route
     : []),
   ...(Config.PEOPLE_TEAM

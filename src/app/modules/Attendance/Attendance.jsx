@@ -60,6 +60,11 @@ const Attendance = ({ isTeamView = false }) => {
     `${moment().format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`
   );
   const [ordering, setOrdering] = useState("emp_name");
+  const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
+  const onPageChange = (name, value) => {
+    setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
+  };
+
   useEffect(() => {
     if (dateRange) {
       const date_range = dateRange.split(",");
@@ -109,6 +114,7 @@ const Attendance = ({ isTeamView = false }) => {
         filterData,
         dateRange,
         ordering,
+        options,
       });
       if (isMounted) {
         if (attendanceData) {
@@ -122,6 +128,9 @@ const Attendance = ({ isTeamView = false }) => {
     }
   };
   const tableOptions = {
+    page: options.page,
+    sizePerPage: options.sizePerPage,
+    onPageChange: onPageChange,
     onSortChange: (sortName) => {
       setOrdering(sortName);
     },
@@ -132,7 +141,7 @@ const Attendance = ({ isTeamView = false }) => {
     return () => {
       isMounted = false;
     };
-  }, [filterData, dateRange, ordering]);
+  }, [filterData, dateRange, ordering, options]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -230,7 +239,7 @@ const Attendance = ({ isTeamView = false }) => {
                 <TableCustom
                   data={attendanceData.results || []}
                   columns={EmployeesAttendanceColumns(TotalDays)}
-                  pagination={false}
+                  pagination={true}
                   dataTotalSize={attendanceData.count || 0}
                   tableOptions={tableOptions}
                 />
