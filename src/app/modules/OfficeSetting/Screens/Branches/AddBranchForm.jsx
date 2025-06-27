@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchBranches } from "state/slices/CommonSlice";
 import { initialState } from "state/slices/UserSlice";
+import { Button } from "components/ui/button";
 
 // Get the base URL from Redux store
 const baseUrl = initialState.baseUrl;
@@ -155,6 +156,9 @@ const AddBranchForm = ({
     if (!values.branch_number) {
       errors.branch_number = "Branch number is required";
     }
+    else if (!/^\d+$/.test(values.branch_number)) {
+      errors.branch_number = "Branch number must be numeric";
+    }
     
     if (!values.branch_address) {
       errors.branch_address = "Branch address is required";
@@ -231,13 +235,12 @@ const AddBranchForm = ({
                           value={form.values.branch_location || ""}
                           disabled
                         />
-                        <button
+                        <Button
                           type="button"
-                          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
                           onClick={handleMapOpen}
                         >
                           Open Map
-                        </button>
+                        </Button>
                       </div>
                       
                       {form.values.branch_coordinates && form.values.branch_coordinates.lat !== 0 && (
