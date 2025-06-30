@@ -150,19 +150,31 @@ const TreeNodeItem = ({ node, selectedLeafIds, onCheckChange }) => {
   const [open, setOpen] = useState(false);
   const { childrens, id, code_name, name, description } = node;
   const hasChildren = Boolean(childrens && childrens.length > 0);
+  const anyNodeSelected = React.useMemo(
+    () => ChildAnyNodeExist(node, selectedLeafIds, "id"),
+    [selectedLeafIds, node]
+  );
   const CheckSelected = React.useMemo(() => {
     return ChildALLNodesExist(node, selectedLeafIds, "id");
   }, [selectedLeafIds, node]);
 
   if (code_name === "DASHBOARD") return null;
   return (
-    <div className="mb-3 p-2">
+    <div className="mb-3 p-2 pr-0">
       <div
-        className="flex items-center cursor-pointer"
-        onClick={() => setOpen(!open)}
+        className={`flex items-center cursor-pointer ${
+          anyNodeSelected ? "text-plum-900" : ""
+        }`}
       >
         {hasChildren && (
-          <div className="mr-2">
+          <div
+            className="mr-2"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              setOpen(!open);
+            }}
+          >
             {open ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </div>
         )}
@@ -179,7 +191,11 @@ const TreeNodeItem = ({ node, selectedLeafIds, onCheckChange }) => {
       </div>
 
       {open && hasChildren && (
-        <div className={`pl-5 pt-3 ml-3 mt-3 border rounded `}>
+        <div
+          className={`pl-5 pt-3 mt-3 border rounded-lg ${
+            CheckSelected ? "border-plum-700" : ""
+          }`}
+        >
           <RenderTreeLevel
             treeNodes={childrens}
             onCheckChange={onCheckChange}
