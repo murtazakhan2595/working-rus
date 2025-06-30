@@ -6,7 +6,7 @@ import ViewBranch from "app/modules/OfficeSetting/Screens/Branches/ViewBranch";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
-const BranchAction = ({ data, reload, BranchList = [] }) => {
+const BranchAction = ({ data, reloadData=()=>{}, BranchList = [] }) => {
   const [view, setView] = useState(null);
   const [edit, setEdit] = useState(null);
   const [deleteBranch, setDeleteBranch] = useState(null);
@@ -36,8 +36,8 @@ const BranchAction = ({ data, reload, BranchList = [] }) => {
   const confirmDelete = async () => {
     try {
       await deleteRecord(`/branch/${data?.id}`, data?.branch_name);
-      if (typeof reload === 'function') {
-        reload();
+      if (typeof reloadData === 'function') {
+        reloadData(true);
       }
     } catch (error) {
       console.log("ERROR", error);
@@ -81,7 +81,7 @@ const BranchAction = ({ data, reload, BranchList = [] }) => {
           isOpen={edit.open}
           setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
           id={data?.id}
-          reloadData={reload}
+          reloadData={reloadData}
           onUpdateSuccess={handleFormUpdate}
         />
       )}
@@ -93,7 +93,7 @@ const BranchAction = ({ data, reload, BranchList = [] }) => {
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
           data={view.data}
-          reload={reload}
+          reload={reloadData}
           BranchList={BranchList}
         />
       )}

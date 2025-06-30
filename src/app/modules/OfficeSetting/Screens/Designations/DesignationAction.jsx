@@ -6,7 +6,7 @@ import ViewDesignation from "./ViewDesignation";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
-const DesignationAction = ({ data, reload, DesignationList = [] }) => {
+const DesignationAction = ({ data, reloadData=()=>{}, DesignationList = [] }) => {
   const [view, setView] = useState(null);
   const [edit, setEdit] = useState(null);
   const [deleteDesignation, setDeleteDesignation] = useState(null);
@@ -54,10 +54,10 @@ const DesignationAction = ({ data, reload, DesignationList = [] }) => {
         `/designation/${deleteDesignation?.data?.id}`,
         deleteDesignation?.data?.name
       );
-      if (typeof reload === 'function') {
-        reload();
+      if (typeof reloadData === 'function') {
+        reloadData();
       } else {
-        console.error("Reload is not a function:", reload);
+        console.error("Reload is not a function:", reloadData);
       }
     } catch (error) {
       console.log("ERROR", error);
@@ -99,7 +99,7 @@ const DesignationAction = ({ data, reload, DesignationList = [] }) => {
             setEdit((prev) => ({ ...prev, open: isOpen }));
           }}
           edit={edit}
-          reloadData={reload}
+          reloadData={reloadData}
         />
       )}
       
@@ -110,7 +110,7 @@ const DesignationAction = ({ data, reload, DesignationList = [] }) => {
             setView((prev) => ({ ...prev, visible: isOpen }))
           }
           data={view.data}
-          reload={reload}
+          reload={reloadData}
           DesignationList={DesignationList}
         />
       )}

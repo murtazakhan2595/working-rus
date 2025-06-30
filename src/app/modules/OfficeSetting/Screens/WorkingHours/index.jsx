@@ -1,16 +1,16 @@
 import TableCustom from "components/CustomTable";
 import { CardTitle, CardHeader, CardContent, Card } from "components/ui/card";
+import { WorkingHoursColumn } from "../../sections/OfficeSettingTableColumns";
 import { CardDescription } from "components/ui/card";
-import { OnboardingChecklistColumn } from "../../sections/OfficeSettingTableColumns";
 import { FilterInput } from "components/FormControl";
-import { useState, useEffect } from "react";
-import { getOnboardingDocument } from "app/hooks/officeSetting";
+import { useState, useEffect, useMemo } from "react";
 import { OfficeSettingPermissionWrapper } from "../../components/PermissionWrapper";
 import { OFFICE_SETTING_PERMISSIONS } from "../../permissions/constants";
+import { getWorkingHours } from "app/hooks/general";
 import { PageLoader } from "components";
 
-const OnboardingChecklist = ({ reload }) => {
-  const [OnboardingCheckList, setOnboardingCheckList] = useState({});
+const WorkingHours = ({ reload }) => {
+  const [Shifts, setShifts] = useState({});
   const [filterData, setFilterData] = useState({});
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -45,13 +45,13 @@ const OnboardingChecklist = ({ reload }) => {
   const fetchData = async (isMounted) => {
     setIsLoading(true);
     try {
-      const response = await getOnboardingDocument({
+      const response = await getWorkingHours({
         filterData,
         options,
         ordering,
       });
       if (isMounted && response) {
-        setOnboardingCheckList(response);
+        setShifts(response);
       }
     } catch (error) {
       console.error(error);
@@ -80,25 +80,32 @@ const OnboardingChecklist = ({ reload }) => {
 
   return (
     <OfficeSettingPermissionWrapper
-      permissions={OFFICE_SETTING_PERMISSIONS.ONBOARDING.VIEW}
+      permissions={OFFICE_SETTING_PERMISSIONS.WORKING_HOURS.VIEW}
       showError={true}
     >
       <Card>
         <CardHeader>
-          <CardTitle className="text-primary">
-            Onboarding Document Checklist
-          </CardTitle>
+          <CardTitle className="text-primary">Working Hours</CardTitle>
           <CardDescription className="text-neutral-1100">
-            Here you can manage your onboarding document checklist. Add, edit,
-            or delete onboarding document checklist as needed.
+            Here you can manage your working hours. Add, edit, or delete working
+            hours as needed.
           </CardDescription>
           <div className="flex justify-end">
             <FilterInput
               filters={[
                 {
                   type: "search",
-                  placeholder: "Search Document Name",
-                  name: "document_name",
+                  placeholder: "Search Shift Name",
+                  name: "shift_name",
+                },
+                {
+                  type: "select",
+                  placeholder: "Shift Type",
+                  name: "type",
+                  options: [
+                    { value: "Weekday", label: "Weekday" },
+                    { value: "Weekend", label: "Weekend" },
+                  ],
                 },
               ]}
               onChange={handleFilterChange}
@@ -111,11 +118,11 @@ const OnboardingChecklist = ({ reload }) => {
             <PageLoader />
           ) : (
             <TableCustom
-              columns={OnboardingChecklistColumn(fetchData)}
-              data={OnboardingCheckList.results || []}
-              pagination={true}
+              columns={WorkingHoursColumn(reload)}
+              data={Shifts.results || []}
               tableOptions={tableOptions}
-              dataTotalSize={OnboardingCheckList?.count || 0}
+              dataTotalSize={Shifts?.count || 0}
+              pagination={true}
               className="organization-table"
             />
           )}
@@ -125,4 +132,4 @@ const OnboardingChecklist = ({ reload }) => {
   );
 };
 
-export default OnboardingChecklist;
+export default WorkingHours;

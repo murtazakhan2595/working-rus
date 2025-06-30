@@ -6,7 +6,7 @@ import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermiss
 import { OfficeSettingPermissionWrapper } from "../../components/PermissionWrapper";
 import { OFFICE_SETTING_PERMISSIONS } from "../../permissions/constants";
 
-const AddBranch = ({ reload = () => {} }) => {
+const AddBranch = ({ reloadData = () => {} }) => {
   const [isOpen, setIsOpen] = useState(false);
   const permissions = useOfficeSettingPermissions();
 
@@ -28,7 +28,11 @@ const AddBranch = ({ reload = () => {} }) => {
       setIsOpen={setIsOpen}
       width="600px"
     >
-      <AddBranchForm isOpen={isOpen} setIsOpen={setIsOpen} reload={reload} />
+      <AddBranchForm
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        reloadData={reloadData}
+      />
     </SheetComponent>
   );
 };

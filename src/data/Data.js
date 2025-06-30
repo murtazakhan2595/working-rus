@@ -81,6 +81,9 @@ export const ApprovalHierarchyRequestType = [
   ...(Config.MY_ATTENDANCE
     ? [{ label: "Attendance Adjustments", value: "ATTENDANCE_UPDATION" }]
     : []),
+  ...(Config.MY_ATTENDANCE
+    ? [{ label: "Shift Schedule By Manager", value: "SHIFT_SCHEDULE_MANAGER" }]
+    : []),
 ];
 
 export const statusOptions = [
@@ -846,24 +849,24 @@ export const AssetCategories = [
 ];
 
 export const ReligionList = [
-  { label: "Christianity", value: "christianity" },
-  { label: "Islam", value: "islam" },
-  { label: "Hinduism", value: "hinduism" },
-  { label: "Buddhism", value: "buddhism" },
-  { label: "Judaism", value: "judaism" },
-  { label: "Sikhism", value: "sikhism" },
-  { label: "Jainism", value: "jainism" },
-  { label: "Shinto", value: "shinto" },
-  { label: "Taoism", value: "taoism" },
-  { label: "Confucianism", value: "confucianism" },
-  { label: "Bahá'í Faith", value: "bahai" },
-  { label: "Zoroastrianism", value: "zoroastrianism" },
-  { label: "Traditional African Religions", value: "african_traditional" },
-  { label: "Indigenous Religions", value: "indigenous" },
-  { label: "Atheism", value: "atheism" },
-  { label: "Agnosticism", value: "agnosticism" },
-  { label: "Non-religious/Secular", value: "non_religious" },
-  { label: "Other", value: "other" },
+  { label: "Christianity", value: "Christianity" },
+  { label: "Islam", value: "Islam" },
+  { label: "Hinduism", value: "Hinduism" },
+  { label: "Buddhism", value: "Buddhism" },
+  { label: "Judaism", value: "Judaism" },
+  { label: "Sikhism", value: "Sikhism" },
+  { label: "Jainism", value: "Jainism" },
+  { label: "Shinto", value: "Shinto" },
+  { label: "Taoism", value: "Taoism" },
+  { label: "Confucianism", value: "Confucianism" },
+  { label: "Bahá'í Faith", value: "Bahá'í Faith" },
+  { label: "Zoroastrianism", value: "Zoroastrianism" },
+  { label: "Traditional African Religions", value: "Traditional African Religions" },
+  { label: "Indigenous Religions", value: "Indigenous Religions" },
+  { label: "Atheism", value: "Atheism" },
+  { label: "Agnosticism", value: "Agnosticism" },
+  { label: "Non-religious/Secular", value: "Non-religious/Secular" },
+  { label: "Other", value: "Other" },
 ];
 
 export const handleUpdateProfile = async (dispatch, data) => {
