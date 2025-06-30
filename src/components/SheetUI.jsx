@@ -1,5 +1,5 @@
 import { Button } from "components/ui/button";
-import React, { useState, forwardRef } from "react";
+import React, { useState, forwardRef, useCallback } from "react";
 import { DialogBox } from "components";
 import {
   handleCloseWithConfirmation,
@@ -36,6 +36,7 @@ const SheetUI = forwardRef(
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
     const [openActionMessage, setOpenActionMessage] = useState(false);
     const [messageConfig, setMessageConfig] = useState(false);
+    const [validateFieldErrors, setValidateFieldErrors] = useState({});
 
     // Extract form configurations
     const {
@@ -52,6 +53,7 @@ const SheetUI = forwardRef(
       disableSubmit = false,
       loadingMessage,
       onSubmitClick = () => {},
+      DataList = [],
     } = formConfig;
 
     const handleClose = () => {
@@ -72,6 +74,39 @@ const SheetUI = forwardRef(
         setIsSubmittingForm(false);
       }
     };
+
+    const validateFieldValue = useCallback(
+      async (value, label, id) => {
+        if (!value) {
+          setValidateFieldErrors((prevErrors) => {
+            const updated = { ...prevErrors };
+            delete updated[label];
+            return updated;
+          });
+          return 0;
+        }
+
+        const filtered = DataList.filter(
+          (obj) =>
+            obj[label]?.toLowerCase() === value.trim().toLowerCase() &&
+            parseInt(obj.id) !== parseInt(id)
+        );
+
+        if (filtered.length > 0) {
+          setValidateFieldErrors((prevErrors) => ({
+            ...prevErrors,
+            [label]: `Already exists. Please choose a different value`,
+          }));
+        } else {
+          setValidateFieldErrors((prevErrors) => {
+            const updated = { ...prevErrors };
+            delete updated[label];
+            return updated;
+          });
+        }
+      },
+      [DataList, setValidateFieldErrors]
+    );
 
     return (
       <SheetVariant
@@ -98,6 +133,23 @@ const SheetUI = forwardRef(
             }
             if (onFormChange) {
               onFormChange(values);
+            }
+            if (
+              validateFieldErrors &&
+              typeof validateFieldErrors === "object" &&
+              !Array.isArray(validateFieldErrors) &&
+              Object.keys(validateFieldErrors).length > 0
+            ) {
+              Object.entries(validateFieldErrors).forEach(
+                ([field, message]) => {
+                  if (
+                    typeof field === "string" &&
+                    typeof message === "string"
+                  ) {
+                    errors[field] = message;
+                  }
+                }
+              );
             }
             return errors;
           }}
@@ -142,23 +194,15 @@ const SheetUI = forwardRef(
                         {InputFields?.map((fieldsConfig, index) => {
                           const {
                             name,
-                            required,
-                            disabled,
-                            label,
                             onFieldUpdate,
-                            options = [],
                             value,
                             colsSpan,
-                            date,
-                            placeholder,
-                            maxRows,
                             InputField,
-                            variant,
-                            multiple,
                             subColumns,
                             shouldRender = true, // NEW: Default to true for backward compatibility
                             renderCondition = true, // NEW: Alternative prop name for conditional rendering
                             customComponent,
+                            validateDuplicate = false,
                           } = fieldsConfig;
 
                           // Handle custom component inside InputFields
@@ -199,15 +243,9 @@ const SheetUI = forwardRef(
                               key={name || index}
                             >
                               <InputField
-                                name={name}
-                                options={options}
                                 error={typeof error === "string" ? error : ""}
                                 touch={get(props?.touched, name)}
                                 value={value ? value : get(props?.values, name)}
-                                required={required}
-                                disabled={disabled}
-                                label={label}
-                                placeholder={placeholder}
                                 onChange={async (field, value) => {
                                   if (
                                     onFieldUpdate &&
@@ -219,12 +257,15 @@ const SheetUI = forwardRef(
                                       props.values,
                                       props.setFieldValue
                                     );
+                                  if (validateDuplicate) {
+                                    await validateFieldValue(
+                                      value,
+                                      name,
+                                      props.values.id
+                                    );
+                                  }
                                   props?.setFieldValue(field, value);
                                 }}
-                                maxRows={maxRows}
-                                date={date}
-                                variant={variant}
-                                multiple={multiple}
                                 columns={subColumns}
                                 {...fieldsConfig}
                               />

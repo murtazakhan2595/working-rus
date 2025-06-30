@@ -62,7 +62,7 @@ export const getBranchList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const ordering = payload?.ordering ?? "created_at";
+  const ordering = payload?.ordering ?? "-id";
   try {
     const URL = `/branch/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
@@ -659,9 +659,18 @@ const deleteRecord = async (URL, recordName) => {
   }
 };
 
-const getWorkingHours = async (URL) => {
+const getWorkingHours = async (payload) => {
   try {
-    const response = await axios.get(`${baseUrl}/shift/`, {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    const URL = `/shift/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
@@ -679,17 +688,6 @@ const getWorkingHours = async (URL) => {
   return [];
 };
 
-const handleLogout = () => {
-  if (window.localStorage.getItem("token")) {
-    window.location.href = "/login";
-    toast.error("Session Time Out", {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 2000,
-    });
-    window.localStorage.setItem("token", "");
-    setUserLogout();
-  }
-};
 function HandleLogout(message = "Session Time Out") {
   if (window.localStorage.getItem("token")) {
     window.location.href = "/login";

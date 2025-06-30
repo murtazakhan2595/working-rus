@@ -5,7 +5,7 @@ import AddDepartmentForm from './AddDepartmentForm';
 import useUserOrganization from 'app/hooks/useUserOrganization';
 import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
-const AddDepartment = ({ reload }) => {
+const AddDepartment = ({ reloadData }) => {
   const [isOpen, setIsOpen] = useState(false);
   const permissions = useOfficeSettingPermissions();
   const userOrganization = useUserOrganization();
@@ -31,7 +31,7 @@ const AddDepartment = ({ reload }) => {
       <AddDepartmentForm
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        reload={reload}
+        reloadData={reloadData}
         userOrganization={userOrganization}
       />
     </SheetComponent>
