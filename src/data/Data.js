@@ -81,8 +81,11 @@ export const ApprovalHierarchyRequestType = [
   ...(Config.MY_ATTENDANCE
     ? [{ label: "Attendance Adjustments", value: "ATTENDANCE_UPDATION" }]
     : []),
-  ...(Config.MY_ATTENDANCE
-    ? [{ label: "Shift Schedule By Manager", value: "SHIFT_SCHEDULE_MANAGER" }]
+  ...(Config.MY_SHIFT_CALENDAR
+    ? [{ label: "Employee Shift Schedule", value: "SHIFT_SCHEDULE_EMPLOYEE" }]
+    : []),
+  ...(Config.SHIFT_CALENDAR
+    ? [{ label: "Manager Shift Schedule", value: "SHIFT_SCHEDULE_MANAGER" }]
     : []),
 ];
 

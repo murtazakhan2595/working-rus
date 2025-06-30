@@ -213,7 +213,8 @@ const MultiStatusLabel = React.forwardRef(
 MultiStatusLabel.displayName = "MultiStatusLabel";
 
 export const StatusButtons = ({
-  permissionKey,
+  permissionKey, // Can now be string or array
+  permissionLogic = "OR", // "OR" or "AND" logic for multiple permissions
   status,
   current_approver,
   request_id,
@@ -222,27 +223,55 @@ export const StatusButtons = ({
   const { id: user_id, role: user_role } = useSelector(
     (state) => state.user.userProfile
   );
-  const managePermitted = HasAccess(permissionKey);
+
+  // 🚀 NEW: Handle multiple permission keys
+  const checkPermissions = () => {
+    if (!permissionKey) return false;
+
+    // Single permission key (backward compatibility)
+    if (typeof permissionKey === "string") {
+      return HasAccess(permissionKey);
+    }
+
+    // Multiple permission keys
+    if (Array.isArray(permissionKey)) {
+      if (permissionLogic === "AND") {
+        // User must have ALL permissions
+        return permissionKey.every((key) => HasAccess(key));
+      } else {
+        // User must have AT LEAST ONE permission (OR logic)
+        return permissionKey.some((key) => HasAccess(key));
+      }
+    }
+
+    return false;
+  };
+
+  const managePermitted = checkPermissions();
+
   if (!managePermitted) return null;
   if (!status || status?.toLowerCase() !== "pending") return null;
   if (!current_approver && !user_role.includes(1)) return null;
+
   if (current_approver.includes(user_id) || user_role.includes(1)) {
     const handleSubmit = async (status) => {
       try {
         const response = await handleRequest(request_id, status === "Approved");
         if (response) {
-          setResponse(true,status);
+          setResponse(true, status);
         }
       } catch (error) {
         console.error("Approving Request Error", error);
-        setResponse(false,status);
+        setResponse(false, status);
       }
     };
+
     const handleClick = (event, status) => {
       event.preventDefault();
       event.stopPropagation();
       handleSubmit(status);
     };
+
     return (
       <div className="flex flex-wrap justify-end gap-2 my-5">
         <Button
@@ -261,7 +290,6 @@ export const StatusButtons = ({
     );
   }
 };
-
 export const StatusLabelAttendance = ({ status, value }) => {
   if (!status) {
     return "";

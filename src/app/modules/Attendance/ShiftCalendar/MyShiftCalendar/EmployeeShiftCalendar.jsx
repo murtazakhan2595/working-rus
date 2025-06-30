@@ -505,15 +505,15 @@ const EmployeeShiftCalendar = () => {
       text: "Status",
       formatter: (cell) => {
         const statusColors = {
-          Pending: "bg-yellow-50 text-yellow-700",
-          Approved: "bg-green-50 text-green-700",
-          Rejected: "bg-red-50 text-red-700",
+          pending: "bg-yellow-50 text-yellow-700",
+          approved: "bg-green-50 text-green-700",
+          rejected: "bg-red-50 text-red-700",
         };
 
         return (
           <span
-            className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
-              statusColors[cell] || ""
+            className={`px-3 py-1.5 text-xs font-semibold rounded-full capitalize ${
+              statusColors[cell?.toLowerCase()] || ""
             }`}
           >
             {cell || "N/A"}
