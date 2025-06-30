@@ -27,20 +27,20 @@ const CheckBoxInputTree = React.memo(
 
     const filteredOptions = React.useMemo(() => {
       if (!searchQuery) return options;
-    
+
       const query = searchQuery.toLowerCase();
-    
+
       const filterTree = (node) => {
         const nodeName = node.name?.toLowerCase() || "";
         const children = node.childrens || [];
-    
+
         // Recursively filter children
         const matchingChildren = children
           .map((child) => filterTree(child))
           .filter(Boolean);
-    
+
         const isMatch = nodeName.includes(query);
-    
+
         if (isMatch) {
           // Parent matches → keep full children as-is
           return {
@@ -54,13 +54,13 @@ const CheckBoxInputTree = React.memo(
             childrens: matchingChildren,
           };
         }
-    
+
         return null;
       };
-    
+
       return options.map(filterTree).filter(Boolean);
     }, [options, searchQuery]);
-    
+
     // Recursive function to collect all leaf IDs from a node
     const getAllLeafIds = (node) => {
       const children = node.childrens;
@@ -150,13 +150,6 @@ const TreeNodeItem = ({ node, selectedLeafIds, onCheckChange }) => {
   const [open, setOpen] = useState(false);
   const { childrens, id, code_name, name, description } = node;
   const hasChildren = Boolean(childrens && childrens.length > 0);
-  const anyNodeSelected = React.useMemo(() => {
-    {
-      const isSelected = ChildAnyNodeExist(node, selectedLeafIds, "id");
-      if (isSelected) setOpen(true);
-      return isSelected;
-    }
-  }, [selectedLeafIds, node]);
   const CheckSelected = React.useMemo(() => {
     return ChildALLNodesExist(node, selectedLeafIds, "id");
   }, [selectedLeafIds, node]);
