@@ -15,7 +15,6 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import "./index.css";
 import { SidebarRoutes, LoginRoutes, GeneralRoutes } from "constants/routes";
-import { doesNodeExistInTree } from "utils/renderValues";
 import { getNodeExistInTree } from "utils/renderValues";
 import Error from "app/modules/Error";
 

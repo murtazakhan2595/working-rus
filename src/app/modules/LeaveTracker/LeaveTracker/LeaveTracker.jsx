@@ -191,30 +191,50 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
   };
   const exportAttendanceToExcel = async (event) => {
     event.preventDefault();
-    const data = Leaves.results || [];
-    if (!data || !Array.isArray(data)) return null;
-    const dataToExport = await Promise.all(
-      data?.map(async (row) => ({
-        "Employee Id": row.employee_serial_number,
-        "Employee Name": row.employee_name,
-        "Employee Department": row["employee_department_name"],
-        "Employee Designation": row["employee_designation"],
-        "Employee Branch": row["employee_branch_name"],
-        "Leave Type": row.leave_type_name,
-        "Leave Duration": row.leave_duration_name,
-        "Start Date": row.start_date,
-        "End Date": row.end_date,
-        "Total Days": row.total_days,
-        "Full Paid Days": row.full_paid_days,
-        "Half Paid Days": row.half_paid_days,
-        Reason: row.reason,
-      }))
-    );
-    exportRecordToExcel(
-      dataToExport,
-      "Leave",
-      `Employee-Leaves-Record${filterData.date_range || ""}`
-    );
+    try {
+      const response = await getLeaveListData({
+        filterData: { ...filterData },
+        ordering: "-id",
+      });
+      if (response) {
+        const ResponseData = response.results;
+        if (
+          !ResponseData ||
+          !Array.isArray(ResponseData) ||
+          ResponseData.length === 0
+        ) {
+          // setOpenActionMessage(true);
+        } else {
+          const dataToExport = await Promise.all(
+            ResponseData?.map(async (row) => {
+              return {
+                "Employee Id": row.employee_serial_number,
+                "Employee Name": row.employee_name,
+                "Employee Department": row["employee_department_name"],
+                "Employee Designation": row["employee_designation"],
+                "Employee Branch": row["employee_branch_name"],
+                "Leave Type": row.leave_type_name,
+                "Leave Duration": row.leave_duration_name,
+                "Start Date": row.start_date,
+                "End Date": row.end_date,
+                "Total Days": row.total_days,
+                "Full Paid Days": row.full_paid_days,
+                "Half Paid Days": row.half_paid_days,
+                Reason: row.reason,
+              };
+            })
+          );
+          exportRecordToExcel(
+            dataToExport,
+            "Leave",
+            `Employee-Leaves-Record${filterData.date_range || ""}`
+          );
+        }
+        // setAttendanceData(attendanceData.results);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { HandleLogout, baseUrl, headers } from "./general";
+import { HandleLogout, baseUrl, getCurrentRequestApprover, headers } from "./general";
 import moment from "moment";
 import { getEmployeeInfoData } from "app/hooks/use-store";
 import {
@@ -8,6 +8,7 @@ import {
   mapCustomShiftListData,
   mapActiveShiftListData,
 } from "app/utils/MappingObjects/mapShiftManagementData";
+import { mapShiftScheduleData } from "app/utils/MappingObjects/mapShiftManagementData";
 
 const saveShift = async (payload) => {
   try {
@@ -94,34 +95,95 @@ const deleteShiftSchedule = async (scheduleId) => {
   }
 };
 
+
 const getShiftSchedule = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
   const sortField = payload?.ordering || "id";
+
   if (!filterData?.draft) {
     filterData.draft = false;
   }
+
   let URL = `/shift-schedules?ordering=${sortField}&${
     pageNo ? `page=${pageNo}&` : ""
   }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
     JSON.stringify(filterData)
   )}`;
+
   try {
     const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
+
     if (response.status === 200) {
-      return response.data;
+      // Check if response has results array (paginated) or is single object
+      if (response.data.results && Array.isArray(response.data.results)) {
+        // Process each result
+        const mappedResults = await Promise.all(
+          response.data.results.map(async (item) => {
+            const mappedItem = await mapShiftScheduleData(item);
+
+            // Get current approver if hierarchy_request exists
+            if (mappedItem.hierarchy_request) {
+              try {
+                const currentapprover = await getCurrentRequestApprover(
+                  mappedItem.hierarchy_request
+                );
+
+                if (
+                  currentapprover &&
+                  Object.keys(currentapprover).length > 0
+                ) {
+                  return { ...mappedItem, ...currentapprover };
+                }
+              } catch (error) {
+                console.error("Error getting current approver:", error);
+              }
+            }
+
+            return mappedItem;
+          })
+        );
+
+        return {
+          ...response.data,
+          results: mappedResults,
+        };
+      } else {
+        // Single object response
+        const ResponseData = await mapShiftScheduleData(response.data);
+
+        if (ResponseData.hierarchy_request) {
+          try {
+            const currentapprover = await getCurrentRequestApprover(
+              ResponseData.hierarchy_request
+            );
+
+            if (currentapprover && Object.keys(currentapprover).length > 0) {
+              return { ...ResponseData, ...currentapprover };
+            }
+          } catch (error) {
+            console.error("Error getting current approver:", error);
+          }
+        }
+
+        return ResponseData;
+      }
     }
+
+    return false;
   } catch (error) {
-    console.error("Error fetching asset list:", error);
+    console.error("Error fetching shift schedule:", error);
     if (error?.response?.status === 401) {
       HandleLogout();
     }
     return false;
   }
 };
+
+
 export const getCustomShiftByEmployeeID = async (
   employee_id,
   date = new Date()
