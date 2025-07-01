@@ -62,8 +62,8 @@ export const validateStartAndEndDateField = (start_date, end_date) => {
   if (!start_date) errors.start_date = true;
   if (!end_date) errors.end_date = true;
   if (start_date && end_date) {
-    const startDate = moment(start_date).endOf("day");
-    const endDate = moment(end_date).endOf("day");
+    const startDate = moment(start_date).startOf("day");
+    const endDate = moment(end_date).startOf("day");
     if (startDate.isAfter(endDate)) {
       errors.end_date_before = true;
     }
