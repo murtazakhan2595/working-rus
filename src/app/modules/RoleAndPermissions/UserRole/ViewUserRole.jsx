@@ -139,8 +139,12 @@ const ViewUserRole = ({
         <div className="flex flex-col gap-4">
           <div className="flex justify-end mt-4 space-x-2">
             <CircularActionButtons
-              onEdit={handleEdit}
-              onDelete={handleDelete}
+              onEdit={currentRole.id !== 1 ? handleEdit : null}
+              onDelete={
+                currentRole.id !== 1 && !currentRole.is_default
+                  ? handleDelete
+                  : null
+              }
               editTooltip="Edit Role"
               deleteTooltip="Delete Role"
             />
