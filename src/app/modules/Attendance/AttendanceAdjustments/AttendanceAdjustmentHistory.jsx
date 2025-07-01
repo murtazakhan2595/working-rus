@@ -129,7 +129,7 @@ const AttendanceAdjustmentHistory = ({
             : []),
           {
             type: "date-range",
-            placeholder: "Status",
+            placeholder: "Date Range",
             name: "date_range",
           },
           {

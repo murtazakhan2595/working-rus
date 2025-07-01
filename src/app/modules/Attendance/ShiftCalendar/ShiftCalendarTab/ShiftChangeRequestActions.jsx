@@ -1,4 +1,3 @@
-// ShiftChangeRequestActions.jsx
 import React, { useState } from "react";
 import DropdownActionMenu from "components/DropdownActionMenu";
 import { toast } from "react-toastify";
@@ -19,7 +18,7 @@ import {
   DialogTitle,
 } from "src/@/components/ui/dialog";
 import { generateShiftScheduleLog } from "../Section/getEmployeeActiveShift";
-import { HasAccess } from "utils/PermissionUtils";
+import { StatusButtons, StatusList } from "components";
 
 const ShiftChangeRequestActions = ({ data, reload }) => {
   const [viewSheetOpen, setViewSheetOpen] = useState(false);
@@ -28,17 +27,38 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const userProfile = useSelector((state) => state.user.userProfile);
 
-  const hasEditPendingAccess = HasAccess("EDIT_PENDING_SCHEDULES");
-  const hasApproveAccess = HasAccess("APPROVE_SHIFT_SCHEDULES");
-  const canApprove = data.status === "Pending" && (hasEditPendingAccess || hasApproveAccess);
-
   const handleView = () => {
     setViewSheetOpen(true);
   };
 
-  const handleApprove = async () => {
-    if (!canApprove) return;
+  // 🚀 NEW: Combined approval/rejection handler
+  const handleApprovalResponse = async (success, status) => {
+    if (!success) {
+      toast.error(`Failed to ${status.toLowerCase()} request`);
+      return;
+    }
 
+    // Show initial success message
+    toast.success(`Request ${status} Successfully!`);
+
+    // For rejection, we need to show the rejection reason modal first
+    if (status === "Rejected") {
+      setRejectModalOpen(true);
+      return; // Don't close the modal yet, let them enter rejection reason
+    }
+
+    // For approval, apply the business logic immediately
+    if (status === "Approved") {
+      await applyApprovalLogic();
+    }
+
+    // Close modal and reload
+    reload();
+    setViewSheetOpen(false);
+  };
+
+  // 🚀 EXTRACTED: Approval business logic
+  const applyApprovalLogic = async () => {
     setIsSubmitting(true);
     try {
       await generateShiftScheduleLog({
@@ -47,6 +67,7 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
         userProfile: userProfile,
         status: "Approved",
       });
+
       const payload = {
         ...data,
         employee: data.employee.id || data.employee,
@@ -58,36 +79,35 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
 
       const response = await saveShiftSchedule(payload);
 
-
       if (response) {
-        toast.success("Shift change request approved successfully!");
-        reload();
-        setViewSheetOpen(false);
+        toast.success("Shift changes have been applied successfully!");
       } else {
-        toast.error("Failed to approve shift change request");
+        toast.warning("Request approved but failed to apply changes");
       }
     } catch (error) {
-      console.error("Error approving request:", error);
-      toast.error("An error occurred while approving the request");
+      console.error("Error applying approval logic:", error);
+      toast.warning("Request approved but failed to complete all actions");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleReject = async () => {
+  // 🚀 UPDATED: Rejection with reason
+  const handleRejectWithReason = async () => {
     if (!rejectionReason.trim()) {
       toast.error("Please provide a rejection reason");
       return;
     }
 
     setIsSubmitting(true);
-    await generateShiftScheduleLog({
-      scheduleData: data,
-      logType: "Change Request",
-      userProfile: userProfile,
-      status: "Rejected",
-    });
     try {
+      await generateShiftScheduleLog({
+        scheduleData: data,
+        logType: "Change Request",
+        userProfile: userProfile,
+        status: "Rejected",
+      });
+
       const payload = {
         ...data,
         employee: data.employee.id || data.employee,
@@ -100,17 +120,17 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
       const response = await saveShiftSchedule(payload);
 
       if (response) {
-        toast.success("Shift change request rejected");
+        toast.success("Shift change request rejected with reason");
         reload();
         setRejectModalOpen(false);
         setViewSheetOpen(false);
         setRejectionReason("");
       } else {
-        toast.error("Failed to reject shift change request");
+        toast.error("Failed to save rejection reason");
       }
     } catch (error) {
       console.error("Error rejecting request:", error);
-      toast.error("An error occurred while rejecting the request");
+      toast.error("An error occurred while saving rejection");
     } finally {
       setIsSubmitting(false);
     }
@@ -130,7 +150,6 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
         menuTooltip="Request Actions"
       />
 
-      {/* View Sheet with Comparison Data */}
       <SheetComponent
         {...formSheetData}
         isOpen={viewSheetOpen}
@@ -175,6 +194,16 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
               }
             />
           </DetailCard>
+
+          {/* ✅ ADD: Approval Details Section */}
+          {data.approval_details && data.approval_details.length > 0 && (
+            <DetailCard detailCardTitle="Approval Details" className="mt-4">
+              <StatusList
+                status_list={data.approval_details}
+                className="my-3"
+              />
+            </DetailCard>
+          )}
 
           {/* Shift Changes Card */}
           <DetailCard detailCardTitle="Shift Changes" className="mt-4">
@@ -232,48 +261,32 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-6">
-            {canApprove ? (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={() => setViewSheetOpen(false)}
-                  disabled={isSubmitting}
-                  size="lg"
-                >
-                  Close
-                </Button>
-                <Button
-                  variant="destructiveOutline"
-                  onClick={() => setRejectModalOpen(true)}
-                  disabled={isSubmitting}
-                  size="lg"
-                >
-                  Reject
-                </Button>
-                <Button
-                  onClick={handleApprove}
-                  disabled={isSubmitting}
-                  size="lg"
-                >
-                  {isSubmitting ? "Processing..." : "Approve"}
-                </Button>
-              </>
-            ) : (
-              <Button
-                variant="outline"
-                onClick={() => setViewSheetOpen(false)}
-                size="lg"
-              >
-                Close
-              </Button>
-            )}
+          {/* 🚀 UPDATED: Action Buttons */}
+          <div className="flex justify-between items-center pt-6">
+            <Button
+              variant="outline"
+              onClick={() => setViewSheetOpen(false)}
+              size="lg"
+            >
+              Close
+            </Button>
+
+            <StatusButtons
+              permissionKey={[
+                "EDIT_PENDING_SCHEDULES",
+                "APPROVE_SHIFT_SCHEDULES",
+              ]}
+              permissionLogic="OR"
+              status={data?.status}
+              current_approver={data?.current_approver || []}
+              request_id={data?.hierarchy_request || data?.request}
+              setResponse={handleApprovalResponse}
+            />
           </div>
         </div>
       </SheetComponent>
 
-      {/* Rejection Modal - Keep this as Dialog for quick action */}
+      {/* 🚀 UPDATED: Rejection Modal - Now triggered by approval flow */}
       <Dialog open={rejectModalOpen} onOpenChange={setRejectModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -307,7 +320,7 @@ const ShiftChangeRequestActions = ({ data, reload }) => {
               Cancel
             </Button>
             <Button
-              onClick={handleReject}
+              onClick={handleRejectWithReason} // 🚀 Use the new handler
               disabled={!rejectionReason.trim() || isSubmitting}
             >
               {isSubmitting ? "Submitting..." : "Submit"}
