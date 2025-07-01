@@ -377,7 +377,7 @@ export const AttendanceAdjustmentLogsColumns = [
     text: "Employee",
     dataField: "employee",
     formatter: (cell) => (
-      <EmployeeOverview id={cell} showId={true} showDepartment={true} />
+      <EmployeeOverview id={cell} showId={true} showDepartment={true} showBranchName={true} />
     ),
   },
   {
