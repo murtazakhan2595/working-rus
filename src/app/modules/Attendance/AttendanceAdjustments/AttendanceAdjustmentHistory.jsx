@@ -82,7 +82,7 @@ const AttendanceAdjustmentHistory = ({
     if (filterName === "department_name") setSelectedDepartment(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
+      if (filterValue === "" || filterValue === null) {
         delete updatedFilters[filterName];
       } else {
         updatedFilters[filterName] = filterValue;
@@ -130,7 +130,7 @@ const AttendanceAdjustmentHistory = ({
           {
             type: "date-range",
             placeholder: "Date Range",
-            name: "date_range",
+            name: "attendance_date",
           },
           {
             type: "select",
