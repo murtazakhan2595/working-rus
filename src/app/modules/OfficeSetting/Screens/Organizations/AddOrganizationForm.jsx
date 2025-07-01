@@ -312,17 +312,25 @@ const AddOrganizationForm = ({
                     value={props.values.country}
                     error={props.errors.country}
                     touch={props.touched.country}
-                    placeholder={
-                      selectedCountry?.label ||
-                      editData?.country_name ||
-                      "Select country"
-                    }
+                    // Country onChange handler - Updated
                     onChange={(field, value) => {
                       props.handleChange(field)(value);
                       setCountry(value);
-                      setState(null); // Reset state when country changes
+
+                      // Clear state and city when country changes
+                      setState(null);
                       setSelectedState(null);
                       setSelectedCity(null);
+
+                      // Clear Formik form values for state and city
+                      props.setFieldValue("state", "");
+                      props.setFieldValue("city", "");
+                      props.setFieldValue("state_name", "");
+                      props.setFieldValue("city_name", "");
+
+                      // Clear the options arrays
+                      setStates([]);
+                      setCities([]);
 
                       // Find the selected country object
                       const selectedCountryObj = countries.find(
@@ -346,15 +354,19 @@ const AddOrganizationForm = ({
                     value={props.values.state}
                     error={props.errors.state}
                     touch={props.touched.state}
-                    placeholder={
-                      selectedState?.label ||
-                      editData?.state_name ||
-                      "Select state"
-                    }
                     onChange={(field, value) => {
                       props.handleChange(field)(value);
                       setState(value);
-                      setSelectedCity(null); // Reset city when state changes
+
+                      // Clear city when state changes
+                      setSelectedCity(null);
+
+                      // Clear Formik form value for city
+                      props.setFieldValue("city", "");
+                      props.setFieldValue("city_name", "");
+
+                      // Clear the cities array
+                      setCities([]);
 
                       // Find the selected state object
                       const selectedStateObj = states.find(
@@ -379,11 +391,6 @@ const AddOrganizationForm = ({
                     value={props.values.city}
                     error={props.errors.city}
                     touch={props.touched.city}
-                    placeholder={
-                      selectedCity?.label ||
-                      editData?.city_name ||
-                      "Select city"
-                    }
                     onChange={(field, value) => {
                       props.handleChange(field)(value);
 
