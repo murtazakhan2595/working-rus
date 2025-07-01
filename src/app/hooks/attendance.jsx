@@ -848,6 +848,24 @@ export const getAttendanceAdjustmentLogsList = async (payload) => {
   }
 };
 
+export const getBiometricUserAttendanceData = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/user-records/${id}/`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+
+      return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
 export {
   getAttendanceStats,
   saveShiftAssignment,

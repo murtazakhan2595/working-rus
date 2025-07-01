@@ -161,7 +161,7 @@ export const SidebarRoutes = [
     ? [
         Config.TEAM_PROFILE && {
           path: "/team-profile-management",
-          component: <TeamProfileMangement />,
+          component: <Employee isTeamView={true} />,
           name: "TEAM_PROFILE",
         },
         Config.TEAM_LEAVE_REQUEST && {

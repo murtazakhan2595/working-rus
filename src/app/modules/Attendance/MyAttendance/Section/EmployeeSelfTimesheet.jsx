@@ -10,6 +10,7 @@ import {
   saveAttendance,
   saveBreak,
   calculateBreak,
+  getBiometricUserAttendanceData,
 } from "app/hooks/attendance";
 import { Button } from "components/ui/button";
 import AlertDialogue from "components/ui/AlertDialogue";
@@ -24,6 +25,7 @@ export default function EmployeeSelfTimesheet({
   reloadData,
   isDashboard = false,
 }) {
+  const { id: user_id } = useSelector((state) => state.user.userProfile);
   const { today_shift } = useSelector(
     (state) => state.attendance.attendance_details
   );
@@ -67,6 +69,24 @@ export default function EmployeeSelfTimesheet({
       updateTimer();
     }
   }, [attendance, OnBreak, today_shift]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchData = async (isMounted, user_id) => {
+      try {
+        const response = await getBiometricUserAttendanceData(20672);
+        if (isMounted) {
+          // setFormData(response);
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
+    };
+    if (user_id) fetchData(isMounted, user_id);
+    return () => {
+      isMounted = false;
+    };
+  }, [user_id]);
 
   return (
     // if isDashboard is false, then the div will  have border and shadow
@@ -183,7 +203,8 @@ export default function EmployeeSelfTimesheet({
           </div>
           {today_shift?.isOffToday && (
             <div className="text-red-800 flex flex-wrap justify-center items-center">
-              <TriangleAlert size={14} /> You are on {today_shift?.OffLabel?.toLowerCase()} today
+              <TriangleAlert size={14} /> You are on{" "}
+              {today_shift?.OffLabel?.toLowerCase()} today
             </div>
           )}
           <div className="flex justify-between mt-4">
@@ -254,7 +275,7 @@ const RenderBreakButton = ({
   };
 
   const endBreakResumeShift = async () => {
-    const endTime =moment().utc().toISOString();
+    const endTime = moment().utc().toISOString();
     if (OnBreak) {
       const result = await endBreak(
         {
