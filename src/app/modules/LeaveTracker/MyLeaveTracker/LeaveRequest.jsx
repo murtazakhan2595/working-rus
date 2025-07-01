@@ -5,11 +5,11 @@ import {
   getLeaveTypeData,
   getEligibleLeaveTypeDurations,
   saveUpdateLeave,
+  getLeaveListData,
 } from "app/hooks/leaveTracker";
 import { validateLeaveRequestFormSchema } from "app/utils/FormSchema/leaveTrackerFormSchema";
 import moment from "moment";
 import { SheetUI, EmployeeDetailUI } from "components";
-import { getActiveShiftList } from "app/hooks/shiftManagement";
 import { getDropdownList } from "utils/Lists";
 import { useSelector } from "react-redux";
 import { SelectInputComponent } from "components/FormControl";
@@ -29,6 +29,7 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
   const [FormData, setFormData] = useState(Leave);
   const [FormValues, setFormValues] = useState(Leave);
   const [LeaveTypeOptions, setLeaveTypeOptions] = useState([]);
+  const [ApprovedLeaves, setApprovedLeaves] = useState([]);
   const [LeaveValidationInfo, setLeaveValidationInfo] = useState({});
   const [LeaveDurationOptions, setLeaveDurationOptions] = useState([]);
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
@@ -47,6 +48,9 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
     try {
       const response = await getEligibleLeaveTypeDurations();
       const responseDuration = await getEligibleLeaveTypeDurations(false);
+      const responseApprovedLeaves = await getLeaveListData({
+        filterData: { status: "pending,approved", employee: user_id },
+      });
       if (isMounted && response) {
         const leaveTypeDropdownOptions = await getDropdownList(
           response,
@@ -60,6 +64,7 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
           "id"
         );
         setLeaveDurationOptions(durationDropDownList || []);
+        setApprovedLeaves(responseApprovedLeaves.results || []);
       }
     } catch (error) {
       console.error(error);
@@ -219,7 +224,8 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
             validateFormSchema: (values) => {
               const errors = validateLeaveRequestFormSchema(
                 values,
-                LeaveValidationInfo
+                LeaveValidationInfo,
+                ApprovedLeaves
               );
               if (
                 !LeaveTypeOptions ||
@@ -274,6 +280,9 @@ const LeaveRequest = ({ id, reloadData = () => {} }) => {
                     required: true,
                     minDate: new Date(),
                     disableHolidays: true,
+                    onFieldUpdate: async (_, value, __, handleChange) => {
+                      handleChange("end_date", value);
+                    },
                   },
                   {
                     InputField: DateInput,
