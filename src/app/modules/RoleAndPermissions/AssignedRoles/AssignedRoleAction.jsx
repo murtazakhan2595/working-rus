@@ -57,6 +57,13 @@ const AssignedRoleAction = ({ data, reload, roles }) => {
       reload();
     }
   };
+  if (
+    data?.user_role &&
+    Array.isArray(data?.user_role) &&
+    data?.user_role?.length > 0 &&
+    data?.user_role?.includes(1)
+  )
+    return null;
 
   return (
     <>

@@ -21,7 +21,9 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const default_role = GetDefaultUserRole()?.id;
 
   // Get employees from Redux state
-  const employees = useSelector((state) => state.emp.employees);
+  const employees = useSelector((state) =>
+    (state.emp.employees || []).filter((obj) => obj.id !== 1)
+  );
 
   // Initialize form data with assigned role values if in edit mode
   const [formData, setFormData] = useState({});
@@ -98,7 +100,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const handleSubmit = async (values) => {
     const payload = {
       employeeId: employeeData?.id || employeeData?.value || values.employee,
-      roles: [...values.roles,default_role],
+      roles: [...values.roles, default_role],
     };
 
     setFormValues({ ...values, ...payload });
@@ -139,7 +141,6 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const handleClose = () => {
     setIsOpen(false);
   };
-
 
   const roleOptions = React.useMemo(() => {
     if (!Array.isArray(availableRoles) || availableRoles.length === 0)
