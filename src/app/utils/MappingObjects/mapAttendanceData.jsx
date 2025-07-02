@@ -466,3 +466,17 @@ export function mapEmpAttendanceOverview({
 
   return attendanceOverview;
 }
+export function getAttendancePayloadFromBiometric(
+  biometricData,
+  AttendanceData
+) {
+  const { status } = biometricData;
+  if (status === "break") {
+    const payload = {
+    };
+  }
+  const payload = {
+    id: AttendanceData.id,
+  };
+  return payload;
+}

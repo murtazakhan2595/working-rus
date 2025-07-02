@@ -12,6 +12,7 @@ import {
   mapAttendanceAdjustmentData,
   mapAttendanceBreakDurationData,
   mapEmpAttendanceOverview,
+  getAttendancePayloadFromBiometric,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
@@ -857,6 +858,29 @@ export const getBiometricUserAttendanceData = async (id) => {
       const ResponseData = response.data;
 
       return ResponseData;
+    }
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return [];
+  }
+};
+
+export const saveUserBiometricAttendance = async (employee_id, attendance) => {
+  try {
+    const response = await getBiometricUserAttendanceData(20672);
+
+    if (response) {
+      const payload = getAttendancePayloadFromBiometric(response, attendance);
+      if (response.status === "break") {
+        await saveBreak(payload);
+      } else {
+        const ResponseData = response.data;
+
+        return ResponseData;
+      }
     }
   } catch (error) {
     console.error("Error getting onboarding document by id:", error);
