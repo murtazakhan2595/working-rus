@@ -129,8 +129,17 @@ const AttendanceAdjustmentHistory = ({
           {
             type: "select",
             placeholder: "Status",
-            name: "statuses",
-            options: GlobalStatusOptions(false),
+            name: "approver_action",
+            options: [
+              {
+                value: "Approved",
+                label: "Approved",
+              },
+              {
+                value: "UPDATED",
+                label: "Updated",
+              },
+            ],
             values: selectedStatus,
           },
         ]}
