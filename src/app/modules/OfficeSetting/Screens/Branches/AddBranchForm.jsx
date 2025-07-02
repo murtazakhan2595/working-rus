@@ -26,6 +26,7 @@ const AddBranchForm = ({
   const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [DataList, setDataList] = useState(false);
+  const [currentFormInstance, setCurrentFormInstance] = useState(null);
   const dispatch = useDispatch();
   const isEditMode = Boolean(id);
 
@@ -123,25 +124,41 @@ const AddBranchForm = ({
     }
   };
 
-  const handleMapOpen = () => {
+  const handleMapOpen = (formInstance = null) => {
+    if (formInstance) {
+      setCurrentFormInstance(formInstance);
+    }
     setShowMap(true);
   };
 
   const handleMapClose = () => {
     setShowMap(false);
+    setCurrentFormInstance(null);
   };
 
-  const handleLocationSave = (locationData) => {
-    setFormData((prev) => ({
-      ...prev,
-      branch_coordinates: {
+  const handleLocationSave = (locationData, formInstance = null) => {
+    if (formInstance) {
+      // Use Formik's setFieldValue to update individual fields without triggering reinitialization
+      formInstance.setFieldValue('branch_coordinates', {
         lat: locationData.coordinates.lat,
         lng: locationData.coordinates.lng,
-      },
-      branch_location: locationData.formattedAddress,
-      branch_address: locationData.formattedAddress,
-    }));
+      });
+      formInstance.setFieldValue('branch_location', locationData.formattedAddress);
+      formInstance.setFieldValue('branch_address', locationData.formattedAddress);
+    } else {
+      // Fallback to state update (preserve existing form data)
+      setFormData((prev) => ({
+        ...prev,
+        branch_coordinates: {
+          lat: locationData.coordinates.lat,
+          lng: locationData.coordinates.lng,
+        },
+        branch_location: locationData.formattedAddress,
+        branch_address: locationData.formattedAddress,
+      }));
+    }
     setShowMap(false);
+    setCurrentFormInstance(null);
   };
 
   const validateForm = (values) => {
@@ -227,7 +244,7 @@ const AddBranchForm = ({
                           value={form.values?.branch_location || ""}
                           disabled
                         />
-                        <Button type="button" onClick={handleMapOpen}>
+                        <Button type="button" onClick={() => handleMapOpen(form)}>
                           Open Map
                         </Button>
                       </div>
@@ -266,7 +283,7 @@ const AddBranchForm = ({
         <SelectLocationOnMap
           isOpen={showMap}
           onClose={handleMapClose}
-          onSave={handleLocationSave}
+          onSave={(locationData) => handleLocationSave(locationData, currentFormInstance)}
           initialLocation={formData.branch_location}
           initialCoordinates={formData.branch_coordinates}
         />
