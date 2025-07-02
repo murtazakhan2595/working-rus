@@ -20,8 +20,8 @@ const Config = {
   //----------------TEAM_MANAGEMENT------------
   TEAM_MANAGEMENT: true,
   //Sub Modules
-  TEAM_PROFILE: true,
-  TEAM_ATTENDANCE: true,
+  TEAM_PROFILE: false,
+  TEAM_ATTENDANCE: false,
   TEAM_DAILY_TASK_REPORT: false,
   TEAM_LEAVE_REQUEST: true,
   TEAM_EXIT_CLEARANCE: true,
@@ -66,10 +66,10 @@ const Config = {
   PROJECT_BOARD: false,
 
   //-------------TALENT_SPHERE-----------
-  TALENT_SPHERE: true,
+  TALENT_SPHERE: false,
   //Sub Modules
-  JOBS: true,
-  APPLICANTS: true,
+  JOBS: false,
+  APPLICANTS: false,
 
   //-------------ASSET_MANAGEMENT-----------
   ASSET_MANAGEMENT: true,
