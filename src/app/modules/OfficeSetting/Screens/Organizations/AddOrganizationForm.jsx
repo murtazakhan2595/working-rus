@@ -345,33 +345,20 @@ const AddOrganizationForm = ({
                       countriesLoading ? "Loading countries..." : null
                     }
                     onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                      setCountry(value);
-                      setState(null); // Reset state when country changes
-                      setSelectedState(null);
-                      setSelectedCity(null);
-
-                      // Clear Formik form values for state and city
-                      props.setFieldValue("state", "");
-                      props.setFieldValue("city", "");
-                      props.setFieldValue("state_name", "");
-                      props.setFieldValue("city_name", "");
-
-                      // Clear the options arrays
-                      setStates([]);
-                      setCities([]);
-
-                      // Find the selected country object
-                      const selectedCountryObj = countries.find(
-                        (c) => c.value === value
-                      );
-                      if (selectedCountryObj) {
-                        setSelectedCountry(selectedCountryObj);
-                        props.setFieldValue(
-                          "country_name",
-                          selectedCountryObj.label
-                        );
-                      }
+                      props.setFieldValue(field, value);
+                      // Handle dependencies with a small delay to allow form validation to complete
+                      setTimeout(() => {
+                        setCountry(value);
+                        setState(null);
+                        setSelectedState(null);
+                        setSelectedCity(null);
+                        setStates([]);
+                        setCities([]);
+                        props.setFieldValue("state", "");
+                        props.setFieldValue("city", "");
+                        props.setFieldValue("state_name", "");
+                        props.setFieldValue("city_name", "");
+                      }, 0);
                     }}
                   />
 
@@ -386,28 +373,24 @@ const AddOrganizationForm = ({
                     disabled={statesLoading || !country}
                     placeholder={statesLoading ? "Loading states..." : null}
                     onChange={(field, value) => {
-                      props.handleChange(field)(value);
-                      setState(value);
-                      setSelectedCity(null); // Reset city when state changes
-
-                      // Clear Formik form value for city
-                      props.setFieldValue("city", "");
-                      props.setFieldValue("city_name", "");
-
-                      // Clear the cities array
-                      setCities([]);
-
-                      // Find the selected state object
-                      const selectedStateObj = states.find(
-                        (s) => s.value === value
-                      );
-                      if (selectedStateObj) {
-                        setSelectedState(selectedStateObj);
-                        props.setFieldValue(
-                          "state_name",
-                          selectedStateObj.label
+                      props.setFieldValue(field, value);
+                      // Handle dependencies with a small delay to allow form validation to complete
+                      setTimeout(() => {
+                        setState(value);
+                        setSelectedCity(null);
+                        setCities([]);
+                        props.setFieldValue("city", "");
+                        props.setFieldValue("city_name", "");
+                        
+                        // Find the selected state object and set state_name
+                        const selectedStateObj = states.find(
+                          (s) => s.value === value
                         );
-                      }
+                        if (selectedStateObj) {
+                          setSelectedState(selectedStateObj);
+                          props.setFieldValue("state_name", selectedStateObj.label);
+                        }
+                      }, 0);
                     }}
                   />
                 </div>
@@ -425,16 +408,18 @@ const AddOrganizationForm = ({
                     disabled={citiesLoading || !props.values.state}
                     placeholder={citiesLoading ? "Loading cities..." : null}
                     onChange={(field, value) => {
-                      props.handleChange(field)(value);
-
-                      // Find the selected city object
-                      const selectedCityObj = cities.find(
-                        (c) => c.value === value
-                      );
-                      if (selectedCityObj) {
-                        setSelectedCity(selectedCityObj);
-                        props.setFieldValue("city_name", selectedCityObj.label);
-                      }
+                      props.setFieldValue(field, value);
+                      // Handle dependencies with a small delay to allow form validation to complete
+                      setTimeout(() => {
+                        // Find the selected city object and set city_name
+                        const selectedCityObj = cities.find(
+                          (c) => c.value === value
+                        );
+                        if (selectedCityObj) {
+                          setSelectedCity(selectedCityObj);
+                          props.setFieldValue("city_name", selectedCityObj.label);
+                        }
+                      }, 0);
                     }}
                   />
                   <TextInput
