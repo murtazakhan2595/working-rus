@@ -5,15 +5,25 @@ import {
   DelegateLevel,
 } from "app/utils/Types/ApprovalHierarchy";
 import { addSeconds, format } from "date-fns";
+import _ from "lodash";
 
 export async function mapApprovalHierarchyData(data) {
   const approvalHierarchyData = {};
   for (const key of Object.keys(ApprovalHierarchy)) {
     if (data.hasOwnProperty(key)) {
       if (key === "levels") {
-        approvalHierarchyData[key] = await mapHierarchyLevelListData(
-          data[key] || []
-        );
+        const levels = await mapHierarchyLevelListData(data[key] || []);
+        approvalHierarchyData[key] = levels;
+      } else if (key === "level_groups") {
+        const levels = approvalHierarchyData.levels;
+        const level_groups = data[key];
+        if (!levels || !Array.isArray(levels) || levels.length === 0)
+          approvalHierarchyData[key] = level_groups;
+        else {
+          approvalHierarchyData[key] = _.uniq(
+            levels.map((level) => level.group_name) || []
+          );
+        }
       } else {
         approvalHierarchyData[key] = data[key];
       }
@@ -102,11 +112,6 @@ export function mapLevelPayloadData(data) {
 export function mapApprovalHierarchyHistoryLogsData(data) {
   const historyData = Object.keys(ApprovalHierarchyHistoryLogs).reduce(
     (acc, key) => {
-      // if (key === "feature_ids") acc[key] = data.details.feature_ids;
-      // else if (key === "permission_changed")
-      //   acc[key] = data.details.permission_changed;
-      // else if (key === "employee_id") acc[key] = data.employee.id;
-      // else if (key === "employee_name") acc[key] = data.employee.name;
       if (data.hasOwnProperty(key)) {
         acc[key] = data[key];
       }
@@ -164,6 +169,11 @@ export function mapHierarchyLevelData(data) {
             console.error("Threshold parsing error for key:", key, error);
             acc[key] = null;
           }
+        } else if (key === "group_name") {
+          const group_name = data[key];
+          if (!group_name || group_name.length === 0)
+            acc[key] = `Group ${data.initiative_designation.join(" ")}`;
+          else acc[key] = group_name;
         } else acc[key] = data[key];
       } else {
         // Use default values from ApprovalHierarchy type

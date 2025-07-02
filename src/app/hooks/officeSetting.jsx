@@ -1,6 +1,5 @@
 import axios from "axios";
-import { initialState } from "state/slices/UserSlice";
-import { HandleLogout } from "./general";
+import { HandleLogout, baseUrl, headers, formDataHeader } from "./general";
 import {
   mapGraceTimeList,
   mapGraceTimeData,
@@ -8,18 +7,7 @@ import {
 } from "app/utils/MappingObjects/mapOfficeSettingData";
 import { renderErrorMessages } from "utils/renderErrors";
 
-const baseUrl = initialState.baseUrl;
-const headers = () => ({
-  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-  "Content-Type": "application/json",
-});
-
-const formDataHeader = () => ({
-  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-});
-
 const saveOrganization = async (id, payload) => {
-  console.log(id, "ID");
   try {
     if (id) {
       const response = await axios.patch(
@@ -259,9 +247,18 @@ const deleteOnboardingDocument = async (id) => {
     return false;
   }
 };
-const getOnboardingDocument = async () => {
+const getOnboardingDocument = async (payload) => {
   try {
-    const response = await axios.get(`${baseUrl}/onboardingdoc/`, {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    const URL = `/onboardingdoc/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {

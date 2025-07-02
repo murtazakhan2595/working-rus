@@ -74,6 +74,12 @@ export default function ImageDocPreview({
 
   const handleMouseUp = () => setDragging(false);
 
+  const downloadAttachment = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    downloadFile(attachment, name);
+  };
+
   return (
     <Dialog
       open={isOpen}
@@ -154,11 +160,7 @@ export default function ImageDocPreview({
 
         {/* Footer */}
         <div className="flex justify-end border-t pt-2">
-          <Button
-            onClick={() => downloadFile(attachment, name)}
-            variant="continue"
-            size="sm"
-          >
+          <Button onClick={downloadAttachment} variant="continue" size="sm">
             Download <AiOutlineDownload className="ml-2 w-5 h-5" />
           </Button>
         </div>

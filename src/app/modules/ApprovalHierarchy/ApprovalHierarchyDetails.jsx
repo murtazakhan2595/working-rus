@@ -7,12 +7,16 @@ import {
 } from "app/modules/ApprovalHierarchy";
 import React, { useEffect, useState } from "react";
 import { Header, StatusLabel } from "components";
-import { Card } from "components/ui/card";
-import { CardContent } from "components/ui/card";
 import { useLocation } from "react-router-dom";
 import { Button } from "components/ui/button";
 import { DetailBox } from "components/SheetCardExtension";
-import { CardDescription, CardTitle } from "components/ui/card";
+import {
+  CardDescription,
+  CardTitle,
+  CardHeader,
+  CardContent,
+  Card,
+} from "components/ui/card";
 import {
   ApprovalHierarchyRequestTypeName,
   EmployeeUsername,
@@ -71,8 +75,12 @@ const ApprovalHierarchyDetails = ({}) => {
         }
       />
       <Card>
-        <CardTitle className="text-primary p-6">Hierarchy Details</CardTitle>
-        <CardDescription></CardDescription>
+        <CardHeader>
+          <CardTitle>Hierarchy Details</CardTitle>
+          <CardDescription>
+            Here you can view the details of hierarchy.
+          </CardDescription>
+        </CardHeader>
         <CardContent>
           <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-5">
             <DetailBox
@@ -126,8 +134,14 @@ const ApprovalHierarchyDetails = ({}) => {
         </CardContent>
       </Card>
       <Card>
-        <CardTitle className="text-primary p-6">Hierarchy Levels</CardTitle>
-        <CardDescription></CardDescription>
+        <CardHeader>
+          <CardTitle>Hierarchy Levels</CardTitle>
+          <CardDescription>
+            Here you can view, edit the levels against all request initiators in
+            the hierarchy.
+          </CardDescription>
+        </CardHeader>
+
         <CardContent className="">
           <Levels
             HierarchyDetails={Hierarchy}

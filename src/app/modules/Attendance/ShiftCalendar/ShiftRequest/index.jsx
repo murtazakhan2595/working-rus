@@ -16,10 +16,24 @@ import {
 } from "src/@/components/ui/tabs";
 import { HasAccess } from "utils/PermissionUtils";
 import { PageLoader } from "components";
+
 const ShiftRequest = () => {
-  const isViewRecordsPermitted = HasAccess("VIEW_SHIFT_REQUEST_RECORDS");
-  const isEditEmployeeShiftPermitted = HasAccess("EDIT_EMPLOYEE_SHIFT");
-  // const isViewRecordsPermitted = true;
+  const isManageTeamShiftsPermitted = HasAccess("MANAGE_TEAM_SHIFTS_REQUEST");
+  const isManageOrganizationShiftsPermitted = HasAccess(
+    "MANAGE_ORGANIZATION_SHIFTS_REQUEST"
+  );
+
+  // Determine user role with priority: HR > Manager
+  const isHR = isManageOrganizationShiftsPermitted;
+  const isManager =
+    !isManageOrganizationShiftsPermitted && isManageTeamShiftsPermitted;
+  const hasTabAccess = isHR; // Only HR gets tabs view
+  console.log("hasTabAccess", hasTabAccess);
+  console.log("isHR", isHR);
+  console.log("isManager", isManager);
+  console.log("isManageOrganizationShiftsPermitted", isManageOrganizationShiftsPermitted);
+  console.log("isManageTeamShiftsPermitted", isManageTeamShiftsPermitted);
+
   const [isLoading, setIsLoading] = useState(true);
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
@@ -29,13 +43,16 @@ const ShiftRequest = () => {
     results: [],
     count: 0,
   });
+  const userProfile = useSelector((state) => state.user.userProfile);
   const [filters, setFilters] = useState({
     status: "",
     user_role: "",
   });
+
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
+
   const employees = useSelector((state) => state.emp.employees);
 
   const tableOptions = {
@@ -46,6 +63,7 @@ const ShiftRequest = () => {
       setOrdering(sortName);
     },
   };
+
   const fetchRoles = async (isMounted) => {
     const response = await getRoleList();
     if (isMounted && response) {
@@ -60,12 +78,14 @@ const ShiftRequest = () => {
       isMounted = false;
     };
   }, []);
+
   useEffect(() => {
-    if (isViewRecordsPermitted) {
+    if (hasTabAccess) {
       setOptions((prev) => ({ ...prev, page: 1 }));
       setFilters((prev) => ({ ...prev, status: "" }));
     }
-  }, [activeTab, isViewRecordsPermitted]);
+  }, [activeTab, hasTabAccess]);
+
   useEffect(() => {
     fetchShiftRequests();
   }, [ordering, options, filters, activeTab]);
@@ -77,19 +97,24 @@ const ShiftRequest = () => {
         is_change_request: "true",
         shift_requested: "Employee",
       };
-      if(isViewRecordsPermitted){
-        if(activeTab === "Request") {
+
+      if (hasTabAccess) {
+        console.log("Fetching shift requests for HR view with tabs");
+        // HR view with tabs
+        if (activeTab === "Request") {
           filterData.status = filters.status || "Pending";
-        }
-        else if(activeTab === "Record") {
+        } else if (activeTab === "Record") {
           filterData.status = filters.status || "Approved,Rejected";
           filterData.is_change_request = "true,false";
         }
-      } else{
-        if(filters.status){
+      } else {
+        // Manager view without tabs
+        filterData.manager = userProfile.id;
+        if (filters.status) {
           filterData.status = filters.status;
         }
       }
+
       if (filters.user_role) {
         filterData.user_role = filters.user_role;
       }
@@ -99,11 +124,11 @@ const ShiftRequest = () => {
       if (filters.search) {
         filterData.search = filters.search;
       }
-      
+      console.log("filterDatasdfsdfsdf", filterData);
       const response = await getShiftSchedule({
         filterData,
         ordering: ordering,
-        options
+        options,
       });
 
       if (response && response.results) {
@@ -134,13 +159,15 @@ const ShiftRequest = () => {
       setIsLoading(false);
     }
   };
+
   const handleFilterChange = (name, value) => {
     setFilters((prev) => ({
       ...prev,
       [name]: value,
     }));
-    setOptions((prev) => ({ ...prev, page: 1 })); 
+    setOptions((prev) => ({ ...prev, page: 1 }));
   };
+
   const ShiftRequestTabs = ["Request", "Record"].filter(Boolean);
 
   const FiltersSection = (
@@ -180,21 +207,26 @@ const ShiftRequest = () => {
   const TableSection = (
     <Card>
       <CardContent>
-        {isLoading ? <PageLoader/> :<TableCustom
-          data={shiftRequests.results}
-          columns={EmployeeColumns(fetchShiftRequests)}
-          pagination={true}
-          dataTotalSize={shiftRequests.count}
-          tableOptions={tableOptions}
-        />}
+        {isLoading ? (
+          <PageLoader />
+        ) : (
+          <TableCustom
+            data={shiftRequests.results}
+            columns={EmployeeColumns(fetchShiftRequests)}
+            pagination={true}
+            dataTotalSize={shiftRequests.count}
+            tableOptions={tableOptions}
+          />
+        )}
       </CardContent>
     </Card>
   );
+
   return (
     <div
       className={`flex flex-col gap-4 ${window.location.pathname.substring(1)}`}
     >
-      {isViewRecordsPermitted ? (
+      {hasTabAccess ? (
         // HR View with Tabs
         <Tabs
           defaultValue="Request"

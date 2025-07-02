@@ -1,17 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { Attendance, AttendanceAdjustment } from "app/utils/Types/Attendance";
-import { mapAdjustmentFromAttendnaceData } from "app/utils/MappingObjects/mapAttendanceData";
-import {
-  validateUpdateAttendanceFormSchema,
-  validateAttendanceAdjustmentFormSchema,
-} from "app/utils/FormSchema/AttendanceFormSchema";
+import React, { useEffect, useState, useCallback } from "react";
+import { Attendance } from "app/utils/Types/Attendance";
+import { validateUpdateAttendanceFormSchema } from "app/utils/FormSchema/AttendanceFormSchema";
 import { SheetUI } from "components";
 import {
   saveAttendance,
   getAttendanceData,
   getAttendance,
-  saveUpdateAttendanceAdjustment,
 } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import {
@@ -21,11 +15,10 @@ import {
   DateInput,
 } from "components/FormControl";
 import { HasAccess } from "utils/PermissionUtils";
-import { TextAreaInput } from "components/FormControl";
 import { GetEmployeeFilteredList } from "utils/Lists";
-import { GetEmployeeActiveShift } from "app/modules/Attendance/ShiftCalendar/Section/getEmployeeActiveShift";
+import { getActiveShiftData } from "app/hooks/shiftManagement";
 import { renderDate } from "utils/renderValues";
-import { getShiftById } from "app/hooks/attendance";
+
 const FormSheetData = {
   triggerText: "Submit",
   title: "Update Employee Attendance",
@@ -39,9 +32,6 @@ const UpdateEmployeeAttendance = ({
   id,
   setIsOpen = () => {},
 }) => {
-  const defaultShift = useSelector(
-    (state) => state.attendance.assignedShiftData
-  );
   const isDptAttendancePermitted = HasAccess("UPDATE_DPT_EMP_ATTENDANCE");
   const isBrnAttendancePermitted = HasAccess("UPDATE_BRN_EMP_ATTENDANCE");
   const isAttendancePermitted = HasAccess("UPDATE_EMPLOYEE_ATTENDANCE");
@@ -53,7 +43,6 @@ const UpdateEmployeeAttendance = ({
   );
   const Departments = useSelector((state) => state.common.departments);
   const Designations = useSelector((state) => state.common.designations);
-  const UserDetails = useSelector((state) => state.emp.user_details);
   const Mangers = useSelector((state) => state.emp.reportingManagers);
   const [formData, setFormData] = useState(Attendance);
   const [formValues, setFormValues] = useState(Attendance);
@@ -61,20 +50,23 @@ const UpdateEmployeeAttendance = ({
   const [ActiveShift, setActiveShift] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchData = async (isMounted) => {
-    try {
-      const response = await getAttendanceData(id);
-      if (isMounted && response) {
-        setFormData(response);
-        setFormValues(response);
-        setSelectedEmployee(
-          Employees.find((obj) => obj.value === response.employee_id)
-        );
+  const fetchData = useCallback(
+    async (isMounted) => {
+      try {
+        const response = await getAttendanceData(id);
+        if (isMounted && response) {
+          setFormData(response);
+          setFormValues(response);
+          setSelectedEmployee(
+            Employees.find((obj) => obj.value === response.employee_id)
+          );
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    },
+    [id, Employees]
+  );
 
   const fetchAttendanceData = async (isMounted, date, selectedEmployee) => {
     setIsLoading(true);
@@ -83,11 +75,8 @@ const UpdateEmployeeAttendance = ({
         const response = await getAttendance({
           filterData: { date: date, employee_id: selectedEmployee.id },
         });
-        const default_shift_id = selectedEmployee.default_shift;
-        const default_shift = await getShiftById(default_shift_id);
-        const active_shift = await GetEmployeeActiveShift(
+        const active_shift = await getActiveShiftData(
           selectedEmployee.id,
-          default_shift,
           date
         );
         setActiveShift(active_shift);
@@ -114,7 +103,7 @@ const UpdateEmployeeAttendance = ({
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [id, fetchData]);
 
   const handleSubmit = async (data) => {
     try {

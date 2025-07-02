@@ -45,7 +45,7 @@ const OnboardingActions = ({ data, reload, OnboardingList = [] }) => {
   const confirmDelete = async () => {
     try {
       await deleteRecord(
-        `/onboarding-document/${deleteDept?.data?.id}`,
+        `/onboardingdoc/${deleteDept?.data?.id}`,
         deleteDept?.data?.name
       );
       reload();
@@ -87,13 +87,7 @@ const OnboardingActions = ({ data, reload, OnboardingList = [] }) => {
       )}
 
       {edit?.open && (
-        <ViewDetailSheetCardExtension
-          isOpen={edit?.open}
-          setIsOpen={(isOpen) => setEdit((prev) => ({ ...prev, open: isOpen }))}
-          title="Update Document"
-          handlePrevious={() => {}}
-          handleNext={() => {}}
-        >
+      
           <AddOnboardingForm
             isOpen={edit.open}
             setIsOpen={(isOpen) =>
@@ -104,7 +98,6 @@ const OnboardingActions = ({ data, reload, OnboardingList = [] }) => {
             reload={reload}
             onUpdateSuccess={handleFormUpdate}
           />
-        </ViewDetailSheetCardExtension>
       )}
 
       {view?.visible && (

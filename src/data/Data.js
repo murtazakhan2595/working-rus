@@ -81,6 +81,12 @@ export const ApprovalHierarchyRequestType = [
   ...(Config.MY_ATTENDANCE
     ? [{ label: "Attendance Adjustments", value: "ATTENDANCE_UPDATION" }]
     : []),
+  ...(Config.MY_SHIFT_CALENDAR
+    ? [{ label: "Employee Shift Schedule", value: "SHIFT_SCHEDULE_EMPLOYEE" }]
+    : []),
+  ...(Config.SHIFT_CALENDAR
+    ? [{ label: "Manager Shift Schedule", value: "SHIFT_SCHEDULE_MANAGER" }]
+    : []),
 ];
 
 export const statusOptions = [
@@ -842,6 +848,27 @@ export const AssetCategories = [
   { label: "Networking", value: "Networking" },
   { label: "Accessory", value: "Accessory" },
   { label: "Furniture", value: "Furniture" },
+  { label: "Other", value: "Other" },
+];
+
+export const ReligionList = [
+  { label: "Christianity", value: "Christianity" },
+  { label: "Islam", value: "Islam" },
+  { label: "Hinduism", value: "Hinduism" },
+  { label: "Buddhism", value: "Buddhism" },
+  { label: "Judaism", value: "Judaism" },
+  { label: "Sikhism", value: "Sikhism" },
+  { label: "Jainism", value: "Jainism" },
+  { label: "Shinto", value: "Shinto" },
+  { label: "Taoism", value: "Taoism" },
+  { label: "Confucianism", value: "Confucianism" },
+  { label: "Bahá'í Faith", value: "Bahá'í Faith" },
+  { label: "Zoroastrianism", value: "Zoroastrianism" },
+  { label: "Traditional African Religions", value: "Traditional African Religions" },
+  { label: "Indigenous Religions", value: "Indigenous Religions" },
+  { label: "Atheism", value: "Atheism" },
+  { label: "Agnosticism", value: "Agnosticism" },
+  { label: "Non-religious/Secular", value: "Non-religious/Secular" },
   { label: "Other", value: "Other" },
 ];
 

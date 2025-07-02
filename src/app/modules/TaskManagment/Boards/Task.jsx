@@ -198,26 +198,23 @@ const TaskDetails = ({
         </div>
         {!task.is_subtask && (
           <div className="mt-2">
-            <TooltipText
-              tooltipTriggerText={
-                <Badge
-                  className="rounded"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setOpenSubtaskDetails(!openSubtaskDetails);
-                  }}
-                  variant="plum"
-                >
-                  {openSubtaskDetails ? (
-                    <ChevronDown size={16} />
-                  ) : (
-                    <ChevronRight size={16} />
-                  )}
-                  <div>{task?.sub_task?.length || 0} Subtask</div>
-                </Badge>
-              }
-              content={`${task?.sub_task?.length || 0} Subtasks`}
-            />
+            <TooltipText content={`${task?.sub_task?.length || 0} Subtasks`}>
+              <Badge
+                className="rounded"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setOpenSubtaskDetails(!openSubtaskDetails);
+                }}
+                variant="plum"
+              >
+                {openSubtaskDetails ? (
+                  <ChevronDown size={16} />
+                ) : (
+                  <ChevronRight size={16} />
+                )}
+                <div>{task?.sub_task?.length || 0} Subtask</div>
+              </Badge>
+            </TooltipText>
           </div>
         )}
       </CardContent>
@@ -256,35 +253,26 @@ const TaskDetails = ({
           )}
         </div>
         <div className="flex items-center gap-3 text-neutral-1000">
-          <TooltipText
-            tooltipTriggerText={
-              <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
-                <BiComment />
-                <div>{task?.comment_count || 0}</div>
-              </div>
-            }
-            content={`${task?.comment_count || 0} Comments`}
-          />
+          <TooltipText content={`${task?.comment_count || 0} Comments`}>
+            <div className="flex gap-0.5 text-sm items-center my-auto whitespace-nowrap">
+              <BiComment />
+              <div>{task?.comment_count || 0}</div>
+            </div>
+          </TooltipText>
 
-          <TooltipText
-            tooltipTriggerText={
-              <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
-                <ImAttachment />
-                <div>{task?.attachment_count || 0}</div>
-              </div>
-            }
-            content={`${task?.attachment_count || 0} Attachment`}
-          />
+          <TooltipText content={`${task?.attachment_count || 0} Attachment`}>
+            <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
+              <ImAttachment />
+              <div>{task?.attachment_count || 0}</div>
+            </div>
+          </TooltipText>
 
-          <TooltipText
-            tooltipTriggerText={
-              <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
-                <ExternalLink size={16} />
-                <div>{task?.relation_count}</div>
-              </div>
-            }
-            content={`${task?.relation_count} Task Related`}
-          />
+          <TooltipText content={`${task?.relation_count} Task Related`}>
+            <div className="flex items-center text-sm gap-0.5 my-auto whitespace-nowrap">
+              <ExternalLink size={16} />
+              <div>{task?.relation_count}</div>
+            </div>
+          </TooltipText>
         </div>
       </CardFooter>
       {/* Render ConfirmationModal component when isDeleteModalOpen is true */}

@@ -156,7 +156,7 @@ const AttendanceAdjustmentLogsDetails = ({
     <NavigationSheetComponent
       isOpen={isOpen}
       setIsOpen={setIsOpen}
-      title="Attendandance Adjustment Details"
+      title="Attendance Adjustment Details"
       currentItem_Id={currentId}
       dataList={DataList}
       reloadData={reloadData}

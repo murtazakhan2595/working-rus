@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { Card, CardHeader, CardContent, CardTitle } from "components/ui/card";
-import { getEmployeeActiveShift } from "app/modules/Attendance/ShiftCalendar/Section/getEmployeeActiveShift";
+import { getActiveShiftData } from "app/hooks/shiftManagement";
 import { Clock, Calendar, ArrowRight } from "lucide-react";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import moment from "moment";
 
 const dayStyles = {
   yesterday: {
@@ -41,28 +42,57 @@ const DailyShiftDetailsCard = ({ isDashboard = false }) => {
   const emp_attendance_detail = useSelector(
     (state) => state.attendance.attendance_details
   );
+  const { id: user_id } = useSelector((state) => state.user.userProfile);
   //   console.log(emp_attendance_detail, "emp_attendance_detail");
 
   const [shiftDetails, setShiftDetails] = useState([]);
   const [offsetCount, setOffsetCount] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setShiftDetails([
-      {
-        day: "yesterday",
-        details: emp_attendance_detail.yesterday_shift || {},
-      },
-      { day: "today", details: emp_attendance_detail.today_shift || {} },
-      { day: "tomorrow", details: emp_attendance_detail.tomorrow_shift || {} },
-    ]);
+    const fetchData = async (isMounted) => {
+      try {
+        setIsLoading(true);
+        const yesterday_shift = await getActiveShiftData(
+          user_id,
+          moment().subtract(1, "day")
+        );
+        const tomorrow_shift = await getActiveShiftData(
+          user_id,
+          moment().add(1, "day")
+        );
+        if (isMounted) {
+          setShiftDetails([
+            {
+              day: "yesterday",
+              details: yesterday_shift || {},
+            },
+            { day: "today", details: emp_attendance_detail.today_shift || {} },
+            {
+              day: "tomorrow",
+              details: tomorrow_shift || {},
+            },
+          ]);
 
-    const offSetCount = parseInt(
-      emp_attendance_detail.monthly_overtime /
-        emp_attendance_detail.monthly_total_hours
-    );
-    setOffsetCount(offSetCount||0);
-  }, [emp_attendance_detail]);
+          const offSetCount = parseInt(
+            emp_attendance_detail.monthly_overtime /
+              emp_attendance_detail.monthly_total_hours
+          );
+          setOffsetCount(offSetCount || 0);
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    let isMounted = true;
+    if (user_id) fetchData(isMounted, user_id);
+    return () => {
+      isMounted = false;
+    };
+  }, [emp_attendance_detail, user_id]);
 
   if (loading) {
     return (
@@ -96,7 +126,7 @@ const DailyShiftDetailsCard = ({ isDashboard = false }) => {
               day={day}
               Icon={Clock}
               shifts={details.shifts}
-              status={details.status}
+              status={details.shift_assigned}
               OffLabel={details.OffLabel}
             />
           ))}
@@ -125,7 +155,7 @@ const ShiftCard = ({ day, Icon, shifts, status, OffLabel }) => {
       </div>
       {status ? (
         <div className="">
-          {shifts &&
+          {shifts && shifts.length > 0 ? (
             shifts.map((shift, index) => (
               <div
                 key={index}
@@ -135,7 +165,14 @@ const ShiftCard = ({ day, Icon, shifts, status, OffLabel }) => {
                 <ArrowRight className={`h-3 w-3 ${dayStyles[day].icon}`} />
                 <span className="font-medium">{shift.end_time}</span>
               </div>
-            ))}
+            ))
+          ) : (
+            <div
+              className={`text-center py-1 px-2 text-sm font-medium ${dayStyles[day].text}`}
+            >
+              {OffLabel}
+            </div>
+          )}
         </div>
       ) : (
         <div

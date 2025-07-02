@@ -2,17 +2,18 @@ import { Header } from "components";
 import { Card } from "components/ui/card";
 import React, { useEffect, useState } from "react";
 import AddOrganization from "./Organizations/AddOrganization";
-import { getWorkingHours } from "app/hooks/general";
 import {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
 } from "src/@/components/ui/tabs";
-import Departments from "./Departments";
-import Branches from "./Branches";
-import GraceTime from "./GraceTime";
-import Designations from "./Designations";
+import {
+  Departments,
+  Branches,
+  GraceTime,
+  Designations,
+} from "app/modules/OfficeSetting/Screens";
 import AddDepartment from "./Departments/AddDepartment";
 import AddBranch from "./Branches/AddBranch";
 import AddGraceTime from "./GraceTime/AddGraceTime";
@@ -20,10 +21,8 @@ import { getOrganizationList } from "app/hooks/general";
 import { CardContent } from "components/ui/card";
 import AddDesignation from "./Designations/AddDesignation";
 import WorkingHours from "./WorkingHours";
-import Shift from "../sections/Shift/Shift";
+import { Shift } from "app/modules/OfficeSetting";
 import { PageLoader } from "components";
-import { getDepartmentList } from "app/hooks/general";
-import { getDesignationList } from "app/hooks/general";
 import OnboardingChecklist from "./OnboardingChecklist";
 import OnboardingTab from "./OnboardingChecklist/OnboardingTab";
 import { getOnboardingDocument } from "app/hooks/officeSetting";
@@ -38,46 +37,31 @@ import {
   getRegionById,
   getCityById,
 } from "app/hooks/officeSetting";
-import { useOfficeSettingPermissions } from "../hooks/useOfficeSettingPermissions";
 import { OfficeSettingPermissionWrapper } from "../components/PermissionWrapper";
 import { OFFICE_SETTING_PERMISSIONS } from "../permissions/constants";
 
 const OfficeSetting = () => {
-  const [dataShift, setDataShift] = useState(null);
   const [edit, setEdit] = useState(false);
   const [editData, setEditData] = useState(null);
   const [activeTab, setActiveTab] = useState("offices");
   const [loading, setLoading] = useState(true);
-  const [depLoading, setDepLoading] = useState(true);
-  const [department, setDepartments] = useState(null);
-  const [reloadBranchesData, setReloadBranchesData] = useState(false);
-  const [reloadGraceTimeData, setReloadGraceTimeData] = useState(false);
-  const [depOptions, setdepOptions] = useState({ page: 1, sizePerPage: 10 });
-  const [desigOptions, setDesigOptions] = useState({
-    page: 1,
-    sizePerPage: 10,
-  });
+  const [reloadSettingData, setReloadSettingData] = useState({});
 
   // Get user details from Redux store
   const userDetails = useSelector((state) => state.emp?.user_details);
-  console.log("User details Or:", userDetails);
   const userOrganizationId =
     userDetails?.organization_id || userDetails?.organization;
 
   // Get office setting permissions
-  const permissions = useOfficeSettingPermissions();
-  const userPermissionsRaw = useSelector(state => state.roles_permissions?.my_permissions || []);
-  
+  const userPermissionsRaw = useSelector(
+    (state) => state.roles_permissions?.my_permissions || []
+  );
+
   // The permissions are already strings (permission codes), not objects
   const userPermissions = userPermissionsRaw.filter(Boolean); // Remove any undefined/null values
 
-  console.log("User organization ID:", userOrganizationId);
-  console.log("Full organization field from user:", userDetails?.organization);
-
   const [filteredOrganizations, setFilteredOrganizations] = useState([]);
 
-  const [designLoading, setDesignLoading] = useState(true);
-  const [designation, setDesignation] = useState(null);
   const [onboardingDocs, setOnboardingDocs] = useState([]);
   const [onboardingLoading, setOnboardingLoading] = useState(true);
 
@@ -87,21 +71,10 @@ const OfficeSetting = () => {
 
   const getOrganization = async () => {
     try {
-      console.log("Fetching organization data...");
-      console.log(
-        "Current user organization ID from Redux:",
-        userOrganizationId
-      );
       setLoading(true);
       const response = await getOrganizationList(true);
-      console.log("Organization API response in component:", response);
       if (response) {
         if (response.results && response.results.length > 0) {
-          console.log(
-            "All organizations:",
-            response.results.map((org) => ({ id: org.id, name: org.name }))
-          );
-
           let orgToShow = [];
 
           // Find user's organization if userOrganizationId exists
@@ -111,19 +84,14 @@ const OfficeSetting = () => {
             );
 
             if (userOrg) {
-              console.log("Found user's organization:", userOrg);
               orgToShow = [userOrg];
               fetchLocationDetails(userOrg);
             } else {
-              console.log(
-                "User organization not found. Showing first organization."
-              );
               orgToShow = [response.results[0]];
               fetchLocationDetails(response.results[0]);
             }
           } else {
             // No user organization ID, just show the first organization
-            console.log("No user organization ID. Showing first organization.");
             orgToShow = [response.results[0]];
             fetchLocationDetails(response.results[0]);
           }
@@ -136,84 +104,6 @@ const OfficeSetting = () => {
     } catch (error) {
       console.error("ERROR", error);
       setLoading(false);
-    }
-  };
-
-  const fetchShifts = async () => {
-    try {
-      setLoading(true);
-      const response = await getWorkingHours();
-      if (response?.results) {
-        const formattedData = response.results.map((item) => ({
-          ...item,
-        }));
-        setDataShift(formattedData);
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error(error, "ERROR");
-    }
-  };
-
-  const getDepartments = async () => {
-    try {
-      setDepLoading(true);
-      // Create filter data with organization ID if available
-      const filterData = {};
-
-      // When showing all organizations, use the user's organization ID if available
-      if (userOrganizationId) {
-        console.log(
-          "Filtering departments by user's organization ID:",
-          userOrganizationId
-        );
-        filterData.organization = userOrganizationId;
-      }
-
-      const departmentResponse = await getDepartmentList({
-        options: depOptions,
-        filterData: filterData,
-      });
-
-      console.log("Department data retrieved:", departmentResponse);
-      setDepartments(departmentResponse);
-    } catch (error) {
-      console.error("Error fetching lists:", error);
-    } finally {
-      setDepLoading(false);
-    }
-  };
-
-  const getDesignations = async () => {
-    setDesignLoading(true);
-    try {
-      // Create filter data with organization ID if available
-      const filterData = {};
-
-      // When showing all organizations, use the user's organization ID if available
-      if (userOrganizationId) {
-        console.log(
-          "Filtering designations by user's organization ID:",
-          userOrganizationId
-        );
-        filterData.organization = userOrganizationId;
-      }
-
-      // Merge with any existing filter data from desigOptions
-      const mergedFilterData = {
-        ...filterData,
-        ...(desigOptions.filterData || {}),
-      };
-
-      const response = await getDesignationList({
-        options: desigOptions,
-        filterData: mergedFilterData,
-      });
-      setDesignation(response);
-    } catch (error) {
-      console.error("Error fetching designations:", error);
-    } finally {
-      setDesignLoading(false);
     }
   };
 
@@ -271,45 +161,16 @@ const OfficeSetting = () => {
     }
   };
 
-  // Function to check if an organization is the user's organization
-  const isUserOrganization = (organizationId) => {
-    if (!userOrganizationId) return false;
-    return String(organizationId) === String(userOrganizationId);
-  };
-
   useEffect(() => {
     const fetchData = async () => {
-      console.log("Initial component load - User details:", userDetails);
-      console.log("User organization ID before fetching:", userOrganizationId);
-      console.log("Organization property:", userDetails?.organization);
-
       // First get organization data
       await getOrganization();
-
-      // Log after fetching
-      console.log(
-        "After fetching - filtered organizations:",
-        filteredOrganizations
-      );
-
       // Then fetch the rest of the data that depends on organization
-      await fetchShifts();
-      await getDepartments();
-      await getDesignations();
       await getOnboardingDocuments();
     };
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Add another useEffect to update departments when filteredOrganizations changes
-  useEffect(() => {
-    if (filteredOrganizations.length > 0) {
-      console.log("Organization changed, updating departments...");
-      getDepartments();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filteredOrganizations]);
 
   // Helper function to get location names
   const getLocationName = (type, id, orgId) => {
@@ -345,52 +206,48 @@ const OfficeSetting = () => {
   };
 
   const tabsData = [
-    { 
-      value: "offices", 
-      label: "Organization", 
-      permission: OFFICE_SETTING_PERMISSIONS.ORGANIZATION.VIEW 
+    {
+      value: "offices",
+      label: "Organization",
+      permission: OFFICE_SETTING_PERMISSIONS.ORGANIZATION.VIEW,
     },
-    { 
-      value: "department", 
-      label: "Department", 
-      permission: OFFICE_SETTING_PERMISSIONS.DEPARTMENTS.VIEW 
+    {
+      value: "department",
+      label: "Department",
+      permission: OFFICE_SETTING_PERMISSIONS.DEPARTMENTS.VIEW,
     },
-    { 
-      value: "designation", 
-      label: "Designation", 
-      permission: OFFICE_SETTING_PERMISSIONS.DESIGNATIONS.VIEW 
+    {
+      value: "designation",
+      label: "Designation",
+      permission: OFFICE_SETTING_PERMISSIONS.DESIGNATIONS.VIEW,
     },
-    { 
-      value: "branches", 
-      label: "Branches", 
-      permission: OFFICE_SETTING_PERMISSIONS.BRANCHES.VIEW 
+    {
+      value: "branches",
+      label: "Branches",
+      permission: OFFICE_SETTING_PERMISSIONS.BRANCHES.VIEW,
     },
-    { 
-      value: "working-hours", 
-      label: "Working Hours", 
-      permission: OFFICE_SETTING_PERMISSIONS.WORKING_HOURS.VIEW 
+    {
+      value: "working-hours",
+      label: "Working Hours",
+      permission: OFFICE_SETTING_PERMISSIONS.WORKING_HOURS.VIEW,
     },
-    { 
-      value: "onboarding", 
-      label: "Onboarding Checklist", 
-      permission: OFFICE_SETTING_PERMISSIONS.ONBOARDING.VIEW 
+    {
+      value: "onboarding",
+      label: "Onboarding Checklist",
+      permission: OFFICE_SETTING_PERMISSIONS.ONBOARDING.VIEW,
     },
-    { 
-      value: "grace-time", 
-      label: "Grace Time", 
-      permission: OFFICE_SETTING_PERMISSIONS.GRACE_TIME.VIEW 
+    {
+      value: "grace-time",
+      label: "Grace Time",
+      permission: OFFICE_SETTING_PERMISSIONS.GRACE_TIME.VIEW,
     },
   ];
 
   // Filter tabs based on permissions
-  const availableTabs = tabsData.filter(tab => {
+  const availableTabs = tabsData.filter((tab) => {
     const hasPermission = userPermissions.includes(tab.permission);
-    console.log(`Tab "${tab.label}" requires permission "${tab.permission}": ${hasPermission}`);
     return hasPermission;
   });
-
-  console.log('Available tabs:', availableTabs.map(t => t.label));
-  console.log('User permissions:', userPermissions);
 
   return (
     <div>
@@ -401,36 +258,100 @@ const OfficeSetting = () => {
           <Header
             content={
               activeTab === "offices" ? (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.ORGANIZATION.CREATE}>
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.ORGANIZATION.CREATE}
+                >
                   <AddOrganization reload={getOrganization} />
                 </OfficeSettingPermissionWrapper>
               ) : activeTab === "department" ? (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.DEPARTMENTS.CREATE}>
-                  <AddDepartment reload={getDepartments} />
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.DEPARTMENTS.CREATE}
+                >
+                  <AddDepartment
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          department: !prev["department"],
+                        };
+                      });
+                    }}
+                  />
                 </OfficeSettingPermissionWrapper>
               ) : activeTab === "designation" ? (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.DESIGNATIONS.CREATE}>
-                  <AddDesignation reload={getDesignations} />
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.DESIGNATIONS.CREATE}
+                >
+                  <AddDesignation
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          designation: !prev["designation"],
+                        };
+                      });
+                    }}
+                  />
                 </OfficeSettingPermissionWrapper>
               ) : activeTab === "working-hours" ? (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.SHIFT.CREATE}>
-                  <Shift reload={fetchShifts} />
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.SHIFT.CREATE}
+                >
+                  <Shift
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          "working-hours": !prev["working-hours"],
+                        };
+                      });
+                    }}
+                  />
                 </OfficeSettingPermissionWrapper>
               ) : activeTab === "branches" ? (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.BRANCHES.CREATE}>
-                  <AddBranch reload={setReloadBranchesData} />
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.BRANCHES.CREATE}
+                >
+                  <AddBranch
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          branches: !prev["branches"],
+                        };
+                      });
+                    }}
+                  />
                 </OfficeSettingPermissionWrapper>
               ) : activeTab === "grace-time" ? (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.GRACE_TIME.CREATE}>
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.GRACE_TIME.CREATE}
+                >
                   <AddGraceTime
-                    reloadData={() =>
-                      setReloadGraceTimeData(!reloadGraceTimeData)
-                    }
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          "grace-time": !prev["grace-time"],
+                        };
+                      });
+                    }}
                   />
                 </OfficeSettingPermissionWrapper>
               ) : (
-                <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.ONBOARDING.CREATE}>
-                  <OnboardingTab reload={getOnboardingDocuments} />
+                <OfficeSettingPermissionWrapper
+                  permissions={OFFICE_SETTING_PERMISSIONS.ONBOARDING.CREATE}
+                >
+                  <OnboardingTab
+                    reloadData={() => {
+                      setReloadSettingData((prev) => {
+                        return {
+                          ...prev,
+                          onboarding: !prev["onboarding"],
+                        };
+                      });
+                    }}
+                  />
                 </OfficeSettingPermissionWrapper>
               )
             }
@@ -441,20 +362,20 @@ const OfficeSetting = () => {
             defaultValue="offices"
             className="w-full"
           >
-                          {/* Horizontal tabs */}
-              <div className="w-full mb-6">
-                <TabsList className="flex flex-row w-full gap-4 overflow-x-auto">
-                  {availableTabs?.map((tab) => (
-                    <TabsTrigger
-                      key={tab.value}
-                      value={tab.value}
-                      className="data-[state=active]:bg-primary-200 data-[state=active]:text-primary-1100"
-                    >
-                      {tab.label}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </div>
+            {/* Horizontal tabs */}
+            <div className="w-full mb-6">
+              <TabsList className="flex flex-row w-full gap-4 overflow-x-auto">
+                {availableTabs?.map((tab) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="data-[state=active]:bg-primary-200 data-[state=active]:text-primary-1100"
+                  >
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
 
             {/* Tab content */}
             <div className="w-full">
@@ -474,7 +395,11 @@ const OfficeSetting = () => {
                                 {organization.name}
                               </CardTitle>
                             </div>
-                            <OfficeSettingPermissionWrapper permissions={OFFICE_SETTING_PERMISSIONS.ORGANIZATION.UPDATE}>
+                            <OfficeSettingPermissionWrapper
+                              permissions={
+                                OFFICE_SETTING_PERMISSIONS.ORGANIZATION.UPDATE
+                              }
+                            >
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -545,59 +470,22 @@ const OfficeSetting = () => {
                 )}
               </TabsContent>
               <TabsContent value="department">
-                <Departments
-                  loading={depLoading}
-                  options={depOptions}
-                  reload={getDepartments}
-                  organizationId={userOrganizationId}
-                  setOPtions={setdepOptions}
-                  getDepartments={getDepartments}
-                  department={department}
-                />
+                <Departments reload={reloadSettingData["department"]} />
               </TabsContent>
               <TabsContent value="branches">
-                <Branches
-                  loading={depLoading}
-                  options={depOptions}
-                  reload={reloadBranchesData}
-                  organizationId={userOrganizationId}
-                  setOPtions={setdepOptions}
-                  getDepartments={getDepartments}
-                  department={department}
-                />
+                <Branches reload={reloadSettingData["branches"]} />
               </TabsContent>
               <TabsContent value="designation">
-                <Designations
-                  loading={designLoading}
-                  options={desigOptions}
-                  setOptions={setDesigOptions}
-                  reload={getDesignations}
-                  organizationId={userOrganizationId}
-                  designation={designation}
-                  setDesignation={setDesignation}
-                  getDesignations={getDesignations}
-                />
+                <Designations reload={reloadSettingData["designation"]} />
               </TabsContent>
               <TabsContent value="working-hours">
-                <WorkingHours
-                  data={dataShift}
-                  reload={fetchShifts}
-                  organizationId={userOrganizationId}
-                />
+                <WorkingHours reload={reloadSettingData["working-hours"]} />
               </TabsContent>
               <TabsContent value="grace-time">
-                <GraceTime reload={reloadGraceTimeData} />
+                <GraceTime reload={reloadSettingData["grace-time"]} />
               </TabsContent>
               <TabsContent value="onboarding">
-                {onboardingLoading ? (
-                  <PageLoader />
-                ) : (
-                  <OnboardingChecklist
-                    data={onboardingDocs}
-                    reload={getOnboardingDocuments}
-                    organizationId={userOrganizationId}
-                  />
-                )}
+                <OnboardingChecklist reload={reloadSettingData["onboarding"]} />
               </TabsContent>
             </div>
           </Tabs>

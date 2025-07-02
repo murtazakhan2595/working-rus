@@ -70,10 +70,27 @@ const AssignDocumentForm = ({
   }, [document_id]);
 
   const handleSubmit = async (data) => {
+    debugger;
     setDisableSubmit(true);
     try {
       const object_id_list = data.object_id;
       const failedAssignments = [];
+      if (!object_id_list || !Array.isArray(object_id_list)) {
+        const payload = {
+          ...data,
+          object_id: object_id_list, // assign one at a time
+          document: document_id,
+        };
+        const response = await addUpdateDocumentAssignment(payload);
+        if (response) {
+          return {
+            status: true,
+            messageType: "SUCCESS",
+            title: `Document Assigned Successfully`,
+            description: `Document was assigned to ${data.target_audience.toLowerCase()} successfully`,
+          };
+        }
+      }
 
       for (const objectId of object_id_list) {
         const payload = {
@@ -94,10 +111,12 @@ const AssignDocumentForm = ({
       }
 
       if (failedAssignments.length === 0) {
-        toast.success("Document Assigned Successfully!", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        setIsOpen(false);
+        return {
+          status: true,
+          messageType: "SUCCESS",
+          title: `Document Assigned Successfully`,
+          description: `Document was assigned to selected ${data.target_audience.toLowerCase()} successfully`,
+        };
       } else {
         toast.error(
           `Failed to assign document for: ${failedAssignments.join(", ")}`,

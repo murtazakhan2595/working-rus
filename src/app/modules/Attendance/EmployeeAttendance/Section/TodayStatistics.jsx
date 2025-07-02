@@ -1,55 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { getAttendance, getShiftById } from "app/hooks/attendance";
-import { useSelector } from "react-redux";
+import { getAttendancebyEmployee } from "app/hooks/attendance";
+import { DetailBox } from "components/SheetCardExtension";
 import moment from "moment";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "src/@/components/ui/table";
-import { PageLoader } from "components";
+import { PageLoader, StatusLabel } from "components";
+import { getActiveShiftData } from "app/hooks/shiftManagement";
+import { renderDate } from "utils/renderValues";
 
-const TodayStatistics = ({ userId, shiftId }) => {
+const TodayStatistics = ({ userId }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [todayAttendanceData, setTodayAttendanceData] = useState({});
-  const [shiftTime, setShiftTime] = useState(null);
+  const [attendanceData, setTodayAttendanceData] = useState({});
+  const [shift_details, setShiftDetails] = useState(null);
   const getTodayAttendanceData = async (isMounted) => {
     setIsLoading(true);
     try {
-      const attendanceData = await getAttendance({
-        filterData: {
-          date: moment().format("YYYY-MM-DD"),
-          employee_id: userId,
-        },
-      });
+      const attendanceData = await getAttendancebyEmployee(userId, moment());
+      const activeShift = await getActiveShiftData(userId, moment());
       if (isMounted) {
-        const todayAttendance =
-          attendanceData &&
-          attendanceData.results &&
-          attendanceData.results.length > 0
-            ? attendanceData.results[0]
-            : null;
-        if (todayAttendance) {
-          setTodayAttendanceData(todayAttendance);
+        if (attendanceData) {
+          setTodayAttendanceData(attendanceData);
         } else {
           setTodayAttendanceData(null);
         }
-        const shiftData = await getShiftById(shiftId);
-        if (shiftData) {
-          const shiftTime = shiftData
-            ? `${
-                shiftData.starttime
-                  ? moment(shiftData.starttime).format("hh:mm A")
-                  : "---"
-              } - ${
-                shiftData.endtime
-                  ? moment(shiftData.endtime).format("hh:mm A")
-                  : "---"
-              }`
-            : "---";
-          setShiftTime(shiftTime);
-           }
+        if (activeShift) {
+          setShiftDetails(activeShift);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -67,31 +41,86 @@ const TodayStatistics = ({ userId, shiftId }) => {
       isMounted = false;
     };
   }, []);
- 
-  if (isLoading) return <PageLoader />;
-  return (
-    <div className="space-y-4">
-      <Table>
-        <TableBody>
-          <TableRow>
-            <TableCell className="pl-0">Today Check in</TableCell>
-            <TableCell>
-              {todayAttendanceData
-                ? moment(todayAttendanceData.checkin).format("hh:mm A")
-                : "---/---"}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell className="pl-0">Shift Time</TableCell>
-            <TableCell>{shiftTime ? shiftTime : "---/---"}</TableCell>
-          </TableRow>
 
-          <TableRow>
-            <TableCell className="pl-0">Annual Leave</TableCell>
-            <TableCell>Not Applicable</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+  if (isLoading) return <PageLoader />;
+
+  return (
+    <div className="space-y-4 mt-4">
+      <DetailBox
+        value={renderDate(moment())}
+        label="Time Log"
+        labelClassName="w-50"
+        valueClassName="justify-end flex"
+      />
+      {!shift_details?.isOffToday && (
+        <>
+          <DetailBox
+            value={
+              attendanceData?.checkin
+                ? renderDate(attendanceData?.checkin, "--", "time")
+                : "Start working!"
+            }
+            valueClassName="text-end"
+            label="Check-in Time"
+          />
+          {attendanceData?.checkin && (
+            <DetailBox
+              value={
+                attendanceData?.checkout
+                  ? renderDate(attendanceData?.checkout, "--", "time")
+                  : "Still Working"
+              }
+              valueClassName="text-end"
+              label="Check-out Time"
+            />
+          )}
+          {shift_details?.shift_assigned ? (
+            !shift_details?.isOffToday && (
+              <DetailBox
+                value={shift_details?.shifts.map(({ start_time, end_time }) => (
+                  <span>
+                    {start_time} - {end_time}
+                  </span>
+                ))}
+                valueClassName="text-end flex flex-col w-fil min-w-[165px]"
+                label="Shift Time"
+              />
+            )
+          ) : (
+            <DetailBox
+              value={"No shift assigned"}
+              valueClassName="text-end"
+              label="Shift Time"
+            />
+          )}
+        </>
+      )}
+      <DetailBox
+        value={
+          shift_details?.isOffToday ? (
+            <StatusLabel variant="info">{shift_details?.OffLabel}</StatusLabel>
+          ) : (
+            <StatusLabel status={attendanceData?.status}>
+              {attendanceData?.status}
+            </StatusLabel>
+          )
+        }
+        label="Attendance Status"
+        labelClassName="w-50"
+        valueClassName="justify-end flex"
+      />
+      <DetailBox
+        value={
+          shift_details?.is_on_leave ? (
+            <StatusLabel variant="info">{shift_details?.OffLabel}</StatusLabel>
+          ) : (
+            <span>Not Applicable</span>
+          )
+        }
+        label="Leave Status"
+        labelClassName="w-50"
+        valueClassName="justify-end flex"
+      />
     </div>
   );
 };

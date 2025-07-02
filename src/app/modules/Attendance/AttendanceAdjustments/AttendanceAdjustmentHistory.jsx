@@ -30,9 +30,6 @@ const AttendanceAdjustmentHistory = ({
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedBranch, setSelectedBranch] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [selectedEmployee, setSelectedEmployee] = useState("");
 
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
@@ -76,13 +73,9 @@ const AttendanceAdjustmentHistory = ({
 
   const handleFilterChange = (filterName, filterValue) => {
     onPageChange("page", 1);
-    if (filterName === "employee") setSelectedEmployee(filterValue);
-    if (filterName === "statuses") setSelectedStatus(filterValue);
-    if (filterName === "branch_id") setSelectedBranch(filterValue);
-    if (filterName === "department_name") setSelectedDepartment(filterValue);
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
-      if (filterValue === "") {
+      if (filterValue === "" || filterValue === null) {
         delete updatedFilters[filterName];
       } else {
         updatedFilters[filterName] = filterValue;
@@ -129,14 +122,24 @@ const AttendanceAdjustmentHistory = ({
             : []),
           {
             type: "date-range",
-            placeholder: "Status",
-            name: "date_range",
+            placeholder: "Attendance Date",
+            name: "attendance_date",
+            // className:'min-w-[310px]'
           },
           {
             type: "select",
             placeholder: "Status",
-            name: "statuses",
-            options: GlobalStatusOptions(false),
+            name: "approver_action",
+            options: [
+              {
+                value: "Approved",
+                label: "Approved",
+              },
+              {
+                value: "UPDATED",
+                label: "Updated",
+              },
+            ],
             values: selectedStatus,
           },
         ]}

@@ -1,12 +1,10 @@
-import { EmployeeResignationsColumns } from "app/modules/ExitAndClearance/Sections";
-
+import { ExitRequestColumns } from "app/modules/ExitAndClearance/Sections";
 import React, { useState, useEffect } from "react";
 import { ExitDetailsCard } from "app/modules/ExitAndClearance/ExitRequests";
 import { connect } from "react-redux";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 
 import { PageLoader } from "components";
-
 
 import TableCustom from "components/CustomTable";
 
@@ -86,9 +84,7 @@ const Resignations = React.memo(({ filterData }) => {
       ) : (
         <TableCustom
           data={Resignations?.results || []}
-          columns={EmployeeResignationsColumns(handleRowClicked, () => {
-            fetchData();
-          })}
+          columns={ExitRequestColumns(fetchData)}
           pagination={true}
           dataTotalSize={Resignations?.count || 0}
           tableOptions={tableOptions}

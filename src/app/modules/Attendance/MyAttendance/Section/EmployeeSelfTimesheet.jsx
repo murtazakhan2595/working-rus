@@ -254,7 +254,7 @@ const RenderBreakButton = ({
   };
 
   const endBreakResumeShift = async () => {
-    const endTime = moment().utc().format("YYYY-MM-DDTHH:mm:ss[Z]");
+    const endTime =moment().utc().toISOString();
     if (OnBreak) {
       const result = await endBreak(
         {

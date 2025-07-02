@@ -95,3 +95,16 @@ export const PayrollAdjustment = {
   type: null,
   calculated_amount: null,
 };
+
+
+export const FinalSettlement = {
+  last_working_date: null,
+  remaining_salary: null,
+  earned_leave_encashment: null,
+  total_deductions: null,
+  gratuity_amount: null,
+  final_amount: null,
+  notes: null,
+  employee_payroll: null,
+  id: null,
+};

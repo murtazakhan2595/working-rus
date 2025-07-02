@@ -77,7 +77,7 @@ const getEmployeePersonalInfoData = async (employeeid) => {
   if (employeeid) {
     try {
       const response = await axios.get(
-        `${baseUrl}/employeeInformationlist/${employeeid}`,
+        `${baseUrl}/emp/${employeeid}`,
         {
           headers: headers(),
         }
@@ -123,7 +123,7 @@ const getEmployeeContactInfo = async (employeeid) => {
   if (employeeid) {
     try {
       const response = await axios.get(
-        `${baseUrl}/employeeInformationlist/${employeeid}`,
+        `${baseUrl}/emp/${employeeid}`,
         {
           headers: headers(),
         }

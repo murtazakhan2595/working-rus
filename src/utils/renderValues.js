@@ -272,11 +272,41 @@ export const calculatePercentage1 = (stats) => {
 };
 
 export const calculatePercentage = (count = 0, total = 0) => {
-  count = parseFloat(count) || 0;
-  total = parseFloat(total) || 0;
-  if (count > total || total === 0) return 0;
-  return (count / total) * 100;
+  // Ensure both values are numbers
+  const parsedCount = parseFloat(count);
+  const parsedTotal = parseFloat(total);
+
+  // Handle invalid or NaN values
+  if (isNaN(parsedCount) || isNaN(parsedTotal)) return 0;
+
+  // Prevent division by zero and ensure count is non-negative and not more than total
+  if (parsedTotal <= 0 || parsedCount < 0 || parsedCount > parsedTotal) return 0;
+
+  const percentage = (parsedCount / parsedTotal) * 100;
+  return parseFloat(percentage.toFixed(2)); // Round to 2 decimal places
 };
+
+export const calculateAverage = (
+  data = [],
+  count_label = "",
+  total_label = ""
+) => {
+  // Check if data is an array
+  if (!Array.isArray(data) || data.length === 0) return 0;
+
+  const count = calculateTotal(data, count_label);
+  const total = calculateTotal(data, total_label);
+
+  // Check if both count and total are valid numbers
+  if (isNaN(count) || isNaN(total)) return 0;
+
+  // Prevent division by zero
+  if (total === 0) return 0;
+
+  const average = parseFloat(count / total).toFixed(2);
+  return parseFloat(average);
+};
+
 
 export const calculateTotal = (data, label) => {
   if (!Array.isArray(data)) return 0;
