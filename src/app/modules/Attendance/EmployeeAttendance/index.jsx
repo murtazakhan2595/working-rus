@@ -8,10 +8,8 @@ import {
   EmployeeAttendanceHistory,
   EmployeeAttendanceOverview,
 } from "app/modules/Attendance/EmployeeAttendance/Section";
-import {
-  getAttendance,
-} from "app/hooks/attendance";
-import { PageLoader } from "components";
+import { getAttendance } from "app/hooks/attendance";
+import { PageLoader, EmployeeOverview } from "components";
 import { toast } from "react-toastify";
 import { calculateBreak } from "app/hooks/attendance";
 import { getBreakStatus } from "app/hooks/attendance";
@@ -26,7 +24,7 @@ import { ArrowLeft } from "lucide-react";
 
 const EmployeeAttendance = () => {
   const { id } = useParams();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const userProfile = GetUser(id);
   const [isLoading, setIsLoading] = useState(false);
   const [attendanceData, setAttendanceData] = useState([]);
@@ -84,7 +82,13 @@ const EmployeeAttendance = () => {
         <Card>
           <CardContent className="mt-5">
             <div className="flex justify-start flex-col">
-              <EmployeeInfo user={userProfile} />
+              <EmployeeOverview
+                id={id}
+                showId={true}
+                showDepartment={true}
+                showPosition={true}
+                avatarSize={14}
+              />
               <TodayStatistics
                 userId={id}
                 shiftId={userProfile?.shift_assignment || 1}
@@ -98,18 +102,9 @@ const EmployeeAttendance = () => {
             <CardTitle className="text-plum-900">Hours Statistics</CardTitle>
           </CardHeader>
           <CardContent>
-            <HourlyStatistics
-              userId={id}
-              shiftId={userProfile?.shift_assignment || 1}
-              dateRange={
-                filterData && filterData.date_range
-                  ? filterData.date_range
-                  : null
-              }
-              attendanceData={attendanceData?.results}
-            />
+            <HourlyStatistics employee_id={id} />
           </CardContent>
-        </Card> 
+        </Card>
 
         <Card>
           <CardHeader>

@@ -1,33 +1,18 @@
 import React, { useState, useEffect, forwardRef, memo } from "react";
 // import Select from "react-select";
 import { Label } from "src/@/components/ui/label";
-import DatePicker from "react-datepicker";
 import { cn } from "src/@/lib/utils";
-import moment from "moment";
-import { Input } from "components/ui/input";
 import { Button } from "components/ui/button";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "src/@/components/ui/popover";
-import { RadioGroup, RadioGroupItem } from "src/@/components/ui/radio-group";
 import TextInput from "components/FormControl/TextInput";
 import NumberInput from "components/FormControl/NumberInput";
 import PasswordInput from "components/FormControl/PasswordInput";
 import CheckBoxInputTree from "components/FormControl/CheckBoxInputTree";
 import CoverFileUpload from "components/FormControl/UploadFiles";
-import { ChevronsUpDown, Check, SearchIcon } from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "src/@/components/ui/command";
-import { format, parse, isValid } from "date-fns";
-import { Calendar } from "src/@/components/ui/calendar";
 import TextEditorInputField from "./TextEditorInputField";
 import FilterInput from "./FilterInput";
 import MonthInput from "./MonthInput";
@@ -51,6 +36,7 @@ import PhoneNumberInput from "./PhoneNumberInput";
 import CheckBoxInput from "./CheckBoxInput";
 import DateRangeInput from "./DateRangeInput";
 import SelectLocationOnMap from "./SelectLocationOnMap";
+import { TooltipText } from "components";
 
 const errorClassName = "text-red-800 text-xs font-[inter] font-normal ml-1";
 export const inputButtonClassName =
@@ -189,6 +175,36 @@ export const FormFieldIcon = memo(
   }) => {
     if (!icon) return null;
     return <div className={cn("w-4", className)}>{icon}</div>;
+  }
+);
+export const FormFieldResetButton = memo(
+  ({
+    title = "Reset",
+    className = "", // Allows additional styling
+    allowReset = false,
+    variant = "ghost",
+    handleReset = () => {},
+  }) => {
+    if (!allowReset) return null;
+    const reseField = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      handleReset();
+    };
+    return (
+      <TooltipText content="On clicking the button the selected values will be set to empty.">
+        <Button
+          variant={variant}
+          className={cn(
+            "text-sm text-neutral-900 hover:text-red-500 cursor-pointer hover:bg-transparent ml-auto p-0 h-fit",
+            className
+          )}
+          onClick={reseField}
+        >
+          {title}
+        </Button>
+      </TooltipText>
+    );
   }
 );
 

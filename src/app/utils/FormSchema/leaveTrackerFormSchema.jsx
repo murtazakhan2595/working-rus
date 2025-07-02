@@ -2,8 +2,14 @@ import moment from "moment";
 import { GetDateDifference } from "utils/renderValues";
 import { validateStartAndEndDateField } from "app/utils/FormSchema/generalFormSchema";
 
-const validateLeaveRequestFormSchema = (values, validationObj) => {
+const validateLeaveRequestFormSchema = (
+  values,
+  validationObj = {},
+  approvedLeaves = []
+) => {
   const errors = {};
+
+  // Basic required field validations
   if (!values.leave_type) errors.leave_type = "Leave type is required";
   if (!values.leave_duration)
     errors.leave_duration = "Leave duration is required";
@@ -13,38 +19,62 @@ const validateLeaveRequestFormSchema = (values, validationObj) => {
   if (!values.reason) errors.reason = "Reason is required";
   if (validationObj.attachmentRequired && !values.attachment)
     errors.attachment = "Attachment is required";
+
+  // Validate start and end date logic
   if (values.start_date && values.end_date) {
-    const startDate = moment(values.start_date).endOf("day");
+    const startDate = moment(values.start_date).startOf("day");
     const endDate = moment(values.end_date).endOf("day");
+
     if (startDate.isAfter(endDate)) {
-      errors.end_date = "End cannot be before start date.";
+      errors.end_date = "End date cannot be before start date.";
+    }
+    // Overlap check with already approved leaves
+    const hasOverlap = approvedLeaves.some((leave) => {
+      const approvedStart = moment(leave.start_date).startOf("day");
+      const approvedEnd = moment(leave.end_date).endOf("day");
+
+      return (
+        startDate.isSameOrBefore(approvedEnd) &&
+        endDate.isSameOrAfter(approvedStart) // overlap condition
+      );
+    });
+
+    if (hasOverlap) {
+      errors.leave_details =
+        "Selected date range overlaps with an already approved/pending leave.";
     }
   }
+
+  // Leave policy checks
   if (validationObj) {
     const { total_days = 0, start_date } = values;
-    const {
-      allowedLeaves,
-      allowedConsecutiveDays,
-      noticeDays,
-      halfPaidAllowed,
-    } = validationObj;
+    const { allowedLeaves, allowedConsecutiveDays, noticeDays } = validationObj;
+
     if (total_days) {
       if (allowedLeaves && total_days > allowedLeaves) {
         errors.total_days = `Cannot apply for more than ${allowedLeaves} leaves`;
-      } else if (allowedConsecutiveDays && total_days > allowedConsecutiveDays)
-        errors.total_days = `Cannot apply for more than ${allowedConsecutiveDays} leaves at once`;
-      if (noticeDays && start_date) {
-        const daysDifference = GetDateDifference(
-          start_date,
-          moment(),
-          "days",
-          "calendar_days"
-        );
-        if (daysDifference > noticeDays)
-          errors.start_date = `Leave must be applied before ${noticeDays} days for this leave type`;
+      } else if (
+        allowedConsecutiveDays &&
+        total_days > allowedConsecutiveDays
+      ) {
+        errors.total_days = `Cannot apply for more than ${allowedConsecutiveDays} consecutive leaves`;
+      }
+    }
+
+    if (noticeDays && start_date) {
+      const daysDifference = GetDateDifference(
+        start_date,
+        moment().format("YYYY-MM-DD"),
+        "days",
+        "calendar_days"
+      );
+
+      if (daysDifference < noticeDays) {
+        errors.start_date = `This leave type requires a notice of at least ${noticeDays} days`;
       }
     }
   }
+
   return errors;
 };
 
@@ -198,10 +228,10 @@ export const validatePublicHolidayFormSchema = (values) => {
     values.end_date
   );
   if (start_date) {
-    errors.date = start_date;
+    errors.date = "Start date is required";
   }
   if (end_date_before) {
-    errors.end_date = end_date_before;
+    errors.end_date = "End date cannot be before start date.";
   }
   return errors;
 };

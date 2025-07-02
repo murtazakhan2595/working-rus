@@ -62,10 +62,11 @@ const AllocatedLeavesInfo = () => {
             >
               <div className="mt-4 first:mt-0 text-neutral-1000">
                 <TooltipText
-                  tooltipTriggerText={name}
                   content={tooltip_info}
-                  className={"whitespace-pre-line "}
-                />
+                  className={"whitespace-pre-line"}
+                >
+                  {name}
+                </TooltipText>
               </div>
               <div className="flex gap-1">
                 <p className="text-xs text-gray-800">

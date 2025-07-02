@@ -86,7 +86,7 @@ export const ProjectBoardColumn = [
     text: "Tasks",
     dataField: "name",
     dataSort: true,
-    minWidth:"250px",
+    minWidth: "250px",
     formatter: (cell, row) => (
       <div
         className={`inline-block items-end gap-x-2 transition-all duration-200`}
@@ -94,15 +94,12 @@ export const ProjectBoardColumn = [
         {/* Task Title */}
         <span className="">{cell}</span>
         {/* Subtask Tooltip */}
-        <TooltipText
-          tooltipTriggerText={
-            <div className="inline-flex items-center gap-0.5 ml-1 whitespace-nowrap text-plum-1100 bg-plum-300 px-2 rounded">
-              <ListChecks size={11} />
-              <div>{row?.sub_task?.length || 0}</div>
-            </div>
-          }
-          content={`${row?.sub_task?.length || 0} Subtasks`}
-        />
+        <TooltipText content={`${row?.sub_task?.length || 0} Subtasks`}>
+          <div className="inline-flex items-center gap-0.5 ml-1 whitespace-nowrap text-plum-1100 bg-plum-300 px-2 rounded">
+            <ListChecks size={11} />
+            <div>{row?.sub_task?.length || 0}</div>
+          </div>
+        </TooltipText>
       </div>
     ),
   },
@@ -190,4 +187,3 @@ export const ProjectBoardSubtaskColumn = [
     width: "160px",
   },
 ];
-

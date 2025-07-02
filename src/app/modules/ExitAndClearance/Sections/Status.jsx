@@ -2,21 +2,22 @@ import { ResignationStatusOptions, TerminationStatusOptions } from "data/Data";
 const StatusList = (isResignation = true) => {
   if (isResignation) {
     // Iterate over ResignationStatusOptions and collect the values in the status_list array
-    const status_list = ResignationStatusOptions.map(
-      (status) => status.value
-    ).filter((value) => value !== "exit interview").join(",");
-    
+    const status_list = ResignationStatusOptions.map((status) => status.value)
+      .filter((value) => value !== "exit interview")
+      .join(",");
+
     return status_list;
   } else {
     // Iterate over TerminationStatusOptions and collect the values in the status_list array
-    const status_list = TerminationStatusOptions.map(
-      (status) => status.value
-    ).filter((value) => value !== "exit interview").join(",");
+    const status_list = TerminationStatusOptions.map((status) => status.value)
+      .filter((value) => value !== "exit interview")
+      .join(",");
     return status_list;
   }
 };
 
 const ExitStatusCurrentStep = (status) => {
+  if (!status) return -1;
   switch (status.toLowerCase()) {
     case "accepted by manager":
       return 1;

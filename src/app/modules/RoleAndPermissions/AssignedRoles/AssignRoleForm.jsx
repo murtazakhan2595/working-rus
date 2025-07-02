@@ -21,7 +21,9 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const default_role = GetDefaultUserRole()?.id;
 
   // Get employees from Redux state
-  const employees = useSelector((state) => state.emp.employees);
+  const employees = useSelector((state) =>
+    (state.emp.employees || []).filter((obj) => obj.id !== 1)
+  );
 
   // Initialize form data with assigned role values if in edit mode
   const [formData, setFormData] = useState({});
@@ -98,7 +100,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const handleSubmit = async (values) => {
     const payload = {
       employeeId: employeeData?.id || employeeData?.value || values.employee,
-      roles: [...values.roles,default_role],
+      roles: [...values.roles, default_role],
     };
 
     setFormValues({ ...values, ...payload });
@@ -139,15 +141,6 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
   const handleClose = () => {
     setIsOpen(false);
   };
-
-  // Transform employees for SelectInputComponent
-  const employeeOptions = employees.map((emp) => ({
-    value: emp.value,
-    label: `${emp.label} - ${emp.username}`,
-    department: emp.department || "N/A",
-    branch: emp.branch || "N/A",
-    email: emp.email || "",
-  }));
 
   const roleOptions = React.useMemo(() => {
     if (!Array.isArray(availableRoles) || availableRoles.length === 0)
@@ -215,7 +208,7 @@ const AssignRoleForm = ({ isOpen, setIsOpen, edit, reload }) => {
         name: "employee",
         required: true,
         label: "Select Employee",
-        options: employeeOptions,
+        options: employees,
         placeholder: "Select an employee",
         colsSpan: 2,
         onFieldUpdate: (field, value) => {

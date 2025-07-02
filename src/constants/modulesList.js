@@ -270,6 +270,76 @@ const FeatureList = [
   "EDIT_LEVEL_DELEGATE",
 ];
 
+// Add Sub-Module
+const sub_module = {
+  module_id: 3,
+  name: "Exit & Clearance",
+  code: "TEAM_EXIT_CLEARANCE",
+  Features: [
+    {
+      Name: "View Team Exit & Clearance",
+      code_name: "VIEW_TEAM_EXIT_CLEARANCE",
+    },
+  ],
+};
+// Add Features
 
+const featires = {
+  sub_module_id: 16,
+  features: [
+    {
+      name: "View Branch Exit Requests & Records",
+      code_name: "VIEW_BRANCH_EXIT",
+      description: "",
+    },
+    {
+      id: 95,
+      name: "View Exit Requests & Records",
+      code_name: "VIEW_EXIT",
+      description: "",
+    },
+    {
+      id: 96,
+      name: "View Department Exit Records & Records",
+      code_name: "VIEW_DPT_EXIT",
+      description: "",
+    },
+    {
+      name: "View Termination Reasons",
+      code_name: "VIEW_TERMINATION_REASONS",
+      description: "",
+    },
+    {
+      name: "Add Termination Reasons",
+      code_name: "ADD_TERMINATION_REASONS",
+      description: "",
+    },
+    {
+      name: "Delete Termination Reasons",
+      code_name: "DELETE_TERMINATION_REASONS",
+      description: "",
+    },
+    {
+      name: "Edit Termination Reasons",
+      code_name: "EDIT_TERMINATION_REASONS",
+      description: "",
+    },
+    {
+      name: "Initiate Clearance",
+      code_name: "INITIATE_CLEARANCE",
+      description: "Can initiate clearance by setting final settlement details.",
+    },
+    {
+      name: "Initiate Clearance",
+      code_name: "COMPLETE_CLEARANCE",
+      description: "Can complete clearance by uploading the clearance report.",
+    },
+    {
+      name: "Edit Termination Reasons",
+      code_name: "EXIT_INTERVIEW",
+      description: "Can add exit interview details with the employee.",
+    },
+  ],
+};
 
 export { ModuleList, SubModuleList, FeatureList };

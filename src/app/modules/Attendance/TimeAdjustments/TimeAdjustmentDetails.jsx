@@ -7,7 +7,11 @@ import {
 // import AddGraceTimeForm from "./AddGraceTimeForm";
 import { FormatID } from "utils/getValuesFromTables";
 import { StatusLabel, EmployeeDetailUI } from "components";
-import { getTimeAdjustmentData } from "app/hooks/attendance";
+import {
+  getTimeAdjustmentData,
+  getAttendancebyEmployee,
+  saveAttendance,
+} from "app/hooks/attendance";
 import { EmployeeOverview } from "components";
 import { renderDate } from "utils/renderValues";
 import { Button } from "components/ui/button";
@@ -50,8 +54,8 @@ const TimeAdjustmentDetails = ({
       if (response) {
         toast.success(`Request ${status} Successfully!`);
         if (status === "Approved") {
-          const { status } = await fetchData(id, true);
-          if (status && status.toLowerCase() === "approved") {
+          const { status: updatedStatus } = await fetchData(id, true);
+          if (updatedStatus && updatedStatus.toLowerCase() === "approved") {
             await saveCustomShift(
               employee_id,
               date,
@@ -60,6 +64,8 @@ const TimeAdjustmentDetails = ({
               is_second_shift,
               user_id
             );
+            const { id } = await getAttendancebyEmployee(employee_id, date);
+            if (id) await saveAttendance({ status: "Present" }, null, id);
           }
         }
         setForceLoad(!forceLoad);

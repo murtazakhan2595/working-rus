@@ -34,7 +34,7 @@ export const DetailBox = ({
 }) => {
   if (orientation === "horizontal") {
     return (
-      <div className={`flex flex-col w-full ${className}`} key={key || value}>
+      <div className={`flex flex-col w-full overflow-hidden ${className}`} key={key || value}>
         <div
           className={cn(
             "text-sm font-medium mb-2 text-neutral-900",
@@ -52,7 +52,7 @@ export const DetailBox = ({
 
   return (
     <div
-      className={`flex gap-4 items-center max-w-full ${className}`}
+      className={`flex gap-4 items-center max-w-full overflow-hidden ${className}`}
       key={key || value}
     >
       <div

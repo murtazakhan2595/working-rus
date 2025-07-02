@@ -215,12 +215,12 @@ const DashboardEmployee = [
     content: <MyLeaves />,
     value: "MyLeaves",
   },
-  {
-    type: "div",
-    className: "w-full",
-    content: <ExpiredDocuments />,
-    value: "ExpiredDocuments",
-  },
+  // {
+  //   type: "div",
+  //   className: "w-full",
+  //   content: <ExpiredDocuments />,
+  //   value: "ExpiredDocuments",
+  // },
 ];
 export const getDashboard = (userRole) => {
   if (userRole.includes(1)) {

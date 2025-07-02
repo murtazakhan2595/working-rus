@@ -33,7 +33,6 @@ const ViewBranch = ({
 
   // Fetch department data by ID
   const fetchData = async (id, isMounted) => {
-    console.log("Fetching department with ID:", id); // Debug
     try {
       const response = await getBranchById(id);
       console.log("API response:", response); // Debug

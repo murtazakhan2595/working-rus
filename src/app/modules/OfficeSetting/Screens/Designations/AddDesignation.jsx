@@ -5,12 +5,9 @@ import DesignationForm from './AddDesignationForm';
 import useUserOrganization from 'app/hooks/useUserOrganization';
 import { useOfficeSettingPermissions } from "../../hooks/useOfficeSettingPermissions";
 
-const AddDesignation = ({reload}) => {
+const AddDesignation = ({reloadData}) => {
   const [isOpen, setIsOpen] = useState(false)
   const permissions = useOfficeSettingPermissions();
-
-  console.log("reload in add desig", reload)
-
   const userOrganization = useUserOrganization();
 
   if (!permissions.designations.canCreate) {
@@ -34,7 +31,7 @@ const AddDesignation = ({reload}) => {
       <DesignationForm 
         isOpen={isOpen} 
         setIsOpen={setIsOpen} 
-        reload={reload}
+        reloadData={reloadData}
         userOrganization={userOrganization}
       />
     </SheetComponent>

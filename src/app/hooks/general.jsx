@@ -11,10 +11,14 @@ import {
 import { renderErrorMessages } from "utils/renderErrors";
 import { fetchDepartments } from "state/slices/CommonSlice";
 
-const baseUrl = initialState.baseUrl;
-const headers = () => ({
+export const baseUrl = initialState.baseUrl;
+export const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
   "Content-Type": "application/json",
+});
+export const formDataHeader = () => ({
+  Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+  // Don't explicitly set 'Content-Type' for FormData
 });
 
 const getDepartmentList = async (payload) => {
@@ -58,7 +62,7 @@ export const getBranchList = async (payload) => {
   const pageNo = payload?.options?.page ?? "";
   const pageSize = payload?.options?.sizePerPage ?? "";
   const filterData = payload?.filterData ?? {};
-  const ordering = payload?.ordering ?? "created_at";
+  const ordering = payload?.ordering ?? "-id";
   try {
     const URL = `/branch/?ordering=${ordering}&${
       pageNo ? `page=${pageNo}&` : ""
@@ -287,7 +291,8 @@ const getEmployeeList = async (payload) => {
         department_name: employee.department_name,
         department_position: employee.department_position,
         employee_location: employee.employee_location,
-        direct_report: employee.direct_report,
+        direct_report: parseInt(employee.direct_report) || null,
+        indirect_report: employee.indirect_report,
         branch_id: employee.branch_id,
         work_email: employee.work_email,
         serial_number: employee.serial_number,
@@ -325,9 +330,11 @@ const getEmployeeListWithDetail = async () => {
         label: `${employee.first_name} ${employee.last_name}`,
         username: `${employee.username}`,
         name: `${employee.first_name} ${employee.last_name}`,
+        contact_no: `+${employee.country_code}${employee.mobile_no}`,
         first_name: employee.first_name,
         date_of_birth: employee.date_of_birth,
         direct_report: employee.direct_report,
+        indirect_report: employee.indirect_report,
         joining_date: employee.joining_date,
         last_name: employee.last_name,
         department_name: employee.department_name,
@@ -652,9 +659,18 @@ const deleteRecord = async (URL, recordName) => {
   }
 };
 
-const getWorkingHours = async (URL) => {
+const getWorkingHours = async (payload) => {
   try {
-    const response = await axios.get(`${baseUrl}/shift/`, {
+    const pageNo = payload?.options?.page ?? "";
+    const ordering = payload?.ordering ?? "-id";
+    const pageSize = payload?.options?.sizePerPage ?? "";
+    const filterData = payload?.filterData ?? {};
+    const URL = `/shift/?ordering=${ordering}&${
+      pageNo ? `page=${pageNo}&` : ""
+    }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+      JSON.stringify(filterData)
+    )}`;
+    const response = await axios.get(`${baseUrl}${URL}`, {
       headers: headers(),
     });
     if (response.status === 200) {
@@ -672,17 +688,6 @@ const getWorkingHours = async (URL) => {
   return [];
 };
 
-const handleLogout = () => {
-  if (window.localStorage.getItem("token")) {
-    window.location.href = "/login";
-    toast.error("Session Time Out", {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 2000,
-    });
-    window.localStorage.setItem("token", "");
-    setUserLogout();
-  }
-};
 function HandleLogout(message = "Session Time Out") {
   if (window.localStorage.getItem("token")) {
     window.location.href = "/login";

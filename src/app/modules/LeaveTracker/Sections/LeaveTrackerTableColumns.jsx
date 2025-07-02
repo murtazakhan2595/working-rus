@@ -70,6 +70,7 @@ export const LeaveAplicationColumns = (
         showId={true}
       />
     ),
+    dataSort:true,
   },
   {
     dataField: "leave_type_name",
@@ -87,6 +88,7 @@ export const LeaveAplicationColumns = (
       </div>
     ),
     minWidth: "120px",
+    dataSort:true,
   },
   {
     dataField: "total_days",
@@ -145,6 +147,7 @@ export const LeaveAplicationDashboardColumns = [
       </div>
     ),
     minWidth: "120px",
+    dataSort:true,
   },
   {
     dataField: "status",
@@ -197,6 +200,8 @@ export const MyLeaveAplicationColumns = (realoadData = () => {}) => [
         {/* <span>{row?.total_days} Days</span> */}
       </div>
     ),
+    dataSort:true,
+
   },
   {
     dataField: "total_days",

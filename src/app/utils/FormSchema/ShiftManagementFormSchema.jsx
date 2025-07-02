@@ -1,28 +1,61 @@
-// src/app/utils/FormSchema/ShiftManagementFormSchema.jsx
+import { renderDate } from "utils/renderValues";
 
-// Validation for individual shift creation/editing
-const validateShiftFormSchema = (values) => {
+export const validateShiftFormSchema = (
+  values,
+  existingShifts = [],
+  currentShiftId = null
+) => {
   const errors = {};
 
-  // Basic field validation
-  if (!values.name) errors.name = "Shift Name is required";
-  if (!values.type) errors.type = "Shift Type is required";
+  // Validate required fields
+  if (!values.name?.trim()) errors.name = "Shift name is required";
+  if (!values.type) errors.type = "Shift type is required";
 
-  // Validate time fields if they exist
-  if (values.is_split_shift) {
-    // For split shifts, validate all split time fields
+  const hasSplit = Boolean(values.is_split_shift);
+
+  // Validate time fields based on shift type
+  if (hasSplit) {
     if (!values.split_start_time1)
-      errors.split_start_time1 = "Start time for first half is required";
+      errors.split_start_time1 = "First half start time is required";
     if (!values.split_end_time1)
-      errors.split_end_time1 = "End time for first half is required";
+      errors.split_end_time1 = "First half end time is required";
     if (!values.split_start_time2)
-      errors.split_start_time2 = "Start time for second half is required";
+      errors.split_start_time2 = "Second half start time is required";
     if (!values.split_end_time2)
-      errors.split_end_time2 = "End time for second half is required";
+      errors.split_end_time2 = "Second half end time is required";
   } else {
-    // For regular shifts, validate start and end times
     if (!values.starttime) errors.starttime = "Start time is required";
     if (!values.endtime) errors.endtime = "End time is required";
+  }
+
+  // Check for duplicate shift (for regular shift only)
+  const isDuplicateShift =
+    !hasSplit &&
+    values.name &&
+    values.type &&
+    values.starttime &&
+    currentShiftId &&
+    values.endtime &&
+    Array.isArray(existingShifts) &&
+    existingShifts.length > 0 &&
+    existingShifts.some((shift) => {
+      if (shift?.id === currentShiftId) return false;
+
+      const sameName = shift.name?.toLowerCase() === values.name.toLowerCase();
+      const sameType = shift.type === values.type;
+      const sameStartTime =
+        renderDate(shift.starttime, "--", "time") ===
+        renderDate(values.starttime, "--", "time");
+      const sameEndTime =
+        renderDate(shift.endtime, "--", "time") ===
+        renderDate(values.endtime, "--", "time");
+
+      return sameName && sameType && sameStartTime && sameEndTime;
+    });
+
+  if (isDuplicateShift) {
+    errors.name =
+      "A shift with the same name, type, and timings already exists";
   }
 
   return errors;
@@ -110,7 +143,6 @@ const validateShiftRequestFormSchema = (values) => {
 };
 
 export {
-  validateShiftFormSchema,
   validateScheduleShiftFormSchema,
   validateShiftRequestFormSchema,
 };

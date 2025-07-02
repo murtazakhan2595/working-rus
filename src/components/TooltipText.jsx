@@ -7,11 +7,11 @@ import {
 } from "src/@/components/ui/tooltip";
 import { cn } from "src/@/lib/utils.js";
 
-const TooltipText = React.memo(({ tooltipTriggerText, content, className }) => {
+const TooltipText = React.memo(({ content, className, children }) => {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>{tooltipTriggerText}</TooltipTrigger>
+        <TooltipTrigger>{children}</TooltipTrigger>
         <TooltipContent>
           <div className={cn(className, "text-neutral-1100 text-xs")}>
             {content}

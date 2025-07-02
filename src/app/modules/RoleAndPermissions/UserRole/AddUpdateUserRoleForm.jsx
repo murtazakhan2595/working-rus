@@ -125,7 +125,11 @@ const AddUpdateUserRoleForm = ({ isOpen = true }) => {
       if (response) {
         if (response.id) {
           await saveUpdateUserRolePermission(
-            { ...formValues, role: response.id },
+            {
+              ...formValues,
+              role: response.id,
+              id: formData.role_permission_id,
+            },
             formData.role_permission_id
           );
         }

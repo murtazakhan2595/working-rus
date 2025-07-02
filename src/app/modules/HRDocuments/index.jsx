@@ -17,6 +17,7 @@ import { Card, CardContent } from "components/ui/card";
 import { Header } from "components";
 import { Button } from "components/ui/button";
 import { HasAccess } from "utils/PermissionUtils";
+
 const HRDocumentsTab = ["Documents", "Category"];
 
 function HRDocuments() {
@@ -75,14 +76,12 @@ function HRDocuments() {
           </div>
         </div>
         <Card>
-          <CardContent>
-            <TabsContent value="Documents">
-              <Documents reload={reloadData} />
-            </TabsContent>
-            <TabsContent value="Category">
-              <Category reload={reloadData} />
-            </TabsContent>
-          </CardContent>
+          <TabsContent value="Documents">
+            <Documents reload={reloadData} />
+          </TabsContent>
+          <TabsContent value="Category">
+            <Category reload={reloadData} />
+          </TabsContent>
         </Card>
       </Tabs>
       {OpenUploadDocumentForm && (

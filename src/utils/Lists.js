@@ -377,33 +377,49 @@ export const GetEmployeeFilteredList = (
     department_name: user_department,
     id: user_id,
   } = useSelector((state) => state.emp.user_details);
+
   if (!Array.isArray(Employees) || Employees.length === 0) return [];
-  if (adminView && !isTeamView) return Employees;
-  const labelFilter = isTeamView
-    ? "report_to"
-    : isBranchView
-    ? "branch_id"
-    : isDepartmentView
-    ? "department_name"
-    : null;
 
-  const valueFilter = isTeamView
-    ? user_id
-    : isBranchView
-    ? user_branch
-    : isDepartmentView
-    ? user_department
-    : null;
+  // Admin view returns all employees
+  if (adminView && !isTeamView) {
+    return Employees;
+  }
 
-  if (!labelFilter || valueFilter === null || valueFilter === undefined)
-    return [];
+  // Determine filters
+  const filters = [];
 
+  if (isTeamView) {
+    filters.push({
+      keys: ['direct_report', 'indirect_report'],
+      value: user_id,
+    });
+  } else if (isBranchView) {
+    filters.push({
+      keys: ['branch_id'],
+      value: user_branch,
+    });
+  } else if (isDepartmentView) {
+    filters.push({
+      keys: ['department_name'],
+      value: user_department,
+    });
+  }
+
+  if (filters.length === 0) return [];
   return Employees.filter((employee) => {
-    const employeeValue = employee[labelFilter];
-    if (employeeValue === undefined || employeeValue === null) return false;
-    return employeeValue;
+    return filters.some(({ keys, value }) => {
+      return keys.some((key) => {
+        const empVal = employee[key];
+        if (Array.isArray(empVal)) {
+          return empVal.includes(value);
+        }
+
+        return empVal === value;
+      });
+    });
   });
 };
+
 
 export const GetCommonFilteredList = (label) => {
   const List = useSelector((state) => state.common[label]);

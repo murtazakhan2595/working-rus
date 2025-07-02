@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Table, PageLoader } from "components";
 import { FilterInput } from "components/FormControl";
 import { Row, Col } from "reactstrap";
-import { ExitResignedColumns } from "app/utils/Types/TableColumns";
+import { ExitRequestColumns } from "app/modules/ExitAndClearance/Sections";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 import { Card, CardContent } from "components/ui/card.jsx";
 import TableCustom from "components/CustomTable";
@@ -55,12 +55,10 @@ const Resigned = React.memo(({ userProfile, departments, filterData }) => {
           <CardContent>
             <TableCustom
               data={Resigned?.results || []}
-              columns={ExitResignedColumns}
-              hideTableHeader={true}
+              columns={ExitRequestColumns(fetchData)}
               pagination={true}
               dataTotalSize={Resigned?.count || 0}
               tableOptions={tableOptions}
-              dataStyle={{ backgroundColor: "white" }}
             />
           </CardContent>
         </Card>

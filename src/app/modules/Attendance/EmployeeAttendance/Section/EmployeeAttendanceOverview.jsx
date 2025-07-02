@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAttendance, getShiftById } from "app/hooks/attendance";
+import { getEmpAttendanceOverview, getShiftById } from "app/hooks/attendance";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import { CalculateHoursWorked } from "app/modules/Attendance/Sections/CalculateWorkHours";
@@ -10,6 +10,8 @@ import {
   FaArrowRightFromBracket,
   FaArrowTrendUp,
 } from "react-icons/fa6";
+import { calculateTotalCount } from "utils/renderValues";
+import { formatDuration } from "utils/renderValues";
 
 const EmployeeAttendanceOverview = ({ userId, attendanceData }) => {
   //  const userProfile = useSelector((state) => state.user.userProfile);
@@ -48,7 +50,7 @@ const EmployeeAttendanceOverview = ({ userId, attendanceData }) => {
     }
   };
 
-  const getLateAttendanceCount = async () => {
+  const getLateAttendanceCount = async (attendanceData) => {
     try {
       const lateCount = attendanceData.filter(
         (record) => record.is_late
@@ -84,18 +86,27 @@ const EmployeeAttendanceOverview = ({ userId, attendanceData }) => {
   const getUserStatisticsData = async (isMounted) => {
     setIsLoading(true);
     try {
+      const response = await getEmpAttendanceOverview(
+        userId,
+        moment().startOf("month"),
+        moment()
+      );
       if (isMounted) {
-        if (!attendanceData || attendanceData.length === 0) {
-          setLateAttendanceCount(0);
-          setAbsentAttendanceCount(0);
-          setAverageHours("0h 0min");
-          setOnTimeArrivalPercentage("0.00");
-        } else {
-          getLateAttendanceCount();
-          getAbsentAttendanceCount();
-          getOnTimeArrivalPercentage();
-          getAverageHours();
+        if (response) {
+          const {
+            late_count,
+            absent_count,
+            on_time_percentage,
+            average_hours,
+          } = response;
+          if (absent_count) setAbsentAttendanceCount(absent_count);
+          if (average_hours) setAverageHours(average_hours);
+          if (on_time_percentage)
+            setOnTimeArrivalPercentage(on_time_percentage);
+          if (late_count) setLateAttendanceCount(late_count);
         }
+      }
+      if (isMounted) {
       }
     } catch (error) {
       console.error(error);
@@ -135,7 +146,7 @@ const EmployeeAttendanceOverview = ({ userId, attendanceData }) => {
         />
         <RecordDetailBox
           icon={<LuTimerReset className="w-6 h-6" />}
-          value={averageHours}
+          value={formatDuration(averageHours)}
           label={"Average Hours"}
         />
       </div>
