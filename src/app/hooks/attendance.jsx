@@ -13,6 +13,7 @@ import {
   mapAttendanceBreakDurationData,
   mapEmpAttendanceOverview,
   getAttendancePayloadFromBiometric,
+  mapBreakPayloadData,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
@@ -266,34 +267,35 @@ export const getAttendancebyEmployee = async (employee_id, date) => {
     return null;
   }
 };
-const saveBreak = async (payload) => {
+const saveBreak = async (payload, id) => {
   try {
-    if (payload?.id) {
-      const response = await axios.patch(
-        `${baseUrl}/breaks/${payload.id}/`,
-        payload,
-        {
-          headers: headers(),
-        }
-      );
-      if (response.status === 200 || response.status === 201) {
-        return response.data;
-      }
-    } else {
-      const response = await axios.post(`${baseUrl}/breaks/`, payload, {
-        headers: headers(),
-      });
-      if (response.status === 201 || response.status === 200) {
-        return response.data;
-      }
+    debugger;
+    const ID = payload?.id || id;
+    const isUpdate = Boolean(ID);
+    const url = isUpdate ? `${baseUrl}/breaks/${ID}/` : `${baseUrl}/breaks/`;
+    const method = isUpdate ? axios.patch : axios.post;
+    const existingData = await getBreak({
+      filterData: {
+        employee_id: payload.employee_id,
+        attendance: payload.attendance,
+      },
+    });
+    const finalPaylaod = mapBreakPayloadData(payload, existingData);
+    const response = await method(url, finalPaylaod, { headers: headers() });
+
+    if ([200, 201].includes(response.status)) {
+      return response.data;
     }
   } catch (error) {
     console.error("Error saving break:", error);
+
     if (error?.response?.status === 401) {
       HandleLogout();
     }
-    return false;
+    renderErrorMessages(error?.response?.data);
   }
+
+  return false;
 };
 
 const getBreak = async (payload) => {
@@ -870,16 +872,26 @@ export const getBiometricUserAttendanceData = async (id) => {
 
 export const saveUserBiometricAttendance = async (employee_id, attendance) => {
   try {
-    const response = await getBiometricUserAttendanceData(20672);
+    const responseList = await getBiometricUserAttendanceData(20672);
 
-    if (response) {
-      const payload = getAttendancePayloadFromBiometric(response, attendance);
-      if (response.status === "break") {
-        await saveBreak(payload);
-      } else {
-        const ResponseData = response.data;
+    if (responseList) {
+      if (Array.isArray(responseList) && responseList.length > 0) {
+        Promise.all(
+          responseList.map(async (response) => {
+            const payload = getAttendancePayloadFromBiometric(
+              response,
+              attendance,
+              employee_id
+            );
+            if (response.status === "break") {
+              await saveBreak(payload);
+            } else {
+              const ResponseData = response.data;
 
-        return ResponseData;
+              return ResponseData;
+            }
+          })
+        );
       }
     }
   } catch (error) {
@@ -888,6 +900,33 @@ export const saveUserBiometricAttendance = async (employee_id, attendance) => {
       HandleLogout();
     }
     return [];
+  }
+};
+
+export const getUserBiometricLogsList = async (payload) => {
+  const pageNo = payload?.options?.page ?? "";
+  const pageSize = payload?.options?.sizePerPage ?? "";
+  const filterData = payload?.filterData ?? {};
+  const ordering = payload?.ordering ?? "";
+  let URL = `/user-record-list//?${ordering ? `ordering=${ordering}&` : ""}${
+    pageNo ? `page=${pageNo}&` : ""
+  }${pageSize ? `page_size=${pageSize}&` : ""}search=${encodeURIComponent(
+    JSON.stringify(filterData)
+  )}`;
+  try {
+    const response = await axios.get(`${baseUrl}${URL}`, {
+      headers: headers(),
+    });
+    if (response.status === 200) {
+      const ResponseData = response.data;
+      return { results: ResponseData.results, count: ResponseData.count };
+    }
+  } catch (error) {
+    console.error("Error fetching attendance list:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return {};
   }
 };
 export {

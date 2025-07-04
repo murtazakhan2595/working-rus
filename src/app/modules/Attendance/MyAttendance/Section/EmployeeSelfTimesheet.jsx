@@ -30,8 +30,7 @@ export default function EmployeeSelfTimesheet({
     (state) => state.attendance.attendance_details
   );
   const [payableHours, setPayableHours] = useState(0);
-  const [attendance, setAttendance] = useState(null
-  );
+  const [attendance, setAttendance] = useState(null);
   const updateTimer = () => {
     const isSplitShit = today_shift?.is_split_shift;
     const checkInDate =
@@ -70,38 +69,42 @@ export default function EmployeeSelfTimesheet({
     }
   }, [attendance, OnBreak, today_shift]);
 
- useEffect(() => {
-  let isMounted = true;
+  useEffect(() => {
+    let isMounted = true;
 
-  const fetchData = async () => {
-    try {
-      const response = await saveUserBiometricAttendance(user_id, 20672, attendance);
-      if (isMounted && response) {
-        fetchAttendanceData(true);
+    const fetchData = async () => {
+      try {
+        const response = await saveUserBiometricAttendance(
+          user_id,
+          20672,
+          attendance
+        );
+        if (isMounted && response) {
+            
+            await fetchAttendanceData(true);
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
       }
-    } catch (error) {
-      console.error("Error fetching roles:", error);
+    };
+
+    if (user_id) {
+      fetchData(); // Initial call
+
+      const interval = setInterval(() => {
+        fetchData();
+      }, 300000); // 5 minutes
+
+      return () => {
+        clearInterval(interval); // Cleanup
+        isMounted = false;
+      };
     }
-  };
-
-  if (user_id) {
-    fetchData(); // Initial call
-
-    const interval = setInterval(() => {
-      fetchData();
-    }, 300000); // 5 minutes
 
     return () => {
-      clearInterval(interval); // Cleanup
       isMounted = false;
     };
-  }
-
-  return () => {
-    isMounted = false;
-  };
-}, [user_id, attendance]); // Add attendance if it's used inside
-
+  }, [user_id, attendance]); // Add attendance if it's used inside
 
   const fetchAttendanceData = async (isMounted, user_id) => {
     try {

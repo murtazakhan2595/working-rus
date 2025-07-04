@@ -11,7 +11,7 @@ import moment from "moment";
 import { StatusLabelAttendance } from "components/StatusLabel";
 import { renderDate, formatNumber } from "utils/renderValues";
 import { StatusLabel } from "components";
-import { EmployeeUsername ,EmployeeName} from "utils/getValuesFromTables";
+import { EmployeeUsername, EmployeeName } from "utils/getValuesFromTables";
 
 /**
  * AttendanceColumns
@@ -377,7 +377,12 @@ export const AttendanceAdjustmentLogsColumns = [
     text: "Employee",
     dataField: "employee",
     formatter: (cell) => (
-      <EmployeeOverview id={cell} showId={true} showDepartment={true} showBranchName={true} />
+      <EmployeeOverview
+        id={cell}
+        showId={true}
+        showDepartment={true}
+        showBranchName={true}
+      />
     ),
   },
   {
@@ -422,5 +427,41 @@ export const AttendanceAdjustmentLogsColumns = [
         DataList={dataList}
       />
     ),
+  },
+];
+export const UserBiometricLogsColumns = [
+  {
+    text: "Employee",
+    dataField: "emp_id",
+    formatter: (cell) => (
+      <EmployeeOverview
+        id={cell}
+        showId={true}
+        showDepartment={true}
+        showBranchName={true}
+      />
+    ),
+  },
+  {
+    text: "Biometric ID",
+    dataField: "user_no",
+  },
+  {
+    text: "Date",
+    dataField: "sj",
+    formatter: (cell) => renderDate(cell, "--"),
+  },
+  {
+    text: "Logtime",
+    dataField: "sj",
+    formatter: (cell) => renderDate(cell, "--", "time"),
+  },
+  {
+    text: "Status",
+    dataField: "status",
+    formatter: (cell) => {
+      const status = cell ? cell : "pending";
+      return <StatusLabel status={status}>{status?.toLowerCase()}</StatusLabel>;
+    },
   },
 ];

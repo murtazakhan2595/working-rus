@@ -2,6 +2,7 @@ import Attendance from "./Attendance";
 import MyAttendance from "./MyAttendance";
 import EmployeeAttendance from "./EmployeeAttendance";
 import EmployeeAttendanceReport from "./EmployeeAttendanceReport";
+import UserBiometricHistory from "./UserBiometricHistory";
 import {
   TimeAdjustmentRequest,
   TimeAdjustments,
@@ -39,4 +40,5 @@ export {
   AttendanceAdjustmentDetails,
   AttendanceUpdateRequest,
   AttendanceAdjustmentLogsDetails,
+  UserBiometricHistory,
 };
