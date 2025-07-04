@@ -466,3 +466,42 @@ export function mapEmpAttendanceOverview({
 
   return attendanceOverview;
 }
+export function getAttendancePayloadFromBiometric(
+  biometricData,
+  AttendanceData,
+  employee_id
+) {
+  debugger;
+  const { status } = biometricData;
+  const payload = {
+    employee_id: employee_id,
+  };
+  if (status === "break") {
+    payload["attendance"] = AttendanceData.id;
+    payload["time"] = biometricData.sj;
+  }
+
+  return payload;
+}
+
+export function mapBreakPayloadData(data, existingData) {
+  // Initialize an empty payload object
+  debugger
+  const payload = {};
+  if (data.time) {
+    if (existingData && existingData?.length > 0) {
+      const lastBreakEnd = existingData?.[0]?.endtime;
+      if (!lastBreakEnd) {
+        return true;
+      }
+    }
+    return {
+      break_type: "Biometric check in",
+      starttime: moment(data.time).utc.toISOString,
+      ...data,
+    };
+  }
+
+  // Return the constructed payload
+  return payload;
+}

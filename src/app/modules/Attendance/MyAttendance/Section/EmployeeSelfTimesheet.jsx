@@ -10,6 +10,8 @@ import {
   saveAttendance,
   saveBreak,
   calculateBreak,
+  saveUserBiometricAttendance,
+  getAttendancebyEmployee,
 } from "app/hooks/attendance";
 import { Button } from "components/ui/button";
 import AlertDialogue from "components/ui/AlertDialogue";
@@ -18,18 +20,17 @@ import { DetailBox } from "components/SheetCardExtension";
 import { TriangleAlert } from "lucide-react";
 
 export default function EmployeeSelfTimesheet({
-  attendance,
   OnBreak,
   disable,
   reloadData,
   isDashboard = false,
 }) {
+  const { id: user_id } = useSelector((state) => state.user.userProfile);
   const { today_shift } = useSelector(
     (state) => state.attendance.attendance_details
   );
-  const [payableHours, setPayableHours] = useState(
-    parseFloat(attendance?.payable_hours) || 0
-  );
+  const [payableHours, setPayableHours] = useState(0);
+  const [attendance, setAttendance] = useState(null);
   const updateTimer = () => {
     const isSplitShit = today_shift?.is_split_shift;
     const checkInDate =
@@ -67,6 +68,69 @@ export default function EmployeeSelfTimesheet({
       updateTimer();
     }
   }, [attendance, OnBreak, today_shift]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchData = async () => {
+      try {
+        const response = await saveUserBiometricAttendance(
+          user_id,
+          20672,
+          attendance
+        );
+        if (isMounted && response) {
+            
+            await fetchAttendanceData(true);
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
+    };
+
+    if (user_id) {
+      fetchData(); // Initial call
+
+      const interval = setInterval(() => {
+        fetchData();
+      }, 300000); // 5 minutes
+
+      return () => {
+        clearInterval(interval); // Cleanup
+        isMounted = false;
+      };
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user_id, attendance]); // Add attendance if it's used inside
+
+  const fetchAttendanceData = async (isMounted, user_id) => {
+    try {
+      const attendanceResponse = await getAttendancebyEmployee(
+        user_id,
+        moment()
+      );
+      if (isMounted) {
+        if (attendanceResponse) {
+          setAttendance(attendanceResponse);
+          setPayableHours(parseFloat(attendanceResponse?.payable_hours) || 0);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (user_id) fetchAttendanceData(isMounted, user_id);
+    return () => {
+      isMounted = false;
+    };
+  }, [user_id]);
 
   return (
     // if isDashboard is false, then the div will  have border and shadow
@@ -183,7 +247,8 @@ export default function EmployeeSelfTimesheet({
           </div>
           {today_shift?.isOffToday && (
             <div className="text-red-800 flex flex-wrap justify-center items-center">
-              <TriangleAlert size={14} /> You are on {today_shift?.OffLabel?.toLowerCase()} today
+              <TriangleAlert size={14} /> You are on{" "}
+              {today_shift?.OffLabel?.toLowerCase()} today
             </div>
           )}
           <div className="flex justify-between mt-4">
@@ -254,7 +319,7 @@ const RenderBreakButton = ({
   };
 
   const endBreakResumeShift = async () => {
-    const endTime =moment().utc().toISOString();
+    const endTime = moment().utc().toISOString();
     if (OnBreak) {
       const result = await endBreak(
         {
