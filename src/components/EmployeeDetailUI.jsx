@@ -72,7 +72,7 @@ const EmployeeDetailUI = React.memo(
             {
               name: "report_to",
               label: "Reporting Manager",
-              value: getLabelByValue(userProfile.report_to, Managers),
+              value: getLabelByValue(userProfile.direct_report, Managers),
             },
           ]
         : []),
