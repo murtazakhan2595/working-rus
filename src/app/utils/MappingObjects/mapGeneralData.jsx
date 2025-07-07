@@ -34,7 +34,7 @@ export function mapCalendarContent({ holidays }) {
   return calendar_content;
 }
 
-export function mapApproverDetails(approver_logs, approval_levels) {
+export function mapApproverDetails(approver_logs, approval_levels , data) {
   const level_list = approval_levels
     .map((level) => {
       const level_number = parseInt(level.level_number);
@@ -50,8 +50,8 @@ export function mapApproverDetails(approver_logs, approval_levels) {
         level_number: level_number,
         time: null,
       };
-      if (parseInt(level_number) === parseInt(data.current_level)) {
-        level_detail.approver = data.current_approver;
+      if (parseInt(level_number) === parseInt(data?.current_level)) {
+        level_detail.approver = data?.current_approver;
       } else if (logs) {
         level_detail.status = logs.action_type;
         level_detail.approver = logs.changed_by;
