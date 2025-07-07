@@ -160,11 +160,11 @@ export function mapLeaveData(data) {
           );
           const level_detail = {
             status: "PENDING",
-            designation: level.designation,
+            designation: level.designation_name || level.assignment_type.replace(/_/g, " "),
             level_number: level_number,
             time: null,
           };
-          if (level_number === parseInt(data.current_level)) {
+          if (parseInt(level_number) === parseInt(data.current_level)) {
             level_detail.approver = data.current_approver;
           } else if (logs) {
             level_detail.status = logs.action_type;

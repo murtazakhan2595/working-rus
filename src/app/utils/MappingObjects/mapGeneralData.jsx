@@ -33,3 +33,33 @@ export function mapCalendarContent({ holidays }) {
 
   return calendar_content;
 }
+
+export function mapApproverDetails(approver_logs, approval_levels) {
+  const level_list = approval_levels
+    .map((level) => {
+      const level_number = parseInt(level.level_number);
+      const logs = approver_logs.find(
+        (log) =>
+          parseInt(log.level_number) === level_number &&
+          log.action_type !== "CREATED"
+      );
+      const level_detail = {
+        status: "PENDING",
+        designation:
+          level.designation_name || level.assignment_type.replace(/_/g, " "),
+        level_number: level_number,
+        time: null,
+      };
+      if (parseInt(level_number) === parseInt(data.current_level)) {
+        level_detail.approver = data.current_approver;
+      } else if (logs) {
+        level_detail.status = logs.action_type;
+        level_detail.approver = logs.changed_by;
+        level_detail.time = logs.timestamp;
+      }
+      return level_detail;
+    })
+    .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
+
+  return level_list;
+}

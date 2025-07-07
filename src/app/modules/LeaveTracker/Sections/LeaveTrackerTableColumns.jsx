@@ -70,7 +70,7 @@ export const LeaveAplicationColumns = (
         showId={true}
       />
     ),
-    dataSort:true,
+    dataSort: true,
   },
   {
     dataField: "leave_type_name",
@@ -88,7 +88,7 @@ export const LeaveAplicationColumns = (
       </div>
     ),
     minWidth: "120px",
-    dataSort:true,
+    dataSort: true,
   },
   {
     dataField: "total_days",
@@ -133,7 +133,7 @@ export const LeaveAplicationDashboardColumns = [
       />
     ),
   },
- 
+
   {
     dataField: "start_date",
     text: "Leave Period",
@@ -147,7 +147,7 @@ export const LeaveAplicationDashboardColumns = [
       </div>
     ),
     minWidth: "120px",
-    dataSort:true,
+    dataSort: true,
   },
   {
     dataField: "status",
@@ -158,11 +158,12 @@ export const LeaveAplicationDashboardColumns = [
     },
   },
 ];
-export const MyLeaveApplicationDashboard = [ 
- {
+export const MyLeaveApplicationDashboard = [
+  {
     dataField: "leave_type_name",
     text: "Leave Type",
-  }, {
+  },
+  {
     dataField: "start_date",
     text: "Leave Period",
     formatter: (cell, row) => (
@@ -200,8 +201,7 @@ export const MyLeaveAplicationColumns = (realoadData = () => {}) => [
         {/* <span>{row?.total_days} Days</span> */}
       </div>
     ),
-    dataSort:true,
-
+    dataSort: true,
   },
   {
     dataField: "total_days",
@@ -247,43 +247,43 @@ export const LeaveDurationColumn = (reload, data) => [
   {
     dataField: "nationalities",
     text: "Nationalities",
-    formatter: (cell) => {
-      if (!cell || cell.length === 0) {
-        return <span className="">All</span>;
-      }
-      return (
-        <div className="flex flex-wrap gap-1">
-          {cell.map((nationality) => (
-            <span
-              key={nationality}
-              className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
-            >
-              {nationality}
-            </span>
-          ))}
-        </div>
-      );
-    },
+    formatter: (cell) => (
+      <MultiStatusLabel
+        statusList={cell}
+        variant="info"
+        fallBackText="All Nationalities"
+      />
+    ),
     dataSort: true,
   },
   {
     dataField: "branches",
     text: "Branches",
+    // formatter: (cell) => {
+    //   if (!cell || cell.length === 0) {
+    //     return <span className="">All</span>;
+    //   }
+    //   return (
+    //     <div className="flex flex-wrap gap-1">
+    //       {cell.map((branch) => (
+    //         <span
+    //           key={branch.id}
+    //           className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
+    //         >
+    //           {branch.branch_name}
+    //         </span>
+    //       ))}
+    //     </div>
+    //   );
+    // },
     formatter: (cell) => {
-      if (!cell || cell.length === 0) {
-        return <span className="">All</span>;
-      }
+      const branches = cell.map((branch) => branch.branch_name);
       return (
-        <div className="flex flex-wrap gap-1">
-          {cell.map((branch) => (
-            <span
-              key={branch.id}
-              className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
-            >
-              {branch.branch_name}
-            </span>
-          ))}
-        </div>
+        <MultiStatusLabel
+          statusList={branches}
+          variant="info"
+          fallBackText="All Branches"
+        />
       );
     },
     dataSort: true,
@@ -291,21 +291,31 @@ export const LeaveDurationColumn = (reload, data) => [
   {
     dataField: "departments",
     text: "Departments",
+    // formatter: (cell) => {
+    //   if (!cell || cell.length === 0) {
+    //     return <span className="">All</span>;
+    //   }
+    //   return (
+    //     <div className="flex flex-wrap gap-1">
+    //       {cell.map((dep) => (
+    //         <span
+    //           key={dep.id}
+    //           className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
+    //         >
+    //           {dep.name}
+    //         </span>
+    //       ))}
+    //     </div>
+    //   );
+    // },
     formatter: (cell) => {
-      if (!cell || cell.length === 0) {
-        return <span className="">All</span>;
-      }
+      const departments = cell.map((dpt) => dpt.name);
       return (
-        <div className="flex flex-wrap gap-1">
-          {cell.map((dep) => (
-            <span
-              key={dep.id}
-              className="inline-block px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
-            >
-              {dep.name}
-            </span>
-          ))}
-        </div>
+        <MultiStatusLabel
+          statusList={departments}
+          variant="info"
+          fallBackText="All Departments"
+        />
       );
     },
   },
