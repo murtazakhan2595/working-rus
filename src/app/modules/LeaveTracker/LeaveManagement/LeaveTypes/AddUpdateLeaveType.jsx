@@ -12,7 +12,11 @@ import {
 import { GenderOptions, countriesList, maritalStatus } from "data/Data";
 import { useSelector } from "react-redux";
 import { validateLeaveTypeFormSchema } from "app/utils/FormSchema/leaveTrackerFormSchema";
-import { saveLeaveType, getLeaveTypeById } from "app/hooks/leaveTracker";
+import {
+  saveLeaveType,
+  getLeaveTypeById,
+  getLeaveTypes,
+} from "app/hooks/leaveTracker";
 import { toast } from "react-toastify";
 
 export default function AddUpdateLeaveType({
@@ -23,6 +27,7 @@ export default function AddUpdateLeaveType({
 }) {
   const [formData, setFormData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [DataList, setDataList] = useState(false);
 
   const isEditMode = Boolean(data);
 
@@ -38,11 +43,37 @@ export default function AddUpdateLeaveType({
     width: "900px",
   };
 
+  const fetchUserRolesData = async (isMounted) => {
+    try {
+      setIsLoading(true);
+      // Add organizationId to filter if available
+
+      const response = await getLeaveTypes();
+
+      if (isMounted) {
+        setDataList(response.results);
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchUserRolesData(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   // Set form data from passed data or initialize empty
   useEffect(() => {
     if (data) {
       // Pre-populate form with existing data
       setFormData({
+        id: data.id || null,
         name: data.name || "",
         short_code: data.short_code || "",
         leave_count: data.leave_count || "",
@@ -108,6 +139,7 @@ export default function AddUpdateLeaveType({
             required: true,
             label: "Leave Type Name",
             placeholder: "e.g. Sick Leave, Annual Leave",
+            validateDuplicate: true,
           },
           {
             InputField: TextInput,
@@ -115,6 +147,7 @@ export default function AddUpdateLeaveType({
             required: true,
             label: "Short Code",
             placeholder: "e.g. SL, AL",
+            validateDuplicate: true,
           },
           {
             InputField: NumberInput,
@@ -328,6 +361,7 @@ export default function AddUpdateLeaveType({
               submitButtonText: isEditMode ? "Update" : "Submit",
               cancelButtonText: "Cancel",
               columns: 2,
+              DataList: DataList,
               disableSubmit: isLoading,
               loadingMessage: isLoading
                 ? isEditMode
