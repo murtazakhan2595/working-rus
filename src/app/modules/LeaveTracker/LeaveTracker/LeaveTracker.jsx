@@ -163,7 +163,8 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
           if (activeTab === "Requests") {
             updatedFilters[filterName] = "pending";
           } else if (activeTab === "Records") {
-            updatedFilters[filterName] = "approved,rejected";
+            updatedFilters[filterName] =
+              "approved,rejected,cancelled_by_employee";
           }
         } else delete updatedFilters[filterName];
       } else {
@@ -221,9 +222,11 @@ const LeaveTracker = ({ isTeamView = false, activeView = "Requests" }) => {
                 "Full Paid Days": row.full_paid_days,
                 "Half Paid Days": row.half_paid_days,
                 Reason: row.reason,
+                Status: row.status,
               };
             })
           );
+          console.log(dataToExport);
           exportRecordToExcel(
             dataToExport,
             "Leave",
