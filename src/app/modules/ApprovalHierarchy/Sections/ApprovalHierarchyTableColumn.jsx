@@ -108,21 +108,24 @@ export const HierarchyLevelsColumn = (reload = () => {}, viewMode) =>
       dataField: "level_number",
       text: "Level Number",
     },
-
+    {
+      dataField: "assignment_type",
+      text: "Approver Type",
+      formatter: (cell) => {
+        const assignment_type = cell.replace(/_/g, " ");
+        return (
+          <div className="capitalize-text">{assignment_type.toLowerCase()}</div>
+        );
+      },
+    },
     {
       dataField: "designation",
       text: "Designation",
-      formatter: (cell, row) =>
-        cell ? (
-          <div>
-            <DesignationName value={cell} />
-          </div>
-        ) : (
-          <div>
-            <EmployeeName value={row.user} fallBackText={"--"} />
-            <div>User</div>
-          </div>
-        ),
+      formatter: (cell) => (
+        <div>
+          <DesignationName value={cell} fallBackText={"--"} />
+        </div>
+      ),
     },
     {
       dataField: "auto_forward_enabled",

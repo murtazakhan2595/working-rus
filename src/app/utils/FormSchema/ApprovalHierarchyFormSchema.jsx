@@ -69,17 +69,38 @@ export const validateAddHierarchyLevelsForm = (
     errors.levels = "At least one level is required";
   } else {
     const seenDesignations = new Set();
+    let seenDirectApprover = false;
+    let seenIndirectApprover = false;
     let finalApprovalCount = 0;
 
     values.levels.forEach((level, index) => {
       const levelErrors = {};
-
-      if (!level.designation) {
-        levelErrors.designation = "Designation is required";
-      } else if (seenDesignations.has(level.designation)) {
-        levelErrors.designation = "Designation must be unique";
+      if (!level.assignment_type) {
+        levelErrors.assignment_type = "Approver type is required.";
       } else {
-        seenDesignations.add(level.designation);
+        if (level.assignment_type === "DESIGNATION") {
+          if (!level.designation) {
+            levelErrors.designation = "Designation is required";
+          } else if (seenDesignations.has(level.designation)) {
+            levelErrors.designation = "Designation must be unique";
+          } else {
+            seenDesignations.add(level.designation);
+          }
+        } else if (level.assignment_type === "DIRECT_REPORTING") {
+          if (seenDirectApprover) {
+            levelErrors.assignment_type =
+              "Direct reporting can only be assigned as an approver for one level.";
+          } else {
+            seenDirectApprover = true;
+          }
+        } else if (level.assignment_type === "INDIRECT_REPORTING") {
+          if (seenIndirectApprover) {
+            levelErrors.assignment_type =
+              "Indirect reporting can only be assigned as an approver for one level.";
+          } else {
+            seenIndirectApprover = true;
+          }
+        }
       }
 
       if (level.auto_forward_enabled)
