@@ -248,7 +248,7 @@ const Attendance = ({ isTeamView = false }) => {
                 />
               </CardContent>
             </Card>
-            <UserBiometricHistory />
+            {/* <UserBiometricHistory /> */}
           </>
         )}
       </div>
