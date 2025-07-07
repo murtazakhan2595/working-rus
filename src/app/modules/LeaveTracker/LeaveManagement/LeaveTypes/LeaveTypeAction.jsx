@@ -75,8 +75,8 @@ const LeaveTypeAction = ({ data, reload, leaveTypeList = [] }) => {
     }
   };
 
-  const ShowEdit = data.id !== 1;
-  const DeleteRecord = data.id !== 1;
+  const ShowEdit = data.name !== "Offset Leaves";
+  const DeleteRecord = data.name !== "Offset Leaves";
 
   return (
     <>
