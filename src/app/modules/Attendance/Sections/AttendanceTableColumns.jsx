@@ -448,12 +448,12 @@ export const UserBiometricLogsColumns = [
   },
   {
     text: "Date",
-    dataField: "sj",
+    dataField: "timestamp",
     formatter: (cell) => renderDate(cell, "--"),
   },
   {
     text: "Logtime",
-    dataField: "sj",
+    dataField: "timestamp",
     formatter: (cell) => renderDate(cell, "--", "time"),
   },
   {

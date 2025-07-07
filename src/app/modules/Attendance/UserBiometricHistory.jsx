@@ -3,7 +3,7 @@ import { Card, CardContent } from "components/ui/card";
 import { Button } from "components/ui/button";
 import moment from "moment";
 import {
-  getAttendanceSummary,
+  saveUserBiometricAttendanceLog,
   getWeeklySummary,
   getUserBiometricLogsList,
 } from "app/hooks/attendance";
@@ -13,7 +13,7 @@ import {
   UpdateEmployeeAttendance,
   ExportAttendance,
 } from "app/modules/Attendance/Sections";
-import { LeaveStatusOverview } from "./Sections/LeaveStatusOverview";
+import _ from "lodash";
 import { StatisticsChart } from "./Sections/StatisticsChart";
 import DepartmentOverview from "./Sections/DepartmentOverview";
 import { StatsCards } from "./Sections/StatsCards";
@@ -24,7 +24,7 @@ import { exportRecordToExcel } from "utils/downloadUtils";
 import { GetUserInfo } from "utils/getValuesFromTables";
 import { HasAccess } from "utils/PermissionUtils";
 import { renderDate, formatDuration } from "utils/renderValues";
-import { CardTitle ,CardHeader} from "components/ui/card";
+import { CardTitle, CardHeader } from "components/ui/card";
 
 const UserBiometricHistory = ({ isTeamView = false }) => {
   const isViewEmpAttendancePermitted = HasAccess("VIEW_EMPLOYEE_ATTENDANCE");
@@ -37,33 +37,13 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
     id: user_id,
   } = useSelector((state) => state.emp.user_details);
   const [filterData, setFilterData] = useState({});
-  const [ordering, setOrdering] = useState("emp_name");
+  const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [List, setList] = useState({ page: 1, sizePerPage: 10 });
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
 
-  useEffect(() => {
-    let isMounted = true;
-    setFilterData(() => {
-      if (isViewEmpAttendancePermitted) return {};
-      else {
-        if (isViewBrnEmpAttendancePermitted) {
-          return { branch: user_branch };
-        } else if (isViewDptEmpAttendancePermitted) {
-          return { department: user_department };
-        }
-      }
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, [
-    isViewBrnEmpAttendancePermitted,
-    isViewDptEmpAttendancePermitted,
-    isViewEmpAttendancePermitted,
-  ]);
   const handleFilterChange = (filterName, filterValue) => {
     setFilterData((prevFilters) => {
       const updatedFilters = { ...prevFilters };
@@ -110,7 +90,25 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
     };
   }, [filterData, ordering, options]);
 
-  
+  useEffect(() => {
+    let isMounted = true;
+    const saveRecords = async (isMounted) => {
+      try {
+        const attendanceData = await getUserBiometricLogsList();
+        if (isMounted) {
+          if (attendanceData) {
+            UpdateMissingAttanceRecords(attendanceData.results);
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    saveRecords(isMounted);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <>
@@ -134,6 +132,35 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
       </Card>
     </>
   );
+};
+
+const UpdateMissingAttanceRecords = async (dataList) => {
+  const user_attendance_updated = [];
+  const usersList = _.uniq(dataList.map((data) => data.user_no));
+  for (const user of usersList) {
+    if (!user_attendance_updated.includes(user)) {
+      const userRecord = dataList.filter((obj) => obj.user_no === user);
+
+      for (const data of userRecord) {
+        const date = moment(data.timestamp).format("YYYY-MM-DD");
+
+        if (data.emp_id) {
+          try {
+            const response = await saveUserBiometricAttendanceLog(
+              data.emp_id,
+              data,
+              date
+            );
+            console.log(response, data, "biometric");
+          } catch (error) {
+            console.error("Error saving attendance for:", data, error);
+          }
+        }
+      }
+
+      user_attendance_updated.push(user); // mark as processed only after all data is handled
+    }
+  }
 };
 
 export default UserBiometricHistory;
