@@ -43,6 +43,7 @@ import {
   SalaryTypeOptions,
 } from "data/Data";
 import OnboardingChecklistSection from "./OnboardingChecklistSection";
+import ThirdPartIntegration from "./ThirdPartIntegration";
 
 import { format } from "date-fns";
 
@@ -158,7 +159,6 @@ const EmployeeForm = ({
   const initializeFormData = async (isMounted) => {
     try {
       if (isMounted) {
-
         if (!empId) {
           const response = await getNewEmployeeCode();
           setEmpId(response);
@@ -247,7 +247,7 @@ const EmployeeForm = ({
   const saveCustomShiftSchedule = async (employeeId, shiftData) => {
     try {
       const [startDate, endDate] = shiftData.dateRange.split(",");
-      
+
       // Build custom_schedule object
       const customSchedule = {};
       shiftData.dailySchedule.forEach((day) => {
@@ -290,7 +290,10 @@ const EmployeeForm = ({
 
       const response = await saveShiftSchedule(payload);
       if (response) {
-        console.log("Custom shift schedule saved successfully for employee:", employeeId);
+        console.log(
+          "Custom shift schedule saved successfully for employee:",
+          employeeId
+        );
       }
     } catch (error) {
       console.error("Error saving custom shift schedule:", error);
@@ -888,10 +891,14 @@ const EmployeeForm = ({
                       {customShiftData && (
                         <div className="mt-2 p-3 bg-purple-50 border border-purple-200 rounded-md">
                           <div className="text-sm font-medium text-purple-800">
-                            ✓ Custom Schedule Configured: {customShiftData.scheduleName}
+                            ✓ Custom Schedule Configured:{" "}
+                            {customShiftData.scheduleName}
                           </div>
                           <div className="text-xs text-purple-600 mt-1">
-                            Weekly Hours: {customShiftData.totalHours?.weekly?.toFixed(1) || 0} hours
+                            Weekly Hours:{" "}
+                            {customShiftData.totalHours?.weekly?.toFixed(1) ||
+                              0}{" "}
+                            hours
                           </div>
                           <button
                             type="button"
@@ -975,6 +982,9 @@ const EmployeeForm = ({
                   <div className="space-y-4">
                     <OnboardingChecklistSection formikProps={props} />
                   </div>
+                  <div className="space-y-4">
+                    <ThirdPartIntegration formikProps={props} />
+                  </div>
                   <div className="p-6 border-t border-gray-200 bg-gray-50">
                     <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
                       <Button
@@ -1020,7 +1030,5 @@ const EmployeeForm = ({
     </>
   );
 };
-
-
 
 export default EmployeeForm;
