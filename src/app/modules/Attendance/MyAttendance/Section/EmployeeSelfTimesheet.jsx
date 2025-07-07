@@ -18,14 +18,17 @@ import AlertDialogue from "components/ui/AlertDialogue";
 import { StatusLabel } from "components";
 import { DetailBox } from "components/SheetCardExtension";
 import { TriangleAlert } from "lucide-react";
-
+import {
+  mapAttendanceCheckInPayload,
+  mapAttendanceCheckOutPayload,
+} from "app/utils/MappingObjects/mapAttendanceData";
 export default function EmployeeSelfTimesheet({
   OnBreak,
   disable,
-  reloadData,
   isDashboard = false,
 }) {
-  const { id: user_id } = useSelector((state) => state.user.userProfile);
+  const { id: user_id, biometric_id: user_biometric_id } =
+    useSelector((state) => state.emp.user_details) || {};
   const { today_shift } = useSelector(
     (state) => state.attendance.attendance_details
   );
@@ -74,21 +77,16 @@ export default function EmployeeSelfTimesheet({
 
     const fetchData = async () => {
       try {
-        const response = await saveUserBiometricAttendance(
-          user_id,
-          20672,
-          attendance
-        );
+        const response = await saveUserBiometricAttendance(user_biometric_id);
         if (isMounted && response) {
-            
-            await fetchAttendanceData(true);
+          await fetchAttendanceData(true);
         }
       } catch (error) {
         console.error("Error fetching roles:", error);
       }
     };
 
-    if (user_id) {
+    if (user_biometric_id) {
       fetchData(); // Initial call
 
       const interval = setInterval(() => {
@@ -106,7 +104,7 @@ export default function EmployeeSelfTimesheet({
     };
   }, [user_id, attendance]); // Add attendance if it's used inside
 
-  const fetchAttendanceData = async (isMounted, user_id) => {
+  const fetchAttendanceData = async (isMounted) => {
     try {
       const attendanceResponse = await getAttendancebyEmployee(
         user_id,
@@ -259,7 +257,7 @@ export default function EmployeeSelfTimesheet({
                   attendance={attendance}
                   Shift={today_shift}
                   OnBreak={OnBreak}
-                  reloadData={reloadData}
+                  reloadData={fetchAttendanceData}
                 />
               </div>
             </div>
@@ -270,7 +268,7 @@ export default function EmployeeSelfTimesheet({
                   attendance={attendance}
                   Shift={today_shift}
                   OnBreak={OnBreak}
-                  reloadData={reloadData}
+                  reloadData={fetchAttendanceData}
                 />
                 {attendance?.status === "Late" && (
                   <TimeAdjustmentRequest attendance={attendance} />
@@ -314,7 +312,7 @@ const RenderBreakButton = ({
     const response = await saveBreak(payload);
     if (response) {
       toast.success("Break started");
-      reloadData();
+      reloadData(true);
     }
   };
 
@@ -345,7 +343,7 @@ const RenderBreakButton = ({
         };
         const response = await saveAttendance(payload);
         if (response) {
-          reloadData();
+          reloadData(true);
         }
       }
     }
@@ -396,55 +394,35 @@ const RenderLogInButton = ({
 
   if (!Shift?.shifts || Shift?.shifts?.length === 0) return null;
   const startShift = async () => {
-    debugger;
-    if (attendance && attendance?.checkout && !isSplitShift) {
-      toast.success("Shift already ended");
-      return;
-    }
-    if (attendance && attendance?.second_checkout && isSplitShift) {
-      toast.success("Shift already ended");
-      return;
-    }
-    const checkInTime = moment().utc().toISOString();
-    // Compare time only
-    const payload = {
-      employee_id: userProfile.id,
-      date: moment().format("YYYY-MM-DD"),
-    };
-    if (isSplitShift && attendance?.checkin && !attendance?.second_checkin)
-      payload.second_checkin = checkInTime;
-    else if (!attendance?.checkin) payload.checkin = checkInTime;
-    const response = await saveAttendance(payload, Shift, attendance?.id);
-    if (response) {
-      toast.success("Shift started");
-      reloadData(true);
+    const payload = mapAttendanceCheckInPayload(
+      moment(),
+      attendance,
+      isSplitShift,
+      userProfile?.id
+    );
+    if (payload) {
+      const response = await saveAttendance(payload, Shift, attendance?.id);
+      if (response) {
+        toast.success("Shift started");
+        reloadData(true);
+      }
     }
     return;
   };
 
   const endShift = async () => {
-    const checkout = moment().utc().toISOString();
-    const payload = {
-      break_duration: attendance?.break_duration,
-      checkin: attendance?.checkin,
-      second_checkin: attendance?.second_checkin,
-      id: attendance?.id,
-      payable_hours: attendance?.payable_hours,
-      date: attendance.date,
-    };
-    if (
-      isSplitShift &&
-      attendance?.second_checkin &&
-      !attendance?.second_checkout
-    )
-      payload.second_checkout = checkout;
-    else if (!attendance?.checkout) payload.checkout = checkout;
-
-    const response = await saveAttendance(payload, Shift, attendance?.id);
-    if (response) {
-      toast.success("Shift ended");
-      reloadData(true);
-      setShowCheckoutAlert(false);
+    const payload = mapAttendanceCheckOutPayload(
+      moment(),
+      attendance,
+      isSplitShift
+    );
+    if (payload) {
+      const response = await saveAttendance(payload, Shift, attendance?.id);
+      if (response) {
+        toast.success("Shift ended");
+        reloadData(true);
+        setShowCheckoutAlert(false);
+      }
     }
   };
   const disableCheckOutButton = OnBreak || disable;

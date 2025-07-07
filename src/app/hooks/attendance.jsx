@@ -12,14 +12,18 @@ import {
   mapAttendanceAdjustmentData,
   mapAttendanceBreakDurationData,
   mapEmpAttendanceOverview,
-  getAttendancePayloadFromBiometric,
+  mapAttendanceCheckInPayload,
+  mapAttendanceCheckOutPayload,
   mapBreakPayloadData,
 } from "app/utils/MappingObjects/mapAttendanceData";
 import moment from "moment";
 import { renderErrorMessages } from "utils/renderErrors";
 import { getEmployeeInfoData } from "app/hooks/use-store";
 
-import { getActiveShiftList } from "app/hooks/shiftManagement";
+import {
+  getActiveShiftList,
+  getActiveShiftData,
+} from "app/hooks/shiftManagement";
 const baseUrl = initialState.baseUrl;
 const headers = () => ({
   Authorization: `Bearer ${window.localStorage.getItem("token")}`,
@@ -195,7 +199,10 @@ const getAttendanceSummary = async (payload) => {
 export const saveAttendance = async (payload, shift_details, id) => {
   const attendanceId = id || payload?.id;
   try {
-    const finalPayload = mapAttendanceData(payload, shift_details);
+    const active_shift =
+      shift_details ??
+      (await getActiveShiftData(payload.employee_id, payload.date));
+    const finalPayload = mapAttendanceData(payload, active_shift);
     const url = attendanceId
       ? `${baseUrl}/attendance/${attendanceId}/` // Use id if updating
       : `${baseUrl}/attendance/`; // No id means create new
@@ -269,26 +276,17 @@ export const getAttendancebyEmployee = async (employee_id, date) => {
 };
 const saveBreak = async (payload, id) => {
   try {
-    debugger;
     const ID = payload?.id || id;
     const isUpdate = Boolean(ID);
     const url = isUpdate ? `${baseUrl}/breaks/${ID}/` : `${baseUrl}/breaks/`;
     const method = isUpdate ? axios.patch : axios.post;
-    const existingData = await getBreak({
-      filterData: {
-        employee_id: payload.employee_id,
-        attendance: payload.attendance,
-      },
-    });
-    const finalPaylaod = mapBreakPayloadData(payload, existingData);
-    const response = await method(url, finalPaylaod, { headers: headers() });
+    const response = await method(url, payload, { headers: headers() });
 
     if ([200, 201].includes(response.status)) {
       return response.data;
     }
   } catch (error) {
     console.error("Error saving break:", error);
-
     if (error?.response?.status === 401) {
       HandleLogout();
     }
@@ -420,7 +418,7 @@ const employeeData = async (id) => {
   return employeeData;
 };
 
-const getShiftById = async (id) => {
+export const getShiftById = async (id) => {
   if (id) {
     try {
       const shiftResponse = await axios.get(`${baseUrl}/shift/${id}`, {
@@ -870,28 +868,26 @@ export const getBiometricUserAttendanceData = async (id) => {
   }
 };
 
-export const saveUserBiometricAttendance = async (employee_id, attendance) => {
+export const saveUserBiometricAttendance = async (biometric_id) => {
   try {
-    const responseList = await getBiometricUserAttendanceData(20672);
-
+    const responseList = await getBiometricUserAttendanceData(biometric_id);
     if (responseList) {
       if (Array.isArray(responseList) && responseList.length > 0) {
-        Promise.all(
-          responseList.map(async (response) => {
-            const payload = getAttendancePayloadFromBiometric(
-              response,
-              attendance,
-              employee_id
-            );
-            if (response.status === "break") {
-              await saveBreak(payload);
-            } else {
-              const ResponseData = response.data;
-
-              return ResponseData;
+        for (const data of responseList) {
+          const date = moment(data.timestamp).format("YYYY-MM-DD");
+          if (data.emp_id) {
+            try {
+              const response = await saveUserBiometricAttendanceLog(
+                data.emp_id,
+                data,
+                date
+              );
+              console.log(response, data, "biometric");
+            } catch (error) {
+              console.error("Error saving attendance for:", data, error);
             }
-          })
-        );
+          }
+        }
       }
     }
   } catch (error) {
@@ -900,6 +896,128 @@ export const saveUserBiometricAttendance = async (employee_id, attendance) => {
       HandleLogout();
     }
     return [];
+  }
+};
+
+export const saveBiometricBreak = async (payload) => {
+  try {
+    const existingData = await getBreak({
+      filterData: {
+        employee_id: payload.employee_id,
+        attendance: payload.attendance,
+      },
+    });
+    const finalPayload = mapBreakPayloadData(payload, existingData.results);
+    const ID = finalPayload?.id;
+    if (finalPayload) {
+      debugger;
+      const response = await saveBreak(finalPayload, ID);
+      if (response) {
+        return response;
+      }
+    }
+  } catch (error) {
+    console.error("Error saving break:", error);
+
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    renderErrorMessages(error?.response?.data);
+  }
+
+  return false;
+};
+
+export const saveUserBiometricAttendanceLog = async (
+  employee_id,
+  userBiometricList,
+  date
+) => {
+  try {
+    const active_Shift = await getActiveShiftData(employee_id, date);
+    const attendanceData = await getAttendancebyEmployee(employee_id, date);
+    if (userBiometricList.status === "check-in") {
+      const attendancePaylaod = mapAttendanceCheckInPayload(
+        userBiometricList.timestamp,
+        attendanceData,
+        active_Shift.is_split_shift,
+        employee_id
+      );
+      if (attendancePaylaod) {
+        const response = await saveAttendance(
+          attendancePaylaod,
+          active_Shift,
+          attendanceData.id
+        );
+        return Boolean(response);
+      }
+    }
+    if (userBiometricList.status === "check-out") {
+      debugger;
+      const attendancePayload = mapAttendanceCheckOutPayload(
+        userBiometricList.timestamp,
+        attendanceData,
+        active_Shift.is_split_shift
+      );
+      if (attendancePayload) {
+        const response = await saveAttendance(
+          attendancePayload,
+          active_Shift,
+          attendanceData.id
+        );
+        return Boolean(response);
+      }
+    }
+    if (userBiometricList.status === "check-out") {
+      debugger;
+      if (attendanceData) return Boolean(attendanceData);
+      const response = await saveAttendance({
+        employee_id: employee_id,
+        date: date,
+        checkin: moment(userBiometricList.timestamp).utc().toISOString(),
+      });
+      return Boolean(response);
+    }
+    const attendance =
+      attendanceData ??
+      (await saveAttendance({
+        employee_id: employee_id,
+        date: date,
+        checkin: moment(userBiometricList.timestamp).utc().toISOString(),
+      }));
+    if (userBiometricList) {
+      if (userBiometricList.status === "break") {
+        const breakSaveResponse = await saveBiometricBreak({
+          employee_id: employee_id,
+          attendance: attendance.id,
+          time: userBiometricList.timestamp,
+        });
+        if (breakSaveResponse) {
+          debugger;
+          const breakDuration = await calculateBreak({
+            filterData: {
+              employee_id: employee_id,
+              attendance: attendance.id,
+            },
+          });
+          const attendanceResponse = await saveAttendance({
+            id: attendance?.id,
+            break_duration: breakDuration,
+          });
+          if (attendanceResponse) {
+            return true;
+          }
+        }
+      } else {
+      }
+    }
+    return false;
+  } catch (error) {
+    console.error("Error getting onboarding document by id:", error);
+    if (error?.response?.status === 401) {
+      HandleLogout();
+    }
+    return false;
   }
 };
 
@@ -945,7 +1063,6 @@ export {
   convertUTCToLocal,
   getStats,
   employeeData,
-  getShiftById,
   getAttendanceSummary,
   getDepartmentPercentage,
   getWeeklySummary,
