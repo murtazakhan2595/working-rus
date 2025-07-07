@@ -34,7 +34,7 @@ export function mapCalendarContent({ holidays }) {
   return calendar_content;
 }
 
-export function mapApproverDetails(approver_logs, approval_levels , data) {
+export function mapApproverDetails(approver_logs, approval_levels, data) {
   const level_list = approval_levels
     .map((level) => {
       const level_number = parseInt(level.level_number);
