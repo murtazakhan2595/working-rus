@@ -73,6 +73,7 @@ export default function AddUpdateLeaveType({
     if (data) {
       // Pre-populate form with existing data
       setFormData({
+        id: data.id || null,
         name: data.name || "",
         short_code: data.short_code || "",
         leave_count: data.leave_count || "",
