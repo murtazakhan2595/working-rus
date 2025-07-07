@@ -36,7 +36,11 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
     department_name: user_department,
     id: user_id,
   } = useSelector((state) => state.emp.user_details);
-  const [filterData, setFilterData] = useState({});
+  const [filterData, setFilterData] = useState({
+    date_range: `${moment().format("YYYY-MM-DD")},${moment().format(
+      "YYYY-MM-DD"
+    )}`,
+  });
   const [ordering, setOrdering] = useState("-id");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const [List, setList] = useState({ page: 1, sizePerPage: 10 });
@@ -94,7 +98,13 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
     let isMounted = true;
     const saveRecords = async (isMounted) => {
       try {
-        const attendanceData = await getUserBiometricLogsList();
+        const attendanceData = await getUserBiometricLogsList({
+          filterData: {
+            date_range: `${moment().format("YYYY-MM-DD")},${moment().format(
+              "YYYY-MM-DD"
+            )}`,
+          },
+        });
         if (isMounted) {
           if (attendanceData) {
             UpdateMissingAttanceRecords(attendanceData.results);
@@ -117,6 +127,17 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
           <CardTitle>User Biometric Attendance History</CardTitle>
         </CardHeader>
         <CardContent>
+          <FilterInput
+            filters={[
+              {
+                type: "date-range",
+                placeholder: "Date",
+                name: "date_range",
+              },
+            ]}
+            onChange={handleFilterChange}
+            className="justify-end mb-4"
+          />
           {isLoading ? (
             <PageLoader />
           ) : (
