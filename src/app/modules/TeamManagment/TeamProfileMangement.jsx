@@ -18,7 +18,7 @@ export default function TeamProfileMangement() {
   const [employeeData, setEmployeeData] = useState({ results: [], count: 0 });
   const [filterData, setFilterData] = useState({
     // department_name: loggedInUserDetails.department_name,
-    direct_report: loggedInUserDetails.id,
+    reporting_employees: loggedInUserDetails.id,
   });
   const [totalEmployee, setTotalEmployee] = useState(0);
   const [activeEmployee, setActiveEmployee] = useState(0);
@@ -53,7 +53,6 @@ export default function TeamProfileMangement() {
         filterData,
         ordering,
       });
-      console.log("Employee Data", data);
       if (isMounted) {
         setEmployeeData(data);
         setActiveEmployee(data.ActiveEmployee || 0);

@@ -9,6 +9,7 @@ import {
 } from "app/hooks/attendance";
 import { PageLoader, TableCustom } from "components";
 import { EmployeesAttendanceColumns } from "app/modules/Attendance/Sections/AttendanceTableColumns";
+import { UserBiometricHistory } from "app/modules/Attendance";
 import {
   UpdateEmployeeAttendance,
   ExportAttendance,
@@ -24,6 +25,8 @@ import { exportRecordToExcel } from "utils/downloadUtils";
 import { GetUserInfo } from "utils/getValuesFromTables";
 import { HasAccess } from "utils/PermissionUtils";
 import { renderDate, formatDuration } from "utils/renderValues";
+import { CardHeader } from "reactstrap";
+import { CardTitle } from "components/ui/card";
 
 const Attendance = ({ isTeamView = false }) => {
   const isUpdateBrnAttendancePermitted = HasAccess("UPDATE_BRN_EMP_ATTENDANCE");
@@ -156,7 +159,7 @@ const Attendance = ({ isTeamView = false }) => {
   return (
     <>
       <div
-        className={`flex flex-col gap-4 ${window.location.pathname.substring(
+        className={`flex flex-col gap-4 mb-10 ${window.location.pathname.substring(
           1
         )}`}
       >
@@ -234,7 +237,7 @@ const Attendance = ({ isTeamView = false }) => {
               )}
               <ExportAttendance activeTab={activeTab} filterData={filterData} />
             </div>
-            <Card className="mb-10">
+            <Card>
               <CardContent>
                 <TableCustom
                   data={attendanceData.results || []}
@@ -245,6 +248,7 @@ const Attendance = ({ isTeamView = false }) => {
                 />
               </CardContent>
             </Card>
+            {/* <UserBiometricHistory /> */}
           </>
         )}
       </div>

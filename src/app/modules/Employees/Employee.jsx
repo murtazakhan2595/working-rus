@@ -14,7 +14,7 @@ import { HasAccess } from "utils/PermissionUtils";
 import { Button } from "components/ui/button";
 import { useNavigate } from "react-router-dom";
 
-export default function EmployeeManagement() {
+export default function EmployeeManagement({ isTeamView = false }) {
   const navigate = useNavigate();
   const AddEmployeesPermitted = HasAccess("ADD_EMPLOYEE");
   const [isLoading, setIsLoading] = useState(true);
@@ -171,7 +171,7 @@ export default function EmployeeManagement() {
             },
           ]}
           onChange={handleFilterChange}
-          className='justify-end'
+          className="justify-end"
         />
       </div>
       {isLoading ? (

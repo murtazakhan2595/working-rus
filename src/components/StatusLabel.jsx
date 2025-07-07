@@ -485,7 +485,7 @@ export const StatusList = ({ status_list, className }) => {
                     />
                   </>
                 ) : (
-                  <DesignationName value={designation} />
+                  designation
                 )}
               </span>
               <span className="text-xs text-neutral-900">
