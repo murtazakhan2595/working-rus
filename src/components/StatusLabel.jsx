@@ -463,30 +463,19 @@ export const JobStatusLabel = ({ label, type }) => {
   );
 };
 
-export const StatusList = ({ status_list, className }) => {
+export const StatusList = ({ status_list, className, infoPrefix = "By" }) => {
   if (!status_list || !Array.isArray(status_list) || status_list.length === 0)
     return <></>;
-
+  console.log(status_list);
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      {status_list.map(({ status, approver, time, designation }, index) => {
+      {status_list.map(({ status, info, time, designation }, index) => {
         return (
           <div key={`status-list-${index}`} className="flex items-center">
             <StatusViewIcon status={status} className="mr-1 mt-1" />
             <div className="flex flex-col">
               <span className="text-capitalize">
-                {status.toLowerCase()} By{" "}
-                {approver ? (
-                  <>
-                    <EmployeeName value={approver} />-{" "}
-                    <EmployeeInfo
-                      value={approver}
-                      label={"department_position"}
-                    />
-                  </>
-                ) : (
-                  designation
-                )}
+                {status.toLowerCase()} {infoPrefix} {info}
               </span>
               <span className="text-xs text-neutral-900">
                 {renderDate(time, "", "date-time")}
