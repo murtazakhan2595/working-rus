@@ -45,7 +45,6 @@ const getCheckoutTime = (checkIn) => {
 
 export const EmployeesAttendanceColumns = (
   TotalDays = 5,
-  reload = () => {}
 ) => [
   {
     dataField: "emp_name",

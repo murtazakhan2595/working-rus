@@ -58,24 +58,15 @@ const Attendance = ({ isTeamView = false }) => {
   const [selectedBranch, setSelectedBranch] = useState("");
   const [activeTab, setActiveTab] = useState("Day");
   const [TotalDays, setTotalDays] = useState(1);
-  const [filterData, setFilterData] = useState({});
-  const [dateRange, setDateRange] = useState(
-    `${moment().format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`
-  );
+  const [filterData, setFilterData] = useState({
+    start_date: moment().format("YYYY-MM-DD"),
+    end_date: moment().format("YYYY-MM-DD"),
+  });
   const [ordering, setOrdering] = useState("emp_name");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const onPageChange = (name, value) => {
     setOptions((prevOptions) => ({ ...prevOptions, [name]: value }));
   };
-
-  useEffect(() => {
-    if (dateRange) {
-      const date_range = dateRange.split(",");
-      if (date_range && date_range.length > 0) {
-        setTotalDays(getWorkingDays(date_range[0], moment()));
-      }
-    }
-  }, [dateRange]);
 
   useEffect(() => {
     let isMounted = true;
@@ -115,7 +106,6 @@ const Attendance = ({ isTeamView = false }) => {
     try {
       const attendanceData = await getAttendanceSummary({
         filterData,
-        dateRange,
         ordering,
         options,
       });
@@ -144,7 +134,7 @@ const Attendance = ({ isTeamView = false }) => {
     return () => {
       isMounted = false;
     };
-  }, [filterData, dateRange, ordering, options]);
+  }, [filterData, ordering, options]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -211,13 +201,25 @@ const Attendance = ({ isTeamView = false }) => {
                 activeDateRange={activeTab}
                 setDateRange={(dateRange) => {
                   if (dateRange.toUpperCase() === "DAY") {
-                    setDateRange(
-                      `${moment().format("YYYY-MM-DD")},${moment().format(
-                        "YYYY-MM-DD"
-                      )}`
-                    );
+                    const formattedDatee = moment().format("YYYY-MM-DD");
+                    handleFilterChange("start_date", formattedDatee);
+                    handleFilterChange("end_date", formattedDatee);
+                    setTotalDays(1);
                   } else {
-                    setDateRange(GetDateRange(dateRange));
+                    const date_range =
+                      GetDateRange(dateRange)?.split(",") || [];
+                    const end_date =
+                      date_range[1] && date_range[1] !== "null"
+                        ? date_range[1]
+                        : "";
+                    const start_date =
+                      date_range[0] && date_range[0] !== "null"
+                        ? date_range[0]
+                        : "";
+
+                    handleFilterChange("start_date", start_date);
+                    handleFilterChange("end_date", end_date);
+                    setTotalDays(getWorkingDays(start_date,end_date))
                   }
                   setActiveTab(dateRange);
                   return;
@@ -248,7 +250,7 @@ const Attendance = ({ isTeamView = false }) => {
                 />
               </CardContent>
             </Card>
-            {/* <UserBiometricHistory /> */}
+            <UserBiometricHistory />
           </>
         )}
       </div>

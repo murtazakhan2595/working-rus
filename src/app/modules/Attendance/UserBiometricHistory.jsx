@@ -157,6 +157,7 @@ const UserBiometricHistory = ({ isTeamView = false }) => {
 
 const UpdateMissingAttanceRecords = async (dataList) => {
   const user_attendance_updated = [];
+  if(!dataList || !Array.isArray(dataList)|| dataList.length===0)return null;
   const usersList = _.uniq(dataList.map((data) => data.user_no));
   for (const user of usersList) {
     if (!user_attendance_updated.includes(user)) {
