@@ -112,23 +112,26 @@ const Attendance = ({ isTeamView = false }) => {
   };
   const getAttendanceList = async (isMounted) => {
     setIsLoading(true);
+    const filter = { ...filterData, start_date: dateRange.split(",")[0], end_date: dateRange.split(",")[1] };
+    if (isTeamView) {
+      filter.reporting_employees = user_id;
+    }
     try {
       const attendanceData = await getAttendanceSummary({
-        filterData,
-        dateRange,
+        filterData: filter,
         ordering,
         options,
-      });
-      if (isMounted) {
-        if (attendanceData) {
-          setAttendanceData(attendanceData);
+        });
+        if (isMounted) {
+          if (attendanceData) {
+            setAttendanceData(attendanceData);
+          }
         }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
   };
   const tableOptions = {
     page: options.page,

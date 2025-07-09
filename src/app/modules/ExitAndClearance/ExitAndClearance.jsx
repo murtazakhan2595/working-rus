@@ -73,8 +73,12 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
 
   const fetchData = async () => {
     try {
+      const filter = permittedViewFilterData;
+      if (isTeamView) {
+        filter.reporting_employees = [user_id];
+      }
       const response = await getEmployeeExitStats({
-        filterData: permittedViewFilterData,
+        filterData: filter,
       });
 
       if (response) {
@@ -172,10 +176,14 @@ const ExitAndClearance = ({ userProfile, isTeamView = false }) => {
             <ExitRequests
               reload={reloadData}
               permittedViewFilterData={permittedViewFilterData}
+              isTeamView={isTeamView}
             />
           </TabsContent>
           <TabsContent value="Exit Records">
-            <ExitRecords />
+            <ExitRecords
+              isTeamView={isTeamView}
+              permittedViewFilterData={permittedViewFilterData}
+            />
           </TabsContent>
           <TabsContent value="Resons of Termination">
             <TerminationReasons reload={terminationReasonsReload} />
