@@ -69,7 +69,7 @@ import ImportEmployeesButton from "../Sections/ImportEmployeesButton"; // Adjust
 
 import { getEmployeeid, GetDefaultUserRole } from "utils/getValuesFromTables";
 import { saveEmployeePayroll } from "app/hooks/payroll";
-import { PageLoader } from "components";
+import { PageLoader, SheetUI } from "components";
 import { handleCloseWithConfirmation } from "components/SheetCardExtension";
 import { getShift } from "app/hooks/attendance";
 import { saveShiftSchedule } from "app/hooks/shiftManagement";
@@ -83,6 +83,8 @@ import { validateOnboardingDocuments } from "app/utils/FormSchema/employeeFormSc
 import { getEmployeeDocsChecklist } from "app/hooks/employee";
 import { saveEmpoyeeDocBulk } from "app/hooks/employee";
 import { useSelector } from "react-redux";
+import { ReligionList } from "data/Data";
+import { NumberInput } from "components/FormControl";
 const EmployeeForm = ({
   setShowFormSubmittedModal = () => {},
   setEmail = () => {},
@@ -95,14 +97,15 @@ const EmployeeForm = ({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const Managers = useSelector((state) => state.emp.reportingManagers);
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false);
   const Branches = useSelector((state) => state.common.branches);
   const Designations = useSelector((state) => state.common.designations);
   const Departments = useSelector((state) => state.common.departments);
   const Employees = useSelector((state) => state.emp.employees);
   const userProfile = useSelector((state) => state.user.userProfile);
-
   const default_user = GetDefaultUserRole()?.id;
   const [formData, setFormData] = useState({});
+  const [FormValues, setFormvalues] = useState({});
   const [empId, setEmpId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [emailAlreadyExist, setEmailAlreadyExist] = useState(false);
@@ -389,6 +392,377 @@ const EmployeeForm = ({
 
   return (
     <>
+      <SheetUI
+        isOpen={true}
+        setIsOpen={handleClose}
+        variant=""
+        sheetConfig={{}}
+        formConfig={{
+          initialValues: formData,
+          enableReinitialize: true,
+          handleSubmit: handleSubmit,
+          // onSubmitClick: (values) => {
+          //   validateUserRoleName(values.name);
+          // },
+          renderUpdatedFormValues: setFormvalues,
+          DataList: Employees,
+          validateFormSchema: (values) => {
+            const errors = validationEmployeeInfoFormSchema(
+              values,
+              id ? true : false
+            );
+            const documentErrors = validateOnboardingDocuments(
+              values?.onboardingDocuments
+            );
+
+            if (values.work_email && emailAlreadyExist) {
+              errors.work_email = "Email already exist";
+            }
+            if (values.username && usernameAlreadyExist) {
+              errors.username = "Username already exist";
+            }
+            const finalErrors = {
+              ...errors,
+              ...(documentErrors ? documentErrors : {}),
+            };
+
+            return finalErrors;
+          },
+          submitButtonText: "Submit",
+          cancelButtonText: "Cancel",
+          columns: 3,
+          disableSubmit: isLoading || isSubmittingForm,
+          loadingMessage: isSubmittingForm ? "Submitting Form..." : "",
+          formFields: [
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: `Employee Details`,
+              InputFields: [
+                {
+                  InputField: TextInput,
+                  name: "serial_number",
+                  required: true,
+                  label: "Employee ID",
+                  disabled: true,
+                },
+                {
+                  InputField: TextInput,
+                  name: "username",
+                  required: true,
+                  label: "User Name",
+                  validateDuplicate: true,
+                },
+                {
+                  InputField: TextInput,
+                  name: "first_name",
+                  required: true,
+                  label: "First Name",
+                },
+                {
+                  InputField: TextInput,
+                  name: "last_name",
+                  required: true,
+                  label: "Last Name",
+                },
+                {
+                  InputField: EmailInput,
+                  name: "work_email",
+                  required: true,
+                  label: "Email",
+                  validateDuplicate: true,
+                },
+                {
+                  InputField: PasswordInput,
+                  name: "password",
+                  required: true,
+                  label: "Password",
+                  maxLength: 20,
+                },
+                {
+                  InputField: PhoneNumberInput,
+                  name: "mobile_no",
+                  required: true,
+                  label: "Contact no.",
+                  countryCodeName: "country_code",
+                  countryOptions: countriesCallingCodes,
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "blood_group",
+                  options: BloodGroupOptions,
+                  required: false,
+                  label: "Blood Group",
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "gender",
+                  options: GenderOptions,
+                  required: false,
+                  label: "Gender",
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "religion",
+                  options: ReligionList,
+                  required: false,
+                  label: "Religion",
+                },
+                {
+                  InputField: TextInput,
+                  name: "po_box_number",
+                  required: false,
+                  label: "PO Box Number",
+                },
+                {
+                  InputField: TextAreaInput,
+                  name: "residential_address",
+                  required: true,
+                  label: "Residential Address",
+                  colsSpan: 3,
+                  maxRows: 3,
+                },
+                {
+                  InputField: TextAreaInput,
+                  name: "permanent_address",
+                  required: false,
+                  label: "Permanent Address",
+                  colsSpan: 3,
+                  maxRows: 3,
+                },
+              ],
+            },
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: `Official Information`,
+              InputFields: [
+                {
+                  InputField: SelectInputComponent,
+                  name: "department_name",
+                  options: Departments,
+                  required: true,
+                  label: "Department",
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "branch_id",
+                  options: Branches,
+                  required: true,
+                  label: "Branch",
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "employee_location",
+                  options: countriesList,
+                  required: true,
+                  label: "Employee Location",
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "nationality",
+                  options: countriesList,
+                  required: true,
+                  label: "Nationality",
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "department_position",
+                  options: Designations,
+                  required: true,
+                  label: "Designation",
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "employee_type",
+                  options: jobRoles,
+                  required: true,
+                  label: "Employee Type",
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "employee_status",
+                  options: employeeStatus,
+                  required: true,
+                  label: "Employee Status",
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "employee_work_type",
+                  options: workplaceTypes,
+                  required: true,
+                  label: "Employee Work Type",
+                },
+                {
+                  InputField: SelectInputComponent,
+                  name: "direct_report",
+                  options: Managers,
+                  required: false,
+                  label: "Direct Report",
+                },
+                {
+                  InputField: SelectMultiInputComponent,
+                  name: "indirect_report",
+                  options: Managers,
+                  required: false,
+                  label: "Indirect Report",
+                },
+                {
+                  InputField: DateInput,
+                  name: "joining_date",
+                  required: true,
+                  label: "Joining Date",
+                  onFieldUpdate: async (_, value, __, handleChange) => {
+                    handleChange("probation_start_date", value);
+                    handleChange("probation_end_date", null);
+                  },
+                },
+                {
+                  InputField: DateRangeInput,
+                  name: "probation_date_range",
+                  required: true,
+                  label: "Probation Date Range",
+                  value:
+                    FormValues.probation_start_date ||
+                    FormValues.probation_end_date
+                      ? `${FormValues.probation_start_date},${FormValues.probation_end_date}`
+                      : null,
+                  minDate: FormValues.joining_date,
+                  onFieldUpdate: async (_, value, __, handleChange) => {
+                    const [start_date, end_date] = value?.split(",") || "";
+                    handleChange("probation_start_date", start_date || null);
+                    handleChange("probation_end_date", end_date || null);
+                    if (end_date && start_date) {
+                      handleChange(
+                        "confirmation_date",
+                        moment(end_date).add(1, "days").format("YYYY-MM-DD")
+                      );
+                    }
+                  },
+                },
+                {
+                  InputField: DateInput,
+                  name: "probation_period",
+                  required: true,
+                  disabled: true,
+                  label: "Probation Period",
+                },
+                {
+                  InputField: DateInput,
+                  name: "confirmation_date",
+                  required: true,
+                  disabled: true,
+                  label: "Confirmation Date",
+                },
+                {
+                  InputField: CheckBoxInput,
+                  name: "active_contract",
+                  label: "Contract Employment",
+                  colsSpan: 3,
+                },
+                {
+                  InputField: DateInput,
+                  name: "contract_start_date",
+                  required: true,
+                  label: "Contract Start Date",
+                  renderCondition: FormValues.active_contract,
+                },
+                {
+                  InputField: DateInput,
+                  name: "contract_end_date",
+                  required: true,
+                  label: "Contract End Date",
+                  renderCondition: FormValues.active_contract,
+                },
+                {
+                  InputField: TextAreaInput,
+                  name: "jd_file",
+                  required: false,
+                  label: "Job Description",
+                  maxRows: 5,
+                  maxLength: 1000,
+                  colsSpan: 3,
+                },
+                {
+                  InputField: TextAreaInput,
+                  name: "kpi_file",
+                  required: false,
+                  label: "Job KPIs",
+                  maxRows: 5,
+                  maxLength: 1000,
+                  colsSpan: 3,
+                },
+              ],
+            },
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: `Shift Details`,
+              InputFields: [
+                {
+                  InputField: SelectInputComponent,
+                  name: "shift_assignment",
+                  options: shiftList,
+                  required: true,
+                  label: "Shift",
+                },
+              ],
+            },
+            ...(SalarySetupAllowed
+              ? [
+                  {
+                    sheetCardExtension: true,
+                    sheetCardTitle: `Salary Details`,
+                    InputFields: [
+                      {
+                        InputField: SelectInputComponent,
+                        name: "SalaryTypeOptions",
+                        options: shiftList,
+                        required: true,
+                        label: "Salary Type",
+                      },
+                      {
+                        InputField: NumberInput,
+                        name: "salary",
+                        options: shiftList,
+                        required: true,
+                        label: `Employee ${
+                          FormValues.salary_type === "hourly"
+                            ? "Hourly"
+                            : "Monthly"
+                        } Salary`,
+                      },
+                    ],
+                  },
+                ]
+              : []),
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: `Onboarding Checklist`,
+              InputFields: [
+                {
+                  InputField: TextInput,
+                  name: "biometric_id",
+                  required: false,
+                  label: "Biometric Id",
+                  validateDuplicate: true,
+                },
+              ],
+            },
+            {
+              sheetCardExtension: true,
+              sheetCardTitle: `Third Party Integration`,
+              InputFields: [
+                {
+                  InputField: TextInput,
+                  name: "biometric_id",
+                  required: false,
+                  label: "Biometric Id",
+                  validateDuplicate: true,
+                },
+              ],
+            },
+          ],
+        }}
+      />
+
       {handleCloseWithConfirmation({
         isOpen: closeSheet,
         setCloseSheet,
@@ -447,48 +821,42 @@ const EmployeeForm = ({
                       <ImportEmployeesButton />
                     </div>
                     <div className="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2">
-                      <div className="space-y-2">
-                        <TextInput
-                          name={"serial_number"}
-                          error={props.errors?.serial_number}
-                          touch={props.touched?.serial_number}
-                          value={getEmployeeid(empId)}
-                          label={"Employee ID"}
-                          required={true}
-                          disabled={true}
-                          onChange={(field, value) => {
-                            props.handleChange(field)(value);
-                          }}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <TextInput
-                          name={"username"}
-                          error={props.errors?.username}
-                          touch={props.touched?.username}
-                          value={props.values?.username}
-                          label={"User Name"}
-                          required={true}
-                          onChange={(field, value) => {
-                            props.handleChange(field)(value);
-                            validateUsername(value);
-                          }}
-                        />
-                      </div>
+                      <TextInput
+                        name={"serial_number"}
+                        error={props.errors?.serial_number}
+                        touch={props.touched?.serial_number}
+                        value={getEmployeeid(empId)}
+                        label={"Employee ID"}
+                        required={true}
+                        disabled={true}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
+                      <TextInput
+                        name={"username"}
+                        error={props.errors?.username}
+                        touch={props.touched?.username}
+                        value={props.values?.username}
+                        label={"User Name"}
+                        required={true}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                          validateUsername(value);
+                        }}
+                      />
 
-                      <div className="space-y-2">
-                        <TextInput
-                          name={"first_name"}
-                          error={props.errors?.first_name}
-                          touch={props.touched?.first_name}
-                          value={props.values?.first_name}
-                          label={"First Name"}
-                          required={true}
-                          onChange={(field, value) => {
-                            props.handleChange(field)(value);
-                          }}
-                        />
-                      </div>
+                      <TextInput
+                        name={"first_name"}
+                        error={props.errors?.first_name}
+                        touch={props.touched?.first_name}
+                        value={props.values?.first_name}
+                        label={"First Name"}
+                        required={true}
+                        onChange={(field, value) => {
+                          props.handleChange(field)(value);
+                        }}
+                      />
                       <div className="space-y-2">
                         <TextInput
                           name={"last_name"}
@@ -949,42 +1317,12 @@ const EmployeeForm = ({
                       </div>
                     </div>
                   )}
-                  <div className="col-span-2 space-y-2">
-                    <TextAreaInput
-                      name={"jd_file"}
-                      error={props.errors?.jd_file}
-                      touch={props.touched?.jd_file}
-                      value={props.values?.jd_file}
-                      label={"Job Description"}
-                      required={false}
-                      maxRows={5}
-                      maxLength={1000}
-                      onChange={(field, value) => {
-                        props.handleChange(field)(value);
-                      }}
-                    />
-                  </div>
-                  <div className="col-span-2 space-y-2 ">
-                    <TextAreaInput
-                      name={"kpi_file"}
-                      error={props.errors?.kpi_file}
-                      touch={props.touched?.kpi_file}
-                      value={props.values?.kpi_file}
-                      label={"Job KPIs"}
-                      maxLength={1000}
-                      required={false}
-                      maxRows={5}
-                      onChange={(field, value) => {
-                        props.handleChange(field)(value);
-                      }}
-                    />
-                  </div>
+                  
+                 
                   <div className="space-y-4">
                     <OnboardingChecklistSection formikProps={props} />
                   </div>
-                  <div className="space-y-4">
-                    <ThirdPartIntegration formikProps={props} />
-                  </div>
+                  
                   <div className="p-6 border-t border-gray-200 bg-gray-50">
                     <div className="flex flex-col justify-end gap-4 md:flex-row lg:flex-row xl:flex-row">
                       <Button

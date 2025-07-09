@@ -1,31 +1,29 @@
 import Joi from "joi";
-import {validateEmailField} from 'app/utils/FormSchema/generalFormSchema';
+import { validateEmailField } from "app/utils/FormSchema/generalFormSchema";
 const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   const errors = {};
-  if (!isEditMode) {
-    if (!values.first_name) errors.first_name = "First name is required";
-    if (!values.last_name) errors.last_name = "Last name is required";
-    if (!values.country_code)
-      errors.country_code = "Phone Country Code name is required";
-    if (!values.mobile_no) errors.mobile_no = "Phone number is required";
-    if (!values.username) errors.username = "Username is required";
-    if (!values.branch_id) errors.branch_id = "Branch is required";
-    const work_email_error = validateEmailField(values.work_email, "Email");
-    if (work_email_error) errors.work_email = work_email_error;
-    // if (values.work_email && EMAIL_REGEX.test(values.work_email))
-    //   errors.work_email = "Invalid email address";
-    if (!values.password) errors.password = "Password is required";
-    if (!values.residential_address)
-      errors.residential_address = "Address is required";
-    if (values.residential_address && values.residential_address.length > 200) {
-      errors.residential_address =
-        "Residential address cannot exceed 200 characters";
-    }
-    if (values.permanent_address && values.permanent_address.length > 255) {
-      errors.permanent_address =
-        "Permanent address cannot exceed 255 characters";
-    }
+  if (!values.first_name) errors.first_name = "First name is required";
+  if (!values.last_name) errors.last_name = "Last name is required";
+  if (!values.country_code)
+    errors.country_code = "Phone Country Code name is required";
+  if (!values.mobile_no) errors.mobile_no = "Phone number is required";
+  if (!values.username) errors.username = "Username is required";
+  if (!values.branch_id) errors.branch_id = "Branch is required";
+  const work_email_error = validateEmailField(values.work_email, "Email");
+  if (work_email_error) errors.work_email = work_email_error;
+  // if (values.work_email && EMAIL_REGEX.test(values.work_email))
+  //   errors.work_email = "Invalid email address";
+  if (!values.password) errors.password = "Password is required";
+  if (!values.residential_address)
+    errors.residential_address = "Address is required";
+  if (values.residential_address && values.residential_address.length > 200) {
+    errors.residential_address =
+      "Residential address cannot exceed 200 characters";
   }
+  if (values.permanent_address && values.permanent_address.length > 255) {
+    errors.permanent_address = "Permanent address cannot exceed 255 characters";
+  }
+
   if (!values.user_role) errors.user_role = "User role is required";
   if (!values.department_name)
     errors.department_name = "Department is required";
@@ -43,25 +41,28 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
     errors.employee_location = "Work location is required";
   if (!values.employee_status) errors.employee_status = "Status is required";
   if (!values.joining_date) errors.joining_date = "Joining date is required";
-
+  if (!values.probation_date_range)
+    errors.probation_date_range = "Probation period range is required";
+  if (!values.probation_period)
+    errors.probation_period = "Probation period is required";
   // Validate probation dates in relation to joining date
   if (values.joining_date && values.probation_start_date) {
     const joiningDate = new Date(values.joining_date);
     const probationStartDate = new Date(values.probation_start_date);
 
     if (probationStartDate < joiningDate) {
-      errors.probation_start_date =
+      errors.probation_date_range =
         "Probation start date cannot be before joining date";
     }
   }
 
   // Validate probation end date is after start date
-  if (values.probation_start_date && values.probation_end_date) {
+  if (values.probation_date_range && values.probation_end_date) {
     const startDate = new Date(values.probation_start_date);
     const endDate = new Date(values.probation_end_date);
 
     if (endDate < startDate) {
-      errors.probation_end_date =
+      errors.probation_date_range =
         "Probation end date must be after the start date";
     }
   }

@@ -52,7 +52,7 @@ const CreateUpdateEmployee = () => {
   return (
     <>
       <div
-        className={`max-w-[840px] mx-auto ${window.location.pathname.substring(
+        className={`max-w-[1040px] mx-auto ${window.location.pathname.substring(
           1
         )}`}
       >
