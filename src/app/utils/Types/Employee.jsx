@@ -157,6 +157,7 @@ const EmployeeInformation = {
   po_box_number: null,
   nationality: null,
   biometric_id: null,
+  probation_date_range: null,
 };
 const EmployeeProfessionalExperiance = {
   id: null,

@@ -2,20 +2,13 @@ import Joi from "joi";
 import { validateEmailField } from "app/utils/FormSchema/generalFormSchema";
 const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   const errors = {};
-  if (!values.first_name) errors.first_name = "First name is required";
-  if (!values.last_name) errors.last_name = "Last name is required";
   if (!values.country_code)
     errors.country_code = "Phone Country Code name is required";
   if (!values.mobile_no) errors.mobile_no = "Phone number is required";
-  if (!values.username) errors.username = "Username is required";
-  if (!values.branch_id) errors.branch_id = "Branch is required";
+  if (!values.probation_end_date) errors.probation_date_range = "Probation end date is required";
+  if (!values.probation_start_date) errors.probation_date_range = "Probation start date is required";
   const work_email_error = validateEmailField(values.work_email, "Email");
   if (work_email_error) errors.work_email = work_email_error;
-  // if (values.work_email && EMAIL_REGEX.test(values.work_email))
-  //   errors.work_email = "Invalid email address";
-  if (!values.password) errors.password = "Password is required";
-  if (!values.residential_address)
-    errors.residential_address = "Address is required";
   if (values.residential_address && values.residential_address.length > 200) {
     errors.residential_address =
       "Residential address cannot exceed 200 characters";
@@ -23,28 +16,11 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
   if (values.permanent_address && values.permanent_address.length > 255) {
     errors.permanent_address = "Permanent address cannot exceed 255 characters";
   }
-
-  if (!values.user_role) errors.user_role = "User role is required";
-  if (!values.department_name)
-    errors.department_name = "Department is required";
-  if (!values.department_position)
-    errors.department_position = "Designation is required";
   if (values.direct_report && values.indirect_report) {
     if (values.indirect_report.includes(values.direct_report))
       errors.indirect_report =
         "Direct reporting manager cannot be assigned as an indirect reporting manager.";
   }
-  if (!values.employee_type) errors.employee_type = "Employee type is required";
-  if (!values.employee_work_type)
-    errors.employee_work_type = "Work type is required";
-  if (!values.employee_location)
-    errors.employee_location = "Work location is required";
-  if (!values.employee_status) errors.employee_status = "Status is required";
-  if (!values.joining_date) errors.joining_date = "Joining date is required";
-  if (!values.probation_date_range)
-    errors.probation_date_range = "Probation period range is required";
-  if (!values.probation_period)
-    errors.probation_period = "Probation period is required";
   // Validate probation dates in relation to joining date
   if (values.joining_date && values.probation_start_date) {
     const joiningDate = new Date(values.joining_date);
@@ -66,23 +42,9 @@ const validationEmployeeInfoFormSchema = (values, isEditMode) => {
         "Probation end date must be after the start date";
     }
   }
-
-  if (!values.salary_type && !isEditMode)
-    errors.salary_type = "Salary type is required";
-  if (!values.salary && !isEditMode) errors.salary = "Salary is required";
-  if (values.active_contract) {
-    if (!values.contract_start_date)
-      errors.contract_start_date = "Start date is required";
-    if (!values.contract_end_date)
-      errors.contract_end_date = "End date is required";
-  }
-
   // Optional validations for PO Box (if provided, ensure it's in correct format)
   if (values.po_box_number && !/^\d+$/.test(values.po_box_number)) {
     errors.po_box_number = "PO Box Number must contain only numbers";
-  }
-  if (!values.nationality) {
-    errors.nationality = "Nationality is required";
   }
   return errors;
 };
@@ -165,7 +127,6 @@ const validationEmployeeExperienceFormSchema = (values) => {
       }
     });
   }
-  console.log(values, errors);
   return errors;
 };
 

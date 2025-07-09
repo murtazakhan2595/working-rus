@@ -24,7 +24,6 @@ import {
   // CardFooter,
 } from "components/ui/card.jsx";
 import Header from "components/Header.jsx";
-
 import { HasAccess } from "utils/PermissionUtils";
 
 const CreateUpdateEmployee = () => {
