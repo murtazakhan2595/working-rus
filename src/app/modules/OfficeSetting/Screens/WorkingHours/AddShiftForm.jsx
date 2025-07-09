@@ -99,8 +99,6 @@ const AddShiftForm = ({
         endtime: endTimeUTC,
       };
 
-      console.log(updatedValues, "UPDATE VALUES");
-
       const response = await saveShift(updatedValues);
       if (response) {
         toast.success(
