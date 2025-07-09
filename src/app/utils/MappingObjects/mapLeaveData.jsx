@@ -44,7 +44,7 @@ export function mapLeaveTypeData(data) {
         acc["branch_names"] = branches.map(({ branch_name }) => {
           return branch_name;
         });
-        acc["branches"] = branches.map(({ id }) => {
+        acc["branches_ids"] = branches.map(({ id }) => {
           return id;
         });
       } else if (key === "departments") {
@@ -52,7 +52,7 @@ export function mapLeaveTypeData(data) {
         acc["department_names"] = departments.map(({ name }) => {
           return name;
         });
-        acc["departments"] = departments.map(({ id }) => {
+        acc["departments_ids"] = departments.map(({ id }) => {
           return id;
         });
       } else if (key === "grades") {
