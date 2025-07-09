@@ -15,9 +15,9 @@ const AddCustomShift = ({ customShiftData, setCustomShiftData }) => {
   };
 
   return (
-    <div className="flex-col flex justify-center h-full">
+    <div className="flex-col flex justify-end h-full">
       <Button onClick={handleClick} className="w-fit">
-        Add Custom Shift
+        {customShiftData ? "Edit" : "Add"} Custom Shift
       </Button>
       {customShiftData && (
         <div className="mt-2 p-3 bg-purple-50 border border-purple-200 rounded-md">
@@ -28,13 +28,7 @@ const AddCustomShift = ({ customShiftData, setCustomShiftData }) => {
             Weekly Hours: {customShiftData.totalHours?.weekly?.toFixed(1) || 0}{" "}
             hours
           </div>
-          <button
-            type="button"
-            className="text-xs text-purple-600 hover:text-purple-800 mt-1"
-            onClick={() => setIsOpen(true)}
-          >
-            Edit Schedule
-          </button>
+        
         </div>
       )}
       {isOpen && (
