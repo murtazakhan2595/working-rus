@@ -584,10 +584,13 @@ export const getTimeAdjustmentData = async (id) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      const ResponseData = await mapTimeAdjustmentData(response.data);
-      const currentapprover = await getCurrentRequestApprover(
-        ResponseData.request
-      );
+      const Response = response.data;
+      const currentapprover = await getCurrentRequestApprover(Response.request);
+      const ResponseData = await mapTimeAdjustmentData({
+        ...Response,
+        ...currentapprover,
+      });
+
       return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {
@@ -782,10 +785,15 @@ export const getAttendanceAdjustmentData = async (id) => {
       }
     );
     if (response.status === 200) {
-      const ResponseData = await mapAttendanceAdjustmentData(response.data);
+      const Response = response.data;
       const currentapprover = await getCurrentRequestApprover(
-        ResponseData.request_id
+        Response.request_id
       );
+      const ResponseData = await mapAttendanceAdjustmentData({
+        ...Response,
+        ...currentapprover,
+      });
+
       return { ...ResponseData, ...currentapprover };
     }
   } catch (error) {

@@ -342,10 +342,14 @@ export const getLeaveData = async (id) => {
       headers: headers(),
     });
     if (response.status === 200) {
-      const ResponseData = await mapLeaveData(response.data);
+      const Response = response.data;
       const currentapprover = await getCurrentRequestApprover(
-        ResponseData.request_id
+        Response.request_id
       );
+      const ResponseData = await mapLeaveData({
+        ...Response,
+        ...currentapprover,
+      });
       const employeeAllotedLeave = await getEligibleLeaveTypeByEmployeeId(
         ResponseData.employee,
         ResponseData.leave_type

@@ -35,10 +35,11 @@ const ExportAttendance = ({ activeTab = "day", filterData = {} }) => {
           const dataToExport = await Promise.all(
             ResponseData?.map(async (row) => {
               return {
-                Date: renderDate(row.date),
+                ID: row['employee_serial_number'],
                 Name: row.employee_name,
                 Email: row["employee_email"],
                 Department: row["employee_department"],
+                Date: renderDate(row.date),
                 "Total Shift Hours": formatDuration(row.total_hours),
                 "Check-In": renderDate(row.checkin, "Not Check-in", "time"),
                 "Check-Out": renderDate(

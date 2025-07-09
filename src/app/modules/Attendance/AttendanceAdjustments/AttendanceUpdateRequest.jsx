@@ -80,7 +80,6 @@ const AttendanceUpdateRequest = ({ id }) => {
           date,
           default_shift
         );
-        console.log(active_shift, "71537612736712");
         setActiveShift(active_shift);
         if (isMounted && response) {
           if (response.results && response.results.length > 0) {

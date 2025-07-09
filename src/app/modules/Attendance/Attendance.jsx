@@ -21,12 +21,7 @@ import { StatsCards } from "./Sections/StatsCards";
 import { FilterInput, DateRangeFilter } from "components/FormControl";
 import { useSelector } from "react-redux";
 import { GetDateRange, getWorkingDays } from "utils/renderValues";
-import { exportRecordToExcel } from "utils/downloadUtils";
-import { GetUserInfo } from "utils/getValuesFromTables";
 import { HasAccess } from "utils/PermissionUtils";
-import { renderDate, formatDuration } from "utils/renderValues";
-import { CardHeader } from "reactstrap";
-import { CardTitle } from "components/ui/card";
 
 const Attendance = ({ isTeamView = false }) => {
   const isUpdateBrnAttendancePermitted = HasAccess("UPDATE_BRN_EMP_ATTENDANCE");
@@ -34,12 +29,8 @@ const Attendance = ({ isTeamView = false }) => {
   const isAdminView = HasAccess("VIEW_EMPLOYEE_ATTENDANCE");
   const isBranchView = HasAccess("VIEW_BRN_EMPS_ATTENDANCE");
   const isDepartmentView = HasAccess("VIEW_DPT_EMPS_ATTENDANCE");
-  const isViewWeeklytatusPermitted = HasAccess("VIEW_WEEKLY_STATISTICS");
   const isUpdateEmpAttendancePermitted = HasAccess(
     "UPDATE_EMPLOYEE_ATTENDANCE"
-  );
-  const isViewDptAttendancePermitted = HasAccess(
-    "VIEW_DEPARTMENT_ATTENDANCE_OVERVIEW"
   );
   const Departments = useSelector((state) => state.common.departments);
   const Branches = useSelector((state) => state.common.branches);
@@ -50,18 +41,15 @@ const Attendance = ({ isTeamView = false }) => {
   } = useSelector((state) => state.emp.user_details);
   const [attendanceData, setAttendanceData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [openUpdateEmployeeAttendance, setOpenUpdateEmployeeAttendance] =
-    useState(false);
+  const [openUpdateAttendance, setOpenUpdateAttendance] = useState(false);
   const [weeklySummary, setWeeklySummary] = useState([]);
-  const [selectedDepartment, setSelectedDepartment] = useState("");
   const [permittedViewFilterData, setPermittedViewFilterData] = useState(null);
-  const [selectedBranch, setSelectedBranch] = useState("");
   const [activeTab, setActiveTab] = useState("Day");
   const [TotalDays, setTotalDays] = useState(1);
-  const [filterData, setFilterData] = useState({});
-  const [dateRange, setDateRange] = useState(
-    `${moment().format("YYYY-MM-DD")},${moment().format("YYYY-MM-DD")}`
-  );
+  const [filterData, setFilterData] = useState({
+    start_date: moment().format("YYYY-MM-DD"),
+    end_date: moment().format("YYYY-MM-DD"),
+  });
   const [ordering, setOrdering] = useState("emp_name");
   const [options, setOptions] = useState({ page: 1, sizePerPage: 10 });
   const onPageChange = (name, value) => {
@@ -81,15 +69,6 @@ const Attendance = ({ isTeamView = false }) => {
       isMounted = false;
     };
   }, [isTeamView, isAdminView, isBranchView, isDepartmentView]);
-
-  useEffect(() => {
-    if (dateRange) {
-      const date_range = dateRange.split(",");
-      if (date_range && date_range.length > 0) {
-        setTotalDays(getWorkingDays(date_range[0], moment()));
-      }
-    }
-  }, [dateRange]);
 
   useEffect(() => {
     let isMounted = true;
@@ -122,8 +101,6 @@ const Attendance = ({ isTeamView = false }) => {
     setIsLoading(true);
     const filter = {
       ...filterData,
-      start_date: dateRange.split(",")[0],
-      end_date: dateRange.split(",")[1],
       ...permittedViewFilterData,
     };
 
@@ -184,11 +161,7 @@ const Attendance = ({ isTeamView = false }) => {
         </div>
         {(isAdminView || isBranchView) && (
           <>
-            <StatsCards
-              isTeamView={isTeamView}
-              isEmpView={isAdminView}
-              isBranchView={isBranchView}
-            />
+            <StatsCards permittedViewFilterData={permittedViewFilterData} />
             <div className="flex justify-end gap-3 flex-row flex-wrap">
               <FilterInput
                 filters={[
@@ -220,13 +193,25 @@ const Attendance = ({ isTeamView = false }) => {
                 activeDateRange={activeTab}
                 setDateRange={(dateRange) => {
                   if (dateRange.toUpperCase() === "DAY") {
-                    setDateRange(
-                      `${moment().format("YYYY-MM-DD")},${moment().format(
-                        "YYYY-MM-DD"
-                      )}`
-                    );
+                    const formattedDatee = moment().format("YYYY-MM-DD");
+                    handleFilterChange("start_date", formattedDatee);
+                    handleFilterChange("end_date", formattedDatee);
+                    setTotalDays(1);
                   } else {
-                    setDateRange(GetDateRange(dateRange));
+                    const date_range =
+                      GetDateRange(dateRange)?.split(",") || [];
+                    const end_date =
+                      date_range[1] && date_range[1] !== "null"
+                        ? date_range[1]
+                        : "";
+                    const start_date =
+                      date_range[0] && date_range[0] !== "null"
+                        ? date_range[0]
+                        : "";
+
+                    handleFilterChange("start_date", start_date);
+                    handleFilterChange("end_date", end_date);
+                    setTotalDays(getWorkingDays(start_date, end_date));
                   }
                   setActiveTab(dateRange);
                   return;
@@ -238,7 +223,7 @@ const Attendance = ({ isTeamView = false }) => {
                 <Button
                   onClick={(e) => {
                     e.preventDefault();
-                    setOpenUpdateEmployeeAttendance(true);
+                    setOpenUpdateAttendance(true);
                   }}
                 >
                   Update Attendance
@@ -248,24 +233,28 @@ const Attendance = ({ isTeamView = false }) => {
             </div>
             <Card>
               <CardContent>
-                <TableCustom
-                  data={attendanceData.results || []}
-                  columns={EmployeesAttendanceColumns(TotalDays)}
-                  pagination={true}
-                  dataTotalSize={attendanceData.count || 0}
-                  tableOptions={tableOptions}
-                />
+                {isLoading ? (
+                  <PageLoader />
+                ) : (
+                  <TableCustom
+                    data={attendanceData.results || []}
+                    columns={EmployeesAttendanceColumns(TotalDays)}
+                    pagination={true}
+                    dataTotalSize={attendanceData.count || 0}
+                    tableOptions={tableOptions}
+                  />
+                )}
               </CardContent>
             </Card>
-            {/* <UserBiometricHistory /> */}
+            <UserBiometricHistory />
           </>
         )}
       </div>
-      {openUpdateEmployeeAttendance && (
+      {openUpdateAttendance && (
         <UpdateEmployeeAttendance
-          isOpen={openUpdateEmployeeAttendance}
+          isOpen={openUpdateAttendance}
           setIsOpen={() => {
-            setOpenUpdateEmployeeAttendance(false);
+            setOpenUpdateAttendance(false);
             getAttendanceList(true);
           }}
         />

@@ -13,6 +13,7 @@ import {
 import moment from "moment";
 import { renderTime } from "utils/DateTimeUtils";
 import { calculateTotalCount } from "utils/renderValues";
+import { mapApproverDetails } from "app/utils/MappingObjects/mapGeneralData";
 
 export function mapShiftData(data) {
   const shiftDetails = Object.keys(Shift).reduce((acc, key) => {
@@ -54,12 +55,8 @@ export function mapAttendanceCheckInPayload(
   else if (!attendance?.checkin) payload.checkin = checkInTime;
   return payload;
 }
-export function mapAttendanceCheckOutPayload(
-  time,
-  attendance,
-  isSplitShift,
-) {
-  if(!attendance) return null;
+export function mapAttendanceCheckOutPayload(time, attendance, isSplitShift) {
+  if (!attendance) return null;
   const checkout = moment(time).utc().toISOString();
   const payload = {
     break_duration: attendance?.break_duration,
@@ -293,36 +290,14 @@ export function mapEmployeeAttendanceDetail(data) {
   return emp_attendance_data;
 }
 
-export async function mapAttendanceAdjustmentData(data) {
+export async function mapAttendanceAdjustmentData(
+  data,
+  fetchApprovalDetails = true
+) {
   const attendanceAdjustmentData = {};
   for (const key of Object.keys(AttendanceAdjustment)) {
-    if (key === "approval_details") {
-      const approver_logs = data["approval_logs"] || [];
-      const approval_levels = data["approval_levels"] || [];
-      const level_list = approval_levels
-        .map((level) => {
-          const level_number = parseInt(level.level_number);
-          const logs = approver_logs.find(
-            (log) => parseInt(log.level_number) === level_number
-          );
-          const level_detail = {
-            status: "PENDING",
-            designation: level.designation,
-            level_number: level_number,
-            time: null,
-          };
-          if (level_number === parseInt(data.current_level)) {
-            level_detail.approver = data.current_approver;
-          } else if (logs) {
-            level_detail.status = logs.action_type;
-            level_detail.approver = logs.changed_by;
-            level_detail.time = logs.timestamp;
-          }
-          return level_detail;
-        })
-        .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
-
-      attendanceAdjustmentData[key] = level_list;
+    if (key === "approval_details" && fetchApprovalDetails) {
+      attendanceAdjustmentData[key] = await mapApproverDetails(data);
     } else {
       if (Object.prototype.hasOwnProperty.call(data, key))
         attendanceAdjustmentData[key] = data[key];
@@ -336,7 +311,9 @@ export async function mapAttendanceAdjustmentListData(data) {
   if (!Array.isArray(data) || data.length === 0) return [];
 
   const ResponseList = await Promise.all(
-    data.map((item) => mapAttendanceAdjustmentData(item))
+    data.map(async (item) => {
+      return await mapAttendanceAdjustmentData(item);
+    })
   );
 
   return ResponseList;
@@ -383,39 +360,12 @@ export function mapAttendanceAdjustmentPayloadData(data, id) {
   return payload;
 }
 
-export async function mapTimeAdjustmentData(data) {
+export async function mapTimeAdjustmentData(data, fetchApprovalDetails = true) {
   const timeAdjustmentDetails = {};
 
   for (const key of Object.keys(TimeAdjustment)) {
-    if (key === "approval_details") {
-      const approver_logs = data["approval_logs"] || [];
-      const approval_levels = data["approval_levels"] || [];
-      const level_list = approval_levels
-        .map((level) => {
-          const level_number = parseInt(level.level_number);
-          const logs = approver_logs.find(
-            (log) =>
-              parseInt(log.level_number) === level_number &&
-              log.action_type !== "CREATED"
-          );
-          const level_detail = {
-            status: "PENDING",
-            designation: level.designation,
-            level_number: level_number,
-            time: null,
-          };
-          if (level_number === parseInt(data.current_level)) {
-            level_detail.approver = data.current_approver;
-          } else if (logs) {
-            level_detail.status = logs.action_type;
-            level_detail.approver = logs.changed_by;
-            level_detail.time = logs.timestamp;
-          }
-          return level_detail;
-        })
-        .sort((a, b) => a.level_number - b.level_number); // Sort by level_number
-
-      timeAdjustmentDetails[key] = level_list;
+    if (key === "approval_details" && fetchApprovalDetails) {
+      timeAdjustmentDetails[key] = await mapApproverDetails(data);
     } else {
       if (Object.prototype.hasOwnProperty.call(data, key))
         timeAdjustmentDetails[key] = data[key];

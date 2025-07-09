@@ -245,7 +245,6 @@ const DateRangeInput = React.memo(
       setInputValues({ startInput: "", endInput: "" });
       setCalendarMonth(new Date());
     }, [onChange, name]);
-
     return (
       <FormField
         name={name}
@@ -260,7 +259,7 @@ const DateRangeInput = React.memo(
           open={isOpen}
           setOpen={setIsOpen}
           disabled={disabled}
-          invalidField={!!(error && touch)}
+          invalidField={!!(error)}
           triggerContent={
             <div className="flex justify-start w-full gap-2 items-center">
               <FormFieldIcon icon={icon} />
