@@ -22,8 +22,7 @@ import { TableCustom, PageLoader } from "components";
 import { HasAccess } from "utils/PermissionUtils";
 import { getEmployeesResignations } from "app/hooks/employeeExitAndClearance";
 
-const ExitRequests = ({ reload,permittedViewFilterData }) => {
- 
+const ExitRequests = ({ reload, permittedViewFilterData, isTeamView }) => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Terminations");
   const [ExitRequestList, setExitRequestList] = useState(null);
@@ -57,8 +56,12 @@ const ExitRequests = ({ reload,permittedViewFilterData }) => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      const filter = { ...filterData };
+      if (isTeamView) {
+        filter.reporting_employees = permittedViewFilterData?.reporting_employees || [];
+      }
       const response = await getEmployeesResignations({
-        filterData,
+        filterData: filter,
         options,
         ordering,
       });

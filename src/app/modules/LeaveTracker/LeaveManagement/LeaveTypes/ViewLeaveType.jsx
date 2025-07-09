@@ -236,6 +236,7 @@ const ViewLeaveType = ({
           isOpen={editMode}
           setIsOpen={(isEditOpen) => handleEditClose(isEditOpen, true)}
           data={currentType}
+          id={currentType.id}
           reload={reload}
         />
       )}

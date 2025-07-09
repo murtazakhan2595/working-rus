@@ -41,7 +41,7 @@ export const BranchColumn = (reload) => [
   },
 ];
 //
-export const WorkingHoursColumn = (reload, originalData = []) => [
+export const WorkingHoursColumn = (reload) => [
   {
     dataField: "name",
     text: "Shift Name",

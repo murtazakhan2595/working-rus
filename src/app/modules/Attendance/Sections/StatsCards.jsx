@@ -7,17 +7,12 @@ import { EmployeeOverview } from "components";
 import moment from "moment";
 import { TextInput } from "components/FormControl";
 
-export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
+export function StatsCards({ permittedViewFilterData }) {
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [ModalDetails, setModalDetails] = useState({});
   const [EmployeeDetails, setEmployeeDetails] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const {
-    branch_id: user_branch,
-    department_name: user_department,
-    id: user_id,
-  } = useSelector((state) => state.emp.user_details);
   const [cardStats, setCardStats] = useState({
     total: 0,
     present: 0,
@@ -29,10 +24,13 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
     event.stopPropagation();
     try {
       const attendanceData = await getAttendanceSummary({
-        filterData: { ...(status ? { status: status } : {}) },
-        dateRange: `${moment().format("YYYY-MM-DD")},${moment().format(
-          "YYYY-MM-DD"
-        )}`,
+        filterData: {
+          ...(status ? { status: status } : {}),
+          dateRange: `${moment().format("YYYY-MM-DD")},${moment().format(
+            "YYYY-MM-DD"
+          )}`,
+          ...permittedViewFilterData,
+        },
         ordering: "emp_name",
       });
       if (attendanceData) {
@@ -42,36 +40,6 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
       }
     } catch (error) {
       console.error(error);
-    }
-  };
-
-  const attendanceStats = async (isMounted) => {
-    setLoading(true);
-    try {
-      const FilterData = isTeamView
-        ? { report_to: user_id }
-        : isEmpView
-        ? {}
-        : isBranchView
-        ? { branch_id: user_branch }
-        : {
-            // ...({ department_name } || {}),
-            // ...({ branch_id } || {}),
-          };
-      const response = await getAttendanceStats({ filterData: FilterData });
-      if (response && isMounted) {
-        setCardStats({
-          present: parseInt(response?.daily_stats?.Present),
-          absent: response?.daily_stats?.Absent,
-          late: response?.daily_stats?.Late,
-          leave: response?.daily_stats?.on_leave,
-          totalEmployees: response?.valid_employee_count,
-        });
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -118,11 +86,32 @@ export function StatsCards({ isTeamView, isEmpView, isBranchView }) {
   ];
   useEffect(() => {
     let isMounted = true;
-    attendanceStats(isMounted);
+    const attendanceStats = async (isMounted) => {
+      setLoading(true);
+      try {
+        const response = await getAttendanceStats({
+          filterData: permittedViewFilterData,
+        });
+        if (response && isMounted) {
+          setCardStats({
+            present: parseInt(response?.daily_stats?.Present),
+            absent: response?.daily_stats?.Absent,
+            late: response?.daily_stats?.Late,
+            leave: response?.daily_stats?.on_leave,
+            totalEmployees: response?.valid_employee_count,
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (permittedViewFilterData) attendanceStats(isMounted);
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [permittedViewFilterData]);
 
   // Filter employee based on search
   const FilteredEmployees = React.useMemo(() => {

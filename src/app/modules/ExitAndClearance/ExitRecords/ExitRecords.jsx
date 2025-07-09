@@ -9,11 +9,14 @@ import {
 const innerTabClassName =
   "shadow-none border-transparent mr-4 border-b data-[state=active]:border-plum-1100 w-28 data-[state=active]:text-primary-1100 rounded-none data-[state-active]:font-medium";
 
-const ExitRecords = () => {
+const ExitRecords = ({ isTeamView, permittedViewFilterData }) => {
   const [activeTab, setActiveTab] = useState("Terminated");
   const [filterData, setFilterData] = useState({
     request_status: "REJECTED,APPROVED",
     exit_category: "TERMINATION",
+    reporting_employees: isTeamView
+      ? permittedViewFilterData?.reporting_employees
+      : [],
   });
   const handleTabChange = (tab) => {
     setFilterData((prevFilters) => {

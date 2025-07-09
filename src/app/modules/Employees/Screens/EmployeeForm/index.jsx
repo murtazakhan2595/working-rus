@@ -293,10 +293,6 @@ const EmployeeForm = ({
 
       const response = await saveShiftSchedule(payload);
       if (response) {
-        console.log(
-          "Custom shift schedule saved successfully for employee:",
-          employeeId
-        );
       }
     } catch (error) {
       console.error("Error saving custom shift schedule:", error);
