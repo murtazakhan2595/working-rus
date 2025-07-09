@@ -80,9 +80,7 @@ const SelectableOptionsList = ({
       ? true
       : selectedValues.includes(value);
 
-  const AllOption =
-    showAllOption && options.find((obj) => obj.label === "All");
-
+  // const AllOption = showAllOption && options.find((obj) => obj.label === "All");
   return (
     <div className="w-[300px] p-0">
       <Command
@@ -101,24 +99,19 @@ const SelectableOptionsList = ({
         <CommandList>
           <CommandEmpty>No options found.</CommandEmpty>
 
-      
           {/* Main Options List */}
           <CommandGroup>
             {options.map(({ value, label }) => (
               <CommandItem
                 key={value}
                 value={value}
-                onSelect={() =>
-                  handleSelectionToggle(value, inputSearchValue)
-                }
+                onSelect={() => handleSelectionToggle(value, inputSearchValue)}
               >
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center">
                     <Check
                       className={`mr-2 h-4 w-4 min-w-4 ${
-                        OptionSelect(value)
-                          ? "opacity-100"
-                          : "opacity-0"
+                        OptionSelect(value) ? "opacity-100" : "opacity-0"
                       }`}
                     />
                     {label}
