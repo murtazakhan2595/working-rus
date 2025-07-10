@@ -502,7 +502,7 @@ export const getRecentActivities = async (payload, attendance, userProfile) => {
   recentActivities.push({
     time: moment(attendance.checkin).format("hh:mm A"),
     activity: "Check in",
-    description: "Checked In",
+    description: attendance.additional_info || "Checked In",
     timestamp: moment(attendance.checkin),
   });
 
@@ -519,7 +519,7 @@ export const getRecentActivities = async (payload, attendance, userProfile) => {
       recentActivities.push({
         time: moment(breakItem.starttime).format("hh:mm A"),
         activity: `Break Start`,
-        description: `Away`,
+        description: `${breakItem.break_type} break - Away`,
         timestamp: moment(breakItem.starttime),
       });
 
@@ -528,7 +528,7 @@ export const getRecentActivities = async (payload, attendance, userProfile) => {
         recentActivities.push({
           time: moment(breakItem.endtime).format("hh:mm A"),
           activity: `Break End`,
-          description: `Back`,
+          description: `${breakItem.break_type} break - Back`,
           timestamp: moment(breakItem.endtime),
         });
       }
@@ -945,15 +945,15 @@ export const saveUserBiometricAttendanceLog = async (
     const active_Shift = await getActiveShiftData(employee_id, date);
     const attendanceData = await getAttendancebyEmployee(employee_id, date);
     if (userBiometricList.status === "check-in") {
-      const attendancePaylaod = mapAttendanceCheckInPayload(
+      const attendancePayload = mapAttendanceCheckInPayload(
         userBiometricList.timestamp,
         attendanceData,
         active_Shift.is_split_shift,
         employee_id
       );
-      if (attendancePaylaod) {
+      if (attendancePayload) {
         const response = await saveAttendance(
-          attendancePaylaod,
+          { ...attendancePayload, additional_info: "Biometric Check-In" },
           active_Shift,
           attendanceData.id
         );
@@ -961,7 +961,6 @@ export const saveUserBiometricAttendanceLog = async (
       }
     }
     if (userBiometricList.status === "check-out") {
-      debugger;
       const attendancePayload = mapAttendanceCheckOutPayload(
         userBiometricList.timestamp,
         attendanceData,
@@ -969,7 +968,7 @@ export const saveUserBiometricAttendanceLog = async (
       );
       if (attendancePayload) {
         const response = await saveAttendance(
-          attendancePayload,
+          { ...attendancePayload, additional_info: "Biometric Check-Out" },
           active_Shift,
           attendanceData.id
         );
@@ -977,7 +976,6 @@ export const saveUserBiometricAttendanceLog = async (
       }
     }
     if (userBiometricList.status === "check-out") {
-      debugger;
       if (attendanceData) return Boolean(attendanceData);
       const response = await saveAttendance({
         employee_id: employee_id,
